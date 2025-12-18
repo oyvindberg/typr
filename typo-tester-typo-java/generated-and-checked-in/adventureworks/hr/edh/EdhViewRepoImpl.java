@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class EdhViewRepoImpl implements EdhViewRepo {
@@ -19,9 +20,6 @@ public class EdhViewRepoImpl implements EdhViewRepo {
 
   @Override
   public List<EdhViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
-       from "hr"."edh"
-    """)).query(EdhViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\"\nfrom \"hr\".\"edh\"\n")).query(EdhViewRow._rowParser.all()).runUnchecked(c);
   };
 }

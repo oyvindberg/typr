@@ -7,13 +7,14 @@ package adventureworks.humanresources.employeedepartmenthistory;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDate;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.humanresources.department.DepartmentId;
 import adventureworks.humanresources.shift.ShiftId;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `humanresources.employeedepartmenthistory` which has not been persisted yet */
 public record EmployeedepartmenthistoryRowUnsaved(
@@ -32,13 +33,13 @@ public record EmployeedepartmenthistoryRowUnsaved(
   /** Date the employee started work in the department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  TypoLocalDate startdate,
+  LocalDate startdate,
   /** Date the employee left the department. NULL = Current department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  Optional<TypoLocalDate> enddate,
+  Optional<LocalDate> enddate,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public EmployeedepartmenthistoryRowUnsaved(
     /** Employee identification number. Foreign key to Employee.BusinessEntityID.
@@ -56,7 +57,7 @@ public record EmployeedepartmenthistoryRowUnsaved(
     /** Date the employee started work in the department.
       * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
       */
-    TypoLocalDate startdate
+    LocalDate startdate
   ) {
     this(businessentityid, departmentid, shiftid, startdate, Optional.empty(), new UseDefault<>());
   };
@@ -85,19 +86,19 @@ public record EmployeedepartmenthistoryRowUnsaved(
   /** Date the employee started work in the department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public EmployeedepartmenthistoryRowUnsaved withStartdate(TypoLocalDate startdate) {
+  public EmployeedepartmenthistoryRowUnsaved withStartdate(LocalDate startdate) {
     return new EmployeedepartmenthistoryRowUnsaved(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate);
   };
 
   /** Date the employee left the department. NULL = Current department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public EmployeedepartmenthistoryRowUnsaved withEnddate(Optional<TypoLocalDate> enddate) {
+  public EmployeedepartmenthistoryRowUnsaved withEnddate(Optional<LocalDate> enddate) {
     return new EmployeedepartmenthistoryRowUnsaved(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate);
   };
 
   /** Default: now() */
-  public EmployeedepartmenthistoryRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public EmployeedepartmenthistoryRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new EmployeedepartmenthistoryRowUnsaved(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate);
   };
 
@@ -109,14 +110,14 @@ public record EmployeedepartmenthistoryRowUnsaved(
       sb.append(PgText.DELIMETER);
       ShiftId.pgType.pgText().unsafeEncode(row.shiftid, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDate.pgType.pgText().unsafeEncode(row.startdate, sb);
+      PgTypes.date.pgText().unsafeEncode(row.startdate, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDate.pgType.opt().pgText().unsafeEncode(row.enddate, sb);
+      PgTypes.date.opt().pgText().unsafeEncode(row.enddate, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public EmployeedepartmenthistoryRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public EmployeedepartmenthistoryRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new EmployeedepartmenthistoryRow(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate.getOrElse(modifieddateDefault));
   };
 }

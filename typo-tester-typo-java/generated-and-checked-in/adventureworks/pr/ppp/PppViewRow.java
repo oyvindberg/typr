@@ -5,10 +5,11 @@
  */
 package adventureworks.pr.ppp;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.productphoto.ProductphotoId;
 import adventureworks.public_.Flag;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -21,7 +22,7 @@ public record PppViewRow(
   /** Points to {@link adventureworks.production.productproductphoto.ProductproductphotoRow#primary()} */
   Flag primary,
   /** Points to {@link adventureworks.production.productproductphoto.ProductproductphotoRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productproductphoto.ProductproductphotoRow#productid()} */
   public PppViewRow withProductid(ProductId productid) {
@@ -39,9 +40,9 @@ public record PppViewRow(
   };
 
   /** Points to {@link adventureworks.production.productproductphoto.ProductproductphotoRow#modifieddate()} */
-  public PppViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PppViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PppViewRow(productid, productphotoid, primary, modifieddate);
   };
 
-  static RowParser<PppViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductphotoId.pgType, Flag.pgType, TypoLocalDateTime.pgType, PppViewRow::new, row -> new Object[]{row.productid(), row.productphotoid(), row.primary(), row.modifieddate()});;
+  static RowParser<PppViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductphotoId.pgType, Flag.pgType, PgTypes.timestamp, PppViewRow::new, row -> new Object[]{row.productid(), row.productphotoid(), row.primary(), row.modifieddate()});;
 }

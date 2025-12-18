@@ -7,11 +7,12 @@ package adventureworks.person.businessentitycontact;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.contacttype.ContacttypeId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `person.businessentitycontact` which has not been persisted yet */
 public record BusinessentitycontactRowUnsaved(
@@ -28,9 +29,9 @@ public record BusinessentitycontactRowUnsaved(
     */
   ContacttypeId contacttypeid,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public BusinessentitycontactRowUnsaved(
     /** Primary key. Foreign key to BusinessEntity.BusinessEntityID.
@@ -71,12 +72,12 @@ public record BusinessentitycontactRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public BusinessentitycontactRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public BusinessentitycontactRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new BusinessentitycontactRowUnsaved(businessentityid, personid, contacttypeid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public BusinessentitycontactRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public BusinessentitycontactRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new BusinessentitycontactRowUnsaved(businessentityid, personid, contacttypeid, rowguid, modifieddate);
   };
 
@@ -88,14 +89,14 @@ public record BusinessentitycontactRowUnsaved(
       sb.append(PgText.DELIMETER);
       ContacttypeId.pgType.pgText().unsafeEncode(row.contacttypeid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public BusinessentitycontactRow toRow(
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new BusinessentitycontactRow(businessentityid, personid, contacttypeid, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

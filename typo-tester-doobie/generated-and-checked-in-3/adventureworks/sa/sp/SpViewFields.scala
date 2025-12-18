@@ -10,16 +10,15 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait SpViewFields {
   def id: Field[BusinessentityId, SpViewRow]
   def businessentityid: Field[BusinessentityId, SpViewRow]
-  def territoryid: OptField[SalesterritoryId, SpViewRow]
-  def salesquota: OptField[BigDecimal, SpViewRow]
+  def territoryid: Field[SalesterritoryId, SpViewRow]
+  def salesquota: Field[BigDecimal, SpViewRow]
   def bonus: Field[BigDecimal, SpViewRow]
   def commissionpct: Field[BigDecimal, SpViewRow]
   def salesytd: Field[BigDecimal, SpViewRow]
@@ -29,17 +28,17 @@ trait SpViewFields {
 }
 
 object SpViewFields {
-  lazy val structure: Relation[SpViewFields, SpViewRow] =
+  lazy val structure: RelationStructure[SpViewFields, SpViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SpViewFields, SpViewRow] {
+    extends RelationStructure[SpViewFields, SpViewRow] {
 
     override lazy val fields: SpViewFields = new SpViewFields {
       override def id = Field[BusinessentityId, SpViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, SpViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
-      override def territoryid = OptField[SalesterritoryId, SpViewRow](_path, "territoryid", None, None, x => x.territoryid, (row, value) => row.copy(territoryid = value))
-      override def salesquota = OptField[BigDecimal, SpViewRow](_path, "salesquota", None, None, x => x.salesquota, (row, value) => row.copy(salesquota = value))
+      override def territoryid = Field[SalesterritoryId, SpViewRow](_path, "territoryid", None, None, x => x.territoryid, (row, value) => row.copy(territoryid = value))
+      override def salesquota = Field[BigDecimal, SpViewRow](_path, "salesquota", None, None, x => x.salesquota, (row, value) => row.copy(salesquota = value))
       override def bonus = Field[BigDecimal, SpViewRow](_path, "bonus", None, None, x => x.bonus, (row, value) => row.copy(bonus = value))
       override def commissionpct = Field[BigDecimal, SpViewRow](_path, "commissionpct", None, None, x => x.commissionpct, (row, value) => row.copy(commissionpct = value))
       override def salesytd = Field[BigDecimal, SpViewRow](_path, "salesytd", None, None, x => x.salesytd, (row, value) => row.copy(salesytd = value))

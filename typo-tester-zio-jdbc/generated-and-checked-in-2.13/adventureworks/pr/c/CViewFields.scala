@@ -9,9 +9,9 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait CViewFields {
   def id: Field[CultureId, CViewRow]
@@ -21,11 +21,11 @@ trait CViewFields {
 }
 
 object CViewFields {
-  lazy val structure: Relation[CViewFields, CViewRow] =
+  lazy val structure: RelationStructure[CViewFields, CViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[CViewFields, CViewRow] {
+    extends RelationStructure[CViewFields, CViewRow] {
 
     override lazy val fields: CViewFields = new CViewFields {
       override def id = Field[CultureId, CViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))

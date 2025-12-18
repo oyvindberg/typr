@@ -10,11 +10,11 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoXml
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait ProductmodelFields {
   def productmodelid: IdField[ProductmodelId, ProductmodelRow]
@@ -26,11 +26,11 @@ trait ProductmodelFields {
 }
 
 object ProductmodelFields {
-  lazy val structure: Relation[ProductmodelFields, ProductmodelRow] =
+  lazy val structure: RelationStructure[ProductmodelFields, ProductmodelRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductmodelFields, ProductmodelRow] {
+    extends RelationStructure[ProductmodelFields, ProductmodelRow] {
 
     override lazy val fields: ProductmodelFields = new ProductmodelFields {
       override def productmodelid = IdField[ProductmodelId, ProductmodelRow](_path, "productmodelid", None, Some("int4"), x => x.productmodelid, (row, value) => row.copy(productmodelid = value))

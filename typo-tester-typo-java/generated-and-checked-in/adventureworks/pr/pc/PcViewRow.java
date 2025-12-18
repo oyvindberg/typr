@@ -5,10 +5,11 @@
  */
 package adventureworks.pr.pc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productcategory.ProductcategoryId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -21,9 +22,9 @@ public record PcViewRow(
   /** Points to {@link adventureworks.production.productcategory.ProductcategoryRow#name()} */
   Name name,
   /** Points to {@link adventureworks.production.productcategory.ProductcategoryRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.production.productcategory.ProductcategoryRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productcategory.ProductcategoryRow#productcategoryid()} */
   public PcViewRow withId(ProductcategoryId id) {
@@ -41,14 +42,14 @@ public record PcViewRow(
   };
 
   /** Points to {@link adventureworks.production.productcategory.ProductcategoryRow#rowguid()} */
-  public PcViewRow withRowguid(TypoUUID rowguid) {
+  public PcViewRow withRowguid(UUID rowguid) {
     return new PcViewRow(id, productcategoryid, name, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productcategory.ProductcategoryRow#modifieddate()} */
-  public PcViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PcViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PcViewRow(id, productcategoryid, name, rowguid, modifieddate);
   };
 
-  static RowParser<PcViewRow> _rowParser = RowParsers.of(ProductcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, PcViewRow::new, row -> new Object[]{row.id(), row.productcategoryid(), row.name(), row.rowguid(), row.modifieddate()});;
+  static RowParser<PcViewRow> _rowParser = RowParsers.of(ProductcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, PcViewRow::new, row -> new Object[]{row.id(), row.productcategoryid(), row.name(), row.rowguid(), row.modifieddate()});;
 }

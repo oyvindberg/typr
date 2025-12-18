@@ -5,20 +5,21 @@
  */
 package adventureworks.sa.cu;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import adventureworks.sales.currency.CurrencyId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface CuViewFields extends FieldsExpr<CuViewRow> {
-  record Impl(List<Path> _path) implements CuViewFields, Relation<CuViewFields, CuViewRow> {
+  record Impl(List<Path> _path) implements CuViewFields, RelationStructure<CuViewFields, CuViewRow> {
     @Override
     public Field<CurrencyId, CuViewRow> id() {
       return new Field<CurrencyId, CuViewRow>(_path, "id", CuViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), CurrencyId.pgType);
@@ -35,23 +36,23 @@ public interface CuViewFields extends FieldsExpr<CuViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, CuViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, CuViewRow>(_path, "modifieddate", CuViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CuViewRow> modifieddate() {
+      return new Field<LocalDateTime, CuViewRow>(_path, "modifieddate", CuViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, CuViewRow>> columns() {
-      return List.of(this.id(), this.currencycode(), this.name(), this.modifieddate());
+      return java.util.List.of(this.id(), this.currencycode(), this.name(), this.modifieddate());
     };
 
     @Override
-    public Relation<CuViewFields, CuViewRow> copy(List<Path> _path) {
+    public RelationStructure<CuViewFields, CuViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<CurrencyId, CuViewRow> id();
@@ -60,7 +61,7 @@ public interface CuViewFields extends FieldsExpr<CuViewRow> {
 
   Field<Name, CuViewRow> name();
 
-  Field<TypoLocalDateTime, CuViewRow> modifieddate();
+  Field<LocalDateTime, CuViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, CuViewRow>> columns();

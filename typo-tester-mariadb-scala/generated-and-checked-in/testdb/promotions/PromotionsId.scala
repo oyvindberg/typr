@@ -6,15 +6,15 @@
 package testdb.promotions
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
 import typo.runtime.MariaType
-import typo.runtime.MariaTypes
+import typo.scaladsl.Bijection
+import typo.scaladsl.ScalaDbTypes
 
 /** Type for the primary key of table `promotions` */
-case class PromotionsId(@JsonValue value: java.lang.Long) extends scala.AnyVal
+case class PromotionsId(@JsonValue value: Long) extends scala.AnyVal
 
 object PromotionsId {
-  given bijection: Bijection[PromotionsId, java.lang.Long] = Bijection.apply[PromotionsId, java.lang.Long](_.value)(PromotionsId.apply)
+  given bijection: Bijection[PromotionsId, Long] = Bijection.apply[PromotionsId, Long](_.value)(PromotionsId.apply)
 
-  given pgType: MariaType[PromotionsId] = MariaTypes.bigint.bimap(PromotionsId.apply, _.value)
+  given pgType: MariaType[PromotionsId] = ScalaDbTypes.MariaTypes.intUnsigned.bimap(PromotionsId.apply, _.value)
 }

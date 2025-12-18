@@ -7,9 +7,10 @@ package adventureworks.person.contacttype
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `person.contacttype` which has not been persisted yet */
 data class ContacttypeRowUnsaved(
@@ -20,11 +21,11 @@ data class ContacttypeRowUnsaved(
     */
   val contacttypeid: Defaulted<ContacttypeId> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     contacttypeidDefault: () -> ContacttypeId,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): ContacttypeRow = ContacttypeRow(contacttypeid = contacttypeid.getOrElse(contacttypeidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -33,6 +34,6 @@ data class ContacttypeRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(ContacttypeId.pgType.pgText()).unsafeEncode(row.contacttypeid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

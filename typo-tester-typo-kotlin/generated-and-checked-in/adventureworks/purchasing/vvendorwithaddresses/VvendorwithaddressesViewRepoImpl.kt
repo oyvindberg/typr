@@ -7,15 +7,13 @@ package adventureworks.purchasing.vvendorwithaddresses
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class VvendorwithaddressesViewRepoImpl() : VvendorwithaddressesViewRepo {
   override fun select(): SelectBuilder<VvendorwithaddressesViewFields, VvendorwithaddressesViewRow> = SelectBuilder.of("\"purchasing\".\"vvendorwithaddresses\"", VvendorwithaddressesViewFields.structure, VvendorwithaddressesViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<VvendorwithaddressesViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "name", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname"
-    from "purchasing"."vvendorwithaddresses"
-  """.trimMargin())).query(VvendorwithaddressesViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<VvendorwithaddressesViewRow> = interpolate(Fragment.lit("select \"businessentityid\", \"name\", \"addresstype\", \"addressline1\", \"addressline2\", \"city\", \"stateprovincename\", \"postalcode\", \"countryregionname\"\nfrom \"purchasing\".\"vvendorwithaddresses\"\n")).query(VvendorwithaddressesViewRow._rowParser.all()).runUnchecked(c)
 }

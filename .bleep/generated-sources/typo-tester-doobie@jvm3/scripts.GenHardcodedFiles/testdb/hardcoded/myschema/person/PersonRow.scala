@@ -26,11 +26,11 @@ case class PersonRow(
   id: PersonId,
   /** Points to [[testdb.hardcoded.myschema.football_club.FootballClubRow.id]] */
   favouriteFootballClubId: FootballClubId,
-  name: /* max 100 chars */ String,
+  name: String,
   nickName: Option[/* max 30 chars */ String],
   blogUrl: Option[/* max 100 chars */ String],
-  email: /* max 254 chars */ String,
-  phone: /* max 8 chars */ String,
+  email: String,
+  phone: String,
   likesPizza: Boolean,
   /** Default: some-value
    * Points to [[testdb.hardcoded.myschema.marital_status.MaritalStatusRow.id]]
@@ -66,9 +66,9 @@ case class PersonRow(
 }
 
 object PersonRow {
-  given decoder: Decoder[PersonRow] = Decoder.forProduct12[PersonRow, PersonId, FootballClubId, /* max 100 chars */ String, Option[/* max 30 chars */ String], Option[/* max 100 chars */ String], /* max 254 chars */ String, /* max 8 chars */ String, Boolean, MaritalStatusId, Option[/* max 254 chars */ String], Sector, Number]("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number")(PersonRow.apply)(using PersonId.decoder, FootballClubId.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Decoder.decodeString, Decoder.decodeBoolean, MaritalStatusId.decoder, Decoder.decodeOption(using Decoder.decodeString), Sector.decoder, Number.decoder)
+  given decoder: Decoder[PersonRow] = Decoder.forProduct12[PersonRow, PersonId, FootballClubId, String, Option[/* max 30 chars */ String], Option[/* max 100 chars */ String], String, String, Boolean, MaritalStatusId, Option[/* max 254 chars */ String], Sector, Number]("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number")(PersonRow.apply)(using PersonId.decoder, FootballClubId.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Decoder.decodeString, Decoder.decodeBoolean, MaritalStatusId.decoder, Decoder.decodeOption(using Decoder.decodeString), Sector.decoder, Number.decoder)
 
-  given encoder: Encoder[PersonRow] = Encoder.forProduct12[PersonRow, PersonId, FootballClubId, /* max 100 chars */ String, Option[/* max 30 chars */ String], Option[/* max 100 chars */ String], /* max 254 chars */ String, /* max 8 chars */ String, Boolean, MaritalStatusId, Option[/* max 254 chars */ String], Sector, Number]("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number")(x => (x.id, x.favouriteFootballClubId, x.name, x.nickName, x.blogUrl, x.email, x.phone, x.likesPizza, x.maritalStatusId, x.workEmail, x.sector, x.favoriteNumber))(using PersonId.encoder, FootballClubId.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Encoder.encodeString, Encoder.encodeBoolean, MaritalStatusId.encoder, Encoder.encodeOption(using Encoder.encodeString), Sector.encoder, Number.encoder)
+  given encoder: Encoder[PersonRow] = Encoder.forProduct12[PersonRow, PersonId, FootballClubId, String, Option[/* max 30 chars */ String], Option[/* max 100 chars */ String], String, String, Boolean, MaritalStatusId, Option[/* max 254 chars */ String], Sector, Number]("id", "favourite_football_club_id", "name", "nick_name", "blog_url", "email", "phone", "likes_pizza", "marital_status_id", "work_email", "sector", "favorite_number")(x => (x.id, x.favouriteFootballClubId, x.name, x.nickName, x.blogUrl, x.email, x.phone, x.likesPizza, x.maritalStatusId, x.workEmail, x.sector, x.favoriteNumber))(using PersonId.encoder, FootballClubId.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Encoder.encodeString, Encoder.encodeBoolean, MaritalStatusId.encoder, Encoder.encodeOption(using Encoder.encodeString), Sector.encoder, Number.encoder)
 
   given pgText: Text[PersonRow] = {
     Text.instance[PersonRow]{ (row, sb) =>
@@ -114,11 +114,11 @@ object PersonRow {
       PersonRow(
         id = arr(0).asInstanceOf[PersonId],
             favouriteFootballClubId = arr(1).asInstanceOf[FootballClubId],
-            name = arr(2).asInstanceOf[/* max 100 chars */ String],
+            name = arr(2).asInstanceOf[String],
             nickName = arr(3).asInstanceOf[Option[/* max 30 chars */ String]],
             blogUrl = arr(4).asInstanceOf[Option[/* max 100 chars */ String]],
-            email = arr(5).asInstanceOf[/* max 254 chars */ String],
-            phone = arr(6).asInstanceOf[/* max 8 chars */ String],
+            email = arr(5).asInstanceOf[String],
+            phone = arr(6).asInstanceOf[String],
             likesPizza = arr(7).asInstanceOf[Boolean],
             maritalStatusId = arr(8).asInstanceOf[MaritalStatusId],
             workEmail = arr(9).asInstanceOf[Option[/* max 254 chars */ String]],

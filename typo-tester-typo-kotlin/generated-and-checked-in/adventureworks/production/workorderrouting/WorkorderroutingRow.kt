@@ -6,16 +6,16 @@
 package adventureworks.production.workorderrouting
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.location.LocationId
 import adventureworks.production.workorder.WorkorderId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.workorderrouting
   * Work order details.
@@ -29,7 +29,7 @@ data class WorkorderroutingRow(
   /** Primary key. Foreign key to Product.ProductID. */
   val productid: Int,
   /** Primary key. Indicates the manufacturing process sequence. */
-  val operationsequence: TypoShort,
+  val operationsequence: Short,
   /** Manufacturing location where the part is processed. Foreign key to Location.LocationID.
     * Points to [adventureworks.production.location.LocationRow.locationid]
     */
@@ -37,23 +37,23 @@ data class WorkorderroutingRow(
   /** Planned manufacturing start date.
     * Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate: ((scheduledenddate >= scheduledstartdate))
     */
-  val scheduledstartdate: TypoLocalDateTime,
+  val scheduledstartdate: LocalDateTime,
   /** Planned manufacturing end date.
     * Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate: ((scheduledenddate >= scheduledstartdate))
     */
-  val scheduledenddate: TypoLocalDateTime,
+  val scheduledenddate: LocalDateTime,
   /** Actual start date.
     * Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate: (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL)))
     */
-  val actualstartdate: Optional<TypoLocalDateTime>,
+  val actualstartdate: LocalDateTime?,
   /** Actual end date.
     * Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate: (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL)))
     */
-  val actualenddate: Optional<TypoLocalDateTime>,
+  val actualenddate: LocalDateTime?,
   /** Number of manufacturing hours used.
     * Constraint CK_WorkOrderRouting_ActualResourceHrs affecting columns actualresourcehrs: ((actualresourcehrs >= 0.0000))
     */
-  val actualresourcehrs: Optional<BigDecimal>,
+  val actualresourcehrs: BigDecimal?,
   /** Estimated manufacturing cost.
     * Constraint CK_WorkOrderRouting_PlannedCost affecting columns plannedcost: ((plannedcost > 0.00))
     */
@@ -61,33 +61,33 @@ data class WorkorderroutingRow(
   /** Actual manufacturing cost.
     * Constraint CK_WorkOrderRouting_ActualCost affecting columns actualcost: ((actualcost > 0.00))
     */
-  val actualcost: Optional<BigDecimal>,
+  val actualcost: BigDecimal?,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): WorkorderroutingId = WorkorderroutingId(workorderid, productid, operationsequence)
 
   fun id(): WorkorderroutingId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): WorkorderroutingRowUnsaved = WorkorderroutingRowUnsaved(workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): WorkorderroutingRowUnsaved = WorkorderroutingRowUnsaved(workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<WorkorderroutingRow> = RowParsers.of(WorkorderId.pgType, PgTypes.int4, TypoShort.pgType, LocationId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> WorkorderroutingRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.workorderid, row.productid, row.operationsequence, row.locationid, row.scheduledstartdate, row.scheduledenddate, row.actualstartdate, row.actualenddate, row.actualresourcehrs, row.plannedcost, row.actualcost, row.modifieddate) })
+    val _rowParser: RowParser<WorkorderroutingRow> = RowParsers.of(WorkorderId.pgType, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int2, LocationId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp.nullable(), PgTypes.timestamp.nullable(), PgTypes.numeric.nullable(), PgTypes.numeric, PgTypes.numeric.nullable(), PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> WorkorderroutingRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.workorderid, row.productid, row.operationsequence, row.locationid, row.scheduledstartdate, row.scheduledenddate, row.actualstartdate, row.actualenddate, row.actualresourcehrs, row.plannedcost, row.actualcost, row.modifieddate) })
 
     fun apply(
       compositeId: WorkorderroutingId,
       locationid: LocationId,
-      scheduledstartdate: TypoLocalDateTime,
-      scheduledenddate: TypoLocalDateTime,
-      actualstartdate: Optional<TypoLocalDateTime>,
-      actualenddate: Optional<TypoLocalDateTime>,
-      actualresourcehrs: Optional<BigDecimal>,
+      scheduledstartdate: LocalDateTime,
+      scheduledenddate: LocalDateTime,
+      actualstartdate: LocalDateTime?,
+      actualenddate: LocalDateTime?,
+      actualresourcehrs: BigDecimal?,
       plannedcost: BigDecimal,
-      actualcost: Optional<BigDecimal>,
-      modifieddate: TypoLocalDateTime
+      actualcost: BigDecimal?,
+      modifieddate: LocalDateTime
     ): WorkorderroutingRow = WorkorderroutingRow(compositeId.workorderid, compositeId.productid, compositeId.operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate)
 
     val pgText: PgText<WorkorderroutingRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

@@ -6,12 +6,13 @@
 package adventureworks.sales.customer;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -37,9 +38,9 @@ public record CustomerRow(
     */
   Optional<SalesterritoryId> territoryid,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key.
     * Default: nextval('sales.customer_customerid_seq'::regclass)
@@ -70,16 +71,16 @@ public record CustomerRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public CustomerRow withRowguid(TypoUUID rowguid) {
+  public CustomerRow withRowguid(UUID rowguid) {
     return new CustomerRow(customerid, personid, storeid, territoryid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public CustomerRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CustomerRow withModifieddate(LocalDateTime modifieddate) {
     return new CustomerRow(customerid, personid, storeid, territoryid, rowguid, modifieddate);
   };
 
-  static RowParser<CustomerRow> _rowParser = RowParsers.of(CustomerId.pgType, BusinessentityId.pgType.opt(), BusinessentityId.pgType.opt(), SalesterritoryId.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, CustomerRow::new, row -> new Object[]{row.customerid(), row.personid(), row.storeid(), row.territoryid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<CustomerRow> _rowParser = RowParsers.of(CustomerId.pgType, BusinessentityId.pgType.opt(), BusinessentityId.pgType.opt(), SalesterritoryId.pgType.opt(), PgTypes.uuid, PgTypes.timestamp, CustomerRow::new, row -> new Object[]{row.customerid(), row.personid(), row.storeid(), row.territoryid(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<CustomerRow> pgText =
     PgText.from(_rowParser);
@@ -90,8 +91,8 @@ public record CustomerRow(
 
   public CustomerRowUnsaved toUnsavedRow(
     Defaulted<CustomerId> customerid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new CustomerRowUnsaved(personid, storeid, territoryid, customerid, rowguid, modifieddate);
   };

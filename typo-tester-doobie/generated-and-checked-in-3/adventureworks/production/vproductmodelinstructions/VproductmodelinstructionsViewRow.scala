@@ -20,13 +20,13 @@ case class VproductmodelinstructionsViewRow(
   productmodelid: ProductmodelId,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
-  instructions: /* nullability unknown */ Option[String],
+  instructions: Option[String],
   locationID: Int,
   setupHours: BigDecimal,
   machineHours: BigDecimal,
   laborHours: BigDecimal,
   lotSize: Int,
-  step: /* max 1024 chars */ String,
+  step: String,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
@@ -34,9 +34,9 @@ case class VproductmodelinstructionsViewRow(
 )
 
 object VproductmodelinstructionsViewRow {
-  given decoder: Decoder[VproductmodelinstructionsViewRow] = Decoder.forProduct11[VproductmodelinstructionsViewRow, ProductmodelId, Name, /* nullability unknown */ Option[String], Int, BigDecimal, BigDecimal, BigDecimal, Int, /* max 1024 chars */ String, TypoUUID, TypoLocalDateTime]("productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate")(VproductmodelinstructionsViewRow.apply)(using ProductmodelId.decoder, Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeInt, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeInt, Decoder.decodeString, TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[VproductmodelinstructionsViewRow] = Decoder.forProduct11[VproductmodelinstructionsViewRow, ProductmodelId, Name, Option[String], Int, BigDecimal, BigDecimal, BigDecimal, Int, String, TypoUUID, TypoLocalDateTime]("productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate")(VproductmodelinstructionsViewRow.apply)(using ProductmodelId.decoder, Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeInt, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeInt, Decoder.decodeString, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[VproductmodelinstructionsViewRow] = Encoder.forProduct11[VproductmodelinstructionsViewRow, ProductmodelId, Name, /* nullability unknown */ Option[String], Int, BigDecimal, BigDecimal, BigDecimal, Int, /* max 1024 chars */ String, TypoUUID, TypoLocalDateTime]("productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate")(x => (x.productmodelid, x.name, x.instructions, x.locationID, x.setupHours, x.machineHours, x.laborHours, x.lotSize, x.step, x.rowguid, x.modifieddate))(using ProductmodelId.encoder, Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeInt, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeInt, Encoder.encodeString, TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[VproductmodelinstructionsViewRow] = Encoder.forProduct11[VproductmodelinstructionsViewRow, ProductmodelId, Name, Option[String], Int, BigDecimal, BigDecimal, BigDecimal, Int, String, TypoUUID, TypoLocalDateTime]("productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate")(x => (x.productmodelid, x.name, x.instructions, x.locationID, x.setupHours, x.machineHours, x.laborHours, x.lotSize, x.step, x.rowguid, x.modifieddate))(using ProductmodelId.encoder, Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeInt, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeInt, Encoder.encodeString, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given read: Read[VproductmodelinstructionsViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -55,13 +55,13 @@ object VproductmodelinstructionsViewRow {
       VproductmodelinstructionsViewRow(
         productmodelid = arr(0).asInstanceOf[ProductmodelId],
             name = arr(1).asInstanceOf[Name],
-            instructions = arr(2).asInstanceOf[/* nullability unknown */ Option[String]],
+            instructions = arr(2).asInstanceOf[Option[String]],
             locationID = arr(3).asInstanceOf[Int],
             setupHours = arr(4).asInstanceOf[BigDecimal],
             machineHours = arr(5).asInstanceOf[BigDecimal],
             laborHours = arr(6).asInstanceOf[BigDecimal],
             lotSize = arr(7).asInstanceOf[Int],
-            step = arr(8).asInstanceOf[/* max 1024 chars */ String],
+            step = arr(8).asInstanceOf[String],
             rowguid = arr(9).asInstanceOf[TypoUUID],
             modifieddate = arr(10).asInstanceOf[TypoLocalDateTime]
       )

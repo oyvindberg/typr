@@ -11,16 +11,16 @@ import org.mariadb.jdbc.type.Point;
 import org.mariadb.jdbc.type.Polygon;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface WarehousesFields extends FieldsExpr<WarehousesRow> {
-  record Impl(List<Path> _path) implements WarehousesFields, Relation<WarehousesFields, WarehousesRow> {
+  record Impl(List<Path> _path) implements WarehousesFields, RelationStructure<WarehousesFields, WarehousesRow> {
     @Override
     public IdField<WarehousesId, WarehousesRow> warehouseId() {
       return new IdField<WarehousesId, WarehousesRow>(_path, "warehouse_id", WarehousesRow::warehouseId, Optional.empty(), Optional.empty(), (row, value) -> row.withWarehouseId(value), WarehousesId.pgType);
@@ -73,17 +73,17 @@ public interface WarehousesFields extends FieldsExpr<WarehousesRow> {
 
     @Override
     public List<FieldLike<?, WarehousesRow>> columns() {
-      return List.of(this.warehouseId(), this.code(), this.name(), this.address(), this.location(), this.serviceArea(), this.timezone(), this.isActive(), this.contactEmail(), this.contactPhone());
+      return java.util.List.of(this.warehouseId(), this.code(), this.name(), this.address(), this.location(), this.serviceArea(), this.timezone(), this.isActive(), this.contactEmail(), this.contactPhone());
     };
 
     @Override
-    public Relation<WarehousesFields, WarehousesRow> copy(List<Path> _path) {
+    public RelationStructure<WarehousesFields, WarehousesRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<WarehousesId, WarehousesRow> warehouseId();

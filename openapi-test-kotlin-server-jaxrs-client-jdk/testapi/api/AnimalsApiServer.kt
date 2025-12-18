@@ -11,14 +11,14 @@ import testapi.model.Animal
 
 interface AnimalsApiServer : AnimalsApi {
   /** List all animals (polymorphic) */
-  override fun listAnimals(): Response2004XX5XX<List<Animal>>
+  abstract override fun listAnimals(): Response2004XX5XX<List<Animal>>
 
   /** Endpoint wrapper for listAnimals - handles response status codes */
   @GET
   @Path("")
   @Produces(value = [MediaType.APPLICATION_JSON])
   fun listAnimalsEndpoint(): Response = when (val __r = listAnimals()) {
-    is Ok<*> -> { val r = __r as Ok<*>; Response.ok(r.value).build() }
+    is Ok -> { val r = __r as Ok; Response.ok(r.value).build() }
     is ClientError4XX -> { val r = __r as ClientError4XX; Response.status(r.statusCode).entity(r.value).build() }
     is ServerError5XX -> { val r = __r as ServerError5XX; Response.status(r.statusCode).entity(r.value).build() }
     else -> throw IllegalStateException("Unexpected response type")

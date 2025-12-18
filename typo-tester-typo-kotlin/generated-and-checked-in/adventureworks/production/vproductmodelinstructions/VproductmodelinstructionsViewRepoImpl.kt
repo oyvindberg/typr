@@ -7,15 +7,13 @@ package adventureworks.production.vproductmodelinstructions
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class VproductmodelinstructionsViewRepoImpl() : VproductmodelinstructionsViewRepo {
   override fun select(): SelectBuilder<VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow> = SelectBuilder.of("\"production\".\"vproductmodelinstructions\"", VproductmodelinstructionsViewFields.structure, VproductmodelinstructionsViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<VproductmodelinstructionsViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "productmodelid", "name", "instructions", "LocationID", "SetupHours", "MachineHours", "LaborHours", "LotSize", "Step", "rowguid", "modifieddate"::text
-    from "production"."vproductmodelinstructions"
-  """.trimMargin())).query(VproductmodelinstructionsViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<VproductmodelinstructionsViewRow> = interpolate(Fragment.lit("select \"productmodelid\", \"name\", \"instructions\", \"LocationID\", \"SetupHours\", \"MachineHours\", \"LaborHours\", \"LotSize\", \"Step\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"vproductmodelinstructions\"\n")).query(VproductmodelinstructionsViewRow._rowParser.all()).runUnchecked(c)
 }

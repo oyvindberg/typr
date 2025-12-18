@@ -6,13 +6,11 @@
 package adventureworks.production.document;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Flag;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -24,7 +22,7 @@ import typo.runtime.RowParsers;
   */
 public record DocumentRow(
   /** Title of the document. */
-  /* max 50 chars */ String title,
+  String title,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
     * Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()}
     */
@@ -34,11 +32,11 @@ public record DocumentRow(
     */
   Flag folderflag,
   /** File name of the document */
-  /* max 400 chars */ String filename,
+  String filename,
   /** File extension indicating the document type. For example, .doc or .txt. */
   Optional</* max 8 chars */ String> fileextension,
   /** Revision number of the document. */
-  /* bpchar, max 5 chars */ String revision,
+  String revision,
   /** Engineering change approval number.
     * Default: 0
     */
@@ -46,24 +44,24 @@ public record DocumentRow(
   /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
     * Constraint CK_Document_Status affecting columns status: (((status >= 1) AND (status <= 3)))
     */
-  TypoShort status,
+  Short status,
   /** Document abstract. */
   Optional<String> documentsummary,
   /** Complete document. */
-  Optional<TypoBytea> document,
+  Optional<byte[]> document,
   /** ROWGUIDCOL number uniquely identifying the record. Required for FileStream.
     * Default: uuid_generate_v1()
     */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate,
+  LocalDateTime modifieddate,
   /** Primary key for Document records.
     * Default: '/'::character varying
     */
   DocumentId documentnode
 ) {
   /** Title of the document. */
-  public DocumentRow withTitle(/* max 50 chars */ String title) {
+  public DocumentRow withTitle(String title) {
     return new DocumentRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
@@ -82,7 +80,7 @@ public record DocumentRow(
   };
 
   /** File name of the document */
-  public DocumentRow withFilename(/* max 400 chars */ String filename) {
+  public DocumentRow withFilename(String filename) {
     return new DocumentRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
@@ -92,7 +90,7 @@ public record DocumentRow(
   };
 
   /** Revision number of the document. */
-  public DocumentRow withRevision(/* bpchar, max 5 chars */ String revision) {
+  public DocumentRow withRevision(String revision) {
     return new DocumentRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
@@ -106,7 +104,7 @@ public record DocumentRow(
   /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
     * Constraint CK_Document_Status affecting columns status: (((status >= 1) AND (status <= 3)))
     */
-  public DocumentRow withStatus(TypoShort status) {
+  public DocumentRow withStatus(Short status) {
     return new DocumentRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
@@ -116,19 +114,19 @@ public record DocumentRow(
   };
 
   /** Complete document. */
-  public DocumentRow withDocument(Optional<TypoBytea> document) {
+  public DocumentRow withDocument(Optional<byte[]> document) {
     return new DocumentRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
   /** ROWGUIDCOL number uniquely identifying the record. Required for FileStream.
     * Default: uuid_generate_v1()
     */
-  public DocumentRow withRowguid(TypoUUID rowguid) {
+  public DocumentRow withRowguid(UUID rowguid) {
     return new DocumentRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
   /** Default: now() */
-  public DocumentRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public DocumentRow withModifieddate(LocalDateTime modifieddate) {
     return new DocumentRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
@@ -139,7 +137,7 @@ public record DocumentRow(
     return new DocumentRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
-  static RowParser<DocumentRow> _rowParser = RowParsers.of(PgTypes.text, BusinessentityId.pgType, Flag.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.bpchar, PgTypes.int4, TypoShort.pgType, PgTypes.text.opt(), TypoBytea.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, DocumentId.pgType, DocumentRow::new, row -> new Object[]{row.title(), row.owner(), row.folderflag(), row.filename(), row.fileextension(), row.revision(), row.changenumber(), row.status(), row.documentsummary(), row.document(), row.rowguid(), row.modifieddate(), row.documentnode()});;
+  static RowParser<DocumentRow> _rowParser = RowParsers.of(PgTypes.text, BusinessentityId.pgType, Flag.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.bpchar, PgTypes.int4, PgTypes.int2, PgTypes.text.opt(), PgTypes.bytea.opt(), PgTypes.uuid, PgTypes.timestamp, DocumentId.pgType, DocumentRow::new, row -> new Object[]{row.title(), row.owner(), row.folderflag(), row.filename(), row.fileextension(), row.revision(), row.changenumber(), row.status(), row.documentsummary(), row.document(), row.rowguid(), row.modifieddate(), row.documentnode()});;
 
   static public PgText<DocumentRow> pgText =
     PgText.from(_rowParser);
@@ -152,8 +150,8 @@ public record DocumentRow(
     Defaulted<DocumentId> documentnode,
     Defaulted<Flag> folderflag,
     Defaulted<Integer> changenumber,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new DocumentRowUnsaved(title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode);
   };

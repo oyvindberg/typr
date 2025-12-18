@@ -6,88 +6,87 @@
 package adventureworks.sales.personcreditcard
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PersoncreditcardRepo {
-  fun delete(): DeleteBuilder<PersoncreditcardFields, PersoncreditcardRow>
+  abstract fun delete(): DeleteBuilder<PersoncreditcardFields, PersoncreditcardRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: PersoncreditcardId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<PersoncreditcardId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: PersoncreditcardRow,
     c: Connection
   ): PersoncreditcardRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: PersoncreditcardRowUnsaved,
     c: Connection
   ): PersoncreditcardRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<PersoncreditcardRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<PersoncreditcardRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<PersoncreditcardFields, PersoncreditcardRow>
+  abstract fun select(): SelectBuilder<PersoncreditcardFields, PersoncreditcardRow>
 
-  fun selectAll(c: Connection): List<PersoncreditcardRow>
+  abstract fun selectAll(c: Connection): List<PersoncreditcardRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: PersoncreditcardId,
     c: Connection
-  ): Optional<PersoncreditcardRow>
+  ): PersoncreditcardRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<PersoncreditcardId>,
     c: Connection
   ): List<PersoncreditcardRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<PersoncreditcardId>,
     c: Connection
   ): Map<PersoncreditcardId, PersoncreditcardRow>
 
-  fun update(): UpdateBuilder<PersoncreditcardFields, PersoncreditcardRow>
+  abstract fun update(): UpdateBuilder<PersoncreditcardFields, PersoncreditcardRow>
 
-  fun update(
+  abstract fun update(
     row: PersoncreditcardRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: PersoncreditcardRow,
     c: Connection
   ): PersoncreditcardRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<PersoncreditcardRow>,
     c: Connection
   ): List<PersoncreditcardRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<PersoncreditcardRow>,
     batchSize: Int,
     c: Connection

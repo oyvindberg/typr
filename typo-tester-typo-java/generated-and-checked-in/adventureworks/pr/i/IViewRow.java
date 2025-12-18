@@ -5,10 +5,10 @@
  */
 package adventureworks.pr.i;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.production.illustration.IllustrationId;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import typo.data.Xml;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -19,9 +19,9 @@ public record IViewRow(
   /** Points to {@link adventureworks.production.illustration.IllustrationRow#illustrationid()} */
   IllustrationId illustrationid,
   /** Points to {@link adventureworks.production.illustration.IllustrationRow#diagram()} */
-  Optional<TypoXml> diagram,
+  Xml diagram,
   /** Points to {@link adventureworks.production.illustration.IllustrationRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.illustration.IllustrationRow#illustrationid()} */
   public IViewRow withId(IllustrationId id) {
@@ -34,14 +34,14 @@ public record IViewRow(
   };
 
   /** Points to {@link adventureworks.production.illustration.IllustrationRow#diagram()} */
-  public IViewRow withDiagram(Optional<TypoXml> diagram) {
+  public IViewRow withDiagram(Xml diagram) {
     return new IViewRow(id, illustrationid, diagram, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.illustration.IllustrationRow#modifieddate()} */
-  public IViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public IViewRow withModifieddate(LocalDateTime modifieddate) {
     return new IViewRow(id, illustrationid, diagram, modifieddate);
   };
 
-  static RowParser<IViewRow> _rowParser = RowParsers.of(IllustrationId.pgType, IllustrationId.pgType, TypoXml.pgType.opt(), TypoLocalDateTime.pgType, IViewRow::new, row -> new Object[]{row.id(), row.illustrationid(), row.diagram(), row.modifieddate()});;
+  static RowParser<IViewRow> _rowParser = RowParsers.of(IllustrationId.pgType, IllustrationId.pgType, PgTypes.xml, PgTypes.timestamp, IViewRow::new, row -> new Object[]{row.id(), row.illustrationid(), row.diagram(), row.modifieddate()});;
 }

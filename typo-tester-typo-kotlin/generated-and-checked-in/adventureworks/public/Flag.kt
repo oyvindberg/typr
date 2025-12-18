@@ -6,7 +6,8 @@
 package adventureworks.public
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -20,7 +21,7 @@ data class Flag(@JsonValue val value: Boolean) {
       Bijection.of(Flag::value, ::Flag)
 
     val pgType: PgType<Flag> =
-      PgTypes.bool.bimap(::Flag, Flag::value).renamed("\"public\".\"Flag\"")
+      KotlinDbTypes.PgTypes.bool.bimap(::Flag, Flag::value).renamed("\"public\".\"Flag\"")
 
     val pgTypeArray: PgType<Array<Flag>> =
       PgTypes.boolArray.bimap({ xs -> arrayMap.map(xs, ::Flag, Flag::class.java) }, { xs -> arrayMap.map(xs, Flag::value, Boolean::class.javaObjectType) }).renamed("\"public\".\"Flag\"[]")

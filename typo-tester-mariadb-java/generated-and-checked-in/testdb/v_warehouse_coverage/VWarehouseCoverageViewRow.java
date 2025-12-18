@@ -134,5 +134,5 @@ public record VWarehouseCoverageViewRow(
     return new VWarehouseCoverageViewRow(warehouseId, code, name, address, locationWkt, serviceAreaWkt, timezone, isActive, productsStocked, totalInventory);
   };
 
-  static RowParser<VWarehouseCoverageViewRow> _rowParser = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.varchar, MariaTypes.bool, MariaTypes.bigint, MariaTypes.decimal.opt(), VWarehouseCoverageViewRow::new, row -> new Object[]{row.warehouseId(), row.code(), row.name(), row.address(), row.locationWkt(), row.serviceAreaWkt(), row.timezone(), row.isActive(), row.productsStocked(), row.totalInventory()});;
+  static RowParser<VWarehouseCoverageViewRow> _rowParser = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.varchar, MariaTypes.bool, MariaTypes.bigint, MariaTypes.numeric.opt(), VWarehouseCoverageViewRow::new, row -> new Object[]{row.warehouseId(), row.code(), row.name(), row.address(), row.locationWkt(), row.serviceAreaWkt(), row.timezone(), row.isActive(), row.productsStocked(), row.totalInventory()});;
 }

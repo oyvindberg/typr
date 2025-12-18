@@ -7,15 +7,13 @@ package adventureworks.sa.cr
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class CrViewRepoImpl() : CrViewRepo {
   override fun select(): SelectBuilder<CrViewFields, CrViewRow> = SelectBuilder.of("\"sa\".\"cr\"", CrViewFields.structure, CrViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<CrViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-    from "sa"."cr"
-  """.trimMargin())).query(CrViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<CrViewRow> = interpolate(Fragment.lit("select \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\nfrom \"sa\".\"cr\"\n")).query(CrViewRow._rowParser.all()).runUnchecked(c)
 }

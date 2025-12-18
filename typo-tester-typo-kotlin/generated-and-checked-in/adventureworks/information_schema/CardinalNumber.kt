@@ -6,7 +6,8 @@
 package adventureworks.information_schema
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -20,7 +21,7 @@ data class CardinalNumber(@JsonValue val value: Int) {
       Bijection.of(CardinalNumber::value, ::CardinalNumber)
 
     val pgType: PgType<CardinalNumber> =
-      PgTypes.int4.bimap(::CardinalNumber, CardinalNumber::value).renamed("\"information_schema\".\"cardinal_number\"")
+      KotlinDbTypes.PgTypes.int4.bimap(::CardinalNumber, CardinalNumber::value).renamed("\"information_schema\".\"cardinal_number\"")
 
     val pgTypeArray: PgType<Array<CardinalNumber>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::CardinalNumber, CardinalNumber::class.java) }, { xs -> arrayMap.map(xs, CardinalNumber::value, Int::class.javaObjectType) }).renamed("\"information_schema\".\"cardinal_number\"[]")

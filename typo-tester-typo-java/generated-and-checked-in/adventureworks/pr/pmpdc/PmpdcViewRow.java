@@ -5,10 +5,11 @@
  */
 package adventureworks.pr.pmpdc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.culture.CultureId;
 import adventureworks.production.productdescription.ProductdescriptionId;
 import adventureworks.production.productmodel.ProductmodelId;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -21,7 +22,7 @@ public record PmpdcViewRow(
   /** Points to {@link adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow#cultureid()} */
   CultureId cultureid,
   /** Points to {@link adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow#productmodelid()} */
   public PmpdcViewRow withProductmodelid(ProductmodelId productmodelid) {
@@ -39,9 +40,9 @@ public record PmpdcViewRow(
   };
 
   /** Points to {@link adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow#modifieddate()} */
-  public PmpdcViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PmpdcViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PmpdcViewRow(productmodelid, productdescriptionid, cultureid, modifieddate);
   };
 
-  static RowParser<PmpdcViewRow> _rowParser = RowParsers.of(ProductmodelId.pgType, ProductdescriptionId.pgType, CultureId.pgType, TypoLocalDateTime.pgType, PmpdcViewRow::new, row -> new Object[]{row.productmodelid(), row.productdescriptionid(), row.cultureid(), row.modifieddate()});;
+  static RowParser<PmpdcViewRow> _rowParser = RowParsers.of(ProductmodelId.pgType, ProductdescriptionId.pgType, CultureId.pgType, PgTypes.timestamp, PmpdcViewRow::new, row -> new Object[]{row.productmodelid(), row.productdescriptionid(), row.cultureid(), row.modifieddate()});;
 }

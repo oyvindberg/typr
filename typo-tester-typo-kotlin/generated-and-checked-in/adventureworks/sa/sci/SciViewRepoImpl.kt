@@ -7,15 +7,13 @@ package adventureworks.sa.sci
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class SciViewRepoImpl() : SciViewRepo {
   override fun select(): SelectBuilder<SciViewFields, SciViewRow> = SelectBuilder.of("\"sa\".\"sci\"", SciViewFields.structure, SciViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<SciViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text
-    from "sa"."sci"
-  """.trimMargin())).query(SciViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<SciViewRow> = interpolate(Fragment.lit("select \"id\", \"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\"\nfrom \"sa\".\"sci\"\n")).query(SciViewRow._rowParser.all()).runUnchecked(c)
 }

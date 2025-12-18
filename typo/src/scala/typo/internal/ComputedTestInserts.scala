@@ -159,11 +159,11 @@ object ComputedTestInserts {
                     colsFromFks.exprForColumn.get(col.name) match {
                       case Some(expr) =>
                         if (col.dbCol.isDefaulted && col.dbCol.nullability != Nullability.NoNulls)
-                          code"${table.default.Defaulted}.${table.default.Provided}(${lang.Optional.tpe}($expr))"
+                          code"${table.default.Defaulted}.${table.default.Provided}(${lang.Optional.some(expr)})"
                         else if (col.dbCol.isDefaulted)
                           code"${table.default.Defaulted}.${table.default.Provided}($expr)"
                         else if (col.dbCol.nullability != Nullability.NoNulls)
-                          code"${lang.Optional.tpe}(${expr})"
+                          lang.Optional.some(expr)
                         else
                           expr
 

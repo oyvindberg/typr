@@ -4,5 +4,5 @@ import com.fasterxml.jackson.databind.JsonNode
 
 interface PetStatusChangedWebhook {
   /** Called when a pet's status changes */
-  fun onPetStatusChanged(body: JsonNode): Unit
+  abstract fun onPetStatusChanged(body: JsonNode): Unit
 }

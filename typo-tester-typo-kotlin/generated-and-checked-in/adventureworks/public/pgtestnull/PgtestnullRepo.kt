@@ -8,27 +8,27 @@ package adventureworks.public.pgtestnull
 import java.sql.Connection
 import kotlin.collections.List
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PgtestnullRepo {
-  fun delete(): DeleteBuilder<PgtestnullFields, PgtestnullRow>
+  abstract fun delete(): DeleteBuilder<PgtestnullFields, PgtestnullRow>
 
-  fun insert(
+  abstract fun insert(
     unsaved: PgtestnullRow,
     c: Connection
   ): PgtestnullRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<PgtestnullRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<PgtestnullFields, PgtestnullRow>
+  abstract fun select(): SelectBuilder<PgtestnullFields, PgtestnullRow>
 
-  fun selectAll(c: Connection): List<PgtestnullRow>
+  abstract fun selectAll(c: Connection): List<PgtestnullRow>
 
-  fun update(): UpdateBuilder<PgtestnullFields, PgtestnullRow>
+  abstract fun update(): UpdateBuilder<PgtestnullFields, PgtestnullRow>
 }

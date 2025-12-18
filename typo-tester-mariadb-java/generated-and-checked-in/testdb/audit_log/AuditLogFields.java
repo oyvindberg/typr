@@ -11,16 +11,16 @@ import java.util.Optional;
 import typo.data.maria.Inet6;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface AuditLogFields extends FieldsExpr<AuditLogRow> {
-  record Impl(List<Path> _path) implements AuditLogFields, Relation<AuditLogFields, AuditLogRow> {
+  record Impl(List<Path> _path) implements AuditLogFields, RelationStructure<AuditLogFields, AuditLogRow> {
     @Override
     public IdField<AuditLogId, AuditLogRow> logId() {
       return new IdField<AuditLogId, AuditLogRow>(_path, "log_id", AuditLogRow::logId, Optional.empty(), Optional.empty(), (row, value) -> row.withLogId(value), AuditLogId.pgType);
@@ -73,17 +73,17 @@ public interface AuditLogFields extends FieldsExpr<AuditLogRow> {
 
     @Override
     public List<FieldLike<?, AuditLogRow>> columns() {
-      return List.of(this.logId(), this.tableName(), this.recordId(), this.action(), this.oldValues(), this.newValues(), this.changedBy(), this.changedAt(), this.clientIp(), this.sessionId());
+      return java.util.List.of(this.logId(), this.tableName(), this.recordId(), this.action(), this.oldValues(), this.newValues(), this.changedBy(), this.changedAt(), this.clientIp(), this.sessionId());
     };
 
     @Override
-    public Relation<AuditLogFields, AuditLogRow> copy(List<Path> _path) {
+    public RelationStructure<AuditLogFields, AuditLogRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<AuditLogId, AuditLogRow> logId();

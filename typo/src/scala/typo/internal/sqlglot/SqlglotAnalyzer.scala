@@ -38,7 +38,9 @@ object SqlglotAnalyzer {
       if (resourceStream == null) {
         None
       } else {
-        val tempFile = Files.createTempFile("sqlglot_analyze", ".py")
+        // Use UUID to ensure unique file name for parallel invocations
+        val uuid = java.util.UUID.randomUUID().toString
+        val tempFile = Files.createTempFile(s"sqlglot_analyze_${uuid}_", ".py")
         tempFile.toFile.deleteOnExit()
         Files.copy(resourceStream, tempFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
         resourceStream.close()
@@ -81,9 +83,19 @@ object SqlglotAnalyzer {
     Try {
       val inputStream = new ByteArrayInputStream(inputJson.getBytes(StandardCharsets.UTF_8))
 
+      // Create unique temp directory for this Python process to avoid conflicts
+      val uuid = java.util.UUID.randomUUID().toString
+      val tempDir = Files.createTempDirectory(s"typo_sqlglot_${uuid}_")
+      tempDir.toFile.deleteOnExit()
+
       // Build environment variables
-      val envVars = List("PYTHONIOENCODING" -> "utf-8") ++
-        config.pythonPath.map(p => "PYTHONPATH" -> p.toString).toList
+      val envVars = List(
+        "PYTHONIOENCODING" -> "utf-8",
+        "PYTHONDONTWRITEBYTECODE" -> "1", // Prevent .pyc file creation for parallel safety
+        "TMPDIR" -> tempDir.toString, // Use unique temp dir for this process
+        "TEMP" -> tempDir.toString, // Windows equivalent
+        "TMP" -> tempDir.toString // Another Windows equivalent
+      ) ++ config.pythonPath.map(p => "PYTHONPATH" -> p.toString).toList
 
       val exitCode = Process(
         Seq(config.pythonBinary.toString, config.sqlglotScript.toString),

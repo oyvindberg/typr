@@ -5,9 +5,10 @@
  */
 package adventureworks.pe.cr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -18,7 +19,7 @@ public record CrViewRow(
   /** Points to {@link adventureworks.person.countryregion.CountryregionRow#name()} */
   Name name,
   /** Points to {@link adventureworks.person.countryregion.CountryregionRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.countryregion.CountryregionRow#countryregioncode()} */
   public CrViewRow withCountryregioncode(CountryregionId countryregioncode) {
@@ -31,9 +32,9 @@ public record CrViewRow(
   };
 
   /** Points to {@link adventureworks.person.countryregion.CountryregionRow#modifieddate()} */
-  public CrViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CrViewRow withModifieddate(LocalDateTime modifieddate) {
     return new CrViewRow(countryregioncode, name, modifieddate);
   };
 
-  static RowParser<CrViewRow> _rowParser = RowParsers.of(CountryregionId.pgType, Name.pgType, TypoLocalDateTime.pgType, CrViewRow::new, row -> new Object[]{row.countryregioncode(), row.name(), row.modifieddate()});;
+  static RowParser<CrViewRow> _rowParser = RowParsers.of(CountryregionId.pgType, Name.pgType, PgTypes.timestamp, CrViewRow::new, row -> new Object[]{row.countryregioncode(), row.name(), row.modifieddate()});;
 }

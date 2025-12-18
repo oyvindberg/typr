@@ -5,11 +5,10 @@
  */
 package adventureworks.pr.pr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.productreview.ProductreviewId;
 import adventureworks.public_.Name;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -25,15 +24,15 @@ public record PrViewRow(
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#reviewername()} */
   Name reviewername,
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#reviewdate()} */
-  TypoLocalDateTime reviewdate,
+  LocalDateTime reviewdate,
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#emailaddress()} */
-  /* max 50 chars */ String emailaddress,
+  String emailaddress,
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#rating()} */
   Integer rating,
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#comments()} */
-  Optional</* max 3850 chars */ String> comments,
+  String comments,
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#productreviewid()} */
   public PrViewRow withId(ProductreviewId id) {
@@ -56,12 +55,12 @@ public record PrViewRow(
   };
 
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#reviewdate()} */
-  public PrViewRow withReviewdate(TypoLocalDateTime reviewdate) {
+  public PrViewRow withReviewdate(LocalDateTime reviewdate) {
     return new PrViewRow(id, productreviewid, productid, reviewername, reviewdate, emailaddress, rating, comments, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#emailaddress()} */
-  public PrViewRow withEmailaddress(/* max 50 chars */ String emailaddress) {
+  public PrViewRow withEmailaddress(String emailaddress) {
     return new PrViewRow(id, productreviewid, productid, reviewername, reviewdate, emailaddress, rating, comments, modifieddate);
   };
 
@@ -71,14 +70,14 @@ public record PrViewRow(
   };
 
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#comments()} */
-  public PrViewRow withComments(Optional</* max 3850 chars */ String> comments) {
+  public PrViewRow withComments(String comments) {
     return new PrViewRow(id, productreviewid, productid, reviewername, reviewdate, emailaddress, rating, comments, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productreview.ProductreviewRow#modifieddate()} */
-  public PrViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PrViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PrViewRow(id, productreviewid, productid, reviewername, reviewdate, emailaddress, rating, comments, modifieddate);
   };
 
-  static RowParser<PrViewRow> _rowParser = RowParsers.of(ProductreviewId.pgType, ProductreviewId.pgType, ProductId.pgType, Name.pgType, TypoLocalDateTime.pgType, PgTypes.text, PgTypes.int4, PgTypes.text.opt(), TypoLocalDateTime.pgType, PrViewRow::new, row -> new Object[]{row.id(), row.productreviewid(), row.productid(), row.reviewername(), row.reviewdate(), row.emailaddress(), row.rating(), row.comments(), row.modifieddate()});;
+  static RowParser<PrViewRow> _rowParser = RowParsers.of(ProductreviewId.pgType, ProductreviewId.pgType, ProductId.pgType, Name.pgType, PgTypes.timestamp, PgTypes.text, PgTypes.int4, PgTypes.text, PgTypes.timestamp, PrViewRow::new, row -> new Object[]{row.id(), row.productreviewid(), row.productid(), row.reviewername(), row.reviewdate(), row.emailaddress(), row.rating(), row.comments(), row.modifieddate()});;
 }

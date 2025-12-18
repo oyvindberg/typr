@@ -5,9 +5,9 @@
  */
 package adventureworks.humanresources.vjobcandidateeducation;
 
-import adventureworks.customtypes.TypoLocalDate;
 import adventureworks.humanresources.jobcandidate.JobcandidateId;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDate;
 import java.util.Optional;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -17,71 +17,71 @@ import typo.runtime.RowParsers;
 public record VjobcandidateeducationViewRow(
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#jobcandidateid()} */
   JobcandidateId jobcandidateid,
-  @JsonProperty("Edu.Level") /* nullability unknown */ Optional</* max 50 chars */ String> eduLevel,
-  @JsonProperty("Edu.StartDate") /* nullability unknown */ Optional<TypoLocalDate> eduStartDate,
-  @JsonProperty("Edu.EndDate") /* nullability unknown */ Optional<TypoLocalDate> eduEndDate,
-  @JsonProperty("Edu.Degree") /* nullability unknown */ Optional</* max 50 chars */ String> eduDegree,
-  @JsonProperty("Edu.Major") /* nullability unknown */ Optional</* max 50 chars */ String> eduMajor,
-  @JsonProperty("Edu.Minor") /* nullability unknown */ Optional</* max 50 chars */ String> eduMinor,
-  @JsonProperty("Edu.GPA") /* nullability unknown */ Optional</* max 5 chars */ String> eduGPA,
-  @JsonProperty("Edu.GPAScale") /* nullability unknown */ Optional</* max 5 chars */ String> eduGPAScale,
-  @JsonProperty("Edu.School") /* nullability unknown */ Optional</* max 100 chars */ String> eduSchool,
-  @JsonProperty("Edu.Loc.CountryRegion") /* nullability unknown */ Optional</* max 100 chars */ String> eduLocCountryRegion,
-  @JsonProperty("Edu.Loc.State") /* nullability unknown */ Optional</* max 100 chars */ String> eduLocState,
-  @JsonProperty("Edu.Loc.City") /* nullability unknown */ Optional</* max 100 chars */ String> eduLocCity
+  @JsonProperty("Edu.Level") Optional</* max 50 chars */ String> eduLevel,
+  @JsonProperty("Edu.StartDate") Optional<LocalDate> eduStartDate,
+  @JsonProperty("Edu.EndDate") Optional<LocalDate> eduEndDate,
+  @JsonProperty("Edu.Degree") Optional</* max 50 chars */ String> eduDegree,
+  @JsonProperty("Edu.Major") Optional</* max 50 chars */ String> eduMajor,
+  @JsonProperty("Edu.Minor") Optional</* max 50 chars */ String> eduMinor,
+  @JsonProperty("Edu.GPA") Optional</* max 5 chars */ String> eduGPA,
+  @JsonProperty("Edu.GPAScale") Optional</* max 5 chars */ String> eduGPAScale,
+  @JsonProperty("Edu.School") Optional</* max 100 chars */ String> eduSchool,
+  @JsonProperty("Edu.Loc.CountryRegion") Optional</* max 100 chars */ String> eduLocCountryRegion,
+  @JsonProperty("Edu.Loc.State") Optional</* max 100 chars */ String> eduLocState,
+  @JsonProperty("Edu.Loc.City") Optional</* max 100 chars */ String> eduLocCity
 ) {
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#jobcandidateid()} */
   public VjobcandidateeducationViewRow withJobcandidateid(JobcandidateId jobcandidateid) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduLevel(/* nullability unknown */ Optional</* max 50 chars */ String> eduLevel) {
+  public VjobcandidateeducationViewRow withEduLevel(Optional</* max 50 chars */ String> eduLevel) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduStartDate(/* nullability unknown */ Optional<TypoLocalDate> eduStartDate) {
+  public VjobcandidateeducationViewRow withEduStartDate(Optional<LocalDate> eduStartDate) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduEndDate(/* nullability unknown */ Optional<TypoLocalDate> eduEndDate) {
+  public VjobcandidateeducationViewRow withEduEndDate(Optional<LocalDate> eduEndDate) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduDegree(/* nullability unknown */ Optional</* max 50 chars */ String> eduDegree) {
+  public VjobcandidateeducationViewRow withEduDegree(Optional</* max 50 chars */ String> eduDegree) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduMajor(/* nullability unknown */ Optional</* max 50 chars */ String> eduMajor) {
+  public VjobcandidateeducationViewRow withEduMajor(Optional</* max 50 chars */ String> eduMajor) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduMinor(/* nullability unknown */ Optional</* max 50 chars */ String> eduMinor) {
+  public VjobcandidateeducationViewRow withEduMinor(Optional</* max 50 chars */ String> eduMinor) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduGPA(/* nullability unknown */ Optional</* max 5 chars */ String> eduGPA) {
+  public VjobcandidateeducationViewRow withEduGPA(Optional</* max 5 chars */ String> eduGPA) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduGPAScale(/* nullability unknown */ Optional</* max 5 chars */ String> eduGPAScale) {
+  public VjobcandidateeducationViewRow withEduGPAScale(Optional</* max 5 chars */ String> eduGPAScale) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduSchool(/* nullability unknown */ Optional</* max 100 chars */ String> eduSchool) {
+  public VjobcandidateeducationViewRow withEduSchool(Optional</* max 100 chars */ String> eduSchool) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduLocCountryRegion(/* nullability unknown */ Optional</* max 100 chars */ String> eduLocCountryRegion) {
+  public VjobcandidateeducationViewRow withEduLocCountryRegion(Optional</* max 100 chars */ String> eduLocCountryRegion) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduLocState(/* nullability unknown */ Optional</* max 100 chars */ String> eduLocState) {
+  public VjobcandidateeducationViewRow withEduLocState(Optional</* max 100 chars */ String> eduLocState) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  public VjobcandidateeducationViewRow withEduLocCity(/* nullability unknown */ Optional</* max 100 chars */ String> eduLocCity) {
+  public VjobcandidateeducationViewRow withEduLocCity(Optional</* max 100 chars */ String> eduLocCity) {
     return new VjobcandidateeducationViewRow(jobcandidateid, eduLevel, eduStartDate, eduEndDate, eduDegree, eduMajor, eduMinor, eduGPA, eduGPAScale, eduSchool, eduLocCountryRegion, eduLocState, eduLocCity);
   };
 
-  static RowParser<VjobcandidateeducationViewRow> _rowParser = RowParsers.of(JobcandidateId.pgType, PgTypes.text.opt(), TypoLocalDate.pgType.opt(), TypoLocalDate.pgType.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), VjobcandidateeducationViewRow::new, row -> new Object[]{row.jobcandidateid(), row.eduLevel(), row.eduStartDate(), row.eduEndDate(), row.eduDegree(), row.eduMajor(), row.eduMinor(), row.eduGPA(), row.eduGPAScale(), row.eduSchool(), row.eduLocCountryRegion(), row.eduLocState(), row.eduLocCity()});;
+  static RowParser<VjobcandidateeducationViewRow> _rowParser = RowParsers.of(JobcandidateId.pgType, PgTypes.text.opt(), PgTypes.date.opt(), PgTypes.date.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), VjobcandidateeducationViewRow::new, row -> new Object[]{row.jobcandidateid(), row.eduLevel(), row.eduStartDate(), row.eduEndDate(), row.eduDegree(), row.eduMajor(), row.eduMinor(), row.eduGPA(), row.eduGPAScale(), row.eduSchool(), row.eduLocCountryRegion(), row.eduLocState(), row.eduLocCity()});;
 }

@@ -17,13 +17,13 @@ import zio.json.internal.Write
 /** View: sales.vsalespersonsalesbyfiscalyearsdata */
 case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
-  salespersonid: Option[BusinessentityId],
+  salespersonid: BusinessentityId,
   fullname: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
-  jobtitle: /* max 50 chars */ String,
+  jobtitle: String,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
-  salestotal: /* nullability unknown */ Option[BigDecimal],
+  salestotal: Option[BigDecimal],
   fiscalyear: BigDecimal
 )
 
@@ -33,7 +33,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
       override def unsafeDecode(columIndex: Int, rs: ResultSet): (Int, VsalespersonsalesbyfiscalyearsdataViewRow) =
         columIndex + 5 ->
           VsalespersonsalesbyfiscalyearsdataViewRow(
-            salespersonid = JdbcDecoder.optionDecoder(using BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 0, rs)._2,
+            salespersonid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             fullname = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 1, rs)._2,
             jobtitle = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 2, rs)._2,
             salesterritory = Name.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
@@ -45,7 +45,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
 
   given jsonDecoder: JsonDecoder[VsalespersonsalesbyfiscalyearsdataViewRow] = {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
-      val salespersonid = jsonObj.get("salespersonid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(using JsonDecoder.option(using BusinessentityId.jsonDecoder)))
+      val salespersonid = jsonObj.get("salespersonid").toRight("Missing field 'salespersonid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
       val fullname = jsonObj.get("fullname").toRight("Missing field 'fullname'").flatMap(_.as(using JsonDecoder.string))
       val jobtitle = jsonObj.get("jobtitle").toRight("Missing field 'jobtitle'").flatMap(_.as(using JsonDecoder.string))
       val salesterritory = jsonObj.get("salesterritory").toRight("Missing field 'salesterritory'").flatMap(_.as(using Name.jsonDecoder))
@@ -62,7 +62,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
       override def unsafeEncode(a: VsalespersonsalesbyfiscalyearsdataViewRow, indent: Option[Int], out: Write): Unit = {
         out.write("{")
         out.write(""""salespersonid":""")
-        JsonEncoder.option(using BusinessentityId.jsonEncoder).unsafeEncode(a.salespersonid, indent, out)
+        BusinessentityId.jsonEncoder.unsafeEncode(a.salespersonid, indent, out)
         out.write(",")
         out.write(""""fullname":""")
         JsonEncoder.string.unsafeEncode(a.fullname, indent, out)

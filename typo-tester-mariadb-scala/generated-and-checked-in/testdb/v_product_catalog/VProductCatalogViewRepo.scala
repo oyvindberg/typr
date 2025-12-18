@@ -6,10 +6,10 @@
 package testdb.v_product_catalog
 
 import java.sql.Connection
-import typo.dsl.SelectBuilder
+import typo.scaladsl.SelectBuilder
 
 trait VProductCatalogViewRepo {
   def select: SelectBuilder[VProductCatalogViewFields, VProductCatalogViewRow]
 
-  def selectAll(using c: Connection): java.util.List[VProductCatalogViewRow]
+  def selectAll(using c: Connection): List[VProductCatalogViewRow]
 }

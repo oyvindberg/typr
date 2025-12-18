@@ -5,22 +5,22 @@
  */
 package testdb.product_images
 
-import java.util.Optional
 import testdb.products.ProductsFields
 import testdb.products.ProductsId
 import testdb.products.ProductsRow
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.FieldsExpr0
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait ProductImagesFields extends FieldsExpr[ProductImagesRow] {
+trait ProductImagesFields extends FieldsExpr0[ProductImagesRow] {
   def imageId: IdField[ProductImagesId, ProductImagesRow]
 
   def productId: Field[ProductsId, ProductImagesRow]
@@ -31,29 +31,29 @@ trait ProductImagesFields extends FieldsExpr[ProductImagesRow] {
 
   def altText: OptField[String, ProductImagesRow]
 
-  def sortOrder: Field[java.lang.Short, ProductImagesRow]
+  def sortOrder: Field[Short, ProductImagesRow]
 
-  def isPrimary: Field[java.lang.Boolean, ProductImagesRow]
+  def isPrimary: Field[Boolean, ProductImagesRow]
 
   def imageData: OptField[Array[Byte], ProductImagesRow]
 
-  def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_pi_product").withColumnPair(productId, _.productId)
+  def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_pi_product").withColumnPair[ProductsId](productId, _.productId)
 
   override def columns: java.util.List[FieldLike[?, ProductImagesRow]]
 
-  override def rowParser: RowParser[ProductImagesRow] = ProductImagesRow._rowParser
+  override def rowParser: RowParser[ProductImagesRow] = ProductImagesRow._rowParser.underlying
 }
 
 object ProductImagesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductImagesFields with Relation[ProductImagesFields, ProductImagesRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends ProductImagesFields with RelationStructure[ProductImagesFields, ProductImagesRow] {
 
     override def imageId: IdField[ProductImagesId, ProductImagesRow] = {
       new IdField[ProductImagesId, ProductImagesRow](
         _path,
         "image_id",
         _.imageId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(imageId = value),
         ProductImagesId.pgType
       )
@@ -64,8 +64,8 @@ object ProductImagesFields {
         _path,
         "product_id",
         _.productId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(productId = value),
         ProductsId.pgType
       )
@@ -76,8 +76,8 @@ object ProductImagesFields {
         _path,
         "image_url",
         _.imageUrl,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(imageUrl = value),
         MariaTypes.varchar
       )
@@ -88,8 +88,8 @@ object ProductImagesFields {
         _path,
         "thumbnail_url",
         _.thumbnailUrl,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(thumbnailUrl = value),
         MariaTypes.varchar
       )
@@ -100,34 +100,34 @@ object ProductImagesFields {
         _path,
         "alt_text",
         _.altText,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(altText = value),
         MariaTypes.varchar
       )
     }
 
-    override def sortOrder: Field[java.lang.Short, ProductImagesRow] = {
-      new Field[java.lang.Short, ProductImagesRow](
+    override def sortOrder: Field[Short, ProductImagesRow] = {
+      new Field[Short, ProductImagesRow](
         _path,
         "sort_order",
         _.sortOrder,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(sortOrder = value),
-        MariaTypes.tinyintUnsigned
+        ScalaDbTypes.MariaTypes.tinyintUnsigned
       )
     }
 
-    override def isPrimary: Field[java.lang.Boolean, ProductImagesRow] = {
-      new Field[java.lang.Boolean, ProductImagesRow](
+    override def isPrimary: Field[Boolean, ProductImagesRow] = {
+      new Field[Boolean, ProductImagesRow](
         _path,
         "is_primary",
         _.isPrimary,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isPrimary = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
@@ -136,17 +136,17 @@ object ProductImagesFields {
         _path,
         "image_data",
         _.imageData,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(imageData = value),
         MariaTypes.longblob
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, ProductImagesRow]] = java.util.List.of(this.imageId, this.productId, this.imageUrl, this.thumbnailUrl, this.altText, this.sortOrder, this.isPrimary, this.imageData)
+    override def columns: java.util.List[FieldLike[?, ProductImagesRow]] = java.util.List.of(this.imageId.underlying, this.productId.underlying, this.imageUrl.underlying, this.thumbnailUrl.underlying, this.altText.underlying, this.sortOrder.underlying, this.isPrimary.underlying, this.imageData.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[ProductImagesFields, ProductImagesRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductImagesFields, ProductImagesRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

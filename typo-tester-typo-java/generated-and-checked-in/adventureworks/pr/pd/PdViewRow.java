@@ -5,9 +5,9 @@
  */
 package adventureworks.pr.pd;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productdescription.ProductdescriptionId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -19,11 +19,11 @@ public record PdViewRow(
   /** Points to {@link adventureworks.production.productdescription.ProductdescriptionRow#productdescriptionid()} */
   ProductdescriptionId productdescriptionid,
   /** Points to {@link adventureworks.production.productdescription.ProductdescriptionRow#description()} */
-  /* max 400 chars */ String description,
+  String description,
   /** Points to {@link adventureworks.production.productdescription.ProductdescriptionRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.production.productdescription.ProductdescriptionRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productdescription.ProductdescriptionRow#productdescriptionid()} */
   public PdViewRow withId(ProductdescriptionId id) {
@@ -36,19 +36,19 @@ public record PdViewRow(
   };
 
   /** Points to {@link adventureworks.production.productdescription.ProductdescriptionRow#description()} */
-  public PdViewRow withDescription(/* max 400 chars */ String description) {
+  public PdViewRow withDescription(String description) {
     return new PdViewRow(id, productdescriptionid, description, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productdescription.ProductdescriptionRow#rowguid()} */
-  public PdViewRow withRowguid(TypoUUID rowguid) {
+  public PdViewRow withRowguid(UUID rowguid) {
     return new PdViewRow(id, productdescriptionid, description, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productdescription.ProductdescriptionRow#modifieddate()} */
-  public PdViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PdViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PdViewRow(id, productdescriptionid, description, rowguid, modifieddate);
   };
 
-  static RowParser<PdViewRow> _rowParser = RowParsers.of(ProductdescriptionId.pgType, ProductdescriptionId.pgType, PgTypes.text, TypoUUID.pgType, TypoLocalDateTime.pgType, PdViewRow::new, row -> new Object[]{row.id(), row.productdescriptionid(), row.description(), row.rowguid(), row.modifieddate()});;
+  static RowParser<PdViewRow> _rowParser = RowParsers.of(ProductdescriptionId.pgType, ProductdescriptionId.pgType, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, PdViewRow::new, row -> new Object[]{row.id(), row.productdescriptionid(), row.description(), row.rowguid(), row.modifieddate()});;
 }

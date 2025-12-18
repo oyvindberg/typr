@@ -5,59 +5,61 @@
  */
 package adventureworks.sales.personcreditcard
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.person.PersonFields
 import adventureworks.person.person.PersonRow
 import adventureworks.sales.creditcard.CreditcardFields
 import adventureworks.sales.creditcard.CreditcardRow
 import adventureworks.userdefined.CustomCreditcardId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PersoncreditcardFields : FieldsExpr<PersoncreditcardRow> {
-  fun businessentityid(): IdField<BusinessentityId, PersoncreditcardRow>
+  abstract fun businessentityid(): IdField<BusinessentityId, PersoncreditcardRow>
 
-  override fun columns(): List<FieldLike<*, PersoncreditcardRow>>
+  abstract override fun columns(): List<FieldLike<*, PersoncreditcardRow>>
 
   fun compositeIdIn(compositeIds: List<PersoncreditcardId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<BusinessentityId, PersoncreditcardId, PersoncreditcardRow>(businessentityid(), PersoncreditcardId::businessentityid, BusinessentityId.pgType), Part</* user-picked */ CustomCreditcardId, PersoncreditcardId, PersoncreditcardRow>(creditcardid(), PersoncreditcardId::creditcardid, CustomCreditcardId.pgType)), compositeIds)
 
   fun compositeIdIs(compositeId: PersoncreditcardId): SqlExpr<Boolean> = SqlExpr.all(businessentityid().isEqual(compositeId.businessentityid), creditcardid().isEqual(compositeId.creditcardid))
 
-  fun creditcardid(): IdField</* user-picked */ CustomCreditcardId, PersoncreditcardRow>
+  abstract fun creditcardid(): IdField</* user-picked */ CustomCreditcardId, PersoncreditcardRow>
 
-  fun fkCreditcard(): ForeignKey<CreditcardFields, CreditcardRow> = ForeignKey.of<CreditcardFields, CreditcardRow>("sales.FK_PersonCreditCard_CreditCard_CreditCardID").withColumnPair(creditcardid(), CreditcardFields::creditcardid)
+  fun fkCreditcard(): ForeignKey<CreditcardFields, CreditcardRow> = ForeignKey.of<CreditcardFields, CreditcardRow>("sales.FK_PersonCreditCard_CreditCard_CreditCardID").withColumnPair</* user-picked */ CustomCreditcardId>(creditcardid(), CreditcardFields::creditcardid)
 
-  fun fkPersonPerson(): ForeignKey<PersonFields, PersonRow> = ForeignKey.of<PersonFields, PersonRow>("sales.FK_PersonCreditCard_Person_BusinessEntityID").withColumnPair(businessentityid(), PersonFields::businessentityid)
+  fun fkPersonPerson(): ForeignKey<PersonFields, PersonRow> = ForeignKey.of<PersonFields, PersonRow>("sales.FK_PersonCreditCard_Person_BusinessEntityID").withColumnPair<BusinessentityId>(businessentityid(), PersonFields::businessentityid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, PersoncreditcardRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PersoncreditcardRow>
 
-  override fun rowParser(): RowParser<PersoncreditcardRow> = PersoncreditcardRow._rowParser
+  override fun rowParser(): RowParser<PersoncreditcardRow> = PersoncreditcardRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : PersoncreditcardFields, Relation<PersoncreditcardFields, PersoncreditcardRow> {
-      override fun businessentityid(): IdField<BusinessentityId, PersoncreditcardRow> = IdField<BusinessentityId, PersoncreditcardRow>(_path, "businessentityid", PersoncreditcardRow::businessentityid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : PersoncreditcardFields, RelationStructure<PersoncreditcardFields, PersoncreditcardRow> {
+      override fun businessentityid(): IdField<BusinessentityId, PersoncreditcardRow> = IdField<BusinessentityId, PersoncreditcardRow>(_path, "businessentityid", PersoncreditcardRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun creditcardid(): IdField</* user-picked */ CustomCreditcardId, PersoncreditcardRow> = IdField</* user-picked */ CustomCreditcardId, PersoncreditcardRow>(_path, "creditcardid", PersoncreditcardRow::creditcardid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(creditcardid = value) }, CustomCreditcardId.pgType)
+      override fun creditcardid(): IdField</* user-picked */ CustomCreditcardId, PersoncreditcardRow> = IdField</* user-picked */ CustomCreditcardId, PersoncreditcardRow>(_path, "creditcardid", PersoncreditcardRow::creditcardid, null, "int4", { row, value -> row.copy(creditcardid = value) }, CustomCreditcardId.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PersoncreditcardRow> = Field<TypoLocalDateTime, PersoncreditcardRow>(_path, "modifieddate", PersoncreditcardRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PersoncreditcardRow> = Field<LocalDateTime, PersoncreditcardRow>(_path, "modifieddate", PersoncreditcardRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PersoncreditcardRow>> = listOf(this.businessentityid(), this.creditcardid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PersoncreditcardFields, PersoncreditcardRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PersoncreditcardRow>> = listOf(this.businessentityid().underlying, this.creditcardid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PersoncreditcardFields, PersoncreditcardRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

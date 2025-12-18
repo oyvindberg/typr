@@ -5,22 +5,22 @@
  */
 package adventureworks.production.location;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface LocationFields extends FieldsExpr<LocationRow> {
-  record Impl(List<Path> _path) implements LocationFields, Relation<LocationFields, LocationRow> {
+  record Impl(List<Path> _path) implements LocationFields, RelationStructure<LocationFields, LocationRow> {
     @Override
     public IdField<LocationId, LocationRow> locationid() {
       return new IdField<LocationId, LocationRow>(_path, "locationid", LocationRow::locationid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withLocationid(value), LocationId.pgType);
@@ -42,23 +42,23 @@ public interface LocationFields extends FieldsExpr<LocationRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, LocationRow> modifieddate() {
-      return new Field<TypoLocalDateTime, LocationRow>(_path, "modifieddate", LocationRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, LocationRow> modifieddate() {
+      return new Field<LocalDateTime, LocationRow>(_path, "modifieddate", LocationRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, LocationRow>> columns() {
-      return List.of(this.locationid(), this.name(), this.costrate(), this.availability(), this.modifieddate());
+      return java.util.List.of(this.locationid(), this.name(), this.costrate(), this.availability(), this.modifieddate());
     };
 
     @Override
-    public Relation<LocationFields, LocationRow> copy(List<Path> _path) {
+    public RelationStructure<LocationFields, LocationRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<LocationId, LocationRow> locationid();
@@ -69,7 +69,7 @@ public interface LocationFields extends FieldsExpr<LocationRow> {
 
   Field<BigDecimal, LocationRow> availability();
 
-  Field<TypoLocalDateTime, LocationRow> modifieddate();
+  Field<LocalDateTime, LocationRow> modifieddate();
 
   @Override
   List<FieldLike<?, LocationRow>> columns();

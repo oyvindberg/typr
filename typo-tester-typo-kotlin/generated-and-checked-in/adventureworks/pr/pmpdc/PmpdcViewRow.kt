@@ -5,12 +5,13 @@
  */
 package adventureworks.pr.pmpdc
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
 import adventureworks.production.productdescription.ProductdescriptionId
 import adventureworks.production.productmodel.ProductmodelId
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pr.pmpdc */
 data class PmpdcViewRow(
@@ -21,9 +22,9 @@ data class PmpdcViewRow(
   /** Points to [adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.cultureid] */
   val cultureid: CultureId,
   /** Points to [adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PmpdcViewRow> = RowParsers.of(ProductmodelId.pgType, ProductdescriptionId.pgType, CultureId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> PmpdcViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.productdescriptionid, row.cultureid, row.modifieddate) })
+    val _rowParser: RowParser<PmpdcViewRow> = RowParsers.of(ProductmodelId.pgType, ProductdescriptionId.pgType, CultureId.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> PmpdcViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.productdescriptionid, row.cultureid, row.modifieddate) })
   }
 }

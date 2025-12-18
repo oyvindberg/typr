@@ -8,21 +8,19 @@ package adventureworks.production.culture
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class CultureRepoMock(
   val toRow: (CultureRowUnsaved) -> CultureRow,
@@ -33,7 +31,7 @@ data class CultureRepoMock(
   override fun deleteById(
     cultureid: CultureId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(cultureid)).isPresent()
+  ): Boolean = map.remove(cultureid) != null
 
   override fun deleteByIds(
     cultureids: Array<CultureId>,
@@ -41,7 +39,7 @@ data class CultureRepoMock(
   ): Int {
     var count = 0
     for (id in cultureids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class CultureRepoMock(
     c: Connection
   ): CultureRow {
     if (map.containsKey(unsaved.cultureid)) {
-      throw RuntimeException(str("id $unsaved.cultureid already exists"))
+      throw RuntimeException("id " + unsaved.cultureid + " already exists")
     }
     map[unsaved.cultureid] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class CultureRepoMock(
   override fun selectById(
     cultureid: CultureId,
     c: Connection
-  ): Optional<CultureRow> = Optional.ofNullable(map[cultureid])
+  ): CultureRow? = map[cultureid]
 
   override fun selectByIds(
     cultureids: Array<CultureId>,
@@ -109,9 +107,9 @@ data class CultureRepoMock(
   ): List<CultureRow> {
     val result = ArrayList<CultureRow>()
     for (id in cultureids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class CultureRepoMock(
     row: CultureRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.cultureid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.cultureid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.cultureid] = row
     }

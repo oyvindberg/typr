@@ -8,21 +8,19 @@ package testdb.reviews
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ReviewsRepoMock(
   val toRow: (ReviewsRowUnsaved) -> ReviewsRow,
@@ -33,7 +31,7 @@ data class ReviewsRepoMock(
   override fun deleteById(
     reviewId: ReviewsId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(reviewId)).isPresent()
+  ): Boolean = map.remove(reviewId) != null
 
   override fun deleteByIds(
     reviewIds: Array<ReviewsId>,
@@ -41,7 +39,7 @@ data class ReviewsRepoMock(
   ): Int {
     var count = 0
     for (id in reviewIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ReviewsRepoMock(
     c: Connection
   ): ReviewsRow {
     if (map.containsKey(unsaved.reviewId)) {
-      throw RuntimeException(str("id $unsaved.reviewId already exists"))
+      throw RuntimeException("id " + unsaved.reviewId + " already exists")
     }
     map[unsaved.reviewId] = unsaved
     return unsaved
@@ -71,7 +69,7 @@ data class ReviewsRepoMock(
   override fun selectById(
     reviewId: ReviewsId,
     c: Connection
-  ): Optional<ReviewsRow> = Optional.ofNullable(map[reviewId])
+  ): ReviewsRow? = map[reviewId]
 
   override fun selectByIds(
     reviewIds: Array<ReviewsId>,
@@ -79,9 +77,9 @@ data class ReviewsRepoMock(
   ): List<ReviewsRow> {
     val result = ArrayList<ReviewsRow>()
     for (id in reviewIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -98,7 +96,7 @@ data class ReviewsRepoMock(
     row: ReviewsRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.reviewId]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.reviewId]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.reviewId] = row
     }

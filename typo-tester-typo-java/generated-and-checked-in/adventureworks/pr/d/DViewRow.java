@@ -5,14 +5,11 @@
  */
 package adventureworks.pr.d;
 
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.production.document.DocumentId;
 import adventureworks.public_.Flag;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -20,34 +17,34 @@ import typo.runtime.RowParsers;
 /** View: pr.d */
 public record DViewRow(
   /** Points to {@link adventureworks.production.document.DocumentRow#title()} */
-  /* max 50 chars */ String title,
+  String title,
   /** Points to {@link adventureworks.production.document.DocumentRow#owner()} */
   BusinessentityId owner,
   /** Points to {@link adventureworks.production.document.DocumentRow#folderflag()} */
   Flag folderflag,
   /** Points to {@link adventureworks.production.document.DocumentRow#filename()} */
-  /* max 400 chars */ String filename,
+  String filename,
   /** Points to {@link adventureworks.production.document.DocumentRow#fileextension()} */
-  Optional</* max 8 chars */ String> fileextension,
+  String fileextension,
   /** Points to {@link adventureworks.production.document.DocumentRow#revision()} */
-  /* bpchar, max 5 chars */ String revision,
+  String revision,
   /** Points to {@link adventureworks.production.document.DocumentRow#changenumber()} */
   Integer changenumber,
   /** Points to {@link adventureworks.production.document.DocumentRow#status()} */
-  TypoShort status,
+  Short status,
   /** Points to {@link adventureworks.production.document.DocumentRow#documentsummary()} */
-  Optional<String> documentsummary,
+  String documentsummary,
   /** Points to {@link adventureworks.production.document.DocumentRow#document()} */
-  Optional<TypoBytea> document,
+  byte[] document,
   /** Points to {@link adventureworks.production.document.DocumentRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.production.document.DocumentRow#modifieddate()} */
-  TypoLocalDateTime modifieddate,
+  LocalDateTime modifieddate,
   /** Points to {@link adventureworks.production.document.DocumentRow#documentnode()} */
   DocumentId documentnode
 ) {
   /** Points to {@link adventureworks.production.document.DocumentRow#title()} */
-  public DViewRow withTitle(/* max 50 chars */ String title) {
+  public DViewRow withTitle(String title) {
     return new DViewRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
@@ -62,17 +59,17 @@ public record DViewRow(
   };
 
   /** Points to {@link adventureworks.production.document.DocumentRow#filename()} */
-  public DViewRow withFilename(/* max 400 chars */ String filename) {
+  public DViewRow withFilename(String filename) {
     return new DViewRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
   /** Points to {@link adventureworks.production.document.DocumentRow#fileextension()} */
-  public DViewRow withFileextension(Optional</* max 8 chars */ String> fileextension) {
+  public DViewRow withFileextension(String fileextension) {
     return new DViewRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
   /** Points to {@link adventureworks.production.document.DocumentRow#revision()} */
-  public DViewRow withRevision(/* bpchar, max 5 chars */ String revision) {
+  public DViewRow withRevision(String revision) {
     return new DViewRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
@@ -82,27 +79,27 @@ public record DViewRow(
   };
 
   /** Points to {@link adventureworks.production.document.DocumentRow#status()} */
-  public DViewRow withStatus(TypoShort status) {
+  public DViewRow withStatus(Short status) {
     return new DViewRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
   /** Points to {@link adventureworks.production.document.DocumentRow#documentsummary()} */
-  public DViewRow withDocumentsummary(Optional<String> documentsummary) {
+  public DViewRow withDocumentsummary(String documentsummary) {
     return new DViewRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
   /** Points to {@link adventureworks.production.document.DocumentRow#document()} */
-  public DViewRow withDocument(Optional<TypoBytea> document) {
+  public DViewRow withDocument(byte[] document) {
     return new DViewRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
   /** Points to {@link adventureworks.production.document.DocumentRow#rowguid()} */
-  public DViewRow withRowguid(TypoUUID rowguid) {
+  public DViewRow withRowguid(UUID rowguid) {
     return new DViewRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
   /** Points to {@link adventureworks.production.document.DocumentRow#modifieddate()} */
-  public DViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public DViewRow withModifieddate(LocalDateTime modifieddate) {
     return new DViewRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
@@ -111,5 +108,5 @@ public record DViewRow(
     return new DViewRow(title, owner, folderflag, filename, fileextension, revision, changenumber, status, documentsummary, document, rowguid, modifieddate, documentnode);
   };
 
-  static RowParser<DViewRow> _rowParser = RowParsers.of(PgTypes.text, BusinessentityId.pgType, Flag.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.bpchar, PgTypes.int4, TypoShort.pgType, PgTypes.text.opt(), TypoBytea.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, DocumentId.pgType, DViewRow::new, row -> new Object[]{row.title(), row.owner(), row.folderflag(), row.filename(), row.fileextension(), row.revision(), row.changenumber(), row.status(), row.documentsummary(), row.document(), row.rowguid(), row.modifieddate(), row.documentnode()});;
+  static RowParser<DViewRow> _rowParser = RowParsers.of(PgTypes.text, BusinessentityId.pgType, Flag.pgType, PgTypes.text, PgTypes.text, PgTypes.bpchar, PgTypes.int4, PgTypes.int2, PgTypes.text, PgTypes.bytea, PgTypes.uuid, PgTypes.timestamp, DocumentId.pgType, DViewRow::new, row -> new Object[]{row.title(), row.owner(), row.folderflag(), row.filename(), row.fileextension(), row.revision(), row.changenumber(), row.status(), row.documentsummary(), row.document(), row.rowguid(), row.modifieddate(), row.documentnode()});;
 }

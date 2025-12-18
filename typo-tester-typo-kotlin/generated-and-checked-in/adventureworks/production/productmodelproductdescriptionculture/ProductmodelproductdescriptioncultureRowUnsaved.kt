@@ -7,11 +7,12 @@ package adventureworks.production.productmodelproductdescriptionculture
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
 import adventureworks.production.productdescription.ProductdescriptionId
 import adventureworks.production.productmodel.ProductmodelId
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `production.productmodelproductdescriptionculture` which has not been persisted yet */
 data class ProductmodelproductdescriptioncultureRowUnsaved(
@@ -28,9 +29,9 @@ data class ProductmodelproductdescriptioncultureRowUnsaved(
     */
   val cultureid: CultureId,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
-  fun toRow(modifieddateDefault: () -> TypoLocalDateTime): ProductmodelproductdescriptioncultureRow = ProductmodelproductdescriptioncultureRow(productmodelid = productmodelid, productdescriptionid = productdescriptionid, cultureid = cultureid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
+  fun toRow(modifieddateDefault: () -> LocalDateTime): ProductmodelproductdescriptioncultureRow = ProductmodelproductdescriptioncultureRow(productmodelid = productmodelid, productdescriptionid = productdescriptionid, cultureid = cultureid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<ProductmodelproductdescriptioncultureRowUnsaved> =
@@ -40,6 +41,6 @@ data class ProductmodelproductdescriptioncultureRowUnsaved(
       sb.append(PgText.DELIMETER)
       CultureId.pgType.pgText().unsafeEncode(row.cultureid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

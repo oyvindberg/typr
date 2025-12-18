@@ -10,16 +10,16 @@ import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.public.Flag
 import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Materialized View: person.vstateprovincecountryregion */
 data class VstateprovincecountryregionMVRow(
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid] */
   val stateprovinceid: StateprovinceId,
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.stateprovincecode] */
-  val stateprovincecode: /* bpchar, max 3 chars */ String,
+  val stateprovincecode: String,
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.isonlystateprovinceflag] */
   val isonlystateprovinceflag: Flag,
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.name] */

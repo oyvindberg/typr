@@ -19,7 +19,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -34,11 +33,7 @@ public class InventoryRepoImpl implements InventoryRepo {
     InventoryId inventoryId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `inventory` where `inventory_id` = "),
-      InventoryId.pgType.encode(inventoryId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `inventory` where `inventory_id` = "), Fragment.encode(InventoryId.pgType, inventoryId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -46,8 +41,8 @@ public class InventoryRepoImpl implements InventoryRepo {
     InventoryId[] inventoryIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : inventoryIds) { fragments.add(InventoryId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : inventoryIds) { fragments.add(Fragment.encode(InventoryId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `inventory` where `inventory_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -56,34 +51,7 @@ public class InventoryRepoImpl implements InventoryRepo {
     InventoryRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `inventory`(`product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)
-         values ("""),
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit(", "),
-      WarehousesId.pgType.encode(unsaved.warehouseId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.quantityOnHand()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.quantityReserved()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.quantityOnOrder()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.reorderPoint()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.reorderQuantity()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.binLocation()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.lastCountedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.updatedAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `inventory`(`product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)\nvalues ("), Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit(", "), Fragment.encode(WarehousesId.pgType, unsaved.warehouseId()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_, unsaved.quantityOnHand()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_, unsaved.quantityReserved()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_, unsaved.quantityOnOrder()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_, unsaved.reorderPoint()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_, unsaved.reorderQuantity()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.binLocation()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.lastCountedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt()), Fragment.lit(")\nreturning `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\n"))
       .updateReturning(InventoryRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -92,31 +60,19 @@ public class InventoryRepoImpl implements InventoryRepo {
     InventoryRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`product_id`"));
-    values.add(interpolate(
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit("")));
     columns.add(Fragment.lit("`warehouse_id`"));
-    values.add(interpolate(
-      WarehousesId.pgType.encode(unsaved.warehouseId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(WarehousesId.pgType, unsaved.warehouseId()), Fragment.lit("")));
     unsaved.quantityOnHand().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`quantity_on_hand`"));
-        values.add(interpolate(
-        MariaTypes.int_.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.int_, value), Fragment.lit("")));
       }
     );;
     unsaved.quantityReserved().visit(
@@ -125,11 +81,7 @@ public class InventoryRepoImpl implements InventoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`quantity_reserved`"));
-        values.add(interpolate(
-        MariaTypes.int_.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.int_, value), Fragment.lit("")));
       }
     );;
     unsaved.quantityOnOrder().visit(
@@ -138,11 +90,7 @@ public class InventoryRepoImpl implements InventoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`quantity_on_order`"));
-        values.add(interpolate(
-        MariaTypes.int_.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.int_, value), Fragment.lit("")));
       }
     );;
     unsaved.reorderPoint().visit(
@@ -151,11 +99,7 @@ public class InventoryRepoImpl implements InventoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`reorder_point`"));
-        values.add(interpolate(
-        MariaTypes.int_.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.int_, value), Fragment.lit("")));
       }
     );;
     unsaved.reorderQuantity().visit(
@@ -164,11 +108,7 @@ public class InventoryRepoImpl implements InventoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`reorder_quantity`"));
-        values.add(interpolate(
-        MariaTypes.int_.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.int_, value), Fragment.lit("")));
       }
     );;
     unsaved.binLocation().visit(
@@ -177,11 +117,7 @@ public class InventoryRepoImpl implements InventoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`bin_location`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.lastCountedAt().visit(
@@ -190,11 +126,7 @@ public class InventoryRepoImpl implements InventoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`last_counted_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.updatedAt().visit(
@@ -203,25 +135,10 @@ public class InventoryRepoImpl implements InventoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`updated_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `inventory`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `inventory`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\n"));;
     return q.updateReturning(InventoryRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -232,10 +149,7 @@ public class InventoryRepoImpl implements InventoryRepo {
 
   @Override
   public List<InventoryRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`
-       from `inventory`
-    """)).query(InventoryRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\nfrom `inventory`\n")).query(InventoryRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -243,14 +157,7 @@ public class InventoryRepoImpl implements InventoryRepo {
     InventoryId inventoryId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`
-         from `inventory`
-         where `inventory_id` = """),
-      InventoryId.pgType.encode(inventoryId),
-      typo.runtime.Fragment.lit("")
-    ).query(InventoryRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\nfrom `inventory`\nwhere `inventory_id` = "), Fragment.encode(InventoryId.pgType, inventoryId), Fragment.lit("")).query(InventoryRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -258,8 +165,8 @@ public class InventoryRepoImpl implements InventoryRepo {
     InventoryId[] inventoryIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : inventoryIds) { fragments.add(InventoryId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : inventoryIds) { fragments.add(Fragment.encode(InventoryId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at` from `inventory` where `inventory_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(InventoryRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -279,24 +186,12 @@ public class InventoryRepoImpl implements InventoryRepo {
     WarehousesId warehouseId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`
-         from `inventory`
-         where `product_id` = """),
-      ProductsId.pgType.encode(productId),
-      typo.runtime.Fragment.lit(" AND `warehouse_id` = "),
-      WarehousesId.pgType.encode(warehouseId),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(InventoryRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\nfrom `inventory`\nwhere `product_id` = "), Fragment.encode(ProductsId.pgType, productId), Fragment.lit(" AND `warehouse_id` = "), Fragment.encode(WarehousesId.pgType, warehouseId), Fragment.lit("\n")).query(InventoryRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<InventoryFields, InventoryRow> update() {
-    return UpdateBuilder.of("`inventory`", InventoryFields.structure(), InventoryRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`inventory`", InventoryFields.structure(), InventoryRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -305,53 +200,7 @@ public class InventoryRepoImpl implements InventoryRepo {
     Connection c
   ) {
     InventoryId inventoryId = row.inventoryId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `inventory`
-         set `product_id` = """),
-      ProductsId.pgType.encode(row.productId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `warehouse_id` = """),
-      WarehousesId.pgType.encode(row.warehouseId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `quantity_on_hand` = """),
-      MariaTypes.int_.encode(row.quantityOnHand()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `quantity_reserved` = """),
-      MariaTypes.int_.encode(row.quantityReserved()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `quantity_on_order` = """),
-      MariaTypes.int_.encode(row.quantityOnOrder()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `reorder_point` = """),
-      MariaTypes.int_.encode(row.reorderPoint()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `reorder_quantity` = """),
-      MariaTypes.int_.encode(row.reorderQuantity()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `bin_location` = """),
-      MariaTypes.text.opt().encode(row.binLocation()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `last_counted_at` = """),
-      MariaTypes.datetime.opt().encode(row.lastCountedAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `updated_at` = """),
-      MariaTypes.datetime.encode(row.updatedAt()),
-      typo.runtime.Fragment.lit("""
-   
-         where `inventory_id` = """),
-      InventoryId.pgType.encode(inventoryId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `inventory`\nset `product_id` = "), Fragment.encode(ProductsId.pgType, row.productId()), Fragment.lit(",\n`warehouse_id` = "), Fragment.encode(WarehousesId.pgType, row.warehouseId()), Fragment.lit(",\n`quantity_on_hand` = "), Fragment.encode(MariaTypes.int_, row.quantityOnHand()), Fragment.lit(",\n`quantity_reserved` = "), Fragment.encode(MariaTypes.int_, row.quantityReserved()), Fragment.lit(",\n`quantity_on_order` = "), Fragment.encode(MariaTypes.int_, row.quantityOnOrder()), Fragment.lit(",\n`reorder_point` = "), Fragment.encode(MariaTypes.int_, row.reorderPoint()), Fragment.lit(",\n`reorder_quantity` = "), Fragment.encode(MariaTypes.int_, row.reorderQuantity()), Fragment.lit(",\n`bin_location` = "), Fragment.encode(MariaTypes.varchar.opt(), row.binLocation()), Fragment.lit(",\n`last_counted_at` = "), Fragment.encode(MariaTypes.datetime.opt(), row.lastCountedAt()), Fragment.lit(",\n`updated_at` = "), Fragment.encode(MariaTypes.datetime, row.updatedAt()), Fragment.lit("\nwhere `inventory_id` = "), Fragment.encode(InventoryId.pgType, inventoryId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -359,43 +208,7 @@ public class InventoryRepoImpl implements InventoryRepo {
     InventoryRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `inventory`(`product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)
-         VALUES ("""),
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit(", "),
-      WarehousesId.pgType.encode(unsaved.warehouseId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.quantityOnHand()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.quantityReserved()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.quantityOnOrder()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.reorderPoint()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.reorderQuantity()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.binLocation()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.lastCountedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.updatedAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-         `warehouse_id` = VALUES(`warehouse_id`),
-         `quantity_on_hand` = VALUES(`quantity_on_hand`),
-         `quantity_reserved` = VALUES(`quantity_reserved`),
-         `quantity_on_order` = VALUES(`quantity_on_order`),
-         `reorder_point` = VALUES(`reorder_point`),
-         `reorder_quantity` = VALUES(`reorder_quantity`),
-         `bin_location` = VALUES(`bin_location`),
-         `last_counted_at` = VALUES(`last_counted_at`),
-         `updated_at` = VALUES(`updated_at`)
-         RETURNING `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `inventory`(`product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)\nVALUES ("), Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit(", "), Fragment.encode(WarehousesId.pgType, unsaved.warehouseId()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_, unsaved.quantityOnHand()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_, unsaved.quantityReserved()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_, unsaved.quantityOnOrder()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_, unsaved.reorderPoint()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_, unsaved.reorderQuantity()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.binLocation()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.lastCountedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`warehouse_id` = VALUES(`warehouse_id`),\n`quantity_on_hand` = VALUES(`quantity_on_hand`),\n`quantity_reserved` = VALUES(`quantity_reserved`),\n`quantity_on_order` = VALUES(`quantity_on_order`),\n`reorder_point` = VALUES(`reorder_point`),\n`reorder_quantity` = VALUES(`reorder_quantity`),\n`bin_location` = VALUES(`bin_location`),\n`last_counted_at` = VALUES(`last_counted_at`),\n`updated_at` = VALUES(`updated_at`)\nRETURNING `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`"))
       .updateReturning(InventoryRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -405,21 +218,8 @@ public class InventoryRepoImpl implements InventoryRepo {
     Iterator<InventoryRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `inventory`(`inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-                `warehouse_id` = VALUES(`warehouse_id`),
-                `quantity_on_hand` = VALUES(`quantity_on_hand`),
-                `quantity_reserved` = VALUES(`quantity_reserved`),
-                `quantity_on_order` = VALUES(`quantity_on_order`),
-                `reorder_point` = VALUES(`reorder_point`),
-                `reorder_quantity` = VALUES(`reorder_quantity`),
-                `bin_location` = VALUES(`bin_location`),
-                `last_counted_at` = VALUES(`last_counted_at`),
-                `updated_at` = VALUES(`updated_at`)
-                RETURNING `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`"""))
+    return interpolate(Fragment.lit("INSERT INTO `inventory`(`inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`warehouse_id` = VALUES(`warehouse_id`),\n`quantity_on_hand` = VALUES(`quantity_on_hand`),\n`quantity_reserved` = VALUES(`quantity_reserved`),\n`quantity_on_order` = VALUES(`quantity_on_order`),\n`reorder_point` = VALUES(`reorder_point`),\n`reorder_quantity` = VALUES(`reorder_quantity`),\n`bin_location` = VALUES(`bin_location`),\n`last_counted_at` = VALUES(`last_counted_at`),\n`updated_at` = VALUES(`updated_at`)\nRETURNING `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`"))
       .updateReturningEach(InventoryRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

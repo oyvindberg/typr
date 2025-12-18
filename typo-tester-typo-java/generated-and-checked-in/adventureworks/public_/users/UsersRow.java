@@ -6,10 +6,10 @@
 package adventureworks.public_.users;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoInstant;
-import adventureworks.customtypes.TypoUnknownCitext;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.Instant;
 import java.util.Optional;
+import typo.data.Unknown;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -22,11 +22,11 @@ public record UsersRow(
   @JsonProperty("user_id") UsersId userId,
   String name,
   @JsonProperty("last_name") Optional<String> lastName,
-  TypoUnknownCitext email,
+  Unknown email,
   String password,
   /** Default: now() */
-  @JsonProperty("created_at") TypoInstant createdAt,
-  @JsonProperty("verified_on") Optional<TypoInstant> verifiedOn
+  @JsonProperty("created_at") Instant createdAt,
+  @JsonProperty("verified_on") Optional<Instant> verifiedOn
 ) {
   public UsersRow withUserId(UsersId userId) {
     return new UsersRow(userId, name, lastName, email, password, createdAt, verifiedOn);
@@ -40,7 +40,7 @@ public record UsersRow(
     return new UsersRow(userId, name, lastName, email, password, createdAt, verifiedOn);
   };
 
-  public UsersRow withEmail(TypoUnknownCitext email) {
+  public UsersRow withEmail(Unknown email) {
     return new UsersRow(userId, name, lastName, email, password, createdAt, verifiedOn);
   };
 
@@ -49,15 +49,15 @@ public record UsersRow(
   };
 
   /** Default: now() */
-  public UsersRow withCreatedAt(TypoInstant createdAt) {
+  public UsersRow withCreatedAt(Instant createdAt) {
     return new UsersRow(userId, name, lastName, email, password, createdAt, verifiedOn);
   };
 
-  public UsersRow withVerifiedOn(Optional<TypoInstant> verifiedOn) {
+  public UsersRow withVerifiedOn(Optional<Instant> verifiedOn) {
     return new UsersRow(userId, name, lastName, email, password, createdAt, verifiedOn);
   };
 
-  static RowParser<UsersRow> _rowParser = RowParsers.of(UsersId.pgType, PgTypes.text, PgTypes.text.opt(), TypoUnknownCitext.pgType, PgTypes.text, TypoInstant.pgType, TypoInstant.pgType.opt(), UsersRow::new, row -> new Object[]{row.userId(), row.name(), row.lastName(), row.email(), row.password(), row.createdAt(), row.verifiedOn()});;
+  static RowParser<UsersRow> _rowParser = RowParsers.of(UsersId.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.unknown, PgTypes.text, PgTypes.timestamptz, PgTypes.timestamptz.opt(), UsersRow::new, row -> new Object[]{row.userId(), row.name(), row.lastName(), row.email(), row.password(), row.createdAt(), row.verifiedOn()});;
 
   static public PgText<UsersRow> pgText =
     PgText.from(_rowParser);
@@ -66,7 +66,7 @@ public record UsersRow(
     return userId;
   };
 
-  public UsersRowUnsaved toUnsavedRow(Defaulted<TypoInstant> createdAt) {
+  public UsersRowUnsaved toUnsavedRow(Defaulted<Instant> createdAt) {
     return new UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt);
   };
 }

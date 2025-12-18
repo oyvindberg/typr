@@ -43,15 +43,16 @@ object GeneratedAdventureWorks {
           Duration.Inf
         )
         val variants: Seq[(Lang, DbLibName, JsonLibName, String, String)] = List(
-          (LangScala(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.Anorm, JsonLibName.PlayJson, "typo-tester-anorm", "-2.13"),
-          (LangScala(Dialect.Scala3, TypeSupportScala), DbLibName.Anorm, JsonLibName.PlayJson, "typo-tester-anorm", "-3"),
-          (LangScala(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.Doobie, JsonLibName.Circe, "typo-tester-doobie", "-2.13"),
-          (LangScala(Dialect.Scala3, TypeSupportScala), DbLibName.Doobie, JsonLibName.Circe, "typo-tester-doobie", "-3"),
-          (LangScala(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.ZioJdbc, JsonLibName.ZioJson, "typo-tester-zio-jdbc", "-2.13"),
-          (LangScala(Dialect.Scala3, TypeSupportScala), DbLibName.ZioJdbc, JsonLibName.ZioJson, "typo-tester-zio-jdbc", "-3"),
+          (LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.Anorm, JsonLibName.PlayJson, "typo-tester-anorm", "-2.13"),
+          (LangScala.javaDsl(Dialect.Scala3, TypeSupportScala), DbLibName.Anorm, JsonLibName.PlayJson, "typo-tester-anorm", "-3"),
+          (LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.Doobie, JsonLibName.Circe, "typo-tester-doobie", "-2.13"),
+          (LangScala.javaDsl(Dialect.Scala3, TypeSupportScala), DbLibName.Doobie, JsonLibName.Circe, "typo-tester-doobie", "-3"),
+          (LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.ZioJdbc, JsonLibName.ZioJson, "typo-tester-zio-jdbc", "-2.13"),
+          (LangScala.javaDsl(Dialect.Scala3, TypeSupportScala), DbLibName.ZioJdbc, JsonLibName.ZioJson, "typo-tester-zio-jdbc", "-3"),
           (LangJava, DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-java", ""),
-          (LangScala(Dialect.Scala3, TypeSupportJava), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-scala", ""),
-          (LangKotlin, DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-kotlin", "")
+          (LangScala.javaDsl(Dialect.Scala3, TypeSupportJava), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-scala-old", ""),
+          (LangScala.scalaDsl(Dialect.Scala3, TypeSupportScala), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-scala-new", ""),
+          (LangKotlin(TypeSupportKotlin), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-kotlin", "")
         )
 
         def go(): Unit = {

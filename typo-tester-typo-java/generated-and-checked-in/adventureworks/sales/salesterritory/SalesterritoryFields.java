@@ -5,27 +5,27 @@
  */
 package adventureworks.sales.salesterritory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.countryregion.CountryregionFields;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.person.countryregion.CountryregionRow;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SalesterritoryFields extends FieldsExpr<SalesterritoryRow> {
-  record Impl(List<Path> _path) implements SalesterritoryFields, Relation<SalesterritoryFields, SalesterritoryRow> {
+  record Impl(List<Path> _path) implements SalesterritoryFields, RelationStructure<SalesterritoryFields, SalesterritoryRow> {
     @Override
     public IdField<SalesterritoryId, SalesterritoryRow> territoryid() {
       return new IdField<SalesterritoryId, SalesterritoryRow>(_path, "territoryid", SalesterritoryRow::territoryid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withTerritoryid(value), SalesterritoryId.pgType);
@@ -42,8 +42,8 @@ public interface SalesterritoryFields extends FieldsExpr<SalesterritoryRow> {
     };
 
     @Override
-    public Field</* max 50 chars */ String, SalesterritoryRow> group() {
-      return new Field</* max 50 chars */ String, SalesterritoryRow>(_path, "group", SalesterritoryRow::group, Optional.empty(), Optional.empty(), (row, value) -> row.withGroup(value), PgTypes.text);
+    public Field<String, SalesterritoryRow> group() {
+      return new Field<String, SalesterritoryRow>(_path, "group", SalesterritoryRow::group, Optional.empty(), Optional.empty(), (row, value) -> row.withGroup(value), PgTypes.text);
     };
 
     @Override
@@ -67,28 +67,28 @@ public interface SalesterritoryFields extends FieldsExpr<SalesterritoryRow> {
     };
 
     @Override
-    public Field<TypoUUID, SalesterritoryRow> rowguid() {
-      return new Field<TypoUUID, SalesterritoryRow>(_path, "rowguid", SalesterritoryRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, SalesterritoryRow> rowguid() {
+      return new Field<UUID, SalesterritoryRow>(_path, "rowguid", SalesterritoryRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SalesterritoryRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SalesterritoryRow>(_path, "modifieddate", SalesterritoryRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SalesterritoryRow> modifieddate() {
+      return new Field<LocalDateTime, SalesterritoryRow>(_path, "modifieddate", SalesterritoryRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SalesterritoryRow>> columns() {
-      return List.of(this.territoryid(), this.name(), this.countryregioncode(), this.group(), this.salesytd(), this.saleslastyear(), this.costytd(), this.costlastyear(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.territoryid(), this.name(), this.countryregioncode(), this.group(), this.salesytd(), this.saleslastyear(), this.costytd(), this.costlastyear(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SalesterritoryFields, SalesterritoryRow> copy(List<Path> _path) {
+    public RelationStructure<SalesterritoryFields, SalesterritoryRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<SalesterritoryId, SalesterritoryRow> territoryid();
@@ -97,7 +97,7 @@ public interface SalesterritoryFields extends FieldsExpr<SalesterritoryRow> {
 
   Field<CountryregionId, SalesterritoryRow> countryregioncode();
 
-  Field</* max 50 chars */ String, SalesterritoryRow> group();
+  Field<String, SalesterritoryRow> group();
 
   Field<BigDecimal, SalesterritoryRow> salesytd();
 
@@ -107,12 +107,12 @@ public interface SalesterritoryFields extends FieldsExpr<SalesterritoryRow> {
 
   Field<BigDecimal, SalesterritoryRow> costlastyear();
 
-  Field<TypoUUID, SalesterritoryRow> rowguid();
+  Field<UUID, SalesterritoryRow> rowguid();
 
-  Field<TypoLocalDateTime, SalesterritoryRow> modifieddate();
+  Field<LocalDateTime, SalesterritoryRow> modifieddate();
 
   default ForeignKey<CountryregionFields, CountryregionRow> fkPersonCountryregion() {
-    return ForeignKey.<CountryregionFields, CountryregionRow>of("sales.FK_SalesTerritory_CountryRegion_CountryRegionCode").withColumnPair(countryregioncode(), CountryregionFields::countryregioncode);
+    return ForeignKey.<CountryregionFields, CountryregionRow>of("sales.FK_SalesTerritory_CountryRegion_CountryRegionCode").<CountryregionId>withColumnPair(countryregioncode(), CountryregionFields::countryregioncode);
   };
 
   @Override

@@ -25,7 +25,7 @@ case class ShoppingcartitemRow(
    */
   shoppingcartitemid: ShoppingcartitemId,
   /** Shopping cart identification number. */
-  shoppingcartid: /* max 50 chars */ String,
+  shoppingcartid: String,
   /** Product quantity ordered.
    * Default: 1
    * Constraint CK_ShoppingCartItem_Quantity affecting columns quantity: ((quantity >= 1))
@@ -62,9 +62,9 @@ case class ShoppingcartitemRow(
 }
 
 object ShoppingcartitemRow {
-  given decoder: Decoder[ShoppingcartitemRow] = Decoder.forProduct6[ShoppingcartitemRow, ShoppingcartitemId, /* max 50 chars */ String, Int, ProductId, TypoLocalDateTime, TypoLocalDateTime]("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")(ShoppingcartitemRow.apply)(using ShoppingcartitemId.decoder, Decoder.decodeString, Decoder.decodeInt, ProductId.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[ShoppingcartitemRow] = Decoder.forProduct6[ShoppingcartitemRow, ShoppingcartitemId, String, Int, ProductId, TypoLocalDateTime, TypoLocalDateTime]("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")(ShoppingcartitemRow.apply)(using ShoppingcartitemId.decoder, Decoder.decodeString, Decoder.decodeInt, ProductId.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[ShoppingcartitemRow] = Encoder.forProduct6[ShoppingcartitemRow, ShoppingcartitemId, /* max 50 chars */ String, Int, ProductId, TypoLocalDateTime, TypoLocalDateTime]("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")(x => (x.shoppingcartitemid, x.shoppingcartid, x.quantity, x.productid, x.datecreated, x.modifieddate))(using ShoppingcartitemId.encoder, Encoder.encodeString, Encoder.encodeInt, ProductId.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[ShoppingcartitemRow] = Encoder.forProduct6[ShoppingcartitemRow, ShoppingcartitemId, String, Int, ProductId, TypoLocalDateTime, TypoLocalDateTime]("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")(x => (x.shoppingcartitemid, x.shoppingcartid, x.quantity, x.productid, x.datecreated, x.modifieddate))(using ShoppingcartitemId.encoder, Encoder.encodeString, Encoder.encodeInt, ProductId.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder)
 
   given pgText: Text[ShoppingcartitemRow] = {
     Text.instance[ShoppingcartitemRow]{ (row, sb) =>
@@ -93,7 +93,7 @@ object ShoppingcartitemRow {
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       ShoppingcartitemRow(
         shoppingcartitemid = arr(0).asInstanceOf[ShoppingcartitemId],
-            shoppingcartid = arr(1).asInstanceOf[/* max 50 chars */ String],
+            shoppingcartid = arr(1).asInstanceOf[String],
             quantity = arr(2).asInstanceOf[Int],
             productid = arr(3).asInstanceOf[ProductId],
             datecreated = arr(4).asInstanceOf[TypoLocalDateTime],

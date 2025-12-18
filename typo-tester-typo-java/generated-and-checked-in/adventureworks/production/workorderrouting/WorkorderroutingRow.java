@@ -6,11 +6,10 @@
 package adventureworks.production.workorderrouting;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.location.LocationId;
 import adventureworks.production.workorder.WorkorderId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -29,7 +28,7 @@ public record WorkorderroutingRow(
   /** Primary key. Foreign key to Product.ProductID. */
   Integer productid,
   /** Primary key. Indicates the manufacturing process sequence. */
-  TypoShort operationsequence,
+  Short operationsequence,
   /** Manufacturing location where the part is processed. Foreign key to Location.LocationID.
     * Points to {@link adventureworks.production.location.LocationRow#locationid()}
     */
@@ -37,19 +36,19 @@ public record WorkorderroutingRow(
   /** Planned manufacturing start date.
     * Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate: ((scheduledenddate >= scheduledstartdate))
     */
-  TypoLocalDateTime scheduledstartdate,
+  LocalDateTime scheduledstartdate,
   /** Planned manufacturing end date.
     * Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate: ((scheduledenddate >= scheduledstartdate))
     */
-  TypoLocalDateTime scheduledenddate,
+  LocalDateTime scheduledenddate,
   /** Actual start date.
     * Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate: (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL)))
     */
-  Optional<TypoLocalDateTime> actualstartdate,
+  Optional<LocalDateTime> actualstartdate,
   /** Actual end date.
     * Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate: (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL)))
     */
-  Optional<TypoLocalDateTime> actualenddate,
+  Optional<LocalDateTime> actualenddate,
   /** Number of manufacturing hours used.
     * Constraint CK_WorkOrderRouting_ActualResourceHrs affecting columns actualresourcehrs: ((actualresourcehrs >= 0.0000))
     */
@@ -63,7 +62,7 @@ public record WorkorderroutingRow(
     */
   Optional<BigDecimal> actualcost,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key. Foreign key to WorkOrder.WorkOrderID.
     * Points to {@link adventureworks.production.workorder.WorkorderRow#workorderid()}
@@ -78,7 +77,7 @@ public record WorkorderroutingRow(
   };
 
   /** Primary key. Indicates the manufacturing process sequence. */
-  public WorkorderroutingRow withOperationsequence(TypoShort operationsequence) {
+  public WorkorderroutingRow withOperationsequence(Short operationsequence) {
     return new WorkorderroutingRow(workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
@@ -92,28 +91,28 @@ public record WorkorderroutingRow(
   /** Planned manufacturing start date.
     * Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate: ((scheduledenddate >= scheduledstartdate))
     */
-  public WorkorderroutingRow withScheduledstartdate(TypoLocalDateTime scheduledstartdate) {
+  public WorkorderroutingRow withScheduledstartdate(LocalDateTime scheduledstartdate) {
     return new WorkorderroutingRow(workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
   /** Planned manufacturing end date.
     * Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate: ((scheduledenddate >= scheduledstartdate))
     */
-  public WorkorderroutingRow withScheduledenddate(TypoLocalDateTime scheduledenddate) {
+  public WorkorderroutingRow withScheduledenddate(LocalDateTime scheduledenddate) {
     return new WorkorderroutingRow(workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
   /** Actual start date.
     * Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate: (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL)))
     */
-  public WorkorderroutingRow withActualstartdate(Optional<TypoLocalDateTime> actualstartdate) {
+  public WorkorderroutingRow withActualstartdate(Optional<LocalDateTime> actualstartdate) {
     return new WorkorderroutingRow(workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
   /** Actual end date.
     * Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate: (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL)))
     */
-  public WorkorderroutingRow withActualenddate(Optional<TypoLocalDateTime> actualenddate) {
+  public WorkorderroutingRow withActualenddate(Optional<LocalDateTime> actualenddate) {
     return new WorkorderroutingRow(workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
@@ -139,23 +138,23 @@ public record WorkorderroutingRow(
   };
 
   /** Default: now() */
-  public WorkorderroutingRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public WorkorderroutingRow withModifieddate(LocalDateTime modifieddate) {
     return new WorkorderroutingRow(workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
-  static RowParser<WorkorderroutingRow> _rowParser = RowParsers.of(WorkorderId.pgType, PgTypes.int4, TypoShort.pgType, LocationId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric.opt(), TypoLocalDateTime.pgType, WorkorderroutingRow::new, row -> new Object[]{row.workorderid(), row.productid(), row.operationsequence(), row.locationid(), row.scheduledstartdate(), row.scheduledenddate(), row.actualstartdate(), row.actualenddate(), row.actualresourcehrs(), row.plannedcost(), row.actualcost(), row.modifieddate()});;
+  static RowParser<WorkorderroutingRow> _rowParser = RowParsers.of(WorkorderId.pgType, PgTypes.int4, PgTypes.int2, LocationId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.timestamp.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric.opt(), PgTypes.timestamp, WorkorderroutingRow::new, row -> new Object[]{row.workorderid(), row.productid(), row.operationsequence(), row.locationid(), row.scheduledstartdate(), row.scheduledenddate(), row.actualstartdate(), row.actualenddate(), row.actualresourcehrs(), row.plannedcost(), row.actualcost(), row.modifieddate()});;
 
   static public WorkorderroutingRow apply(
     WorkorderroutingId compositeId,
     LocationId locationid,
-    TypoLocalDateTime scheduledstartdate,
-    TypoLocalDateTime scheduledenddate,
-    Optional<TypoLocalDateTime> actualstartdate,
-    Optional<TypoLocalDateTime> actualenddate,
+    LocalDateTime scheduledstartdate,
+    LocalDateTime scheduledenddate,
+    Optional<LocalDateTime> actualstartdate,
+    Optional<LocalDateTime> actualenddate,
     Optional<BigDecimal> actualresourcehrs,
     BigDecimal plannedcost,
     Optional<BigDecimal> actualcost,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new WorkorderroutingRow(compositeId.workorderid(), compositeId.productid(), compositeId.operationsequence(), locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
@@ -171,7 +170,7 @@ public record WorkorderroutingRow(
     return this.compositeId();
   };
 
-  public WorkorderroutingRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public WorkorderroutingRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new WorkorderroutingRowUnsaved(workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 }

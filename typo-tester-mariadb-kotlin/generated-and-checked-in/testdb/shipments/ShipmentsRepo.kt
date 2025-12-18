@@ -6,69 +6,68 @@
 package testdb.shipments
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ShipmentsRepo {
-  fun delete(): DeleteBuilder<ShipmentsFields, ShipmentsRow>
+  abstract fun delete(): DeleteBuilder<ShipmentsFields, ShipmentsRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     shipmentId: ShipmentsId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     shipmentIds: Array<ShipmentsId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ShipmentsRow,
     c: Connection
   ): ShipmentsRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ShipmentsRowUnsaved,
     c: Connection
   ): ShipmentsRow
 
-  fun select(): SelectBuilder<ShipmentsFields, ShipmentsRow>
+  abstract fun select(): SelectBuilder<ShipmentsFields, ShipmentsRow>
 
-  fun selectAll(c: Connection): List<ShipmentsRow>
+  abstract fun selectAll(c: Connection): List<ShipmentsRow>
 
-  fun selectById(
+  abstract fun selectById(
     shipmentId: ShipmentsId,
     c: Connection
-  ): Optional<ShipmentsRow>
+  ): ShipmentsRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     shipmentIds: Array<ShipmentsId>,
     c: Connection
   ): List<ShipmentsRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     shipmentIds: Array<ShipmentsId>,
     c: Connection
   ): Map<ShipmentsId, ShipmentsRow>
 
-  fun update(): UpdateBuilder<ShipmentsFields, ShipmentsRow>
+  abstract fun update(): UpdateBuilder<ShipmentsFields, ShipmentsRow>
 
-  fun update(
+  abstract fun update(
     row: ShipmentsRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ShipmentsRow,
     c: Connection
   ): ShipmentsRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<ShipmentsRow>,
     c: Connection
   ): List<ShipmentsRow>

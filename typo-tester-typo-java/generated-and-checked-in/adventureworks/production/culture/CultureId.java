@@ -12,8 +12,8 @@ import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 
 /** Type for the primary key of table `production.culture` */
-public record CultureId(@JsonValue /* bpchar, max 6 chars */ String value) {
-  public CultureId withValue(/* bpchar, max 6 chars */ String value) {
+public record CultureId(@JsonValue String value) {
+  public CultureId withValue(String value) {
     return new CultureId(value);
   };
 
@@ -22,12 +22,12 @@ public record CultureId(@JsonValue /* bpchar, max 6 chars */ String value) {
     return value.toString();
   };
 
-  static public Bijection<CultureId, /* bpchar, max 6 chars */ String> bijection =
+  static public Bijection<CultureId, String> bijection =
     Bijection.of(CultureId::value, CultureId::new);
 
   static public PgType<CultureId> pgType =
-    PgTypes.text.bimap(CultureId::new, CultureId::value);
+    PgTypes.bpchar.bimap(CultureId::new, CultureId::value);
 
   static public PgType<CultureId[]> pgTypeArray =
-    PgTypes.textArray.bimap(xs -> arrayMap.map(xs, CultureId::new, CultureId.class), xs -> arrayMap.map(xs, CultureId::value, /* bpchar, max 6 chars */ String.class));
+    PgTypes.bpcharArray.bimap(xs -> arrayMap.map(xs, CultureId::new, CultureId.class), xs -> arrayMap.map(xs, CultureId::value, String.class));
 }

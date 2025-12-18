@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class BeaViewRepoImpl implements BeaViewRepo {
@@ -19,9 +20,6 @@ public class BeaViewRepoImpl implements BeaViewRepo {
 
   @Override
   public List<BeaViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"::text
-       from "pe"."bea"
-    """)).query(BeaViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"businessentityid\", \"addressid\", \"addresstypeid\", \"rowguid\", \"modifieddate\"\nfrom \"pe\".\"bea\"\n")).query(BeaViewRow._rowParser.all()).runUnchecked(c);
   };
 }

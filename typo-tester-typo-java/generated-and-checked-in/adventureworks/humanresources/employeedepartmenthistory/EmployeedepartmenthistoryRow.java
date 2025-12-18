@@ -6,13 +6,14 @@
 package adventureworks.humanresources.employeedepartmenthistory;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDate;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.humanresources.department.DepartmentId;
 import adventureworks.humanresources.shift.ShiftId;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -36,13 +37,13 @@ public record EmployeedepartmenthistoryRow(
   /** Date the employee started work in the department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  TypoLocalDate startdate,
+  LocalDate startdate,
   /** Date the employee left the department. NULL = Current department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  Optional<TypoLocalDate> enddate,
+  Optional<LocalDate> enddate,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Employee identification number. Foreign key to Employee.BusinessEntityID.
     * Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()}
@@ -68,28 +69,28 @@ public record EmployeedepartmenthistoryRow(
   /** Date the employee started work in the department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public EmployeedepartmenthistoryRow withStartdate(TypoLocalDate startdate) {
+  public EmployeedepartmenthistoryRow withStartdate(LocalDate startdate) {
     return new EmployeedepartmenthistoryRow(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate);
   };
 
   /** Date the employee left the department. NULL = Current department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public EmployeedepartmenthistoryRow withEnddate(Optional<TypoLocalDate> enddate) {
+  public EmployeedepartmenthistoryRow withEnddate(Optional<LocalDate> enddate) {
     return new EmployeedepartmenthistoryRow(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate);
   };
 
   /** Default: now() */
-  public EmployeedepartmenthistoryRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public EmployeedepartmenthistoryRow withModifieddate(LocalDateTime modifieddate) {
     return new EmployeedepartmenthistoryRow(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate);
   };
 
-  static RowParser<EmployeedepartmenthistoryRow> _rowParser = RowParsers.of(BusinessentityId.pgType, DepartmentId.pgType, ShiftId.pgType, TypoLocalDate.pgType, TypoLocalDate.pgType.opt(), TypoLocalDateTime.pgType, EmployeedepartmenthistoryRow::new, row -> new Object[]{row.businessentityid(), row.departmentid(), row.shiftid(), row.startdate(), row.enddate(), row.modifieddate()});;
+  static RowParser<EmployeedepartmenthistoryRow> _rowParser = RowParsers.of(BusinessentityId.pgType, DepartmentId.pgType, ShiftId.pgType, PgTypes.date, PgTypes.date.opt(), PgTypes.timestamp, EmployeedepartmenthistoryRow::new, row -> new Object[]{row.businessentityid(), row.departmentid(), row.shiftid(), row.startdate(), row.enddate(), row.modifieddate()});;
 
   static public EmployeedepartmenthistoryRow apply(
     EmployeedepartmenthistoryId compositeId,
-    Optional<TypoLocalDate> enddate,
-    TypoLocalDateTime modifieddate
+    Optional<LocalDate> enddate,
+    LocalDateTime modifieddate
   ) {
     return new EmployeedepartmenthistoryRow(compositeId.businessentityid(), compositeId.departmentid(), compositeId.shiftid(), compositeId.startdate(), enddate, modifieddate);
   };
@@ -105,7 +106,7 @@ public record EmployeedepartmenthistoryRow(
     return this.compositeId();
   };
 
-  public EmployeedepartmenthistoryRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public EmployeedepartmenthistoryRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new EmployeedepartmenthistoryRowUnsaved(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate);
   };
 }

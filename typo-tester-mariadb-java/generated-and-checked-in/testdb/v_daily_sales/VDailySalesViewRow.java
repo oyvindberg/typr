@@ -128,5 +128,5 @@ public record VDailySalesViewRow(
     return new VDailySalesViewRow(orderDate, orderCount, uniqueCustomers, itemsSold, grossSales, totalDiscounts, totalShipping, totalTax, netSales, avgOrderValue);
   };
 
-  static RowParser<VDailySalesViewRow> _rowParser = RowParsers.of(MariaTypes.date.opt(), MariaTypes.bigint, MariaTypes.bigint, MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), VDailySalesViewRow::new, row -> new Object[]{row.orderDate(), row.orderCount(), row.uniqueCustomers(), row.itemsSold(), row.grossSales(), row.totalDiscounts(), row.totalShipping(), row.totalTax(), row.netSales(), row.avgOrderValue()});;
+  static RowParser<VDailySalesViewRow> _rowParser = RowParsers.of(MariaTypes.date.opt(), MariaTypes.bigint, MariaTypes.bigint, MariaTypes.numeric.opt(), MariaTypes.numeric.opt(), MariaTypes.numeric.opt(), MariaTypes.numeric.opt(), MariaTypes.numeric.opt(), MariaTypes.numeric.opt(), MariaTypes.numeric.opt(), VDailySalesViewRow::new, row -> new Object[]{row.orderDate(), row.orderCount(), row.uniqueCustomers(), row.itemsSold(), row.grossSales(), row.totalDiscounts(), row.totalShipping(), row.totalTax(), row.netSales(), row.avgOrderValue()});;
 }

@@ -5,8 +5,6 @@
  */
 package adventureworks.production.illustration;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoXml;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,10 +17,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class IllustrationRepoImpl implements IllustrationRepo {
   @Override
@@ -35,13 +32,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     IllustrationId illustrationid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "production"."illustration" where "illustrationid" = 
-      """),
-      IllustrationId.pgType.encode(illustrationid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"production\".\"illustration\" where \"illustrationid\" = "), Fragment.encode(IllustrationId.pgType, illustrationid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -49,14 +40,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     IllustrationId[] illustrationids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "production"."illustration"
-                  where "illustrationid" = ANY("""),
-               IllustrationId.pgTypeArray.encode(illustrationids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"production\".\"illustration\"\nwhere \"illustrationid\" = ANY("), Fragment.encode(IllustrationId.pgTypeArray, illustrationids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -66,20 +50,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     IllustrationRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."illustration"("illustrationid", "diagram", "modifieddate")
-         values ("""),
-      IllustrationId.pgType.encode(unsaved.illustrationid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoXml.pgType.opt().encode(unsaved.diagram()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "illustrationid", "diagram", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"illustration\"(\"illustrationid\", \"diagram\", \"modifieddate\")\nvalues ("), Fragment.encode(IllustrationId.pgType, unsaved.illustrationid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.xml.opt(), unsaved.diagram()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"illustrationid\", \"diagram\", \"modifieddate\"\n"))
       .updateReturning(IllustrationRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -88,23 +59,17 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     IllustrationRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"diagram\""));
-    values.add(interpolate(
-      TypoXml.pgType.opt().encode(unsaved.diagram()),
-      typo.runtime.Fragment.lit("::xml")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.xml.opt(), unsaved.diagram()), Fragment.lit("::xml")));
     unsaved.illustrationid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"illustrationid\""));
-        values.add(interpolate(
-        IllustrationId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(IllustrationId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -113,26 +78,10 @@ public class IllustrationRepoImpl implements IllustrationRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."illustration"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "illustrationid", "diagram", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"production\".\"illustration\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"illustrationid\", \"diagram\", \"modifieddate\"\n"));;
     return q.updateReturning(IllustrationRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -142,9 +91,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."illustration"("illustrationid", "diagram", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, IllustrationRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"illustration\"(\"illustrationid\", \"diagram\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, IllustrationRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -154,9 +101,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."illustration"("diagram", "illustrationid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, IllustrationRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"illustration\"(\"diagram\", \"illustrationid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, IllustrationRowUnsaved.pgText);
   };
 
   @Override
@@ -166,10 +111,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
 
   @Override
   public List<IllustrationRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "illustrationid", "diagram", "modifieddate"::text
-       from "production"."illustration"
-    """)).query(IllustrationRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"illustrationid\", \"diagram\", \"modifieddate\"\nfrom \"production\".\"illustration\"\n")).query(IllustrationRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -177,14 +119,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     IllustrationId illustrationid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "illustrationid", "diagram", "modifieddate"::text
-         from "production"."illustration"
-         where "illustrationid" = """),
-      IllustrationId.pgType.encode(illustrationid),
-      typo.runtime.Fragment.lit("")
-    ).query(IllustrationRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"illustrationid\", \"diagram\", \"modifieddate\"\nfrom \"production\".\"illustration\"\nwhere \"illustrationid\" = "), Fragment.encode(IllustrationId.pgType, illustrationid), Fragment.lit("")).query(IllustrationRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -192,14 +127,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     IllustrationId[] illustrationids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "illustrationid", "diagram", "modifieddate"::text
-         from "production"."illustration"
-         where "illustrationid" = ANY("""),
-      IllustrationId.pgTypeArray.encode(illustrationids),
-      typo.runtime.Fragment.lit(")")
-    ).query(IllustrationRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"illustrationid\", \"diagram\", \"modifieddate\"\nfrom \"production\".\"illustration\"\nwhere \"illustrationid\" = ANY("), Fragment.encode(IllustrationId.pgTypeArray, illustrationids), Fragment.lit(")")).query(IllustrationRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -214,7 +142,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
 
   @Override
   public UpdateBuilder<IllustrationFields, IllustrationRow> update() {
-    return UpdateBuilder.of("\"production\".\"illustration\"", IllustrationFields.structure(), IllustrationRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"production\".\"illustration\"", IllustrationFields.structure(), IllustrationRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -223,21 +151,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     Connection c
   ) {
     IllustrationId illustrationid = row.illustrationid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "production"."illustration"
-         set "diagram" = """),
-      TypoXml.pgType.opt().encode(row.diagram()),
-      typo.runtime.Fragment.lit("""
-         ::xml,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "illustrationid" = """),
-      IllustrationId.pgType.encode(illustrationid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"production\".\"illustration\"\nset \"diagram\" = "), Fragment.encode(PgTypes.xml.opt(), row.diagram()), Fragment.lit("::xml,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"illustrationid\" = "), Fragment.encode(IllustrationId.pgType, illustrationid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -245,23 +159,7 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     IllustrationRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."illustration"("illustrationid", "diagram", "modifieddate")
-         values ("""),
-      IllustrationId.pgType.encode(unsaved.illustrationid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoXml.pgType.opt().encode(unsaved.diagram()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("illustrationid")
-         do update set
-           "diagram" = EXCLUDED."diagram",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "illustrationid", "diagram", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"illustration\"(\"illustrationid\", \"diagram\", \"modifieddate\")\nvalues ("), Fragment.encode(IllustrationId.pgType, unsaved.illustrationid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.xml.opt(), unsaved.diagram()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"illustrationid\")\ndo update set\n  \"diagram\" = EXCLUDED.\"diagram\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"illustrationid\", \"diagram\", \"modifieddate\""))
       .updateReturning(IllustrationRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -271,16 +169,9 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     Iterator<IllustrationRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "production"."illustration"("illustrationid", "diagram", "modifieddate")
-                values (?::int4, ?::xml, ?::timestamp)
-                on conflict ("illustrationid")
-                do update set
-                  "diagram" = EXCLUDED."diagram",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "illustrationid", "diagram", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"production\".\"illustration\"(\"illustrationid\", \"diagram\", \"modifieddate\")\nvalues (?::int4, ?::xml, ?::timestamp)\non conflict (\"illustrationid\")\ndo update set\n  \"diagram\" = EXCLUDED.\"diagram\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"illustrationid\", \"diagram\", \"modifieddate\""))
       .updateManyReturning(IllustrationRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -290,20 +181,8 @@ public class IllustrationRepoImpl implements IllustrationRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table illustration_TEMP (like "production"."illustration") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy illustration_TEMP("illustrationid", "diagram", "modifieddate") from stdin
-    """), batchSize, unsaved, c, IllustrationRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "production"."illustration"("illustrationid", "diagram", "modifieddate")
-       select * from illustration_TEMP
-       on conflict ("illustrationid")
-       do update set
-         "diagram" = EXCLUDED."diagram",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table illustration_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table illustration_TEMP (like \"production\".\"illustration\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy illustration_TEMP(\"illustrationid\", \"diagram\", \"modifieddate\") from stdin", batchSize, unsaved, c, IllustrationRow.pgText);
+    return interpolate(Fragment.lit("insert into \"production\".\"illustration\"(\"illustrationid\", \"diagram\", \"modifieddate\")\nselect * from illustration_TEMP\non conflict (\"illustrationid\")\ndo update set\n  \"diagram\" = EXCLUDED.\"diagram\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table illustration_TEMP;")).update().runUnchecked(c);
   };
 }

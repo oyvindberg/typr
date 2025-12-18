@@ -8,8 +8,8 @@ package adventureworks.public.identity_test
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
 import com.fasterxml.jackson.annotation.JsonProperty
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgText
-import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `public.identity-test` which has not been persisted yet */
 data class IdentityTestRowUnsaved(
@@ -26,6 +26,6 @@ data class IdentityTestRowUnsaved(
     val pgText: PgText<IdentityTestRowUnsaved> =
       PgText.instance({ row, sb -> IdentityTestId.pgType.pgText().unsafeEncode(row.name, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.defaultGenerated, sb) })
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.defaultGenerated, sb) })
   }
 }

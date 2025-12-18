@@ -7,27 +7,37 @@ import typo.jvm.Type
 
 case object LangJava extends Lang {
   override val `;` : jvm.Code = code";"
+  override val dsl: DslQualifiedNames = DslQualifiedNames.Java
 
-  // Delegate type support to TypeSupportJava
-  private val typeSupport: TypeSupport = TypeSupportJava
-  override val BigDecimal: jvm.Type = typeSupport.BigDecimal
-  override val Boolean: jvm.Type = typeSupport.Boolean
-  override val Byte: jvm.Type = typeSupport.Byte
-  override val Double: jvm.Type = typeSupport.Double
-  override val Float: jvm.Type = typeSupport.Float
-  override val Int: jvm.Type = typeSupport.Int
-  override val IteratorType: jvm.Type = typeSupport.IteratorType
-  override val Long: jvm.Type = typeSupport.Long
-  override val Short: jvm.Type = typeSupport.Short
-  override val String: jvm.Type = typeSupport.String
-  override val Optional: OptionalSupport = typeSupport.Optional
-  override val ListType: ListSupport = typeSupport.ListType
-  override val Random: RandomSupport = typeSupport.Random
-  override val MapOps: MapSupport = typeSupport.MapOps
-  override def bigDecimalFromDouble(d: jvm.Code): jvm.Code = typeSupport.bigDecimalFromDouble(d)
+  override val typeSupport: TypeSupport = TypeSupportJava
 
-  def s(content: jvm.Code): jvm.StringInterpolate =
-    jvm.StringInterpolate(Type.Qualified("typo.runtime.internal.stringInterpolator") / jvm.Ident("str"), jvm.Ident("str"), content)
+  // Type system types - Java uses Java's type system
+  override val nothingType: jvm.Type = TypesJava.Void
+  override val voidType: jvm.Type = TypesJava.Void
+  override val topType: jvm.Type = TypesJava.Object
+
+  def s(content: jvm.Code): jvm.Code = {
+    // Java doesn't have string interpolation, so we build string concatenation directly
+    val linearized = jvm.Code.linearize(content)
+    val parts: List[jvm.Code] = linearized.map {
+      case jvm.Code.Tree(jvm.RuntimeInterpolation(value)) =>
+        // Runtime values need to be converted to string
+        value
+      case jvm.Code.Str(s) =>
+        // String literals - wrap in Code
+        jvm.StrLit(s).code
+      case other =>
+        // Fallback - render the code to get its string representation
+        jvm.StrLit(other.render(LangJava).asString).code
+    }
+
+    // Build string concatenation: "lit" + value + "lit" + ...
+    parts match {
+      case Nil           => jvm.StrLit("").code
+      case single :: Nil => single
+      case multiple      => multiple.reduce((a, b) => code"$a + $b")
+    }
+  }
 
   def docLink(cls: jvm.QIdent, value: jvm.Ident): String =
     s"Points to {@link ${cls.dotName}#${value.value}()}"
@@ -90,15 +100,17 @@ case object LangJava extends Lang {
       case jvm.ClassOf(tpe)              =>
         // Java doesn't support generic type literals like Map<?, ?>.class - strip type parameters
         def stripTypeParams(t: jvm.Type): jvm.Type = t match {
-          case jvm.Type.TApply(underlying, _) => stripTypeParams(underlying)
-          case other                          => other
+          case jvm.Type.TApply(underlying, _)      => stripTypeParams(underlying)
+          case jvm.Type.KotlinNullable(underlying) => jvm.Type.KotlinNullable(stripTypeParams(underlying))
+          case other                               => other
         }
         code"${stripTypeParams(tpe)}.class"
       case jvm.JavaClassOf(tpe) =>
         // Same as ClassOf for Java
         def stripTypeParams(t: jvm.Type): jvm.Type = t match {
-          case jvm.Type.TApply(underlying, _) => stripTypeParams(underlying)
-          case other                          => other
+          case jvm.Type.TApply(underlying, _)      => stripTypeParams(underlying)
+          case jvm.Type.KotlinNullable(underlying) => jvm.Type.KotlinNullable(stripTypeParams(underlying))
+          case other                               => other
         }
         code"${stripTypeParams(tpe)}.class"
       case jvm.Call(target, argGroups) =>
@@ -152,13 +164,20 @@ case object LangJava extends Lang {
         // Java: Type.<T1, T2>of(args)
         val typeArgStr = if (typeArgs.isEmpty) jvm.Code.Empty else code"<${typeArgs.map(t => renderTree(t, ctx)).mkCode(", ")}>"
         code"$tpe.$typeArgStr${jvm.Ident("of")}(${args.map(a => renderTree(a, ctx)).mkCode(", ")})"
-      case jvm.Param(anns, cs, name, tpe, _)               => code"${renderComments(cs).getOrElse(jvm.Code.Empty)}${renderAnnotationsInline(anns)}$tpe $name"
-      case jvm.QIdent(value)                               => value.map(i => renderTree(i, ctx)).mkCode(".")
-      case jvm.StrLit(str) if str.contains(Quote)          => Quote + str.replace(Quote, "\\\"") + Quote
-      case jvm.StrLit(str)                                 => Quote + str + Quote
+      case jvm.Param(anns, cs, name, tpe, _) => code"${renderComments(cs).getOrElse(jvm.Code.Empty)}${renderAnnotationsInline(anns)}$tpe $name"
+      case jvm.QIdent(value)                 => value.map(i => renderTree(i, ctx)).mkCode(".")
+      case jvm.StrLit(str) =>
+        val escaped = str
+          .replace("\\", "\\\\")
+          .replace("\"", "\\\"")
+          .replace("\n", "\\n")
+          .replace("\r", "\\r")
+          .replace("\t", "\\t")
+        Quote + escaped + Quote
       case jvm.Summon(_)                                   => sys.error("java doesn't support `summon`")
       case jvm.Type.Abstract(value, _)                     => value.code // Java ignores variance
       case jvm.Type.ArrayOf(value)                         => code"$value[]"
+      case jvm.Type.KotlinNullable(underlying)             => renderTree(underlying, ctx) // Java doesn't have Kotlin's T? syntax, render underlying type
       case jvm.Type.Commented(underlying, comment)         => code"$comment $underlying"
       case jvm.Type.Annotated(underlying, _)               => renderTree(underlying, ctx) // Java doesn't support Scala-style type annotations
       case jvm.Type.Function0(jvm.Type.Void)               => TypesJava.Runnable.code
@@ -174,6 +193,7 @@ case object LangJava extends Lang {
       case jvm.Type.Wildcard                               => code"?"
       case jvm.Type.Primitive(name)                        => name
       case jvm.RuntimeInterpolation(value)                 => value
+      case jvm.Import(_, _)                                => jvm.Code.Empty // Import node just triggers import, no code output
       case jvm.IfExpr(pred, thenp, elsep) =>
         code"""|($pred
                |  ? $thenp
@@ -216,58 +236,10 @@ case object LangJava extends Lang {
         }
         val elseCode = code"else { $elseCase; }"
         (ifCases :+ elseCode).mkCode("\n")
-      case jvm.StringInterpolate(_, prefix, content) =>
-        // For Java, determine if we need Fragment.lit() wrapping
-        // - interpolate() needs Fragment.lit() for string parts (it expects Fragment varargs)
-        // - str() is plain string concatenation and should NOT have Fragment.lit()
-        val needsFragmentLit = prefix.value == "interpolate"
-        val Fragment = jvm.Type.Qualified("typo.runtime.Fragment")
-        val linearized = jvm.Code.linearize(content)
-        val processedParts: List[jvm.Code] = linearized.map {
-          case jvm.Code.Tree(jvm.RuntimeInterpolation(value)) =>
-            // For str(), wrap in String.valueOf() to ensure String type
-            // For interpolate(), pass Fragment values directly
-            if (needsFragmentLit) value else code"${TypesJava.String}.valueOf($value)"
-          case content =>
-            val strLit: jvm.Code = content.render(this).lines match {
-              case Array(one) if one.contains(Quote) || one.contains("\n") || one.contains("\r") =>
-                // In Java text blocks, if the content ends with a quote, we need to escape it
-                // to avoid ambiguity with the closing """
-                val escaped = if (one.endsWith(Quote)) one.dropRight(1) + "\\\"" else one
-                code"""|$TripleQuote
-                       |$escaped
-                       |$TripleQuote""".stripMargin
-              case Array(one) =>
-                code"$Quote$one$Quote"
-              case more =>
-                // In Java text blocks, if the last line ends with a quote, escape it
-                val ret = more.iterator.zipWithIndex.map { case (line, idx) =>
-                  val escaped = if (idx == more.length - 1 && line.endsWith(Quote)) line.dropRight(1) + "\\\"" else line
-                  code"${" " * 3}$escaped"
-                }
-                jvm.Code.Combined(List(code"$TripleQuote", code"\n") ++ ret ++ List(code"$TripleQuote"))
-            }
-            // Only wrap in Fragment.lit() for interpolate(), not for str()
-            if (needsFragmentLit) code"$Fragment.lit($strLit)" else strLit
-        }
-
-        // Ensure the interpolation ends with a lit() if needed
-        val finalParts = linearized.lastOption match {
-          case Some(jvm.Code.Tree(jvm.RuntimeInterpolation(_))) =>
-            // If the last part is a runtime interpolation, add an empty string literal
-            val emptyStr = if (needsFragmentLit) code"$Fragment.lit($Quote$Quote)" else code"$Quote$Quote"
-            processedParts :+ emptyStr
-          case _ =>
-            processedParts
-        }
-
-        // For interpolate() calls with many arguments, use multi-line format for readability
-        if (needsFragmentLit && finalParts.length > 1)
-          code"""|$prefix(
-                 |  ${finalParts.mkCode(",\n")}
-                 |)""".stripMargin
-        else
-          jvm.Call(prefix, List(jvm.Call.ArgGroup(finalParts.map(jvm.Arg.Pos.apply), isImplicit = false)))
+      case jvm.StringInterpolate(_, _, _) =>
+        // StringInterpolate should never reach LangJava
+        // DbLibTypo.SQL() should have already rewritten it to Fragment.interpolate() calls
+        sys.error("StringInterpolate should not reach LangJava. DbLibTypo.SQL() should have rewritten it to Fragment.interpolate() calls.")
 
       case jvm.Given(annotations, tparams, name, implicitParams, tpe, body) =>
         val annotationsCode = renderAnnotations(annotations)
@@ -712,7 +684,7 @@ case object LangJava extends Lang {
 
   // Java: Bijection.of(getter, constructor)
   override def bijection(wrapperType: jvm.Type, underlying: jvm.Type, getter: jvm.FieldGetterRef, constructor: jvm.ConstructorMethodRef): jvm.Code = {
-    val bijection = jvm.Type.dsl.Bijection
+    val bijection = dsl.Bijection
     code"$bijection.of($getter, $constructor)"
   }
 
@@ -764,8 +736,9 @@ case object LangJava extends Lang {
   // Java annotations use Type.class
   override def annotationClassRef(tpe: jvm.Type): jvm.Code = {
     def stripTypeParams(t: jvm.Type): jvm.Type = t match {
-      case jvm.Type.TApply(underlying, _) => stripTypeParams(underlying)
-      case other                          => other
+      case jvm.Type.TApply(underlying, _)      => stripTypeParams(underlying)
+      case jvm.Type.KotlinNullable(underlying) => jvm.Type.KotlinNullable(stripTypeParams(underlying))
+      case other                               => other
     }
     code"${stripTypeParams(tpe)}.class"
   }

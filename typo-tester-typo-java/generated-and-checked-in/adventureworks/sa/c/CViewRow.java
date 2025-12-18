@@ -5,12 +5,12 @@
  */
 package adventureworks.sa.c;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.customer.CustomerId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -21,15 +21,15 @@ public record CViewRow(
   /** Points to {@link adventureworks.sales.customer.CustomerRow#customerid()} */
   CustomerId customerid,
   /** Points to {@link adventureworks.sales.customer.CustomerRow#personid()} */
-  Optional<BusinessentityId> personid,
+  BusinessentityId personid,
   /** Points to {@link adventureworks.sales.customer.CustomerRow#storeid()} */
-  Optional<BusinessentityId> storeid,
+  BusinessentityId storeid,
   /** Points to {@link adventureworks.sales.customer.CustomerRow#territoryid()} */
-  Optional<SalesterritoryId> territoryid,
+  SalesterritoryId territoryid,
   /** Points to {@link adventureworks.sales.customer.CustomerRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.sales.customer.CustomerRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.customer.CustomerRow#customerid()} */
   public CViewRow withId(CustomerId id) {
@@ -42,29 +42,29 @@ public record CViewRow(
   };
 
   /** Points to {@link adventureworks.sales.customer.CustomerRow#personid()} */
-  public CViewRow withPersonid(Optional<BusinessentityId> personid) {
+  public CViewRow withPersonid(BusinessentityId personid) {
     return new CViewRow(id, customerid, personid, storeid, territoryid, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.customer.CustomerRow#storeid()} */
-  public CViewRow withStoreid(Optional<BusinessentityId> storeid) {
+  public CViewRow withStoreid(BusinessentityId storeid) {
     return new CViewRow(id, customerid, personid, storeid, territoryid, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.customer.CustomerRow#territoryid()} */
-  public CViewRow withTerritoryid(Optional<SalesterritoryId> territoryid) {
+  public CViewRow withTerritoryid(SalesterritoryId territoryid) {
     return new CViewRow(id, customerid, personid, storeid, territoryid, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.customer.CustomerRow#rowguid()} */
-  public CViewRow withRowguid(TypoUUID rowguid) {
+  public CViewRow withRowguid(UUID rowguid) {
     return new CViewRow(id, customerid, personid, storeid, territoryid, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.customer.CustomerRow#modifieddate()} */
-  public CViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CViewRow withModifieddate(LocalDateTime modifieddate) {
     return new CViewRow(id, customerid, personid, storeid, territoryid, rowguid, modifieddate);
   };
 
-  static RowParser<CViewRow> _rowParser = RowParsers.of(CustomerId.pgType, CustomerId.pgType, BusinessentityId.pgType.opt(), BusinessentityId.pgType.opt(), SalesterritoryId.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, CViewRow::new, row -> new Object[]{row.id(), row.customerid(), row.personid(), row.storeid(), row.territoryid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<CViewRow> _rowParser = RowParsers.of(CustomerId.pgType, CustomerId.pgType, BusinessentityId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType, PgTypes.uuid, PgTypes.timestamp, CViewRow::new, row -> new Object[]{row.id(), row.customerid(), row.personid(), row.storeid(), row.territoryid(), row.rowguid(), row.modifieddate()});;
 }

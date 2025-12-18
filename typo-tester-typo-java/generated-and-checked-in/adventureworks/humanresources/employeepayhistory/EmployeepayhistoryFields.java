@@ -5,37 +5,36 @@
  */
 package adventureworks.humanresources.employeepayhistory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.humanresources.employee.EmployeeFields;
 import adventureworks.humanresources.employee.EmployeeRow;
 import adventureworks.person.businessentity.BusinessentityId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface EmployeepayhistoryFields extends FieldsExpr<EmployeepayhistoryRow> {
-  record Impl(List<Path> _path) implements EmployeepayhistoryFields, Relation<EmployeepayhistoryFields, EmployeepayhistoryRow> {
+  record Impl(List<Path> _path) implements EmployeepayhistoryFields, RelationStructure<EmployeepayhistoryFields, EmployeepayhistoryRow> {
     @Override
     public IdField<BusinessentityId, EmployeepayhistoryRow> businessentityid() {
       return new IdField<BusinessentityId, EmployeepayhistoryRow>(_path, "businessentityid", EmployeepayhistoryRow::businessentityid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
     };
 
     @Override
-    public IdField<TypoLocalDateTime, EmployeepayhistoryRow> ratechangedate() {
-      return new IdField<TypoLocalDateTime, EmployeepayhistoryRow>(_path, "ratechangedate", EmployeepayhistoryRow::ratechangedate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withRatechangedate(value), TypoLocalDateTime.pgType);
+    public IdField<LocalDateTime, EmployeepayhistoryRow> ratechangedate() {
+      return new IdField<LocalDateTime, EmployeepayhistoryRow>(_path, "ratechangedate", EmployeepayhistoryRow::ratechangedate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withRatechangedate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -44,42 +43,42 @@ public interface EmployeepayhistoryFields extends FieldsExpr<EmployeepayhistoryR
     };
 
     @Override
-    public Field<TypoShort, EmployeepayhistoryRow> payfrequency() {
-      return new Field<TypoShort, EmployeepayhistoryRow>(_path, "payfrequency", EmployeepayhistoryRow::payfrequency, Optional.empty(), Optional.of("int2"), (row, value) -> row.withPayfrequency(value), TypoShort.pgType);
+    public Field<Short, EmployeepayhistoryRow> payfrequency() {
+      return new Field<Short, EmployeepayhistoryRow>(_path, "payfrequency", EmployeepayhistoryRow::payfrequency, Optional.empty(), Optional.of("int2"), (row, value) -> row.withPayfrequency(value), PgTypes.int2);
     };
 
     @Override
-    public Field<TypoLocalDateTime, EmployeepayhistoryRow> modifieddate() {
-      return new Field<TypoLocalDateTime, EmployeepayhistoryRow>(_path, "modifieddate", EmployeepayhistoryRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, EmployeepayhistoryRow> modifieddate() {
+      return new Field<LocalDateTime, EmployeepayhistoryRow>(_path, "modifieddate", EmployeepayhistoryRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, EmployeepayhistoryRow>> columns() {
-      return List.of(this.businessentityid(), this.ratechangedate(), this.rate(), this.payfrequency(), this.modifieddate());
+      return java.util.List.of(this.businessentityid(), this.ratechangedate(), this.rate(), this.payfrequency(), this.modifieddate());
     };
 
     @Override
-    public Relation<EmployeepayhistoryFields, EmployeepayhistoryRow> copy(List<Path> _path) {
+    public RelationStructure<EmployeepayhistoryFields, EmployeepayhistoryRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BusinessentityId, EmployeepayhistoryRow> businessentityid();
 
-  IdField<TypoLocalDateTime, EmployeepayhistoryRow> ratechangedate();
+  IdField<LocalDateTime, EmployeepayhistoryRow> ratechangedate();
 
   Field<BigDecimal, EmployeepayhistoryRow> rate();
 
-  Field<TypoShort, EmployeepayhistoryRow> payfrequency();
+  Field<Short, EmployeepayhistoryRow> payfrequency();
 
-  Field<TypoLocalDateTime, EmployeepayhistoryRow> modifieddate();
+  Field<LocalDateTime, EmployeepayhistoryRow> modifieddate();
 
   default ForeignKey<EmployeeFields, EmployeeRow> fkEmployee() {
-    return ForeignKey.<EmployeeFields, EmployeeRow>of("humanresources.FK_EmployeePayHistory_Employee_BusinessEntityID").withColumnPair(businessentityid(), EmployeeFields::businessentityid);
+    return ForeignKey.<EmployeeFields, EmployeeRow>of("humanresources.FK_EmployeePayHistory_Employee_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), EmployeeFields::businessentityid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(EmployeepayhistoryId compositeId) {
@@ -87,7 +86,7 @@ public interface EmployeepayhistoryFields extends FieldsExpr<EmployeepayhistoryR
   };
 
   default SqlExpr<Boolean> compositeIdIn(List<EmployeepayhistoryId> compositeIds) {
-    return new CompositeIn(List.of(new Part<BusinessentityId, EmployeepayhistoryId, EmployeepayhistoryRow>(businessentityid(), EmployeepayhistoryId::businessentityid, BusinessentityId.pgType), new Part<TypoLocalDateTime, EmployeepayhistoryId, EmployeepayhistoryRow>(ratechangedate(), EmployeepayhistoryId::ratechangedate, TypoLocalDateTime.pgType)), compositeIds);
+    return new CompositeIn(List.of(new Part<BusinessentityId, EmployeepayhistoryId, EmployeepayhistoryRow>(businessentityid(), EmployeepayhistoryId::businessentityid, BusinessentityId.pgType), new Part<LocalDateTime, EmployeepayhistoryId, EmployeepayhistoryRow>(ratechangedate(), EmployeepayhistoryId::ratechangedate, PgTypes.timestamp)), compositeIds);
   };
 
   @Override

@@ -6,13 +6,14 @@
 package adventureworks.sales.store;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -32,11 +33,11 @@ public record StoreRow(
     */
   Optional<BusinessentityId> salespersonid,
   /** Demographic informationg about the store such as the number of employees, annual sales and store type. */
-  Optional<TypoXml> demographics,
+  Optional<Xml> demographics,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key. Foreign key to Customer.BusinessEntityID.
     * Points to {@link adventureworks.person.businessentity.BusinessentityRow#businessentityid()}
@@ -58,21 +59,21 @@ public record StoreRow(
   };
 
   /** Demographic informationg about the store such as the number of employees, annual sales and store type. */
-  public StoreRow withDemographics(Optional<TypoXml> demographics) {
+  public StoreRow withDemographics(Optional<Xml> demographics) {
     return new StoreRow(businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public StoreRow withRowguid(TypoUUID rowguid) {
+  public StoreRow withRowguid(UUID rowguid) {
     return new StoreRow(businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public StoreRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public StoreRow withModifieddate(LocalDateTime modifieddate) {
     return new StoreRow(businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };
 
-  static RowParser<StoreRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, BusinessentityId.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, StoreRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.salespersonid(), row.demographics(), row.rowguid(), row.modifieddate()});;
+  static RowParser<StoreRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, BusinessentityId.pgType.opt(), PgTypes.xml.opt(), PgTypes.uuid, PgTypes.timestamp, StoreRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.salespersonid(), row.demographics(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<StoreRow> pgText =
     PgText.from(_rowParser);
@@ -82,8 +83,8 @@ public record StoreRow(
   };
 
   public StoreRowUnsaved toUnsavedRow(
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new StoreRowUnsaved(businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };

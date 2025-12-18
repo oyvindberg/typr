@@ -7,11 +7,12 @@ package adventureworks.production.productproductphoto;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.productphoto.ProductphotoId;
 import adventureworks.public_.Flag;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.productproductphoto` which has not been persisted yet */
 public record ProductproductphotoRowUnsaved(
@@ -28,7 +29,7 @@ public record ProductproductphotoRowUnsaved(
     */
   Defaulted<Flag> primary,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductproductphotoRowUnsaved(
     /** Product identification number. Foreign key to Product.ProductID.
@@ -65,7 +66,7 @@ public record ProductproductphotoRowUnsaved(
   };
 
   /** Default: now() */
-  public ProductproductphotoRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductproductphotoRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductproductphotoRowUnsaved(productid, productphotoid, primary, modifieddate);
   };
 
@@ -77,12 +78,12 @@ public record ProductproductphotoRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.primary, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ProductproductphotoRow toRow(
     java.util.function.Supplier<Flag> primaryDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ProductproductphotoRow(productid, productphotoid, primary.getOrElse(primaryDefault), modifieddate.getOrElse(modifieddateDefault));
   };

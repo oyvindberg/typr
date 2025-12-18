@@ -30,17 +30,17 @@ case class EViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.nationalidnumber]] */
-  nationalidnumber: /* max 15 chars */ String,
+  nationalidnumber: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.loginid]] */
-  loginid: /* max 256 chars */ String,
+  loginid: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
-  jobtitle: /* max 50 chars */ String,
+  jobtitle: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.birthdate]] */
   birthdate: TypoLocalDate,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.maritalstatus]] */
-  maritalstatus: /* bpchar, max 1 chars */ String,
+  maritalstatus: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.gender]] */
-  gender: /* bpchar, max 1 chars */ String,
+  gender: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.hiredate]] */
   hiredate: TypoLocalDate,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.salariedflag]] */
@@ -56,7 +56,7 @@ case class EViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.modifieddate]] */
   modifieddate: TypoLocalDateTime,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.organizationnode]] */
-  organizationnode: Option[String]
+  organizationnode: String
 )
 
 object EViewRow {
@@ -79,7 +79,7 @@ object EViewRow {
             currentflag = json.\("currentflag").as(Flag.reads),
             rowguid = json.\("rowguid").as(TypoUUID.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads),
-            organizationnode = json.\("organizationnode").toOption.map(_.as(Reads.StringReads))
+            organizationnode = json.\("organizationnode").as(Reads.StringReads)
           )
         )
       ),
@@ -105,7 +105,7 @@ object EViewRow {
           currentflag = row(idx + 12)(Flag.column),
           rowguid = row(idx + 13)(TypoUUID.column),
           modifieddate = row(idx + 14)(TypoLocalDateTime.column),
-          organizationnode = row(idx + 15)(Column.columnToOption(Column.columnToString))
+          organizationnode = row(idx + 15)(Column.columnToString)
         )
       )
     }
@@ -129,7 +129,7 @@ object EViewRow {
         "currentflag" -> Flag.writes.writes(o.currentflag),
         "rowguid" -> TypoUUID.writes.writes(o.rowguid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate),
-        "organizationnode" -> Writes.OptionWrites(Writes.StringWrites).writes(o.organizationnode)
+        "organizationnode" -> Writes.StringWrites.writes(o.organizationnode)
       ))
     )
   }

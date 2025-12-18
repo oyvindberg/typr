@@ -23,57 +23,57 @@ case class VstorewithcontactsViewRow(
   /** Points to [[adventureworks.person.contacttype.ContacttypeRow.name]] */
   contacttype: Name,
   /** Points to [[adventureworks.person.person.PersonRow.title]] */
-  title: Option[/* max 8 chars */ String],
+  title: String,
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: String,
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
   phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
   phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
-  emailaddress: Option[/* max 50 chars */ String],
+  emailaddress: String,
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
   emailpromotion: Int
 )
 
 object VstorewithcontactsViewRow {
-  given decoder: Decoder[VstorewithcontactsViewRow] = Decoder.forProduct12[VstorewithcontactsViewRow, BusinessentityId, Name, Name, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Phone, Name, Option[/* max 50 chars */ String], Int]("businessentityid", "name", "contacttype", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion")(VstorewithcontactsViewRow.apply)(using BusinessentityId.decoder, Name.decoder, Name.decoder, Decoder.decodeOption(using Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Phone.decoder, Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeInt)
+  given decoder: Decoder[VstorewithcontactsViewRow] = Decoder.forProduct12[VstorewithcontactsViewRow, BusinessentityId, Name, Name, String, /* user-picked */ FirstName, Name, Name, String, Phone, Name, String, Int]("businessentityid", "name", "contacttype", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion")(VstorewithcontactsViewRow.apply)(using BusinessentityId.decoder, Name.decoder, Name.decoder, Decoder.decodeString, FirstName.decoder, Name.decoder, Name.decoder, Decoder.decodeString, Phone.decoder, Name.decoder, Decoder.decodeString, Decoder.decodeInt)
 
-  given encoder: Encoder[VstorewithcontactsViewRow] = Encoder.forProduct12[VstorewithcontactsViewRow, BusinessentityId, Name, Name, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Phone, Name, Option[/* max 50 chars */ String], Int]("businessentityid", "name", "contacttype", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion")(x => (x.businessentityid, x.name, x.contacttype, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.phonenumber, x.phonenumbertype, x.emailaddress, x.emailpromotion))(using BusinessentityId.encoder, Name.encoder, Name.encoder, Encoder.encodeOption(using Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Phone.encoder, Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeInt)
+  given encoder: Encoder[VstorewithcontactsViewRow] = Encoder.forProduct12[VstorewithcontactsViewRow, BusinessentityId, Name, Name, String, /* user-picked */ FirstName, Name, Name, String, Phone, Name, String, Int]("businessentityid", "name", "contacttype", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion")(x => (x.businessentityid, x.name, x.contacttype, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.phonenumber, x.phonenumbertype, x.emailaddress, x.emailpromotion))(using BusinessentityId.encoder, Name.encoder, Name.encoder, Encoder.encodeString, FirstName.encoder, Name.encoder, Name.encoder, Encoder.encodeString, Phone.encoder, Name.encoder, Encoder.encodeString, Encoder.encodeInt)
 
   given read: Read[VstorewithcontactsViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Phone.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       VstorewithcontactsViewRow(
         businessentityid = arr(0).asInstanceOf[BusinessentityId],
             name = arr(1).asInstanceOf[Name],
             contacttype = arr(2).asInstanceOf[Name],
-            title = arr(3).asInstanceOf[Option[/* max 8 chars */ String]],
+            title = arr(3).asInstanceOf[String],
             firstname = arr(4).asInstanceOf[/* user-picked */ FirstName],
-            middlename = arr(5).asInstanceOf[Option[Name]],
+            middlename = arr(5).asInstanceOf[Name],
             lastname = arr(6).asInstanceOf[Name],
-            suffix = arr(7).asInstanceOf[Option[/* max 10 chars */ String]],
+            suffix = arr(7).asInstanceOf[String],
             phonenumber = arr(8).asInstanceOf[Phone],
             phonenumbertype = arr(9).asInstanceOf[Name],
-            emailaddress = arr(10).asInstanceOf[Option[/* max 50 chars */ String]],
+            emailaddress = arr(10).asInstanceOf[String],
             emailpromotion = arr(11).asInstanceOf[Int]
       )
     }

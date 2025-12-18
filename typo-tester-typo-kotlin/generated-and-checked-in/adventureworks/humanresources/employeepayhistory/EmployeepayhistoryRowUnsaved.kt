@@ -7,10 +7,10 @@ package adventureworks.humanresources.employeepayhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -21,7 +21,7 @@ data class EmployeepayhistoryRowUnsaved(
     */
   val businessentityid: BusinessentityId,
   /** Date the change in pay is effective */
-  val ratechangedate: TypoLocalDateTime,
+  val ratechangedate: LocalDateTime,
   /** Salary hourly rate.
     * Constraint CK_EmployeePayHistory_Rate affecting columns rate:  (((rate >= 6.50) AND (rate <= 200.00)))
     */
@@ -29,22 +29,22 @@ data class EmployeepayhistoryRowUnsaved(
   /** 1 = Salary received monthly, 2 = Salary received biweekly
     * Constraint CK_EmployeePayHistory_PayFrequency affecting columns payfrequency:  ((payfrequency = ANY (ARRAY[1, 2])))
     */
-  val payfrequency: TypoShort,
+  val payfrequency: Short,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
-  fun toRow(modifieddateDefault: () -> TypoLocalDateTime): EmployeepayhistoryRow = EmployeepayhistoryRow(businessentityid = businessentityid, ratechangedate = ratechangedate, rate = rate, payfrequency = payfrequency, modifieddate = modifieddate.getOrElse(modifieddateDefault))
+  fun toRow(modifieddateDefault: () -> LocalDateTime): EmployeepayhistoryRow = EmployeepayhistoryRow(businessentityid = businessentityid, ratechangedate = ratechangedate, rate = rate, payfrequency = payfrequency, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<EmployeepayhistoryRowUnsaved> =
       PgText.instance({ row, sb -> BusinessentityId.pgType.pgText().unsafeEncode(row.businessentityid, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.ratechangedate, sb)
+      PgTypes.timestamp.pgText().unsafeEncode(row.ratechangedate, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.numeric.pgText().unsafeEncode(row.rate, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.payfrequency, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.payfrequency, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

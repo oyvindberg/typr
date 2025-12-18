@@ -5,7 +5,6 @@
  */
 package testdb.mariatest_spatial
 
-import java.util.Optional
 import kotlin.collections.List
 import org.mariadb.jdbc.type.Geometry
 import org.mariadb.jdbc.type.GeometryCollection
@@ -15,63 +14,65 @@ import org.mariadb.jdbc.type.MultiPoint
 import org.mariadb.jdbc.type.MultiPolygon
 import org.mariadb.jdbc.type.Point
 import org.mariadb.jdbc.type.Polygon
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
 
 interface MariatestSpatialFields : FieldsExpr<MariatestSpatialRow> {
-  override fun columns(): List<FieldLike<*, MariatestSpatialRow>>
+  abstract override fun columns(): List<FieldLike<*, MariatestSpatialRow>>
 
-  fun geometryCol(): Field<Geometry, MariatestSpatialRow>
+  abstract fun geometryCol(): Field<Geometry, MariatestSpatialRow>
 
-  fun geometrycollectionCol(): Field<GeometryCollection, MariatestSpatialRow>
+  abstract fun geometrycollectionCol(): Field<GeometryCollection, MariatestSpatialRow>
 
-  fun id(): IdField<MariatestSpatialId, MariatestSpatialRow>
+  abstract fun id(): IdField<MariatestSpatialId, MariatestSpatialRow>
 
-  fun linestringCol(): Field<LineString, MariatestSpatialRow>
+  abstract fun linestringCol(): Field<LineString, MariatestSpatialRow>
 
-  fun multilinestringCol(): Field<MultiLineString, MariatestSpatialRow>
+  abstract fun multilinestringCol(): Field<MultiLineString, MariatestSpatialRow>
 
-  fun multipointCol(): Field<MultiPoint, MariatestSpatialRow>
+  abstract fun multipointCol(): Field<MultiPoint, MariatestSpatialRow>
 
-  fun multipolygonCol(): Field<MultiPolygon, MariatestSpatialRow>
+  abstract fun multipolygonCol(): Field<MultiPolygon, MariatestSpatialRow>
 
-  fun pointCol(): Field<Point, MariatestSpatialRow>
+  abstract fun pointCol(): Field<Point, MariatestSpatialRow>
 
-  fun polygonCol(): Field<Polygon, MariatestSpatialRow>
+  abstract fun polygonCol(): Field<Polygon, MariatestSpatialRow>
 
-  override fun rowParser(): RowParser<MariatestSpatialRow> = MariatestSpatialRow._rowParser
+  override fun rowParser(): RowParser<MariatestSpatialRow> = MariatestSpatialRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : MariatestSpatialFields, Relation<MariatestSpatialFields, MariatestSpatialRow> {
-      override fun id(): IdField<MariatestSpatialId, MariatestSpatialRow> = IdField<MariatestSpatialId, MariatestSpatialRow>(_path, "id", MariatestSpatialRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, MariatestSpatialId.pgType)
+    data class Impl(val _path: List<Path>) : MariatestSpatialFields, RelationStructure<MariatestSpatialFields, MariatestSpatialRow> {
+      override fun id(): IdField<MariatestSpatialId, MariatestSpatialRow> = IdField<MariatestSpatialId, MariatestSpatialRow>(_path, "id", MariatestSpatialRow::id, null, null, { row, value -> row.copy(id = value) }, MariatestSpatialId.pgType)
 
-      override fun geometryCol(): Field<Geometry, MariatestSpatialRow> = Field<Geometry, MariatestSpatialRow>(_path, "geometry_col", MariatestSpatialRow::geometryCol, Optional.empty(), Optional.empty(), { row, value -> row.copy(geometryCol = value) }, MariaTypes.geometry)
+      override fun geometryCol(): Field<Geometry, MariatestSpatialRow> = Field<Geometry, MariatestSpatialRow>(_path, "geometry_col", MariatestSpatialRow::geometryCol, null, null, { row, value -> row.copy(geometryCol = value) }, MariaTypes.geometry)
 
-      override fun pointCol(): Field<Point, MariatestSpatialRow> = Field<Point, MariatestSpatialRow>(_path, "point_col", MariatestSpatialRow::pointCol, Optional.empty(), Optional.empty(), { row, value -> row.copy(pointCol = value) }, MariaTypes.point)
+      override fun pointCol(): Field<Point, MariatestSpatialRow> = Field<Point, MariatestSpatialRow>(_path, "point_col", MariatestSpatialRow::pointCol, null, null, { row, value -> row.copy(pointCol = value) }, MariaTypes.point)
 
-      override fun linestringCol(): Field<LineString, MariatestSpatialRow> = Field<LineString, MariatestSpatialRow>(_path, "linestring_col", MariatestSpatialRow::linestringCol, Optional.empty(), Optional.empty(), { row, value -> row.copy(linestringCol = value) }, MariaTypes.linestring)
+      override fun linestringCol(): Field<LineString, MariatestSpatialRow> = Field<LineString, MariatestSpatialRow>(_path, "linestring_col", MariatestSpatialRow::linestringCol, null, null, { row, value -> row.copy(linestringCol = value) }, MariaTypes.linestring)
 
-      override fun polygonCol(): Field<Polygon, MariatestSpatialRow> = Field<Polygon, MariatestSpatialRow>(_path, "polygon_col", MariatestSpatialRow::polygonCol, Optional.empty(), Optional.empty(), { row, value -> row.copy(polygonCol = value) }, MariaTypes.polygon)
+      override fun polygonCol(): Field<Polygon, MariatestSpatialRow> = Field<Polygon, MariatestSpatialRow>(_path, "polygon_col", MariatestSpatialRow::polygonCol, null, null, { row, value -> row.copy(polygonCol = value) }, MariaTypes.polygon)
 
-      override fun multipointCol(): Field<MultiPoint, MariatestSpatialRow> = Field<MultiPoint, MariatestSpatialRow>(_path, "multipoint_col", MariatestSpatialRow::multipointCol, Optional.empty(), Optional.empty(), { row, value -> row.copy(multipointCol = value) }, MariaTypes.multipoint)
+      override fun multipointCol(): Field<MultiPoint, MariatestSpatialRow> = Field<MultiPoint, MariatestSpatialRow>(_path, "multipoint_col", MariatestSpatialRow::multipointCol, null, null, { row, value -> row.copy(multipointCol = value) }, MariaTypes.multipoint)
 
-      override fun multilinestringCol(): Field<MultiLineString, MariatestSpatialRow> = Field<MultiLineString, MariatestSpatialRow>(_path, "multilinestring_col", MariatestSpatialRow::multilinestringCol, Optional.empty(), Optional.empty(), { row, value -> row.copy(multilinestringCol = value) }, MariaTypes.multilinestring)
+      override fun multilinestringCol(): Field<MultiLineString, MariatestSpatialRow> = Field<MultiLineString, MariatestSpatialRow>(_path, "multilinestring_col", MariatestSpatialRow::multilinestringCol, null, null, { row, value -> row.copy(multilinestringCol = value) }, MariaTypes.multilinestring)
 
-      override fun multipolygonCol(): Field<MultiPolygon, MariatestSpatialRow> = Field<MultiPolygon, MariatestSpatialRow>(_path, "multipolygon_col", MariatestSpatialRow::multipolygonCol, Optional.empty(), Optional.empty(), { row, value -> row.copy(multipolygonCol = value) }, MariaTypes.multipolygon)
+      override fun multipolygonCol(): Field<MultiPolygon, MariatestSpatialRow> = Field<MultiPolygon, MariatestSpatialRow>(_path, "multipolygon_col", MariatestSpatialRow::multipolygonCol, null, null, { row, value -> row.copy(multipolygonCol = value) }, MariaTypes.multipolygon)
 
-      override fun geometrycollectionCol(): Field<GeometryCollection, MariatestSpatialRow> = Field<GeometryCollection, MariatestSpatialRow>(_path, "geometrycollection_col", MariatestSpatialRow::geometrycollectionCol, Optional.empty(), Optional.empty(), { row, value -> row.copy(geometrycollectionCol = value) }, MariaTypes.geometrycollection)
+      override fun geometrycollectionCol(): Field<GeometryCollection, MariatestSpatialRow> = Field<GeometryCollection, MariatestSpatialRow>(_path, "geometrycollection_col", MariatestSpatialRow::geometrycollectionCol, null, null, { row, value -> row.copy(geometrycollectionCol = value) }, MariaTypes.geometrycollection)
 
-      override fun columns(): List<FieldLike<*, MariatestSpatialRow>> = listOf(this.id(), this.geometryCol(), this.pointCol(), this.linestringCol(), this.polygonCol(), this.multipointCol(), this.multilinestringCol(), this.multipolygonCol(), this.geometrycollectionCol())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<MariatestSpatialFields, MariatestSpatialRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, MariatestSpatialRow>> = listOf(this.id().underlying, this.geometryCol().underlying, this.pointCol().underlying, this.linestringCol().underlying, this.polygonCol().underlying, this.multipointCol().underlying, this.multilinestringCol().underlying, this.multipolygonCol().underlying, this.geometrycollectionCol().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<MariatestSpatialFields, MariatestSpatialRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

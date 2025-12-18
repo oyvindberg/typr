@@ -7,9 +7,9 @@ package adventureworks.production.transactionhistory;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -24,7 +24,7 @@ public record TransactionhistoryRowUnsaved(
   /** W = WorkOrder, S = SalesOrder, P = PurchaseOrder
     * Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
     */
-  /* bpchar, max 1 chars */ String transactiontype,
+  String transactiontype,
   /** Product quantity. */
   Integer quantity,
   /** Product cost. */
@@ -40,9 +40,9 @@ public record TransactionhistoryRowUnsaved(
   /** Default: now()
     * Date and time of the transaction.
     */
-  Defaulted<TypoLocalDateTime> transactiondate,
+  Defaulted<LocalDateTime> transactiondate,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public TransactionhistoryRowUnsaved(
     /** Product identification number. Foreign key to Product.ProductID.
@@ -54,7 +54,7 @@ public record TransactionhistoryRowUnsaved(
     /** W = WorkOrder, S = SalesOrder, P = PurchaseOrder
       * Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
       */
-    /* bpchar, max 1 chars */ String transactiontype,
+    String transactiontype,
     /** Product quantity. */
     Integer quantity,
     /** Product cost. */
@@ -78,7 +78,7 @@ public record TransactionhistoryRowUnsaved(
   /** W = WorkOrder, S = SalesOrder, P = PurchaseOrder
     * Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
     */
-  public TransactionhistoryRowUnsaved withTransactiontype(/* bpchar, max 1 chars */ String transactiontype) {
+  public TransactionhistoryRowUnsaved withTransactiontype(String transactiontype) {
     return new TransactionhistoryRowUnsaved(productid, referenceorderid, transactiontype, quantity, actualcost, transactionid, referenceorderlineid, transactiondate, modifieddate);
   };
 
@@ -109,12 +109,12 @@ public record TransactionhistoryRowUnsaved(
   /** Default: now()
     * Date and time of the transaction.
     */
-  public TransactionhistoryRowUnsaved withTransactiondate(Defaulted<TypoLocalDateTime> transactiondate) {
+  public TransactionhistoryRowUnsaved withTransactiondate(Defaulted<LocalDateTime> transactiondate) {
     return new TransactionhistoryRowUnsaved(productid, referenceorderid, transactiontype, quantity, actualcost, transactionid, referenceorderlineid, transactiondate, modifieddate);
   };
 
   /** Default: now() */
-  public TransactionhistoryRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public TransactionhistoryRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new TransactionhistoryRowUnsaved(productid, referenceorderid, transactiontype, quantity, actualcost, transactionid, referenceorderlineid, transactiondate, modifieddate);
   };
 
@@ -134,16 +134,16 @@ public record TransactionhistoryRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.referenceorderlineid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.transactiondate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.transactiondate, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public TransactionhistoryRow toRow(
     java.util.function.Supplier<TransactionhistoryId> transactionidDefault,
     java.util.function.Supplier<Integer> referenceorderlineidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> transactiondateDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> transactiondateDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new TransactionhistoryRow(transactionid.getOrElse(transactionidDefault), productid, referenceorderid, referenceorderlineid.getOrElse(referenceorderlineidDefault), transactiondate.getOrElse(transactiondateDefault), transactiontype, quantity, actualcost, modifieddate.getOrElse(modifieddateDefault));
   };

@@ -5,12 +5,10 @@
  */
 package adventureworks.pr.bom;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.unitmeasure.UnitmeasureId;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -22,21 +20,21 @@ public record BomViewRow(
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#billofmaterialsid()} */
   Integer billofmaterialsid,
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#productassemblyid()} */
-  Optional<ProductId> productassemblyid,
+  ProductId productassemblyid,
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#componentid()} */
   ProductId componentid,
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#startdate()} */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#enddate()} */
-  Optional<TypoLocalDateTime> enddate,
+  LocalDateTime enddate,
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#unitmeasurecode()} */
   UnitmeasureId unitmeasurecode,
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#bomlevel()} */
-  TypoShort bomlevel,
+  Short bomlevel,
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#perassemblyqty()} */
   BigDecimal perassemblyqty,
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#billofmaterialsid()} */
   public BomViewRow withId(Integer id) {
@@ -49,7 +47,7 @@ public record BomViewRow(
   };
 
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#productassemblyid()} */
-  public BomViewRow withProductassemblyid(Optional<ProductId> productassemblyid) {
+  public BomViewRow withProductassemblyid(ProductId productassemblyid) {
     return new BomViewRow(id, billofmaterialsid, productassemblyid, componentid, startdate, enddate, unitmeasurecode, bomlevel, perassemblyqty, modifieddate);
   };
 
@@ -59,12 +57,12 @@ public record BomViewRow(
   };
 
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#startdate()} */
-  public BomViewRow withStartdate(TypoLocalDateTime startdate) {
+  public BomViewRow withStartdate(LocalDateTime startdate) {
     return new BomViewRow(id, billofmaterialsid, productassemblyid, componentid, startdate, enddate, unitmeasurecode, bomlevel, perassemblyqty, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#enddate()} */
-  public BomViewRow withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public BomViewRow withEnddate(LocalDateTime enddate) {
     return new BomViewRow(id, billofmaterialsid, productassemblyid, componentid, startdate, enddate, unitmeasurecode, bomlevel, perassemblyqty, modifieddate);
   };
 
@@ -74,7 +72,7 @@ public record BomViewRow(
   };
 
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#bomlevel()} */
-  public BomViewRow withBomlevel(TypoShort bomlevel) {
+  public BomViewRow withBomlevel(Short bomlevel) {
     return new BomViewRow(id, billofmaterialsid, productassemblyid, componentid, startdate, enddate, unitmeasurecode, bomlevel, perassemblyqty, modifieddate);
   };
 
@@ -84,9 +82,9 @@ public record BomViewRow(
   };
 
   /** Points to {@link adventureworks.production.billofmaterials.BillofmaterialsRow#modifieddate()} */
-  public BomViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public BomViewRow withModifieddate(LocalDateTime modifieddate) {
     return new BomViewRow(id, billofmaterialsid, productassemblyid, componentid, startdate, enddate, unitmeasurecode, bomlevel, perassemblyqty, modifieddate);
   };
 
-  static RowParser<BomViewRow> _rowParser = RowParsers.of(PgTypes.int4, PgTypes.int4, ProductId.pgType.opt(), ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), UnitmeasureId.pgType, TypoShort.pgType, PgTypes.numeric, TypoLocalDateTime.pgType, BomViewRow::new, row -> new Object[]{row.id(), row.billofmaterialsid(), row.productassemblyid(), row.componentid(), row.startdate(), row.enddate(), row.unitmeasurecode(), row.bomlevel(), row.perassemblyqty(), row.modifieddate()});;
+  static RowParser<BomViewRow> _rowParser = RowParsers.of(PgTypes.int4, PgTypes.int4, ProductId.pgType, ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp, UnitmeasureId.pgType, PgTypes.int2, PgTypes.numeric, PgTypes.timestamp, BomViewRow::new, row -> new Object[]{row.id(), row.billofmaterialsid(), row.productassemblyid(), row.componentid(), row.startdate(), row.enddate(), row.unitmeasurecode(), row.bomlevel(), row.perassemblyqty(), row.modifieddate()});;
 }

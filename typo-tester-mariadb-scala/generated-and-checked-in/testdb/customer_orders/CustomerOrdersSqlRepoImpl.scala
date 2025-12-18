@@ -6,17 +6,18 @@
 package testdb.customer_orders
 
 import java.sql.Connection
-import java.util.Optional
 import testdb.customers.CustomersId
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Fragment
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.Fragment.sql
 
 class CustomerOrdersSqlRepoImpl extends CustomerOrdersSqlRepo {
   override def apply(
     customerId: /* user-picked */ CustomersId,
-    orderStatus: Optional[String]
-  )(using c: Connection): java.util.List[CustomerOrdersSqlRow] = {
-    interpolate"""-- Query customers with their orders
+    orderStatus: Option[String]
+  )(using c: Connection): List[CustomerOrdersSqlRow] = {
+    sql"""-- Query customers with their orders
     SELECT c.customer_id,
            c.email,
            c.first_name,
@@ -29,8 +30,8 @@ class CustomerOrdersSqlRepoImpl extends CustomerOrdersSqlRepo {
            o.ordered_at
     FROM customers c
     LEFT JOIN orders o ON c.customer_id = o.customer_id
-    WHERE c.customer_id = ${/* user-picked */ CustomersId.pgType.encode(customerId)}
-      AND (${MariaTypes.text.opt().encode(orderStatus)} IS NULL OR o.order_status = ${MariaTypes.text.opt().encode(orderStatus)})
+    WHERE c.customer_id = ${Fragment.encode(CustomersId.pgType, customerId)}
+      AND (${Fragment.encode(MariaTypes.text.nullable, orderStatus)} IS NULL OR o.order_status = ${Fragment.encode(MariaTypes.text.nullable, orderStatus)})
     """.query(CustomerOrdersSqlRow.`_rowParser`.all()).runUnchecked(c)
   }
 }

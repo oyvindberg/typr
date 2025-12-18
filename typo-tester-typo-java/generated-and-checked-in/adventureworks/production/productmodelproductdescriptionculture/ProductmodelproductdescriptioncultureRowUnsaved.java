@@ -7,11 +7,12 @@ package adventureworks.production.productmodelproductdescriptionculture;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.culture.CultureId;
 import adventureworks.production.productdescription.ProductdescriptionId;
 import adventureworks.production.productmodel.ProductmodelId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.productmodelproductdescriptionculture` which has not been persisted yet */
 public record ProductmodelproductdescriptioncultureRowUnsaved(
@@ -28,7 +29,7 @@ public record ProductmodelproductdescriptioncultureRowUnsaved(
     */
   CultureId cultureid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductmodelproductdescriptioncultureRowUnsaved(
     /** Primary key. Foreign key to ProductModel.ProductModelID.
@@ -69,7 +70,7 @@ public record ProductmodelproductdescriptioncultureRowUnsaved(
   };
 
   /** Default: now() */
-  public ProductmodelproductdescriptioncultureRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductmodelproductdescriptioncultureRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductmodelproductdescriptioncultureRowUnsaved(productmodelid, productdescriptionid, cultureid, modifieddate);
   };
 
@@ -81,10 +82,10 @@ public record ProductmodelproductdescriptioncultureRowUnsaved(
       sb.append(PgText.DELIMETER);
       CultureId.pgType.pgText().unsafeEncode(row.cultureid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public ProductmodelproductdescriptioncultureRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public ProductmodelproductdescriptioncultureRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new ProductmodelproductdescriptioncultureRow(productmodelid, productdescriptionid, cultureid, modifieddate.getOrElse(modifieddateDefault));
   };
 }

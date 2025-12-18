@@ -6,10 +6,10 @@
 package adventureworks.person.emailaddress;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -31,9 +31,9 @@ public record EmailaddressRow(
   /** E-mail address for the person. */
   Optional</* max 50 chars */ String> emailaddress,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key. Person associated with this email address.  Foreign key to Person.BusinessEntityID
     * Points to {@link adventureworks.person.person.PersonRow#businessentityid()}
@@ -55,22 +55,22 @@ public record EmailaddressRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public EmailaddressRow withRowguid(TypoUUID rowguid) {
+  public EmailaddressRow withRowguid(UUID rowguid) {
     return new EmailaddressRow(businessentityid, emailaddressid, emailaddress, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public EmailaddressRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public EmailaddressRow withModifieddate(LocalDateTime modifieddate) {
     return new EmailaddressRow(businessentityid, emailaddressid, emailaddress, rowguid, modifieddate);
   };
 
-  static RowParser<EmailaddressRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.int4, PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, EmailaddressRow::new, row -> new Object[]{row.businessentityid(), row.emailaddressid(), row.emailaddress(), row.rowguid(), row.modifieddate()});;
+  static RowParser<EmailaddressRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.int4, PgTypes.text.opt(), PgTypes.uuid, PgTypes.timestamp, EmailaddressRow::new, row -> new Object[]{row.businessentityid(), row.emailaddressid(), row.emailaddress(), row.rowguid(), row.modifieddate()});;
 
   static public EmailaddressRow apply(
     EmailaddressId compositeId,
     Optional</* max 50 chars */ String> emailaddress,
-    TypoUUID rowguid,
-    TypoLocalDateTime modifieddate
+    UUID rowguid,
+    LocalDateTime modifieddate
   ) {
     return new EmailaddressRow(compositeId.businessentityid(), compositeId.emailaddressid(), emailaddress, rowguid, modifieddate);
   };
@@ -88,8 +88,8 @@ public record EmailaddressRow(
 
   public EmailaddressRowUnsaved toUnsavedRow(
     Defaulted<Integer> emailaddressid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new EmailaddressRowUnsaved(businessentityid, emailaddress, emailaddressid, rowguid, modifieddate);
   };

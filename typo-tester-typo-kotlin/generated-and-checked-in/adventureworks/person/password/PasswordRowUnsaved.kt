@@ -7,9 +7,9 @@ package adventureworks.person.password
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
+import java.time.LocalDateTime
+import java.util.UUID
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -18,17 +18,17 @@ data class PasswordRowUnsaved(
   /** Points to [adventureworks.person.person.PersonRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Password for the e-mail account. */
-  val passwordhash: /* max 128 chars */ String,
+  val passwordhash: String,
   /** Random value concatenated with the password string before the password is hashed. */
-  val passwordsalt: /* max 10 chars */ String,
+  val passwordsalt: String,
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): PasswordRow = PasswordRow(businessentityid = businessentityid, passwordhash = passwordhash, passwordsalt = passwordsalt, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -39,8 +39,8 @@ data class PasswordRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.passwordsalt, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class PViewRepoImpl implements PViewRepo {
@@ -19,9 +20,6 @@ public class PViewRepoImpl implements PViewRepo {
 
   @Override
   public List<PViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text
-       from "pr"."p"
-    """)).query(PViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\"\nfrom \"pr\".\"p\"\n")).query(PViewRow._rowParser.all()).runUnchecked(c);
   };
 }

@@ -36,7 +36,7 @@ object GeneratedFrontpage {
 
         val options = Options(
           pkg = "frontpage",
-          lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
+          lang = LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala),
           dbLib = Some(DbLibName.Anorm),
           jsonLibs = List(JsonLibName.PlayJson),
           typeOverride = TypeOverride.Empty,

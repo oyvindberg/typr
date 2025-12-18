@@ -18,16 +18,16 @@ import testdb.hardcoded.myschema.marital_status.MaritalStatusRow;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PersonFields extends FieldsExpr<PersonRow> {
-  record Impl(List<Path> _path) implements PersonFields, Relation<PersonFields, PersonRow> {
+  record Impl(List<Path> _path) implements PersonFields, RelationStructure<PersonFields, PersonRow> {
     @Override
     public IdField<PersonId, PersonRow> id() {
       return new IdField<PersonId, PersonRow>(_path, "id", PersonRow::id, Optional.empty(), Optional.of("int8"), (row, value) -> row.withId(value), PersonId.pgType);
@@ -39,28 +39,28 @@ public interface PersonFields extends FieldsExpr<PersonRow> {
     };
 
     @Override
-    public Field</* max 100 chars */ String, PersonRow> name() {
-      return new Field</* max 100 chars */ String, PersonRow>(_path, "name", PersonRow::name, Optional.empty(), Optional.empty(), (row, value) -> row.withName(value), PgTypes.text);
+    public Field<String, PersonRow> name() {
+      return new Field<String, PersonRow>(_path, "name", PersonRow::name, Optional.empty(), Optional.empty(), (row, value) -> row.withName(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 30 chars */ String, PersonRow> nickName() {
-      return new OptField</* max 30 chars */ String, PersonRow>(_path, "nick_name", PersonRow::nickName, Optional.empty(), Optional.empty(), (row, value) -> row.withNickName(value), PgTypes.text);
+    public OptField<String, PersonRow> nickName() {
+      return new OptField<String, PersonRow>(_path, "nick_name", PersonRow::nickName, Optional.empty(), Optional.empty(), (row, value) -> row.withNickName(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 100 chars */ String, PersonRow> blogUrl() {
-      return new OptField</* max 100 chars */ String, PersonRow>(_path, "blog_url", PersonRow::blogUrl, Optional.empty(), Optional.empty(), (row, value) -> row.withBlogUrl(value), PgTypes.text);
+    public OptField<String, PersonRow> blogUrl() {
+      return new OptField<String, PersonRow>(_path, "blog_url", PersonRow::blogUrl, Optional.empty(), Optional.empty(), (row, value) -> row.withBlogUrl(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 254 chars */ String, PersonRow> email() {
-      return new Field</* max 254 chars */ String, PersonRow>(_path, "email", PersonRow::email, Optional.empty(), Optional.empty(), (row, value) -> row.withEmail(value), PgTypes.text);
+    public Field<String, PersonRow> email() {
+      return new Field<String, PersonRow>(_path, "email", PersonRow::email, Optional.empty(), Optional.empty(), (row, value) -> row.withEmail(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 8 chars */ String, PersonRow> phone() {
-      return new Field</* max 8 chars */ String, PersonRow>(_path, "phone", PersonRow::phone, Optional.empty(), Optional.empty(), (row, value) -> row.withPhone(value), PgTypes.text);
+    public Field<String, PersonRow> phone() {
+      return new Field<String, PersonRow>(_path, "phone", PersonRow::phone, Optional.empty(), Optional.empty(), (row, value) -> row.withPhone(value), PgTypes.text);
     };
 
     @Override
@@ -74,8 +74,8 @@ public interface PersonFields extends FieldsExpr<PersonRow> {
     };
 
     @Override
-    public OptField</* max 254 chars */ String, PersonRow> workEmail() {
-      return new OptField</* max 254 chars */ String, PersonRow>(_path, "work_email", PersonRow::workEmail, Optional.empty(), Optional.empty(), (row, value) -> row.withWorkEmail(value), PgTypes.text);
+    public OptField<String, PersonRow> workEmail() {
+      return new OptField<String, PersonRow>(_path, "work_email", PersonRow::workEmail, Optional.empty(), Optional.empty(), (row, value) -> row.withWorkEmail(value), PgTypes.text);
     };
 
     @Override
@@ -90,32 +90,32 @@ public interface PersonFields extends FieldsExpr<PersonRow> {
 
     @Override
     public List<FieldLike<?, PersonRow>> columns() {
-      return List.of(this.id(), this.favouriteFootballClubId(), this.name(), this.nickName(), this.blogUrl(), this.email(), this.phone(), this.likesPizza(), this.maritalStatusId(), this.workEmail(), this.sector(), this.favoriteNumber());
+      return java.util.List.of(this.id(), this.favouriteFootballClubId(), this.name(), this.nickName(), this.blogUrl(), this.email(), this.phone(), this.likesPizza(), this.maritalStatusId(), this.workEmail(), this.sector(), this.favoriteNumber());
     };
 
     @Override
-    public Relation<PersonFields, PersonRow> copy(List<Path> _path) {
+    public RelationStructure<PersonFields, PersonRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<PersonId, PersonRow> id();
 
   Field<FootballClubId, PersonRow> favouriteFootballClubId();
 
-  Field</* max 100 chars */ String, PersonRow> name();
+  Field<String, PersonRow> name();
 
   OptField</* max 30 chars */ String, PersonRow> nickName();
 
   OptField</* max 100 chars */ String, PersonRow> blogUrl();
 
-  Field</* max 254 chars */ String, PersonRow> email();
+  Field<String, PersonRow> email();
 
-  Field</* max 8 chars */ String, PersonRow> phone();
+  Field<String, PersonRow> phone();
 
   Field<Boolean, PersonRow> likesPizza();
 
@@ -128,11 +128,11 @@ public interface PersonFields extends FieldsExpr<PersonRow> {
   Field<Number, PersonRow> favoriteNumber();
 
   default ForeignKey<FootballClubFields, FootballClubRow> fkFootballClub() {
-    return ForeignKey.<FootballClubFields, FootballClubRow>of("myschema.person_favourite_football_club_id_fkey").withColumnPair(favouriteFootballClubId(), FootballClubFields::id);
+    return ForeignKey.<FootballClubFields, FootballClubRow>of("myschema.person_favourite_football_club_id_fkey").<FootballClubId>withColumnPair(favouriteFootballClubId(), FootballClubFields::id);
   };
 
   default ForeignKey<MaritalStatusFields, MaritalStatusRow> fkMaritalStatus() {
-    return ForeignKey.<MaritalStatusFields, MaritalStatusRow>of("myschema.person_marital_status_id_fkey").withColumnPair(maritalStatusId(), MaritalStatusFields::id);
+    return ForeignKey.<MaritalStatusFields, MaritalStatusRow>of("myschema.person_marital_status_id_fkey").<MaritalStatusId>withColumnPair(maritalStatusId(), MaritalStatusFields::id);
   };
 
   @Override

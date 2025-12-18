@@ -27,17 +27,17 @@ case class AddressRow(
    */
   addressid: AddressId,
   /** First street address line. */
-  addressline1: /* max 60 chars */ String,
+  addressline1: String,
   /** Second street address line. */
   addressline2: Option[/* max 60 chars */ String],
   /** Name of the city. */
-  city: /* max 30 chars */ String,
+  city: String,
   /** Unique identification number for the state or province. Foreign key to StateProvince table.
    * Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]]
    */
   stateprovinceid: StateprovinceId,
   /** Postal code for the street address. */
-  postalcode: /* max 15 chars */ String,
+  postalcode: String,
   /** Latitude and longitude of this address. */
   spatiallocation: Option[TypoBytea],
   /** Default: uuid_generate_v1() */
@@ -67,9 +67,9 @@ case class AddressRow(
 }
 
 object AddressRow {
-  given decoder: Decoder[AddressRow] = Decoder.forProduct9[AddressRow, AddressId, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, StateprovinceId, /* max 15 chars */ String, Option[TypoBytea], TypoUUID, TypoLocalDateTime]("addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate")(AddressRow.apply)(using AddressId.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, StateprovinceId.decoder, Decoder.decodeString, Decoder.decodeOption(using TypoBytea.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[AddressRow] = Decoder.forProduct9[AddressRow, AddressId, String, Option[/* max 60 chars */ String], String, StateprovinceId, String, Option[TypoBytea], TypoUUID, TypoLocalDateTime]("addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate")(AddressRow.apply)(using AddressId.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, StateprovinceId.decoder, Decoder.decodeString, Decoder.decodeOption(using TypoBytea.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[AddressRow] = Encoder.forProduct9[AddressRow, AddressId, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, StateprovinceId, /* max 15 chars */ String, Option[TypoBytea], TypoUUID, TypoLocalDateTime]("addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate")(x => (x.addressid, x.addressline1, x.addressline2, x.city, x.stateprovinceid, x.postalcode, x.spatiallocation, x.rowguid, x.modifieddate))(using AddressId.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, StateprovinceId.encoder, Encoder.encodeString, Encoder.encodeOption(using TypoBytea.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[AddressRow] = Encoder.forProduct9[AddressRow, AddressId, String, Option[/* max 60 chars */ String], String, StateprovinceId, String, Option[TypoBytea], TypoUUID, TypoLocalDateTime]("addressid", "addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "rowguid", "modifieddate")(x => (x.addressid, x.addressline1, x.addressline2, x.city, x.stateprovinceid, x.postalcode, x.spatiallocation, x.rowguid, x.modifieddate))(using AddressId.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, StateprovinceId.encoder, Encoder.encodeString, Encoder.encodeOption(using TypoBytea.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given pgText: Text[AddressRow] = {
     Text.instance[AddressRow]{ (row, sb) =>
@@ -107,11 +107,11 @@ object AddressRow {
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       AddressRow(
         addressid = arr(0).asInstanceOf[AddressId],
-            addressline1 = arr(1).asInstanceOf[/* max 60 chars */ String],
+            addressline1 = arr(1).asInstanceOf[String],
             addressline2 = arr(2).asInstanceOf[Option[/* max 60 chars */ String]],
-            city = arr(3).asInstanceOf[/* max 30 chars */ String],
+            city = arr(3).asInstanceOf[String],
             stateprovinceid = arr(4).asInstanceOf[StateprovinceId],
-            postalcode = arr(5).asInstanceOf[/* max 15 chars */ String],
+            postalcode = arr(5).asInstanceOf[String],
             spatiallocation = arr(6).asInstanceOf[Option[TypoBytea]],
             rowguid = arr(7).asInstanceOf[TypoUUID],
             modifieddate = arr(8).asInstanceOf[TypoLocalDateTime]

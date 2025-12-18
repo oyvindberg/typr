@@ -5,10 +5,11 @@
  */
 package adventureworks.pe.at;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.addresstype.AddresstypeId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -21,9 +22,9 @@ public record AtViewRow(
   /** Points to {@link adventureworks.person.addresstype.AddresstypeRow#name()} */
   Name name,
   /** Points to {@link adventureworks.person.addresstype.AddresstypeRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.person.addresstype.AddresstypeRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.addresstype.AddresstypeRow#addresstypeid()} */
   public AtViewRow withId(AddresstypeId id) {
@@ -41,14 +42,14 @@ public record AtViewRow(
   };
 
   /** Points to {@link adventureworks.person.addresstype.AddresstypeRow#rowguid()} */
-  public AtViewRow withRowguid(TypoUUID rowguid) {
+  public AtViewRow withRowguid(UUID rowguid) {
     return new AtViewRow(id, addresstypeid, name, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.addresstype.AddresstypeRow#modifieddate()} */
-  public AtViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public AtViewRow withModifieddate(LocalDateTime modifieddate) {
     return new AtViewRow(id, addresstypeid, name, rowguid, modifieddate);
   };
 
-  static RowParser<AtViewRow> _rowParser = RowParsers.of(AddresstypeId.pgType, AddresstypeId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, AtViewRow::new, row -> new Object[]{row.id(), row.addresstypeid(), row.name(), row.rowguid(), row.modifieddate()});;
+  static RowParser<AtViewRow> _rowParser = RowParsers.of(AddresstypeId.pgType, AddresstypeId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, AtViewRow::new, row -> new Object[]{row.id(), row.addresstypeid(), row.name(), row.rowguid(), row.modifieddate()});;
 }

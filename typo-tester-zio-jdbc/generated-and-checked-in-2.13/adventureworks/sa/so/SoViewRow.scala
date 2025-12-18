@@ -22,13 +22,13 @@ case class SoViewRow(
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]] */
   specialofferid: SpecialofferId,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.description]] */
-  description: /* max 255 chars */ String,
+  description: String,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.discountpct]] */
   discountpct: BigDecimal,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.type]] */
-  `type`: /* max 50 chars */ String,
+  `type`: String,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.category]] */
-  category: /* max 50 chars */ String,
+  category: String,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.enddate]] */
@@ -36,7 +36,7 @@ case class SoViewRow(
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.minqty]] */
   minqty: Int,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.maxqty]] */
-  maxqty: Option[Int],
+  maxqty: Int,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.modifieddate]] */
@@ -58,7 +58,7 @@ object SoViewRow {
             startdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
             enddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
             minqty = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 8, rs)._2,
-            maxqty = JdbcDecoder.optionDecoder(JdbcDecoder.intDecoder).unsafeDecode(columIndex + 9, rs)._2,
+            maxqty = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 9, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 11, rs)._2
           )
@@ -76,7 +76,7 @@ object SoViewRow {
       val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       val enddate = jsonObj.get("enddate").toRight("Missing field 'enddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       val minqty = jsonObj.get("minqty").toRight("Missing field 'minqty'").flatMap(_.as(JsonDecoder.int))
-      val maxqty = jsonObj.get("maxqty").fold[Either[String, Option[Int]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.int)))
+      val maxqty = jsonObj.get("maxqty").toRight("Missing field 'maxqty'").flatMap(_.as(JsonDecoder.int))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       if (id.isRight && specialofferid.isRight && description.isRight && discountpct.isRight && `type`.isRight && category.isRight && startdate.isRight && enddate.isRight && minqty.isRight && maxqty.isRight && rowguid.isRight && modifieddate.isRight)
@@ -117,7 +117,7 @@ object SoViewRow {
         JsonEncoder.int.unsafeEncode(a.minqty, indent, out)
         out.write(",")
         out.write(""""maxqty":""")
-        JsonEncoder.option(JsonEncoder.int).unsafeEncode(a.maxqty, indent, out)
+        JsonEncoder.int.unsafeEncode(a.maxqty, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

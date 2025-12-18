@@ -10,10 +10,9 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.production.location.LocationId
 import adventureworks.production.workorder.WorkorderId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait WrViewFields {
   def id: Field[WorkorderId, WrViewRow]
@@ -23,20 +22,20 @@ trait WrViewFields {
   def locationid: Field[LocationId, WrViewRow]
   def scheduledstartdate: Field[TypoLocalDateTime, WrViewRow]
   def scheduledenddate: Field[TypoLocalDateTime, WrViewRow]
-  def actualstartdate: OptField[TypoLocalDateTime, WrViewRow]
-  def actualenddate: OptField[TypoLocalDateTime, WrViewRow]
-  def actualresourcehrs: OptField[BigDecimal, WrViewRow]
+  def actualstartdate: Field[TypoLocalDateTime, WrViewRow]
+  def actualenddate: Field[TypoLocalDateTime, WrViewRow]
+  def actualresourcehrs: Field[BigDecimal, WrViewRow]
   def plannedcost: Field[BigDecimal, WrViewRow]
-  def actualcost: OptField[BigDecimal, WrViewRow]
+  def actualcost: Field[BigDecimal, WrViewRow]
   def modifieddate: Field[TypoLocalDateTime, WrViewRow]
 }
 
 object WrViewFields {
-  lazy val structure: Relation[WrViewFields, WrViewRow] =
+  lazy val structure: RelationStructure[WrViewFields, WrViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[WrViewFields, WrViewRow] {
+    extends RelationStructure[WrViewFields, WrViewRow] {
 
     override lazy val fields: WrViewFields = new WrViewFields {
       override def id = Field[WorkorderId, WrViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
@@ -46,11 +45,11 @@ object WrViewFields {
       override def locationid = Field[LocationId, WrViewRow](_path, "locationid", None, None, x => x.locationid, (row, value) => row.copy(locationid = value))
       override def scheduledstartdate = Field[TypoLocalDateTime, WrViewRow](_path, "scheduledstartdate", Some("text"), None, x => x.scheduledstartdate, (row, value) => row.copy(scheduledstartdate = value))
       override def scheduledenddate = Field[TypoLocalDateTime, WrViewRow](_path, "scheduledenddate", Some("text"), None, x => x.scheduledenddate, (row, value) => row.copy(scheduledenddate = value))
-      override def actualstartdate = OptField[TypoLocalDateTime, WrViewRow](_path, "actualstartdate", Some("text"), None, x => x.actualstartdate, (row, value) => row.copy(actualstartdate = value))
-      override def actualenddate = OptField[TypoLocalDateTime, WrViewRow](_path, "actualenddate", Some("text"), None, x => x.actualenddate, (row, value) => row.copy(actualenddate = value))
-      override def actualresourcehrs = OptField[BigDecimal, WrViewRow](_path, "actualresourcehrs", None, None, x => x.actualresourcehrs, (row, value) => row.copy(actualresourcehrs = value))
+      override def actualstartdate = Field[TypoLocalDateTime, WrViewRow](_path, "actualstartdate", Some("text"), None, x => x.actualstartdate, (row, value) => row.copy(actualstartdate = value))
+      override def actualenddate = Field[TypoLocalDateTime, WrViewRow](_path, "actualenddate", Some("text"), None, x => x.actualenddate, (row, value) => row.copy(actualenddate = value))
+      override def actualresourcehrs = Field[BigDecimal, WrViewRow](_path, "actualresourcehrs", None, None, x => x.actualresourcehrs, (row, value) => row.copy(actualresourcehrs = value))
       override def plannedcost = Field[BigDecimal, WrViewRow](_path, "plannedcost", None, None, x => x.plannedcost, (row, value) => row.copy(plannedcost = value))
-      override def actualcost = OptField[BigDecimal, WrViewRow](_path, "actualcost", None, None, x => x.actualcost, (row, value) => row.copy(actualcost = value))
+      override def actualcost = Field[BigDecimal, WrViewRow](_path, "actualcost", None, None, x => x.actualcost, (row, value) => row.copy(actualcost = value))
       override def modifieddate = Field[TypoLocalDateTime, WrViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
 

@@ -5,21 +5,22 @@
  */
 package adventureworks.humanresources.shift;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoLocalTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface ShiftFields extends FieldsExpr<ShiftRow> {
-  record Impl(List<Path> _path) implements ShiftFields, Relation<ShiftFields, ShiftRow> {
+  record Impl(List<Path> _path) implements ShiftFields, RelationStructure<ShiftFields, ShiftRow> {
     @Override
     public IdField<ShiftId, ShiftRow> shiftid() {
       return new IdField<ShiftId, ShiftRow>(_path, "shiftid", ShiftRow::shiftid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withShiftid(value), ShiftId.pgType);
@@ -31,44 +32,44 @@ public interface ShiftFields extends FieldsExpr<ShiftRow> {
     };
 
     @Override
-    public Field<TypoLocalTime, ShiftRow> starttime() {
-      return new Field<TypoLocalTime, ShiftRow>(_path, "starttime", ShiftRow::starttime, Optional.of("text"), Optional.of("time"), (row, value) -> row.withStarttime(value), TypoLocalTime.pgType);
+    public Field<LocalTime, ShiftRow> starttime() {
+      return new Field<LocalTime, ShiftRow>(_path, "starttime", ShiftRow::starttime, Optional.empty(), Optional.of("time"), (row, value) -> row.withStarttime(value), PgTypes.time);
     };
 
     @Override
-    public Field<TypoLocalTime, ShiftRow> endtime() {
-      return new Field<TypoLocalTime, ShiftRow>(_path, "endtime", ShiftRow::endtime, Optional.of("text"), Optional.of("time"), (row, value) -> row.withEndtime(value), TypoLocalTime.pgType);
+    public Field<LocalTime, ShiftRow> endtime() {
+      return new Field<LocalTime, ShiftRow>(_path, "endtime", ShiftRow::endtime, Optional.empty(), Optional.of("time"), (row, value) -> row.withEndtime(value), PgTypes.time);
     };
 
     @Override
-    public Field<TypoLocalDateTime, ShiftRow> modifieddate() {
-      return new Field<TypoLocalDateTime, ShiftRow>(_path, "modifieddate", ShiftRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ShiftRow> modifieddate() {
+      return new Field<LocalDateTime, ShiftRow>(_path, "modifieddate", ShiftRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, ShiftRow>> columns() {
-      return List.of(this.shiftid(), this.name(), this.starttime(), this.endtime(), this.modifieddate());
+      return java.util.List.of(this.shiftid(), this.name(), this.starttime(), this.endtime(), this.modifieddate());
     };
 
     @Override
-    public Relation<ShiftFields, ShiftRow> copy(List<Path> _path) {
+    public RelationStructure<ShiftFields, ShiftRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ShiftId, ShiftRow> shiftid();
 
   Field<Name, ShiftRow> name();
 
-  Field<TypoLocalTime, ShiftRow> starttime();
+  Field<LocalTime, ShiftRow> starttime();
 
-  Field<TypoLocalTime, ShiftRow> endtime();
+  Field<LocalTime, ShiftRow> endtime();
 
-  Field<TypoLocalDateTime, ShiftRow> modifieddate();
+  Field<LocalDateTime, ShiftRow> modifieddate();
 
   @Override
   List<FieldLike<?, ShiftRow>> columns();

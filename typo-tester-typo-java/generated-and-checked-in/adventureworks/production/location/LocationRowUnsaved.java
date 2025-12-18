@@ -7,9 +7,9 @@ package adventureworks.production.location;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -32,7 +32,7 @@ public record LocationRowUnsaved(
     */
   Defaulted<BigDecimal> availability,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public LocationRowUnsaved(
   
@@ -71,7 +71,7 @@ public record LocationRowUnsaved(
   };
 
   /** Default: now() */
-  public LocationRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public LocationRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new LocationRowUnsaved(name, locationid, costrate, availability, modifieddate);
   };
 
@@ -85,14 +85,14 @@ public record LocationRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.availability, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public LocationRow toRow(
     java.util.function.Supplier<LocationId> locationidDefault,
     java.util.function.Supplier<BigDecimal> costrateDefault,
     java.util.function.Supplier<BigDecimal> availabilityDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new LocationRow(locationid.getOrElse(locationidDefault), name, costrate.getOrElse(costrateDefault), availability.getOrElse(availabilityDefault), modifieddate.getOrElse(modifieddateDefault));
   };

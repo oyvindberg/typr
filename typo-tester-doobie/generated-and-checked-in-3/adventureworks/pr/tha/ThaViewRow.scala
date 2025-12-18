@@ -27,7 +27,7 @@ case class ThaViewRow(
   /** Points to [[adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow.transactiondate]] */
   transactiondate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow.transactiontype]] */
-  transactiontype: /* bpchar, max 1 chars */ String,
+  transactiontype: String,
   /** Points to [[adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow.quantity]] */
   quantity: Int,
   /** Points to [[adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow.actualcost]] */
@@ -37,9 +37,9 @@ case class ThaViewRow(
 )
 
 object ThaViewRow {
-  given decoder: Decoder[ThaViewRow] = Decoder.forProduct10[ThaViewRow, TransactionhistoryarchiveId, TransactionhistoryarchiveId, Int, Int, Int, TypoLocalDateTime, /* bpchar, max 1 chars */ String, Int, BigDecimal, TypoLocalDateTime]("id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")(ThaViewRow.apply)(using TransactionhistoryarchiveId.decoder, TransactionhistoryarchiveId.decoder, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeInt, TypoLocalDateTime.decoder, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+  given decoder: Decoder[ThaViewRow] = Decoder.forProduct10[ThaViewRow, TransactionhistoryarchiveId, TransactionhistoryarchiveId, Int, Int, Int, TypoLocalDateTime, String, Int, BigDecimal, TypoLocalDateTime]("id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")(ThaViewRow.apply)(using TransactionhistoryarchiveId.decoder, TransactionhistoryarchiveId.decoder, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeInt, TypoLocalDateTime.decoder, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[ThaViewRow] = Encoder.forProduct10[ThaViewRow, TransactionhistoryarchiveId, TransactionhistoryarchiveId, Int, Int, Int, TypoLocalDateTime, /* bpchar, max 1 chars */ String, Int, BigDecimal, TypoLocalDateTime]("id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")(x => (x.id, x.transactionid, x.productid, x.referenceorderid, x.referenceorderlineid, x.transactiondate, x.transactiontype, x.quantity, x.actualcost, x.modifieddate))(using TransactionhistoryarchiveId.encoder, TransactionhistoryarchiveId.encoder, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, TypoLocalDateTime.encoder, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
+  given encoder: Encoder[ThaViewRow] = Encoder.forProduct10[ThaViewRow, TransactionhistoryarchiveId, TransactionhistoryarchiveId, Int, Int, Int, TypoLocalDateTime, String, Int, BigDecimal, TypoLocalDateTime]("id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")(x => (x.id, x.transactionid, x.productid, x.referenceorderid, x.referenceorderlineid, x.transactiondate, x.transactiontype, x.quantity, x.actualcost, x.modifieddate))(using TransactionhistoryarchiveId.encoder, TransactionhistoryarchiveId.encoder, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeInt, TypoLocalDateTime.encoder, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
 
   given read: Read[ThaViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -61,7 +61,7 @@ object ThaViewRow {
             referenceorderid = arr(3).asInstanceOf[Int],
             referenceorderlineid = arr(4).asInstanceOf[Int],
             transactiondate = arr(5).asInstanceOf[TypoLocalDateTime],
-            transactiontype = arr(6).asInstanceOf[/* bpchar, max 1 chars */ String],
+            transactiontype = arr(6).asInstanceOf[String],
             quantity = arr(7).asInstanceOf[Int],
             actualcost = arr(8).asInstanceOf[BigDecimal],
             modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]

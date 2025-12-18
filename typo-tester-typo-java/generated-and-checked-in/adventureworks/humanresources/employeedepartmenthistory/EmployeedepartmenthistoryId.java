@@ -5,15 +5,15 @@
  */
 package adventureworks.humanresources.employeedepartmenthistory;
 
-import adventureworks.customtypes.TypoLocalDate;
 import adventureworks.humanresources.department.DepartmentId;
 import adventureworks.humanresources.shift.ShiftId;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDate;
 
 /** Type for the composite primary key of table `humanresources.employeedepartmenthistory` */
 public record EmployeedepartmenthistoryId(
   BusinessentityId businessentityid,
-  TypoLocalDate startdate,
+  LocalDate startdate,
   DepartmentId departmentid,
   ShiftId shiftid
 ) {
@@ -21,7 +21,7 @@ public record EmployeedepartmenthistoryId(
     return new EmployeedepartmenthistoryId(businessentityid, startdate, departmentid, shiftid);
   };
 
-  public EmployeedepartmenthistoryId withStartdate(TypoLocalDate startdate) {
+  public EmployeedepartmenthistoryId withStartdate(LocalDate startdate) {
     return new EmployeedepartmenthistoryId(businessentityid, startdate, departmentid, shiftid);
   };
 

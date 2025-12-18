@@ -5,20 +5,21 @@
  */
 package adventureworks.sa.pcc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.userdefined.CustomCreditcardId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PccViewFields extends FieldsExpr<PccViewRow> {
-  record Impl(List<Path> _path) implements PccViewFields, Relation<PccViewFields, PccViewRow> {
+  record Impl(List<Path> _path) implements PccViewFields, RelationStructure<PccViewFields, PccViewRow> {
     @Override
     public Field<BusinessentityId, PccViewRow> id() {
       return new Field<BusinessentityId, PccViewRow>(_path, "id", PccViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), BusinessentityId.pgType);
@@ -35,23 +36,23 @@ public interface PccViewFields extends FieldsExpr<PccViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PccViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PccViewRow>(_path, "modifieddate", PccViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PccViewRow> modifieddate() {
+      return new Field<LocalDateTime, PccViewRow>(_path, "modifieddate", PccViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PccViewRow>> columns() {
-      return List.of(this.id(), this.businessentityid(), this.creditcardid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.businessentityid(), this.creditcardid(), this.modifieddate());
     };
 
     @Override
-    public Relation<PccViewFields, PccViewRow> copy(List<Path> _path) {
+    public RelationStructure<PccViewFields, PccViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<BusinessentityId, PccViewRow> id();
@@ -60,7 +61,7 @@ public interface PccViewFields extends FieldsExpr<PccViewRow> {
 
   Field</* user-picked */ CustomCreditcardId, PccViewRow> creditcardid();
 
-  Field<TypoLocalDateTime, PccViewRow> modifieddate();
+  Field<LocalDateTime, PccViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PccViewRow>> columns();

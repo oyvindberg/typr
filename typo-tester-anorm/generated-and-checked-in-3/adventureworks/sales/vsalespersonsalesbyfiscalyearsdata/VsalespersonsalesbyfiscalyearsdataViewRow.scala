@@ -22,13 +22,13 @@ import scala.util.Try
 /** View: sales.vsalespersonsalesbyfiscalyearsdata */
 case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
-  salespersonid: Option[BusinessentityId],
+  salespersonid: BusinessentityId,
   fullname: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
-  jobtitle: /* max 50 chars */ String,
+  jobtitle: String,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
-  salestotal: /* nullability unknown */ Option[BigDecimal],
+  salestotal: Option[BigDecimal],
   fiscalyear: BigDecimal
 )
 
@@ -37,7 +37,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
     Reads[VsalespersonsalesbyfiscalyearsdataViewRow](json => JsResult.fromTry(
         Try(
           VsalespersonsalesbyfiscalyearsdataViewRow(
-            salespersonid = json.\("salespersonid").toOption.map(_.as(BusinessentityId.reads)),
+            salespersonid = json.\("salespersonid").as(BusinessentityId.reads),
             fullname = json.\("fullname").as(Reads.StringReads),
             jobtitle = json.\("jobtitle").as(Reads.StringReads),
             salesterritory = json.\("salesterritory").as(Name.reads),
@@ -53,7 +53,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
     RowParser[VsalespersonsalesbyfiscalyearsdataViewRow] { row =>
       Success(
         VsalespersonsalesbyfiscalyearsdataViewRow(
-          salespersonid = row(idx + 0)(using Column.columnToOption(using BusinessentityId.column)),
+          salespersonid = row(idx + 0)(using BusinessentityId.column),
           fullname = row(idx + 1)(using Column.columnToString),
           jobtitle = row(idx + 2)(using Column.columnToString),
           salesterritory = row(idx + 3)(using Name.column),
@@ -67,7 +67,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
   given writes: OWrites[VsalespersonsalesbyfiscalyearsdataViewRow] = {
     OWrites[VsalespersonsalesbyfiscalyearsdataViewRow](o =>
       new JsObject(ListMap[String, JsValue](
-        "salespersonid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.salespersonid),
+        "salespersonid" -> BusinessentityId.writes.writes(o.salespersonid),
         "fullname" -> Writes.StringWrites.writes(o.fullname),
         "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
         "salesterritory" -> Name.writes.writes(o.salesterritory),

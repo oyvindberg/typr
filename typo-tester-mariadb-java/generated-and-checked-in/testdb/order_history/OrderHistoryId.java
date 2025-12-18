@@ -17,6 +17,11 @@ public record OrderHistoryId(@JsonValue BigInteger value) {
     return new OrderHistoryId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<OrderHistoryId, BigInteger> bijection =
     Bijection.of(OrderHistoryId::value, OrderHistoryId::new);
 

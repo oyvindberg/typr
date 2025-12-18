@@ -7,10 +7,10 @@ package adventureworks.hr.eph
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface EphViewRepo {
-  fun select(): SelectBuilder<EphViewFields, EphViewRow>
+  abstract fun select(): SelectBuilder<EphViewFields, EphViewRow>
 
-  fun selectAll(c: Connection): List<EphViewRow>
+  abstract fun selectAll(c: Connection): List<EphViewRow>
 }

@@ -12,8 +12,8 @@ import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 
 /** Type for the primary key of table `sales.currency` */
-public record CurrencyId(@JsonValue /* bpchar, max 3 chars */ String value) {
-  public CurrencyId withValue(/* bpchar, max 3 chars */ String value) {
+public record CurrencyId(@JsonValue String value) {
+  public CurrencyId withValue(String value) {
     return new CurrencyId(value);
   };
 
@@ -22,12 +22,12 @@ public record CurrencyId(@JsonValue /* bpchar, max 3 chars */ String value) {
     return value.toString();
   };
 
-  static public Bijection<CurrencyId, /* bpchar, max 3 chars */ String> bijection =
+  static public Bijection<CurrencyId, String> bijection =
     Bijection.of(CurrencyId::value, CurrencyId::new);
 
   static public PgType<CurrencyId> pgType =
-    PgTypes.text.bimap(CurrencyId::new, CurrencyId::value);
+    PgTypes.bpchar.bimap(CurrencyId::new, CurrencyId::value);
 
   static public PgType<CurrencyId[]> pgTypeArray =
-    PgTypes.textArray.bimap(xs -> arrayMap.map(xs, CurrencyId::new, CurrencyId.class), xs -> arrayMap.map(xs, CurrencyId::value, /* bpchar, max 3 chars */ String.class));
+    PgTypes.bpcharArray.bimap(xs -> arrayMap.map(xs, CurrencyId::new, CurrencyId.class), xs -> arrayMap.map(xs, CurrencyId::value, String.class));
 }

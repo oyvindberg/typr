@@ -17,7 +17,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -32,11 +31,7 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     CustomerStatusId statusCode,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `customer_status` where `status_code` = "),
-      CustomerStatusId.pgType.encode(statusCode),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `customer_status` where `status_code` = "), Fragment.encode(CustomerStatusId.pgType, statusCode), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,8 +39,8 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     CustomerStatusId[] statusCodes,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : statusCodes) { fragments.add(CustomerStatusId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : statusCodes) { fragments.add(Fragment.encode(CustomerStatusId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `customer_status` where `status_code` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -54,20 +49,7 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     CustomerStatusRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `customer_status`(`status_code`, `description`, `is_active`)
-         values ("""),
-      CustomerStatusId.pgType.encode(unsaved.statusCode()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.description()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isActive()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `status_code`, `description`, `is_active`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `customer_status`(`status_code`, `description`, `is_active`)\nvalues ("), Fragment.encode(CustomerStatusId.pgType, unsaved.statusCode()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.description()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isActive()), Fragment.lit(")\nreturning `status_code`, `description`, `is_active`\n"))
       .updateReturning(CustomerStatusRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -76,45 +58,22 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     CustomerStatusRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`status_code`"));
-    values.add(interpolate(
-      CustomerStatusId.pgType.encode(unsaved.statusCode()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(CustomerStatusId.pgType, unsaved.statusCode()), Fragment.lit("")));
     columns.add(Fragment.lit("`description`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.description()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.description()), Fragment.lit("")));
     unsaved.isActive().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`is_active`"));
-        values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `customer_status`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `status_code`, `description`, `is_active`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `customer_status`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `status_code`, `description`, `is_active`\n"));;
     return q.updateReturning(CustomerStatusRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -125,10 +84,7 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
 
   @Override
   public List<CustomerStatusRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `status_code`, `description`, `is_active`
-       from `customer_status`
-    """)).query(CustomerStatusRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `status_code`, `description`, `is_active`\nfrom `customer_status`\n")).query(CustomerStatusRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -136,14 +92,7 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     CustomerStatusId statusCode,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `status_code`, `description`, `is_active`
-         from `customer_status`
-         where `status_code` = """),
-      CustomerStatusId.pgType.encode(statusCode),
-      typo.runtime.Fragment.lit("")
-    ).query(CustomerStatusRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `status_code`, `description`, `is_active`\nfrom `customer_status`\nwhere `status_code` = "), Fragment.encode(CustomerStatusId.pgType, statusCode), Fragment.lit("")).query(CustomerStatusRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -151,8 +100,8 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     CustomerStatusId[] statusCodes,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : statusCodes) { fragments.add(CustomerStatusId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : statusCodes) { fragments.add(Fragment.encode(CustomerStatusId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `status_code`, `description`, `is_active` from `customer_status` where `status_code` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(CustomerStatusRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -168,7 +117,7 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
 
   @Override
   public UpdateBuilder<CustomerStatusFields, CustomerStatusRow> update() {
-    return UpdateBuilder.of("`customer_status`", CustomerStatusFields.structure(), CustomerStatusRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`customer_status`", CustomerStatusFields.structure(), CustomerStatusRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -177,21 +126,7 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     Connection c
   ) {
     CustomerStatusId statusCode = row.statusCode();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `customer_status`
-         set `description` = """),
-      MariaTypes.text.encode(row.description()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `is_active` = """),
-      MariaTypes.bool.encode(row.isActive()),
-      typo.runtime.Fragment.lit("""
-   
-         where `status_code` = """),
-      CustomerStatusId.pgType.encode(statusCode),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `customer_status`\nset `description` = "), Fragment.encode(MariaTypes.varchar, row.description()), Fragment.lit(",\n`is_active` = "), Fragment.encode(MariaTypes.bool, row.isActive()), Fragment.lit("\nwhere `status_code` = "), Fragment.encode(CustomerStatusId.pgType, statusCode), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -199,21 +134,7 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     CustomerStatusRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `customer_status`(`status_code`, `description`, `is_active`)
-         VALUES ("""),
-      CustomerStatusId.pgType.encode(unsaved.statusCode()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.description()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isActive()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `description` = VALUES(`description`),
-         `is_active` = VALUES(`is_active`)
-         RETURNING `status_code`, `description`, `is_active`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `customer_status`(`status_code`, `description`, `is_active`)\nVALUES ("), Fragment.encode(CustomerStatusId.pgType, unsaved.statusCode()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.description()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isActive()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `description` = VALUES(`description`),\n`is_active` = VALUES(`is_active`)\nRETURNING `status_code`, `description`, `is_active`"))
       .updateReturning(CustomerStatusRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -223,13 +144,8 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     Iterator<CustomerStatusRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `customer_status`(`status_code`, `description`, `is_active`)
-                VALUES (?, ?, ?)
-                ON DUPLICATE KEY UPDATE `description` = VALUES(`description`),
-                `is_active` = VALUES(`is_active`)
-                RETURNING `status_code`, `description`, `is_active`"""))
+    return interpolate(Fragment.lit("INSERT INTO `customer_status`(`status_code`, `description`, `is_active`)\nVALUES (?, ?, ?)\nON DUPLICATE KEY UPDATE `description` = VALUES(`description`),\n`is_active` = VALUES(`is_active`)\nRETURNING `status_code`, `description`, `is_active`"))
       .updateReturningEach(CustomerStatusRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

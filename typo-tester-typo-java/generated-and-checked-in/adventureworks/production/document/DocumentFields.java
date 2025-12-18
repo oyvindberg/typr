@@ -5,32 +5,30 @@
  */
 package adventureworks.production.document;
 
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.humanresources.employee.EmployeeFields;
 import adventureworks.humanresources.employee.EmployeeRow;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Flag;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface DocumentFields extends FieldsExpr<DocumentRow> {
-  record Impl(List<Path> _path) implements DocumentFields, Relation<DocumentFields, DocumentRow> {
+  record Impl(List<Path> _path) implements DocumentFields, RelationStructure<DocumentFields, DocumentRow> {
     @Override
-    public Field</* max 50 chars */ String, DocumentRow> title() {
-      return new Field</* max 50 chars */ String, DocumentRow>(_path, "title", DocumentRow::title, Optional.empty(), Optional.empty(), (row, value) -> row.withTitle(value), PgTypes.text);
+    public Field<String, DocumentRow> title() {
+      return new Field<String, DocumentRow>(_path, "title", DocumentRow::title, Optional.empty(), Optional.empty(), (row, value) -> row.withTitle(value), PgTypes.text);
     };
 
     @Override
@@ -44,18 +42,18 @@ public interface DocumentFields extends FieldsExpr<DocumentRow> {
     };
 
     @Override
-    public Field</* max 400 chars */ String, DocumentRow> filename() {
-      return new Field</* max 400 chars */ String, DocumentRow>(_path, "filename", DocumentRow::filename, Optional.empty(), Optional.empty(), (row, value) -> row.withFilename(value), PgTypes.text);
+    public Field<String, DocumentRow> filename() {
+      return new Field<String, DocumentRow>(_path, "filename", DocumentRow::filename, Optional.empty(), Optional.empty(), (row, value) -> row.withFilename(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 8 chars */ String, DocumentRow> fileextension() {
-      return new OptField</* max 8 chars */ String, DocumentRow>(_path, "fileextension", DocumentRow::fileextension, Optional.empty(), Optional.empty(), (row, value) -> row.withFileextension(value), PgTypes.text);
+    public OptField<String, DocumentRow> fileextension() {
+      return new OptField<String, DocumentRow>(_path, "fileextension", DocumentRow::fileextension, Optional.empty(), Optional.empty(), (row, value) -> row.withFileextension(value), PgTypes.text);
     };
 
     @Override
-    public Field</* bpchar, max 5 chars */ String, DocumentRow> revision() {
-      return new Field</* bpchar, max 5 chars */ String, DocumentRow>(_path, "revision", DocumentRow::revision, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withRevision(value), PgTypes.bpchar);
+    public Field<String, DocumentRow> revision() {
+      return new Field<String, DocumentRow>(_path, "revision", DocumentRow::revision, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withRevision(value), PgTypes.bpchar);
     };
 
     @Override
@@ -64,8 +62,8 @@ public interface DocumentFields extends FieldsExpr<DocumentRow> {
     };
 
     @Override
-    public Field<TypoShort, DocumentRow> status() {
-      return new Field<TypoShort, DocumentRow>(_path, "status", DocumentRow::status, Optional.empty(), Optional.of("int2"), (row, value) -> row.withStatus(value), TypoShort.pgType);
+    public Field<Short, DocumentRow> status() {
+      return new Field<Short, DocumentRow>(_path, "status", DocumentRow::status, Optional.empty(), Optional.of("int2"), (row, value) -> row.withStatus(value), PgTypes.int2);
     };
 
     @Override
@@ -74,18 +72,18 @@ public interface DocumentFields extends FieldsExpr<DocumentRow> {
     };
 
     @Override
-    public OptField<TypoBytea, DocumentRow> document() {
-      return new OptField<TypoBytea, DocumentRow>(_path, "document", DocumentRow::document, Optional.empty(), Optional.of("bytea"), (row, value) -> row.withDocument(value), TypoBytea.pgType);
+    public OptField<byte[], DocumentRow> document() {
+      return new OptField<byte[], DocumentRow>(_path, "document", DocumentRow::document, Optional.empty(), Optional.of("bytea"), (row, value) -> row.withDocument(value), PgTypes.bytea);
     };
 
     @Override
-    public Field<TypoUUID, DocumentRow> rowguid() {
-      return new Field<TypoUUID, DocumentRow>(_path, "rowguid", DocumentRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, DocumentRow> rowguid() {
+      return new Field<UUID, DocumentRow>(_path, "rowguid", DocumentRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, DocumentRow> modifieddate() {
-      return new Field<TypoLocalDateTime, DocumentRow>(_path, "modifieddate", DocumentRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, DocumentRow> modifieddate() {
+      return new Field<LocalDateTime, DocumentRow>(_path, "modifieddate", DocumentRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -95,47 +93,47 @@ public interface DocumentFields extends FieldsExpr<DocumentRow> {
 
     @Override
     public List<FieldLike<?, DocumentRow>> columns() {
-      return List.of(this.title(), this.owner(), this.folderflag(), this.filename(), this.fileextension(), this.revision(), this.changenumber(), this.status(), this.documentsummary(), this.document(), this.rowguid(), this.modifieddate(), this.documentnode());
+      return java.util.List.of(this.title(), this.owner(), this.folderflag(), this.filename(), this.fileextension(), this.revision(), this.changenumber(), this.status(), this.documentsummary(), this.document(), this.rowguid(), this.modifieddate(), this.documentnode());
     };
 
     @Override
-    public Relation<DocumentFields, DocumentRow> copy(List<Path> _path) {
+    public RelationStructure<DocumentFields, DocumentRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
-  Field</* max 50 chars */ String, DocumentRow> title();
+  Field<String, DocumentRow> title();
 
   Field<BusinessentityId, DocumentRow> owner();
 
   Field<Flag, DocumentRow> folderflag();
 
-  Field</* max 400 chars */ String, DocumentRow> filename();
+  Field<String, DocumentRow> filename();
 
   OptField</* max 8 chars */ String, DocumentRow> fileextension();
 
-  Field</* bpchar, max 5 chars */ String, DocumentRow> revision();
+  Field<String, DocumentRow> revision();
 
   Field<Integer, DocumentRow> changenumber();
 
-  Field<TypoShort, DocumentRow> status();
+  Field<Short, DocumentRow> status();
 
   OptField<String, DocumentRow> documentsummary();
 
-  OptField<TypoBytea, DocumentRow> document();
+  OptField<byte[], DocumentRow> document();
 
-  Field<TypoUUID, DocumentRow> rowguid();
+  Field<UUID, DocumentRow> rowguid();
 
-  Field<TypoLocalDateTime, DocumentRow> modifieddate();
+  Field<LocalDateTime, DocumentRow> modifieddate();
 
   IdField<DocumentId, DocumentRow> documentnode();
 
   default ForeignKey<EmployeeFields, EmployeeRow> fkHumanresourcesEmployee() {
-    return ForeignKey.<EmployeeFields, EmployeeRow>of("production.FK_Document_Employee_Owner").withColumnPair(owner(), EmployeeFields::businessentityid);
+    return ForeignKey.<EmployeeFields, EmployeeRow>of("production.FK_Document_Employee_Owner").<BusinessentityId>withColumnPair(owner(), EmployeeFields::businessentityid);
   };
 
   @Override

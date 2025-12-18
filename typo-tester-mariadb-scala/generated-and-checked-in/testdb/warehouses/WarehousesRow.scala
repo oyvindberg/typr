@@ -6,14 +6,15 @@
 package testdb.warehouses
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import org.mariadb.jdbc.`type`.Point
 import org.mariadb.jdbc.`type`.Polygon
 import testdb.customtypes.Defaulted
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: warehouses
  * Primary key: warehouse_id
@@ -34,7 +35,7 @@ case class WarehousesRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("service_area") serviceArea: Optional[Polygon],
+  @JsonProperty("service_area") serviceArea: Option[Polygon],
   /** 
    * Default: 'UTC'
    */
@@ -42,24 +43,24 @@ case class WarehousesRow(
   /** 
    * Default: 1
    */
-  @JsonProperty("is_active") isActive: java.lang.Boolean,
+  @JsonProperty("is_active") isActive: Boolean,
   /** 
    * Default: NULL
    */
-  @JsonProperty("contact_email") contactEmail: Optional[String],
+  @JsonProperty("contact_email") contactEmail: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("contact_phone") contactPhone: Optional[String]
+  @JsonProperty("contact_phone") contactPhone: Option[String]
 ) {
   def id: WarehousesId = warehouseId
 
   def toUnsavedRow(
-    serviceArea: Defaulted[Optional[Polygon]] = Defaulted.Provided(this.serviceArea),
+    serviceArea: Defaulted[Option[Polygon]] = Defaulted.Provided(this.serviceArea),
     timezone: Defaulted[String] = Defaulted.Provided(this.timezone),
-    isActive: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isActive),
-    contactEmail: Defaulted[Optional[String]] = Defaulted.Provided(this.contactEmail),
-    contactPhone: Defaulted[Optional[String]] = Defaulted.Provided(this.contactPhone)
+    isActive: Defaulted[Boolean] = Defaulted.Provided(this.isActive),
+    contactEmail: Defaulted[Option[String]] = Defaulted.Provided(this.contactEmail),
+    contactPhone: Defaulted[Option[String]] = Defaulted.Provided(this.contactPhone)
   ): WarehousesRowUnsaved = {
     new WarehousesRowUnsaved(
       code,
@@ -76,7 +77,7 @@ case class WarehousesRow(
 }
 
 object WarehousesRow {
-  val `_rowParser`: RowParser[WarehousesRow] = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.point, MariaTypes.polygon.opt(), MariaTypes.varchar, MariaTypes.bool, MariaTypes.varchar.opt(), MariaTypes.varchar.opt(), WarehousesRow.apply, row => Array[Object](row.warehouseId.asInstanceOf[Object], row.code.asInstanceOf[Object], row.name.asInstanceOf[Object], row.address.asInstanceOf[Object], row.location.asInstanceOf[Object], row.serviceArea.asInstanceOf[Object], row.timezone.asInstanceOf[Object], row.isActive.asInstanceOf[Object], row.contactEmail.asInstanceOf[Object], row.contactPhone.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[WarehousesRow] = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.point, MariaTypes.polygon.nullable, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bool, MariaTypes.varchar.nullable, MariaTypes.varchar.nullable)(WarehousesRow.apply)(row => Array[Any](row.warehouseId, row.code, row.name, row.address, row.location, row.serviceArea, row.timezone, row.isActive, row.contactEmail, row.contactPhone))
 
-  given mariaText: MariaText[WarehousesRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[WarehousesRow] = MariaText.from(`_rowParser`.underlying)
 }

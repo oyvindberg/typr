@@ -20,7 +20,7 @@ public record FlaffRow(
   /** Points to {@link adventureworks.public_.flaff.FlaffRow#code()} */
   ShortText code,
   /** Points to {@link adventureworks.public_.flaff.FlaffRow#anotherCode()} */
-  @JsonProperty("another_code") /* max 20 chars */ String anotherCode,
+  @JsonProperty("another_code") String anotherCode,
   /** Points to {@link adventureworks.public_.flaff.FlaffRow#someNumber()} */
   @JsonProperty("some_number") Integer someNumber,
   ShortText specifier,
@@ -33,7 +33,7 @@ public record FlaffRow(
   };
 
   /** Points to {@link adventureworks.public_.flaff.FlaffRow#anotherCode()} */
-  public FlaffRow withAnotherCode(/* max 20 chars */ String anotherCode) {
+  public FlaffRow withAnotherCode(String anotherCode) {
     return new FlaffRow(code, anotherCode, someNumber, specifier, parentspecifier);
   };
 

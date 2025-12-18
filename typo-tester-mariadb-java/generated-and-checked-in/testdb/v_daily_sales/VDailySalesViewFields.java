@@ -11,15 +11,15 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface VDailySalesViewFields extends FieldsExpr<VDailySalesViewRow> {
-  record Impl(List<Path> _path) implements VDailySalesViewFields, Relation<VDailySalesViewFields, VDailySalesViewRow> {
+  record Impl(List<Path> _path) implements VDailySalesViewFields, RelationStructure<VDailySalesViewFields, VDailySalesViewRow> {
     @Override
     public OptField<LocalDate, VDailySalesViewRow> orderDate() {
       return new OptField<LocalDate, VDailySalesViewRow>(_path, "order_date", VDailySalesViewRow::orderDate, Optional.empty(), Optional.empty(), (row, value) -> row.withOrderDate(value), MariaTypes.date);
@@ -37,52 +37,52 @@ public interface VDailySalesViewFields extends FieldsExpr<VDailySalesViewRow> {
 
     @Override
     public OptField<BigDecimal, VDailySalesViewRow> itemsSold() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "items_sold", VDailySalesViewRow::itemsSold, Optional.empty(), Optional.empty(), (row, value) -> row.withItemsSold(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "items_sold", VDailySalesViewRow::itemsSold, Optional.empty(), Optional.empty(), (row, value) -> row.withItemsSold(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, VDailySalesViewRow> grossSales() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "gross_sales", VDailySalesViewRow::grossSales, Optional.empty(), Optional.empty(), (row, value) -> row.withGrossSales(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "gross_sales", VDailySalesViewRow::grossSales, Optional.empty(), Optional.empty(), (row, value) -> row.withGrossSales(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, VDailySalesViewRow> totalDiscounts() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "total_discounts", VDailySalesViewRow::totalDiscounts, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalDiscounts(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "total_discounts", VDailySalesViewRow::totalDiscounts, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalDiscounts(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, VDailySalesViewRow> totalShipping() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "total_shipping", VDailySalesViewRow::totalShipping, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalShipping(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "total_shipping", VDailySalesViewRow::totalShipping, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalShipping(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, VDailySalesViewRow> totalTax() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "total_tax", VDailySalesViewRow::totalTax, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalTax(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "total_tax", VDailySalesViewRow::totalTax, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalTax(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, VDailySalesViewRow> netSales() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "net_sales", VDailySalesViewRow::netSales, Optional.empty(), Optional.empty(), (row, value) -> row.withNetSales(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "net_sales", VDailySalesViewRow::netSales, Optional.empty(), Optional.empty(), (row, value) -> row.withNetSales(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, VDailySalesViewRow> avgOrderValue() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "avg_order_value", VDailySalesViewRow::avgOrderValue, Optional.empty(), Optional.empty(), (row, value) -> row.withAvgOrderValue(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, VDailySalesViewRow>(_path, "avg_order_value", VDailySalesViewRow::avgOrderValue, Optional.empty(), Optional.empty(), (row, value) -> row.withAvgOrderValue(value), MariaTypes.numeric);
     };
 
     @Override
     public List<FieldLike<?, VDailySalesViewRow>> columns() {
-      return List.of(this.orderDate(), this.orderCount(), this.uniqueCustomers(), this.itemsSold(), this.grossSales(), this.totalDiscounts(), this.totalShipping(), this.totalTax(), this.netSales(), this.avgOrderValue());
+      return java.util.List.of(this.orderDate(), this.orderCount(), this.uniqueCustomers(), this.itemsSold(), this.grossSales(), this.totalDiscounts(), this.totalShipping(), this.totalTax(), this.netSales(), this.avgOrderValue());
     };
 
     @Override
-    public Relation<VDailySalesViewFields, VDailySalesViewRow> copy(List<Path> _path) {
+    public RelationStructure<VDailySalesViewFields, VDailySalesViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   OptField<LocalDate, VDailySalesViewRow> orderDate();

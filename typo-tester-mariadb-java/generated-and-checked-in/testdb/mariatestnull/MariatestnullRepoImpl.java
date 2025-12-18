@@ -13,7 +13,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -28,98 +27,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
     MariatestnullRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `mariatestnull`(`tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)
-         values ("""),
-      MariaTypes.tinyint.opt().encode(unsaved.tinyintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.opt().encode(unsaved.smallintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.opt().encode(unsaved.mediumintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.opt().encode(unsaved.intCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.opt().encode(unsaved.bigintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.opt().encode(unsaved.tinyintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.opt().encode(unsaved.smallintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.opt().encode(unsaved.mediumintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.opt().encode(unsaved.intUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigintUnsigned.opt().encode(unsaved.bigintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.opt().encode(unsaved.decimalCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.opt().encode(unsaved.numericCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.float_.opt().encode(unsaved.floatCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.double_.opt().encode(unsaved.doubleCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.opt().encode(unsaved.boolCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.bitCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.bit1Col()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.charCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.varcharCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.tinytextCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.textCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.mediumtextCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.longtextCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.binaryCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.varbinaryCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.tinyblobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.blobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.mediumblobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.longblobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.date.opt().encode(unsaved.dateCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.time.opt().encode(unsaved.timeCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.time.opt().encode(unsaved.timeFspCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.datetimeCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.datetimeFspCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.timestampCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.timestampFspCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.year.opt().encode(unsaved.yearCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.enumCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.set.opt().encode(unsaved.setCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.jsonCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.inet4.opt().encode(unsaved.inet4Col()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.inet6.opt().encode(unsaved.inet6Col()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `mariatestnull`(`tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)\nvalues ("), Fragment.encode(MariaTypes.tinyint.opt(), unsaved.tinyintCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.smallint.opt(), unsaved.smallintCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumint.opt(), unsaved.mediumintCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.int_.opt(), unsaved.intCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bigint.opt(), unsaved.bigintCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyintUnsigned.opt(), unsaved.tinyintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.smallintUnsigned.opt(), unsaved.smallintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumintUnsigned.opt(), unsaved.mediumintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.intUnsigned.opt(), unsaved.intUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bigintUnsigned.opt(), unsaved.bigintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric.opt(), unsaved.decimalCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric.opt(), unsaved.numericCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.float_.opt(), unsaved.floatCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.double_.opt(), unsaved.doubleCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool.opt(), unsaved.boolCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bit.opt(), unsaved.bitCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bit.opt(), unsaved.bit1Col()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_.opt(), unsaved.charCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.varcharCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinytext.opt(), unsaved.tinytextCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.textCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumtext.opt(), unsaved.mediumtextCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.longtextCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.binary.opt(), unsaved.binaryCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.varbinary.opt(), unsaved.varbinaryCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyblob.opt(), unsaved.tinyblobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.blob.opt(), unsaved.blobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumblob.opt(), unsaved.mediumblobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.longblob.opt(), unsaved.longblobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.date.opt(), unsaved.dateCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.time.opt(), unsaved.timeCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.time.opt(), unsaved.timeFspCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.datetimeCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.datetimeFspCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.timestamp.opt(), unsaved.timestampCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.timestamp.opt(), unsaved.timestampFspCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.year.opt(), unsaved.yearCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.enumCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.set.opt(), unsaved.setCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.jsonCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.inet4.opt(), unsaved.inet4Col()), Fragment.lit(", "), Fragment.encode(MariaTypes.inet6.opt(), unsaved.inet6Col()), Fragment.lit(")\nreturning `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"))
       .updateReturning(MariatestnullRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -128,19 +36,15 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
     MariatestnullRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     unsaved.tinyintCol().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`tinyint_col`"));
-        values.add(interpolate(
-        MariaTypes.tinyint.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.tinyint.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.smallintCol().visit(
@@ -149,11 +53,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`smallint_col`"));
-        values.add(interpolate(
-        MariaTypes.smallint.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.smallint.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.mediumintCol().visit(
@@ -162,11 +62,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`mediumint_col`"));
-        values.add(interpolate(
-        MariaTypes.int_.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.mediumint.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.intCol().visit(
@@ -175,11 +71,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`int_col`"));
-        values.add(interpolate(
-        MariaTypes.int_.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.int_.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.bigintCol().visit(
@@ -188,11 +80,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`bigint_col`"));
-        values.add(interpolate(
-        MariaTypes.bigint.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bigint.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.tinyintUCol().visit(
@@ -201,11 +89,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`tinyint_u_col`"));
-        values.add(interpolate(
-        MariaTypes.smallint.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.tinyintUnsigned.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.smallintUCol().visit(
@@ -214,11 +98,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`smallint_u_col`"));
-        values.add(interpolate(
-        MariaTypes.int_.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.smallintUnsigned.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.mediumintUCol().visit(
@@ -227,11 +107,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`mediumint_u_col`"));
-        values.add(interpolate(
-        MariaTypes.int_.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.mediumintUnsigned.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.intUCol().visit(
@@ -240,11 +116,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`int_u_col`"));
-        values.add(interpolate(
-        MariaTypes.bigint.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.intUnsigned.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.bigintUCol().visit(
@@ -253,11 +125,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`bigint_u_col`"));
-        values.add(interpolate(
-        MariaTypes.bigintUnsigned.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bigintUnsigned.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.decimalCol().visit(
@@ -266,11 +134,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`decimal_col`"));
-        values.add(interpolate(
-        MariaTypes.numeric.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.numeric.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.numericCol().visit(
@@ -279,11 +143,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`numeric_col`"));
-        values.add(interpolate(
-        MariaTypes.numeric.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.numeric.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.floatCol().visit(
@@ -292,11 +152,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`float_col`"));
-        values.add(interpolate(
-        MariaTypes.float_.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.float_.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.doubleCol().visit(
@@ -305,11 +161,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`double_col`"));
-        values.add(interpolate(
-        MariaTypes.double_.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.double_.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.boolCol().visit(
@@ -318,11 +170,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`bool_col`"));
-        values.add(interpolate(
-        MariaTypes.bool.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.bitCol().visit(
@@ -331,11 +179,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`bit_col`"));
-        values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bit.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.bit1Col().visit(
@@ -344,11 +188,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`bit1_col`"));
-        values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bit.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.charCol().visit(
@@ -357,11 +197,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`char_col`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.char_.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.varcharCol().visit(
@@ -370,11 +206,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`varchar_col`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.tinytextCol().visit(
@@ -383,11 +215,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`tinytext_col`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.tinytext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.textCol().visit(
@@ -396,11 +224,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`text_col`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.mediumtextCol().visit(
@@ -409,11 +233,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`mediumtext_col`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.mediumtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.longtextCol().visit(
@@ -422,11 +242,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`longtext_col`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.binaryCol().visit(
@@ -435,11 +251,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`binary_col`"));
-        values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.binary.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.varbinaryCol().visit(
@@ -448,11 +260,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`varbinary_col`"));
-        values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varbinary.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.tinyblobCol().visit(
@@ -461,11 +269,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`tinyblob_col`"));
-        values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.tinyblob.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.blobCol().visit(
@@ -474,11 +278,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`blob_col`"));
-        values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.blob.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.mediumblobCol().visit(
@@ -487,11 +287,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`mediumblob_col`"));
-        values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.mediumblob.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.longblobCol().visit(
@@ -500,11 +296,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`longblob_col`"));
-        values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longblob.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.dateCol().visit(
@@ -513,11 +305,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`date_col`"));
-        values.add(interpolate(
-        MariaTypes.date.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.date.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.timeCol().visit(
@@ -526,11 +314,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`time_col`"));
-        values.add(interpolate(
-        MariaTypes.time.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.time.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.timeFspCol().visit(
@@ -539,11 +323,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`time_fsp_col`"));
-        values.add(interpolate(
-        MariaTypes.time.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.time.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.datetimeCol().visit(
@@ -552,11 +332,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`datetime_col`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.datetimeFspCol().visit(
@@ -565,11 +341,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`datetime_fsp_col`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.timestampCol().visit(
@@ -578,11 +350,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`timestamp_col`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.timestamp.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.timestampFspCol().visit(
@@ -591,11 +359,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`timestamp_fsp_col`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.timestamp.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.yearCol().visit(
@@ -604,11 +368,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`year_col`"));
-        values.add(interpolate(
-        MariaTypes.year.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.year.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.enumCol().visit(
@@ -617,11 +377,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`enum_col`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.setCol().visit(
@@ -630,11 +386,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`set_col`"));
-        values.add(interpolate(
-        MariaTypes.set.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.set.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.jsonCol().visit(
@@ -643,11 +395,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`json_col`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.inet4Col().visit(
@@ -656,11 +404,7 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`inet4_col`"));
-        values.add(interpolate(
-        MariaTypes.inet4.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.inet4.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.inet6Col().visit(
@@ -669,30 +413,12 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`inet6_col`"));
-        values.add(interpolate(
-        MariaTypes.inet6.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.inet6.opt(), value), Fragment.lit("")));
       }
     );;
-    Fragment q = columns.isEmpty()
-      ? interpolate(typo.runtime.Fragment.lit("""
-           insert into `mariatestnull` default values
-           returning `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`
-        """))
-      : interpolate(
-          typo.runtime.Fragment.lit("insert into `mariatestnull`("),
-          Fragment.comma(columns),
-          typo.runtime.Fragment.lit("""
-             )
-             values ("""),
-          Fragment.comma(values),
-          typo.runtime.Fragment.lit("""
-             )
-             returning `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`
-          """)
-        );;
+    Fragment q = (columns.isEmpty()
+      ? interpolate(Fragment.lit("insert into `mariatestnull` default values\nreturning `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"))
+      : interpolate(Fragment.lit("insert into `mariatestnull`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\n")));;
     return q.updateReturning(MariatestnullRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -703,14 +429,11 @@ public class MariatestnullRepoImpl implements MariatestnullRepo {
 
   @Override
   public List<MariatestnullRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`
-       from `mariatestnull`
-    """)).query(MariatestnullRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\nfrom `mariatestnull`\n")).query(MariatestnullRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<MariatestnullFields, MariatestnullRow> update() {
-    return UpdateBuilder.of("`mariatestnull`", MariatestnullFields.structure(), MariatestnullRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`mariatestnull`", MariatestnullFields.structure(), MariatestnullRow._rowParser, Dialect.MARIADB);
   };
 }

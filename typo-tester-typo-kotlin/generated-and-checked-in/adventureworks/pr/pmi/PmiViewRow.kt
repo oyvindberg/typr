@@ -5,11 +5,12 @@
  */
 package adventureworks.pr.pmi
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.illustration.IllustrationId
 import adventureworks.production.productmodel.ProductmodelId
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pr.pmi */
 data class PmiViewRow(
@@ -18,9 +19,9 @@ data class PmiViewRow(
   /** Points to [adventureworks.production.productmodelillustration.ProductmodelillustrationRow.illustrationid] */
   val illustrationid: IllustrationId,
   /** Points to [adventureworks.production.productmodelillustration.ProductmodelillustrationRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PmiViewRow> = RowParsers.of(ProductmodelId.pgType, IllustrationId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> PmiViewRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.illustrationid, row.modifieddate) })
+    val _rowParser: RowParser<PmiViewRow> = RowParsers.of(ProductmodelId.pgType, IllustrationId.pgType, PgTypes.timestamp, { t0, t1, t2 -> PmiViewRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.illustrationid, row.modifieddate) })
   }
 }

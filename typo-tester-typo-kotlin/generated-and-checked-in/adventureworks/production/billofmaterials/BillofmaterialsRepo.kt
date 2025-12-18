@@ -6,88 +6,87 @@
 package adventureworks.production.billofmaterials
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface BillofmaterialsRepo {
-  fun delete(): DeleteBuilder<BillofmaterialsFields, BillofmaterialsRow>
+  abstract fun delete(): DeleteBuilder<BillofmaterialsFields, BillofmaterialsRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     billofmaterialsid: Int,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     billofmaterialsids: Array<Int>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: BillofmaterialsRow,
     c: Connection
   ): BillofmaterialsRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: BillofmaterialsRowUnsaved,
     c: Connection
   ): BillofmaterialsRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<BillofmaterialsRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<BillofmaterialsRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<BillofmaterialsFields, BillofmaterialsRow>
+  abstract fun select(): SelectBuilder<BillofmaterialsFields, BillofmaterialsRow>
 
-  fun selectAll(c: Connection): List<BillofmaterialsRow>
+  abstract fun selectAll(c: Connection): List<BillofmaterialsRow>
 
-  fun selectById(
+  abstract fun selectById(
     billofmaterialsid: Int,
     c: Connection
-  ): Optional<BillofmaterialsRow>
+  ): BillofmaterialsRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     billofmaterialsids: Array<Int>,
     c: Connection
   ): List<BillofmaterialsRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     billofmaterialsids: Array<Int>,
     c: Connection
   ): Map<Int, BillofmaterialsRow>
 
-  fun update(): UpdateBuilder<BillofmaterialsFields, BillofmaterialsRow>
+  abstract fun update(): UpdateBuilder<BillofmaterialsFields, BillofmaterialsRow>
 
-  fun update(
+  abstract fun update(
     row: BillofmaterialsRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: BillofmaterialsRow,
     c: Connection
   ): BillofmaterialsRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<BillofmaterialsRow>,
     c: Connection
   ): List<BillofmaterialsRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<BillofmaterialsRow>,
     batchSize: Int,
     c: Connection

@@ -8,21 +8,19 @@ package adventureworks.sales.currency
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class CurrencyRepoMock(
   val toRow: (CurrencyRowUnsaved) -> CurrencyRow,
@@ -33,7 +31,7 @@ data class CurrencyRepoMock(
   override fun deleteById(
     currencycode: CurrencyId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(currencycode)).isPresent()
+  ): Boolean = map.remove(currencycode) != null
 
   override fun deleteByIds(
     currencycodes: Array<CurrencyId>,
@@ -41,7 +39,7 @@ data class CurrencyRepoMock(
   ): Int {
     var count = 0
     for (id in currencycodes) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class CurrencyRepoMock(
     c: Connection
   ): CurrencyRow {
     if (map.containsKey(unsaved.currencycode)) {
-      throw RuntimeException(str("id $unsaved.currencycode already exists"))
+      throw RuntimeException("id " + unsaved.currencycode + " already exists")
     }
     map[unsaved.currencycode] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class CurrencyRepoMock(
   override fun selectById(
     currencycode: CurrencyId,
     c: Connection
-  ): Optional<CurrencyRow> = Optional.ofNullable(map[currencycode])
+  ): CurrencyRow? = map[currencycode]
 
   override fun selectByIds(
     currencycodes: Array<CurrencyId>,
@@ -109,9 +107,9 @@ data class CurrencyRepoMock(
   ): List<CurrencyRow> {
     val result = ArrayList<CurrencyRow>()
     for (id in currencycodes) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class CurrencyRepoMock(
     row: CurrencyRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.currencycode]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.currencycode]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.currencycode] = row
     }

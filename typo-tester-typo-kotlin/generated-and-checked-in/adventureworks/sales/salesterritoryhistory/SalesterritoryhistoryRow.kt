@@ -6,14 +6,15 @@
 package adventureworks.sales.salesterritoryhistory
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: sales.salesterritoryhistory
   * Sales representative transfers to other sales territories.
@@ -31,36 +32,36 @@ data class SalesterritoryhistoryRow(
   /** Primary key. Date the sales representive started work in the territory.
     * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Date the sales representative left work in the territory.
     * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val enddate: Optional<TypoLocalDateTime>,
+  val enddate: LocalDateTime?,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): SalesterritoryhistoryId = SalesterritoryhistoryId(businessentityid, startdate, territoryid)
 
   fun id(): SalesterritoryhistoryId = this.compositeId()
 
   fun toUnsavedRow(
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): SalesterritoryhistoryRowUnsaved = SalesterritoryhistoryRowUnsaved(businessentityid, territoryid, startdate, enddate, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SalesterritoryhistoryRow> = RowParsers.of(BusinessentityId.pgType, SalesterritoryId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> SalesterritoryhistoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.territoryid, row.startdate, row.enddate, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SalesterritoryhistoryRow> = RowParsers.of(BusinessentityId.pgType, SalesterritoryId.pgType, PgTypes.timestamp, PgTypes.timestamp.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> SalesterritoryhistoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.territoryid, row.startdate, row.enddate, row.rowguid, row.modifieddate) })
 
     fun apply(
       compositeId: SalesterritoryhistoryId,
-      enddate: Optional<TypoLocalDateTime>,
-      rowguid: TypoUUID,
-      modifieddate: TypoLocalDateTime
+      enddate: LocalDateTime?,
+      rowguid: UUID,
+      modifieddate: LocalDateTime
     ): SalesterritoryhistoryRow = SalesterritoryhistoryRow(compositeId.businessentityid, compositeId.territoryid, compositeId.startdate, enddate, rowguid, modifieddate)
 
     val pgText: PgText<SalesterritoryhistoryRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

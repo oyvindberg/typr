@@ -30,21 +30,21 @@ case class VvendorwithcontactsViewRow(
   /** Points to [[adventureworks.person.contacttype.ContacttypeRow.name]] */
   contacttype: Name,
   /** Points to [[adventureworks.person.person.PersonRow.title]] */
-  title: Option[/* max 8 chars */ String],
+  title: String,
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: String,
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
   phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
   phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
-  emailaddress: Option[/* max 50 chars */ String],
+  emailaddress: String,
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
   emailpromotion: Int
 )
@@ -57,14 +57,14 @@ object VvendorwithcontactsViewRow {
             businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
             name = json.\("name").as(Name.reads),
             contacttype = json.\("contacttype").as(Name.reads),
-            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            title = json.\("title").as(Reads.StringReads),
             firstname = json.\("firstname").as(FirstName.reads),
-            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            middlename = json.\("middlename").as(Name.reads),
             lastname = json.\("lastname").as(Name.reads),
-            suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
+            suffix = json.\("suffix").as(Reads.StringReads),
             phonenumber = json.\("phonenumber").as(Phone.reads),
             phonenumbertype = json.\("phonenumbertype").as(Name.reads),
-            emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
+            emailaddress = json.\("emailaddress").as(Reads.StringReads),
             emailpromotion = json.\("emailpromotion").as(Reads.IntReads)
           )
         )
@@ -79,14 +79,14 @@ object VvendorwithcontactsViewRow {
           businessentityid = row(idx + 0)(BusinessentityId.column),
           name = row(idx + 1)(Name.column),
           contacttype = row(idx + 2)(Name.column),
-          title = row(idx + 3)(Column.columnToOption(Column.columnToString)),
+          title = row(idx + 3)(Column.columnToString),
           firstname = row(idx + 4)(/* user-picked */ FirstName.column),
-          middlename = row(idx + 5)(Column.columnToOption(Name.column)),
+          middlename = row(idx + 5)(Name.column),
           lastname = row(idx + 6)(Name.column),
-          suffix = row(idx + 7)(Column.columnToOption(Column.columnToString)),
+          suffix = row(idx + 7)(Column.columnToString),
           phonenumber = row(idx + 8)(Phone.column),
           phonenumbertype = row(idx + 9)(Name.column),
-          emailaddress = row(idx + 10)(Column.columnToOption(Column.columnToString)),
+          emailaddress = row(idx + 10)(Column.columnToString),
           emailpromotion = row(idx + 11)(Column.columnToInt)
         )
       )
@@ -99,14 +99,14 @@ object VvendorwithcontactsViewRow {
         "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
         "name" -> Name.writes.writes(o.name),
         "contacttype" -> Name.writes.writes(o.contacttype),
-        "title" -> Writes.OptionWrites(Writes.StringWrites).writes(o.title),
+        "title" -> Writes.StringWrites.writes(o.title),
         "firstname" -> FirstName.writes.writes(o.firstname),
-        "middlename" -> Writes.OptionWrites(Name.writes).writes(o.middlename),
+        "middlename" -> Name.writes.writes(o.middlename),
         "lastname" -> Name.writes.writes(o.lastname),
-        "suffix" -> Writes.OptionWrites(Writes.StringWrites).writes(o.suffix),
+        "suffix" -> Writes.StringWrites.writes(o.suffix),
         "phonenumber" -> Phone.writes.writes(o.phonenumber),
         "phonenumbertype" -> Name.writes.writes(o.phonenumbertype),
-        "emailaddress" -> Writes.OptionWrites(Writes.StringWrites).writes(o.emailaddress),
+        "emailaddress" -> Writes.StringWrites.writes(o.emailaddress),
         "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion)
       ))
     )

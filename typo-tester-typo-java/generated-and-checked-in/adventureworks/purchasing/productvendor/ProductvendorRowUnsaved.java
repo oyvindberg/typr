@@ -7,11 +7,11 @@ package adventureworks.purchasing.productvendor;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.unitmeasure.UnitmeasureId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -39,7 +39,7 @@ public record ProductvendorRowUnsaved(
     */
   Optional<BigDecimal> lastreceiptcost,
   /** Date the product was last received by the vendor. */
-  Optional<TypoLocalDateTime> lastreceiptdate,
+  Optional<LocalDateTime> lastreceiptdate,
   /** The maximum quantity that should be ordered.
     * Constraint CK_ProductVendor_MinOrderQty affecting columns minorderqty:  ((minorderqty >= 1))
     */
@@ -57,7 +57,7 @@ public record ProductvendorRowUnsaved(
     */
   UnitmeasureId unitmeasurecode,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductvendorRowUnsaved(
     /** Primary key. Foreign key to Product.ProductID.
@@ -128,7 +128,7 @@ public record ProductvendorRowUnsaved(
   };
 
   /** Date the product was last received by the vendor. */
-  public ProductvendorRowUnsaved withLastreceiptdate(Optional<TypoLocalDateTime> lastreceiptdate) {
+  public ProductvendorRowUnsaved withLastreceiptdate(Optional<LocalDateTime> lastreceiptdate) {
     return new ProductvendorRowUnsaved(productid, businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate);
   };
 
@@ -161,7 +161,7 @@ public record ProductvendorRowUnsaved(
   };
 
   /** Default: now() */
-  public ProductvendorRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductvendorRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductvendorRowUnsaved(productid, businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate);
   };
 
@@ -177,7 +177,7 @@ public record ProductvendorRowUnsaved(
       sb.append(PgText.DELIMETER);
       PgTypes.numeric.opt().pgText().unsafeEncode(row.lastreceiptcost, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.lastreceiptdate, sb);
+      PgTypes.timestamp.opt().pgText().unsafeEncode(row.lastreceiptdate, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.int4.pgText().unsafeEncode(row.minorderqty, sb);
       sb.append(PgText.DELIMETER);
@@ -187,10 +187,10 @@ public record ProductvendorRowUnsaved(
       sb.append(PgText.DELIMETER);
       UnitmeasureId.pgType.pgText().unsafeEncode(row.unitmeasurecode, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public ProductvendorRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public ProductvendorRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new ProductvendorRow(productid, businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate.getOrElse(modifieddateDefault));
   };
 }

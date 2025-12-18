@@ -5,29 +5,30 @@
  */
 package adventureworks.sales.countryregioncurrency;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.countryregion.CountryregionFields;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.person.countryregion.CountryregionRow;
 import adventureworks.sales.currency.CurrencyFields;
 import adventureworks.sales.currency.CurrencyId;
 import adventureworks.sales.currency.CurrencyRow;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface CountryregioncurrencyFields extends FieldsExpr<CountryregioncurrencyRow> {
-  record Impl(List<Path> _path) implements CountryregioncurrencyFields, Relation<CountryregioncurrencyFields, CountryregioncurrencyRow> {
+  record Impl(List<Path> _path) implements CountryregioncurrencyFields, RelationStructure<CountryregioncurrencyFields, CountryregioncurrencyRow> {
     @Override
     public IdField<CountryregionId, CountryregioncurrencyRow> countryregioncode() {
       return new IdField<CountryregionId, CountryregioncurrencyRow>(_path, "countryregioncode", CountryregioncurrencyRow::countryregioncode, Optional.empty(), Optional.empty(), (row, value) -> row.withCountryregioncode(value), CountryregionId.pgType);
@@ -39,37 +40,37 @@ public interface CountryregioncurrencyFields extends FieldsExpr<Countryregioncur
     };
 
     @Override
-    public Field<TypoLocalDateTime, CountryregioncurrencyRow> modifieddate() {
-      return new Field<TypoLocalDateTime, CountryregioncurrencyRow>(_path, "modifieddate", CountryregioncurrencyRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CountryregioncurrencyRow> modifieddate() {
+      return new Field<LocalDateTime, CountryregioncurrencyRow>(_path, "modifieddate", CountryregioncurrencyRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, CountryregioncurrencyRow>> columns() {
-      return List.of(this.countryregioncode(), this.currencycode(), this.modifieddate());
+      return java.util.List.of(this.countryregioncode(), this.currencycode(), this.modifieddate());
     };
 
     @Override
-    public Relation<CountryregioncurrencyFields, CountryregioncurrencyRow> copy(List<Path> _path) {
+    public RelationStructure<CountryregioncurrencyFields, CountryregioncurrencyRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<CountryregionId, CountryregioncurrencyRow> countryregioncode();
 
   IdField<CurrencyId, CountryregioncurrencyRow> currencycode();
 
-  Field<TypoLocalDateTime, CountryregioncurrencyRow> modifieddate();
+  Field<LocalDateTime, CountryregioncurrencyRow> modifieddate();
 
   default ForeignKey<CountryregionFields, CountryregionRow> fkPersonCountryregion() {
-    return ForeignKey.<CountryregionFields, CountryregionRow>of("sales.FK_CountryRegionCurrency_CountryRegion_CountryRegionCode").withColumnPair(countryregioncode(), CountryregionFields::countryregioncode);
+    return ForeignKey.<CountryregionFields, CountryregionRow>of("sales.FK_CountryRegionCurrency_CountryRegion_CountryRegionCode").<CountryregionId>withColumnPair(countryregioncode(), CountryregionFields::countryregioncode);
   };
 
   default ForeignKey<CurrencyFields, CurrencyRow> fkCurrency() {
-    return ForeignKey.<CurrencyFields, CurrencyRow>of("sales.FK_CountryRegionCurrency_Currency_CurrencyCode").withColumnPair(currencycode(), CurrencyFields::currencycode);
+    return ForeignKey.<CurrencyFields, CurrencyRow>of("sales.FK_CountryRegionCurrency_Currency_CurrencyCode").<CurrencyId>withColumnPair(currencycode(), CurrencyFields::currencycode);
   };
 
   default SqlExpr<Boolean> compositeIdIs(CountryregioncurrencyId compositeId) {

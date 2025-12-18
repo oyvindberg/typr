@@ -25,11 +25,11 @@ import testdb.hardcoded.myschema.marital_status.MaritalStatusId
 case class PersonRowUnsaved(
   /** Points to [[testdb.hardcoded.myschema.football_club.FootballClubRow.id]] */
   favouriteFootballClubId: FootballClubId,
-  name: /* max 100 chars */ String,
+  name: String,
   nickName: Option[/* max 30 chars */ String] = None,
   blogUrl: Option[/* max 100 chars */ String] = None,
-  email: /* max 254 chars */ String,
-  phone: /* max 8 chars */ String,
+  email: String,
+  phone: String,
   likesPizza: Boolean,
   workEmail: Option[/* max 254 chars */ String] = None,
   /** Default: auto-increment */

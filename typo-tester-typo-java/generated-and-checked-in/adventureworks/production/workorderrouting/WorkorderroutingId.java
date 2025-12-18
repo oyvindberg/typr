@@ -5,14 +5,13 @@
  */
 package adventureworks.production.workorderrouting;
 
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.workorder.WorkorderId;
 
 /** Type for the composite primary key of table `production.workorderrouting` */
 public record WorkorderroutingId(
   WorkorderId workorderid,
   Integer productid,
-  TypoShort operationsequence
+  Short operationsequence
 ) {
   public WorkorderroutingId withWorkorderid(WorkorderId workorderid) {
     return new WorkorderroutingId(workorderid, productid, operationsequence);
@@ -22,7 +21,7 @@ public record WorkorderroutingId(
     return new WorkorderroutingId(workorderid, productid, operationsequence);
   };
 
-  public WorkorderroutingId withOperationsequence(TypoShort operationsequence) {
+  public WorkorderroutingId withOperationsequence(Short operationsequence) {
     return new WorkorderroutingId(workorderid, productid, operationsequence);
   };
 }

@@ -5,10 +5,11 @@
  */
 package adventureworks.hr.s;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoLocalTime;
 import adventureworks.humanresources.shift.ShiftId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -21,11 +22,11 @@ public record SViewRow(
   /** Points to {@link adventureworks.humanresources.shift.ShiftRow#name()} */
   Name name,
   /** Points to {@link adventureworks.humanresources.shift.ShiftRow#starttime()} */
-  TypoLocalTime starttime,
+  LocalTime starttime,
   /** Points to {@link adventureworks.humanresources.shift.ShiftRow#endtime()} */
-  TypoLocalTime endtime,
+  LocalTime endtime,
   /** Points to {@link adventureworks.humanresources.shift.ShiftRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.humanresources.shift.ShiftRow#shiftid()} */
   public SViewRow withId(ShiftId id) {
@@ -43,19 +44,19 @@ public record SViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.shift.ShiftRow#starttime()} */
-  public SViewRow withStarttime(TypoLocalTime starttime) {
+  public SViewRow withStarttime(LocalTime starttime) {
     return new SViewRow(id, shiftid, name, starttime, endtime, modifieddate);
   };
 
   /** Points to {@link adventureworks.humanresources.shift.ShiftRow#endtime()} */
-  public SViewRow withEndtime(TypoLocalTime endtime) {
+  public SViewRow withEndtime(LocalTime endtime) {
     return new SViewRow(id, shiftid, name, starttime, endtime, modifieddate);
   };
 
   /** Points to {@link adventureworks.humanresources.shift.ShiftRow#modifieddate()} */
-  public SViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SViewRow(id, shiftid, name, starttime, endtime, modifieddate);
   };
 
-  static RowParser<SViewRow> _rowParser = RowParsers.of(ShiftId.pgType, ShiftId.pgType, Name.pgType, TypoLocalTime.pgType, TypoLocalTime.pgType, TypoLocalDateTime.pgType, SViewRow::new, row -> new Object[]{row.id(), row.shiftid(), row.name(), row.starttime(), row.endtime(), row.modifieddate()});;
+  static RowParser<SViewRow> _rowParser = RowParsers.of(ShiftId.pgType, ShiftId.pgType, Name.pgType, PgTypes.time, PgTypes.time, PgTypes.timestamp, SViewRow::new, row -> new Object[]{row.id(), row.shiftid(), row.name(), row.starttime(), row.endtime(), row.modifieddate()});;
 }

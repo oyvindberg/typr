@@ -8,5 +8,5 @@ package testdb.simple_customer_lookup
 import java.sql.Connection
 
 trait SimpleCustomerLookupSqlRepo {
-  def apply(email: String)(using c: Connection): java.util.List[SimpleCustomerLookupSqlRow]
+  def apply(email: String)(using c: Connection): List[SimpleCustomerLookupSqlRow]
 }

@@ -6,13 +6,14 @@
 package adventureworks.production.productproductphoto
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.production.productphoto.ProductphotoId
 import adventureworks.public.Flag
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: production.productproductphoto
   * Cross-reference table mapping products and product photos.
@@ -32,7 +33,7 @@ data class ProductproductphotoRow(
     */
   val primary: Flag,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): ProductproductphotoId = ProductproductphotoId(productid, productphotoid)
 
@@ -40,19 +41,19 @@ data class ProductproductphotoRow(
 
   fun toUnsavedRow(
     primary: Defaulted<Flag>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): ProductproductphotoRowUnsaved = ProductproductphotoRowUnsaved(productid, productphotoid, primary, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductproductphotoRow> = RowParsers.of(ProductId.pgType, ProductphotoId.pgType, Flag.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> ProductproductphotoRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productid, row.productphotoid, row.primary, row.modifieddate) })
+    val _rowParser: RowParser<ProductproductphotoRow> = RowParsers.of(ProductId.pgType, ProductphotoId.pgType, Flag.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> ProductproductphotoRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productid, row.productphotoid, row.primary, row.modifieddate) })
 
     fun apply(
       compositeId: ProductproductphotoId,
       primary: Flag,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): ProductproductphotoRow = ProductproductphotoRow(compositeId.productid, compositeId.productphotoid, primary, modifieddate)
 
     val pgText: PgText<ProductproductphotoRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

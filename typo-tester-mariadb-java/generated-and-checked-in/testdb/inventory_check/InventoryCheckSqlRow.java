@@ -6,7 +6,6 @@
 package testdb.inventory_check;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Optional;
 import testdb.inventory.InventoryId;
 import testdb.products.ProductsId;
 import testdb.warehouses.WarehousesId;
@@ -34,12 +33,12 @@ public record InventoryCheckSqlRow(
   @JsonProperty("quantity_on_hand") Integer quantityOnHand,
   /** Points to {@link testdb.inventory.InventoryRow#quantityReserved()} */
   @JsonProperty("quantity_reserved") Integer quantityReserved,
-  /** Points to {@link testdb.inventory.InventoryRow#quantityOnHand()} */
+  /** Points to {@link testdb.inventory.InventoryRow#quantityReserved()} */
   Integer available,
   /** Points to {@link testdb.inventory.InventoryRow#reorderPoint()} */
   @JsonProperty("reorder_point") Integer reorderPoint,
   /** Points to {@link testdb.inventory.InventoryRow#binLocation()} */
-  @JsonProperty("bin_location") Optional<String> binLocation
+  @JsonProperty("bin_location") String binLocation
 ) {
   /** Points to {@link testdb.inventory.InventoryRow#inventoryId()} */
   public InventoryCheckSqlRow withInventoryId(InventoryId inventoryId) {
@@ -86,7 +85,7 @@ public record InventoryCheckSqlRow(
     return new InventoryCheckSqlRow(inventoryId, productId, sku, productName, warehouseId, warehouseCode, warehouseName, quantityOnHand, quantityReserved, available, reorderPoint, binLocation);
   };
 
-  /** Points to {@link testdb.inventory.InventoryRow#quantityOnHand()} */
+  /** Points to {@link testdb.inventory.InventoryRow#quantityReserved()} */
   public InventoryCheckSqlRow withAvailable(Integer available) {
     return new InventoryCheckSqlRow(inventoryId, productId, sku, productName, warehouseId, warehouseCode, warehouseName, quantityOnHand, quantityReserved, available, reorderPoint, binLocation);
   };
@@ -97,9 +96,9 @@ public record InventoryCheckSqlRow(
   };
 
   /** Points to {@link testdb.inventory.InventoryRow#binLocation()} */
-  public InventoryCheckSqlRow withBinLocation(Optional<String> binLocation) {
+  public InventoryCheckSqlRow withBinLocation(String binLocation) {
     return new InventoryCheckSqlRow(inventoryId, productId, sku, productName, warehouseId, warehouseCode, warehouseName, quantityOnHand, quantityReserved, available, reorderPoint, binLocation);
   };
 
-  static RowParser<InventoryCheckSqlRow> _rowParser = RowParsers.of(InventoryId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.varchar.opt(), InventoryCheckSqlRow::new, row -> new Object[]{row.inventoryId(), row.productId(), row.sku(), row.productName(), row.warehouseId(), row.warehouseCode(), row.warehouseName(), row.quantityOnHand(), row.quantityReserved(), row.available(), row.reorderPoint(), row.binLocation()});;
+  static RowParser<InventoryCheckSqlRow> _rowParser = RowParsers.of(InventoryId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.varchar, InventoryCheckSqlRow::new, row -> new Object[]{row.inventoryId(), row.productId(), row.sku(), row.productName(), row.warehouseId(), row.warehouseCode(), row.warehouseName(), row.quantityOnHand(), row.quantityReserved(), row.available(), row.reorderPoint(), row.binLocation()});;
 }

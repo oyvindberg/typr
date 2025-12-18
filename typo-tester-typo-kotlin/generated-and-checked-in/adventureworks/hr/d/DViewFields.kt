@@ -5,50 +5,52 @@
  */
 package adventureworks.hr.d
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.department.DepartmentId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface DViewFields : FieldsExpr<DViewRow> {
-  override fun columns(): List<FieldLike<*, DViewRow>>
+  abstract override fun columns(): List<FieldLike<*, DViewRow>>
 
-  fun departmentid(): Field<DepartmentId, DViewRow>
+  abstract fun departmentid(): Field<DepartmentId, DViewRow>
 
-  fun groupname(): Field<Name, DViewRow>
+  abstract fun groupname(): Field<Name, DViewRow>
 
-  fun id(): Field<DepartmentId, DViewRow>
+  abstract fun id(): Field<DepartmentId, DViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, DViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, DViewRow>
 
-  fun name(): Field<Name, DViewRow>
+  abstract fun name(): Field<Name, DViewRow>
 
-  override fun rowParser(): RowParser<DViewRow> = DViewRow._rowParser
+  override fun rowParser(): RowParser<DViewRow> = DViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : DViewFields, Relation<DViewFields, DViewRow> {
-      override fun id(): Field<DepartmentId, DViewRow> = Field<DepartmentId, DViewRow>(_path, "id", DViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, DepartmentId.pgType)
+    data class Impl(val _path: List<Path>) : DViewFields, RelationStructure<DViewFields, DViewRow> {
+      override fun id(): Field<DepartmentId, DViewRow> = Field<DepartmentId, DViewRow>(_path, "id", DViewRow::id, null, null, { row, value -> row.copy(id = value) }, DepartmentId.pgType)
 
-      override fun departmentid(): Field<DepartmentId, DViewRow> = Field<DepartmentId, DViewRow>(_path, "departmentid", DViewRow::departmentid, Optional.empty(), Optional.empty(), { row, value -> row.copy(departmentid = value) }, DepartmentId.pgType)
+      override fun departmentid(): Field<DepartmentId, DViewRow> = Field<DepartmentId, DViewRow>(_path, "departmentid", DViewRow::departmentid, null, null, { row, value -> row.copy(departmentid = value) }, DepartmentId.pgType)
 
-      override fun name(): Field<Name, DViewRow> = Field<Name, DViewRow>(_path, "name", DViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, DViewRow> = Field<Name, DViewRow>(_path, "name", DViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun groupname(): Field<Name, DViewRow> = Field<Name, DViewRow>(_path, "groupname", DViewRow::groupname, Optional.empty(), Optional.empty(), { row, value -> row.copy(groupname = value) }, Name.pgType)
+      override fun groupname(): Field<Name, DViewRow> = Field<Name, DViewRow>(_path, "groupname", DViewRow::groupname, null, null, { row, value -> row.copy(groupname = value) }, Name.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, DViewRow> = Field<TypoLocalDateTime, DViewRow>(_path, "modifieddate", DViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, DViewRow> = Field<LocalDateTime, DViewRow>(_path, "modifieddate", DViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, DViewRow>> = listOf(this.id(), this.departmentid(), this.name(), this.groupname(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<DViewFields, DViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, DViewRow>> = listOf(this.id().underlying, this.departmentid().underlying, this.name().underlying, this.groupname().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<DViewFields, DViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

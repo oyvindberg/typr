@@ -5,9 +5,10 @@
  */
 package adventureworks.update_person;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import java.sql.Connection;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import typo.runtime.Fragment;
 import typo.runtime.PgTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -15,19 +16,9 @@ public class UpdatePersonSqlRepoImpl implements UpdatePersonSqlRepo {
   @Override
   public Integer apply(
     String suffix,
-    Optional<TypoLocalDateTime> cutoff,
+    Optional<LocalDateTime> cutoff,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update person.person
-         set firstname = firstname || '-' || """),
-      PgTypes.text.encode(suffix),
-      typo.runtime.Fragment.lit("""
-   
-         where modifieddate < """),
-      TypoLocalDateTime.pgType.opt().encode(cutoff),
-      typo.runtime.Fragment.lit("::timestamp")
-    ).update().runUnchecked(c);
+    return interpolate(Fragment.lit("update person.person\nset firstname = firstname || '-' || "), Fragment.encode(PgTypes.text, suffix), Fragment.lit("\nwhere modifieddate < "), Fragment.encode(PgTypes.timestamp.opt(), cutoff), Fragment.lit("::timestamp")).update().runUnchecked(c);
   };
 }

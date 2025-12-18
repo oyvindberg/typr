@@ -5,29 +5,26 @@
  */
 package adventureworks.purchasing.vendor
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.AccountNumber
 import adventureworks.public.Flag
 import adventureworks.public.Name
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class VendorRepoImpl() : VendorRepo {
   override fun delete(): DeleteBuilder<VendorFields, VendorRow> = DeleteBuilder.of("\"purchasing\".\"vendor\"", VendorFields.structure, Dialect.POSTGRESQL)
@@ -35,127 +32,53 @@ class VendorRepoImpl() : VendorRepo {
   override fun deleteById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "purchasing"."vendor" where "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(businessentityid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"purchasing\".\"vendor\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "purchasing"."vendor"
-               where "businessentityid" = ANY(""".trimMargin()),
-             BusinessentityId.pgTypeArray.encode(businessentityids),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = interpolate(Fragment.lit("delete\nfrom \"purchasing\".\"vendor\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: VendorRow,
     c: Connection
-  ): VendorRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "purchasing"."vendor"("businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    AccountNumber.pgType.encode(unsaved.accountnumber),
-    typo.runtime.Fragment.lit("::varchar, "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoShort.pgType.encode(unsaved.creditrating),
-    typo.runtime.Fragment.lit("::int2, "),
-    Flag.pgType.encode(unsaved.preferredvendorstatus),
-    typo.runtime.Fragment.lit("::bool, "),
-    Flag.pgType.encode(unsaved.activeflag),
-    typo.runtime.Fragment.lit("::bool, "),
-    PgTypes.text.opt().encode(unsaved.purchasingwebserviceurl),
-    typo.runtime.Fragment.lit(", "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): VendorRow = interpolate(Fragment.lit("insert into \"purchasing\".\"vendor\"(\"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(AccountNumber.pgType, unsaved.accountnumber), Fragment.lit("::varchar, "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.creditrating), Fragment.lit("::int2, "), Fragment.encode(Flag.pgType, unsaved.preferredvendorstatus), Fragment.lit("::bool, "), Fragment.encode(Flag.pgType, unsaved.activeflag), Fragment.lit("::bool, "), Fragment.encode(PgTypes.text.nullable(), unsaved.purchasingwebserviceurl), Fragment.lit(", "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\"\n"))
     .updateReturning(VendorRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: VendorRowUnsaved,
     c: Connection
   ): VendorRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"businessentityid\""))
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"accountnumber\""))
-    values.add(interpolate(
-      AccountNumber.pgType.encode(unsaved.accountnumber),
-      typo.runtime.Fragment.lit("::varchar")
-    ))
+    values.add(interpolate(Fragment.encode(AccountNumber.pgType, unsaved.accountnumber), Fragment.lit("::varchar")))
     columns.add(Fragment.lit("\"name\""))
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name),
-      typo.runtime.Fragment.lit("::varchar")
-    ))
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar")))
     columns.add(Fragment.lit("\"creditrating\""))
-    values.add(interpolate(
-      TypoShort.pgType.encode(unsaved.creditrating),
-      typo.runtime.Fragment.lit("::int2")
-    ))
+    values.add(interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.creditrating), Fragment.lit("::int2")))
     columns.add(Fragment.lit("\"purchasingwebserviceurl\""))
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.purchasingwebserviceurl),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.text.nullable(), unsaved.purchasingwebserviceurl), Fragment.lit("")))
     unsaved.preferredvendorstatus.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"preferredvendorstatus\""))
-      values.add(interpolate(
-        Flag.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      )) }
+      values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool"))) }
     );
     unsaved.activeflag.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"activeflag\""))
-      values.add(interpolate(
-        Flag.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      )) }
+      values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "purchasing"."vendor"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"purchasing\".\"vendor\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\"\n"))
     return q.updateReturning(VendorRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -163,49 +86,28 @@ class VendorRepoImpl() : VendorRepo {
     unsaved: MutableIterator<VendorRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "purchasing"."vendor"("businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, VendorRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"purchasing\".\"vendor\"(\"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, VendorRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<VendorRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "purchasing"."vendor"("businessentityid", "accountnumber", "name", "creditrating", "purchasingwebserviceurl", "preferredvendorstatus", "activeflag", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, VendorRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"purchasing\".\"vendor\"(\"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"purchasingwebserviceurl\", \"preferredvendorstatus\", \"activeflag\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, VendorRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<VendorFields, VendorRow> = SelectBuilder.of("\"purchasing\".\"vendor\"", VendorFields.structure, VendorRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<VendorRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate"::text
-    from "purchasing"."vendor"
-  """.trimMargin())).query(VendorRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<VendorRow> = interpolate(Fragment.lit("select \"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\"\nfrom \"purchasing\".\"vendor\"\n")).query(VendorRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Optional<VendorRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate"::text
-      from "purchasing"."vendor"
-      where "businessentityid" = """.trimMargin()),
-    BusinessentityId.pgType.encode(businessentityid),
-    typo.runtime.Fragment.lit("")
-  ).query(VendorRow._rowParser.first()).runUnchecked(c)
+  ): VendorRow? = interpolate(Fragment.lit("select \"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\"\nfrom \"purchasing\".\"vendor\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).query(VendorRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
-  ): List<VendorRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate"::text
-      from "purchasing"."vendor"
-      where "businessentityid" = ANY(""".trimMargin()),
-    BusinessentityId.pgTypeArray.encode(businessentityids),
-    typo.runtime.Fragment.lit(")")
-  ).query(VendorRow._rowParser.all()).runUnchecked(c)
+  ): List<VendorRow> = interpolate(Fragment.lit("select \"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\"\nfrom \"purchasing\".\"vendor\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")")).query(VendorRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     businessentityids: Array<BusinessentityId>,
@@ -213,109 +115,32 @@ class VendorRepoImpl() : VendorRepo {
   ): Map<BusinessentityId, VendorRow> {
     val ret: MutableMap<BusinessentityId, VendorRow> = mutableMapOf<BusinessentityId, VendorRow>()
     selectByIds(businessentityids, c).forEach({ row -> ret.put(row.businessentityid, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<VendorFields, VendorRow> = UpdateBuilder.of("\"purchasing\".\"vendor\"", VendorFields.structure, VendorRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<VendorFields, VendorRow> = UpdateBuilder.of("\"purchasing\".\"vendor\"", VendorFields.structure, VendorRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: VendorRow,
     c: Connection
   ): Boolean {
     val businessentityid: BusinessentityId = row.businessentityid
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "purchasing"."vendor"
-        set "accountnumber" = """.trimMargin()),
-      AccountNumber.pgType.encode(row.accountnumber),
-      typo.runtime.Fragment.lit("""
-        ::varchar,
-        "name" = """.trimMargin()),
-      Name.pgType.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ::varchar,
-        "creditrating" = """.trimMargin()),
-      TypoShort.pgType.encode(row.creditrating),
-      typo.runtime.Fragment.lit("""
-        ::int2,
-        "preferredvendorstatus" = """.trimMargin()),
-      Flag.pgType.encode(row.preferredvendorstatus),
-      typo.runtime.Fragment.lit("""
-        ::bool,
-        "activeflag" = """.trimMargin()),
-      Flag.pgType.encode(row.activeflag),
-      typo.runtime.Fragment.lit("""
-        ::bool,
-        "purchasingwebserviceurl" = """.trimMargin()),
-      PgTypes.text.opt().encode(row.purchasingwebserviceurl),
-      typo.runtime.Fragment.lit("""
-        ,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "businessentityid" = """.trimMargin()),
-      BusinessentityId.pgType.encode(businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"purchasing\".\"vendor\"\nset \"accountnumber\" = "), Fragment.encode(AccountNumber.pgType, row.accountnumber), Fragment.lit("::varchar,\n\"name\" = "), Fragment.encode(Name.pgType, row.name), Fragment.lit("::varchar,\n\"creditrating\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int2, row.creditrating), Fragment.lit("::int2,\n\"preferredvendorstatus\" = "), Fragment.encode(Flag.pgType, row.preferredvendorstatus), Fragment.lit("::bool,\n\"activeflag\" = "), Fragment.encode(Flag.pgType, row.activeflag), Fragment.lit("::bool,\n\"purchasingwebserviceurl\" = "), Fragment.encode(PgTypes.text.nullable(), row.purchasingwebserviceurl), Fragment.lit(",\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: VendorRow,
     c: Connection
-  ): VendorRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "purchasing"."vendor"("businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    AccountNumber.pgType.encode(unsaved.accountnumber),
-    typo.runtime.Fragment.lit("::varchar, "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoShort.pgType.encode(unsaved.creditrating),
-    typo.runtime.Fragment.lit("::int2, "),
-    Flag.pgType.encode(unsaved.preferredvendorstatus),
-    typo.runtime.Fragment.lit("::bool, "),
-    Flag.pgType.encode(unsaved.activeflag),
-    typo.runtime.Fragment.lit("::bool, "),
-    PgTypes.text.opt().encode(unsaved.purchasingwebserviceurl),
-    typo.runtime.Fragment.lit(", "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("businessentityid")
-      do update set
-        "accountnumber" = EXCLUDED."accountnumber",
-      "name" = EXCLUDED."name",
-      "creditrating" = EXCLUDED."creditrating",
-      "preferredvendorstatus" = EXCLUDED."preferredvendorstatus",
-      "activeflag" = EXCLUDED."activeflag",
-      "purchasingwebserviceurl" = EXCLUDED."purchasingwebserviceurl",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate"::text""".trimMargin())
-  )
+  ): VendorRow = interpolate(Fragment.lit("insert into \"purchasing\".\"vendor\"(\"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(AccountNumber.pgType, unsaved.accountnumber), Fragment.lit("::varchar, "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.creditrating), Fragment.lit("::int2, "), Fragment.encode(Flag.pgType, unsaved.preferredvendorstatus), Fragment.lit("::bool, "), Fragment.encode(Flag.pgType, unsaved.activeflag), Fragment.lit("::bool, "), Fragment.encode(PgTypes.text.nullable(), unsaved.purchasingwebserviceurl), Fragment.lit(", "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"businessentityid\")\ndo update set\n  \"accountnumber\" = EXCLUDED.\"accountnumber\",\n\"name\" = EXCLUDED.\"name\",\n\"creditrating\" = EXCLUDED.\"creditrating\",\n\"preferredvendorstatus\" = EXCLUDED.\"preferredvendorstatus\",\n\"activeflag\" = EXCLUDED.\"activeflag\",\n\"purchasingwebserviceurl\" = EXCLUDED.\"purchasingwebserviceurl\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\""))
     .updateReturning(VendorRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<VendorRow>,
     c: Connection
-  ): List<VendorRow> = interpolate(typo.runtime.Fragment.lit("""
-                         insert into "purchasing"."vendor"("businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")
-                         values (?::int4, ?::varchar, ?::varchar, ?::int2, ?::bool, ?::bool, ?, ?::timestamp)
-                         on conflict ("businessentityid")
-                         do update set
-                           "accountnumber" = EXCLUDED."accountnumber",
-                         "name" = EXCLUDED."name",
-                         "creditrating" = EXCLUDED."creditrating",
-                         "preferredvendorstatus" = EXCLUDED."preferredvendorstatus",
-                         "activeflag" = EXCLUDED."activeflag",
-                         "purchasingwebserviceurl" = EXCLUDED."purchasingwebserviceurl",
-                         "modifieddate" = EXCLUDED."modifieddate"
-                         returning "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate"::text""".trimMargin()))
+  ): List<VendorRow> = interpolate(Fragment.lit("insert into \"purchasing\".\"vendor\"(\"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::varchar, ?::int2, ?::bool, ?::bool, ?, ?::timestamp)\non conflict (\"businessentityid\")\ndo update set\n  \"accountnumber\" = EXCLUDED.\"accountnumber\",\n\"name\" = EXCLUDED.\"name\",\n\"creditrating\" = EXCLUDED.\"creditrating\",\n\"preferredvendorstatus\" = EXCLUDED.\"preferredvendorstatus\",\n\"activeflag\" = EXCLUDED.\"activeflag\",\n\"purchasingwebserviceurl\" = EXCLUDED.\"purchasingwebserviceurl\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\""))
     .updateManyReturning(VendorRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -323,25 +148,8 @@ class VendorRepoImpl() : VendorRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table vendor_TEMP (like "purchasing"."vendor") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy vendor_TEMP("businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, VendorRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "purchasing"."vendor"("businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")
-      select * from vendor_TEMP
-      on conflict ("businessentityid")
-      do update set
-        "accountnumber" = EXCLUDED."accountnumber",
-      "name" = EXCLUDED."name",
-      "creditrating" = EXCLUDED."creditrating",
-      "preferredvendorstatus" = EXCLUDED."preferredvendorstatus",
-      "activeflag" = EXCLUDED."activeflag",
-      "purchasingwebserviceurl" = EXCLUDED."purchasingwebserviceurl",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table vendor_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table vendor_TEMP (like \"purchasing\".\"vendor\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy vendor_TEMP(\"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\") from stdin", batchSize, unsaved, c, VendorRow.pgText)
+    return interpolate(Fragment.lit("insert into \"purchasing\".\"vendor\"(\"businessentityid\", \"accountnumber\", \"name\", \"creditrating\", \"preferredvendorstatus\", \"activeflag\", \"purchasingwebserviceurl\", \"modifieddate\")\nselect * from vendor_TEMP\non conflict (\"businessentityid\")\ndo update set\n  \"accountnumber\" = EXCLUDED.\"accountnumber\",\n\"name\" = EXCLUDED.\"name\",\n\"creditrating\" = EXCLUDED.\"creditrating\",\n\"preferredvendorstatus\" = EXCLUDED.\"preferredvendorstatus\",\n\"activeflag\" = EXCLUDED.\"activeflag\",\n\"purchasingwebserviceurl\" = EXCLUDED.\"purchasingwebserviceurl\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table vendor_TEMP;")).update().runUnchecked(c)
   }
 }

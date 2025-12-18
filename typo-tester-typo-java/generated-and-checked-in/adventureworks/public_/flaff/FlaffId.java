@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /** Type for the composite primary key of table `public.flaff` */
 public record FlaffId(
   ShortText code,
-  @JsonProperty("another_code") /* max 20 chars */ String anotherCode,
+  @JsonProperty("another_code") String anotherCode,
   @JsonProperty("some_number") Integer someNumber,
   ShortText specifier
 ) {
@@ -19,7 +19,7 @@ public record FlaffId(
     return new FlaffId(code, anotherCode, someNumber, specifier);
   };
 
-  public FlaffId withAnotherCode(/* max 20 chars */ String anotherCode) {
+  public FlaffId withAnotherCode(String anotherCode) {
     return new FlaffId(code, anotherCode, someNumber, specifier);
   };
 

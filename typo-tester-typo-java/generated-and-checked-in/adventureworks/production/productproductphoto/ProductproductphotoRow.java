@@ -6,11 +6,12 @@
 package adventureworks.production.productproductphoto;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.productphoto.ProductphotoId;
 import adventureworks.public_.Flag;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -32,7 +33,7 @@ public record ProductproductphotoRow(
     */
   Flag primary,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Product identification number. Foreign key to Product.ProductID.
     * Points to {@link adventureworks.production.product.ProductRow#productid()}
@@ -56,16 +57,16 @@ public record ProductproductphotoRow(
   };
 
   /** Default: now() */
-  public ProductproductphotoRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductproductphotoRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductproductphotoRow(productid, productphotoid, primary, modifieddate);
   };
 
-  static RowParser<ProductproductphotoRow> _rowParser = RowParsers.of(ProductId.pgType, ProductphotoId.pgType, Flag.pgType, TypoLocalDateTime.pgType, ProductproductphotoRow::new, row -> new Object[]{row.productid(), row.productphotoid(), row.primary(), row.modifieddate()});;
+  static RowParser<ProductproductphotoRow> _rowParser = RowParsers.of(ProductId.pgType, ProductphotoId.pgType, Flag.pgType, PgTypes.timestamp, ProductproductphotoRow::new, row -> new Object[]{row.productid(), row.productphotoid(), row.primary(), row.modifieddate()});;
 
   static public ProductproductphotoRow apply(
     ProductproductphotoId compositeId,
     Flag primary,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new ProductproductphotoRow(compositeId.productid(), compositeId.productphotoid(), primary, modifieddate);
   };
@@ -83,7 +84,7 @@ public record ProductproductphotoRow(
 
   public ProductproductphotoRowUnsaved toUnsavedRow(
     Defaulted<Flag> primary,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ProductproductphotoRowUnsaved(productid, productphotoid, primary, modifieddate);
   };

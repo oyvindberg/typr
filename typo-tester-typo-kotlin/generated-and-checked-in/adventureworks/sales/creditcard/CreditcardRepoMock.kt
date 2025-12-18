@@ -9,21 +9,19 @@ import adventureworks.userdefined.CustomCreditcardId
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class CreditcardRepoMock(
   val toRow: (CreditcardRowUnsaved) -> CreditcardRow,
@@ -34,7 +32,7 @@ data class CreditcardRepoMock(
   override fun deleteById(
     creditcardid: /* user-picked */ CustomCreditcardId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(creditcardid)).isPresent()
+  ): Boolean = map.remove(creditcardid) != null
 
   override fun deleteByIds(
     creditcardids: Array</* user-picked */ CustomCreditcardId>,
@@ -42,7 +40,7 @@ data class CreditcardRepoMock(
   ): Int {
     var count = 0
     for (id in creditcardids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -54,7 +52,7 @@ data class CreditcardRepoMock(
     c: Connection
   ): CreditcardRow {
     if (map.containsKey(unsaved.creditcardid)) {
-      throw RuntimeException(str("id $unsaved.creditcardid already exists"))
+      throw RuntimeException("id " + unsaved.creditcardid + " already exists")
     }
     map[unsaved.creditcardid] = unsaved
     return unsaved
@@ -102,7 +100,7 @@ data class CreditcardRepoMock(
   override fun selectById(
     creditcardid: /* user-picked */ CustomCreditcardId,
     c: Connection
-  ): Optional<CreditcardRow> = Optional.ofNullable(map[creditcardid])
+  ): CreditcardRow? = map[creditcardid]
 
   override fun selectByIds(
     creditcardids: Array</* user-picked */ CustomCreditcardId>,
@@ -110,9 +108,9 @@ data class CreditcardRepoMock(
   ): List<CreditcardRow> {
     val result = ArrayList<CreditcardRow>()
     for (id in creditcardids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -129,7 +127,7 @@ data class CreditcardRepoMock(
     row: CreditcardRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.creditcardid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.creditcardid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.creditcardid] = row
     }

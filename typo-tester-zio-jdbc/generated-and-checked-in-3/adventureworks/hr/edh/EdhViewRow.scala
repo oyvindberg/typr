@@ -30,7 +30,7 @@ case class EdhViewRow(
   /** Points to [[adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.startdate]] */
   startdate: TypoLocalDate,
   /** Points to [[adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.enddate]] */
-  enddate: Option[TypoLocalDate],
+  enddate: TypoLocalDate,
   /** Points to [[adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -46,7 +46,7 @@ object EdhViewRow {
             departmentid = DepartmentId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
             shiftid = ShiftId.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
             startdate = TypoLocalDate.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-            enddate = JdbcDecoder.optionDecoder(using TypoLocalDate.jdbcDecoder).unsafeDecode(columIndex + 5, rs)._2,
+            enddate = TypoLocalDate.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
           )
     }
@@ -59,7 +59,7 @@ object EdhViewRow {
       val departmentid = jsonObj.get("departmentid").toRight("Missing field 'departmentid'").flatMap(_.as(using DepartmentId.jsonDecoder))
       val shiftid = jsonObj.get("shiftid").toRight("Missing field 'shiftid'").flatMap(_.as(using ShiftId.jsonDecoder))
       val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(using TypoLocalDate.jsonDecoder))
-      val enddate = jsonObj.get("enddate").fold[Either[String, Option[TypoLocalDate]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDate.jsonDecoder)))
+      val enddate = jsonObj.get("enddate").toRight("Missing field 'enddate'").flatMap(_.as(using TypoLocalDate.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (id.isRight && businessentityid.isRight && departmentid.isRight && shiftid.isRight && startdate.isRight && enddate.isRight && modifieddate.isRight)
         Right(EdhViewRow(id = id.toOption.get, businessentityid = businessentityid.toOption.get, departmentid = departmentid.toOption.get, shiftid = shiftid.toOption.get, startdate = startdate.toOption.get, enddate = enddate.toOption.get, modifieddate = modifieddate.toOption.get))
@@ -87,7 +87,7 @@ object EdhViewRow {
         TypoLocalDate.jsonEncoder.unsafeEncode(a.startdate, indent, out)
         out.write(",")
         out.write(""""enddate":""")
-        JsonEncoder.option(using TypoLocalDate.jsonEncoder).unsafeEncode(a.enddate, indent, out)
+        TypoLocalDate.jsonEncoder.unsafeEncode(a.enddate, indent, out)
         out.write(",")
         out.write(""""modifieddate":""")
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)

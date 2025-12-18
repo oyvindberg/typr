@@ -15,9 +15,9 @@ import typo.dsl.DeleteBuilder;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class TitleRepoImpl implements TitleRepo {
   @Override
@@ -30,13 +30,7 @@ public class TitleRepoImpl implements TitleRepo {
     TitleId code,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "public"."title" where "code" = 
-      """),
-      TitleId.pgType.encode(code),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"public\".\"title\" where \"code\" = "), Fragment.encode(TitleId.pgType, code), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,14 +38,7 @@ public class TitleRepoImpl implements TitleRepo {
     TitleId[] codes,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "public"."title"
-                  where "code" = ANY("""),
-               TitleId.pgTypeArray.encode(codes),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"public\".\"title\"\nwhere \"code\" = ANY("), Fragment.encode(TitleId.pgTypeArray, codes), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -61,16 +48,7 @@ public class TitleRepoImpl implements TitleRepo {
     TitleRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."title"("code")
-         values ("""),
-      TitleId.pgType.encode(unsaved.code()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "code"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"title\"(\"code\")\nvalues ("), Fragment.encode(TitleId.pgType, unsaved.code()), Fragment.lit(")\nreturning \"code\"\n"))
       .updateReturning(TitleRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -80,9 +58,7 @@ public class TitleRepoImpl implements TitleRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "public"."title"("code") FROM STDIN
-    """), batchSize, unsaved, c, TitleRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"public\".\"title\"(\"code\") FROM STDIN", batchSize, unsaved, c, TitleRow.pgText);
   };
 
   @Override
@@ -92,10 +68,7 @@ public class TitleRepoImpl implements TitleRepo {
 
   @Override
   public List<TitleRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "code"
-       from "public"."title"
-    """)).query(TitleRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"code\"\nfrom \"public\".\"title\"\n")).query(TitleRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -103,14 +76,7 @@ public class TitleRepoImpl implements TitleRepo {
     TitleId code,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "code"
-         from "public"."title"
-         where "code" = """),
-      TitleId.pgType.encode(code),
-      typo.runtime.Fragment.lit("")
-    ).query(TitleRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"code\"\nfrom \"public\".\"title\"\nwhere \"code\" = "), Fragment.encode(TitleId.pgType, code), Fragment.lit("")).query(TitleRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -118,14 +84,7 @@ public class TitleRepoImpl implements TitleRepo {
     TitleId[] codes,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "code"
-         from "public"."title"
-         where "code" = ANY("""),
-      TitleId.pgTypeArray.encode(codes),
-      typo.runtime.Fragment.lit(")")
-    ).query(TitleRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"code\"\nfrom \"public\".\"title\"\nwhere \"code\" = ANY("), Fragment.encode(TitleId.pgTypeArray, codes), Fragment.lit(")")).query(TitleRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -140,7 +99,7 @@ public class TitleRepoImpl implements TitleRepo {
 
   @Override
   public UpdateBuilder<TitleFields, TitleRow> update() {
-    return UpdateBuilder.of("\"public\".\"title\"", TitleFields.structure(), TitleRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"public\".\"title\"", TitleFields.structure(), TitleRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -148,17 +107,7 @@ public class TitleRepoImpl implements TitleRepo {
     TitleRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."title"("code")
-         values ("""),
-      TitleId.pgType.encode(unsaved.code()),
-      typo.runtime.Fragment.lit("""
-         )
-         on conflict ("code")
-         do update set "code" = EXCLUDED."code"
-         returning "code\"""")
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"title\"(\"code\")\nvalues ("), Fragment.encode(TitleId.pgType, unsaved.code()), Fragment.lit(")\non conflict (\"code\")\ndo update set \"code\" = EXCLUDED.\"code\"\nreturning \"code\""))
       .updateReturning(TitleRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -168,14 +117,9 @@ public class TitleRepoImpl implements TitleRepo {
     Iterator<TitleRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "public"."title"("code")
-                values (?)
-                on conflict ("code")
-                do update set "code" = EXCLUDED."code"
-                returning "code\""""))
+    return interpolate(Fragment.lit("insert into \"public\".\"title\"(\"code\")\nvalues (?)\non conflict (\"code\")\ndo update set \"code\" = EXCLUDED.\"code\"\nreturning \"code\""))
       .updateManyReturning(TitleRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -185,18 +129,8 @@ public class TitleRepoImpl implements TitleRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table title_TEMP (like "public"."title") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy title_TEMP("code") from stdin
-    """), batchSize, unsaved, c, TitleRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "public"."title"("code")
-       select * from title_TEMP
-       on conflict ("code")
-       do nothing
-       ;
-       drop table title_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table title_TEMP (like \"public\".\"title\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy title_TEMP(\"code\") from stdin", batchSize, unsaved, c, TitleRow.pgText);
+    return interpolate(Fragment.lit("insert into \"public\".\"title\"(\"code\")\nselect * from title_TEMP\non conflict (\"code\")\ndo nothing\n;\ndrop table title_TEMP;")).update().runUnchecked(c);
   };
 }

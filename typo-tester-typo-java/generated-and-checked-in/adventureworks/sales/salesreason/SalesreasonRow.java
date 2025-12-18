@@ -6,9 +6,10 @@
 package adventureworks.sales.salesreason;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -26,7 +27,7 @@ public record SalesreasonRow(
   /** Category the sales reason belongs to. */
   Name reasontype,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for SalesReason records.
     * Default: nextval('sales.salesreason_salesreasonid_seq'::regclass)
@@ -46,11 +47,11 @@ public record SalesreasonRow(
   };
 
   /** Default: now() */
-  public SalesreasonRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SalesreasonRow withModifieddate(LocalDateTime modifieddate) {
     return new SalesreasonRow(salesreasonid, name, reasontype, modifieddate);
   };
 
-  static RowParser<SalesreasonRow> _rowParser = RowParsers.of(SalesreasonId.pgType, Name.pgType, Name.pgType, TypoLocalDateTime.pgType, SalesreasonRow::new, row -> new Object[]{row.salesreasonid(), row.name(), row.reasontype(), row.modifieddate()});;
+  static RowParser<SalesreasonRow> _rowParser = RowParsers.of(SalesreasonId.pgType, Name.pgType, Name.pgType, PgTypes.timestamp, SalesreasonRow::new, row -> new Object[]{row.salesreasonid(), row.name(), row.reasontype(), row.modifieddate()});;
 
   static public PgText<SalesreasonRow> pgText =
     PgText.from(_rowParser);
@@ -61,7 +62,7 @@ public record SalesreasonRow(
 
   public SalesreasonRowUnsaved toUnsavedRow(
     Defaulted<SalesreasonId> salesreasonid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new SalesreasonRowUnsaved(name, reasontype, salesreasonid, modifieddate);
   };

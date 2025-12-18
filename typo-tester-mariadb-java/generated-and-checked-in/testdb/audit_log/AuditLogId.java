@@ -17,6 +17,11 @@ public record AuditLogId(@JsonValue BigInteger value) {
     return new AuditLogId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<AuditLogId, BigInteger> bijection =
     Bijection.of(AuditLogId::value, AuditLogId::new);
 

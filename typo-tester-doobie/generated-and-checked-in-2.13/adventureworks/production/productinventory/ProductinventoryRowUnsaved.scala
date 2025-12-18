@@ -27,7 +27,7 @@ case class ProductinventoryRowUnsaved(
    */
   locationid: LocationId,
   /** Storage compartment within an inventory location. */
-  shelf: /* max 10 chars */ String,
+  shelf: String,
   /** Storage container on a shelf in an inventory location.
    * Constraint CK_ProductInventory_Bin affecting columns bin:  (((bin >= 0) AND (bin <= 100)))
    */
@@ -59,9 +59,9 @@ case class ProductinventoryRowUnsaved(
 }
 
 object ProductinventoryRowUnsaved {
-  implicit lazy val decoder: Decoder[ProductinventoryRowUnsaved] = Decoder.forProduct7[ProductinventoryRowUnsaved, ProductId, LocationId, /* max 10 chars */ String, TypoShort, Defaulted[TypoShort], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(ProductinventoryRowUnsaved.apply)(ProductId.decoder, LocationId.decoder, Decoder.decodeString, TypoShort.decoder, Defaulted.decoder(TypoShort.decoder), Defaulted.decoder(TypoUUID.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+  implicit lazy val decoder: Decoder[ProductinventoryRowUnsaved] = Decoder.forProduct7[ProductinventoryRowUnsaved, ProductId, LocationId, String, TypoShort, Defaulted[TypoShort], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(ProductinventoryRowUnsaved.apply)(ProductId.decoder, LocationId.decoder, Decoder.decodeString, TypoShort.decoder, Defaulted.decoder(TypoShort.decoder), Defaulted.decoder(TypoUUID.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
 
-  implicit lazy val encoder: Encoder[ProductinventoryRowUnsaved] = Encoder.forProduct7[ProductinventoryRowUnsaved, ProductId, LocationId, /* max 10 chars */ String, TypoShort, Defaulted[TypoShort], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(x => (x.productid, x.locationid, x.shelf, x.bin, x.quantity, x.rowguid, x.modifieddate))(ProductId.encoder, LocationId.encoder, Encoder.encodeString, TypoShort.encoder, Defaulted.encoder(TypoShort.encoder), Defaulted.encoder(TypoUUID.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
+  implicit lazy val encoder: Encoder[ProductinventoryRowUnsaved] = Encoder.forProduct7[ProductinventoryRowUnsaved, ProductId, LocationId, String, TypoShort, Defaulted[TypoShort], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(x => (x.productid, x.locationid, x.shelf, x.bin, x.quantity, x.rowguid, x.modifieddate))(ProductId.encoder, LocationId.encoder, Encoder.encodeString, TypoShort.encoder, Defaulted.encoder(TypoShort.encoder), Defaulted.encoder(TypoUUID.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
 
   implicit lazy val pgText: Text[ProductinventoryRowUnsaved] = {
     Text.instance[ProductinventoryRowUnsaved]{ (row, sb) =>

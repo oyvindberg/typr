@@ -18,16 +18,16 @@ import testdb.products.ProductsRow;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface ProductPricesFields extends FieldsExpr<ProductPricesRow> {
-  record Impl(List<Path> _path) implements ProductPricesFields, Relation<ProductPricesFields, ProductPricesRow> {
+  record Impl(List<Path> _path) implements ProductPricesFields, RelationStructure<ProductPricesFields, ProductPricesRow> {
     @Override
     public IdField<ProductPricesId, ProductPricesRow> priceId() {
       return new IdField<ProductPricesId, ProductPricesRow>(_path, "price_id", ProductPricesRow::priceId, Optional.empty(), Optional.empty(), (row, value) -> row.withPriceId(value), ProductPricesId.pgType);
@@ -45,7 +45,7 @@ public interface ProductPricesFields extends FieldsExpr<ProductPricesRow> {
 
     @Override
     public Field<BigDecimal, ProductPricesRow> price() {
-      return new Field<BigDecimal, ProductPricesRow>(_path, "price", ProductPricesRow::price, Optional.empty(), Optional.empty(), (row, value) -> row.withPrice(value), MariaTypes.decimal);
+      return new Field<BigDecimal, ProductPricesRow>(_path, "price", ProductPricesRow::price, Optional.empty(), Optional.empty(), (row, value) -> row.withPrice(value), MariaTypes.numeric);
     };
 
     @Override
@@ -65,17 +65,17 @@ public interface ProductPricesFields extends FieldsExpr<ProductPricesRow> {
 
     @Override
     public List<FieldLike<?, ProductPricesRow>> columns() {
-      return List.of(this.priceId(), this.productId(), this.tierId(), this.price(), this.currencyCode(), this.validFrom(), this.validTo());
+      return java.util.List.of(this.priceId(), this.productId(), this.tierId(), this.price(), this.currencyCode(), this.validFrom(), this.validTo());
     };
 
     @Override
-    public Relation<ProductPricesFields, ProductPricesRow> copy(List<Path> _path) {
+    public RelationStructure<ProductPricesFields, ProductPricesRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ProductPricesId, ProductPricesRow> priceId();
@@ -93,11 +93,11 @@ public interface ProductPricesFields extends FieldsExpr<ProductPricesRow> {
   OptField<LocalDate, ProductPricesRow> validTo();
 
   default ForeignKey<ProductsFields, ProductsRow> fkProducts() {
-    return ForeignKey.<ProductsFields, ProductsRow>of("fk_pp_product").withColumnPair(productId(), ProductsFields::productId);
+    return ForeignKey.<ProductsFields, ProductsRow>of("fk_pp_product").<ProductsId>withColumnPair(productId(), ProductsFields::productId);
   };
 
   default ForeignKey<PriceTiersFields, PriceTiersRow> fkPriceTiers() {
-    return ForeignKey.<PriceTiersFields, PriceTiersRow>of("fk_pp_tier").withColumnPair(tierId(), PriceTiersFields::tierId);
+    return ForeignKey.<PriceTiersFields, PriceTiersRow>of("fk_pp_tier").<PriceTiersId>withColumnPair(tierId(), PriceTiersFields::tierId);
   };
 
   @Override

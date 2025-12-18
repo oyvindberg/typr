@@ -22,25 +22,25 @@ import zio.json.internal.Write
 /** View: pr.d */
 case class DViewRow(
   /** Points to [[adventureworks.production.document.DocumentRow.title]] */
-  title: /* max 50 chars */ String,
+  title: String,
   /** Points to [[adventureworks.production.document.DocumentRow.owner]] */
   owner: BusinessentityId,
   /** Points to [[adventureworks.production.document.DocumentRow.folderflag]] */
   folderflag: Flag,
   /** Points to [[adventureworks.production.document.DocumentRow.filename]] */
-  filename: /* max 400 chars */ String,
+  filename: String,
   /** Points to [[adventureworks.production.document.DocumentRow.fileextension]] */
-  fileextension: Option[/* max 8 chars */ String],
+  fileextension: String,
   /** Points to [[adventureworks.production.document.DocumentRow.revision]] */
-  revision: /* bpchar, max 5 chars */ String,
+  revision: String,
   /** Points to [[adventureworks.production.document.DocumentRow.changenumber]] */
   changenumber: Int,
   /** Points to [[adventureworks.production.document.DocumentRow.status]] */
   status: TypoShort,
   /** Points to [[adventureworks.production.document.DocumentRow.documentsummary]] */
-  documentsummary: Option[String],
+  documentsummary: String,
   /** Points to [[adventureworks.production.document.DocumentRow.document]] */
-  document: Option[TypoBytea],
+  document: TypoBytea,
   /** Points to [[adventureworks.production.document.DocumentRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.document.DocumentRow.modifieddate]] */
@@ -59,12 +59,12 @@ object DViewRow {
             owner = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             folderflag = Flag.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
             filename = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 3, rs)._2,
-            fileextension = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 4, rs)._2,
+            fileextension = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 4, rs)._2,
             revision = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 5, rs)._2,
             changenumber = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 6, rs)._2,
             status = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
-            documentsummary = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 8, rs)._2,
-            document = JdbcDecoder.optionDecoder(using TypoBytea.jdbcDecoder).unsafeDecode(columIndex + 9, rs)._2,
+            documentsummary = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 8, rs)._2,
+            document = TypoBytea.jdbcDecoder.unsafeDecode(columIndex + 9, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 11, rs)._2,
             documentnode = DocumentId.jdbcDecoder.unsafeDecode(columIndex + 12, rs)._2
@@ -78,12 +78,12 @@ object DViewRow {
       val owner = jsonObj.get("owner").toRight("Missing field 'owner'").flatMap(_.as(using BusinessentityId.jsonDecoder))
       val folderflag = jsonObj.get("folderflag").toRight("Missing field 'folderflag'").flatMap(_.as(using Flag.jsonDecoder))
       val filename = jsonObj.get("filename").toRight("Missing field 'filename'").flatMap(_.as(using JsonDecoder.string))
-      val fileextension = jsonObj.get("fileextension").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val fileextension = jsonObj.get("fileextension").toRight("Missing field 'fileextension'").flatMap(_.as(using JsonDecoder.string))
       val revision = jsonObj.get("revision").toRight("Missing field 'revision'").flatMap(_.as(using JsonDecoder.string))
       val changenumber = jsonObj.get("changenumber").toRight("Missing field 'changenumber'").flatMap(_.as(using JsonDecoder.int))
       val status = jsonObj.get("status").toRight("Missing field 'status'").flatMap(_.as(using TypoShort.jsonDecoder))
-      val documentsummary = jsonObj.get("documentsummary").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val document = jsonObj.get("document").fold[Either[String, Option[TypoBytea]]](Right(None))(_.as(using JsonDecoder.option(using TypoBytea.jsonDecoder)))
+      val documentsummary = jsonObj.get("documentsummary").toRight("Missing field 'documentsummary'").flatMap(_.as(using JsonDecoder.string))
+      val document = jsonObj.get("document").toRight("Missing field 'document'").flatMap(_.as(using TypoBytea.jsonDecoder))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       val documentnode = jsonObj.get("documentnode").toRight("Missing field 'documentnode'").flatMap(_.as(using DocumentId.jsonDecoder))
@@ -110,7 +110,7 @@ object DViewRow {
         JsonEncoder.string.unsafeEncode(a.filename, indent, out)
         out.write(",")
         out.write(""""fileextension":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.fileextension, indent, out)
+        JsonEncoder.string.unsafeEncode(a.fileextension, indent, out)
         out.write(",")
         out.write(""""revision":""")
         JsonEncoder.string.unsafeEncode(a.revision, indent, out)
@@ -122,10 +122,10 @@ object DViewRow {
         TypoShort.jsonEncoder.unsafeEncode(a.status, indent, out)
         out.write(",")
         out.write(""""documentsummary":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.documentsummary, indent, out)
+        JsonEncoder.string.unsafeEncode(a.documentsummary, indent, out)
         out.write(",")
         out.write(""""document":""")
-        JsonEncoder.option(using TypoBytea.jsonEncoder).unsafeEncode(a.document, indent, out)
+        TypoBytea.jsonEncoder.unsafeEncode(a.document, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

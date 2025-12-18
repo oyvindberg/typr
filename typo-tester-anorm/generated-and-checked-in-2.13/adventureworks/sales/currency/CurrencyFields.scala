@@ -8,10 +8,10 @@ package adventureworks.sales.currency
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait CurrencyFields {
   def currencycode: IdField[CurrencyId, CurrencyRow]
@@ -20,11 +20,11 @@ trait CurrencyFields {
 }
 
 object CurrencyFields {
-  lazy val structure: Relation[CurrencyFields, CurrencyRow] =
+  lazy val structure: RelationStructure[CurrencyFields, CurrencyRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[CurrencyFields, CurrencyRow] {
+    extends RelationStructure[CurrencyFields, CurrencyRow] {
 
     override lazy val fields: CurrencyFields = new CurrencyFields {
       override def currencycode = IdField[CurrencyId, CurrencyRow](_path, "currencycode", None, Some("bpchar"), x => x.currencycode, (row, value) => row.copy(currencycode = value))

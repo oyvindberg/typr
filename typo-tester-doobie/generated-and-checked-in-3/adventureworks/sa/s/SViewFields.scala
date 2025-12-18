@@ -11,34 +11,33 @@ import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait SViewFields {
   def id: Field[BusinessentityId, SViewRow]
   def businessentityid: Field[BusinessentityId, SViewRow]
   def name: Field[Name, SViewRow]
-  def salespersonid: OptField[BusinessentityId, SViewRow]
-  def demographics: OptField[TypoXml, SViewRow]
+  def salespersonid: Field[BusinessentityId, SViewRow]
+  def demographics: Field[TypoXml, SViewRow]
   def rowguid: Field[TypoUUID, SViewRow]
   def modifieddate: Field[TypoLocalDateTime, SViewRow]
 }
 
 object SViewFields {
-  lazy val structure: Relation[SViewFields, SViewRow] =
+  lazy val structure: RelationStructure[SViewFields, SViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SViewFields, SViewRow] {
+    extends RelationStructure[SViewFields, SViewRow] {
 
     override lazy val fields: SViewFields = new SViewFields {
       override def id = Field[BusinessentityId, SViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, SViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def name = Field[Name, SViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
-      override def salespersonid = OptField[BusinessentityId, SViewRow](_path, "salespersonid", None, None, x => x.salespersonid, (row, value) => row.copy(salespersonid = value))
-      override def demographics = OptField[TypoXml, SViewRow](_path, "demographics", None, None, x => x.demographics, (row, value) => row.copy(demographics = value))
+      override def salespersonid = Field[BusinessentityId, SViewRow](_path, "salespersonid", None, None, x => x.salespersonid, (row, value) => row.copy(salespersonid = value))
+      override def demographics = Field[TypoXml, SViewRow](_path, "demographics", None, None, x => x.demographics, (row, value) => row.copy(demographics = value))
       override def rowguid = Field[TypoUUID, SViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, SViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }

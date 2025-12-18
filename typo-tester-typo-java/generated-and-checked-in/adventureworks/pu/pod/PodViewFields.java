@@ -5,23 +5,22 @@
  */
 package adventureworks.pu.pod;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PodViewFields extends FieldsExpr<PodViewRow> {
-  record Impl(List<Path> _path) implements PodViewFields, Relation<PodViewFields, PodViewRow> {
+  record Impl(List<Path> _path) implements PodViewFields, RelationStructure<PodViewFields, PodViewRow> {
     @Override
     public Field<Integer, PodViewRow> id() {
       return new Field<Integer, PodViewRow>(_path, "id", PodViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), PgTypes.int4);
@@ -38,13 +37,13 @@ public interface PodViewFields extends FieldsExpr<PodViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PodViewRow> duedate() {
-      return new Field<TypoLocalDateTime, PodViewRow>(_path, "duedate", PodViewRow::duedate, Optional.of("text"), Optional.empty(), (row, value) -> row.withDuedate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PodViewRow> duedate() {
+      return new Field<LocalDateTime, PodViewRow>(_path, "duedate", PodViewRow::duedate, Optional.empty(), Optional.empty(), (row, value) -> row.withDuedate(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field<TypoShort, PodViewRow> orderqty() {
-      return new Field<TypoShort, PodViewRow>(_path, "orderqty", PodViewRow::orderqty, Optional.empty(), Optional.empty(), (row, value) -> row.withOrderqty(value), TypoShort.pgType);
+    public Field<Short, PodViewRow> orderqty() {
+      return new Field<Short, PodViewRow>(_path, "orderqty", PodViewRow::orderqty, Optional.empty(), Optional.empty(), (row, value) -> row.withOrderqty(value), PgTypes.int2);
     };
 
     @Override
@@ -68,23 +67,23 @@ public interface PodViewFields extends FieldsExpr<PodViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PodViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PodViewRow>(_path, "modifieddate", PodViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PodViewRow> modifieddate() {
+      return new Field<LocalDateTime, PodViewRow>(_path, "modifieddate", PodViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PodViewRow>> columns() {
-      return List.of(this.id(), this.purchaseorderid(), this.purchaseorderdetailid(), this.duedate(), this.orderqty(), this.productid(), this.unitprice(), this.receivedqty(), this.rejectedqty(), this.modifieddate());
+      return java.util.List.of(this.id(), this.purchaseorderid(), this.purchaseorderdetailid(), this.duedate(), this.orderqty(), this.productid(), this.unitprice(), this.receivedqty(), this.rejectedqty(), this.modifieddate());
     };
 
     @Override
-    public Relation<PodViewFields, PodViewRow> copy(List<Path> _path) {
+    public RelationStructure<PodViewFields, PodViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<Integer, PodViewRow> id();
@@ -93,9 +92,9 @@ public interface PodViewFields extends FieldsExpr<PodViewRow> {
 
   Field<Integer, PodViewRow> purchaseorderdetailid();
 
-  Field<TypoLocalDateTime, PodViewRow> duedate();
+  Field<LocalDateTime, PodViewRow> duedate();
 
-  Field<TypoShort, PodViewRow> orderqty();
+  Field<Short, PodViewRow> orderqty();
 
   Field<ProductId, PodViewRow> productid();
 
@@ -105,7 +104,7 @@ public interface PodViewFields extends FieldsExpr<PodViewRow> {
 
   Field<BigDecimal, PodViewRow> rejectedqty();
 
-  Field<TypoLocalDateTime, PodViewRow> modifieddate();
+  Field<LocalDateTime, PodViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PodViewRow>> columns();

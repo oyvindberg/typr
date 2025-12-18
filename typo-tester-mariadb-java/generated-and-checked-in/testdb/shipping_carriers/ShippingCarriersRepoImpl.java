@@ -17,7 +17,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -32,11 +31,7 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     ShippingCarriersId carrierId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `shipping_carriers` where `carrier_id` = "),
-      ShippingCarriersId.pgType.encode(carrierId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `shipping_carriers` where `carrier_id` = "), Fragment.encode(ShippingCarriersId.pgType, carrierId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,8 +39,8 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     ShippingCarriersId[] carrierIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : carrierIds) { fragments.add(ShippingCarriersId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : carrierIds) { fragments.add(Fragment.encode(ShippingCarriersId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `shipping_carriers` where `carrier_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -54,24 +49,7 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     ShippingCarriersRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
-         values ("""),
-      MariaTypes.text.encode(unsaved.code()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.trackingUrlTemplate()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.apiConfig()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isActive()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.code()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.trackingUrlTemplate()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.apiConfig()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isActive()), Fragment.lit(")\nreturning `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`\n"))
       .updateReturning(ShippingCarriersRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -80,31 +58,19 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     ShippingCarriersRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`code`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.code()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.code()), Fragment.lit("")));
     columns.add(Fragment.lit("`name`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit("")));
     unsaved.trackingUrlTemplate().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`tracking_url_template`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.apiConfig().visit(
@@ -113,11 +79,7 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`api_config`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.isActive().visit(
@@ -126,25 +88,10 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`is_active`"));
-        values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `shipping_carriers`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `shipping_carriers`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`\n"));;
     return q.updateReturning(ShippingCarriersRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -155,10 +102,7 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
 
   @Override
   public List<ShippingCarriersRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
-       from `shipping_carriers`
-    """)).query(ShippingCarriersRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`\nfrom `shipping_carriers`\n")).query(ShippingCarriersRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -166,14 +110,7 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     ShippingCarriersId carrierId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
-         from `shipping_carriers`
-         where `carrier_id` = """),
-      ShippingCarriersId.pgType.encode(carrierId),
-      typo.runtime.Fragment.lit("")
-    ).query(ShippingCarriersRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`\nfrom `shipping_carriers`\nwhere `carrier_id` = "), Fragment.encode(ShippingCarriersId.pgType, carrierId), Fragment.lit("")).query(ShippingCarriersRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -181,8 +118,8 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     ShippingCarriersId[] carrierIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : carrierIds) { fragments.add(ShippingCarriersId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : carrierIds) { fragments.add(Fragment.encode(ShippingCarriersId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active` from `shipping_carriers` where `carrier_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ShippingCarriersRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -201,22 +138,12 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     String code,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
-         from `shipping_carriers`
-         where `code` = """),
-      MariaTypes.text.encode(code),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(ShippingCarriersRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`\nfrom `shipping_carriers`\nwhere `code` = "), Fragment.encode(MariaTypes.varchar, code), Fragment.lit("\n")).query(ShippingCarriersRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<ShippingCarriersFields, ShippingCarriersRow> update() {
-    return UpdateBuilder.of("`shipping_carriers`", ShippingCarriersFields.structure(), ShippingCarriersRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`shipping_carriers`", ShippingCarriersFields.structure(), ShippingCarriersRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -225,33 +152,7 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     Connection c
   ) {
     ShippingCarriersId carrierId = row.carrierId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `shipping_carriers`
-         set `code` = """),
-      MariaTypes.text.encode(row.code()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `name` = """),
-      MariaTypes.text.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `tracking_url_template` = """),
-      MariaTypes.text.opt().encode(row.trackingUrlTemplate()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `api_config` = """),
-      MariaTypes.text.opt().encode(row.apiConfig()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `is_active` = """),
-      MariaTypes.bool.encode(row.isActive()),
-      typo.runtime.Fragment.lit("""
-   
-         where `carrier_id` = """),
-      ShippingCarriersId.pgType.encode(carrierId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `shipping_carriers`\nset `code` = "), Fragment.encode(MariaTypes.varchar, row.code()), Fragment.lit(",\n`name` = "), Fragment.encode(MariaTypes.varchar, row.name()), Fragment.lit(",\n`tracking_url_template` = "), Fragment.encode(MariaTypes.varchar.opt(), row.trackingUrlTemplate()), Fragment.lit(",\n`api_config` = "), Fragment.encode(MariaTypes.longtext.opt(), row.apiConfig()), Fragment.lit(",\n`is_active` = "), Fragment.encode(MariaTypes.bool, row.isActive()), Fragment.lit("\nwhere `carrier_id` = "), Fragment.encode(ShippingCarriersId.pgType, carrierId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -259,28 +160,7 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     ShippingCarriersRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
-         VALUES ("""),
-      MariaTypes.text.encode(unsaved.code()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.trackingUrlTemplate()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.apiConfig()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isActive()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
-         `name` = VALUES(`name`),
-         `tracking_url_template` = VALUES(`tracking_url_template`),
-         `api_config` = VALUES(`api_config`),
-         `is_active` = VALUES(`is_active`)
-         RETURNING `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.code()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.trackingUrlTemplate()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.apiConfig()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isActive()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`tracking_url_template` = VALUES(`tracking_url_template`),\n`api_config` = VALUES(`api_config`),\n`is_active` = VALUES(`is_active`)\nRETURNING `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`"))
       .updateReturning(ShippingCarriersRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -290,16 +170,8 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     Iterator<ShippingCarriersRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `shipping_carriers`(`carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
-                VALUES (?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
-                `name` = VALUES(`name`),
-                `tracking_url_template` = VALUES(`tracking_url_template`),
-                `api_config` = VALUES(`api_config`),
-                `is_active` = VALUES(`is_active`)
-                RETURNING `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`"""))
+    return interpolate(Fragment.lit("INSERT INTO `shipping_carriers`(`carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`)\nVALUES (?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`tracking_url_template` = VALUES(`tracking_url_template`),\n`api_config` = VALUES(`api_config`),\n`is_active` = VALUES(`is_active`)\nRETURNING `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`"))
       .updateReturningEach(ShippingCarriersRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

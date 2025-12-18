@@ -6,8 +6,8 @@
 package adventureworks.sales.shoppingcartitem;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -23,7 +23,7 @@ public record ShoppingcartitemRow(
     */
   ShoppingcartitemId shoppingcartitemid,
   /** Shopping cart identification number. */
-  /* max 50 chars */ String shoppingcartid,
+  String shoppingcartid,
   /** Product quantity ordered.
     * Default: 1
     * Constraint CK_ShoppingCartItem_Quantity affecting columns quantity: ((quantity >= 1))
@@ -36,9 +36,9 @@ public record ShoppingcartitemRow(
   /** Date the time the record was created.
     * Default: now()
     */
-  TypoLocalDateTime datecreated,
+  LocalDateTime datecreated,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for ShoppingCartItem records.
     * Default: nextval('sales.shoppingcartitem_shoppingcartitemid_seq'::regclass)
@@ -48,7 +48,7 @@ public record ShoppingcartitemRow(
   };
 
   /** Shopping cart identification number. */
-  public ShoppingcartitemRow withShoppingcartid(/* max 50 chars */ String shoppingcartid) {
+  public ShoppingcartitemRow withShoppingcartid(String shoppingcartid) {
     return new ShoppingcartitemRow(shoppingcartitemid, shoppingcartid, quantity, productid, datecreated, modifieddate);
   };
 
@@ -70,16 +70,16 @@ public record ShoppingcartitemRow(
   /** Date the time the record was created.
     * Default: now()
     */
-  public ShoppingcartitemRow withDatecreated(TypoLocalDateTime datecreated) {
+  public ShoppingcartitemRow withDatecreated(LocalDateTime datecreated) {
     return new ShoppingcartitemRow(shoppingcartitemid, shoppingcartid, quantity, productid, datecreated, modifieddate);
   };
 
   /** Default: now() */
-  public ShoppingcartitemRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ShoppingcartitemRow withModifieddate(LocalDateTime modifieddate) {
     return new ShoppingcartitemRow(shoppingcartitemid, shoppingcartid, quantity, productid, datecreated, modifieddate);
   };
 
-  static RowParser<ShoppingcartitemRow> _rowParser = RowParsers.of(ShoppingcartitemId.pgType, PgTypes.text, PgTypes.int4, ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, ShoppingcartitemRow::new, row -> new Object[]{row.shoppingcartitemid(), row.shoppingcartid(), row.quantity(), row.productid(), row.datecreated(), row.modifieddate()});;
+  static RowParser<ShoppingcartitemRow> _rowParser = RowParsers.of(ShoppingcartitemId.pgType, PgTypes.text, PgTypes.int4, ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp, ShoppingcartitemRow::new, row -> new Object[]{row.shoppingcartitemid(), row.shoppingcartid(), row.quantity(), row.productid(), row.datecreated(), row.modifieddate()});;
 
   static public PgText<ShoppingcartitemRow> pgText =
     PgText.from(_rowParser);
@@ -91,8 +91,8 @@ public record ShoppingcartitemRow(
   public ShoppingcartitemRowUnsaved toUnsavedRow(
     Defaulted<ShoppingcartitemId> shoppingcartitemid,
     Defaulted<Integer> quantity,
-    Defaulted<TypoLocalDateTime> datecreated,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> datecreated,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ShoppingcartitemRowUnsaved(shoppingcartid, productid, shoppingcartitemid, quantity, datecreated, modifieddate);
   };

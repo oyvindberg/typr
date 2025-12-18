@@ -6,17 +6,16 @@
 package testdb.reviews
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait ReviewsRepo {
   def delete: DeleteBuilder[ReviewsFields, ReviewsRow]
 
-  def deleteById(reviewId: ReviewsId)(using c: Connection): java.lang.Boolean
+  def deleteById(reviewId: ReviewsId)(using c: Connection): Boolean
 
-  def deleteByIds(reviewIds: Array[ReviewsId])(using c: Connection): Integer
+  def deleteByIds(reviewIds: Array[ReviewsId])(using c: Connection): Int
 
   def insert(unsaved: ReviewsRow)(using c: Connection): ReviewsRow
 
@@ -24,19 +23,19 @@ trait ReviewsRepo {
 
   def select: SelectBuilder[ReviewsFields, ReviewsRow]
 
-  def selectAll(using c: Connection): java.util.List[ReviewsRow]
+  def selectAll(using c: Connection): List[ReviewsRow]
 
-  def selectById(reviewId: ReviewsId)(using c: Connection): Optional[ReviewsRow]
+  def selectById(reviewId: ReviewsId)(using c: Connection): Option[ReviewsRow]
 
-  def selectByIds(reviewIds: Array[ReviewsId])(using c: Connection): java.util.List[ReviewsRow]
+  def selectByIds(reviewIds: Array[ReviewsId])(using c: Connection): List[ReviewsRow]
 
-  def selectByIdsTracked(reviewIds: Array[ReviewsId])(using c: Connection): java.util.Map[ReviewsId, ReviewsRow]
+  def selectByIdsTracked(reviewIds: Array[ReviewsId])(using c: Connection): Map[ReviewsId, ReviewsRow]
 
   def update: UpdateBuilder[ReviewsFields, ReviewsRow]
 
-  def update(row: ReviewsRow)(using c: Connection): java.lang.Boolean
+  def update(row: ReviewsRow)(using c: Connection): Boolean
 
   def upsert(unsaved: ReviewsRow)(using c: Connection): ReviewsRow
 
-  def upsertBatch(unsaved: java.util.Iterator[ReviewsRow])(using c: Connection): java.util.List[ReviewsRow]
+  def upsertBatch(unsaved: Iterator[ReviewsRow])(using c: Connection): List[ReviewsRow]
 }

@@ -12,18 +12,18 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VsalespersonsalesbyfiscalyearsdataViewFields extends FieldsExpr<VsalespersonsalesbyfiscalyearsdataViewRow> {
-  record Impl(List<Path> _path) implements VsalespersonsalesbyfiscalyearsdataViewFields, Relation<VsalespersonsalesbyfiscalyearsdataViewFields, VsalespersonsalesbyfiscalyearsdataViewRow> {
+  record Impl(List<Path> _path) implements VsalespersonsalesbyfiscalyearsdataViewFields, RelationStructure<VsalespersonsalesbyfiscalyearsdataViewFields, VsalespersonsalesbyfiscalyearsdataViewRow> {
     @Override
-    public OptField<BusinessentityId, VsalespersonsalesbyfiscalyearsdataViewRow> salespersonid() {
-      return new OptField<BusinessentityId, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "salespersonid", VsalespersonsalesbyfiscalyearsdataViewRow::salespersonid, Optional.empty(), Optional.empty(), (row, value) -> row.withSalespersonid(value), BusinessentityId.pgType);
+    public Field<BusinessentityId, VsalespersonsalesbyfiscalyearsdataViewRow> salespersonid() {
+      return new Field<BusinessentityId, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "salespersonid", VsalespersonsalesbyfiscalyearsdataViewRow::salespersonid, Optional.empty(), Optional.empty(), (row, value) -> row.withSalespersonid(value), BusinessentityId.pgType);
     };
 
     @Override
@@ -32,8 +32,8 @@ public interface VsalespersonsalesbyfiscalyearsdataViewFields extends FieldsExpr
     };
 
     @Override
-    public Field</* max 50 chars */ String, VsalespersonsalesbyfiscalyearsdataViewRow> jobtitle() {
-      return new Field</* max 50 chars */ String, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "jobtitle", VsalespersonsalesbyfiscalyearsdataViewRow::jobtitle, Optional.empty(), Optional.empty(), (row, value) -> row.withJobtitle(value), PgTypes.text);
+    public Field<String, VsalespersonsalesbyfiscalyearsdataViewRow> jobtitle() {
+      return new Field<String, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "jobtitle", VsalespersonsalesbyfiscalyearsdataViewRow::jobtitle, Optional.empty(), Optional.empty(), (row, value) -> row.withJobtitle(value), PgTypes.text);
     };
 
     @Override
@@ -53,24 +53,24 @@ public interface VsalespersonsalesbyfiscalyearsdataViewFields extends FieldsExpr
 
     @Override
     public List<FieldLike<?, VsalespersonsalesbyfiscalyearsdataViewRow>> columns() {
-      return List.of(this.salespersonid(), this.fullname(), this.jobtitle(), this.salesterritory(), this.salestotal(), this.fiscalyear());
+      return java.util.List.of(this.salespersonid(), this.fullname(), this.jobtitle(), this.salesterritory(), this.salestotal(), this.fiscalyear());
     };
 
     @Override
-    public Relation<VsalespersonsalesbyfiscalyearsdataViewFields, VsalespersonsalesbyfiscalyearsdataViewRow> copy(List<Path> _path) {
+    public RelationStructure<VsalespersonsalesbyfiscalyearsdataViewFields, VsalespersonsalesbyfiscalyearsdataViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
-  OptField<BusinessentityId, VsalespersonsalesbyfiscalyearsdataViewRow> salespersonid();
+  Field<BusinessentityId, VsalespersonsalesbyfiscalyearsdataViewRow> salespersonid();
 
   Field<String, VsalespersonsalesbyfiscalyearsdataViewRow> fullname();
 
-  Field</* max 50 chars */ String, VsalespersonsalesbyfiscalyearsdataViewRow> jobtitle();
+  Field<String, VsalespersonsalesbyfiscalyearsdataViewRow> jobtitle();
 
   Field<Name, VsalespersonsalesbyfiscalyearsdataViewRow> salesterritory();
 

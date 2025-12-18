@@ -21,23 +21,23 @@ case class VvendorwithaddressesViewRow(
   /** Points to [[adventureworks.person.addresstype.AddresstypeRow.name]] */
   addresstype: Name,
   /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
-  addressline1: /* max 60 chars */ String,
+  addressline1: String,
   /** Points to [[adventureworks.person.address.AddressRow.addressline2]] */
-  addressline2: Option[/* max 60 chars */ String],
+  addressline2: String,
   /** Points to [[adventureworks.person.address.AddressRow.city]] */
-  city: /* max 30 chars */ String,
+  city: String,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.name]] */
   stateprovincename: Name,
   /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
-  postalcode: /* max 15 chars */ String,
+  postalcode: String,
   /** Points to [[adventureworks.person.countryregion.CountryregionRow.name]] */
   countryregionname: Name
 )
 
 object VvendorwithaddressesViewRow {
-  given decoder: Decoder[VvendorwithaddressesViewRow] = Decoder.forProduct9[VvendorwithaddressesViewRow, BusinessentityId, Name, Name, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, Name, /* max 15 chars */ String, Name]("businessentityid", "name", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname")(VvendorwithaddressesViewRow.apply)(using BusinessentityId.decoder, Name.decoder, Name.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Name.decoder, Decoder.decodeString, Name.decoder)
+  given decoder: Decoder[VvendorwithaddressesViewRow] = Decoder.forProduct9[VvendorwithaddressesViewRow, BusinessentityId, Name, Name, String, String, String, Name, String, Name]("businessentityid", "name", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname")(VvendorwithaddressesViewRow.apply)(using BusinessentityId.decoder, Name.decoder, Name.decoder, Decoder.decodeString, Decoder.decodeString, Decoder.decodeString, Name.decoder, Decoder.decodeString, Name.decoder)
 
-  given encoder: Encoder[VvendorwithaddressesViewRow] = Encoder.forProduct9[VvendorwithaddressesViewRow, BusinessentityId, Name, Name, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, Name, /* max 15 chars */ String, Name]("businessentityid", "name", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname")(x => (x.businessentityid, x.name, x.addresstype, x.addressline1, x.addressline2, x.city, x.stateprovincename, x.postalcode, x.countryregionname))(using BusinessentityId.encoder, Name.encoder, Name.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Name.encoder, Encoder.encodeString, Name.encoder)
+  given encoder: Encoder[VvendorwithaddressesViewRow] = Encoder.forProduct9[VvendorwithaddressesViewRow, BusinessentityId, Name, Name, String, String, String, Name, String, Name]("businessentityid", "name", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname")(x => (x.businessentityid, x.name, x.addresstype, x.addressline1, x.addressline2, x.city, x.stateprovincename, x.postalcode, x.countryregionname))(using BusinessentityId.encoder, Name.encoder, Name.encoder, Encoder.encodeString, Encoder.encodeString, Encoder.encodeString, Name.encoder, Encoder.encodeString, Name.encoder)
 
   given read: Read[VvendorwithaddressesViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -45,7 +45,7 @@ object VvendorwithaddressesViewRow {
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
@@ -55,11 +55,11 @@ object VvendorwithaddressesViewRow {
         businessentityid = arr(0).asInstanceOf[BusinessentityId],
             name = arr(1).asInstanceOf[Name],
             addresstype = arr(2).asInstanceOf[Name],
-            addressline1 = arr(3).asInstanceOf[/* max 60 chars */ String],
-            addressline2 = arr(4).asInstanceOf[Option[/* max 60 chars */ String]],
-            city = arr(5).asInstanceOf[/* max 30 chars */ String],
+            addressline1 = arr(3).asInstanceOf[String],
+            addressline2 = arr(4).asInstanceOf[String],
+            city = arr(5).asInstanceOf[String],
             stateprovincename = arr(6).asInstanceOf[Name],
-            postalcode = arr(7).asInstanceOf[/* max 15 chars */ String],
+            postalcode = arr(7).asInstanceOf[String],
             countryregionname = arr(8).asInstanceOf[Name]
       )
     }

@@ -5,15 +5,15 @@
  */
 package adventureworks.person_detail;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import java.sql.Connection;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PersonDetailSqlRepo {
   List<PersonDetailSqlRow> apply(
     /* user-picked */ BusinessentityId businessentityid,
-    TypoLocalDateTime modifiedAfter,
+    LocalDateTime modifiedAfter,
     Connection c
   );
 }

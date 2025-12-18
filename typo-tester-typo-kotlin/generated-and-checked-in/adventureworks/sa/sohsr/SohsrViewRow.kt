@@ -5,11 +5,12 @@
  */
 package adventureworks.sa.sohsr
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesreason.SalesreasonId
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: sa.sohsr */
 data class SohsrViewRow(
@@ -18,9 +19,9 @@ data class SohsrViewRow(
   /** Points to [adventureworks.sales.salesorderheadersalesreason.SalesorderheadersalesreasonRow.salesreasonid] */
   val salesreasonid: SalesreasonId,
   /** Points to [adventureworks.sales.salesorderheadersalesreason.SalesorderheadersalesreasonRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SohsrViewRow> = RowParsers.of(SalesorderheaderId.pgType, SalesreasonId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> SohsrViewRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.salesorderid, row.salesreasonid, row.modifieddate) })
+    val _rowParser: RowParser<SohsrViewRow> = RowParsers.of(SalesorderheaderId.pgType, SalesreasonId.pgType, PgTypes.timestamp, { t0, t1, t2 -> SohsrViewRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.salesorderid, row.salesreasonid, row.modifieddate) })
   }
 }

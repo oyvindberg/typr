@@ -9,44 +9,44 @@ import adventureworks.customtypes.TypoMoney
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait VstorewithdemographicsViewFields {
   def businessentityid: Field[BusinessentityId, VstorewithdemographicsViewRow]
   def name: Field[Name, VstorewithdemographicsViewRow]
   def annualSales: Field[TypoMoney, VstorewithdemographicsViewRow]
   def annualRevenue: Field[TypoMoney, VstorewithdemographicsViewRow]
-  def bankName: Field[/* max 50 chars */ String, VstorewithdemographicsViewRow]
-  def businessType: Field[/* max 5 chars */ String, VstorewithdemographicsViewRow]
+  def bankName: Field[String, VstorewithdemographicsViewRow]
+  def businessType: Field[String, VstorewithdemographicsViewRow]
   def yearOpened: Field[Int, VstorewithdemographicsViewRow]
-  def specialty: Field[/* max 50 chars */ String, VstorewithdemographicsViewRow]
+  def specialty: Field[String, VstorewithdemographicsViewRow]
   def squareFeet: Field[Int, VstorewithdemographicsViewRow]
-  def brands: Field[/* max 30 chars */ String, VstorewithdemographicsViewRow]
-  def internet: Field[/* max 30 chars */ String, VstorewithdemographicsViewRow]
+  def brands: Field[String, VstorewithdemographicsViewRow]
+  def internet: Field[String, VstorewithdemographicsViewRow]
   def numberEmployees: Field[Int, VstorewithdemographicsViewRow]
 }
 
 object VstorewithdemographicsViewFields {
-  lazy val structure: Relation[VstorewithdemographicsViewFields, VstorewithdemographicsViewRow] =
+  lazy val structure: RelationStructure[VstorewithdemographicsViewFields, VstorewithdemographicsViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[VstorewithdemographicsViewFields, VstorewithdemographicsViewRow] {
+    extends RelationStructure[VstorewithdemographicsViewFields, VstorewithdemographicsViewRow] {
 
     override lazy val fields: VstorewithdemographicsViewFields = new VstorewithdemographicsViewFields {
       override def businessentityid = Field[BusinessentityId, VstorewithdemographicsViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def name = Field[Name, VstorewithdemographicsViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
       override def annualSales = Field[TypoMoney, VstorewithdemographicsViewRow](_path, "AnnualSales", Some("numeric"), None, x => x.annualSales, (row, value) => row.copy(annualSales = value))
       override def annualRevenue = Field[TypoMoney, VstorewithdemographicsViewRow](_path, "AnnualRevenue", Some("numeric"), None, x => x.annualRevenue, (row, value) => row.copy(annualRevenue = value))
-      override def bankName = Field[/* max 50 chars */ String, VstorewithdemographicsViewRow](_path, "BankName", None, None, x => x.bankName, (row, value) => row.copy(bankName = value))
-      override def businessType = Field[/* max 5 chars */ String, VstorewithdemographicsViewRow](_path, "BusinessType", None, None, x => x.businessType, (row, value) => row.copy(businessType = value))
+      override def bankName = Field[String, VstorewithdemographicsViewRow](_path, "BankName", None, None, x => x.bankName, (row, value) => row.copy(bankName = value))
+      override def businessType = Field[String, VstorewithdemographicsViewRow](_path, "BusinessType", None, None, x => x.businessType, (row, value) => row.copy(businessType = value))
       override def yearOpened = Field[Int, VstorewithdemographicsViewRow](_path, "YearOpened", None, None, x => x.yearOpened, (row, value) => row.copy(yearOpened = value))
-      override def specialty = Field[/* max 50 chars */ String, VstorewithdemographicsViewRow](_path, "Specialty", None, None, x => x.specialty, (row, value) => row.copy(specialty = value))
+      override def specialty = Field[String, VstorewithdemographicsViewRow](_path, "Specialty", None, None, x => x.specialty, (row, value) => row.copy(specialty = value))
       override def squareFeet = Field[Int, VstorewithdemographicsViewRow](_path, "SquareFeet", None, None, x => x.squareFeet, (row, value) => row.copy(squareFeet = value))
-      override def brands = Field[/* max 30 chars */ String, VstorewithdemographicsViewRow](_path, "Brands", None, None, x => x.brands, (row, value) => row.copy(brands = value))
-      override def internet = Field[/* max 30 chars */ String, VstorewithdemographicsViewRow](_path, "Internet", None, None, x => x.internet, (row, value) => row.copy(internet = value))
+      override def brands = Field[String, VstorewithdemographicsViewRow](_path, "Brands", None, None, x => x.brands, (row, value) => row.copy(brands = value))
+      override def internet = Field[String, VstorewithdemographicsViewRow](_path, "Internet", None, None, x => x.internet, (row, value) => row.copy(internet = value))
       override def numberEmployees = Field[Int, VstorewithdemographicsViewRow](_path, "NumberEmployees", None, None, x => x.numberEmployees, (row, value) => row.copy(numberEmployees = value))
     }
 

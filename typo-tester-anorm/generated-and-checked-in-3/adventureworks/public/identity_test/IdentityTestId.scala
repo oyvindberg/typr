@@ -14,14 +14,14 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `public.identity-test` */
-case class IdentityTestId(value: /* max 250 chars */ String) extends scala.AnyVal
+case class IdentityTestId(value: String) extends scala.AnyVal
 
 object IdentityTestId {
   given arrayColumn: Column[Array[IdentityTestId]] = Column.columnToArray(using column, implicitly)
 
   given arrayToStatement: ToStatement[Array[IdentityTestId]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  given bijection: Bijection[IdentityTestId, /* max 250 chars */ String] = Bijection.apply[IdentityTestId, /* max 250 chars */ String](_.value)(IdentityTestId.apply)
+  given bijection: Bijection[IdentityTestId, String] = Bijection.apply[IdentityTestId, String](_.value)(IdentityTestId.apply)
 
   given column: Column[IdentityTestId] = Column.columnToString.map(IdentityTestId.apply)
 

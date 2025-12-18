@@ -5,95 +5,94 @@
  */
 package adventureworks.public.users
 
-import adventureworks.customtypes.TypoUnknownCitext
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.data.Unknown
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface UsersRepo {
-  fun delete(): DeleteBuilder<UsersFields, UsersRow>
+  abstract fun delete(): DeleteBuilder<UsersFields, UsersRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     userId: UsersId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     userIds: Array<UsersId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: UsersRow,
     c: Connection
   ): UsersRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: UsersRowUnsaved,
     c: Connection
   ): UsersRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<UsersRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<UsersRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<UsersFields, UsersRow>
+  abstract fun select(): SelectBuilder<UsersFields, UsersRow>
 
-  fun selectAll(c: Connection): List<UsersRow>
+  abstract fun selectAll(c: Connection): List<UsersRow>
 
-  fun selectById(
+  abstract fun selectById(
     userId: UsersId,
     c: Connection
-  ): Optional<UsersRow>
+  ): UsersRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     userIds: Array<UsersId>,
     c: Connection
   ): List<UsersRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     userIds: Array<UsersId>,
     c: Connection
   ): Map<UsersId, UsersRow>
 
-  fun selectByUniqueEmail(
-    email: TypoUnknownCitext,
+  abstract fun selectByUniqueEmail(
+    email: Unknown,
     c: Connection
-  ): Optional<UsersRow>
+  ): UsersRow?
 
-  fun update(): UpdateBuilder<UsersFields, UsersRow>
+  abstract fun update(): UpdateBuilder<UsersFields, UsersRow>
 
-  fun update(
+  abstract fun update(
     row: UsersRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: UsersRow,
     c: Connection
   ): UsersRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<UsersRow>,
     c: Connection
   ): List<UsersRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<UsersRow>,
     batchSize: Int,
     c: Connection

@@ -8,21 +8,19 @@ package adventureworks.sales.shoppingcartitem
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ShoppingcartitemRepoMock(
   val toRow: (ShoppingcartitemRowUnsaved) -> ShoppingcartitemRow,
@@ -33,7 +31,7 @@ data class ShoppingcartitemRepoMock(
   override fun deleteById(
     shoppingcartitemid: ShoppingcartitemId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(shoppingcartitemid)).isPresent()
+  ): Boolean = map.remove(shoppingcartitemid) != null
 
   override fun deleteByIds(
     shoppingcartitemids: Array<ShoppingcartitemId>,
@@ -41,7 +39,7 @@ data class ShoppingcartitemRepoMock(
   ): Int {
     var count = 0
     for (id in shoppingcartitemids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ShoppingcartitemRepoMock(
     c: Connection
   ): ShoppingcartitemRow {
     if (map.containsKey(unsaved.shoppingcartitemid)) {
-      throw RuntimeException(str("id $unsaved.shoppingcartitemid already exists"))
+      throw RuntimeException("id " + unsaved.shoppingcartitemid + " already exists")
     }
     map[unsaved.shoppingcartitemid] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class ShoppingcartitemRepoMock(
   override fun selectById(
     shoppingcartitemid: ShoppingcartitemId,
     c: Connection
-  ): Optional<ShoppingcartitemRow> = Optional.ofNullable(map[shoppingcartitemid])
+  ): ShoppingcartitemRow? = map[shoppingcartitemid]
 
   override fun selectByIds(
     shoppingcartitemids: Array<ShoppingcartitemId>,
@@ -109,9 +107,9 @@ data class ShoppingcartitemRepoMock(
   ): List<ShoppingcartitemRow> {
     val result = ArrayList<ShoppingcartitemRow>()
     for (id in shoppingcartitemids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class ShoppingcartitemRepoMock(
     row: ShoppingcartitemRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.shoppingcartitemid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.shoppingcartitemid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.shoppingcartitemid] = row
     }

@@ -5,5 +5,5 @@ import io.smallrye.mutiny.Uni
 
 interface PetStatusChangedWebhook {
   /** Called when a pet's status changes */
-  fun onPetStatusChanged(body: JsonNode): Uni<Unit>
+  abstract fun onPetStatusChanged(body: JsonNode): Uni<Unit>
 }

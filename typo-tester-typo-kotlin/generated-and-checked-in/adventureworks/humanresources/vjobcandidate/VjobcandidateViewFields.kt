@@ -5,96 +5,96 @@
  */
 package adventureworks.humanresources.vjobcandidate
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface VjobcandidateViewFields : FieldsExpr<VjobcandidateViewRow> {
-  fun addrLocCity(): OptField</* max 100 chars */ String, VjobcandidateViewRow>
+  abstract fun addrLocCity(): Field<String, VjobcandidateViewRow>
 
-  fun addrLocCountryRegion(): OptField</* max 100 chars */ String, VjobcandidateViewRow>
+  abstract fun addrLocCountryRegion(): Field<String, VjobcandidateViewRow>
 
-  fun addrLocState(): OptField</* max 100 chars */ String, VjobcandidateViewRow>
+  abstract fun addrLocState(): Field<String, VjobcandidateViewRow>
 
-  fun addrPostalCode(): OptField</* max 20 chars */ String, VjobcandidateViewRow>
+  abstract fun addrPostalCode(): Field<String, VjobcandidateViewRow>
 
-  fun addrType(): OptField</* max 30 chars */ String, VjobcandidateViewRow>
+  abstract fun addrType(): Field<String, VjobcandidateViewRow>
 
-  fun businessentityid(): OptField<BusinessentityId, VjobcandidateViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, VjobcandidateViewRow>
 
-  override fun columns(): List<FieldLike<*, VjobcandidateViewRow>>
+  abstract override fun columns(): List<FieldLike<*, VjobcandidateViewRow>>
 
-  fun eMail(): Field<String, VjobcandidateViewRow>
+  abstract fun eMail(): Field<String, VjobcandidateViewRow>
 
-  fun jobcandidateid(): Field<JobcandidateId, VjobcandidateViewRow>
+  abstract fun jobcandidateid(): Field<JobcandidateId, VjobcandidateViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, VjobcandidateViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, VjobcandidateViewRow>
 
-  fun nameFirst(): OptField</* max 30 chars */ String, VjobcandidateViewRow>
+  abstract fun nameFirst(): Field<String, VjobcandidateViewRow>
 
-  fun nameLast(): OptField</* max 30 chars */ String, VjobcandidateViewRow>
+  abstract fun nameLast(): Field<String, VjobcandidateViewRow>
 
-  fun nameMiddle(): OptField</* max 30 chars */ String, VjobcandidateViewRow>
+  abstract fun nameMiddle(): Field<String, VjobcandidateViewRow>
 
-  fun namePrefix(): OptField</* max 30 chars */ String, VjobcandidateViewRow>
+  abstract fun namePrefix(): Field<String, VjobcandidateViewRow>
 
-  fun nameSuffix(): OptField</* max 30 chars */ String, VjobcandidateViewRow>
+  abstract fun nameSuffix(): Field<String, VjobcandidateViewRow>
 
-  override fun rowParser(): RowParser<VjobcandidateViewRow> = VjobcandidateViewRow._rowParser
+  override fun rowParser(): RowParser<VjobcandidateViewRow> = VjobcandidateViewRow._rowParser.underlying
 
-  fun skills(): Field<String, VjobcandidateViewRow>
+  abstract fun skills(): Field<String, VjobcandidateViewRow>
 
-  fun webSite(): Field<String, VjobcandidateViewRow>
+  abstract fun webSite(): Field<String, VjobcandidateViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : VjobcandidateViewFields, Relation<VjobcandidateViewFields, VjobcandidateViewRow> {
-      override fun jobcandidateid(): Field<JobcandidateId, VjobcandidateViewRow> = Field<JobcandidateId, VjobcandidateViewRow>(_path, "jobcandidateid", VjobcandidateViewRow::jobcandidateid, Optional.empty(), Optional.empty(), { row, value -> row.copy(jobcandidateid = value) }, JobcandidateId.pgType)
+    data class Impl(val _path: List<Path>) : VjobcandidateViewFields, RelationStructure<VjobcandidateViewFields, VjobcandidateViewRow> {
+      override fun jobcandidateid(): Field<JobcandidateId, VjobcandidateViewRow> = Field<JobcandidateId, VjobcandidateViewRow>(_path, "jobcandidateid", VjobcandidateViewRow::jobcandidateid, null, null, { row, value -> row.copy(jobcandidateid = value) }, JobcandidateId.pgType)
 
-      override fun businessentityid(): OptField<BusinessentityId, VjobcandidateViewRow> = OptField<BusinessentityId, VjobcandidateViewRow>(_path, "businessentityid", VjobcandidateViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, VjobcandidateViewRow> = Field<BusinessentityId, VjobcandidateViewRow>(_path, "businessentityid", VjobcandidateViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun namePrefix(): OptField</* max 30 chars */ String, VjobcandidateViewRow> = OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Name.Prefix", VjobcandidateViewRow::namePrefix, Optional.empty(), Optional.empty(), { row, value -> row.copy(namePrefix = value) }, PgTypes.text)
+      override fun namePrefix(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Name.Prefix", VjobcandidateViewRow::namePrefix, null, null, { row, value -> row.copy(namePrefix = value) }, PgTypes.text)
 
-      override fun nameFirst(): OptField</* max 30 chars */ String, VjobcandidateViewRow> = OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Name.First", VjobcandidateViewRow::nameFirst, Optional.empty(), Optional.empty(), { row, value -> row.copy(nameFirst = value) }, PgTypes.text)
+      override fun nameFirst(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Name.First", VjobcandidateViewRow::nameFirst, null, null, { row, value -> row.copy(nameFirst = value) }, PgTypes.text)
 
-      override fun nameMiddle(): OptField</* max 30 chars */ String, VjobcandidateViewRow> = OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Name.Middle", VjobcandidateViewRow::nameMiddle, Optional.empty(), Optional.empty(), { row, value -> row.copy(nameMiddle = value) }, PgTypes.text)
+      override fun nameMiddle(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Name.Middle", VjobcandidateViewRow::nameMiddle, null, null, { row, value -> row.copy(nameMiddle = value) }, PgTypes.text)
 
-      override fun nameLast(): OptField</* max 30 chars */ String, VjobcandidateViewRow> = OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Name.Last", VjobcandidateViewRow::nameLast, Optional.empty(), Optional.empty(), { row, value -> row.copy(nameLast = value) }, PgTypes.text)
+      override fun nameLast(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Name.Last", VjobcandidateViewRow::nameLast, null, null, { row, value -> row.copy(nameLast = value) }, PgTypes.text)
 
-      override fun nameSuffix(): OptField</* max 30 chars */ String, VjobcandidateViewRow> = OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Name.Suffix", VjobcandidateViewRow::nameSuffix, Optional.empty(), Optional.empty(), { row, value -> row.copy(nameSuffix = value) }, PgTypes.text)
+      override fun nameSuffix(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Name.Suffix", VjobcandidateViewRow::nameSuffix, null, null, { row, value -> row.copy(nameSuffix = value) }, PgTypes.text)
 
-      override fun skills(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Skills", VjobcandidateViewRow::skills, Optional.empty(), Optional.empty(), { row, value -> row.copy(skills = value) }, PgTypes.text)
+      override fun skills(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Skills", VjobcandidateViewRow::skills, null, null, { row, value -> row.copy(skills = value) }, PgTypes.text)
 
-      override fun addrType(): OptField</* max 30 chars */ String, VjobcandidateViewRow> = OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Addr.Type", VjobcandidateViewRow::addrType, Optional.empty(), Optional.empty(), { row, value -> row.copy(addrType = value) }, PgTypes.text)
+      override fun addrType(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Addr.Type", VjobcandidateViewRow::addrType, null, null, { row, value -> row.copy(addrType = value) }, PgTypes.text)
 
-      override fun addrLocCountryRegion(): OptField</* max 100 chars */ String, VjobcandidateViewRow> = OptField</* max 100 chars */ String, VjobcandidateViewRow>(_path, "Addr.Loc.CountryRegion", VjobcandidateViewRow::addrLocCountryRegion, Optional.empty(), Optional.empty(), { row, value -> row.copy(addrLocCountryRegion = value) }, PgTypes.text)
+      override fun addrLocCountryRegion(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Addr.Loc.CountryRegion", VjobcandidateViewRow::addrLocCountryRegion, null, null, { row, value -> row.copy(addrLocCountryRegion = value) }, PgTypes.text)
 
-      override fun addrLocState(): OptField</* max 100 chars */ String, VjobcandidateViewRow> = OptField</* max 100 chars */ String, VjobcandidateViewRow>(_path, "Addr.Loc.State", VjobcandidateViewRow::addrLocState, Optional.empty(), Optional.empty(), { row, value -> row.copy(addrLocState = value) }, PgTypes.text)
+      override fun addrLocState(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Addr.Loc.State", VjobcandidateViewRow::addrLocState, null, null, { row, value -> row.copy(addrLocState = value) }, PgTypes.text)
 
-      override fun addrLocCity(): OptField</* max 100 chars */ String, VjobcandidateViewRow> = OptField</* max 100 chars */ String, VjobcandidateViewRow>(_path, "Addr.Loc.City", VjobcandidateViewRow::addrLocCity, Optional.empty(), Optional.empty(), { row, value -> row.copy(addrLocCity = value) }, PgTypes.text)
+      override fun addrLocCity(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Addr.Loc.City", VjobcandidateViewRow::addrLocCity, null, null, { row, value -> row.copy(addrLocCity = value) }, PgTypes.text)
 
-      override fun addrPostalCode(): OptField</* max 20 chars */ String, VjobcandidateViewRow> = OptField</* max 20 chars */ String, VjobcandidateViewRow>(_path, "Addr.PostalCode", VjobcandidateViewRow::addrPostalCode, Optional.empty(), Optional.empty(), { row, value -> row.copy(addrPostalCode = value) }, PgTypes.text)
+      override fun addrPostalCode(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "Addr.PostalCode", VjobcandidateViewRow::addrPostalCode, null, null, { row, value -> row.copy(addrPostalCode = value) }, PgTypes.text)
 
-      override fun eMail(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "EMail", VjobcandidateViewRow::eMail, Optional.empty(), Optional.empty(), { row, value -> row.copy(eMail = value) }, PgTypes.text)
+      override fun eMail(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "EMail", VjobcandidateViewRow::eMail, null, null, { row, value -> row.copy(eMail = value) }, PgTypes.text)
 
-      override fun webSite(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "WebSite", VjobcandidateViewRow::webSite, Optional.empty(), Optional.empty(), { row, value -> row.copy(webSite = value) }, PgTypes.text)
+      override fun webSite(): Field<String, VjobcandidateViewRow> = Field<String, VjobcandidateViewRow>(_path, "WebSite", VjobcandidateViewRow::webSite, null, null, { row, value -> row.copy(webSite = value) }, PgTypes.text)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, VjobcandidateViewRow> = Field<TypoLocalDateTime, VjobcandidateViewRow>(_path, "modifieddate", VjobcandidateViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, VjobcandidateViewRow> = Field<LocalDateTime, VjobcandidateViewRow>(_path, "modifieddate", VjobcandidateViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, VjobcandidateViewRow>> = listOf(this.jobcandidateid(), this.businessentityid(), this.namePrefix(), this.nameFirst(), this.nameMiddle(), this.nameLast(), this.nameSuffix(), this.skills(), this.addrType(), this.addrLocCountryRegion(), this.addrLocState(), this.addrLocCity(), this.addrPostalCode(), this.eMail(), this.webSite(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<VjobcandidateViewFields, VjobcandidateViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, VjobcandidateViewRow>> = listOf(this.jobcandidateid().underlying, this.businessentityid().underlying, this.namePrefix().underlying, this.nameFirst().underlying, this.nameMiddle().underlying, this.nameLast().underlying, this.nameSuffix().underlying, this.skills().underlying, this.addrType().underlying, this.addrLocCountryRegion().underlying, this.addrLocState().underlying, this.addrLocCity().underlying, this.addrPostalCode().underlying, this.eMail().underlying, this.webSite().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<VjobcandidateViewFields, VjobcandidateViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

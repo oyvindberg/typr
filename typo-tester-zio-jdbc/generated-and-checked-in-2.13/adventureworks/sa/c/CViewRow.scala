@@ -24,11 +24,11 @@ case class CViewRow(
   /** Points to [[adventureworks.sales.customer.CustomerRow.customerid]] */
   customerid: CustomerId,
   /** Points to [[adventureworks.sales.customer.CustomerRow.personid]] */
-  personid: Option[BusinessentityId],
+  personid: BusinessentityId,
   /** Points to [[adventureworks.sales.customer.CustomerRow.storeid]] */
-  storeid: Option[BusinessentityId],
+  storeid: BusinessentityId,
   /** Points to [[adventureworks.sales.customer.CustomerRow.territoryid]] */
-  territoryid: Option[SalesterritoryId],
+  territoryid: SalesterritoryId,
   /** Points to [[adventureworks.sales.customer.CustomerRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.sales.customer.CustomerRow.modifieddate]] */
@@ -43,9 +43,9 @@ object CViewRow {
           CViewRow(
             id = CustomerId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             customerid = CustomerId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-            personid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
-            storeid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
-            territoryid = JdbcDecoder.optionDecoder(SalesterritoryId.jdbcDecoder).unsafeDecode(columIndex + 4, rs)._2,
+            personid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            storeid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            territoryid = SalesterritoryId.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
           )
@@ -56,9 +56,9 @@ object CViewRow {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
       val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(CustomerId.jsonDecoder))
       val customerid = jsonObj.get("customerid").toRight("Missing field 'customerid'").flatMap(_.as(CustomerId.jsonDecoder))
-      val personid = jsonObj.get("personid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
-      val storeid = jsonObj.get("storeid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
-      val territoryid = jsonObj.get("territoryid").fold[Either[String, Option[SalesterritoryId]]](Right(None))(_.as(JsonDecoder.option(SalesterritoryId.jsonDecoder)))
+      val personid = jsonObj.get("personid").toRight("Missing field 'personid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val storeid = jsonObj.get("storeid").toRight("Missing field 'storeid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val territoryid = jsonObj.get("territoryid").toRight("Missing field 'territoryid'").flatMap(_.as(SalesterritoryId.jsonDecoder))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       if (id.isRight && customerid.isRight && personid.isRight && storeid.isRight && territoryid.isRight && rowguid.isRight && modifieddate.isRight)
@@ -78,13 +78,13 @@ object CViewRow {
         CustomerId.jsonEncoder.unsafeEncode(a.customerid, indent, out)
         out.write(",")
         out.write(""""personid":""")
-        JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.personid, indent, out)
+        BusinessentityId.jsonEncoder.unsafeEncode(a.personid, indent, out)
         out.write(",")
         out.write(""""storeid":""")
-        JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.storeid, indent, out)
+        BusinessentityId.jsonEncoder.unsafeEncode(a.storeid, indent, out)
         out.write(",")
         out.write(""""territoryid":""")
-        JsonEncoder.option(SalesterritoryId.jsonEncoder).unsafeEncode(a.territoryid, indent, out)
+        SalesterritoryId.jsonEncoder.unsafeEncode(a.territoryid, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

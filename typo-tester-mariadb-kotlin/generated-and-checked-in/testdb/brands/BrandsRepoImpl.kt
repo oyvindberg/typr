@@ -7,19 +7,19 @@ package testdb.brands
 
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Fragment.interpolate
 
 class BrandsRepoImpl() : BrandsRepo {
   override fun delete(): DeleteBuilder<BrandsFields, BrandsRow> = DeleteBuilder.of("`brands`", BrandsFields.structure, Dialect.MARIADB)
@@ -27,140 +27,72 @@ class BrandsRepoImpl() : BrandsRepo {
   override fun deleteById(
     brandId: BrandsId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("delete from `brands` where `brand_id` = "),
-    BrandsId.pgType.encode(brandId),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from `brands` where `brand_id` = "), Fragment.encode(BrandsId.pgType, brandId), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     brandIds: Array<BrandsId>,
     c: Connection
   ): Int {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in brandIds) { fragments.add(BrandsId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in brandIds) { fragments.add(Fragment.encode(BrandsId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("delete from `brands` where `brand_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: BrandsRow,
     c: Connection
-  ): BrandsRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into `brands`(`name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)
-      values (""".trimMargin()),
-    MariaTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.slug),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.blob.opt().encode(unsaved.logoBlob),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.websiteUrl),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.countryOfOrigin),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bool.encode(unsaved.isActive),
-    typo.runtime.Fragment.lit("""
-      )
-      returning `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
-    """.trimMargin())
-  )
+  ): BrandsRow = interpolate(Fragment.lit("insert into `brands`(`name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.slug), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumblob.nullable(), unsaved.logoBlob), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.websiteUrl), Fragment.lit(", "), Fragment.encode(MariaTypes.char_.nullable(), unsaved.countryOfOrigin), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, unsaved.isActive), Fragment.lit(")\nreturning `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`\n"))
     .updateReturning(BrandsRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: BrandsRowUnsaved,
     c: Connection
   ): BrandsRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("`name`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit("")))
     columns.add(Fragment.lit("`slug`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.slug),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.slug), Fragment.lit("")))
     unsaved.logoBlob.visit(
       {  },
       { value -> columns.add(Fragment.lit("`logo_blob`"))
-      values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(interpolate(Fragment.encode(MariaTypes.mediumblob.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.websiteUrl.visit(
       {  },
       { value -> columns.add(Fragment.lit("`website_url`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(interpolate(Fragment.encode(MariaTypes.varchar.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.countryOfOrigin.visit(
       {  },
       { value -> columns.add(Fragment.lit("`country_of_origin`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(interpolate(Fragment.encode(MariaTypes.char_.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.isActive.visit(
       {  },
       { value -> columns.add(Fragment.lit("`is_active`"))
-      values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.bool, value), Fragment.lit(""))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("insert into `brands`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into `brands`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`\n"))
     return q.updateReturning(BrandsRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun select(): SelectBuilder<BrandsFields, BrandsRow> = SelectBuilder.of("`brands`", BrandsFields.structure, BrandsRow._rowParser, Dialect.MARIADB)
 
-  override fun selectAll(c: Connection): List<BrandsRow> = interpolate(typo.runtime.Fragment.lit("""
-    select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
-    from `brands`
-  """.trimMargin())).query(BrandsRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<BrandsRow> = interpolate(Fragment.lit("select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`\nfrom `brands`\n")).query(BrandsRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     brandId: BrandsId,
     c: Connection
-  ): Optional<BrandsRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
-      from `brands`
-      where `brand_id` = """.trimMargin()),
-    BrandsId.pgType.encode(brandId),
-    typo.runtime.Fragment.lit("")
-  ).query(BrandsRow._rowParser.first()).runUnchecked(c)
+  ): BrandsRow? = interpolate(Fragment.lit("select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`\nfrom `brands`\nwhere `brand_id` = "), Fragment.encode(BrandsId.pgType, brandId), Fragment.lit("")).query(BrandsRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     brandIds: Array<BrandsId>,
     c: Connection
   ): List<BrandsRow> {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in brandIds) { fragments.add(BrandsId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in brandIds) { fragments.add(Fragment.encode(BrandsId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active` from `brands` where `brand_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(BrandsRow._rowParser.all()).runUnchecked(c)
   }
 
@@ -170,108 +102,35 @@ class BrandsRepoImpl() : BrandsRepo {
   ): Map<BrandsId, BrandsRow> {
     val ret: MutableMap<BrandsId, BrandsRow> = mutableMapOf<BrandsId, BrandsRow>()
     selectByIds(brandIds, c).forEach({ row -> ret.put(row.brandId, row) })
-    return ret
+    return ret.toMap()
   }
 
   override fun selectByUniqueSlug(
     slug: String,
     c: Connection
-  ): Optional<BrandsRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
-      from `brands`
-      where `slug` = """.trimMargin()),
-    MariaTypes.text.encode(slug),
-    typo.runtime.Fragment.lit("""
+  ): BrandsRow? = interpolate(Fragment.lit("select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`\nfrom `brands`\nwhere `slug` = "), Fragment.encode(MariaTypes.varchar, slug), Fragment.lit("\n")).query(BrandsRow._rowParser.first()).runUnchecked(c)
 
-
-    """.trimMargin())
-  ).query(BrandsRow._rowParser.first()).runUnchecked(c)
-
-  override fun update(): UpdateBuilder<BrandsFields, BrandsRow> = UpdateBuilder.of("`brands`", BrandsFields.structure, BrandsRow._rowParser.all(), Dialect.MARIADB)
+  override fun update(): UpdateBuilder<BrandsFields, BrandsRow> = UpdateBuilder.of("`brands`", BrandsFields.structure, BrandsRow._rowParser, Dialect.MARIADB)
 
   override fun update(
     row: BrandsRow,
     c: Connection
   ): Boolean {
     val brandId: BrandsId = row.brandId
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update `brands`
-        set `name` = """.trimMargin()),
-      MariaTypes.text.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ,
-        `slug` = """.trimMargin()),
-      MariaTypes.text.encode(row.slug),
-      typo.runtime.Fragment.lit("""
-        ,
-        `logo_blob` = """.trimMargin()),
-      MariaTypes.blob.opt().encode(row.logoBlob),
-      typo.runtime.Fragment.lit("""
-        ,
-        `website_url` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.websiteUrl),
-      typo.runtime.Fragment.lit("""
-        ,
-        `country_of_origin` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.countryOfOrigin),
-      typo.runtime.Fragment.lit("""
-        ,
-        `is_active` = """.trimMargin()),
-      MariaTypes.bool.encode(row.isActive),
-      typo.runtime.Fragment.lit("""
-  
-        where `brand_id` = """.trimMargin()),
-      BrandsId.pgType.encode(brandId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update `brands`\nset `name` = "), Fragment.encode(MariaTypes.varchar, row.name), Fragment.lit(",\n`slug` = "), Fragment.encode(MariaTypes.varchar, row.slug), Fragment.lit(",\n`logo_blob` = "), Fragment.encode(MariaTypes.mediumblob.nullable(), row.logoBlob), Fragment.lit(",\n`website_url` = "), Fragment.encode(MariaTypes.varchar.nullable(), row.websiteUrl), Fragment.lit(",\n`country_of_origin` = "), Fragment.encode(MariaTypes.char_.nullable(), row.countryOfOrigin), Fragment.lit(",\n`is_active` = "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, row.isActive), Fragment.lit("\nwhere `brand_id` = "), Fragment.encode(BrandsId.pgType, brandId), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: BrandsRow,
     c: Connection
-  ): BrandsRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      INSERT INTO `brands`(`name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)
-      VALUES (""".trimMargin()),
-    MariaTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.slug),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.blob.opt().encode(unsaved.logoBlob),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.websiteUrl),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.countryOfOrigin),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bool.encode(unsaved.isActive),
-    typo.runtime.Fragment.lit("""
-      )
-      ON DUPLICATE KEY UPDATE `name` = VALUES(`name`),
-      `slug` = VALUES(`slug`),
-      `logo_blob` = VALUES(`logo_blob`),
-      `website_url` = VALUES(`website_url`),
-      `country_of_origin` = VALUES(`country_of_origin`),
-      `is_active` = VALUES(`is_active`)
-      RETURNING `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`""".trimMargin())
-  )
+  ): BrandsRow = interpolate(Fragment.lit("INSERT INTO `brands`(`name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.slug), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumblob.nullable(), unsaved.logoBlob), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.websiteUrl), Fragment.lit(", "), Fragment.encode(MariaTypes.char_.nullable(), unsaved.countryOfOrigin), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, unsaved.isActive), Fragment.lit(")\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`),\n`slug` = VALUES(`slug`),\n`logo_blob` = VALUES(`logo_blob`),\n`website_url` = VALUES(`website_url`),\n`country_of_origin` = VALUES(`country_of_origin`),\n`is_active` = VALUES(`is_active`)\nRETURNING `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`"))
     .updateReturning(BrandsRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<BrandsRow>,
     c: Connection
-  ): List<BrandsRow> = interpolate(typo.runtime.Fragment.lit("""
-                         INSERT INTO `brands`(`brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)
-                         VALUES (?, ?, ?, ?, ?, ?, ?)
-                         ON DUPLICATE KEY UPDATE `name` = VALUES(`name`),
-                         `slug` = VALUES(`slug`),
-                         `logo_blob` = VALUES(`logo_blob`),
-                         `website_url` = VALUES(`website_url`),
-                         `country_of_origin` = VALUES(`country_of_origin`),
-                         `is_active` = VALUES(`is_active`)
-                         RETURNING `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`""".trimMargin()))
+  ): List<BrandsRow> = interpolate(Fragment.lit("INSERT INTO `brands`(`brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)\nVALUES (?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`),\n`slug` = VALUES(`slug`),\n`logo_blob` = VALUES(`logo_blob`),\n`website_url` = VALUES(`website_url`),\n`country_of_origin` = VALUES(`country_of_origin`),\n`is_active` = VALUES(`is_active`)\nRETURNING `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`"))
     .updateReturningEach(BrandsRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 }

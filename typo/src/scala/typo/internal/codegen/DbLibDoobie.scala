@@ -6,6 +6,7 @@ import typo.internal.analysis.MaybeReturnsRows
 
 class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDefault, enableStreamingInserts: Boolean, fixVerySlowImplicit: Boolean, override val lang: LangScala) extends DbLib {
   val dialect = lang.dialect
+  private val sqlCast = new SqlCast(needsTimestampCasts = true)
 
   val SqlInterpolator = jvm.Type.Qualified("doobie.syntax.string.toSqlInterpolator")
   def SQL(content: jvm.Code) =
@@ -43,7 +44,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
 
   def dbNames(cols: NonEmptyList[ComputedColumn], isRead: Boolean): jvm.Code =
     cols
-      .map(c => c.dbName.code ++ (if (isRead) SqlCast.fromPgCode(c) else jvm.Code.Empty))
+      .map(c => c.dbName.code ++ (if (isRead) sqlCast.fromPgCode(c) else jvm.Code.Empty))
       .mkCode(", ")
 
   def runtimeInterpolateValue(name: jvm.Code, tpe: jvm.Type): jvm.Code =
@@ -63,13 +64,14 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
       case composite: IdComputed.Composite =>
         code"${composite.cols.map(cc => code"${cc.dbName.code} = ${runtimeInterpolateValue(code"${composite.paramName}.${cc.name}", cc.tpe)}").mkCode(" AND ")}"
     }
-  override def resolveConstAs(tpe: jvm.Type): jvm.Code = {
+  override def resolveConstAs(typoType: TypoType): jvm.Code = {
+    val tpe = typoType.jvmType
     val put = lookupPutFor(tpe)
-    tpe match {
-      case lang.Optional(underlying) =>
-        code"${jvm.Type.dsl.ConstAsAsOpt}[$underlying](${dialect.usingCall}$put)"
+    typoType match {
+      case TypoType.Nullable(_, inner) =>
+        code"${lang.dsl.ConstAsAsOpt}[${inner.jvmType}](${dialect.usingCall}$put)"
       case _ =>
-        code"${jvm.Type.dsl.ConstAsAs}[$tpe](${dialect.usingCall}$put)"
+        code"${lang.dsl.ConstAsAs}[$tpe](${dialect.usingCall}$put)"
     }
   }
 
@@ -93,7 +95,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
     )
     repoMethod match {
       case RepoMethod.SelectBuilder(_, fieldsType, rowType) =>
-        sig(params = Nil, returnType = jvm.Type.dsl.SelectBuilder.of(fieldsType, rowType))
+        sig(params = Nil, returnType = lang.dsl.SelectBuilder.of(fieldsType, rowType))
       case RepoMethod.SelectAll(_, _, rowType) =>
         sig(params = Nil, returnType = fs2Stream.of(ConnectionIO, rowType))
       case RepoMethod.SelectById(_, _, id, rowType) =>
@@ -107,7 +109,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
       case RepoMethod.SelectByFieldValues(_, _, _, fieldValueOrIdsParam, rowType) =>
         sig(params = List(fieldValueOrIdsParam), returnType = fs2Stream.of(ConnectionIO, rowType))
       case RepoMethod.UpdateBuilder(_, fieldsType, rowType) =>
-        sig(params = Nil, returnType = jvm.Type.dsl.UpdateBuilder.of(fieldsType, rowType))
+        sig(params = Nil, returnType = lang.dsl.UpdateBuilder.of(fieldsType, rowType))
       case RepoMethod.UpdateFieldValues(_, id, varargs, _, _, _) =>
         sig(params = List(id.param, varargs), returnType = ConnectionIO.of(TypesScala.Boolean))
       case RepoMethod.Update(_, _, _, param, _) =>
@@ -131,7 +133,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
         val unsavedParam = jvm.Param(jvm.Ident("unsaved"), fs2Stream.of(ConnectionIO, rowType))
         sig(params = List(unsavedParam, batchSize), returnType = ConnectionIO.of(TypesScala.Int))
       case RepoMethod.DeleteBuilder(_, fieldsType, rowType) =>
-        sig(params = Nil, returnType = jvm.Type.dsl.DeleteBuilder.of(fieldsType, rowType))
+        sig(params = Nil, returnType = lang.dsl.DeleteBuilder.of(fieldsType, rowType))
       case RepoMethod.Delete(_, id) =>
         sig(params = List(id.param), returnType = ConnectionIO.of(TypesScala.Boolean))
       case RepoMethod.DeleteByIds(_, _, idsParam) =>
@@ -156,7 +158,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
   override def repoImpl(repoMethod: RepoMethod): jvm.Body =
     repoMethod match {
       case RepoMethod.SelectBuilder(relName, fieldsType, rowType) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.SelectBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.read)")
+        jvm.Body.Expr(code"${lang.dsl.SelectBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.read)")
 
       case RepoMethod.SelectAll(relName, cols, rowType) =>
         val joinedColNames = dbNames(cols, isRead = true)
@@ -227,7 +229,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
       case RepoMethod.UpdateFieldValues(relName, id, varargs, fieldValue, cases0, _) =>
         val cases: NonEmptyList[jvm.Code] =
           cases0.map { col =>
-            val fr = frInterpolate(code"${col.dbName.code} = ${runtimeInterpolateValue(jvm.Ident("value"), col.tpe)}${SqlCast.toPgCode(col)}")
+            val fr = frInterpolate(code"${col.dbName.code} = ${runtimeInterpolateValue(jvm.Ident("value"), col.tpe)}${sqlCast.toPgCode(col)}")
             code"case $fieldValue.${col.name}(value) => $fr"
           }
 
@@ -251,12 +253,12 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
         )
 
       case RepoMethod.UpdateBuilder(relName, fieldsType, rowType) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.UpdateBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.read)")
+        jvm.Body.Expr(code"${lang.dsl.UpdateBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.read)")
 
       case RepoMethod.Update(relName, cols, id, param, writeableCols) =>
         val sql = SQL(
           code"""update $relName
-                |set ${writeableCols.map { col => code"${col.dbName.code} = ${runtimeInterpolateValue(code"${param.name}.${col.name}", col.tpe)}${SqlCast.toPgCode(col)}" }.mkCode(",\n")}
+                |set ${writeableCols.map { col => code"${col.dbName.code} = ${runtimeInterpolateValue(code"${param.name}.${col.name}", col.tpe)}${sqlCast.toPgCode(col)}" }.mkCode(",\n")}
                 |where ${matchId(id)}
                 |returning ${dbNames(cols, isRead = true)}""".stripMargin
         )
@@ -269,11 +271,11 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
 
       case RepoMethod.InsertUnsaved(relName, cols, unsaved, unsavedParam, default, rowType) =>
         val cases0 = unsaved.normalColumns.map { col =>
-          val set = frInterpolate(code"${runtimeInterpolateValue(code"${unsavedParam.name}.${col.name}", col.tpe)}${SqlCast.toPgCode(col)}")
+          val set = frInterpolate(code"${runtimeInterpolateValue(code"${unsavedParam.name}.${col.name}", col.tpe)}${sqlCast.toPgCode(col)}")
           code"""Some(($Fragment.const0(${lang.s(col.dbName.code)}), $set))"""
         }
-        val cases1 = unsaved.defaultedCols.map { case ComputedRowUnsaved.DefaultedCol(col @ ComputedColumn(_, ident, _, _), origType) =>
-          val setValue = frInterpolate(code"${runtimeInterpolateValue(code"value: $origType", origType)}${SqlCast.toPgCode(col)}")
+        val cases1 = unsaved.defaultedCols.map { case ComputedRowUnsaved.DefaultedCol(col @ ComputedColumn(_, ident, _, _), origType, _) =>
+          val setValue = frInterpolate(code"${runtimeInterpolateValue(code"value: $origType", origType)}${sqlCast.toPgCode(col)}")
           code"""|${unsavedParam.name}.$ident match {
                  |  case ${default.Defaulted}.${default.UseDefault}() => None
                  |  case ${default.Defaulted}.${default.Provided}(value) => Some(($Fragment.const0(${lang.s(col.dbName.code)}), $setValue))
@@ -327,7 +329,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
         val writeableColumnsNotId = writeableColumnsWithId.toList.filterNot(c => id.cols.exists(_.name == c.name))
 
         val values = writeableColumnsWithId.map { c =>
-          code"${runtimeInterpolateValue(code"${unsavedParam.name}.${c.name}", c.tpe)}${SqlCast.toPgCode(c)}"
+          code"${runtimeInterpolateValue(code"${unsavedParam.name}.${c.name}", c.tpe)}${sqlCast.toPgCode(c)}"
         }
         val conflictAction = writeableColumnsNotId match {
           case Nil =>
@@ -362,7 +364,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
 
         val sql = lang.s {
           code"""|insert into $relName(${dbNames(writeableColumnsWithId, isRead = false)})
-                 |values (${writeableColumnsWithId.map(c => code"?${SqlCast.toPgCode(c)}").mkCode(code",")})
+                 |values (${writeableColumnsWithId.map(c => code"?${sqlCast.toPgCode(c)}").mkCode(code",")})
                  |on conflict (${dbNames(id.cols, isRead = false)})
                  |$conflictAction
                  |returning ${dbNames(cols, isRead = true)}""".stripMargin
@@ -413,7 +415,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
 
       case RepoMethod.Insert(relName, cols, unsavedParam, rowType, writeableColumnsWithId) =>
         val values = writeableColumnsWithId.map { c =>
-          code"${runtimeInterpolateValue(code"${unsavedParam.name}.${c.name}", c.tpe)}${SqlCast.toPgCode(c)}"
+          code"${runtimeInterpolateValue(code"${unsavedParam.name}.${c.name}", c.tpe)}${sqlCast.toPgCode(c)}"
         }
         val sql = SQL {
           code"""|insert into $relName(${dbNames(writeableColumnsWithId, isRead = false)})
@@ -425,7 +427,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
         jvm.Body.Expr(code"${query(sql, rowType)}.unique")
 
       case RepoMethod.DeleteBuilder(relName, fieldsType, rowType) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.DeleteBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.read)")
+        jvm.Body.Expr(code"${lang.dsl.DeleteBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.read)")
       case RepoMethod.Delete(relName, id) =>
         val sql = SQL(code"""delete from $relName where ${matchId(id)}""")
         jvm.Body.Expr(code"$sql.update.run.map(_ > 0)")
@@ -452,7 +454,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
       case RepoMethod.SqlFile(sqlScript) =>
         val renderedScript: jvm.Code = sqlScript.sqlFile.decomposedSql.renderCode { (paramAtIndex: Int) =>
           val param = sqlScript.params.find(_.indices.contains(paramAtIndex)).get
-          val cast = SqlCast.toPg(param).fold("")(_.withColons)
+          val cast = sqlCast.toPg(param).fold("")(_.withColons)
           code"${runtimeInterpolateValue(param.name, param.tpe)}$cast"
         }
         val ret = for {
@@ -461,7 +463,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
         } yield {
           // this is necessary to make custom types work with sql scripts, unfortunately.
           val renderedWithCasts: jvm.Code =
-            cols.toList.flatMap(c => SqlCast.fromPg(c.dbCol.tpe)) match {
+            cols.toList.flatMap(c => sqlCast.fromPg(c.dbCol.tpe)) match {
               case Nil => renderedScript.code
               case _ =>
                 val row = jvm.Ident("row")
@@ -469,7 +471,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
                 code"""|with $row as (
                        |  $renderedScript
                        |)
-                       |select ${cols.map(c => code"$row.${c.dbCol.parsedName.originalName.code}${SqlCast.fromPgCode(c)}").mkCode(", ")}
+                       |select ${cols.map(c => code"$row.${c.dbCol.parsedName.originalName.code}${sqlCast.fromPgCode(c)}").mkCode(", ")}
                        |from $row""".stripMargin
             }
 
@@ -487,7 +489,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
   override def mockRepoImpl(id: IdComputed, repoMethod: RepoMethod, maybeToRow: Option[jvm.Param[jvm.Type.Function1]]): jvm.Body =
     repoMethod match {
       case RepoMethod.SelectBuilder(_, fieldsType, _) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.SelectBuilderMock}($fieldsType.structure, $delayCIO(map.values.toList), ${jvm.Type.dsl.SelectParams}.empty)")
+        jvm.Body.Expr(code"${lang.dsl.SelectBuilderMock}($fieldsType.structure, $delayCIO(map.values.toList), ${lang.dsl.SelectParams}.empty)")
       case RepoMethod.SelectAll(_, _, _) =>
         jvm.Body.Expr(code"$fs2Stream.emits(map.values.toList)")
       case RepoMethod.SelectById(_, _, id, _) =>
@@ -511,7 +513,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
               |  }.toList
               |}""".stripMargin)
       case RepoMethod.UpdateBuilder(_, fieldsType, _) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.UpdateBuilderMock}(${jvm.Type.dsl.UpdateParams}.empty, $fieldsType.structure, map)")
+        jvm.Body.Expr(code"${lang.dsl.UpdateBuilderMock}(${lang.dsl.UpdateParams}.empty, $fieldsType.structure, map)")
       case RepoMethod.UpdateFieldValues(_, id, varargs, fieldValue, cases0, _) =>
         val cases = cases0.map { col =>
           code"case (acc, $fieldValue.${col.name}(value)) => acc.copy(${col.name} = value)"
@@ -592,7 +594,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
                |}""".stripMargin)
 
       case RepoMethod.DeleteBuilder(_, fieldsType, _) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.DeleteBuilderMock}(${jvm.Type.dsl.DeleteParams}.empty, $fieldsType.structure, map)")
+        jvm.Body.Expr(code"${lang.dsl.DeleteBuilderMock}(${lang.dsl.DeleteParams}.empty, $fieldsType.structure, map)")
       case RepoMethod.Delete(_, id) =>
         jvm.Body.Expr(code"$delayCIO(map.remove(${id.paramName}).isDefined)")
       case RepoMethod.DeleteByIds(_, _, idsParam) =>
@@ -620,7 +622,8 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
   override val defaultedInstance: List[jvm.Given] =
     textSupport.map(_.defaultedInstance).toList
 
-  override def stringEnumInstances(wrapperType: jvm.Type, underlying: jvm.Type, sqlType: String, openEnum: Boolean): List[jvm.Given] = {
+  override def stringEnumInstances(wrapperType: jvm.Type, underlyingTypoType: TypoType, sqlType: String, openEnum: Boolean): List[jvm.Given] = {
+    val underlying = underlyingTypoType.jvmType
     val sqlTypeLit = jvm.StrLit(sqlType)
     val sqlArrayTypeLit = jvm.StrLit(sqlType + "[]")
     List(
@@ -680,13 +683,13 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
     ).flatten
   }
 
-  override def wrapperTypeInstances(wrapperType: jvm.Type.Qualified, underlying: jvm.Type, overrideDbType: Option[String]): List[jvm.Given] =
+  override def wrapperTypeInstances(wrapperType: jvm.Type.Qualified, underlyingJvmType: jvm.Type, underlyingDbType: db.Type, overrideDbType: Option[String]): List[jvm.Given] =
     List(
       Some(
-        jvm.Given(tparams = Nil, name = putName, implicitParams = Nil, tpe = Put.of(wrapperType), body = code"${lookupPutFor(underlying)}.contramap(_.value)")
+        jvm.Given(tparams = Nil, name = putName, implicitParams = Nil, tpe = Put.of(wrapperType), body = code"${lookupPutFor(underlyingJvmType)}.contramap(_.value)")
       ),
       Some(
-        jvm.Given(tparams = Nil, name = getName, implicitParams = Nil, tpe = Get.of(wrapperType), body = code"${lookupGetFor(underlying)}.map($wrapperType.apply)")
+        jvm.Given(tparams = Nil, name = getName, implicitParams = Nil, tpe = Get.of(wrapperType), body = code"${lookupGetFor(underlyingJvmType)}.map($wrapperType.apply)")
       ),
       Some(
         jvm.Given(
@@ -694,7 +697,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
           name = arrayPutName,
           implicitParams = Nil,
           tpe = Put.of(jvm.Type.ArrayOf(wrapperType)),
-          body = code"${lookupPutFor(jvm.Type.ArrayOf(underlying))}.contramap(_.map(_.value))"
+          body = code"${lookupPutFor(jvm.Type.ArrayOf(underlyingJvmType))}.contramap(_.map(_.value))"
         )
       ),
       Some(
@@ -703,10 +706,10 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
           name = arrayGetName,
           implicitParams = Nil,
           tpe = Get.of(jvm.Type.ArrayOf(wrapperType)),
-          body = code"${lookupGetFor(jvm.Type.ArrayOf(underlying))}.map(_.map($wrapperType.apply))"
+          body = code"${lookupGetFor(jvm.Type.ArrayOf(underlyingJvmType))}.map(_.map($wrapperType.apply))"
         )
       ),
-      textSupport.map(_.anyValInstance(wrapperType, underlying))
+      textSupport.map(_.anyValInstance(wrapperType, underlyingJvmType))
     ).flatten
 
   override val missingInstances: List[jvm.ClassMember] = {

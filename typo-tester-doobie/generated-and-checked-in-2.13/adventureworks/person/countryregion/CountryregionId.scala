@@ -14,14 +14,14 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `person.countryregion` */
-case class CountryregionId(value: /* max 3 chars */ String) extends scala.AnyVal
+case class CountryregionId(value: String) extends scala.AnyVal
 
 object CountryregionId {
   implicit lazy val arrayGet: Get[Array[CountryregionId]] = adventureworks.StringArrayMeta.get.map(_.map(CountryregionId.apply))
 
   implicit lazy val arrayPut: Put[Array[CountryregionId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
 
-  implicit lazy val bijection: Bijection[CountryregionId, /* max 3 chars */ String] = Bijection.apply[CountryregionId, /* max 3 chars */ String](_.value)(CountryregionId.apply)
+  implicit lazy val bijection: Bijection[CountryregionId, String] = Bijection.apply[CountryregionId, String](_.value)(CountryregionId.apply)
 
   implicit lazy val decoder: Decoder[CountryregionId] = Decoder.decodeString.map(CountryregionId.apply)
 

@@ -7,10 +7,11 @@ package adventureworks.person.emailaddress
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -21,32 +22,32 @@ data class EmailaddressRowUnsaved(
     */
   val businessentityid: BusinessentityId,
   /** E-mail address for the person. */
-  val emailaddress: Optional</* max 50 chars */ String> = Optional.empty(),
+  val emailaddress: /* max 50 chars */ String? = null,
   /** Default: nextval('person.emailaddress_emailaddressid_seq'::regclass)
     * Primary key. ID of this email address.
     */
   val emailaddressid: Defaulted<Int> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     emailaddressidDefault: () -> Int,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): EmailaddressRow = EmailaddressRow(businessentityid = businessentityid, emailaddressid = emailaddressid.getOrElse(emailaddressidDefault), emailaddress = emailaddress, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<EmailaddressRowUnsaved> =
       PgText.instance({ row, sb -> BusinessentityId.pgType.pgText().unsafeEncode(row.businessentityid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.emailaddress, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.emailaddress, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.emailaddressid, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.emailaddressid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

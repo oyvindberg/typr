@@ -18,16 +18,16 @@ import zio.json.internal.Write
 case class VjobcandidateemploymentViewRow(
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
-  empStartDate: Option[TypoLocalDate],
-  empEndDate: Option[TypoLocalDate],
-  empOrgName: Option[/* max 100 chars */ String],
-  empJobTitle: Option[/* max 100 chars */ String],
-  empResponsibility: Option[String],
-  empFunctionCategory: Option[String],
-  empIndustryCategory: Option[String],
-  empLocCountryRegion: Option[String],
-  empLocState: Option[String],
-  empLocCity: Option[String]
+  empStartDate: TypoLocalDate,
+  empEndDate: TypoLocalDate,
+  empOrgName: String,
+  empJobTitle: String,
+  empResponsibility: String,
+  empFunctionCategory: String,
+  empIndustryCategory: String,
+  empLocCountryRegion: String,
+  empLocState: String,
+  empLocCity: String
 )
 
 object VjobcandidateemploymentViewRow {
@@ -37,16 +37,16 @@ object VjobcandidateemploymentViewRow {
         columIndex + 10 ->
           VjobcandidateemploymentViewRow(
             jobcandidateid = JobcandidateId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-            empStartDate = JdbcDecoder.optionDecoder(TypoLocalDate.jdbcDecoder).unsafeDecode(columIndex + 1, rs)._2,
-            empEndDate = JdbcDecoder.optionDecoder(TypoLocalDate.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
-            empOrgName = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
-            empJobTitle = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 4, rs)._2,
-            empResponsibility = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
-            empFunctionCategory = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 6, rs)._2,
-            empIndustryCategory = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 7, rs)._2,
-            empLocCountryRegion = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 8, rs)._2,
-            empLocState = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 9, rs)._2,
-            empLocCity = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 10, rs)._2
+            empStartDate = TypoLocalDate.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            empEndDate = TypoLocalDate.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            empOrgName = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            empJobTitle = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 4, rs)._2,
+            empResponsibility = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 5, rs)._2,
+            empFunctionCategory = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 6, rs)._2,
+            empIndustryCategory = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 7, rs)._2,
+            empLocCountryRegion = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 8, rs)._2,
+            empLocState = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 9, rs)._2,
+            empLocCity = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 10, rs)._2
           )
     }
   }
@@ -54,16 +54,16 @@ object VjobcandidateemploymentViewRow {
   implicit lazy val jsonDecoder: JsonDecoder[VjobcandidateemploymentViewRow] = {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
       val jobcandidateid = jsonObj.get("jobcandidateid").toRight("Missing field 'jobcandidateid'").flatMap(_.as(JobcandidateId.jsonDecoder))
-      val empStartDate = jsonObj.get("Emp.StartDate").fold[Either[String, Option[TypoLocalDate]]](Right(None))(_.as(JsonDecoder.option(TypoLocalDate.jsonDecoder)))
-      val empEndDate = jsonObj.get("Emp.EndDate").fold[Either[String, Option[TypoLocalDate]]](Right(None))(_.as(JsonDecoder.option(TypoLocalDate.jsonDecoder)))
-      val empOrgName = jsonObj.get("Emp.OrgName").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val empJobTitle = jsonObj.get("Emp.JobTitle").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val empResponsibility = jsonObj.get("Emp.Responsibility").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val empFunctionCategory = jsonObj.get("Emp.FunctionCategory").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val empIndustryCategory = jsonObj.get("Emp.IndustryCategory").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val empLocCountryRegion = jsonObj.get("Emp.Loc.CountryRegion").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val empLocState = jsonObj.get("Emp.Loc.State").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val empLocCity = jsonObj.get("Emp.Loc.City").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val empStartDate = jsonObj.get("Emp.StartDate").toRight("Missing field 'Emp.StartDate'").flatMap(_.as(TypoLocalDate.jsonDecoder))
+      val empEndDate = jsonObj.get("Emp.EndDate").toRight("Missing field 'Emp.EndDate'").flatMap(_.as(TypoLocalDate.jsonDecoder))
+      val empOrgName = jsonObj.get("Emp.OrgName").toRight("Missing field 'Emp.OrgName'").flatMap(_.as(JsonDecoder.string))
+      val empJobTitle = jsonObj.get("Emp.JobTitle").toRight("Missing field 'Emp.JobTitle'").flatMap(_.as(JsonDecoder.string))
+      val empResponsibility = jsonObj.get("Emp.Responsibility").toRight("Missing field 'Emp.Responsibility'").flatMap(_.as(JsonDecoder.string))
+      val empFunctionCategory = jsonObj.get("Emp.FunctionCategory").toRight("Missing field 'Emp.FunctionCategory'").flatMap(_.as(JsonDecoder.string))
+      val empIndustryCategory = jsonObj.get("Emp.IndustryCategory").toRight("Missing field 'Emp.IndustryCategory'").flatMap(_.as(JsonDecoder.string))
+      val empLocCountryRegion = jsonObj.get("Emp.Loc.CountryRegion").toRight("Missing field 'Emp.Loc.CountryRegion'").flatMap(_.as(JsonDecoder.string))
+      val empLocState = jsonObj.get("Emp.Loc.State").toRight("Missing field 'Emp.Loc.State'").flatMap(_.as(JsonDecoder.string))
+      val empLocCity = jsonObj.get("Emp.Loc.City").toRight("Missing field 'Emp.Loc.City'").flatMap(_.as(JsonDecoder.string))
       if (jobcandidateid.isRight && empStartDate.isRight && empEndDate.isRight && empOrgName.isRight && empJobTitle.isRight && empResponsibility.isRight && empFunctionCategory.isRight && empIndustryCategory.isRight && empLocCountryRegion.isRight && empLocState.isRight && empLocCity.isRight)
         Right(VjobcandidateemploymentViewRow(jobcandidateid = jobcandidateid.toOption.get, empStartDate = empStartDate.toOption.get, empEndDate = empEndDate.toOption.get, empOrgName = empOrgName.toOption.get, empJobTitle = empJobTitle.toOption.get, empResponsibility = empResponsibility.toOption.get, empFunctionCategory = empFunctionCategory.toOption.get, empIndustryCategory = empIndustryCategory.toOption.get, empLocCountryRegion = empLocCountryRegion.toOption.get, empLocState = empLocState.toOption.get, empLocCity = empLocCity.toOption.get))
       else Left(List[Either[String, Any]](jobcandidateid, empStartDate, empEndDate, empOrgName, empJobTitle, empResponsibility, empFunctionCategory, empIndustryCategory, empLocCountryRegion, empLocState, empLocCity).flatMap(_.left.toOption).mkString(", "))
@@ -78,34 +78,34 @@ object VjobcandidateemploymentViewRow {
         JobcandidateId.jsonEncoder.unsafeEncode(a.jobcandidateid, indent, out)
         out.write(",")
         out.write(""""Emp.StartDate":""")
-        JsonEncoder.option(TypoLocalDate.jsonEncoder).unsafeEncode(a.empStartDate, indent, out)
+        TypoLocalDate.jsonEncoder.unsafeEncode(a.empStartDate, indent, out)
         out.write(",")
         out.write(""""Emp.EndDate":""")
-        JsonEncoder.option(TypoLocalDate.jsonEncoder).unsafeEncode(a.empEndDate, indent, out)
+        TypoLocalDate.jsonEncoder.unsafeEncode(a.empEndDate, indent, out)
         out.write(",")
         out.write(""""Emp.OrgName":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.empOrgName, indent, out)
+        JsonEncoder.string.unsafeEncode(a.empOrgName, indent, out)
         out.write(",")
         out.write(""""Emp.JobTitle":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.empJobTitle, indent, out)
+        JsonEncoder.string.unsafeEncode(a.empJobTitle, indent, out)
         out.write(",")
         out.write(""""Emp.Responsibility":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.empResponsibility, indent, out)
+        JsonEncoder.string.unsafeEncode(a.empResponsibility, indent, out)
         out.write(",")
         out.write(""""Emp.FunctionCategory":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.empFunctionCategory, indent, out)
+        JsonEncoder.string.unsafeEncode(a.empFunctionCategory, indent, out)
         out.write(",")
         out.write(""""Emp.IndustryCategory":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.empIndustryCategory, indent, out)
+        JsonEncoder.string.unsafeEncode(a.empIndustryCategory, indent, out)
         out.write(",")
         out.write(""""Emp.Loc.CountryRegion":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.empLocCountryRegion, indent, out)
+        JsonEncoder.string.unsafeEncode(a.empLocCountryRegion, indent, out)
         out.write(",")
         out.write(""""Emp.Loc.State":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.empLocState, indent, out)
+        JsonEncoder.string.unsafeEncode(a.empLocState, indent, out)
         out.write(",")
         out.write(""""Emp.Loc.City":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.empLocCity, indent, out)
+        JsonEncoder.string.unsafeEncode(a.empLocCity, indent, out)
         out.write("}")
       }
     }

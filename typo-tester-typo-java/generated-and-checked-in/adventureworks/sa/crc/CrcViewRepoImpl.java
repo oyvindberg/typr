@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class CrcViewRepoImpl implements CrcViewRepo {
@@ -19,9 +20,6 @@ public class CrcViewRepoImpl implements CrcViewRepo {
 
   @Override
   public List<CrcViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "countryregioncode", "currencycode", "modifieddate"::text
-       from "sa"."crc"
-    """)).query(CrcViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"countryregioncode\", \"currencycode\", \"modifieddate\"\nfrom \"sa\".\"crc\"\n")).query(CrcViewRow._rowParser.all()).runUnchecked(c);
   };
 }

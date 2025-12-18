@@ -26,9 +26,9 @@ case class CreditcardRow(
    */
   creditcardid: /* user-picked */ CustomCreditcardId,
   /** Credit card name. */
-  cardtype: /* max 50 chars */ String,
+  cardtype: String,
   /** Credit card number. */
-  cardnumber: /* max 25 chars */ String,
+  cardnumber: String,
   /** Credit card expiration month. */
   expmonth: TypoShort,
   /** Credit card expiration year. */
@@ -54,9 +54,9 @@ case class CreditcardRow(
 }
 
 object CreditcardRow {
-  given decoder: Decoder[CreditcardRow] = Decoder.forProduct6[CreditcardRow, /* user-picked */ CustomCreditcardId, /* max 50 chars */ String, /* max 25 chars */ String, TypoShort, TypoShort, TypoLocalDateTime]("creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(CreditcardRow.apply)(using CustomCreditcardId.decoder, Decoder.decodeString, Decoder.decodeString, TypoShort.decoder, TypoShort.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[CreditcardRow] = Decoder.forProduct6[CreditcardRow, /* user-picked */ CustomCreditcardId, String, String, TypoShort, TypoShort, TypoLocalDateTime]("creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(CreditcardRow.apply)(using CustomCreditcardId.decoder, Decoder.decodeString, Decoder.decodeString, TypoShort.decoder, TypoShort.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[CreditcardRow] = Encoder.forProduct6[CreditcardRow, /* user-picked */ CustomCreditcardId, /* max 50 chars */ String, /* max 25 chars */ String, TypoShort, TypoShort, TypoLocalDateTime]("creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(x => (x.creditcardid, x.cardtype, x.cardnumber, x.expmonth, x.expyear, x.modifieddate))(using CustomCreditcardId.encoder, Encoder.encodeString, Encoder.encodeString, TypoShort.encoder, TypoShort.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[CreditcardRow] = Encoder.forProduct6[CreditcardRow, /* user-picked */ CustomCreditcardId, String, String, TypoShort, TypoShort, TypoLocalDateTime]("creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(x => (x.creditcardid, x.cardtype, x.cardnumber, x.expmonth, x.expyear, x.modifieddate))(using CustomCreditcardId.encoder, Encoder.encodeString, Encoder.encodeString, TypoShort.encoder, TypoShort.encoder, TypoLocalDateTime.encoder)
 
   given pgText: Text[CreditcardRow] = {
     Text.instance[CreditcardRow]{ (row, sb) =>
@@ -85,8 +85,8 @@ object CreditcardRow {
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       CreditcardRow(
         creditcardid = arr(0).asInstanceOf[/* user-picked */ CustomCreditcardId],
-            cardtype = arr(1).asInstanceOf[/* max 50 chars */ String],
-            cardnumber = arr(2).asInstanceOf[/* max 25 chars */ String],
+            cardtype = arr(1).asInstanceOf[String],
+            cardnumber = arr(2).asInstanceOf[String],
             expmonth = arr(3).asInstanceOf[TypoShort],
             expyear = arr(4).asInstanceOf[TypoShort],
             modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]

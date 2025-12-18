@@ -27,7 +27,7 @@ case class PdViewRow(
   /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.productdescriptionid]] */
   productdescriptionid: ProductdescriptionId,
   /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.description]] */
-  description: /* max 400 chars */ String,
+  description: String,
   /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.modifieddate]] */

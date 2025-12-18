@@ -5,10 +5,8 @@
  */
 package adventureworks.pr.pp;
 
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.productphoto.ProductphotoId;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -20,15 +18,15 @@ public record PpViewRow(
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#productphotoid()} */
   ProductphotoId productphotoid,
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#thumbnailphoto()} */
-  Optional<TypoBytea> thumbnailphoto,
+  byte[] thumbnailphoto,
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#thumbnailphotofilename()} */
-  Optional</* max 50 chars */ String> thumbnailphotofilename,
+  String thumbnailphotofilename,
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#largephoto()} */
-  Optional<TypoBytea> largephoto,
+  byte[] largephoto,
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#largephotofilename()} */
-  Optional</* max 50 chars */ String> largephotofilename,
+  String largephotofilename,
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#productphotoid()} */
   public PpViewRow withId(ProductphotoId id) {
@@ -41,29 +39,29 @@ public record PpViewRow(
   };
 
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#thumbnailphoto()} */
-  public PpViewRow withThumbnailphoto(Optional<TypoBytea> thumbnailphoto) {
+  public PpViewRow withThumbnailphoto(byte[] thumbnailphoto) {
     return new PpViewRow(id, productphotoid, thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#thumbnailphotofilename()} */
-  public PpViewRow withThumbnailphotofilename(Optional</* max 50 chars */ String> thumbnailphotofilename) {
+  public PpViewRow withThumbnailphotofilename(String thumbnailphotofilename) {
     return new PpViewRow(id, productphotoid, thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#largephoto()} */
-  public PpViewRow withLargephoto(Optional<TypoBytea> largephoto) {
+  public PpViewRow withLargephoto(byte[] largephoto) {
     return new PpViewRow(id, productphotoid, thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#largephotofilename()} */
-  public PpViewRow withLargephotofilename(Optional</* max 50 chars */ String> largephotofilename) {
+  public PpViewRow withLargephotofilename(String largephotofilename) {
     return new PpViewRow(id, productphotoid, thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productphoto.ProductphotoRow#modifieddate()} */
-  public PpViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PpViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PpViewRow(id, productphotoid, thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate);
   };
 
-  static RowParser<PpViewRow> _rowParser = RowParsers.of(ProductphotoId.pgType, ProductphotoId.pgType, TypoBytea.pgType.opt(), PgTypes.text.opt(), TypoBytea.pgType.opt(), PgTypes.text.opt(), TypoLocalDateTime.pgType, PpViewRow::new, row -> new Object[]{row.id(), row.productphotoid(), row.thumbnailphoto(), row.thumbnailphotofilename(), row.largephoto(), row.largephotofilename(), row.modifieddate()});;
+  static RowParser<PpViewRow> _rowParser = RowParsers.of(ProductphotoId.pgType, ProductphotoId.pgType, PgTypes.bytea, PgTypes.text, PgTypes.bytea, PgTypes.text, PgTypes.timestamp, PpViewRow::new, row -> new Object[]{row.id(), row.productphotoid(), row.thumbnailphoto(), row.thumbnailphotofilename(), row.largephoto(), row.largephotofilename(), row.modifieddate()});;
 }

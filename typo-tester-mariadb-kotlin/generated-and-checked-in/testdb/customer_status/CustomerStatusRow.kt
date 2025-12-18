@@ -7,10 +7,11 @@ package testdb.customer_status
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import testdb.customtypes.Defaulted
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: customer_status
   * Primary key: status_code
@@ -30,9 +31,9 @@ data class CustomerStatusRow(
   fun toUnsavedRow(isActive: Defaulted<Boolean>): CustomerStatusRowUnsaved = CustomerStatusRowUnsaved(statusCode, description, isActive)
 
   companion object {
-    val _rowParser: RowParser<CustomerStatusRow> = RowParsers.of(CustomerStatusId.pgType, MariaTypes.varchar, MariaTypes.bool, { t0, t1, t2 -> CustomerStatusRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.statusCode, row.description, row.isActive) })
+    val _rowParser: RowParser<CustomerStatusRow> = RowParsers.of(CustomerStatusId.pgType, MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, { t0, t1, t2 -> CustomerStatusRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.statusCode, row.description, row.isActive) })
 
     val mariaText: MariaText<CustomerStatusRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

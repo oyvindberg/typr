@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class SpViewRepoImpl implements SpViewRepo {
@@ -19,9 +20,6 @@ public class SpViewRepoImpl implements SpViewRepo {
 
   @Override
   public List<SpViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text
-       from "pe"."sp"
-    """)).query(SpViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\"\nfrom \"pe\".\"sp\"\n")).query(SpViewRow._rowParser.all()).runUnchecked(c);
   };
 }

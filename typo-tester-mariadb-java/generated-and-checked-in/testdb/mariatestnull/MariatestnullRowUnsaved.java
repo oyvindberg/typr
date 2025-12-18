@@ -512,9 +512,9 @@ public record MariatestnullRowUnsaved(
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.bigintUnsigned.opt().mariaText()).unsafeEncode(row.bigintUCol, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.decimalCol, sb);
+      Defaulted.mariaText(MariaTypes.numeric.opt().mariaText()).unsafeEncode(row.decimalCol, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.numericCol, sb);
+      Defaulted.mariaText(MariaTypes.numeric.opt().mariaText()).unsafeEncode(row.numericCol, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.float_.opt().mariaText()).unsafeEncode(row.floatCol, sb);
       sb.append(MariaText.DELIMETER);

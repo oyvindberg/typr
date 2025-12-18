@@ -7,31 +7,9 @@ package testdb.subquery_test
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.Fragment.interpolate
 
 class SubqueryTestSqlRepoImpl() : SubqueryTestSqlRepo {
-  override fun apply(c: Connection): List<SubqueryTestSqlRow> = interpolate(typo.runtime.Fragment.lit("""
-    -- Test subquery tracking (no CTE)
-    SELECT
-        c.customer_id,
-        c.email,
-        c.first_name,
-        sub.order_count,
-        sub.total_spent,
-        b.name as favorite_brand
-    FROM customers c
-    INNER JOIN (
-        SELECT
-            o.customer_id,
-            COUNT(*) as order_count,
-            SUM(o.total_amount) as total_spent
-        FROM orders o
-        GROUP BY o.customer_id
-    ) sub ON c.customer_id = sub.customer_id
-    LEFT JOIN orders o2 ON c.customer_id = o2.customer_id
-    LEFT JOIN order_items oi ON o2.order_id = oi.order_id
-    LEFT JOIN products p ON oi.product_id = p.product_id
-    LEFT JOIN brands b ON p.brand_id = b.brand_id
-    WHERE sub.total_spent > 100
-  """.trimMargin())).query(SubqueryTestSqlRow._rowParser.all()).runUnchecked(c)
+  override fun apply(c: Connection): List<SubqueryTestSqlRow> = interpolate(Fragment.lit("-- Test subquery tracking (no CTE)\nSELECT\n    c.customer_id,\n    c.email,\n    c.first_name,\n    sub.order_count,\n    sub.total_spent,\n    b.name as favorite_brand\nFROM customers c\nINNER JOIN (\n    SELECT\n        o.customer_id,\n        COUNT(*) as order_count,\n        SUM(o.total_amount) as total_spent\n    FROM orders o\n    GROUP BY o.customer_id\n) sub ON c.customer_id = sub.customer_id\nLEFT JOIN orders o2 ON c.customer_id = o2.customer_id\nLEFT JOIN order_items oi ON o2.order_id = oi.order_id\nLEFT JOIN products p ON oi.product_id = p.product_id\nLEFT JOIN brands b ON p.brand_id = b.brand_id\nWHERE sub.total_spent > 100\n")).query(SubqueryTestSqlRow._rowParser.all()).runUnchecked(c)
 }

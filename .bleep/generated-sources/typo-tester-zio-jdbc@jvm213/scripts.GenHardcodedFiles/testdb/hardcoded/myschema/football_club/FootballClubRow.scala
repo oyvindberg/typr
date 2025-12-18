@@ -19,7 +19,7 @@ import zio.json.internal.Write
  */
 case class FootballClubRow(
   id: FootballClubId,
-  name: /* max 100 chars */ String
+  name: String
 )
 
 object FootballClubRow {

@@ -7,15 +7,14 @@ package testdb.product_search
 
 import java.math.BigDecimal
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 
 interface ProductSearchSqlRepo {
-  fun apply(
-    brandId: Optional<Int>,
-    minPrice: Optional<BigDecimal>,
-    maxPrice: Optional<BigDecimal>,
-    status: Optional<String>,
+  abstract fun apply(
+    brandId: Int?,
+    minPrice: BigDecimal?,
+    maxPrice: BigDecimal?,
+    status: String?,
     limit: Long,
     c: Connection
   ): List<ProductSearchSqlRow>

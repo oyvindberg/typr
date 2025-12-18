@@ -5,19 +5,19 @@
  */
 package adventureworks.sales.salespersonquotahistory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 
 /** Type for the composite primary key of table `sales.salespersonquotahistory` */
 public record SalespersonquotahistoryId(
   BusinessentityId businessentityid,
-  TypoLocalDateTime quotadate
+  LocalDateTime quotadate
 ) {
   public SalespersonquotahistoryId withBusinessentityid(BusinessentityId businessentityid) {
     return new SalespersonquotahistoryId(businessentityid, quotadate);
   };
 
-  public SalespersonquotahistoryId withQuotadate(TypoLocalDateTime quotadate) {
+  public SalespersonquotahistoryId withQuotadate(LocalDateTime quotadate) {
     return new SalespersonquotahistoryId(businessentityid, quotadate);
   };
 }

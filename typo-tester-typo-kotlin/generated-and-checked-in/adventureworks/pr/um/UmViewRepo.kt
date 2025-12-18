@@ -7,10 +7,10 @@ package adventureworks.pr.um
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface UmViewRepo {
-  fun select(): SelectBuilder<UmViewFields, UmViewRow>
+  abstract fun select(): SelectBuilder<UmViewFields, UmViewRow>
 
-  fun selectAll(c: Connection): List<UmViewRow>
+  abstract fun selectAll(c: Connection): List<UmViewRow>
 }

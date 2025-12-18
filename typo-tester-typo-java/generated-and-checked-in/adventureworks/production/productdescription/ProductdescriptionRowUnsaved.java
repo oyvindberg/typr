@@ -7,34 +7,34 @@ package adventureworks.production.productdescription;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.productdescription` which has not been persisted yet */
 public record ProductdescriptionRowUnsaved(
   /** Description of the product. */
-  /* max 400 chars */ String description,
+  String description,
   /** Default: nextval('production.productdescription_productdescriptionid_seq'::regclass)
     * Primary key for ProductDescription records.
     */
   Defaulted<ProductdescriptionId> productdescriptionid,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductdescriptionRowUnsaved(
   
     /** Description of the product. */
-    /* max 400 chars */ String description
+    String description
   ) {
     this(description, new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
   };
 
   /** Description of the product. */
-  public ProductdescriptionRowUnsaved withDescription(/* max 400 chars */ String description) {
+  public ProductdescriptionRowUnsaved withDescription(String description) {
     return new ProductdescriptionRowUnsaved(description, productdescriptionid, rowguid, modifieddate);
   };
 
@@ -46,12 +46,12 @@ public record ProductdescriptionRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public ProductdescriptionRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public ProductdescriptionRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new ProductdescriptionRowUnsaved(description, productdescriptionid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ProductdescriptionRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductdescriptionRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductdescriptionRowUnsaved(description, productdescriptionid, rowguid, modifieddate);
   };
 
@@ -61,15 +61,15 @@ public record ProductdescriptionRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(ProductdescriptionId.pgType.pgText()).unsafeEncode(row.productdescriptionid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ProductdescriptionRow toRow(
     java.util.function.Supplier<ProductdescriptionId> productdescriptionidDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ProductdescriptionRow(productdescriptionid.getOrElse(productdescriptionidDefault), description, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

@@ -5,12 +5,11 @@
  */
 package adventureworks.production.vproductmodelcatalogdescription;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productmodel.ProductmodelId;
 import adventureworks.public_.Name;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -22,30 +21,30 @@ public record VproductmodelcatalogdescriptionViewRow(
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#name()} */
   Name name,
   @JsonProperty("Summary") String summary,
-  Optional<String> manufacturer,
-  Optional</* max 30 chars */ String> copyright,
-  Optional</* max 256 chars */ String> producturl,
-  Optional</* max 256 chars */ String> warrantyperiod,
-  Optional</* max 256 chars */ String> warrantydescription,
-  Optional</* max 256 chars */ String> noofyears,
-  Optional</* max 256 chars */ String> maintenancedescription,
-  Optional</* max 256 chars */ String> wheel,
-  Optional</* max 256 chars */ String> saddle,
-  Optional</* max 256 chars */ String> pedal,
-  Optional<String> bikeframe,
-  Optional</* max 256 chars */ String> crankset,
-  Optional</* max 256 chars */ String> pictureangle,
-  Optional</* max 256 chars */ String> picturesize,
-  Optional</* max 256 chars */ String> productphotoid,
-  Optional</* max 256 chars */ String> material,
-  Optional</* max 256 chars */ String> color,
-  Optional</* max 256 chars */ String> productline,
-  Optional</* max 256 chars */ String> style,
-  Optional</* max 1024 chars */ String> riderexperience,
+  String manufacturer,
+  String copyright,
+  String producturl,
+  String warrantyperiod,
+  String warrantydescription,
+  String noofyears,
+  String maintenancedescription,
+  String wheel,
+  String saddle,
+  String pedal,
+  String bikeframe,
+  String crankset,
+  String pictureangle,
+  String picturesize,
+  String productphotoid,
+  String material,
+  String color,
+  String productline,
+  String style,
+  String riderexperience,
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#productmodelid()} */
   public VproductmodelcatalogdescriptionViewRow withProductmodelid(ProductmodelId productmodelid) {
@@ -61,95 +60,95 @@ public record VproductmodelcatalogdescriptionViewRow(
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withManufacturer(Optional<String> manufacturer) {
+  public VproductmodelcatalogdescriptionViewRow withManufacturer(String manufacturer) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withCopyright(Optional</* max 30 chars */ String> copyright) {
+  public VproductmodelcatalogdescriptionViewRow withCopyright(String copyright) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withProducturl(Optional</* max 256 chars */ String> producturl) {
+  public VproductmodelcatalogdescriptionViewRow withProducturl(String producturl) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withWarrantyperiod(Optional</* max 256 chars */ String> warrantyperiod) {
+  public VproductmodelcatalogdescriptionViewRow withWarrantyperiod(String warrantyperiod) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withWarrantydescription(Optional</* max 256 chars */ String> warrantydescription) {
+  public VproductmodelcatalogdescriptionViewRow withWarrantydescription(String warrantydescription) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withNoofyears(Optional</* max 256 chars */ String> noofyears) {
+  public VproductmodelcatalogdescriptionViewRow withNoofyears(String noofyears) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withMaintenancedescription(Optional</* max 256 chars */ String> maintenancedescription) {
+  public VproductmodelcatalogdescriptionViewRow withMaintenancedescription(String maintenancedescription) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withWheel(Optional</* max 256 chars */ String> wheel) {
+  public VproductmodelcatalogdescriptionViewRow withWheel(String wheel) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withSaddle(Optional</* max 256 chars */ String> saddle) {
+  public VproductmodelcatalogdescriptionViewRow withSaddle(String saddle) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withPedal(Optional</* max 256 chars */ String> pedal) {
+  public VproductmodelcatalogdescriptionViewRow withPedal(String pedal) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withBikeframe(Optional<String> bikeframe) {
+  public VproductmodelcatalogdescriptionViewRow withBikeframe(String bikeframe) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withCrankset(Optional</* max 256 chars */ String> crankset) {
+  public VproductmodelcatalogdescriptionViewRow withCrankset(String crankset) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withPictureangle(Optional</* max 256 chars */ String> pictureangle) {
+  public VproductmodelcatalogdescriptionViewRow withPictureangle(String pictureangle) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withPicturesize(Optional</* max 256 chars */ String> picturesize) {
+  public VproductmodelcatalogdescriptionViewRow withPicturesize(String picturesize) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withProductphotoid(Optional</* max 256 chars */ String> productphotoid) {
+  public VproductmodelcatalogdescriptionViewRow withProductphotoid(String productphotoid) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withMaterial(Optional</* max 256 chars */ String> material) {
+  public VproductmodelcatalogdescriptionViewRow withMaterial(String material) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withColor(Optional</* max 256 chars */ String> color) {
+  public VproductmodelcatalogdescriptionViewRow withColor(String color) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withProductline(Optional</* max 256 chars */ String> productline) {
+  public VproductmodelcatalogdescriptionViewRow withProductline(String productline) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withStyle(Optional</* max 256 chars */ String> style) {
+  public VproductmodelcatalogdescriptionViewRow withStyle(String style) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  public VproductmodelcatalogdescriptionViewRow withRiderexperience(Optional</* max 1024 chars */ String> riderexperience) {
+  public VproductmodelcatalogdescriptionViewRow withRiderexperience(String riderexperience) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#rowguid()} */
-  public VproductmodelcatalogdescriptionViewRow withRowguid(TypoUUID rowguid) {
+  public VproductmodelcatalogdescriptionViewRow withRowguid(UUID rowguid) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#modifieddate()} */
-  public VproductmodelcatalogdescriptionViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public VproductmodelcatalogdescriptionViewRow withModifieddate(LocalDateTime modifieddate) {
     return new VproductmodelcatalogdescriptionViewRow(productmodelid, name, summary, manufacturer, copyright, producturl, warrantyperiod, warrantydescription, noofyears, maintenancedescription, wheel, saddle, pedal, bikeframe, crankset, pictureangle, picturesize, productphotoid, material, color, productline, style, riderexperience, rowguid, modifieddate);
   };
 
-  static RowParser<VproductmodelcatalogdescriptionViewRow> _rowParser = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, VproductmodelcatalogdescriptionViewRow::new, row -> new Object[]{row.productmodelid(), row.name(), row.summary(), row.manufacturer(), row.copyright(), row.producturl(), row.warrantyperiod(), row.warrantydescription(), row.noofyears(), row.maintenancedescription(), row.wheel(), row.saddle(), row.pedal(), row.bikeframe(), row.crankset(), row.pictureangle(), row.picturesize(), row.productphotoid(), row.material(), row.color(), row.productline(), row.style(), row.riderexperience(), row.rowguid(), row.modifieddate()});;
+  static RowParser<VproductmodelcatalogdescriptionViewRow> _rowParser = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, VproductmodelcatalogdescriptionViewRow::new, row -> new Object[]{row.productmodelid(), row.name(), row.summary(), row.manufacturer(), row.copyright(), row.producturl(), row.warrantyperiod(), row.warrantydescription(), row.noofyears(), row.maintenancedescription(), row.wheel(), row.saddle(), row.pedal(), row.bikeframe(), row.crankset(), row.pictureangle(), row.picturesize(), row.productphotoid(), row.material(), row.color(), row.productline(), row.style(), row.riderexperience(), row.rowguid(), row.modifieddate()});;
 }

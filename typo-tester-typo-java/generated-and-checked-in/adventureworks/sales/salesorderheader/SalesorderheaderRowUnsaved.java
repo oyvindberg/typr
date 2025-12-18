@@ -7,9 +7,6 @@ package adventureworks.sales.salesorderheader;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.address.AddressId;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.AccountNumber;
@@ -21,7 +18,9 @@ import adventureworks.sales.customer.CustomerId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import adventureworks.userdefined.CustomCreditcardId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -30,11 +29,11 @@ public record SalesorderheaderRowUnsaved(
   /** Date the order is due to the customer.
     * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate))
     */
-  TypoLocalDateTime duedate,
+  LocalDateTime duedate,
   /** Date the order was shipped to the customer.
     * Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  Optional<TypoLocalDateTime> shipdate,
+  Optional<LocalDateTime> shipdate,
   /** Customer purchase order number reference. */
   Optional<OrderNumber> purchaseordernumber,
   /** Financial accounting number reference. */
@@ -84,18 +83,18 @@ public record SalesorderheaderRowUnsaved(
   /** Default: 0
     * Incremental number to track changes to the sales order over time.
     */
-  Defaulted<TypoShort> revisionnumber,
+  Defaulted<Short> revisionnumber,
   /** Default: now()
     * Dates the sales order was created.
     * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate))
     * Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  Defaulted<TypoLocalDateTime> orderdate,
+  Defaulted<LocalDateTime> orderdate,
   /** Default: 1
     * Order current status. 1 = In process; 2 = Approved; 3 = Backordered; 4 = Rejected; 5 = Shipped; 6 = Cancelled
     * Constraint CK_SalesOrderHeader_Status affecting columns status:  (((status >= 0) AND (status <= 8)))
     */
-  Defaulted<TypoShort> status,
+  Defaulted<Short> status,
   /** Default: true
     * 0 = Order placed by sales person. 1 = Order placed online by customer.
     */
@@ -116,15 +115,15 @@ public record SalesorderheaderRowUnsaved(
     */
   Defaulted<BigDecimal> freight,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SalesorderheaderRowUnsaved(
     /** Date the order is due to the customer.
       * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate))
       */
-    TypoLocalDateTime duedate,
+    LocalDateTime duedate,
     /** Customer identification number. Foreign key to Customer.BusinessEntityID.
       * Points to {@link adventureworks.sales.customer.CustomerRow#customerid()}
       */
@@ -148,14 +147,14 @@ public record SalesorderheaderRowUnsaved(
   /** Date the order is due to the customer.
     * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate))
     */
-  public SalesorderheaderRowUnsaved withDuedate(TypoLocalDateTime duedate) {
+  public SalesorderheaderRowUnsaved withDuedate(LocalDateTime duedate) {
     return new SalesorderheaderRowUnsaved(duedate, shipdate, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, totaldue, comment, salesorderid, revisionnumber, orderdate, status, onlineorderflag, subtotal, taxamt, freight, rowguid, modifieddate);
   };
 
   /** Date the order was shipped to the customer.
     * Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  public SalesorderheaderRowUnsaved withShipdate(Optional<TypoLocalDateTime> shipdate) {
+  public SalesorderheaderRowUnsaved withShipdate(Optional<LocalDateTime> shipdate) {
     return new SalesorderheaderRowUnsaved(duedate, shipdate, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, totaldue, comment, salesorderid, revisionnumber, orderdate, status, onlineorderflag, subtotal, taxamt, freight, rowguid, modifieddate);
   };
 
@@ -250,7 +249,7 @@ public record SalesorderheaderRowUnsaved(
   /** Default: 0
     * Incremental number to track changes to the sales order over time.
     */
-  public SalesorderheaderRowUnsaved withRevisionnumber(Defaulted<TypoShort> revisionnumber) {
+  public SalesorderheaderRowUnsaved withRevisionnumber(Defaulted<Short> revisionnumber) {
     return new SalesorderheaderRowUnsaved(duedate, shipdate, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, totaldue, comment, salesorderid, revisionnumber, orderdate, status, onlineorderflag, subtotal, taxamt, freight, rowguid, modifieddate);
   };
 
@@ -259,7 +258,7 @@ public record SalesorderheaderRowUnsaved(
     * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate))
     * Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  public SalesorderheaderRowUnsaved withOrderdate(Defaulted<TypoLocalDateTime> orderdate) {
+  public SalesorderheaderRowUnsaved withOrderdate(Defaulted<LocalDateTime> orderdate) {
     return new SalesorderheaderRowUnsaved(duedate, shipdate, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, totaldue, comment, salesorderid, revisionnumber, orderdate, status, onlineorderflag, subtotal, taxamt, freight, rowguid, modifieddate);
   };
 
@@ -267,7 +266,7 @@ public record SalesorderheaderRowUnsaved(
     * Order current status. 1 = In process; 2 = Approved; 3 = Backordered; 4 = Rejected; 5 = Shipped; 6 = Cancelled
     * Constraint CK_SalesOrderHeader_Status affecting columns status:  (((status >= 0) AND (status <= 8)))
     */
-  public SalesorderheaderRowUnsaved withStatus(Defaulted<TypoShort> status) {
+  public SalesorderheaderRowUnsaved withStatus(Defaulted<Short> status) {
     return new SalesorderheaderRowUnsaved(duedate, shipdate, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, totaldue, comment, salesorderid, revisionnumber, orderdate, status, onlineorderflag, subtotal, taxamt, freight, rowguid, modifieddate);
   };
 
@@ -303,20 +302,20 @@ public record SalesorderheaderRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public SalesorderheaderRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public SalesorderheaderRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new SalesorderheaderRowUnsaved(duedate, shipdate, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, totaldue, comment, salesorderid, revisionnumber, orderdate, status, onlineorderflag, subtotal, taxamt, freight, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalesorderheaderRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SalesorderheaderRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SalesorderheaderRowUnsaved(duedate, shipdate, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, totaldue, comment, salesorderid, revisionnumber, orderdate, status, onlineorderflag, subtotal, taxamt, freight, rowguid, modifieddate);
   };
 
   static public PgText<SalesorderheaderRowUnsaved> pgText =
     PgText.instance((row, sb) -> {
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.duedate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.duedate, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.shipdate, sb);
+      PgTypes.timestamp.opt().pgText().unsafeEncode(row.shipdate, sb);
       sb.append(PgText.DELIMETER);
       OrderNumber.pgType.opt().pgText().unsafeEncode(row.purchaseordernumber, sb);
       sb.append(PgText.DELIMETER);
@@ -346,11 +345,11 @@ public record SalesorderheaderRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(SalesorderheaderId.pgType.pgText()).unsafeEncode(row.salesorderid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.revisionnumber, sb);
+      Defaulted.pgText(PgTypes.int2.pgText()).unsafeEncode(row.revisionnumber, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.orderdate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.orderdate, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.status, sb);
+      Defaulted.pgText(PgTypes.int2.pgText()).unsafeEncode(row.status, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.onlineorderflag, sb);
       sb.append(PgText.DELIMETER);
@@ -360,22 +359,22 @@ public record SalesorderheaderRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.freight, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public SalesorderheaderRow toRow(
     java.util.function.Supplier<SalesorderheaderId> salesorderidDefault,
-    java.util.function.Supplier<TypoShort> revisionnumberDefault,
-    java.util.function.Supplier<TypoLocalDateTime> orderdateDefault,
-    java.util.function.Supplier<TypoShort> statusDefault,
+    java.util.function.Supplier<Short> revisionnumberDefault,
+    java.util.function.Supplier<LocalDateTime> orderdateDefault,
+    java.util.function.Supplier<Short> statusDefault,
     java.util.function.Supplier<Flag> onlineorderflagDefault,
     java.util.function.Supplier<BigDecimal> subtotalDefault,
     java.util.function.Supplier<BigDecimal> taxamtDefault,
     java.util.function.Supplier<BigDecimal> freightDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new SalesorderheaderRow(salesorderid.getOrElse(salesorderidDefault), revisionnumber.getOrElse(revisionnumberDefault), orderdate.getOrElse(orderdateDefault), duedate, shipdate, status.getOrElse(statusDefault), onlineorderflag.getOrElse(onlineorderflagDefault), purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal.getOrElse(subtotalDefault), taxamt.getOrElse(taxamtDefault), freight.getOrElse(freightDefault), totaldue, comment, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

@@ -19,7 +19,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -34,13 +33,7 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     ProductCategoriesId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `product_categories` where `product_id` = "),
-      ProductsId.pgType.encode(compositeId.productId()),
-      typo.runtime.Fragment.lit(" AND `category_id` = "),
-      CategoriesId.pgType.encode(compositeId.categoryId()),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `product_categories` where `product_id` = "), Fragment.encode(ProductsId.pgType, compositeId.productId()), Fragment.lit(" AND `category_id` = "), Fragment.encode(CategoriesId.pgType, compositeId.categoryId()), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -48,8 +41,8 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     ProductCategoriesId[] compositeIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : compositeIds) { fragments.add(Fragment.interpolate(Fragment.lit("("), ProductsId.pgType.encode(id.productId()), Fragment.lit(", "), CategoriesId.pgType.encode(id.categoryId()), Fragment.lit(")"))); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : compositeIds) { fragments.add(Fragment.interpolate(Fragment.lit("("), Fragment.encode(ProductsId.pgType, id.productId()), Fragment.lit(", "), Fragment.encode(CategoriesId.pgType, id.categoryId()), Fragment.lit(")"))); };
     return Fragment.interpolate(Fragment.lit("delete from `product_categories` where (`product_id`, `category_id`) in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -58,22 +51,7 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     ProductCategoriesRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `product_categories`(`product_id`, `category_id`, `is_primary`, `sort_order`)
-         values ("""),
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit(", "),
-      CategoriesId.pgType.encode(unsaved.categoryId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isPrimary()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.sortOrder()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `product_id`, `category_id`, `is_primary`, `sort_order`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `product_categories`(`product_id`, `category_id`, `is_primary`, `sort_order`)\nvalues ("), Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit(", "), Fragment.encode(CategoriesId.pgType, unsaved.categoryId()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isPrimary()), Fragment.lit(", "), Fragment.encode(MariaTypes.smallint, unsaved.sortOrder()), Fragment.lit(")\nreturning `product_id`, `category_id`, `is_primary`, `sort_order`\n"))
       .updateReturning(ProductCategoriesRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -82,31 +60,19 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     ProductCategoriesRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`product_id`"));
-    values.add(interpolate(
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit("")));
     columns.add(Fragment.lit("`category_id`"));
-    values.add(interpolate(
-      CategoriesId.pgType.encode(unsaved.categoryId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(CategoriesId.pgType, unsaved.categoryId()), Fragment.lit("")));
     unsaved.isPrimary().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`is_primary`"));
-        values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool, value), Fragment.lit("")));
       }
     );;
     unsaved.sortOrder().visit(
@@ -115,25 +81,10 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`sort_order`"));
-        values.add(interpolate(
-        MariaTypes.smallint.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.smallint, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `product_categories`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `product_id`, `category_id`, `is_primary`, `sort_order`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `product_categories`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `product_id`, `category_id`, `is_primary`, `sort_order`\n"));;
     return q.updateReturning(ProductCategoriesRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -144,10 +95,7 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
 
   @Override
   public List<ProductCategoriesRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `product_id`, `category_id`, `is_primary`, `sort_order`
-       from `product_categories`
-    """)).query(ProductCategoriesRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `product_id`, `category_id`, `is_primary`, `sort_order`\nfrom `product_categories`\n")).query(ProductCategoriesRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -155,16 +103,7 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     ProductCategoriesId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `product_id`, `category_id`, `is_primary`, `sort_order`
-         from `product_categories`
-         where `product_id` = """),
-      ProductsId.pgType.encode(compositeId.productId()),
-      typo.runtime.Fragment.lit(" AND `category_id` = "),
-      CategoriesId.pgType.encode(compositeId.categoryId()),
-      typo.runtime.Fragment.lit("")
-    ).query(ProductCategoriesRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `product_id`, `category_id`, `is_primary`, `sort_order`\nfrom `product_categories`\nwhere `product_id` = "), Fragment.encode(ProductsId.pgType, compositeId.productId()), Fragment.lit(" AND `category_id` = "), Fragment.encode(CategoriesId.pgType, compositeId.categoryId()), Fragment.lit("")).query(ProductCategoriesRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -172,8 +111,8 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     ProductCategoriesId[] compositeIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : compositeIds) { fragments.add(Fragment.interpolate(Fragment.lit("("), ProductsId.pgType.encode(id.productId()), Fragment.lit(", "), CategoriesId.pgType.encode(id.categoryId()), Fragment.lit(")"))); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : compositeIds) { fragments.add(Fragment.interpolate(Fragment.lit("("), Fragment.encode(ProductsId.pgType, id.productId()), Fragment.lit(", "), Fragment.encode(CategoriesId.pgType, id.categoryId()), Fragment.lit(")"))); };
     return Fragment.interpolate(Fragment.lit("select `product_id`, `category_id`, `is_primary`, `sort_order` from `product_categories` where (`product_id`, `category_id`) in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ProductCategoriesRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -189,7 +128,7 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
 
   @Override
   public UpdateBuilder<ProductCategoriesFields, ProductCategoriesRow> update() {
-    return UpdateBuilder.of("`product_categories`", ProductCategoriesFields.structure(), ProductCategoriesRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`product_categories`", ProductCategoriesFields.structure(), ProductCategoriesRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -198,23 +137,7 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     Connection c
   ) {
     ProductCategoriesId compositeId = row.compositeId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `product_categories`
-         set `is_primary` = """),
-      MariaTypes.bool.encode(row.isPrimary()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `sort_order` = """),
-      MariaTypes.smallint.encode(row.sortOrder()),
-      typo.runtime.Fragment.lit("""
-   
-         where `product_id` = """),
-      ProductsId.pgType.encode(compositeId.productId()),
-      typo.runtime.Fragment.lit(" AND `category_id` = "),
-      CategoriesId.pgType.encode(compositeId.categoryId()),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `product_categories`\nset `is_primary` = "), Fragment.encode(MariaTypes.bool, row.isPrimary()), Fragment.lit(",\n`sort_order` = "), Fragment.encode(MariaTypes.smallint, row.sortOrder()), Fragment.lit("\nwhere `product_id` = "), Fragment.encode(ProductsId.pgType, compositeId.productId()), Fragment.lit(" AND `category_id` = "), Fragment.encode(CategoriesId.pgType, compositeId.categoryId()), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -222,23 +145,7 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     ProductCategoriesRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `product_categories`(`product_id`, `category_id`, `is_primary`, `sort_order`)
-         VALUES ("""),
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit(", "),
-      CategoriesId.pgType.encode(unsaved.categoryId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isPrimary()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.sortOrder()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `is_primary` = VALUES(`is_primary`),
-         `sort_order` = VALUES(`sort_order`)
-         RETURNING `product_id`, `category_id`, `is_primary`, `sort_order`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `product_categories`(`product_id`, `category_id`, `is_primary`, `sort_order`)\nVALUES ("), Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit(", "), Fragment.encode(CategoriesId.pgType, unsaved.categoryId()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isPrimary()), Fragment.lit(", "), Fragment.encode(MariaTypes.smallint, unsaved.sortOrder()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `is_primary` = VALUES(`is_primary`),\n`sort_order` = VALUES(`sort_order`)\nRETURNING `product_id`, `category_id`, `is_primary`, `sort_order`"))
       .updateReturning(ProductCategoriesRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -248,13 +155,8 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     Iterator<ProductCategoriesRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `product_categories`(`product_id`, `category_id`, `is_primary`, `sort_order`)
-                VALUES (?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `is_primary` = VALUES(`is_primary`),
-                `sort_order` = VALUES(`sort_order`)
-                RETURNING `product_id`, `category_id`, `is_primary`, `sort_order`"""))
+    return interpolate(Fragment.lit("INSERT INTO `product_categories`(`product_id`, `category_id`, `is_primary`, `sort_order`)\nVALUES (?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `is_primary` = VALUES(`is_primary`),\n`sort_order` = VALUES(`sort_order`)\nRETURNING `product_id`, `category_id`, `is_primary`, `sort_order`"))
       .updateReturningEach(ProductCategoriesRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

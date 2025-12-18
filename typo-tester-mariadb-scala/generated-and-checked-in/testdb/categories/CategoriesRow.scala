@@ -6,12 +6,13 @@
 package testdb.categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: categories
  * Primary key: category_id
@@ -25,7 +26,7 @@ case class CategoriesRow(
    * Default: NULL
    * Points to [[testdb.categories.CategoriesRow.categoryId]]
    */
-  @JsonProperty("parent_id") parentId: Optional[CategoriesId],
+  @JsonProperty("parent_id") parentId: Option[CategoriesId],
   /**  */
   name: String,
   /**  */
@@ -33,33 +34,33 @@ case class CategoriesRow(
   /** 
    * Default: NULL
    */
-  description: Optional[String],
+  description: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("image_url") imageUrl: Optional[String],
+  @JsonProperty("image_url") imageUrl: Option[String],
   /** 
    * Default: 0
    */
-  @JsonProperty("sort_order") sortOrder: java.lang.Short,
+  @JsonProperty("sort_order") sortOrder: Short,
   /** 
    * Default: 1
    */
-  @JsonProperty("is_visible") isVisible: java.lang.Boolean,
+  @JsonProperty("is_visible") isVisible: Boolean,
   /** 
    * Default: NULL
    */
-  metadata: Optional[String]
+  metadata: Option[String]
 ) {
   def id: CategoriesId = categoryId
 
   def toUnsavedRow(
-    parentId: Defaulted[Optional[CategoriesId]] = Defaulted.Provided(this.parentId),
-    description: Defaulted[Optional[String]] = Defaulted.Provided(this.description),
-    imageUrl: Defaulted[Optional[String]] = Defaulted.Provided(this.imageUrl),
-    sortOrder: Defaulted[java.lang.Short] = Defaulted.Provided(this.sortOrder),
-    isVisible: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isVisible),
-    metadata: Defaulted[Optional[String]] = Defaulted.Provided(this.metadata)
+    parentId: Defaulted[Option[CategoriesId]] = Defaulted.Provided(this.parentId),
+    description: Defaulted[Option[String]] = Defaulted.Provided(this.description),
+    imageUrl: Defaulted[Option[String]] = Defaulted.Provided(this.imageUrl),
+    sortOrder: Defaulted[Short] = Defaulted.Provided(this.sortOrder),
+    isVisible: Defaulted[Boolean] = Defaulted.Provided(this.isVisible),
+    metadata: Defaulted[Option[String]] = Defaulted.Provided(this.metadata)
   ): CategoriesRowUnsaved = {
     new CategoriesRowUnsaved(
       name,
@@ -75,7 +76,7 @@ case class CategoriesRow(
 }
 
 object CategoriesRow {
-  val `_rowParser`: RowParser[CategoriesRow] = RowParsers.of(CategoriesId.pgType, CategoriesId.pgType.opt(), MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumtext.opt(), MariaTypes.varchar.opt(), MariaTypes.smallint, MariaTypes.bool, MariaTypes.longtext.opt(), CategoriesRow.apply, row => Array[Object](row.categoryId.asInstanceOf[Object], row.parentId.asInstanceOf[Object], row.name.asInstanceOf[Object], row.slug.asInstanceOf[Object], row.description.asInstanceOf[Object], row.imageUrl.asInstanceOf[Object], row.sortOrder.asInstanceOf[Object], row.isVisible.asInstanceOf[Object], row.metadata.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[CategoriesRow] = RowParsers.of(CategoriesId.pgType, CategoriesId.pgType.nullable, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumtext.nullable, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.smallint, ScalaDbTypes.MariaTypes.bool, MariaTypes.longtext.nullable)(CategoriesRow.apply)(row => Array[Any](row.categoryId, row.parentId, row.name, row.slug, row.description, row.imageUrl, row.sortOrder, row.isVisible, row.metadata))
 
-  given mariaText: MariaText[CategoriesRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[CategoriesRow] = MariaText.from(`_rowParser`.underlying)
 }

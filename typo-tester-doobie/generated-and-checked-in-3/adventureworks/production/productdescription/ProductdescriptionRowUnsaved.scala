@@ -16,7 +16,7 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `production.productdescription` which has not been persisted yet */
 case class ProductdescriptionRowUnsaved(
   /** Description of the product. */
-  description: /* max 400 chars */ String,
+  description: String,
   /** Default: nextval('production.productdescription_productdescriptionid_seq'::regclass)
    * Primary key for ProductDescription records.
    */
@@ -41,9 +41,9 @@ case class ProductdescriptionRowUnsaved(
 }
 
 object ProductdescriptionRowUnsaved {
-  given decoder: Decoder[ProductdescriptionRowUnsaved] = Decoder.forProduct4[ProductdescriptionRowUnsaved, /* max 400 chars */ String, Defaulted[ProductdescriptionId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("description", "productdescriptionid", "rowguid", "modifieddate")(ProductdescriptionRowUnsaved.apply)(using Decoder.decodeString, Defaulted.decoder(using ProductdescriptionId.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+  given decoder: Decoder[ProductdescriptionRowUnsaved] = Decoder.forProduct4[ProductdescriptionRowUnsaved, String, Defaulted[ProductdescriptionId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("description", "productdescriptionid", "rowguid", "modifieddate")(ProductdescriptionRowUnsaved.apply)(using Decoder.decodeString, Defaulted.decoder(using ProductdescriptionId.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
 
-  given encoder: Encoder[ProductdescriptionRowUnsaved] = Encoder.forProduct4[ProductdescriptionRowUnsaved, /* max 400 chars */ String, Defaulted[ProductdescriptionId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("description", "productdescriptionid", "rowguid", "modifieddate")(x => (x.description, x.productdescriptionid, x.rowguid, x.modifieddate))(using Encoder.encodeString, Defaulted.encoder(using ProductdescriptionId.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
+  given encoder: Encoder[ProductdescriptionRowUnsaved] = Encoder.forProduct4[ProductdescriptionRowUnsaved, String, Defaulted[ProductdescriptionId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("description", "productdescriptionid", "rowguid", "modifieddate")(x => (x.description, x.productdescriptionid, x.rowguid, x.modifieddate))(using Encoder.encodeString, Defaulted.encoder(using ProductdescriptionId.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
 
   given pgText: Text[ProductdescriptionRowUnsaved] = {
     Text.instance[ProductdescriptionRowUnsaved]{ (row, sb) =>

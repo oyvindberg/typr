@@ -6,71 +6,70 @@
 package adventureworks.public.test_organisasjon
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface TestOrganisasjonRepo {
-  fun delete(): DeleteBuilder<TestOrganisasjonFields, TestOrganisasjonRow>
+  abstract fun delete(): DeleteBuilder<TestOrganisasjonFields, TestOrganisasjonRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     organisasjonskode: TestOrganisasjonId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     organisasjonskodes: Array<TestOrganisasjonId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: TestOrganisasjonRow,
     c: Connection
   ): TestOrganisasjonRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<TestOrganisasjonRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<TestOrganisasjonFields, TestOrganisasjonRow>
+  abstract fun select(): SelectBuilder<TestOrganisasjonFields, TestOrganisasjonRow>
 
-  fun selectAll(c: Connection): List<TestOrganisasjonRow>
+  abstract fun selectAll(c: Connection): List<TestOrganisasjonRow>
 
-  fun selectById(
+  abstract fun selectById(
     organisasjonskode: TestOrganisasjonId,
     c: Connection
-  ): Optional<TestOrganisasjonRow>
+  ): TestOrganisasjonRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     organisasjonskodes: Array<TestOrganisasjonId>,
     c: Connection
   ): List<TestOrganisasjonRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     organisasjonskodes: Array<TestOrganisasjonId>,
     c: Connection
   ): Map<TestOrganisasjonId, TestOrganisasjonRow>
 
-  fun update(): UpdateBuilder<TestOrganisasjonFields, TestOrganisasjonRow>
+  abstract fun update(): UpdateBuilder<TestOrganisasjonFields, TestOrganisasjonRow>
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: TestOrganisasjonRow,
     c: Connection
   ): TestOrganisasjonRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<TestOrganisasjonRow>,
     c: Connection
   ): List<TestOrganisasjonRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<TestOrganisasjonRow>,
     batchSize: Int,
     c: Connection

@@ -5,94 +5,96 @@
  */
 package adventureworks.person.person
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityFields
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.businessentity.BusinessentityRow
 import adventureworks.public.Name
 import adventureworks.public.NameStyle
 import adventureworks.userdefined.FirstName
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
+import typo.data.Xml
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PersonFields : FieldsExpr<PersonRow> {
-  fun additionalcontactinfo(): OptField<TypoXml, PersonRow>
+  abstract fun additionalcontactinfo(): OptField<Xml, PersonRow>
 
-  fun businessentityid(): IdField<BusinessentityId, PersonRow>
+  abstract fun businessentityid(): IdField<BusinessentityId, PersonRow>
 
-  override fun columns(): List<FieldLike<*, PersonRow>>
+  abstract override fun columns(): List<FieldLike<*, PersonRow>>
 
-  fun demographics(): OptField<TypoXml, PersonRow>
+  abstract fun demographics(): OptField<Xml, PersonRow>
 
-  fun emailpromotion(): Field<Int, PersonRow>
+  abstract fun emailpromotion(): Field<Int, PersonRow>
 
-  fun firstname(): Field</* user-picked */ FirstName, PersonRow>
+  abstract fun firstname(): Field</* user-picked */ FirstName, PersonRow>
 
-  fun fkBusinessentity(): ForeignKey<BusinessentityFields, BusinessentityRow> = ForeignKey.of<BusinessentityFields, BusinessentityRow>("person.FK_Person_BusinessEntity_BusinessEntityID").withColumnPair(businessentityid(), BusinessentityFields::businessentityid)
+  fun fkBusinessentity(): ForeignKey<BusinessentityFields, BusinessentityRow> = ForeignKey.of<BusinessentityFields, BusinessentityRow>("person.FK_Person_BusinessEntity_BusinessEntityID").withColumnPair<BusinessentityId>(businessentityid(), BusinessentityFields::businessentityid)
 
-  fun lastname(): Field<Name, PersonRow>
+  abstract fun lastname(): Field<Name, PersonRow>
 
-  fun middlename(): OptField<Name, PersonRow>
+  abstract fun middlename(): OptField<Name, PersonRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PersonRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PersonRow>
 
-  fun namestyle(): Field<NameStyle, PersonRow>
+  abstract fun namestyle(): Field<NameStyle, PersonRow>
 
-  fun persontype(): Field</* bpchar, max 2 chars */ String, PersonRow>
+  abstract fun persontype(): Field<String, PersonRow>
 
-  override fun rowParser(): RowParser<PersonRow> = PersonRow._rowParser
+  override fun rowParser(): RowParser<PersonRow> = PersonRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, PersonRow>
+  abstract fun rowguid(): Field<UUID, PersonRow>
 
-  fun suffix(): OptField</* max 10 chars */ String, PersonRow>
+  abstract fun suffix(): OptField</* max 10 chars */ String, PersonRow>
 
-  fun title(): OptField</* max 8 chars */ String, PersonRow>
+  abstract fun title(): OptField</* max 8 chars */ String, PersonRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PersonFields, Relation<PersonFields, PersonRow> {
-      override fun businessentityid(): IdField<BusinessentityId, PersonRow> = IdField<BusinessentityId, PersonRow>(_path, "businessentityid", PersonRow::businessentityid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : PersonFields, RelationStructure<PersonFields, PersonRow> {
+      override fun businessentityid(): IdField<BusinessentityId, PersonRow> = IdField<BusinessentityId, PersonRow>(_path, "businessentityid", PersonRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun persontype(): Field</* bpchar, max 2 chars */ String, PersonRow> = Field</* bpchar, max 2 chars */ String, PersonRow>(_path, "persontype", PersonRow::persontype, Optional.empty(), Optional.of("bpchar"), { row, value -> row.copy(persontype = value) }, PgTypes.bpchar)
+      override fun persontype(): Field<String, PersonRow> = Field<String, PersonRow>(_path, "persontype", PersonRow::persontype, null, "bpchar", { row, value -> row.copy(persontype = value) }, PgTypes.bpchar)
 
-      override fun namestyle(): Field<NameStyle, PersonRow> = Field<NameStyle, PersonRow>(_path, "namestyle", PersonRow::namestyle, Optional.empty(), Optional.of("bool"), { row, value -> row.copy(namestyle = value) }, NameStyle.pgType)
+      override fun namestyle(): Field<NameStyle, PersonRow> = Field<NameStyle, PersonRow>(_path, "namestyle", PersonRow::namestyle, null, "bool", { row, value -> row.copy(namestyle = value) }, NameStyle.pgType)
 
-      override fun title(): OptField</* max 8 chars */ String, PersonRow> = OptField</* max 8 chars */ String, PersonRow>(_path, "title", PersonRow::title, Optional.empty(), Optional.empty(), { row, value -> row.copy(title = value) }, PgTypes.text)
+      override fun title(): OptField<String, PersonRow> = OptField<String, PersonRow>(_path, "title", PersonRow::title, null, null, { row, value -> row.copy(title = value) }, PgTypes.text)
 
-      override fun firstname(): Field</* user-picked */ FirstName, PersonRow> = Field</* user-picked */ FirstName, PersonRow>(_path, "firstname", PersonRow::firstname, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(firstname = value) }, FirstName.pgType)
+      override fun firstname(): Field</* user-picked */ FirstName, PersonRow> = Field</* user-picked */ FirstName, PersonRow>(_path, "firstname", PersonRow::firstname, null, "varchar", { row, value -> row.copy(firstname = value) }, FirstName.pgType)
 
-      override fun middlename(): OptField<Name, PersonRow> = OptField<Name, PersonRow>(_path, "middlename", PersonRow::middlename, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(middlename = value) }, Name.pgType)
+      override fun middlename(): OptField<Name, PersonRow> = OptField<Name, PersonRow>(_path, "middlename", PersonRow::middlename, null, "varchar", { row, value -> row.copy(middlename = value) }, Name.pgType)
 
-      override fun lastname(): Field<Name, PersonRow> = Field<Name, PersonRow>(_path, "lastname", PersonRow::lastname, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(lastname = value) }, Name.pgType)
+      override fun lastname(): Field<Name, PersonRow> = Field<Name, PersonRow>(_path, "lastname", PersonRow::lastname, null, "varchar", { row, value -> row.copy(lastname = value) }, Name.pgType)
 
-      override fun suffix(): OptField</* max 10 chars */ String, PersonRow> = OptField</* max 10 chars */ String, PersonRow>(_path, "suffix", PersonRow::suffix, Optional.empty(), Optional.empty(), { row, value -> row.copy(suffix = value) }, PgTypes.text)
+      override fun suffix(): OptField<String, PersonRow> = OptField<String, PersonRow>(_path, "suffix", PersonRow::suffix, null, null, { row, value -> row.copy(suffix = value) }, PgTypes.text)
 
-      override fun emailpromotion(): Field<Int, PersonRow> = Field<Int, PersonRow>(_path, "emailpromotion", PersonRow::emailpromotion, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(emailpromotion = value) }, PgTypes.int4)
+      override fun emailpromotion(): Field<Int, PersonRow> = Field<Int, PersonRow>(_path, "emailpromotion", PersonRow::emailpromotion, null, "int4", { row, value -> row.copy(emailpromotion = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun additionalcontactinfo(): OptField<TypoXml, PersonRow> = OptField<TypoXml, PersonRow>(_path, "additionalcontactinfo", PersonRow::additionalcontactinfo, Optional.empty(), Optional.of("xml"), { row, value -> row.copy(additionalcontactinfo = value) }, TypoXml.pgType)
+      override fun additionalcontactinfo(): OptField<Xml, PersonRow> = OptField<Xml, PersonRow>(_path, "additionalcontactinfo", PersonRow::additionalcontactinfo, null, "xml", { row, value -> row.copy(additionalcontactinfo = value) }, PgTypes.xml)
 
-      override fun demographics(): OptField<TypoXml, PersonRow> = OptField<TypoXml, PersonRow>(_path, "demographics", PersonRow::demographics, Optional.empty(), Optional.of("xml"), { row, value -> row.copy(demographics = value) }, TypoXml.pgType)
+      override fun demographics(): OptField<Xml, PersonRow> = OptField<Xml, PersonRow>(_path, "demographics", PersonRow::demographics, null, "xml", { row, value -> row.copy(demographics = value) }, PgTypes.xml)
 
-      override fun rowguid(): Field<TypoUUID, PersonRow> = Field<TypoUUID, PersonRow>(_path, "rowguid", PersonRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, PersonRow> = Field<UUID, PersonRow>(_path, "rowguid", PersonRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PersonRow> = Field<TypoLocalDateTime, PersonRow>(_path, "modifieddate", PersonRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PersonRow> = Field<LocalDateTime, PersonRow>(_path, "modifieddate", PersonRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PersonRow>> = listOf(this.businessentityid(), this.persontype(), this.namestyle(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.emailpromotion(), this.additionalcontactinfo(), this.demographics(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PersonFields, PersonRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PersonRow>> = listOf(this.businessentityid().underlying, this.persontype().underlying, this.namestyle().underlying, this.title().underlying, this.firstname().underlying, this.middlename().underlying, this.lastname().underlying, this.suffix().underlying, this.emailpromotion().underlying, this.additionalcontactinfo().underlying, this.demographics().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PersonFields, PersonRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

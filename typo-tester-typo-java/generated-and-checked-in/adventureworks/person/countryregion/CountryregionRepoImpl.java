@@ -5,7 +5,6 @@
  */
 package adventureworks.person.countryregion;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -19,10 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class CountryregionRepoImpl implements CountryregionRepo {
   @Override
@@ -35,13 +33,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     CountryregionId countryregioncode,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "person"."countryregion" where "countryregioncode" = 
-      """),
-      CountryregionId.pgType.encode(countryregioncode),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"person\".\"countryregion\" where \"countryregioncode\" = "), Fragment.encode(CountryregionId.pgType, countryregioncode), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -49,14 +41,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     CountryregionId[] countryregioncodes,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "person"."countryregion"
-                  where "countryregioncode" = ANY("""),
-               CountryregionId.pgTypeArray.encode(countryregioncodes),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"person\".\"countryregion\"\nwhere \"countryregioncode\" = ANY("), Fragment.encode(CountryregionId.pgTypeArray, countryregioncodes), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -66,20 +51,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     CountryregionRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."countryregion"("countryregioncode", "name", "modifieddate")
-         values ("""),
-      CountryregionId.pgType.encode(unsaved.countryregioncode()),
-      typo.runtime.Fragment.lit(", "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "countryregioncode", "name", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\")\nvalues ("), Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()), Fragment.lit(", "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"countryregioncode\", \"name\", \"modifieddate\"\n"))
       .updateReturning(CountryregionRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -88,45 +60,22 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     CountryregionRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"countryregioncode\""));
-    values.add(interpolate(
-      CountryregionId.pgType.encode(unsaved.countryregioncode()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()), Fragment.lit("")));
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved.modifieddate().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."countryregion"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "countryregioncode", "name", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"person\".\"countryregion\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"countryregioncode\", \"name\", \"modifieddate\"\n"));;
     return q.updateReturning(CountryregionRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -136,9 +85,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."countryregion"("countryregioncode", "name", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, CountryregionRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, CountryregionRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -148,9 +95,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."countryregion"("countryregioncode", "name", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, CountryregionRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, CountryregionRowUnsaved.pgText);
   };
 
   @Override
@@ -160,10 +105,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
 
   @Override
   public List<CountryregionRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "countryregioncode", "name", "modifieddate"::text
-       from "person"."countryregion"
-    """)).query(CountryregionRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"countryregioncode\", \"name\", \"modifieddate\"\nfrom \"person\".\"countryregion\"\n")).query(CountryregionRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -171,14 +113,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     CountryregionId countryregioncode,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "countryregioncode", "name", "modifieddate"::text
-         from "person"."countryregion"
-         where "countryregioncode" = """),
-      CountryregionId.pgType.encode(countryregioncode),
-      typo.runtime.Fragment.lit("")
-    ).query(CountryregionRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"countryregioncode\", \"name\", \"modifieddate\"\nfrom \"person\".\"countryregion\"\nwhere \"countryregioncode\" = "), Fragment.encode(CountryregionId.pgType, countryregioncode), Fragment.lit("")).query(CountryregionRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -186,14 +121,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     CountryregionId[] countryregioncodes,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "countryregioncode", "name", "modifieddate"::text
-         from "person"."countryregion"
-         where "countryregioncode" = ANY("""),
-      CountryregionId.pgTypeArray.encode(countryregioncodes),
-      typo.runtime.Fragment.lit(")")
-    ).query(CountryregionRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"countryregioncode\", \"name\", \"modifieddate\"\nfrom \"person\".\"countryregion\"\nwhere \"countryregioncode\" = ANY("), Fragment.encode(CountryregionId.pgTypeArray, countryregioncodes), Fragment.lit(")")).query(CountryregionRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -208,7 +136,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
 
   @Override
   public UpdateBuilder<CountryregionFields, CountryregionRow> update() {
-    return UpdateBuilder.of("\"person\".\"countryregion\"", CountryregionFields.structure(), CountryregionRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"person\".\"countryregion\"", CountryregionFields.structure(), CountryregionRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -217,21 +145,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     Connection c
   ) {
     CountryregionId countryregioncode = row.countryregioncode();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "person"."countryregion"
-         set "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "countryregioncode" = """),
-      CountryregionId.pgType.encode(countryregioncode),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"person\".\"countryregion\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"countryregioncode\" = "), Fragment.encode(CountryregionId.pgType, countryregioncode), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -239,23 +153,7 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     CountryregionRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."countryregion"("countryregioncode", "name", "modifieddate")
-         values ("""),
-      CountryregionId.pgType.encode(unsaved.countryregioncode()),
-      typo.runtime.Fragment.lit(", "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("countryregioncode")
-         do update set
-           "name" = EXCLUDED."name",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "countryregioncode", "name", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\")\nvalues ("), Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()), Fragment.lit(", "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"countryregioncode\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"countryregioncode\", \"name\", \"modifieddate\""))
       .updateReturning(CountryregionRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -265,16 +163,9 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     Iterator<CountryregionRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "person"."countryregion"("countryregioncode", "name", "modifieddate")
-                values (?, ?::varchar, ?::timestamp)
-                on conflict ("countryregioncode")
-                do update set
-                  "name" = EXCLUDED."name",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "countryregioncode", "name", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\")\nvalues (?, ?::varchar, ?::timestamp)\non conflict (\"countryregioncode\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"countryregioncode\", \"name\", \"modifieddate\""))
       .updateManyReturning(CountryregionRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -284,20 +175,8 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table countryregion_TEMP (like "person"."countryregion") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy countryregion_TEMP("countryregioncode", "name", "modifieddate") from stdin
-    """), batchSize, unsaved, c, CountryregionRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "person"."countryregion"("countryregioncode", "name", "modifieddate")
-       select * from countryregion_TEMP
-       on conflict ("countryregioncode")
-       do update set
-         "name" = EXCLUDED."name",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table countryregion_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table countryregion_TEMP (like \"person\".\"countryregion\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy countryregion_TEMP(\"countryregioncode\", \"name\", \"modifieddate\") from stdin", batchSize, unsaved, c, CountryregionRow.pgText);
+    return interpolate(Fragment.lit("insert into \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\")\nselect * from countryregion_TEMP\non conflict (\"countryregioncode\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table countryregion_TEMP;")).update().runUnchecked(c);
   };
 }

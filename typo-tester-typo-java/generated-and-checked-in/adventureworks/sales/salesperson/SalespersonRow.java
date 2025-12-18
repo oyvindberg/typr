@@ -6,12 +6,12 @@
 package adventureworks.sales.salesperson;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -55,9 +55,9 @@ public record SalespersonRow(
     */
   BigDecimal saleslastyear,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for SalesPerson records. Foreign key to Employee.BusinessEntityID
     * Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()}
@@ -113,16 +113,16 @@ public record SalespersonRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public SalespersonRow withRowguid(TypoUUID rowguid) {
+  public SalespersonRow withRowguid(UUID rowguid) {
     return new SalespersonRow(businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalespersonRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SalespersonRow withModifieddate(LocalDateTime modifieddate) {
     return new SalespersonRow(businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate);
   };
 
-  static RowParser<SalespersonRow> _rowParser = RowParsers.of(BusinessentityId.pgType, SalesterritoryId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, SalespersonRow::new, row -> new Object[]{row.businessentityid(), row.territoryid(), row.salesquota(), row.bonus(), row.commissionpct(), row.salesytd(), row.saleslastyear(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SalespersonRow> _rowParser = RowParsers.of(BusinessentityId.pgType, SalesterritoryId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, SalespersonRow::new, row -> new Object[]{row.businessentityid(), row.territoryid(), row.salesquota(), row.bonus(), row.commissionpct(), row.salesytd(), row.saleslastyear(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<SalespersonRow> pgText =
     PgText.from(_rowParser);
@@ -136,8 +136,8 @@ public record SalespersonRow(
     Defaulted<BigDecimal> commissionpct,
     Defaulted<BigDecimal> salesytd,
     Defaulted<BigDecimal> saleslastyear,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new SalespersonRowUnsaved(businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate);
   };

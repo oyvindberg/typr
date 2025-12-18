@@ -26,9 +26,9 @@ case class SViewRow(
   /** Points to [[adventureworks.sales.store.StoreRow.name]] */
   name: Name,
   /** Points to [[adventureworks.sales.store.StoreRow.salespersonid]] */
-  salespersonid: Option[BusinessentityId],
+  salespersonid: BusinessentityId,
   /** Points to [[adventureworks.sales.store.StoreRow.demographics]] */
-  demographics: Option[TypoXml],
+  demographics: TypoXml,
   /** Points to [[adventureworks.sales.store.StoreRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.sales.store.StoreRow.modifieddate]] */
@@ -44,8 +44,8 @@ object SViewRow {
             id = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-            salespersonid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
-            demographics = JdbcDecoder.optionDecoder(TypoXml.jdbcDecoder).unsafeDecode(columIndex + 4, rs)._2,
+            salespersonid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            demographics = TypoXml.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
           )
@@ -57,8 +57,8 @@ object SViewRow {
       val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(BusinessentityId.jsonDecoder))
       val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
       val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
-      val salespersonid = jsonObj.get("salespersonid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
-      val demographics = jsonObj.get("demographics").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
+      val salespersonid = jsonObj.get("salespersonid").toRight("Missing field 'salespersonid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val demographics = jsonObj.get("demographics").toRight("Missing field 'demographics'").flatMap(_.as(TypoXml.jsonDecoder))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       if (id.isRight && businessentityid.isRight && name.isRight && salespersonid.isRight && demographics.isRight && rowguid.isRight && modifieddate.isRight)
@@ -81,10 +81,10 @@ object SViewRow {
         Name.jsonEncoder.unsafeEncode(a.name, indent, out)
         out.write(",")
         out.write(""""salespersonid":""")
-        JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.salespersonid, indent, out)
+        BusinessentityId.jsonEncoder.unsafeEncode(a.salespersonid, indent, out)
         out.write(",")
         out.write(""""demographics":""")
-        JsonEncoder.option(TypoXml.jsonEncoder).unsafeEncode(a.demographics, indent, out)
+        TypoXml.jsonEncoder.unsafeEncode(a.demographics, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

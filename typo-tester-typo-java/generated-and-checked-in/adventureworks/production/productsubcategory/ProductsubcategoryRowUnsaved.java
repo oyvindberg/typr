@@ -7,11 +7,12 @@ package adventureworks.production.productsubcategory;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productcategory.ProductcategoryId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.productsubcategory` which has not been persisted yet */
 public record ProductsubcategoryRowUnsaved(
@@ -26,9 +27,9 @@ public record ProductsubcategoryRowUnsaved(
     */
   Defaulted<ProductsubcategoryId> productsubcategoryid,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductsubcategoryRowUnsaved(
     /** Product category identification number. Foreign key to ProductCategory.ProductCategoryID.
@@ -61,12 +62,12 @@ public record ProductsubcategoryRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public ProductsubcategoryRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public ProductsubcategoryRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new ProductsubcategoryRowUnsaved(productcategoryid, name, productsubcategoryid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ProductsubcategoryRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductsubcategoryRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductsubcategoryRowUnsaved(productcategoryid, name, productsubcategoryid, rowguid, modifieddate);
   };
 
@@ -78,15 +79,15 @@ public record ProductsubcategoryRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(ProductsubcategoryId.pgType.pgText()).unsafeEncode(row.productsubcategoryid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ProductsubcategoryRow toRow(
     java.util.function.Supplier<ProductsubcategoryId> productsubcategoryidDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ProductsubcategoryRow(productsubcategoryid.getOrElse(productsubcategoryidDefault), productcategoryid, name, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

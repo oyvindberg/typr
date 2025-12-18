@@ -15,24 +15,24 @@ import io.circe.Encoder
 /** View: sales.vsalespersonsalesbyfiscalyearsdata */
 case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
-  salespersonid: Option[BusinessentityId],
+  salespersonid: BusinessentityId,
   fullname: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
-  jobtitle: /* max 50 chars */ String,
+  jobtitle: String,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
-  salestotal: /* nullability unknown */ Option[BigDecimal],
+  salestotal: Option[BigDecimal],
   fiscalyear: BigDecimal
 )
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
-  given decoder: Decoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Decoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, Option[BusinessentityId], String, /* max 50 chars */ String, Name, /* nullability unknown */ Option[BigDecimal], BigDecimal]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(VsalespersonsalesbyfiscalyearsdataViewRow.apply)(using Decoder.decodeOption(using BusinessentityId.decoder), Decoder.decodeString, Decoder.decodeString, Name.decoder, Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeBigDecimal)
+  given decoder: Decoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Decoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, BusinessentityId, String, String, Name, Option[BigDecimal], BigDecimal]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(VsalespersonsalesbyfiscalyearsdataViewRow.apply)(using BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeString, Name.decoder, Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeBigDecimal)
 
-  given encoder: Encoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Encoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, Option[BusinessentityId], String, /* max 50 chars */ String, Name, /* nullability unknown */ Option[BigDecimal], BigDecimal]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(x => (x.salespersonid, x.fullname, x.jobtitle, x.salesterritory, x.salestotal, x.fiscalyear))(using Encoder.encodeOption(using BusinessentityId.encoder), Encoder.encodeString, Encoder.encodeString, Name.encoder, Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeBigDecimal)
+  given encoder: Encoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Encoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, BusinessentityId, String, String, Name, Option[BigDecimal], BigDecimal]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(x => (x.salespersonid, x.fullname, x.jobtitle, x.salesterritory, x.salestotal, x.fiscalyear))(using BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeString, Name.encoder, Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeBigDecimal)
 
   given read: Read[VsalespersonsalesbyfiscalyearsdataViewRow] = {
     new Read.CompositeOfInstances(Array(
-      new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
+      new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
@@ -40,11 +40,11 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
         new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       VsalespersonsalesbyfiscalyearsdataViewRow(
-        salespersonid = arr(0).asInstanceOf[Option[BusinessentityId]],
+        salespersonid = arr(0).asInstanceOf[BusinessentityId],
             fullname = arr(1).asInstanceOf[String],
-            jobtitle = arr(2).asInstanceOf[/* max 50 chars */ String],
+            jobtitle = arr(2).asInstanceOf[String],
             salesterritory = arr(3).asInstanceOf[Name],
-            salestotal = arr(4).asInstanceOf[/* nullability unknown */ Option[BigDecimal]],
+            salestotal = arr(4).asInstanceOf[Option[BigDecimal]],
             fiscalyear = arr(5).asInstanceOf[BigDecimal]
       )
     }

@@ -6,14 +6,15 @@
 package adventureworks.sales.specialoffer
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: sales.specialoffer
   * Sale discounts lookup table.
@@ -25,24 +26,24 @@ data class SpecialofferRow(
     */
   val specialofferid: SpecialofferId,
   /** Discount description. */
-  val description: /* max 255 chars */ String,
+  val description: String,
   /** Discount precentage.
     * Default: 0.00
     * Constraint CK_SpecialOffer_DiscountPct affecting columns discountpct: ((discountpct >= 0.00))
     */
   val discountpct: BigDecimal,
   /** Discount type category. */
-  val type: /* max 50 chars */ String,
+  val type: String,
   /** Group the discount applies to such as Reseller or Customer. */
-  val category: /* max 50 chars */ String,
+  val category: String,
   /** Discount start date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate: ((enddate >= startdate))
     */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Discount end date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate: ((enddate >= startdate))
     */
-  val enddate: TypoLocalDateTime,
+  val enddate: LocalDateTime,
   /** Minimum discount percent allowed.
     * Default: 0
     * Constraint CK_SpecialOffer_MinQty affecting columns minqty: ((minqty >= 0))
@@ -51,11 +52,11 @@ data class SpecialofferRow(
   /** Maximum discount percent allowed.
     * Constraint CK_SpecialOffer_MaxQty affecting columns maxqty: ((maxqty >= 0))
     */
-  val maxqty: Optional<Int>,
+  val maxqty: Int?,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): SpecialofferId = specialofferid
 
@@ -63,14 +64,14 @@ data class SpecialofferRow(
     specialofferid: Defaulted<SpecialofferId>,
     discountpct: Defaulted<BigDecimal>,
     minqty: Defaulted<Int>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): SpecialofferRowUnsaved = SpecialofferRowUnsaved(description, type, category, startdate, enddate, maxqty, specialofferid, discountpct, minqty, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SpecialofferRow> = RowParsers.of(SpecialofferId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.text, PgTypes.text, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, PgTypes.int4, PgTypes.int4.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> SpecialofferRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.specialofferid, row.description, row.discountpct, row.type, row.category, row.startdate, row.enddate, row.minqty, row.maxqty, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SpecialofferRow> = RowParsers.of(SpecialofferId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.text, PgTypes.text, PgTypes.timestamp, PgTypes.timestamp, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> SpecialofferRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.specialofferid, row.description, row.discountpct, row.type, row.category, row.startdate, row.enddate, row.minqty, row.maxqty, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<SpecialofferRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

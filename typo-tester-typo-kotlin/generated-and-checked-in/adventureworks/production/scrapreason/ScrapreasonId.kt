@@ -6,7 +6,8 @@
 package adventureworks.production.scrapreason
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class ScrapreasonId(@JsonValue val value: Int) {
       Bijection.of(ScrapreasonId::value, ::ScrapreasonId)
 
     val pgType: PgType<ScrapreasonId> =
-      PgTypes.int4.bimap(::ScrapreasonId, ScrapreasonId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::ScrapreasonId, ScrapreasonId::value)
 
     val pgTypeArray: PgType<Array<ScrapreasonId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::ScrapreasonId, ScrapreasonId::class.java) }, { xs -> arrayMap.map(xs, ScrapreasonId::value, Int::class.javaObjectType) })

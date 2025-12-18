@@ -2,38 +2,38 @@ package typo
 package internal
 package codegen
 
-case class SqlCast(typeName: String) {
+case class SqlCastValue(typeName: String) {
   val withColons = s"::$typeName"
   val asCode: jvm.Code = jvm.Code.Str(withColons)
 
   override def toString: String = sys.error("don't write directly")
 }
 
-object SqlCast {
+class SqlCast(needsTimestampCasts: Boolean) {
 
   /** cast to correctly insert into PG
     */
-  def toPg(dbCol: db.Col): Option[SqlCast] =
+  def toPg(dbCol: db.Col): Option[SqlCastValue] =
     toPg(dbCol.tpe, dbCol.udtName)
 
-  def toPg(param: ComputedSqlFile.Param): Option[SqlCast] =
+  def toPg(param: ComputedSqlFile.Param): Option[SqlCastValue] =
     toPg(param.dbType, Some(param.udtName))
 
   /** cast to correctly insert into PG/MariaDB
     */
-  def toPg(dbType: db.Type, udtName: Option[String]): Option[SqlCast] =
+  def toPg(dbType: db.Type, udtName: Option[String]): Option[SqlCastValue] =
     dbType match {
       // Unknown type (extends both PgType and MariaType) - must be first
-      case db.Unknown(sqlType) => Some(SqlCast(sqlType))
+      case db.Unknown(sqlType) => Some(SqlCastValue(sqlType))
       // MariaDB types - no cast needed, driver handles it
       case _: db.MariaType => None
       // PostgreSQL types
-      case db.PgType.EnumRef(enm)                                    => Some(SqlCast(enm.name.value))
+      case db.PgType.EnumRef(enm)                                    => Some(SqlCastValue(enm.name.value))
       case db.PgType.Boolean | db.PgType.Text | db.PgType.VarChar(_) => None
       case _: db.PgType =>
         udtName.map {
-          case ArrayName(x) => SqlCast(x + "[]")
-          case other        => SqlCast(other)
+          case ArrayName(x) => SqlCastValue(x + "[]")
+          case other        => SqlCastValue(other)
         }
     }
 
@@ -42,30 +42,27 @@ object SqlCast {
 
   /** avoid whatever the postgres driver does for these data formats by going through basic data types
     */
-  def fromPg(dbType: db.Type): Option[SqlCast] =
+  def fromPg(dbType: db.Type): Option[SqlCastValue] =
     dbType match {
-      // Unknown type (extends both PgType and MariaType) - must be first
       case db.Unknown(_) =>
-        Some(SqlCast("text"))
-      // MariaDB types - no cast needed for reading
-      case _: db.MariaType => None
-      // PostgreSQL types
+        Some(SqlCastValue("text"))
       case db.PgType.Array(db.Unknown(_)) | db.PgType.Array(db.PgType.DomainRef(_, _, db.Unknown(_))) =>
-        Some(SqlCast("text[]"))
+        Some(SqlCastValue("text[]"))
+      case _: db.MariaType => None
       case db.PgType.DomainRef(_, _, underlying) =>
         fromPg(underlying)
       case db.PgType.PGmoney =>
-        Some(SqlCast("numeric"))
+        Some(SqlCastValue("numeric"))
       case db.PgType.Vector =>
-        Some(SqlCast("float4[]"))
+        if (needsTimestampCasts) Some(SqlCastValue("float4[]")) else None
       case db.PgType.Array(db.PgType.PGmoney) =>
-        Some(SqlCast("numeric[]"))
+        Some(SqlCastValue("numeric[]"))
       case db.PgType.Array(db.PgType.DomainRef(_, underlying, _)) =>
-        Some(SqlCast(underlying + "[]"))
+        Some(SqlCastValue(underlying + "[]"))
       case db.PgType.TimestampTz | db.PgType.Timestamp | db.PgType.TimeTz | db.PgType.Time | db.PgType.Date =>
-        Some(SqlCast("text"))
+        if (needsTimestampCasts) Some(SqlCastValue("text")) else None
       case db.PgType.Array(db.PgType.TimestampTz | db.PgType.Timestamp | db.PgType.TimeTz | db.PgType.Time | db.PgType.Date) =>
-        Some(SqlCast("text[]"))
+        if (needsTimestampCasts) Some(SqlCastValue("text[]")) else None
       case _ => None
     }
 

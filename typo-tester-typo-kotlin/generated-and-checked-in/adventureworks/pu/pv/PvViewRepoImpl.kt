@@ -7,15 +7,13 @@ package adventureworks.pu.pv
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class PvViewRepoImpl() : PvViewRepo {
   override fun select(): SelectBuilder<PvViewFields, PvViewRow> = SelectBuilder.of("\"pu\".\"pv\"", PvViewFields.structure, PvViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<PvViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text
-    from "pu"."pv"
-  """.trimMargin())).query(PvViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<PvViewRow> = interpolate(Fragment.lit("select \"id\", \"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\"\nfrom \"pu\".\"pv\"\n")).query(PvViewRow._rowParser.all()).runUnchecked(c)
 }

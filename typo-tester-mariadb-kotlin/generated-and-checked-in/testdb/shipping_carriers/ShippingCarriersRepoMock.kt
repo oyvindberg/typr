@@ -8,21 +8,19 @@ package testdb.shipping_carriers
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ShippingCarriersRepoMock(
   val toRow: (ShippingCarriersRowUnsaved) -> ShippingCarriersRow,
@@ -33,7 +31,7 @@ data class ShippingCarriersRepoMock(
   override fun deleteById(
     carrierId: ShippingCarriersId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(carrierId)).isPresent()
+  ): Boolean = map.remove(carrierId) != null
 
   override fun deleteByIds(
     carrierIds: Array<ShippingCarriersId>,
@@ -41,7 +39,7 @@ data class ShippingCarriersRepoMock(
   ): Int {
     var count = 0
     for (id in carrierIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ShippingCarriersRepoMock(
     c: Connection
   ): ShippingCarriersRow {
     if (map.containsKey(unsaved.carrierId)) {
-      throw RuntimeException(str("id $unsaved.carrierId already exists"))
+      throw RuntimeException("id " + unsaved.carrierId + " already exists")
     }
     map[unsaved.carrierId] = unsaved
     return unsaved
@@ -71,7 +69,7 @@ data class ShippingCarriersRepoMock(
   override fun selectById(
     carrierId: ShippingCarriersId,
     c: Connection
-  ): Optional<ShippingCarriersRow> = Optional.ofNullable(map[carrierId])
+  ): ShippingCarriersRow? = map[carrierId]
 
   override fun selectByIds(
     carrierIds: Array<ShippingCarriersId>,
@@ -79,9 +77,9 @@ data class ShippingCarriersRepoMock(
   ): List<ShippingCarriersRow> {
     val result = ArrayList<ShippingCarriersRow>()
     for (id in carrierIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -95,7 +93,7 @@ data class ShippingCarriersRepoMock(
   override fun selectByUniqueCode(
     code: String,
     c: Connection
-  ): Optional<ShippingCarriersRow> = Optional.ofNullable(map.values.toList().find({ v -> (code == v.code) }))
+  ): ShippingCarriersRow? = map.values.toList().find({ v -> (code == v.code) })
 
   override fun update(): UpdateBuilder<ShippingCarriersFields, ShippingCarriersRow> = UpdateBuilderMock(ShippingCarriersFields.structure, { map.values.toList() }, UpdateParams.empty(), { row -> row })
 
@@ -103,7 +101,7 @@ data class ShippingCarriersRepoMock(
     row: ShippingCarriersRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.carrierId]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.carrierId]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.carrierId] = row
     }

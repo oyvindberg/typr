@@ -6,10 +6,10 @@
 package adventureworks.sales.specialoffer;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -25,24 +25,24 @@ public record SpecialofferRow(
     */
   SpecialofferId specialofferid,
   /** Discount description. */
-  /* max 255 chars */ String description,
+  String description,
   /** Discount precentage.
     * Default: 0.00
     * Constraint CK_SpecialOffer_DiscountPct affecting columns discountpct: ((discountpct >= 0.00))
     */
   BigDecimal discountpct,
   /** Discount type category. */
-  /* max 50 chars */ String type,
+  String type,
   /** Group the discount applies to such as Reseller or Customer. */
-  /* max 50 chars */ String category,
+  String category,
   /** Discount start date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate: ((enddate >= startdate))
     */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Discount end date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate: ((enddate >= startdate))
     */
-  TypoLocalDateTime enddate,
+  LocalDateTime enddate,
   /** Minimum discount percent allowed.
     * Default: 0
     * Constraint CK_SpecialOffer_MinQty affecting columns minqty: ((minqty >= 0))
@@ -53,9 +53,9 @@ public record SpecialofferRow(
     */
   Optional<Integer> maxqty,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for SpecialOffer records.
     * Default: nextval('sales.specialoffer_specialofferid_seq'::regclass)
@@ -65,7 +65,7 @@ public record SpecialofferRow(
   };
 
   /** Discount description. */
-  public SpecialofferRow withDescription(/* max 255 chars */ String description) {
+  public SpecialofferRow withDescription(String description) {
     return new SpecialofferRow(specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
@@ -78,26 +78,26 @@ public record SpecialofferRow(
   };
 
   /** Discount type category. */
-  public SpecialofferRow withType(/* max 50 chars */ String type) {
+  public SpecialofferRow withType(String type) {
     return new SpecialofferRow(specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
   /** Group the discount applies to such as Reseller or Customer. */
-  public SpecialofferRow withCategory(/* max 50 chars */ String category) {
+  public SpecialofferRow withCategory(String category) {
     return new SpecialofferRow(specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
   /** Discount start date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate: ((enddate >= startdate))
     */
-  public SpecialofferRow withStartdate(TypoLocalDateTime startdate) {
+  public SpecialofferRow withStartdate(LocalDateTime startdate) {
     return new SpecialofferRow(specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
   /** Discount end date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate: ((enddate >= startdate))
     */
-  public SpecialofferRow withEnddate(TypoLocalDateTime enddate) {
+  public SpecialofferRow withEnddate(LocalDateTime enddate) {
     return new SpecialofferRow(specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
@@ -117,16 +117,16 @@ public record SpecialofferRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public SpecialofferRow withRowguid(TypoUUID rowguid) {
+  public SpecialofferRow withRowguid(UUID rowguid) {
     return new SpecialofferRow(specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SpecialofferRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SpecialofferRow withModifieddate(LocalDateTime modifieddate) {
     return new SpecialofferRow(specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
-  static RowParser<SpecialofferRow> _rowParser = RowParsers.of(SpecialofferId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.text, PgTypes.text, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, PgTypes.int4, PgTypes.int4.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, SpecialofferRow::new, row -> new Object[]{row.specialofferid(), row.description(), row.discountpct(), row.type(), row.category(), row.startdate(), row.enddate(), row.minqty(), row.maxqty(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SpecialofferRow> _rowParser = RowParsers.of(SpecialofferId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.text, PgTypes.text, PgTypes.timestamp, PgTypes.timestamp, PgTypes.int4, PgTypes.int4.opt(), PgTypes.uuid, PgTypes.timestamp, SpecialofferRow::new, row -> new Object[]{row.specialofferid(), row.description(), row.discountpct(), row.type(), row.category(), row.startdate(), row.enddate(), row.minqty(), row.maxqty(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<SpecialofferRow> pgText =
     PgText.from(_rowParser);
@@ -139,8 +139,8 @@ public record SpecialofferRow(
     Defaulted<SpecialofferId> specialofferid,
     Defaulted<BigDecimal> discountpct,
     Defaulted<Integer> minqty,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new SpecialofferRowUnsaved(description, type, category, startdate, enddate, maxqty, specialofferid, discountpct, minqty, rowguid, modifieddate);
   };

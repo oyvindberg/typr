@@ -6,10 +6,11 @@
 package adventureworks.production.productmodelillustration;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.illustration.IllustrationId;
 import adventureworks.production.productmodel.ProductmodelId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -27,7 +28,7 @@ public record ProductmodelillustrationRow(
     */
   IllustrationId illustrationid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key. Foreign key to ProductModel.ProductModelID.
     * Points to {@link adventureworks.production.productmodel.ProductmodelRow#productmodelid()}
@@ -44,15 +45,15 @@ public record ProductmodelillustrationRow(
   };
 
   /** Default: now() */
-  public ProductmodelillustrationRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductmodelillustrationRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductmodelillustrationRow(productmodelid, illustrationid, modifieddate);
   };
 
-  static RowParser<ProductmodelillustrationRow> _rowParser = RowParsers.of(ProductmodelId.pgType, IllustrationId.pgType, TypoLocalDateTime.pgType, ProductmodelillustrationRow::new, row -> new Object[]{row.productmodelid(), row.illustrationid(), row.modifieddate()});;
+  static RowParser<ProductmodelillustrationRow> _rowParser = RowParsers.of(ProductmodelId.pgType, IllustrationId.pgType, PgTypes.timestamp, ProductmodelillustrationRow::new, row -> new Object[]{row.productmodelid(), row.illustrationid(), row.modifieddate()});;
 
   static public ProductmodelillustrationRow apply(
     ProductmodelillustrationId compositeId,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new ProductmodelillustrationRow(compositeId.productmodelid(), compositeId.illustrationid(), modifieddate);
   };
@@ -68,7 +69,7 @@ public record ProductmodelillustrationRow(
     return this.compositeId();
   };
 
-  public ProductmodelillustrationRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductmodelillustrationRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new ProductmodelillustrationRowUnsaved(productmodelid, illustrationid, modifieddate);
   };
 }

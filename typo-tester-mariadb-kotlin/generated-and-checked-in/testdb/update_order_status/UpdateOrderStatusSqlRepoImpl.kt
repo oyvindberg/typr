@@ -7,39 +7,14 @@ package testdb.update_order_status
 
 import java.sql.Connection
 import testdb.orders.OrdersId
+import typo.kotlindsl.Fragment
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Fragment.interpolate
 
 class UpdateOrderStatusSqlRepoImpl() : UpdateOrderStatusSqlRepo {
   override fun apply(
-    newStatus: /* user-picked */ java.lang.String,
+    newStatus: String,
     orderId: /* user-picked */ OrdersId,
     c: Connection
-  ): Int = interpolate(
-    typo.runtime.Fragment.lit("""
-      -- Update order status
-      UPDATE orders
-      SET order_status = """.trimMargin()),
-    MariaTypes.text.encode(newStatus),
-    typo.runtime.Fragment.lit("""
-      ,
-          confirmed_at = CASE WHEN """.trimMargin()),
-    MariaTypes.text.encode(newStatus),
-    typo.runtime.Fragment.lit("""
-       = 'confirmed' THEN NOW(6) ELSE confirmed_at END,
-          shipped_at = CASE WHEN """.trimMargin()),
-    MariaTypes.text.encode(newStatus),
-    typo.runtime.Fragment.lit("""
-       = 'shipped' THEN NOW(6) ELSE shipped_at END,
-          delivered_at = CASE WHEN """.trimMargin()),
-    MariaTypes.text.encode(newStatus),
-    typo.runtime.Fragment.lit("""
-       = 'delivered' THEN NOW(6) ELSE delivered_at END
-      WHERE order_id = """.trimMargin()),
-    /* user-picked */ OrdersId.pgType.encode(orderId),
-    typo.runtime.Fragment.lit("""
-
-
-    """.trimMargin())
-  ).update().runUnchecked(c)
+  ): Int = interpolate(Fragment.lit("-- Update order status\nUPDATE orders\nSET order_status = "), Fragment.encode(MariaTypes.varchar, newStatus), Fragment.lit(",\n    confirmed_at = CASE WHEN "), Fragment.encode(MariaTypes.varchar, newStatus), Fragment.lit(" = 'confirmed' THEN NOW(6) ELSE confirmed_at END,\n    shipped_at = CASE WHEN "), Fragment.encode(MariaTypes.varchar, newStatus), Fragment.lit(" = 'shipped' THEN NOW(6) ELSE shipped_at END,\n    delivered_at = CASE WHEN "), Fragment.encode(MariaTypes.varchar, newStatus), Fragment.lit(" = 'delivered' THEN NOW(6) ELSE delivered_at END\nWHERE order_id = "), Fragment.encode(OrdersId.pgType, orderId), Fragment.lit("\n")).update().runUnchecked(c)
 }

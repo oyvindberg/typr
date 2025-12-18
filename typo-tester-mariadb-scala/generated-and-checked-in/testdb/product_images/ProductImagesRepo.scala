@@ -6,17 +6,16 @@
 package testdb.product_images
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait ProductImagesRepo {
   def delete: DeleteBuilder[ProductImagesFields, ProductImagesRow]
 
-  def deleteById(imageId: ProductImagesId)(using c: Connection): java.lang.Boolean
+  def deleteById(imageId: ProductImagesId)(using c: Connection): Boolean
 
-  def deleteByIds(imageIds: Array[ProductImagesId])(using c: Connection): Integer
+  def deleteByIds(imageIds: Array[ProductImagesId])(using c: Connection): Int
 
   def insert(unsaved: ProductImagesRow)(using c: Connection): ProductImagesRow
 
@@ -24,19 +23,19 @@ trait ProductImagesRepo {
 
   def select: SelectBuilder[ProductImagesFields, ProductImagesRow]
 
-  def selectAll(using c: Connection): java.util.List[ProductImagesRow]
+  def selectAll(using c: Connection): List[ProductImagesRow]
 
-  def selectById(imageId: ProductImagesId)(using c: Connection): Optional[ProductImagesRow]
+  def selectById(imageId: ProductImagesId)(using c: Connection): Option[ProductImagesRow]
 
-  def selectByIds(imageIds: Array[ProductImagesId])(using c: Connection): java.util.List[ProductImagesRow]
+  def selectByIds(imageIds: Array[ProductImagesId])(using c: Connection): List[ProductImagesRow]
 
-  def selectByIdsTracked(imageIds: Array[ProductImagesId])(using c: Connection): java.util.Map[ProductImagesId, ProductImagesRow]
+  def selectByIdsTracked(imageIds: Array[ProductImagesId])(using c: Connection): Map[ProductImagesId, ProductImagesRow]
 
   def update: UpdateBuilder[ProductImagesFields, ProductImagesRow]
 
-  def update(row: ProductImagesRow)(using c: Connection): java.lang.Boolean
+  def update(row: ProductImagesRow)(using c: Connection): Boolean
 
   def upsert(unsaved: ProductImagesRow)(using c: Connection): ProductImagesRow
 
-  def upsertBatch(unsaved: java.util.Iterator[ProductImagesRow])(using c: Connection): java.util.List[ProductImagesRow]
+  def upsertBatch(unsaved: Iterator[ProductImagesRow])(using c: Connection): List[ProductImagesRow]
 }

@@ -6,11 +6,10 @@
 package adventureworks.purchasing.purchaseorderheader;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.purchasing.shipmethod.ShipmethodId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -29,12 +28,12 @@ public record PurchaseorderheaderRow(
   /** Incremental number to track changes to the purchase order over time.
     * Default: 0
     */
-  TypoShort revisionnumber,
+  Short revisionnumber,
   /** Order current status. 1 = Pending; 2 = Approved; 3 = Rejected; 4 = Complete
     * Default: 1
     * Constraint CK_PurchaseOrderHeader_Status affecting columns status: (((status >= 1) AND (status <= 4)))
     */
-  TypoShort status,
+  Short status,
   /** Employee who created the purchase order. Foreign key to Employee.BusinessEntityID.
     * Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()}
     */
@@ -51,11 +50,11 @@ public record PurchaseorderheaderRow(
     * Default: now()
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate: (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  TypoLocalDateTime orderdate,
+  LocalDateTime orderdate,
   /** Estimated shipment date from the vendor.
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate: (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  Optional<TypoLocalDateTime> shipdate,
+  Optional<LocalDateTime> shipdate,
   /** Purchase order subtotal. Computed as SUM(PurchaseOrderDetail.LineTotal)for the appropriate PurchaseOrderID.
     * Default: 0.00
     * Constraint CK_PurchaseOrderHeader_SubTotal affecting columns subtotal: ((subtotal >= 0.00))
@@ -72,7 +71,7 @@ public record PurchaseorderheaderRow(
     */
   BigDecimal freight,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key.
     * Default: nextval('purchasing.purchaseorderheader_purchaseorderid_seq'::regclass)
@@ -84,7 +83,7 @@ public record PurchaseorderheaderRow(
   /** Incremental number to track changes to the purchase order over time.
     * Default: 0
     */
-  public PurchaseorderheaderRow withRevisionnumber(TypoShort revisionnumber) {
+  public PurchaseorderheaderRow withRevisionnumber(Short revisionnumber) {
     return new PurchaseorderheaderRow(purchaseorderid, revisionnumber, status, employeeid, vendorid, shipmethodid, orderdate, shipdate, subtotal, taxamt, freight, modifieddate);
   };
 
@@ -92,7 +91,7 @@ public record PurchaseorderheaderRow(
     * Default: 1
     * Constraint CK_PurchaseOrderHeader_Status affecting columns status: (((status >= 1) AND (status <= 4)))
     */
-  public PurchaseorderheaderRow withStatus(TypoShort status) {
+  public PurchaseorderheaderRow withStatus(Short status) {
     return new PurchaseorderheaderRow(purchaseorderid, revisionnumber, status, employeeid, vendorid, shipmethodid, orderdate, shipdate, subtotal, taxamt, freight, modifieddate);
   };
 
@@ -121,14 +120,14 @@ public record PurchaseorderheaderRow(
     * Default: now()
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate: (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  public PurchaseorderheaderRow withOrderdate(TypoLocalDateTime orderdate) {
+  public PurchaseorderheaderRow withOrderdate(LocalDateTime orderdate) {
     return new PurchaseorderheaderRow(purchaseorderid, revisionnumber, status, employeeid, vendorid, shipmethodid, orderdate, shipdate, subtotal, taxamt, freight, modifieddate);
   };
 
   /** Estimated shipment date from the vendor.
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate: (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  public PurchaseorderheaderRow withShipdate(Optional<TypoLocalDateTime> shipdate) {
+  public PurchaseorderheaderRow withShipdate(Optional<LocalDateTime> shipdate) {
     return new PurchaseorderheaderRow(purchaseorderid, revisionnumber, status, employeeid, vendorid, shipmethodid, orderdate, shipdate, subtotal, taxamt, freight, modifieddate);
   };
 
@@ -157,11 +156,11 @@ public record PurchaseorderheaderRow(
   };
 
   /** Default: now() */
-  public PurchaseorderheaderRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PurchaseorderheaderRow withModifieddate(LocalDateTime modifieddate) {
     return new PurchaseorderheaderRow(purchaseorderid, revisionnumber, status, employeeid, vendorid, shipmethodid, orderdate, shipdate, subtotal, taxamt, freight, modifieddate);
   };
 
-  static RowParser<PurchaseorderheaderRow> _rowParser = RowParsers.of(PurchaseorderheaderId.pgType, TypoShort.pgType, TypoShort.pgType, BusinessentityId.pgType, BusinessentityId.pgType, ShipmethodId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, PurchaseorderheaderRow::new, row -> new Object[]{row.purchaseorderid(), row.revisionnumber(), row.status(), row.employeeid(), row.vendorid(), row.shipmethodid(), row.orderdate(), row.shipdate(), row.subtotal(), row.taxamt(), row.freight(), row.modifieddate()});;
+  static RowParser<PurchaseorderheaderRow> _rowParser = RowParsers.of(PurchaseorderheaderId.pgType, PgTypes.int2, PgTypes.int2, BusinessentityId.pgType, BusinessentityId.pgType, ShipmethodId.pgType, PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, PurchaseorderheaderRow::new, row -> new Object[]{row.purchaseorderid(), row.revisionnumber(), row.status(), row.employeeid(), row.vendorid(), row.shipmethodid(), row.orderdate(), row.shipdate(), row.subtotal(), row.taxamt(), row.freight(), row.modifieddate()});;
 
   static public PgText<PurchaseorderheaderRow> pgText =
     PgText.from(_rowParser);
@@ -172,13 +171,13 @@ public record PurchaseorderheaderRow(
 
   public PurchaseorderheaderRowUnsaved toUnsavedRow(
     Defaulted<PurchaseorderheaderId> purchaseorderid,
-    Defaulted<TypoShort> revisionnumber,
-    Defaulted<TypoShort> status,
-    Defaulted<TypoLocalDateTime> orderdate,
+    Defaulted<Short> revisionnumber,
+    Defaulted<Short> status,
+    Defaulted<LocalDateTime> orderdate,
     Defaulted<BigDecimal> subtotal,
     Defaulted<BigDecimal> taxamt,
     Defaulted<BigDecimal> freight,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new PurchaseorderheaderRowUnsaved(employeeid, vendorid, shipmethodid, shipdate, purchaseorderid, revisionnumber, status, orderdate, subtotal, taxamt, freight, modifieddate);
   };

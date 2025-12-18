@@ -20,9 +20,9 @@ case class CcViewRow(
   /** Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
   creditcardid: /* user-picked */ CustomCreditcardId,
   /** Points to [[adventureworks.sales.creditcard.CreditcardRow.cardtype]] */
-  cardtype: /* max 50 chars */ String,
+  cardtype: String,
   /** Points to [[adventureworks.sales.creditcard.CreditcardRow.cardnumber]] */
-  cardnumber: /* max 25 chars */ String,
+  cardnumber: String,
   /** Points to [[adventureworks.sales.creditcard.CreditcardRow.expmonth]] */
   expmonth: TypoShort,
   /** Points to [[adventureworks.sales.creditcard.CreditcardRow.expyear]] */
@@ -32,9 +32,9 @@ case class CcViewRow(
 )
 
 object CcViewRow {
-  given decoder: Decoder[CcViewRow] = Decoder.forProduct7[CcViewRow, /* user-picked */ CustomCreditcardId, /* user-picked */ CustomCreditcardId, /* max 50 chars */ String, /* max 25 chars */ String, TypoShort, TypoShort, TypoLocalDateTime]("id", "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(CcViewRow.apply)(using CustomCreditcardId.decoder, CustomCreditcardId.decoder, Decoder.decodeString, Decoder.decodeString, TypoShort.decoder, TypoShort.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[CcViewRow] = Decoder.forProduct7[CcViewRow, /* user-picked */ CustomCreditcardId, /* user-picked */ CustomCreditcardId, String, String, TypoShort, TypoShort, TypoLocalDateTime]("id", "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(CcViewRow.apply)(using CustomCreditcardId.decoder, CustomCreditcardId.decoder, Decoder.decodeString, Decoder.decodeString, TypoShort.decoder, TypoShort.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[CcViewRow] = Encoder.forProduct7[CcViewRow, /* user-picked */ CustomCreditcardId, /* user-picked */ CustomCreditcardId, /* max 50 chars */ String, /* max 25 chars */ String, TypoShort, TypoShort, TypoLocalDateTime]("id", "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(x => (x.id, x.creditcardid, x.cardtype, x.cardnumber, x.expmonth, x.expyear, x.modifieddate))(using CustomCreditcardId.encoder, CustomCreditcardId.encoder, Encoder.encodeString, Encoder.encodeString, TypoShort.encoder, TypoShort.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[CcViewRow] = Encoder.forProduct7[CcViewRow, /* user-picked */ CustomCreditcardId, /* user-picked */ CustomCreditcardId, String, String, TypoShort, TypoShort, TypoLocalDateTime]("id", "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate")(x => (x.id, x.creditcardid, x.cardtype, x.cardnumber, x.expmonth, x.expyear, x.modifieddate))(using CustomCreditcardId.encoder, CustomCreditcardId.encoder, Encoder.encodeString, Encoder.encodeString, TypoShort.encoder, TypoShort.encoder, TypoLocalDateTime.encoder)
 
   given read: Read[CcViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -49,8 +49,8 @@ object CcViewRow {
       CcViewRow(
         id = arr(0).asInstanceOf[/* user-picked */ CustomCreditcardId],
             creditcardid = arr(1).asInstanceOf[/* user-picked */ CustomCreditcardId],
-            cardtype = arr(2).asInstanceOf[/* max 50 chars */ String],
-            cardnumber = arr(3).asInstanceOf[/* max 25 chars */ String],
+            cardtype = arr(2).asInstanceOf[String],
+            cardnumber = arr(3).asInstanceOf[String],
             expmonth = arr(4).asInstanceOf[TypoShort],
             expyear = arr(5).asInstanceOf[TypoShort],
             modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]

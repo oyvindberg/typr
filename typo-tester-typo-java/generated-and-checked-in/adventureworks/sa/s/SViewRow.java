@@ -5,12 +5,12 @@
  */
 package adventureworks.sa.s;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.data.Xml;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -23,13 +23,13 @@ public record SViewRow(
   /** Points to {@link adventureworks.sales.store.StoreRow#name()} */
   Name name,
   /** Points to {@link adventureworks.sales.store.StoreRow#salespersonid()} */
-  Optional<BusinessentityId> salespersonid,
+  BusinessentityId salespersonid,
   /** Points to {@link adventureworks.sales.store.StoreRow#demographics()} */
-  Optional<TypoXml> demographics,
+  Xml demographics,
   /** Points to {@link adventureworks.sales.store.StoreRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.sales.store.StoreRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.store.StoreRow#businessentityid()} */
   public SViewRow withId(BusinessentityId id) {
@@ -47,24 +47,24 @@ public record SViewRow(
   };
 
   /** Points to {@link adventureworks.sales.store.StoreRow#salespersonid()} */
-  public SViewRow withSalespersonid(Optional<BusinessentityId> salespersonid) {
+  public SViewRow withSalespersonid(BusinessentityId salespersonid) {
     return new SViewRow(id, businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.store.StoreRow#demographics()} */
-  public SViewRow withDemographics(Optional<TypoXml> demographics) {
+  public SViewRow withDemographics(Xml demographics) {
     return new SViewRow(id, businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.store.StoreRow#rowguid()} */
-  public SViewRow withRowguid(TypoUUID rowguid) {
+  public SViewRow withRowguid(UUID rowguid) {
     return new SViewRow(id, businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.store.StoreRow#modifieddate()} */
-  public SViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SViewRow(id, businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };
 
-  static RowParser<SViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, Name.pgType, BusinessentityId.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, SViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.name(), row.salespersonid(), row.demographics(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, Name.pgType, BusinessentityId.pgType, PgTypes.xml, PgTypes.uuid, PgTypes.timestamp, SViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.name(), row.salespersonid(), row.demographics(), row.rowguid(), row.modifieddate()});;
 }

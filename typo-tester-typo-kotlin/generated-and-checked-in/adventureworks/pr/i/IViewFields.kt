@@ -5,47 +5,48 @@
  */
 package adventureworks.pr.i
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoXml
 import adventureworks.production.illustration.IllustrationId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
+import typo.data.Xml
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface IViewFields : FieldsExpr<IViewRow> {
-  override fun columns(): List<FieldLike<*, IViewRow>>
+  abstract override fun columns(): List<FieldLike<*, IViewRow>>
 
-  fun diagram(): OptField<TypoXml, IViewRow>
+  abstract fun diagram(): Field<Xml, IViewRow>
 
-  fun id(): Field<IllustrationId, IViewRow>
+  abstract fun id(): Field<IllustrationId, IViewRow>
 
-  fun illustrationid(): Field<IllustrationId, IViewRow>
+  abstract fun illustrationid(): Field<IllustrationId, IViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, IViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, IViewRow>
 
-  override fun rowParser(): RowParser<IViewRow> = IViewRow._rowParser
+  override fun rowParser(): RowParser<IViewRow> = IViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : IViewFields, Relation<IViewFields, IViewRow> {
-      override fun id(): Field<IllustrationId, IViewRow> = Field<IllustrationId, IViewRow>(_path, "id", IViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, IllustrationId.pgType)
+    data class Impl(val _path: List<Path>) : IViewFields, RelationStructure<IViewFields, IViewRow> {
+      override fun id(): Field<IllustrationId, IViewRow> = Field<IllustrationId, IViewRow>(_path, "id", IViewRow::id, null, null, { row, value -> row.copy(id = value) }, IllustrationId.pgType)
 
-      override fun illustrationid(): Field<IllustrationId, IViewRow> = Field<IllustrationId, IViewRow>(_path, "illustrationid", IViewRow::illustrationid, Optional.empty(), Optional.empty(), { row, value -> row.copy(illustrationid = value) }, IllustrationId.pgType)
+      override fun illustrationid(): Field<IllustrationId, IViewRow> = Field<IllustrationId, IViewRow>(_path, "illustrationid", IViewRow::illustrationid, null, null, { row, value -> row.copy(illustrationid = value) }, IllustrationId.pgType)
 
-      override fun diagram(): OptField<TypoXml, IViewRow> = OptField<TypoXml, IViewRow>(_path, "diagram", IViewRow::diagram, Optional.empty(), Optional.empty(), { row, value -> row.copy(diagram = value) }, TypoXml.pgType)
+      override fun diagram(): Field<Xml, IViewRow> = Field<Xml, IViewRow>(_path, "diagram", IViewRow::diagram, null, null, { row, value -> row.copy(diagram = value) }, PgTypes.xml)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, IViewRow> = Field<TypoLocalDateTime, IViewRow>(_path, "modifieddate", IViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, IViewRow> = Field<LocalDateTime, IViewRow>(_path, "modifieddate", IViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, IViewRow>> = listOf(this.id(), this.illustrationid(), this.diagram(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<IViewFields, IViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, IViewRow>> = listOf(this.id().underlying, this.illustrationid().underlying, this.diagram().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<IViewFields, IViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

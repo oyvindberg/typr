@@ -5,9 +5,6 @@
  */
 package adventureworks.production.product;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productmodel.ProductmodelId;
 import adventureworks.production.productsubcategory.ProductsubcategoryId;
 import adventureworks.production.unitmeasure.UnitmeasureId;
@@ -25,11 +22,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class ProductRepoImpl implements ProductRepo {
   @Override
@@ -42,13 +37,7 @@ public class ProductRepoImpl implements ProductRepo {
     ProductId productid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "production"."product" where "productid" = 
-      """),
-      ProductId.pgType.encode(productid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"production\".\"product\" where \"productid\" = "), Fragment.encode(ProductId.pgType, productid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -56,14 +45,7 @@ public class ProductRepoImpl implements ProductRepo {
     ProductId[] productids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "production"."product"
-                  where "productid" = ANY("""),
-               ProductId.pgTypeArray.encode(productids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"production\".\"product\"\nwhere \"productid\" = ANY("), Fragment.encode(ProductId.pgTypeArray, productids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -73,64 +55,7 @@ public class ProductRepoImpl implements ProductRepo {
     ProductRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."product"("productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate", "sellenddate", "discontinueddate", "rowguid", "modifieddate")
-         values ("""),
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      PgTypes.text.encode(unsaved.productnumber()),
-      typo.runtime.Fragment.lit(", "),
-      Flag.pgType.encode(unsaved.makeflag()),
-      typo.runtime.Fragment.lit("::bool, "),
-      Flag.pgType.encode(unsaved.finishedgoodsflag()),
-      typo.runtime.Fragment.lit("::bool, "),
-      PgTypes.text.opt().encode(unsaved.color()),
-      typo.runtime.Fragment.lit(", "),
-      TypoShort.pgType.encode(unsaved.safetystocklevel()),
-      typo.runtime.Fragment.lit("::int2, "),
-      TypoShort.pgType.encode(unsaved.reorderpoint()),
-      typo.runtime.Fragment.lit("::int2, "),
-      PgTypes.numeric.encode(unsaved.standardcost()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.encode(unsaved.listprice()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.text.opt().encode(unsaved.size()),
-      typo.runtime.Fragment.lit(", "),
-      UnitmeasureId.pgType.opt().encode(unsaved.sizeunitmeasurecode()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      UnitmeasureId.pgType.opt().encode(unsaved.weightunitmeasurecode()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      PgTypes.numeric.opt().encode(unsaved.weight()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.int4.encode(unsaved.daystomanufacture()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.opt().encode(unsaved.productline()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      PgTypes.text.opt().encode(unsaved.class_()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      PgTypes.text.opt().encode(unsaved.style()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      ProductsubcategoryId.pgType.opt().encode(unsaved.productsubcategoryid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      ProductmodelId.pgType.opt().encode(unsaved.productmodelid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoLocalDateTime.pgType.encode(unsaved.sellstartdate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoLocalDateTime.pgType.opt().encode(unsaved.sellenddate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoLocalDateTime.pgType.opt().encode(unsaved.discontinueddate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"product\"(\"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.text, unsaved.productnumber()), Fragment.lit(", "), Fragment.encode(Flag.pgType, unsaved.makeflag()), Fragment.lit("::bool, "), Fragment.encode(Flag.pgType, unsaved.finishedgoodsflag()), Fragment.lit("::bool, "), Fragment.encode(PgTypes.text.opt(), unsaved.color()), Fragment.lit(", "), Fragment.encode(PgTypes.int2, unsaved.safetystocklevel()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.int2, unsaved.reorderpoint()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.numeric, unsaved.standardcost()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.listprice()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.text.opt(), unsaved.size()), Fragment.lit(", "), Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.sizeunitmeasurecode()), Fragment.lit("::bpchar, "), Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.weightunitmeasurecode()), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.numeric.opt(), unsaved.weight()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.int4, unsaved.daystomanufacture()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.bpchar.opt(), unsaved.productline()), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.bpchar.opt(), unsaved.class_()), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.bpchar.opt(), unsaved.style()), Fragment.lit("::bpchar, "), Fragment.encode(ProductsubcategoryId.pgType.opt(), unsaved.productsubcategoryid()), Fragment.lit("::int4, "), Fragment.encode(ProductmodelId.pgType.opt(), unsaved.productmodelid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.sellstartdate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp.opt(), unsaved.sellenddate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp.opt(), unsaved.discontinueddate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(ProductRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -139,121 +64,55 @@ public class ProductRepoImpl implements ProductRepo {
     ProductRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"productnumber\""));
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.productnumber()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.productnumber()), Fragment.lit("")));
     columns.add(Fragment.lit("\"color\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.color()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text.opt(), unsaved.color()), Fragment.lit("")));
     columns.add(Fragment.lit("\"safetystocklevel\""));
-    values.add(interpolate(
-      TypoShort.pgType.encode(unsaved.safetystocklevel()),
-      typo.runtime.Fragment.lit("::int2")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.int2, unsaved.safetystocklevel()), Fragment.lit("::int2")));
     columns.add(Fragment.lit("\"reorderpoint\""));
-    values.add(interpolate(
-      TypoShort.pgType.encode(unsaved.reorderpoint()),
-      typo.runtime.Fragment.lit("::int2")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.int2, unsaved.reorderpoint()), Fragment.lit("::int2")));
     columns.add(Fragment.lit("\"standardcost\""));
-    values.add(interpolate(
-      PgTypes.numeric.encode(unsaved.standardcost()),
-      typo.runtime.Fragment.lit("::numeric")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.numeric, unsaved.standardcost()), Fragment.lit("::numeric")));
     columns.add(Fragment.lit("\"listprice\""));
-    values.add(interpolate(
-      PgTypes.numeric.encode(unsaved.listprice()),
-      typo.runtime.Fragment.lit("::numeric")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.numeric, unsaved.listprice()), Fragment.lit("::numeric")));
     columns.add(Fragment.lit("\"size\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.size()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text.opt(), unsaved.size()), Fragment.lit("")));
     columns.add(Fragment.lit("\"sizeunitmeasurecode\""));
-    values.add(interpolate(
-      UnitmeasureId.pgType.opt().encode(unsaved.sizeunitmeasurecode()),
-      typo.runtime.Fragment.lit("::bpchar")
-    ));
+    values.add(interpolate(Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.sizeunitmeasurecode()), Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"weightunitmeasurecode\""));
-    values.add(interpolate(
-      UnitmeasureId.pgType.opt().encode(unsaved.weightunitmeasurecode()),
-      typo.runtime.Fragment.lit("::bpchar")
-    ));
+    values.add(interpolate(Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.weightunitmeasurecode()), Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"weight\""));
-    values.add(interpolate(
-      PgTypes.numeric.opt().encode(unsaved.weight()),
-      typo.runtime.Fragment.lit("::numeric")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.numeric.opt(), unsaved.weight()), Fragment.lit("::numeric")));
     columns.add(Fragment.lit("\"daystomanufacture\""));
-    values.add(interpolate(
-      PgTypes.int4.encode(unsaved.daystomanufacture()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.int4, unsaved.daystomanufacture()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"productline\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.productline()),
-      typo.runtime.Fragment.lit("::bpchar")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.bpchar.opt(), unsaved.productline()), Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"class\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.class_()),
-      typo.runtime.Fragment.lit("::bpchar")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.bpchar.opt(), unsaved.class_()), Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"style\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.style()),
-      typo.runtime.Fragment.lit("::bpchar")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.bpchar.opt(), unsaved.style()), Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"productsubcategoryid\""));
-    values.add(interpolate(
-      ProductsubcategoryId.pgType.opt().encode(unsaved.productsubcategoryid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(ProductsubcategoryId.pgType.opt(), unsaved.productsubcategoryid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"productmodelid\""));
-    values.add(interpolate(
-      ProductmodelId.pgType.opt().encode(unsaved.productmodelid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(ProductmodelId.pgType.opt(), unsaved.productmodelid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"sellstartdate\""));
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.encode(unsaved.sellstartdate()),
-      typo.runtime.Fragment.lit("::timestamp")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.timestamp, unsaved.sellstartdate()), Fragment.lit("::timestamp")));
     columns.add(Fragment.lit("\"sellenddate\""));
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.opt().encode(unsaved.sellenddate()),
-      typo.runtime.Fragment.lit("::timestamp")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.timestamp.opt(), unsaved.sellenddate()), Fragment.lit("::timestamp")));
     columns.add(Fragment.lit("\"discontinueddate\""));
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.opt().encode(unsaved.discontinueddate()),
-      typo.runtime.Fragment.lit("::timestamp")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.timestamp.opt(), unsaved.discontinueddate()), Fragment.lit("::timestamp")));
     unsaved.productid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"productid\""));
-        values.add(interpolate(
-        ProductId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(ProductId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.makeflag().visit(
@@ -262,10 +121,7 @@ public class ProductRepoImpl implements ProductRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"makeflag\""));
-        values.add(interpolate(
-        Flag.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      ));
+        values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool")));
       }
     );;
     unsaved.finishedgoodsflag().visit(
@@ -274,10 +130,7 @@ public class ProductRepoImpl implements ProductRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"finishedgoodsflag\""));
-        values.add(interpolate(
-        Flag.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      ));
+        values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool")));
       }
     );;
     unsaved.rowguid().visit(
@@ -286,10 +139,7 @@ public class ProductRepoImpl implements ProductRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -298,26 +148,10 @@ public class ProductRepoImpl implements ProductRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."product"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"production\".\"product\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(ProductRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -327,9 +161,7 @@ public class ProductRepoImpl implements ProductRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."product"("productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate", "sellenddate", "discontinueddate", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, ProductRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"product\"(\"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, ProductRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -339,9 +171,7 @@ public class ProductRepoImpl implements ProductRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."product"("name", "productnumber", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate", "sellenddate", "discontinueddate", "productid", "makeflag", "finishedgoodsflag", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, ProductRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"product\"(\"name\", \"productnumber\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"productid\", \"makeflag\", \"finishedgoodsflag\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ProductRowUnsaved.pgText);
   };
 
   @Override
@@ -351,10 +181,7 @@ public class ProductRepoImpl implements ProductRepo {
 
   @Override
   public List<ProductRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text
-       from "production"."product"
-    """)).query(ProductRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"product\"\n")).query(ProductRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -362,14 +189,7 @@ public class ProductRepoImpl implements ProductRepo {
     ProductId productid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text
-         from "production"."product"
-         where "productid" = """),
-      ProductId.pgType.encode(productid),
-      typo.runtime.Fragment.lit("")
-    ).query(ProductRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"product\"\nwhere \"productid\" = "), Fragment.encode(ProductId.pgType, productid), Fragment.lit("")).query(ProductRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -377,14 +197,7 @@ public class ProductRepoImpl implements ProductRepo {
     ProductId[] productids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text
-         from "production"."product"
-         where "productid" = ANY("""),
-      ProductId.pgTypeArray.encode(productids),
-      typo.runtime.Fragment.lit(")")
-    ).query(ProductRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"product\"\nwhere \"productid\" = ANY("), Fragment.encode(ProductId.pgTypeArray, productids), Fragment.lit(")")).query(ProductRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -399,7 +212,7 @@ public class ProductRepoImpl implements ProductRepo {
 
   @Override
   public UpdateBuilder<ProductFields, ProductRow> update() {
-    return UpdateBuilder.of("\"production\".\"product\"", ProductFields.structure(), ProductRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"production\".\"product\"", ProductFields.structure(), ProductRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -408,109 +221,7 @@ public class ProductRepoImpl implements ProductRepo {
     Connection c
   ) {
     ProductId productid = row.productid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "production"."product"
-         set "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "productnumber" = """),
-      PgTypes.text.encode(row.productnumber()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "makeflag" = """),
-      Flag.pgType.encode(row.makeflag()),
-      typo.runtime.Fragment.lit("""
-         ::bool,
-         "finishedgoodsflag" = """),
-      Flag.pgType.encode(row.finishedgoodsflag()),
-      typo.runtime.Fragment.lit("""
-         ::bool,
-         "color" = """),
-      PgTypes.text.opt().encode(row.color()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "safetystocklevel" = """),
-      TypoShort.pgType.encode(row.safetystocklevel()),
-      typo.runtime.Fragment.lit("""
-         ::int2,
-         "reorderpoint" = """),
-      TypoShort.pgType.encode(row.reorderpoint()),
-      typo.runtime.Fragment.lit("""
-         ::int2,
-         "standardcost" = """),
-      PgTypes.numeric.encode(row.standardcost()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "listprice" = """),
-      PgTypes.numeric.encode(row.listprice()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "size" = """),
-      PgTypes.text.opt().encode(row.size()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "sizeunitmeasurecode" = """),
-      UnitmeasureId.pgType.opt().encode(row.sizeunitmeasurecode()),
-      typo.runtime.Fragment.lit("""
-         ::bpchar,
-         "weightunitmeasurecode" = """),
-      UnitmeasureId.pgType.opt().encode(row.weightunitmeasurecode()),
-      typo.runtime.Fragment.lit("""
-         ::bpchar,
-         "weight" = """),
-      PgTypes.numeric.opt().encode(row.weight()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "daystomanufacture" = """),
-      PgTypes.int4.encode(row.daystomanufacture()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "productline" = """),
-      PgTypes.text.opt().encode(row.productline()),
-      typo.runtime.Fragment.lit("""
-         ::bpchar,
-         "class" = """),
-      PgTypes.text.opt().encode(row.class_()),
-      typo.runtime.Fragment.lit("""
-         ::bpchar,
-         "style" = """),
-      PgTypes.text.opt().encode(row.style()),
-      typo.runtime.Fragment.lit("""
-         ::bpchar,
-         "productsubcategoryid" = """),
-      ProductsubcategoryId.pgType.opt().encode(row.productsubcategoryid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "productmodelid" = """),
-      ProductmodelId.pgType.opt().encode(row.productmodelid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "sellstartdate" = """),
-      TypoLocalDateTime.pgType.encode(row.sellstartdate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp,
-         "sellenddate" = """),
-      TypoLocalDateTime.pgType.opt().encode(row.sellenddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp,
-         "discontinueddate" = """),
-      TypoLocalDateTime.pgType.opt().encode(row.discontinueddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "productid" = """),
-      ProductId.pgType.encode(productid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"production\".\"product\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"productnumber\" = "), Fragment.encode(PgTypes.text, row.productnumber()), Fragment.lit(",\n\"makeflag\" = "), Fragment.encode(Flag.pgType, row.makeflag()), Fragment.lit("::bool,\n\"finishedgoodsflag\" = "), Fragment.encode(Flag.pgType, row.finishedgoodsflag()), Fragment.lit("::bool,\n\"color\" = "), Fragment.encode(PgTypes.text.opt(), row.color()), Fragment.lit(",\n\"safetystocklevel\" = "), Fragment.encode(PgTypes.int2, row.safetystocklevel()), Fragment.lit("::int2,\n\"reorderpoint\" = "), Fragment.encode(PgTypes.int2, row.reorderpoint()), Fragment.lit("::int2,\n\"standardcost\" = "), Fragment.encode(PgTypes.numeric, row.standardcost()), Fragment.lit("::numeric,\n\"listprice\" = "), Fragment.encode(PgTypes.numeric, row.listprice()), Fragment.lit("::numeric,\n\"size\" = "), Fragment.encode(PgTypes.text.opt(), row.size()), Fragment.lit(",\n\"sizeunitmeasurecode\" = "), Fragment.encode(UnitmeasureId.pgType.opt(), row.sizeunitmeasurecode()), Fragment.lit("::bpchar,\n\"weightunitmeasurecode\" = "), Fragment.encode(UnitmeasureId.pgType.opt(), row.weightunitmeasurecode()), Fragment.lit("::bpchar,\n\"weight\" = "), Fragment.encode(PgTypes.numeric.opt(), row.weight()), Fragment.lit("::numeric,\n\"daystomanufacture\" = "), Fragment.encode(PgTypes.int4, row.daystomanufacture()), Fragment.lit("::int4,\n\"productline\" = "), Fragment.encode(PgTypes.bpchar.opt(), row.productline()), Fragment.lit("::bpchar,\n\"class\" = "), Fragment.encode(PgTypes.bpchar.opt(), row.class_()), Fragment.lit("::bpchar,\n\"style\" = "), Fragment.encode(PgTypes.bpchar.opt(), row.style()), Fragment.lit("::bpchar,\n\"productsubcategoryid\" = "), Fragment.encode(ProductsubcategoryId.pgType.opt(), row.productsubcategoryid()), Fragment.lit("::int4,\n\"productmodelid\" = "), Fragment.encode(ProductmodelId.pgType.opt(), row.productmodelid()), Fragment.lit("::int4,\n\"sellstartdate\" = "), Fragment.encode(PgTypes.timestamp, row.sellstartdate()), Fragment.lit("::timestamp,\n\"sellenddate\" = "), Fragment.encode(PgTypes.timestamp.opt(), row.sellenddate()), Fragment.lit("::timestamp,\n\"discontinueddate\" = "), Fragment.encode(PgTypes.timestamp.opt(), row.discontinueddate()), Fragment.lit("::timestamp,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"productid\" = "), Fragment.encode(ProductId.pgType, productid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -518,89 +229,7 @@ public class ProductRepoImpl implements ProductRepo {
     ProductRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."product"("productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate", "sellenddate", "discontinueddate", "rowguid", "modifieddate")
-         values ("""),
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      PgTypes.text.encode(unsaved.productnumber()),
-      typo.runtime.Fragment.lit(", "),
-      Flag.pgType.encode(unsaved.makeflag()),
-      typo.runtime.Fragment.lit("::bool, "),
-      Flag.pgType.encode(unsaved.finishedgoodsflag()),
-      typo.runtime.Fragment.lit("::bool, "),
-      PgTypes.text.opt().encode(unsaved.color()),
-      typo.runtime.Fragment.lit(", "),
-      TypoShort.pgType.encode(unsaved.safetystocklevel()),
-      typo.runtime.Fragment.lit("::int2, "),
-      TypoShort.pgType.encode(unsaved.reorderpoint()),
-      typo.runtime.Fragment.lit("::int2, "),
-      PgTypes.numeric.encode(unsaved.standardcost()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.encode(unsaved.listprice()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.text.opt().encode(unsaved.size()),
-      typo.runtime.Fragment.lit(", "),
-      UnitmeasureId.pgType.opt().encode(unsaved.sizeunitmeasurecode()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      UnitmeasureId.pgType.opt().encode(unsaved.weightunitmeasurecode()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      PgTypes.numeric.opt().encode(unsaved.weight()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.int4.encode(unsaved.daystomanufacture()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.opt().encode(unsaved.productline()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      PgTypes.text.opt().encode(unsaved.class_()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      PgTypes.text.opt().encode(unsaved.style()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      ProductsubcategoryId.pgType.opt().encode(unsaved.productsubcategoryid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      ProductmodelId.pgType.opt().encode(unsaved.productmodelid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoLocalDateTime.pgType.encode(unsaved.sellstartdate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoLocalDateTime.pgType.opt().encode(unsaved.sellenddate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoLocalDateTime.pgType.opt().encode(unsaved.discontinueddate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("productid")
-         do update set
-           "name" = EXCLUDED."name",
-         "productnumber" = EXCLUDED."productnumber",
-         "makeflag" = EXCLUDED."makeflag",
-         "finishedgoodsflag" = EXCLUDED."finishedgoodsflag",
-         "color" = EXCLUDED."color",
-         "safetystocklevel" = EXCLUDED."safetystocklevel",
-         "reorderpoint" = EXCLUDED."reorderpoint",
-         "standardcost" = EXCLUDED."standardcost",
-         "listprice" = EXCLUDED."listprice",
-         "size" = EXCLUDED."size",
-         "sizeunitmeasurecode" = EXCLUDED."sizeunitmeasurecode",
-         "weightunitmeasurecode" = EXCLUDED."weightunitmeasurecode",
-         "weight" = EXCLUDED."weight",
-         "daystomanufacture" = EXCLUDED."daystomanufacture",
-         "productline" = EXCLUDED."productline",
-         "class" = EXCLUDED."class",
-         "style" = EXCLUDED."style",
-         "productsubcategoryid" = EXCLUDED."productsubcategoryid",
-         "productmodelid" = EXCLUDED."productmodelid",
-         "sellstartdate" = EXCLUDED."sellstartdate",
-         "sellenddate" = EXCLUDED."sellenddate",
-         "discontinueddate" = EXCLUDED."discontinueddate",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"product\"(\"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.text, unsaved.productnumber()), Fragment.lit(", "), Fragment.encode(Flag.pgType, unsaved.makeflag()), Fragment.lit("::bool, "), Fragment.encode(Flag.pgType, unsaved.finishedgoodsflag()), Fragment.lit("::bool, "), Fragment.encode(PgTypes.text.opt(), unsaved.color()), Fragment.lit(", "), Fragment.encode(PgTypes.int2, unsaved.safetystocklevel()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.int2, unsaved.reorderpoint()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.numeric, unsaved.standardcost()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.listprice()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.text.opt(), unsaved.size()), Fragment.lit(", "), Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.sizeunitmeasurecode()), Fragment.lit("::bpchar, "), Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.weightunitmeasurecode()), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.numeric.opt(), unsaved.weight()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.int4, unsaved.daystomanufacture()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.bpchar.opt(), unsaved.productline()), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.bpchar.opt(), unsaved.class_()), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.bpchar.opt(), unsaved.style()), Fragment.lit("::bpchar, "), Fragment.encode(ProductsubcategoryId.pgType.opt(), unsaved.productsubcategoryid()), Fragment.lit("::int4, "), Fragment.encode(ProductmodelId.pgType.opt(), unsaved.productmodelid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.sellstartdate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp.opt(), unsaved.sellenddate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp.opt(), unsaved.discontinueddate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"productid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"productnumber\" = EXCLUDED.\"productnumber\",\n\"makeflag\" = EXCLUDED.\"makeflag\",\n\"finishedgoodsflag\" = EXCLUDED.\"finishedgoodsflag\",\n\"color\" = EXCLUDED.\"color\",\n\"safetystocklevel\" = EXCLUDED.\"safetystocklevel\",\n\"reorderpoint\" = EXCLUDED.\"reorderpoint\",\n\"standardcost\" = EXCLUDED.\"standardcost\",\n\"listprice\" = EXCLUDED.\"listprice\",\n\"size\" = EXCLUDED.\"size\",\n\"sizeunitmeasurecode\" = EXCLUDED.\"sizeunitmeasurecode\",\n\"weightunitmeasurecode\" = EXCLUDED.\"weightunitmeasurecode\",\n\"weight\" = EXCLUDED.\"weight\",\n\"daystomanufacture\" = EXCLUDED.\"daystomanufacture\",\n\"productline\" = EXCLUDED.\"productline\",\n\"class\" = EXCLUDED.\"class\",\n\"style\" = EXCLUDED.\"style\",\n\"productsubcategoryid\" = EXCLUDED.\"productsubcategoryid\",\n\"productmodelid\" = EXCLUDED.\"productmodelid\",\n\"sellstartdate\" = EXCLUDED.\"sellstartdate\",\n\"sellenddate\" = EXCLUDED.\"sellenddate\",\n\"discontinueddate\" = EXCLUDED.\"discontinueddate\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\""))
       .updateReturning(ProductRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -610,38 +239,9 @@ public class ProductRepoImpl implements ProductRepo {
     Iterator<ProductRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "production"."product"("productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate", "sellenddate", "discontinueddate", "rowguid", "modifieddate")
-                values (?::int4, ?::varchar, ?, ?::bool, ?::bool, ?, ?::int2, ?::int2, ?::numeric, ?::numeric, ?, ?::bpchar, ?::bpchar, ?::numeric, ?::int4, ?::bpchar, ?::bpchar, ?::bpchar, ?::int4, ?::int4, ?::timestamp, ?::timestamp, ?::timestamp, ?::uuid, ?::timestamp)
-                on conflict ("productid")
-                do update set
-                  "name" = EXCLUDED."name",
-                "productnumber" = EXCLUDED."productnumber",
-                "makeflag" = EXCLUDED."makeflag",
-                "finishedgoodsflag" = EXCLUDED."finishedgoodsflag",
-                "color" = EXCLUDED."color",
-                "safetystocklevel" = EXCLUDED."safetystocklevel",
-                "reorderpoint" = EXCLUDED."reorderpoint",
-                "standardcost" = EXCLUDED."standardcost",
-                "listprice" = EXCLUDED."listprice",
-                "size" = EXCLUDED."size",
-                "sizeunitmeasurecode" = EXCLUDED."sizeunitmeasurecode",
-                "weightunitmeasurecode" = EXCLUDED."weightunitmeasurecode",
-                "weight" = EXCLUDED."weight",
-                "daystomanufacture" = EXCLUDED."daystomanufacture",
-                "productline" = EXCLUDED."productline",
-                "class" = EXCLUDED."class",
-                "style" = EXCLUDED."style",
-                "productsubcategoryid" = EXCLUDED."productsubcategoryid",
-                "productmodelid" = EXCLUDED."productmodelid",
-                "sellstartdate" = EXCLUDED."sellstartdate",
-                "sellenddate" = EXCLUDED."sellenddate",
-                "discontinueddate" = EXCLUDED."discontinueddate",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate"::text, "sellenddate"::text, "discontinueddate"::text, "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"production\".\"product\"(\"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?, ?::bool, ?::bool, ?, ?::int2, ?::int2, ?::numeric, ?::numeric, ?, ?::bpchar, ?::bpchar, ?::numeric, ?::int4, ?::bpchar, ?::bpchar, ?::bpchar, ?::int4, ?::int4, ?::timestamp, ?::timestamp, ?::timestamp, ?::uuid, ?::timestamp)\non conflict (\"productid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"productnumber\" = EXCLUDED.\"productnumber\",\n\"makeflag\" = EXCLUDED.\"makeflag\",\n\"finishedgoodsflag\" = EXCLUDED.\"finishedgoodsflag\",\n\"color\" = EXCLUDED.\"color\",\n\"safetystocklevel\" = EXCLUDED.\"safetystocklevel\",\n\"reorderpoint\" = EXCLUDED.\"reorderpoint\",\n\"standardcost\" = EXCLUDED.\"standardcost\",\n\"listprice\" = EXCLUDED.\"listprice\",\n\"size\" = EXCLUDED.\"size\",\n\"sizeunitmeasurecode\" = EXCLUDED.\"sizeunitmeasurecode\",\n\"weightunitmeasurecode\" = EXCLUDED.\"weightunitmeasurecode\",\n\"weight\" = EXCLUDED.\"weight\",\n\"daystomanufacture\" = EXCLUDED.\"daystomanufacture\",\n\"productline\" = EXCLUDED.\"productline\",\n\"class\" = EXCLUDED.\"class\",\n\"style\" = EXCLUDED.\"style\",\n\"productsubcategoryid\" = EXCLUDED.\"productsubcategoryid\",\n\"productmodelid\" = EXCLUDED.\"productmodelid\",\n\"sellstartdate\" = EXCLUDED.\"sellstartdate\",\n\"sellenddate\" = EXCLUDED.\"sellenddate\",\n\"discontinueddate\" = EXCLUDED.\"discontinueddate\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(ProductRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -651,42 +251,8 @@ public class ProductRepoImpl implements ProductRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table product_TEMP (like "production"."product") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy product_TEMP("productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate", "sellenddate", "discontinueddate", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, ProductRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "production"."product"("productid", "name", "productnumber", "makeflag", "finishedgoodsflag", "color", "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weightunitmeasurecode", "weight", "daystomanufacture", "productline", "class", "style", "productsubcategoryid", "productmodelid", "sellstartdate", "sellenddate", "discontinueddate", "rowguid", "modifieddate")
-       select * from product_TEMP
-       on conflict ("productid")
-       do update set
-         "name" = EXCLUDED."name",
-       "productnumber" = EXCLUDED."productnumber",
-       "makeflag" = EXCLUDED."makeflag",
-       "finishedgoodsflag" = EXCLUDED."finishedgoodsflag",
-       "color" = EXCLUDED."color",
-       "safetystocklevel" = EXCLUDED."safetystocklevel",
-       "reorderpoint" = EXCLUDED."reorderpoint",
-       "standardcost" = EXCLUDED."standardcost",
-       "listprice" = EXCLUDED."listprice",
-       "size" = EXCLUDED."size",
-       "sizeunitmeasurecode" = EXCLUDED."sizeunitmeasurecode",
-       "weightunitmeasurecode" = EXCLUDED."weightunitmeasurecode",
-       "weight" = EXCLUDED."weight",
-       "daystomanufacture" = EXCLUDED."daystomanufacture",
-       "productline" = EXCLUDED."productline",
-       "class" = EXCLUDED."class",
-       "style" = EXCLUDED."style",
-       "productsubcategoryid" = EXCLUDED."productsubcategoryid",
-       "productmodelid" = EXCLUDED."productmodelid",
-       "sellstartdate" = EXCLUDED."sellstartdate",
-       "sellenddate" = EXCLUDED."sellenddate",
-       "discontinueddate" = EXCLUDED."discontinueddate",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table product_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table product_TEMP (like \"production\".\"product\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy product_TEMP(\"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, ProductRow.pgText);
+    return interpolate(Fragment.lit("insert into \"production\".\"product\"(\"productid\", \"name\", \"productnumber\", \"makeflag\", \"finishedgoodsflag\", \"color\", \"safetystocklevel\", \"reorderpoint\", \"standardcost\", \"listprice\", \"size\", \"sizeunitmeasurecode\", \"weightunitmeasurecode\", \"weight\", \"daystomanufacture\", \"productline\", \"class\", \"style\", \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\", \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\")\nselect * from product_TEMP\non conflict (\"productid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"productnumber\" = EXCLUDED.\"productnumber\",\n\"makeflag\" = EXCLUDED.\"makeflag\",\n\"finishedgoodsflag\" = EXCLUDED.\"finishedgoodsflag\",\n\"color\" = EXCLUDED.\"color\",\n\"safetystocklevel\" = EXCLUDED.\"safetystocklevel\",\n\"reorderpoint\" = EXCLUDED.\"reorderpoint\",\n\"standardcost\" = EXCLUDED.\"standardcost\",\n\"listprice\" = EXCLUDED.\"listprice\",\n\"size\" = EXCLUDED.\"size\",\n\"sizeunitmeasurecode\" = EXCLUDED.\"sizeunitmeasurecode\",\n\"weightunitmeasurecode\" = EXCLUDED.\"weightunitmeasurecode\",\n\"weight\" = EXCLUDED.\"weight\",\n\"daystomanufacture\" = EXCLUDED.\"daystomanufacture\",\n\"productline\" = EXCLUDED.\"productline\",\n\"class\" = EXCLUDED.\"class\",\n\"style\" = EXCLUDED.\"style\",\n\"productsubcategoryid\" = EXCLUDED.\"productsubcategoryid\",\n\"productmodelid\" = EXCLUDED.\"productmodelid\",\n\"sellstartdate\" = EXCLUDED.\"sellstartdate\",\n\"sellenddate\" = EXCLUDED.\"sellenddate\",\n\"discontinueddate\" = EXCLUDED.\"discontinueddate\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table product_TEMP;")).update().runUnchecked(c);
   };
 }

@@ -5,29 +5,24 @@
  */
 package adventureworks.humanresources.employee
 
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class EmployeeRepoImpl() : EmployeeRepo {
   override fun delete(): DeleteBuilder<EmployeeFields, EmployeeRow> = DeleteBuilder.of("\"humanresources\".\"employee\"", EmployeeFields.structure, Dialect.POSTGRESQL)
@@ -35,191 +30,79 @@ class EmployeeRepoImpl() : EmployeeRepo {
   override fun deleteById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "humanresources"."employee" where "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(businessentityid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"humanresources\".\"employee\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "humanresources"."employee"
-               where "businessentityid" = ANY(""".trimMargin()),
-             BusinessentityId.pgTypeArray.encode(businessentityids),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = interpolate(Fragment.lit("delete\nfrom \"humanresources\".\"employee\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: EmployeeRow,
     c: Connection
-  ): EmployeeRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employee"("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.text.encode(unsaved.nationalidnumber),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.text.encode(unsaved.loginid),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.text.encode(unsaved.jobtitle),
-    typo.runtime.Fragment.lit(", "),
-    TypoLocalDate.pgType.encode(unsaved.birthdate),
-    typo.runtime.Fragment.lit("::date, "),
-    PgTypes.text.encode(unsaved.maritalstatus),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    PgTypes.text.encode(unsaved.gender),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    TypoLocalDate.pgType.encode(unsaved.hiredate),
-    typo.runtime.Fragment.lit("::date, "),
-    Flag.pgType.encode(unsaved.salariedflag),
-    typo.runtime.Fragment.lit("::bool, "),
-    TypoShort.pgType.encode(unsaved.vacationhours),
-    typo.runtime.Fragment.lit("::int2, "),
-    TypoShort.pgType.encode(unsaved.sickleavehours),
-    typo.runtime.Fragment.lit("::int2, "),
-    Flag.pgType.encode(unsaved.currentflag),
-    typo.runtime.Fragment.lit("::bool, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    PgTypes.text.opt().encode(unsaved.organizationnode),
-    typo.runtime.Fragment.lit("""
-      )
-      returning "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode"
-    """.trimMargin())
-  )
+  ): EmployeeRow = interpolate(Fragment.lit("insert into \"humanresources\".\"employee\"(\"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text, unsaved.nationalidnumber), Fragment.lit(", "), Fragment.encode(PgTypes.text, unsaved.loginid), Fragment.lit(", "), Fragment.encode(PgTypes.text, unsaved.jobtitle), Fragment.lit(", "), Fragment.encode(PgTypes.date, unsaved.birthdate), Fragment.lit("::date, "), Fragment.encode(PgTypes.bpchar, unsaved.maritalstatus), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.bpchar, unsaved.gender), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.date, unsaved.hiredate), Fragment.lit("::date, "), Fragment.encode(Flag.pgType, unsaved.salariedflag), Fragment.lit("::bool, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.vacationhours), Fragment.lit("::int2, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.sickleavehours), Fragment.lit("::int2, "), Fragment.encode(Flag.pgType, unsaved.currentflag), Fragment.lit("::bool, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.text.nullable(), unsaved.organizationnode), Fragment.lit(")\nreturning \"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\"\n"))
     .updateReturning(EmployeeRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: EmployeeRowUnsaved,
     c: Connection
   ): EmployeeRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"businessentityid\""))
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"nationalidnumber\""))
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.nationalidnumber),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.nationalidnumber), Fragment.lit("")))
     columns.add(Fragment.lit("\"loginid\""))
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.loginid),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.loginid), Fragment.lit("")))
     columns.add(Fragment.lit("\"jobtitle\""))
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.jobtitle),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.jobtitle), Fragment.lit("")))
     columns.add(Fragment.lit("\"birthdate\""))
-    values.add(interpolate(
-      TypoLocalDate.pgType.encode(unsaved.birthdate),
-      typo.runtime.Fragment.lit("::date")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.date, unsaved.birthdate), Fragment.lit("::date")))
     columns.add(Fragment.lit("\"maritalstatus\""))
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.maritalstatus),
-      typo.runtime.Fragment.lit("::bpchar")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.bpchar, unsaved.maritalstatus), Fragment.lit("::bpchar")))
     columns.add(Fragment.lit("\"gender\""))
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.gender),
-      typo.runtime.Fragment.lit("::bpchar")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.bpchar, unsaved.gender), Fragment.lit("::bpchar")))
     columns.add(Fragment.lit("\"hiredate\""))
-    values.add(interpolate(
-      TypoLocalDate.pgType.encode(unsaved.hiredate),
-      typo.runtime.Fragment.lit("::date")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.date, unsaved.hiredate), Fragment.lit("::date")))
     unsaved.salariedflag.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"salariedflag\""))
-      values.add(interpolate(
-        Flag.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      )) }
+      values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool"))) }
     );
     unsaved.vacationhours.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"vacationhours\""))
-      values.add(interpolate(
-        TypoShort.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int2")
-      )) }
+      values.add(interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int2, value), Fragment.lit("::int2"))) }
     );
     unsaved.sickleavehours.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"sickleavehours\""))
-      values.add(interpolate(
-        TypoShort.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int2")
-      )) }
+      values.add(interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int2, value), Fragment.lit("::int2"))) }
     );
     unsaved.currentflag.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"currentflag\""))
-      values.add(interpolate(
-        Flag.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      )) }
+      values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool"))) }
     );
     unsaved.rowguid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"rowguid\""))
-      values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
     unsaved.organizationnode.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"organizationnode\""))
-      values.add(interpolate(
-        PgTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.text.nullable(), value), Fragment.lit(""))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employee"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode"
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"humanresources\".\"employee\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\"\n"))
     return q.updateReturning(EmployeeRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -227,49 +110,28 @@ class EmployeeRepoImpl() : EmployeeRepo {
     unsaved: MutableIterator<EmployeeRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "humanresources"."employee"("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, EmployeeRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"humanresources\".\"employee\"(\"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\") FROM STDIN", batchSize, unsaved, c, EmployeeRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<EmployeeRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "humanresources"."employee"("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, EmployeeRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"humanresources\".\"employee\"(\"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, EmployeeRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<EmployeeFields, EmployeeRow> = SelectBuilder.of("\"humanresources\".\"employee\"", EmployeeFields.structure, EmployeeRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<EmployeeRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode"
-    from "humanresources"."employee"
-  """.trimMargin())).query(EmployeeRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<EmployeeRow> = interpolate(Fragment.lit("select \"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\"\nfrom \"humanresources\".\"employee\"\n")).query(EmployeeRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Optional<EmployeeRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode"
-      from "humanresources"."employee"
-      where "businessentityid" = """.trimMargin()),
-    BusinessentityId.pgType.encode(businessentityid),
-    typo.runtime.Fragment.lit("")
-  ).query(EmployeeRow._rowParser.first()).runUnchecked(c)
+  ): EmployeeRow? = interpolate(Fragment.lit("select \"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\"\nfrom \"humanresources\".\"employee\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).query(EmployeeRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
-  ): List<EmployeeRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode"
-      from "humanresources"."employee"
-      where "businessentityid" = ANY(""".trimMargin()),
-    BusinessentityId.pgTypeArray.encode(businessentityids),
-    typo.runtime.Fragment.lit(")")
-  ).query(EmployeeRow._rowParser.all()).runUnchecked(c)
+  ): List<EmployeeRow> = interpolate(Fragment.lit("select \"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\"\nfrom \"humanresources\".\"employee\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")")).query(EmployeeRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     businessentityids: Array<BusinessentityId>,
@@ -277,165 +139,32 @@ class EmployeeRepoImpl() : EmployeeRepo {
   ): Map<BusinessentityId, EmployeeRow> {
     val ret: MutableMap<BusinessentityId, EmployeeRow> = mutableMapOf<BusinessentityId, EmployeeRow>()
     selectByIds(businessentityids, c).forEach({ row -> ret.put(row.businessentityid, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<EmployeeFields, EmployeeRow> = UpdateBuilder.of("\"humanresources\".\"employee\"", EmployeeFields.structure, EmployeeRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<EmployeeFields, EmployeeRow> = UpdateBuilder.of("\"humanresources\".\"employee\"", EmployeeFields.structure, EmployeeRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: EmployeeRow,
     c: Connection
   ): Boolean {
     val businessentityid: BusinessentityId = row.businessentityid
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "humanresources"."employee"
-        set "nationalidnumber" = """.trimMargin()),
-      PgTypes.text.encode(row.nationalidnumber),
-      typo.runtime.Fragment.lit("""
-        ,
-        "loginid" = """.trimMargin()),
-      PgTypes.text.encode(row.loginid),
-      typo.runtime.Fragment.lit("""
-        ,
-        "jobtitle" = """.trimMargin()),
-      PgTypes.text.encode(row.jobtitle),
-      typo.runtime.Fragment.lit("""
-        ,
-        "birthdate" = """.trimMargin()),
-      TypoLocalDate.pgType.encode(row.birthdate),
-      typo.runtime.Fragment.lit("""
-        ::date,
-        "maritalstatus" = """.trimMargin()),
-      PgTypes.text.encode(row.maritalstatus),
-      typo.runtime.Fragment.lit("""
-        ::bpchar,
-        "gender" = """.trimMargin()),
-      PgTypes.text.encode(row.gender),
-      typo.runtime.Fragment.lit("""
-        ::bpchar,
-        "hiredate" = """.trimMargin()),
-      TypoLocalDate.pgType.encode(row.hiredate),
-      typo.runtime.Fragment.lit("""
-        ::date,
-        "salariedflag" = """.trimMargin()),
-      Flag.pgType.encode(row.salariedflag),
-      typo.runtime.Fragment.lit("""
-        ::bool,
-        "vacationhours" = """.trimMargin()),
-      TypoShort.pgType.encode(row.vacationhours),
-      typo.runtime.Fragment.lit("""
-        ::int2,
-        "sickleavehours" = """.trimMargin()),
-      TypoShort.pgType.encode(row.sickleavehours),
-      typo.runtime.Fragment.lit("""
-        ::int2,
-        "currentflag" = """.trimMargin()),
-      Flag.pgType.encode(row.currentflag),
-      typo.runtime.Fragment.lit("""
-        ::bool,
-        "rowguid" = """.trimMargin()),
-      TypoUUID.pgType.encode(row.rowguid),
-      typo.runtime.Fragment.lit("""
-        ::uuid,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp,
-        "organizationnode" = """.trimMargin()),
-      PgTypes.text.opt().encode(row.organizationnode),
-      typo.runtime.Fragment.lit("""
-  
-        where "businessentityid" = """.trimMargin()),
-      BusinessentityId.pgType.encode(businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"humanresources\".\"employee\"\nset \"nationalidnumber\" = "), Fragment.encode(PgTypes.text, row.nationalidnumber), Fragment.lit(",\n\"loginid\" = "), Fragment.encode(PgTypes.text, row.loginid), Fragment.lit(",\n\"jobtitle\" = "), Fragment.encode(PgTypes.text, row.jobtitle), Fragment.lit(",\n\"birthdate\" = "), Fragment.encode(PgTypes.date, row.birthdate), Fragment.lit("::date,\n\"maritalstatus\" = "), Fragment.encode(PgTypes.bpchar, row.maritalstatus), Fragment.lit("::bpchar,\n\"gender\" = "), Fragment.encode(PgTypes.bpchar, row.gender), Fragment.lit("::bpchar,\n\"hiredate\" = "), Fragment.encode(PgTypes.date, row.hiredate), Fragment.lit("::date,\n\"salariedflag\" = "), Fragment.encode(Flag.pgType, row.salariedflag), Fragment.lit("::bool,\n\"vacationhours\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int2, row.vacationhours), Fragment.lit("::int2,\n\"sickleavehours\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int2, row.sickleavehours), Fragment.lit("::int2,\n\"currentflag\" = "), Fragment.encode(Flag.pgType, row.currentflag), Fragment.lit("::bool,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp,\n\"organizationnode\" = "), Fragment.encode(PgTypes.text.nullable(), row.organizationnode), Fragment.lit("\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: EmployeeRow,
     c: Connection
-  ): EmployeeRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employee"("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.text.encode(unsaved.nationalidnumber),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.text.encode(unsaved.loginid),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.text.encode(unsaved.jobtitle),
-    typo.runtime.Fragment.lit(", "),
-    TypoLocalDate.pgType.encode(unsaved.birthdate),
-    typo.runtime.Fragment.lit("::date, "),
-    PgTypes.text.encode(unsaved.maritalstatus),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    PgTypes.text.encode(unsaved.gender),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    TypoLocalDate.pgType.encode(unsaved.hiredate),
-    typo.runtime.Fragment.lit("::date, "),
-    Flag.pgType.encode(unsaved.salariedflag),
-    typo.runtime.Fragment.lit("::bool, "),
-    TypoShort.pgType.encode(unsaved.vacationhours),
-    typo.runtime.Fragment.lit("::int2, "),
-    TypoShort.pgType.encode(unsaved.sickleavehours),
-    typo.runtime.Fragment.lit("::int2, "),
-    Flag.pgType.encode(unsaved.currentflag),
-    typo.runtime.Fragment.lit("::bool, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    PgTypes.text.opt().encode(unsaved.organizationnode),
-    typo.runtime.Fragment.lit("""
-      )
-      on conflict ("businessentityid")
-      do update set
-        "nationalidnumber" = EXCLUDED."nationalidnumber",
-      "loginid" = EXCLUDED."loginid",
-      "jobtitle" = EXCLUDED."jobtitle",
-      "birthdate" = EXCLUDED."birthdate",
-      "maritalstatus" = EXCLUDED."maritalstatus",
-      "gender" = EXCLUDED."gender",
-      "hiredate" = EXCLUDED."hiredate",
-      "salariedflag" = EXCLUDED."salariedflag",
-      "vacationhours" = EXCLUDED."vacationhours",
-      "sickleavehours" = EXCLUDED."sickleavehours",
-      "currentflag" = EXCLUDED."currentflag",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate",
-      "organizationnode" = EXCLUDED."organizationnode"
-      returning "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode"""".trimMargin())
-  )
+  ): EmployeeRow = interpolate(Fragment.lit("insert into \"humanresources\".\"employee\"(\"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text, unsaved.nationalidnumber), Fragment.lit(", "), Fragment.encode(PgTypes.text, unsaved.loginid), Fragment.lit(", "), Fragment.encode(PgTypes.text, unsaved.jobtitle), Fragment.lit(", "), Fragment.encode(PgTypes.date, unsaved.birthdate), Fragment.lit("::date, "), Fragment.encode(PgTypes.bpchar, unsaved.maritalstatus), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.bpchar, unsaved.gender), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.date, unsaved.hiredate), Fragment.lit("::date, "), Fragment.encode(Flag.pgType, unsaved.salariedflag), Fragment.lit("::bool, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.vacationhours), Fragment.lit("::int2, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.sickleavehours), Fragment.lit("::int2, "), Fragment.encode(Flag.pgType, unsaved.currentflag), Fragment.lit("::bool, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.text.nullable(), unsaved.organizationnode), Fragment.lit(")\non conflict (\"businessentityid\")\ndo update set\n  \"nationalidnumber\" = EXCLUDED.\"nationalidnumber\",\n\"loginid\" = EXCLUDED.\"loginid\",\n\"jobtitle\" = EXCLUDED.\"jobtitle\",\n\"birthdate\" = EXCLUDED.\"birthdate\",\n\"maritalstatus\" = EXCLUDED.\"maritalstatus\",\n\"gender\" = EXCLUDED.\"gender\",\n\"hiredate\" = EXCLUDED.\"hiredate\",\n\"salariedflag\" = EXCLUDED.\"salariedflag\",\n\"vacationhours\" = EXCLUDED.\"vacationhours\",\n\"sickleavehours\" = EXCLUDED.\"sickleavehours\",\n\"currentflag\" = EXCLUDED.\"currentflag\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\",\n\"organizationnode\" = EXCLUDED.\"organizationnode\"\nreturning \"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\""))
     .updateReturning(EmployeeRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<EmployeeRow>,
     c: Connection
-  ): List<EmployeeRow> = interpolate(typo.runtime.Fragment.lit("""
-                           insert into "humanresources"."employee"("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")
-                           values (?::int4, ?, ?, ?, ?::date, ?::bpchar, ?::bpchar, ?::date, ?::bool, ?::int2, ?::int2, ?::bool, ?::uuid, ?::timestamp, ?)
-                           on conflict ("businessentityid")
-                           do update set
-                             "nationalidnumber" = EXCLUDED."nationalidnumber",
-                           "loginid" = EXCLUDED."loginid",
-                           "jobtitle" = EXCLUDED."jobtitle",
-                           "birthdate" = EXCLUDED."birthdate",
-                           "maritalstatus" = EXCLUDED."maritalstatus",
-                           "gender" = EXCLUDED."gender",
-                           "hiredate" = EXCLUDED."hiredate",
-                           "salariedflag" = EXCLUDED."salariedflag",
-                           "vacationhours" = EXCLUDED."vacationhours",
-                           "sickleavehours" = EXCLUDED."sickleavehours",
-                           "currentflag" = EXCLUDED."currentflag",
-                           "rowguid" = EXCLUDED."rowguid",
-                           "modifieddate" = EXCLUDED."modifieddate",
-                           "organizationnode" = EXCLUDED."organizationnode"
-                           returning "businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate"::text, "maritalstatus", "gender", "hiredate"::text, "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate"::text, "organizationnode"""".trimMargin()))
+  ): List<EmployeeRow> = interpolate(Fragment.lit("insert into \"humanresources\".\"employee\"(\"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\")\nvalues (?::int4, ?, ?, ?, ?::date, ?::bpchar, ?::bpchar, ?::date, ?::bool, ?::int2, ?::int2, ?::bool, ?::uuid, ?::timestamp, ?)\non conflict (\"businessentityid\")\ndo update set\n  \"nationalidnumber\" = EXCLUDED.\"nationalidnumber\",\n\"loginid\" = EXCLUDED.\"loginid\",\n\"jobtitle\" = EXCLUDED.\"jobtitle\",\n\"birthdate\" = EXCLUDED.\"birthdate\",\n\"maritalstatus\" = EXCLUDED.\"maritalstatus\",\n\"gender\" = EXCLUDED.\"gender\",\n\"hiredate\" = EXCLUDED.\"hiredate\",\n\"salariedflag\" = EXCLUDED.\"salariedflag\",\n\"vacationhours\" = EXCLUDED.\"vacationhours\",\n\"sickleavehours\" = EXCLUDED.\"sickleavehours\",\n\"currentflag\" = EXCLUDED.\"currentflag\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\",\n\"organizationnode\" = EXCLUDED.\"organizationnode\"\nreturning \"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\""))
     .updateManyReturning(EmployeeRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -443,32 +172,8 @@ class EmployeeRepoImpl() : EmployeeRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table employee_TEMP (like "humanresources"."employee") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy employee_TEMP("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode") from stdin
-    """.trimMargin()), batchSize, unsaved, c, EmployeeRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employee"("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")
-      select * from employee_TEMP
-      on conflict ("businessentityid")
-      do update set
-        "nationalidnumber" = EXCLUDED."nationalidnumber",
-      "loginid" = EXCLUDED."loginid",
-      "jobtitle" = EXCLUDED."jobtitle",
-      "birthdate" = EXCLUDED."birthdate",
-      "maritalstatus" = EXCLUDED."maritalstatus",
-      "gender" = EXCLUDED."gender",
-      "hiredate" = EXCLUDED."hiredate",
-      "salariedflag" = EXCLUDED."salariedflag",
-      "vacationhours" = EXCLUDED."vacationhours",
-      "sickleavehours" = EXCLUDED."sickleavehours",
-      "currentflag" = EXCLUDED."currentflag",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate",
-      "organizationnode" = EXCLUDED."organizationnode"
-      ;
-      drop table employee_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table employee_TEMP (like \"humanresources\".\"employee\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy employee_TEMP(\"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\") from stdin", batchSize, unsaved, c, EmployeeRow.pgText)
+    return interpolate(Fragment.lit("insert into \"humanresources\".\"employee\"(\"businessentityid\", \"nationalidnumber\", \"loginid\", \"jobtitle\", \"birthdate\", \"maritalstatus\", \"gender\", \"hiredate\", \"salariedflag\", \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\", \"modifieddate\", \"organizationnode\")\nselect * from employee_TEMP\non conflict (\"businessentityid\")\ndo update set\n  \"nationalidnumber\" = EXCLUDED.\"nationalidnumber\",\n\"loginid\" = EXCLUDED.\"loginid\",\n\"jobtitle\" = EXCLUDED.\"jobtitle\",\n\"birthdate\" = EXCLUDED.\"birthdate\",\n\"maritalstatus\" = EXCLUDED.\"maritalstatus\",\n\"gender\" = EXCLUDED.\"gender\",\n\"hiredate\" = EXCLUDED.\"hiredate\",\n\"salariedflag\" = EXCLUDED.\"salariedflag\",\n\"vacationhours\" = EXCLUDED.\"vacationhours\",\n\"sickleavehours\" = EXCLUDED.\"sickleavehours\",\n\"currentflag\" = EXCLUDED.\"currentflag\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\",\n\"organizationnode\" = EXCLUDED.\"organizationnode\"\n;\ndrop table employee_TEMP;")).update().runUnchecked(c)
   }
 }

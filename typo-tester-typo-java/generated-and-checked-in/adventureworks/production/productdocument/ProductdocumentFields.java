@@ -5,37 +5,38 @@
  */
 package adventureworks.production.productdocument;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.document.DocumentFields;
 import adventureworks.production.document.DocumentId;
 import adventureworks.production.document.DocumentRow;
 import adventureworks.production.product.ProductFields;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.product.ProductRow;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface ProductdocumentFields extends FieldsExpr<ProductdocumentRow> {
-  record Impl(List<Path> _path) implements ProductdocumentFields, Relation<ProductdocumentFields, ProductdocumentRow> {
+  record Impl(List<Path> _path) implements ProductdocumentFields, RelationStructure<ProductdocumentFields, ProductdocumentRow> {
     @Override
     public IdField<ProductId, ProductdocumentRow> productid() {
       return new IdField<ProductId, ProductdocumentRow>(_path, "productid", ProductdocumentRow::productid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withProductid(value), ProductId.pgType);
     };
 
     @Override
-    public Field<TypoLocalDateTime, ProductdocumentRow> modifieddate() {
-      return new Field<TypoLocalDateTime, ProductdocumentRow>(_path, "modifieddate", ProductdocumentRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ProductdocumentRow> modifieddate() {
+      return new Field<LocalDateTime, ProductdocumentRow>(_path, "modifieddate", ProductdocumentRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -45,31 +46,31 @@ public interface ProductdocumentFields extends FieldsExpr<ProductdocumentRow> {
 
     @Override
     public List<FieldLike<?, ProductdocumentRow>> columns() {
-      return List.of(this.productid(), this.modifieddate(), this.documentnode());
+      return java.util.List.of(this.productid(), this.modifieddate(), this.documentnode());
     };
 
     @Override
-    public Relation<ProductdocumentFields, ProductdocumentRow> copy(List<Path> _path) {
+    public RelationStructure<ProductdocumentFields, ProductdocumentRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ProductId, ProductdocumentRow> productid();
 
-  Field<TypoLocalDateTime, ProductdocumentRow> modifieddate();
+  Field<LocalDateTime, ProductdocumentRow> modifieddate();
 
   IdField<DocumentId, ProductdocumentRow> documentnode();
 
   default ForeignKey<DocumentFields, DocumentRow> fkDocument() {
-    return ForeignKey.<DocumentFields, DocumentRow>of("production.FK_ProductDocument_Document_DocumentNode").withColumnPair(documentnode(), DocumentFields::documentnode);
+    return ForeignKey.<DocumentFields, DocumentRow>of("production.FK_ProductDocument_Document_DocumentNode").<DocumentId>withColumnPair(documentnode(), DocumentFields::documentnode);
   };
 
   default ForeignKey<ProductFields, ProductRow> fkProduct() {
-    return ForeignKey.<ProductFields, ProductRow>of("production.FK_ProductDocument_Product_ProductID").withColumnPair(productid(), ProductFields::productid);
+    return ForeignKey.<ProductFields, ProductRow>of("production.FK_ProductDocument_Product_ProductID").<ProductId>withColumnPair(productid(), ProductFields::productid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(ProductdocumentId compositeId) {

@@ -7,11 +7,10 @@ package adventureworks.production.billofmaterials;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.unitmeasure.UnitmeasureId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -32,7 +31,7 @@ public record BillofmaterialsRowUnsaved(
   /** Date the component stopped being used in the assembly item.
     * Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate:  (((enddate > startdate) OR (enddate IS NULL)))
     */
-  Optional<TypoLocalDateTime> enddate,
+  Optional<LocalDateTime> enddate,
   /** Standard code identifying the unit of measure for the quantity.
     * Points to {@link adventureworks.production.unitmeasure.UnitmeasureRow#unitmeasurecode()}
     */
@@ -40,7 +39,7 @@ public record BillofmaterialsRowUnsaved(
   /** Indicates the depth the component is from its parent (AssemblyID).
     * Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid:  ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
     */
-  TypoShort bomlevel,
+  Short bomlevel,
   /** Default: nextval('production.billofmaterials_billofmaterialsid_seq'::regclass)
     * Primary key for BillOfMaterials records.
     */
@@ -49,7 +48,7 @@ public record BillofmaterialsRowUnsaved(
     * Date the component started being used in the assembly item.
     * Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate:  (((enddate > startdate) OR (enddate IS NULL)))
     */
-  Defaulted<TypoLocalDateTime> startdate,
+  Defaulted<LocalDateTime> startdate,
   /** Default: 1.00
     * Quantity of the component needed to create the assembly.
     * Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid:  ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
@@ -57,7 +56,7 @@ public record BillofmaterialsRowUnsaved(
     */
   Defaulted<BigDecimal> perassemblyqty,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public BillofmaterialsRowUnsaved(
     /** Component identification number. Foreign key to Product.ProductID.
@@ -72,7 +71,7 @@ public record BillofmaterialsRowUnsaved(
     /** Indicates the depth the component is from its parent (AssemblyID).
       * Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid:  ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
       */
-    TypoShort bomlevel
+    Short bomlevel
   ) {
     this(Optional.empty(), componentid, Optional.empty(), unitmeasurecode, bomlevel, new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
   };
@@ -97,7 +96,7 @@ public record BillofmaterialsRowUnsaved(
   /** Date the component stopped being used in the assembly item.
     * Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate:  (((enddate > startdate) OR (enddate IS NULL)))
     */
-  public BillofmaterialsRowUnsaved withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public BillofmaterialsRowUnsaved withEnddate(Optional<LocalDateTime> enddate) {
     return new BillofmaterialsRowUnsaved(productassemblyid, componentid, enddate, unitmeasurecode, bomlevel, billofmaterialsid, startdate, perassemblyqty, modifieddate);
   };
 
@@ -111,7 +110,7 @@ public record BillofmaterialsRowUnsaved(
   /** Indicates the depth the component is from its parent (AssemblyID).
     * Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid:  ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
     */
-  public BillofmaterialsRowUnsaved withBomlevel(TypoShort bomlevel) {
+  public BillofmaterialsRowUnsaved withBomlevel(Short bomlevel) {
     return new BillofmaterialsRowUnsaved(productassemblyid, componentid, enddate, unitmeasurecode, bomlevel, billofmaterialsid, startdate, perassemblyqty, modifieddate);
   };
 
@@ -126,7 +125,7 @@ public record BillofmaterialsRowUnsaved(
     * Date the component started being used in the assembly item.
     * Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate:  (((enddate > startdate) OR (enddate IS NULL)))
     */
-  public BillofmaterialsRowUnsaved withStartdate(Defaulted<TypoLocalDateTime> startdate) {
+  public BillofmaterialsRowUnsaved withStartdate(Defaulted<LocalDateTime> startdate) {
     return new BillofmaterialsRowUnsaved(productassemblyid, componentid, enddate, unitmeasurecode, bomlevel, billofmaterialsid, startdate, perassemblyqty, modifieddate);
   };
 
@@ -140,7 +139,7 @@ public record BillofmaterialsRowUnsaved(
   };
 
   /** Default: now() */
-  public BillofmaterialsRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public BillofmaterialsRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new BillofmaterialsRowUnsaved(productassemblyid, componentid, enddate, unitmeasurecode, bomlevel, billofmaterialsid, startdate, perassemblyqty, modifieddate);
   };
 
@@ -150,26 +149,26 @@ public record BillofmaterialsRowUnsaved(
       sb.append(PgText.DELIMETER);
       ProductId.pgType.pgText().unsafeEncode(row.componentid, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.enddate, sb);
+      PgTypes.timestamp.opt().pgText().unsafeEncode(row.enddate, sb);
       sb.append(PgText.DELIMETER);
       UnitmeasureId.pgType.pgText().unsafeEncode(row.unitmeasurecode, sb);
       sb.append(PgText.DELIMETER);
-      TypoShort.pgType.pgText().unsafeEncode(row.bomlevel, sb);
+      PgTypes.int2.pgText().unsafeEncode(row.bomlevel, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.billofmaterialsid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.startdate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.startdate, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.perassemblyqty, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public BillofmaterialsRow toRow(
     java.util.function.Supplier<Integer> billofmaterialsidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> startdateDefault,
+    java.util.function.Supplier<LocalDateTime> startdateDefault,
     java.util.function.Supplier<BigDecimal> perassemblyqtyDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new BillofmaterialsRow(billofmaterialsid.getOrElse(billofmaterialsidDefault), productassemblyid, componentid, startdate.getOrElse(startdateDefault), enddate, unitmeasurecode, bomlevel, perassemblyqty.getOrElse(perassemblyqtyDefault), modifieddate.getOrElse(modifieddateDefault));
   };

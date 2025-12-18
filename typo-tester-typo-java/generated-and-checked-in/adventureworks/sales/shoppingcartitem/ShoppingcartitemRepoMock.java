@@ -16,15 +16,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import typo.dsl.DeleteBuilder;
-import typo.dsl.DeleteBuilder.DeleteBuilderMock;
+import typo.dsl.DeleteBuilderMock;
 import typo.dsl.DeleteParams;
 import typo.dsl.SelectBuilder;
 import typo.dsl.SelectBuilderMock;
 import typo.dsl.SelectParams;
 import typo.dsl.UpdateBuilder;
-import typo.dsl.UpdateBuilder.UpdateBuilderMock;
+import typo.dsl.UpdateBuilderMock;
 import typo.dsl.UpdateParams;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public record ShoppingcartitemRepoMock(
   java.util.function.Function<ShoppingcartitemRowUnsaved, ShoppingcartitemRow> toRow,
@@ -75,7 +74,7 @@ public record ShoppingcartitemRepoMock(
     Connection c
   ) {
     if (map.containsKey(unsaved.shoppingcartitemid())) {
-      throw new RuntimeException(str("id $unsaved.shoppingcartitemid() already exists"));
+      throw new RuntimeException("id " + unsaved.shoppingcartitemid() + " already exists");
     };
     map.put(unsaved.shoppingcartitemid(), unsaved);
     return unsaved;

@@ -5,13 +5,11 @@
  */
 package adventureworks.hr.e;
 
-import adventureworks.customtypes.TypoLocalDate;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Flag;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -23,33 +21,33 @@ public record EViewRow(
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()} */
   BusinessentityId businessentityid,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#nationalidnumber()} */
-  /* max 15 chars */ String nationalidnumber,
+  String nationalidnumber,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#loginid()} */
-  /* max 256 chars */ String loginid,
+  String loginid,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#jobtitle()} */
-  /* max 50 chars */ String jobtitle,
+  String jobtitle,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#birthdate()} */
-  TypoLocalDate birthdate,
+  LocalDate birthdate,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#maritalstatus()} */
-  /* bpchar, max 1 chars */ String maritalstatus,
+  String maritalstatus,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#gender()} */
-  /* bpchar, max 1 chars */ String gender,
+  String gender,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#hiredate()} */
-  TypoLocalDate hiredate,
+  LocalDate hiredate,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#salariedflag()} */
   Flag salariedflag,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#vacationhours()} */
-  TypoShort vacationhours,
+  Short vacationhours,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#sickleavehours()} */
-  TypoShort sickleavehours,
+  Short sickleavehours,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#currentflag()} */
   Flag currentflag,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#modifieddate()} */
-  TypoLocalDateTime modifieddate,
+  LocalDateTime modifieddate,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#organizationnode()} */
-  Optional<String> organizationnode
+  String organizationnode
 ) {
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()} */
   public EViewRow withId(BusinessentityId id) {
@@ -62,37 +60,37 @@ public record EViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#nationalidnumber()} */
-  public EViewRow withNationalidnumber(/* max 15 chars */ String nationalidnumber) {
+  public EViewRow withNationalidnumber(String nationalidnumber) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#loginid()} */
-  public EViewRow withLoginid(/* max 256 chars */ String loginid) {
+  public EViewRow withLoginid(String loginid) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#jobtitle()} */
-  public EViewRow withJobtitle(/* max 50 chars */ String jobtitle) {
+  public EViewRow withJobtitle(String jobtitle) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#birthdate()} */
-  public EViewRow withBirthdate(TypoLocalDate birthdate) {
+  public EViewRow withBirthdate(LocalDate birthdate) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#maritalstatus()} */
-  public EViewRow withMaritalstatus(/* bpchar, max 1 chars */ String maritalstatus) {
+  public EViewRow withMaritalstatus(String maritalstatus) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#gender()} */
-  public EViewRow withGender(/* bpchar, max 1 chars */ String gender) {
+  public EViewRow withGender(String gender) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#hiredate()} */
-  public EViewRow withHiredate(TypoLocalDate hiredate) {
+  public EViewRow withHiredate(LocalDate hiredate) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
@@ -102,12 +100,12 @@ public record EViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#vacationhours()} */
-  public EViewRow withVacationhours(TypoShort vacationhours) {
+  public EViewRow withVacationhours(Short vacationhours) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#sickleavehours()} */
-  public EViewRow withSickleavehours(TypoShort sickleavehours) {
+  public EViewRow withSickleavehours(Short sickleavehours) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
@@ -117,19 +115,19 @@ public record EViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#rowguid()} */
-  public EViewRow withRowguid(TypoUUID rowguid) {
+  public EViewRow withRowguid(UUID rowguid) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#modifieddate()} */
-  public EViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public EViewRow withModifieddate(LocalDateTime modifieddate) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#organizationnode()} */
-  public EViewRow withOrganizationnode(Optional<String> organizationnode) {
+  public EViewRow withOrganizationnode(String organizationnode) {
     return new EViewRow(id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
-  static RowParser<EViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, TypoLocalDate.pgType, PgTypes.bpchar, PgTypes.bpchar, TypoLocalDate.pgType, Flag.pgType, TypoShort.pgType, TypoShort.pgType, Flag.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, PgTypes.text.opt(), EViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.nationalidnumber(), row.loginid(), row.jobtitle(), row.birthdate(), row.maritalstatus(), row.gender(), row.hiredate(), row.salariedflag(), row.vacationhours(), row.sickleavehours(), row.currentflag(), row.rowguid(), row.modifieddate(), row.organizationnode()});;
+  static RowParser<EViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.date, PgTypes.bpchar, PgTypes.bpchar, PgTypes.date, Flag.pgType, PgTypes.int2, PgTypes.int2, Flag.pgType, PgTypes.uuid, PgTypes.timestamp, PgTypes.text, EViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.nationalidnumber(), row.loginid(), row.jobtitle(), row.birthdate(), row.maritalstatus(), row.gender(), row.hiredate(), row.salariedflag(), row.vacationhours(), row.sickleavehours(), row.currentflag(), row.rowguid(), row.modifieddate(), row.organizationnode()});;
 }

@@ -22,7 +22,7 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `person.stateprovince` which has not been persisted yet */
 case class StateprovinceRowUnsaved(
   /** ISO standard state or province code. */
-  stateprovincecode: /* bpchar, max 3 chars */ String,
+  stateprovincecode: String,
   /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
    * Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]]
    */

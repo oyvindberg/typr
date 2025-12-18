@@ -5,29 +5,28 @@
  */
 package adventureworks.purchasing.vendor;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityFields;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.businessentity.BusinessentityRow;
 import adventureworks.public_.AccountNumber;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VendorFields extends FieldsExpr<VendorRow> {
-  record Impl(List<Path> _path) implements VendorFields, Relation<VendorFields, VendorRow> {
+  record Impl(List<Path> _path) implements VendorFields, RelationStructure<VendorFields, VendorRow> {
     @Override
     public IdField<BusinessentityId, VendorRow> businessentityid() {
       return new IdField<BusinessentityId, VendorRow>(_path, "businessentityid", VendorRow::businessentityid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
@@ -44,8 +43,8 @@ public interface VendorFields extends FieldsExpr<VendorRow> {
     };
 
     @Override
-    public Field<TypoShort, VendorRow> creditrating() {
-      return new Field<TypoShort, VendorRow>(_path, "creditrating", VendorRow::creditrating, Optional.empty(), Optional.of("int2"), (row, value) -> row.withCreditrating(value), TypoShort.pgType);
+    public Field<Short, VendorRow> creditrating() {
+      return new Field<Short, VendorRow>(_path, "creditrating", VendorRow::creditrating, Optional.empty(), Optional.of("int2"), (row, value) -> row.withCreditrating(value), PgTypes.int2);
     };
 
     @Override
@@ -59,28 +58,28 @@ public interface VendorFields extends FieldsExpr<VendorRow> {
     };
 
     @Override
-    public OptField</* max 1024 chars */ String, VendorRow> purchasingwebserviceurl() {
-      return new OptField</* max 1024 chars */ String, VendorRow>(_path, "purchasingwebserviceurl", VendorRow::purchasingwebserviceurl, Optional.empty(), Optional.empty(), (row, value) -> row.withPurchasingwebserviceurl(value), PgTypes.text);
+    public OptField<String, VendorRow> purchasingwebserviceurl() {
+      return new OptField<String, VendorRow>(_path, "purchasingwebserviceurl", VendorRow::purchasingwebserviceurl, Optional.empty(), Optional.empty(), (row, value) -> row.withPurchasingwebserviceurl(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoLocalDateTime, VendorRow> modifieddate() {
-      return new Field<TypoLocalDateTime, VendorRow>(_path, "modifieddate", VendorRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, VendorRow> modifieddate() {
+      return new Field<LocalDateTime, VendorRow>(_path, "modifieddate", VendorRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, VendorRow>> columns() {
-      return List.of(this.businessentityid(), this.accountnumber(), this.name(), this.creditrating(), this.preferredvendorstatus(), this.activeflag(), this.purchasingwebserviceurl(), this.modifieddate());
+      return java.util.List.of(this.businessentityid(), this.accountnumber(), this.name(), this.creditrating(), this.preferredvendorstatus(), this.activeflag(), this.purchasingwebserviceurl(), this.modifieddate());
     };
 
     @Override
-    public Relation<VendorFields, VendorRow> copy(List<Path> _path) {
+    public RelationStructure<VendorFields, VendorRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BusinessentityId, VendorRow> businessentityid();
@@ -89,7 +88,7 @@ public interface VendorFields extends FieldsExpr<VendorRow> {
 
   Field<Name, VendorRow> name();
 
-  Field<TypoShort, VendorRow> creditrating();
+  Field<Short, VendorRow> creditrating();
 
   Field<Flag, VendorRow> preferredvendorstatus();
 
@@ -97,10 +96,10 @@ public interface VendorFields extends FieldsExpr<VendorRow> {
 
   OptField</* max 1024 chars */ String, VendorRow> purchasingwebserviceurl();
 
-  Field<TypoLocalDateTime, VendorRow> modifieddate();
+  Field<LocalDateTime, VendorRow> modifieddate();
 
   default ForeignKey<BusinessentityFields, BusinessentityRow> fkPersonBusinessentity() {
-    return ForeignKey.<BusinessentityFields, BusinessentityRow>of("purchasing.FK_Vendor_BusinessEntity_BusinessEntityID").withColumnPair(businessentityid(), BusinessentityFields::businessentityid);
+    return ForeignKey.<BusinessentityFields, BusinessentityRow>of("purchasing.FK_Vendor_BusinessEntity_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), BusinessentityFields::businessentityid);
   };
 
   @Override

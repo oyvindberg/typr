@@ -5,12 +5,10 @@
  */
 package adventureworks.pr.w;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.scrapreason.ScrapreasonId;
 import adventureworks.production.workorder.WorkorderId;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -26,17 +24,17 @@ public record WViewRow(
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#orderqty()} */
   Integer orderqty,
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#scrappedqty()} */
-  TypoShort scrappedqty,
+  Short scrappedqty,
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#startdate()} */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#enddate()} */
-  Optional<TypoLocalDateTime> enddate,
+  LocalDateTime enddate,
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#duedate()} */
-  TypoLocalDateTime duedate,
+  LocalDateTime duedate,
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#scrapreasonid()} */
-  Optional<ScrapreasonId> scrapreasonid,
+  ScrapreasonId scrapreasonid,
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#workorderid()} */
   public WViewRow withId(WorkorderId id) {
@@ -59,34 +57,34 @@ public record WViewRow(
   };
 
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#scrappedqty()} */
-  public WViewRow withScrappedqty(TypoShort scrappedqty) {
+  public WViewRow withScrappedqty(Short scrappedqty) {
     return new WViewRow(id, workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#startdate()} */
-  public WViewRow withStartdate(TypoLocalDateTime startdate) {
+  public WViewRow withStartdate(LocalDateTime startdate) {
     return new WViewRow(id, workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#enddate()} */
-  public WViewRow withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public WViewRow withEnddate(LocalDateTime enddate) {
     return new WViewRow(id, workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#duedate()} */
-  public WViewRow withDuedate(TypoLocalDateTime duedate) {
+  public WViewRow withDuedate(LocalDateTime duedate) {
     return new WViewRow(id, workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#scrapreasonid()} */
-  public WViewRow withScrapreasonid(Optional<ScrapreasonId> scrapreasonid) {
+  public WViewRow withScrapreasonid(ScrapreasonId scrapreasonid) {
     return new WViewRow(id, workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.workorder.WorkorderRow#modifieddate()} */
-  public WViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public WViewRow withModifieddate(LocalDateTime modifieddate) {
     return new WViewRow(id, workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
-  static RowParser<WViewRow> _rowParser = RowParsers.of(WorkorderId.pgType, WorkorderId.pgType, ProductId.pgType, PgTypes.int4, TypoShort.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType, ScrapreasonId.pgType.opt(), TypoLocalDateTime.pgType, WViewRow::new, row -> new Object[]{row.id(), row.workorderid(), row.productid(), row.orderqty(), row.scrappedqty(), row.startdate(), row.enddate(), row.duedate(), row.scrapreasonid(), row.modifieddate()});;
+  static RowParser<WViewRow> _rowParser = RowParsers.of(WorkorderId.pgType, WorkorderId.pgType, ProductId.pgType, PgTypes.int4, PgTypes.int2, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp, ScrapreasonId.pgType, PgTypes.timestamp, WViewRow::new, row -> new Object[]{row.id(), row.workorderid(), row.productid(), row.orderqty(), row.scrappedqty(), row.startdate(), row.enddate(), row.duedate(), row.scrapreasonid(), row.modifieddate()});;
 }

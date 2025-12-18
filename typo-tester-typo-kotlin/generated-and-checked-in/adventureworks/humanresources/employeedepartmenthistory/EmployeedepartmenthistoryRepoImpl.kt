@@ -5,28 +5,26 @@
  */
 package adventureworks.humanresources.employeedepartmenthistory
 
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
 import java.sql.Connection
+import java.time.LocalDate
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
+import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class EmployeedepartmenthistoryRepoImpl() : EmployeedepartmenthistoryRepo {
   override fun delete(): DeleteBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow> = DeleteBuilder.of("\"humanresources\".\"employeedepartmenthistory\"", EmployeedepartmenthistoryFields.structure, Dialect.POSTGRESQL)
@@ -34,132 +32,47 @@ class EmployeedepartmenthistoryRepoImpl() : EmployeedepartmenthistoryRepo {
   override fun deleteById(
     compositeId: EmployeedepartmenthistoryId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "humanresources"."employeedepartmenthistory" where "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("""
-     AND "startdate" = 
-    """.trimMargin()),
-    TypoLocalDate.pgType.encode(compositeId.startdate),
-    typo.runtime.Fragment.lit("""
-     AND "departmentid" = 
-    """.trimMargin()),
-    DepartmentId.pgType.encode(compositeId.departmentid),
-    typo.runtime.Fragment.lit("""
-     AND "shiftid" = 
-    """.trimMargin()),
-    ShiftId.pgType.encode(compositeId.shiftid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"humanresources\".\"employeedepartmenthistory\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"startdate\" = "), Fragment.encode(PgTypes.date, compositeId.startdate), Fragment.lit(" AND \"departmentid\" = "), Fragment.encode(DepartmentId.pgType, compositeId.departmentid), Fragment.lit(" AND \"shiftid\" = "), Fragment.encode(ShiftId.pgType, compositeId.shiftid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     compositeIds: Array<EmployeedepartmenthistoryId>,
     c: Connection
   ): Int {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, EmployeedepartmenthistoryId::businessentityid, BusinessentityId::class.java)
-    val startdate: Array<TypoLocalDate> = arrayMap.map(compositeIds, EmployeedepartmenthistoryId::startdate, TypoLocalDate::class.java)
+    val startdate: Array<LocalDate> = arrayMap.map(compositeIds, EmployeedepartmenthistoryId::startdate, LocalDate::class.java)
     val departmentid: Array<DepartmentId> = arrayMap.map(compositeIds, EmployeedepartmenthistoryId::departmentid, DepartmentId::class.java)
     val shiftid: Array<ShiftId> = arrayMap.map(compositeIds, EmployeedepartmenthistoryId::shiftid, ShiftId::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        delete
-        from "humanresources"."employeedepartmenthistory"
-        where ("businessentityid", "startdate", "departmentid", "shiftid")
-        in (select unnest(""".trimMargin()),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      TypoLocalDate.pgTypeArray.encode(startdate),
-      typo.runtime.Fragment.lit("::date[]), unnest("),
-      DepartmentId.pgTypeArray.encode(departmentid),
-      typo.runtime.Fragment.lit("::int2[]), unnest("),
-      ShiftId.pgTypeArray.encode(shiftid),
-      typo.runtime.Fragment.lit("""
-      ::int2[]))
-
-      """.trimMargin())
-    ).update().runUnchecked(c)
+    return interpolate(Fragment.lit("delete\nfrom \"humanresources\".\"employeedepartmenthistory\"\nwhere (\"businessentityid\", \"startdate\", \"departmentid\", \"shiftid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.dateArray, startdate), Fragment.lit("::date[]), unnest("), Fragment.encode(DepartmentId.pgTypeArray, departmentid), Fragment.lit("::int2[]), unnest("), Fragment.encode(ShiftId.pgTypeArray, shiftid), Fragment.lit("::int2[]))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: EmployeedepartmenthistoryRow,
     c: Connection
-  ): EmployeedepartmenthistoryRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    DepartmentId.pgType.encode(unsaved.departmentid),
-    typo.runtime.Fragment.lit("::int2, "),
-    ShiftId.pgType.encode(unsaved.shiftid),
-    typo.runtime.Fragment.lit("::int2, "),
-    TypoLocalDate.pgType.encode(unsaved.startdate),
-    typo.runtime.Fragment.lit("::date, "),
-    TypoLocalDate.pgType.opt().encode(unsaved.enddate),
-    typo.runtime.Fragment.lit("::date, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
-    """.trimMargin())
-  )
+  ): EmployeedepartmenthistoryRow = interpolate(Fragment.lit("insert into \"humanresources\".\"employeedepartmenthistory\"(\"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(DepartmentId.pgType, unsaved.departmentid), Fragment.lit("::int2, "), Fragment.encode(ShiftId.pgType, unsaved.shiftid), Fragment.lit("::int2, "), Fragment.encode(PgTypes.date, unsaved.startdate), Fragment.lit("::date, "), Fragment.encode(PgTypes.date.nullable(), unsaved.enddate), Fragment.lit("::date, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\"\n"))
     .updateReturning(EmployeedepartmenthistoryRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: EmployeedepartmenthistoryRowUnsaved,
     c: Connection
   ): EmployeedepartmenthistoryRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"businessentityid\""))
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"departmentid\""))
-    values.add(interpolate(
-      DepartmentId.pgType.encode(unsaved.departmentid),
-      typo.runtime.Fragment.lit("::int2")
-    ))
+    values.add(interpolate(Fragment.encode(DepartmentId.pgType, unsaved.departmentid), Fragment.lit("::int2")))
     columns.add(Fragment.lit("\"shiftid\""))
-    values.add(interpolate(
-      ShiftId.pgType.encode(unsaved.shiftid),
-      typo.runtime.Fragment.lit("::int2")
-    ))
+    values.add(interpolate(Fragment.encode(ShiftId.pgType, unsaved.shiftid), Fragment.lit("::int2")))
     columns.add(Fragment.lit("\"startdate\""))
-    values.add(interpolate(
-      TypoLocalDate.pgType.encode(unsaved.startdate),
-      typo.runtime.Fragment.lit("::date")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.date, unsaved.startdate), Fragment.lit("::date")))
     columns.add(Fragment.lit("\"enddate\""))
-    values.add(interpolate(
-      TypoLocalDate.pgType.opt().encode(unsaved.enddate),
-      typo.runtime.Fragment.lit("::date")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.date.nullable(), unsaved.enddate), Fragment.lit("::date")))
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employeedepartmenthistory"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"humanresources\".\"employeedepartmenthistory\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\"\n"))
     return q.updateReturning(EmployeedepartmenthistoryRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -167,76 +80,33 @@ class EmployeedepartmenthistoryRepoImpl() : EmployeedepartmenthistoryRepo {
     unsaved: MutableIterator<EmployeedepartmenthistoryRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, EmployeedepartmenthistoryRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"humanresources\".\"employeedepartmenthistory\"(\"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, EmployeedepartmenthistoryRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<EmployeedepartmenthistoryRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, EmployeedepartmenthistoryRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"humanresources\".\"employeedepartmenthistory\"(\"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, EmployeedepartmenthistoryRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow> = SelectBuilder.of("\"humanresources\".\"employeedepartmenthistory\"", EmployeedepartmenthistoryFields.structure, EmployeedepartmenthistoryRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<EmployeedepartmenthistoryRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
-    from "humanresources"."employeedepartmenthistory"
-  """.trimMargin())).query(EmployeedepartmenthistoryRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<EmployeedepartmenthistoryRow> = interpolate(Fragment.lit("select \"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\"\nfrom \"humanresources\".\"employeedepartmenthistory\"\n")).query(EmployeedepartmenthistoryRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     compositeId: EmployeedepartmenthistoryId,
     c: Connection
-  ): Optional<EmployeedepartmenthistoryRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
-      from "humanresources"."employeedepartmenthistory"
-      where "businessentityid" = """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("""
-     AND "startdate" = 
-    """.trimMargin()),
-    TypoLocalDate.pgType.encode(compositeId.startdate),
-    typo.runtime.Fragment.lit("""
-     AND "departmentid" = 
-    """.trimMargin()),
-    DepartmentId.pgType.encode(compositeId.departmentid),
-    typo.runtime.Fragment.lit("""
-     AND "shiftid" = 
-    """.trimMargin()),
-    ShiftId.pgType.encode(compositeId.shiftid),
-    typo.runtime.Fragment.lit("")
-  ).query(EmployeedepartmenthistoryRow._rowParser.first()).runUnchecked(c)
+  ): EmployeedepartmenthistoryRow? = interpolate(Fragment.lit("select \"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\"\nfrom \"humanresources\".\"employeedepartmenthistory\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"startdate\" = "), Fragment.encode(PgTypes.date, compositeId.startdate), Fragment.lit(" AND \"departmentid\" = "), Fragment.encode(DepartmentId.pgType, compositeId.departmentid), Fragment.lit(" AND \"shiftid\" = "), Fragment.encode(ShiftId.pgType, compositeId.shiftid), Fragment.lit("")).query(EmployeedepartmenthistoryRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     compositeIds: Array<EmployeedepartmenthistoryId>,
     c: Connection
   ): List<EmployeedepartmenthistoryRow> {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, EmployeedepartmenthistoryId::businessentityid, BusinessentityId::class.java)
-    val startdate: Array<TypoLocalDate> = arrayMap.map(compositeIds, EmployeedepartmenthistoryId::startdate, TypoLocalDate::class.java)
+    val startdate: Array<LocalDate> = arrayMap.map(compositeIds, EmployeedepartmenthistoryId::startdate, LocalDate::class.java)
     val departmentid: Array<DepartmentId> = arrayMap.map(compositeIds, EmployeedepartmenthistoryId::departmentid, DepartmentId::class.java)
     val shiftid: Array<ShiftId> = arrayMap.map(compositeIds, EmployeedepartmenthistoryId::shiftid, ShiftId::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        select "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text
-        from "humanresources"."employeedepartmenthistory"
-        where ("businessentityid", "startdate", "departmentid", "shiftid")
-        in (select unnest(""".trimMargin()),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      TypoLocalDate.pgTypeArray.encode(startdate),
-      typo.runtime.Fragment.lit("::date[]), unnest("),
-      DepartmentId.pgTypeArray.encode(departmentid),
-      typo.runtime.Fragment.lit("::int2[]), unnest("),
-      ShiftId.pgTypeArray.encode(shiftid),
-      typo.runtime.Fragment.lit("""
-      ::int2[]))
-
-      """.trimMargin())
-    ).query(EmployeedepartmenthistoryRow._rowParser.all()).runUnchecked(c)
+    return interpolate(Fragment.lit("select \"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\"\nfrom \"humanresources\".\"employeedepartmenthistory\"\nwhere (\"businessentityid\", \"startdate\", \"departmentid\", \"shiftid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.dateArray, startdate), Fragment.lit("::date[]), unnest("), Fragment.encode(DepartmentId.pgTypeArray, departmentid), Fragment.lit("::int2[]), unnest("), Fragment.encode(ShiftId.pgTypeArray, shiftid), Fragment.lit("::int2[]))\n")).query(EmployeedepartmenthistoryRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(
@@ -245,87 +115,32 @@ class EmployeedepartmenthistoryRepoImpl() : EmployeedepartmenthistoryRepo {
   ): Map<EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow> {
     val ret: MutableMap<EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow> = mutableMapOf<EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow>()
     selectByIds(compositeIds, c).forEach({ row -> ret.put(row.compositeId(), row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow> = UpdateBuilder.of("\"humanresources\".\"employeedepartmenthistory\"", EmployeedepartmenthistoryFields.structure, EmployeedepartmenthistoryRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow> = UpdateBuilder.of("\"humanresources\".\"employeedepartmenthistory\"", EmployeedepartmenthistoryFields.structure, EmployeedepartmenthistoryRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: EmployeedepartmenthistoryRow,
     c: Connection
   ): Boolean {
     val compositeId: EmployeedepartmenthistoryId = row.compositeId()
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "humanresources"."employeedepartmenthistory"
-        set "enddate" = """.trimMargin()),
-      TypoLocalDate.pgType.opt().encode(row.enddate),
-      typo.runtime.Fragment.lit("""
-        ::date,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "businessentityid" = """.trimMargin()),
-      BusinessentityId.pgType.encode(compositeId.businessentityid),
-      typo.runtime.Fragment.lit("""
-       AND "startdate" = 
-      """.trimMargin()),
-      TypoLocalDate.pgType.encode(compositeId.startdate),
-      typo.runtime.Fragment.lit("""
-       AND "departmentid" = 
-      """.trimMargin()),
-      DepartmentId.pgType.encode(compositeId.departmentid),
-      typo.runtime.Fragment.lit("""
-       AND "shiftid" = 
-      """.trimMargin()),
-      ShiftId.pgType.encode(compositeId.shiftid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"humanresources\".\"employeedepartmenthistory\"\nset \"enddate\" = "), Fragment.encode(PgTypes.date.nullable(), row.enddate), Fragment.lit("::date,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"startdate\" = "), Fragment.encode(PgTypes.date, compositeId.startdate), Fragment.lit(" AND \"departmentid\" = "), Fragment.encode(DepartmentId.pgType, compositeId.departmentid), Fragment.lit(" AND \"shiftid\" = "), Fragment.encode(ShiftId.pgType, compositeId.shiftid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: EmployeedepartmenthistoryRow,
     c: Connection
-  ): EmployeedepartmenthistoryRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    DepartmentId.pgType.encode(unsaved.departmentid),
-    typo.runtime.Fragment.lit("::int2, "),
-    ShiftId.pgType.encode(unsaved.shiftid),
-    typo.runtime.Fragment.lit("::int2, "),
-    TypoLocalDate.pgType.encode(unsaved.startdate),
-    typo.runtime.Fragment.lit("::date, "),
-    TypoLocalDate.pgType.opt().encode(unsaved.enddate),
-    typo.runtime.Fragment.lit("::date, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("businessentityid", "startdate", "departmentid", "shiftid")
-      do update set
-        "enddate" = EXCLUDED."enddate",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text""".trimMargin())
-  )
+  ): EmployeedepartmenthistoryRow = interpolate(Fragment.lit("insert into \"humanresources\".\"employeedepartmenthistory\"(\"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(DepartmentId.pgType, unsaved.departmentid), Fragment.lit("::int2, "), Fragment.encode(ShiftId.pgType, unsaved.shiftid), Fragment.lit("::int2, "), Fragment.encode(PgTypes.date, unsaved.startdate), Fragment.lit("::date, "), Fragment.encode(PgTypes.date.nullable(), unsaved.enddate), Fragment.lit("::date, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"businessentityid\", \"startdate\", \"departmentid\", \"shiftid\")\ndo update set\n  \"enddate\" = EXCLUDED.\"enddate\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\""))
     .updateReturning(EmployeedepartmenthistoryRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<EmployeedepartmenthistoryRow>,
     c: Connection
-  ): List<EmployeedepartmenthistoryRow> = interpolate(typo.runtime.Fragment.lit("""
-                                            insert into "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate")
-                                            values (?::int4, ?::int2, ?::int2, ?::date, ?::date, ?::timestamp)
-                                            on conflict ("businessentityid", "startdate", "departmentid", "shiftid")
-                                            do update set
-                                              "enddate" = EXCLUDED."enddate",
-                                            "modifieddate" = EXCLUDED."modifieddate"
-                                            returning "businessentityid", "departmentid", "shiftid", "startdate"::text, "enddate"::text, "modifieddate"::text""".trimMargin()))
+  ): List<EmployeedepartmenthistoryRow> = interpolate(Fragment.lit("insert into \"humanresources\".\"employeedepartmenthistory\"(\"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\")\nvalues (?::int4, ?::int2, ?::int2, ?::date, ?::date, ?::timestamp)\non conflict (\"businessentityid\", \"startdate\", \"departmentid\", \"shiftid\")\ndo update set\n  \"enddate\" = EXCLUDED.\"enddate\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\""))
     .updateManyReturning(EmployeedepartmenthistoryRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -333,20 +148,8 @@ class EmployeedepartmenthistoryRepoImpl() : EmployeedepartmenthistoryRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table employeedepartmenthistory_TEMP (like "humanresources"."employeedepartmenthistory") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy employeedepartmenthistory_TEMP("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, EmployeedepartmenthistoryRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employeedepartmenthistory"("businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate")
-      select * from employeedepartmenthistory_TEMP
-      on conflict ("businessentityid", "startdate", "departmentid", "shiftid")
-      do update set
-        "enddate" = EXCLUDED."enddate",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table employeedepartmenthistory_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table employeedepartmenthistory_TEMP (like \"humanresources\".\"employeedepartmenthistory\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy employeedepartmenthistory_TEMP(\"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\") from stdin", batchSize, unsaved, c, EmployeedepartmenthistoryRow.pgText)
+    return interpolate(Fragment.lit("insert into \"humanresources\".\"employeedepartmenthistory\"(\"businessentityid\", \"departmentid\", \"shiftid\", \"startdate\", \"enddate\", \"modifieddate\")\nselect * from employeedepartmenthistory_TEMP\non conflict (\"businessentityid\", \"startdate\", \"departmentid\", \"shiftid\")\ndo update set\n  \"enddate\" = EXCLUDED.\"enddate\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table employeedepartmenthistory_TEMP;")).update().runUnchecked(c)
   }
 }

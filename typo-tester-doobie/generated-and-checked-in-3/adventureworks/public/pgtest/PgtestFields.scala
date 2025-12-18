@@ -32,16 +32,16 @@ import adventureworks.customtypes.TypoXml
 import adventureworks.public.Mydomain
 import adventureworks.public.Myenum
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait PgtestFields {
   def bool: Field[Boolean, PgtestRow]
   def box: Field[TypoBox, PgtestRow]
-  def bpchar: Field[/* bpchar, max 3 chars */ String, PgtestRow]
+  def bpchar: Field[String, PgtestRow]
   def bytea: Field[TypoBytea, PgtestRow]
-  def char: Field[/* bpchar, max 1 chars */ String, PgtestRow]
+  def char: Field[String, PgtestRow]
   def circle: Field[TypoCircle, PgtestRow]
   def date: Field[TypoLocalDate, PgtestRow]
   def float4: Field[Float, PgtestRow]
@@ -110,18 +110,18 @@ trait PgtestFields {
 }
 
 object PgtestFields {
-  lazy val structure: Relation[PgtestFields, PgtestRow] =
+  lazy val structure: RelationStructure[PgtestFields, PgtestRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PgtestFields, PgtestRow] {
+    extends RelationStructure[PgtestFields, PgtestRow] {
 
     override lazy val fields: PgtestFields = new PgtestFields {
       override def bool = Field[Boolean, PgtestRow](_path, "bool", None, None, x => x.bool, (row, value) => row.copy(bool = value))
       override def box = Field[TypoBox, PgtestRow](_path, "box", None, Some("box"), x => x.box, (row, value) => row.copy(box = value))
-      override def bpchar = Field[/* bpchar, max 3 chars */ String, PgtestRow](_path, "bpchar", None, Some("bpchar"), x => x.bpchar, (row, value) => row.copy(bpchar = value))
+      override def bpchar = Field[String, PgtestRow](_path, "bpchar", None, Some("bpchar"), x => x.bpchar, (row, value) => row.copy(bpchar = value))
       override def bytea = Field[TypoBytea, PgtestRow](_path, "bytea", None, Some("bytea"), x => x.bytea, (row, value) => row.copy(bytea = value))
-      override def char = Field[/* bpchar, max 1 chars */ String, PgtestRow](_path, "char", None, Some("bpchar"), x => x.char, (row, value) => row.copy(char = value))
+      override def char = Field[String, PgtestRow](_path, "char", None, Some("bpchar"), x => x.char, (row, value) => row.copy(char = value))
       override def circle = Field[TypoCircle, PgtestRow](_path, "circle", None, Some("circle"), x => x.circle, (row, value) => row.copy(circle = value))
       override def date = Field[TypoLocalDate, PgtestRow](_path, "date", Some("text"), Some("date"), x => x.date, (row, value) => row.copy(date = value))
       override def float4 = Field[Float, PgtestRow](_path, "float4", None, Some("float4"), x => x.float4, (row, value) => row.copy(float4 = value))

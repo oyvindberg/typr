@@ -27,13 +27,13 @@ case class SoViewRow(
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.specialofferid]] */
   specialofferid: SpecialofferId,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.description]] */
-  description: /* max 255 chars */ String,
+  description: String,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.discountpct]] */
   discountpct: BigDecimal,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.type]] */
-  `type`: /* max 50 chars */ String,
+  `type`: String,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.category]] */
-  category: /* max 50 chars */ String,
+  category: String,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.enddate]] */
@@ -41,7 +41,7 @@ case class SoViewRow(
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.minqty]] */
   minqty: Int,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.maxqty]] */
-  maxqty: Option[Int],
+  maxqty: Int,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.sales.specialoffer.SpecialofferRow.modifieddate]] */
@@ -62,7 +62,7 @@ object SoViewRow {
             startdate = json.\("startdate").as(TypoLocalDateTime.reads),
             enddate = json.\("enddate").as(TypoLocalDateTime.reads),
             minqty = json.\("minqty").as(Reads.IntReads),
-            maxqty = json.\("maxqty").toOption.map(_.as(Reads.IntReads)),
+            maxqty = json.\("maxqty").as(Reads.IntReads),
             rowguid = json.\("rowguid").as(TypoUUID.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
@@ -84,7 +84,7 @@ object SoViewRow {
           startdate = row(idx + 6)(using TypoLocalDateTime.column),
           enddate = row(idx + 7)(using TypoLocalDateTime.column),
           minqty = row(idx + 8)(using Column.columnToInt),
-          maxqty = row(idx + 9)(using Column.columnToOption(using Column.columnToInt)),
+          maxqty = row(idx + 9)(using Column.columnToInt),
           rowguid = row(idx + 10)(using TypoUUID.column),
           modifieddate = row(idx + 11)(using TypoLocalDateTime.column)
         )
@@ -104,7 +104,7 @@ object SoViewRow {
         "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
         "enddate" -> TypoLocalDateTime.writes.writes(o.enddate),
         "minqty" -> Writes.IntWrites.writes(o.minqty),
-        "maxqty" -> Writes.OptionWrites(using Writes.IntWrites).writes(o.maxqty),
+        "maxqty" -> Writes.IntWrites.writes(o.maxqty),
         "rowguid" -> TypoUUID.writes.writes(o.rowguid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))

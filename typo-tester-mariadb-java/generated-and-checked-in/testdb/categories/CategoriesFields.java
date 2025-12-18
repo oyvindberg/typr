@@ -10,16 +10,16 @@ import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface CategoriesFields extends FieldsExpr<CategoriesRow> {
-  record Impl(List<Path> _path) implements CategoriesFields, Relation<CategoriesFields, CategoriesRow> {
+  record Impl(List<Path> _path) implements CategoriesFields, RelationStructure<CategoriesFields, CategoriesRow> {
     @Override
     public IdField<CategoriesId, CategoriesRow> categoryId() {
       return new IdField<CategoriesId, CategoriesRow>(_path, "category_id", CategoriesRow::categoryId, Optional.empty(), Optional.empty(), (row, value) -> row.withCategoryId(value), CategoriesId.pgType);
@@ -67,17 +67,17 @@ public interface CategoriesFields extends FieldsExpr<CategoriesRow> {
 
     @Override
     public List<FieldLike<?, CategoriesRow>> columns() {
-      return List.of(this.categoryId(), this.parentId(), this.name(), this.slug(), this.description(), this.imageUrl(), this.sortOrder(), this.isVisible(), this.metadata());
+      return java.util.List.of(this.categoryId(), this.parentId(), this.name(), this.slug(), this.description(), this.imageUrl(), this.sortOrder(), this.isVisible(), this.metadata());
     };
 
     @Override
-    public Relation<CategoriesFields, CategoriesRow> copy(List<Path> _path) {
+    public RelationStructure<CategoriesFields, CategoriesRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<CategoriesId, CategoriesRow> categoryId();
@@ -99,7 +99,7 @@ public interface CategoriesFields extends FieldsExpr<CategoriesRow> {
   OptField<String, CategoriesRow> metadata();
 
   default ForeignKey<CategoriesFields, CategoriesRow> fkCategories() {
-    return ForeignKey.<CategoriesFields, CategoriesRow>of("fk_category_parent").withColumnPair(parentId(), CategoriesFields::categoryId);
+    return ForeignKey.<CategoriesFields, CategoriesRow>of("fk_category_parent").<CategoriesId>withColumnPair(parentId(), CategoriesFields::categoryId);
   };
 
   @Override

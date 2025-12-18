@@ -6,88 +6,87 @@
 package adventureworks.production.transactionhistory
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface TransactionhistoryRepo {
-  fun delete(): DeleteBuilder<TransactionhistoryFields, TransactionhistoryRow>
+  abstract fun delete(): DeleteBuilder<TransactionhistoryFields, TransactionhistoryRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     transactionid: TransactionhistoryId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     transactionids: Array<TransactionhistoryId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: TransactionhistoryRow,
     c: Connection
   ): TransactionhistoryRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: TransactionhistoryRowUnsaved,
     c: Connection
   ): TransactionhistoryRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<TransactionhistoryRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<TransactionhistoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<TransactionhistoryFields, TransactionhistoryRow>
+  abstract fun select(): SelectBuilder<TransactionhistoryFields, TransactionhistoryRow>
 
-  fun selectAll(c: Connection): List<TransactionhistoryRow>
+  abstract fun selectAll(c: Connection): List<TransactionhistoryRow>
 
-  fun selectById(
+  abstract fun selectById(
     transactionid: TransactionhistoryId,
     c: Connection
-  ): Optional<TransactionhistoryRow>
+  ): TransactionhistoryRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     transactionids: Array<TransactionhistoryId>,
     c: Connection
   ): List<TransactionhistoryRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     transactionids: Array<TransactionhistoryId>,
     c: Connection
   ): Map<TransactionhistoryId, TransactionhistoryRow>
 
-  fun update(): UpdateBuilder<TransactionhistoryFields, TransactionhistoryRow>
+  abstract fun update(): UpdateBuilder<TransactionhistoryFields, TransactionhistoryRow>
 
-  fun update(
+  abstract fun update(
     row: TransactionhistoryRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: TransactionhistoryRow,
     c: Connection
   ): TransactionhistoryRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<TransactionhistoryRow>,
     c: Connection
   ): List<TransactionhistoryRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<TransactionhistoryRow>,
     batchSize: Int,
     c: Connection

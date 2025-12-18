@@ -16,15 +16,15 @@ import adventureworks.public.NameStyle
 import adventureworks.userdefined.FirstName
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PersonFields {
   def businessentityid: IdField[BusinessentityId, PersonRow]
-  def persontype: Field[/* bpchar, max 2 chars */ String, PersonRow]
+  def persontype: Field[String, PersonRow]
   def namestyle: Field[NameStyle, PersonRow]
   def title: OptField[/* max 8 chars */ String, PersonRow]
   def firstname: Field[/* user-picked */ FirstName, PersonRow]
@@ -42,15 +42,15 @@ trait PersonFields {
 }
 
 object PersonFields {
-  lazy val structure: Relation[PersonFields, PersonRow] =
+  lazy val structure: RelationStructure[PersonFields, PersonRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PersonFields, PersonRow] {
+    extends RelationStructure[PersonFields, PersonRow] {
 
     override lazy val fields: PersonFields = new PersonFields {
       override def businessentityid = IdField[BusinessentityId, PersonRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
-      override def persontype = Field[/* bpchar, max 2 chars */ String, PersonRow](_path, "persontype", None, Some("bpchar"), x => x.persontype, (row, value) => row.copy(persontype = value))
+      override def persontype = Field[String, PersonRow](_path, "persontype", None, Some("bpchar"), x => x.persontype, (row, value) => row.copy(persontype = value))
       override def namestyle = Field[NameStyle, PersonRow](_path, "namestyle", None, Some("bool"), x => x.namestyle, (row, value) => row.copy(namestyle = value))
       override def title = OptField[/* max 8 chars */ String, PersonRow](_path, "title", None, None, x => x.title, (row, value) => row.copy(title = value))
       override def firstname = Field[/* user-picked */ FirstName, PersonRow](_path, "firstname", None, Some("varchar"), x => x.firstname, (row, value) => row.copy(firstname = value))

@@ -6,7 +6,8 @@
 package adventureworks.sales.salestaxrate
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class SalestaxrateId(@JsonValue val value: Int) {
       Bijection.of(SalestaxrateId::value, ::SalestaxrateId)
 
     val pgType: PgType<SalestaxrateId> =
-      PgTypes.int4.bimap(::SalestaxrateId, SalestaxrateId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::SalestaxrateId, SalestaxrateId::value)
 
     val pgTypeArray: PgType<Array<SalestaxrateId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::SalestaxrateId, SalestaxrateId::class.java) }, { xs -> arrayMap.map(xs, SalestaxrateId::value, Int::class.javaObjectType) })

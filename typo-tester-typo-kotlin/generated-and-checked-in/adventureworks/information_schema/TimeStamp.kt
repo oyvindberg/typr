@@ -5,24 +5,25 @@
  */
 package adventureworks.information_schema
 
-import adventureworks.customtypes.TypoInstant
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import java.time.Instant
+import typo.kotlindsl.Bijection
 import typo.runtime.PgType
+import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 
 /** Domain `information_schema.time_stamp`
   * No constraint
   */
-data class TimeStamp(@JsonValue val value: TypoInstant) {
+data class TimeStamp(@JsonValue val value: Instant) {
   companion object {
-    val bijection: Bijection<TimeStamp, TypoInstant> =
+    val bijection: Bijection<TimeStamp, Instant> =
       Bijection.of(TimeStamp::value, ::TimeStamp)
 
     val pgType: PgType<TimeStamp> =
-      TypoInstant.pgType.bimap(::TimeStamp, TimeStamp::value).renamed("\"information_schema\".\"time_stamp\"")
+      PgTypes.timestamptz.bimap(::TimeStamp, TimeStamp::value).renamed("\"information_schema\".\"time_stamp\"")
 
     val pgTypeArray: PgType<Array<TimeStamp>> =
-      TypoInstant.pgTypeArray.bimap({ xs -> arrayMap.map(xs, ::TimeStamp, TimeStamp::class.java) }, { xs -> arrayMap.map(xs, TimeStamp::value, TypoInstant::class.java) }).renamed("\"information_schema\".\"time_stamp\"[]")
+      PgTypes.timestamptzArray.bimap({ xs -> arrayMap.map(xs, ::TimeStamp, TimeStamp::class.java) }, { xs -> arrayMap.map(xs, TimeStamp::value, Instant::class.java) }).renamed("\"information_schema\".\"time_stamp\"[]")
   }
 }

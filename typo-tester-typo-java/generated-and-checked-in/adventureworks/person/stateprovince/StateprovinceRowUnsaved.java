@@ -7,19 +7,19 @@ package adventureworks.person.stateprovince;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
 import adventureworks.sales.salesterritory.SalesterritoryId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `person.stateprovince` which has not been persisted yet */
 public record StateprovinceRowUnsaved(
   /** ISO standard state or province code. */
-  /* bpchar, max 3 chars */ String stateprovincecode,
+  String stateprovincecode,
   /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
     * Points to {@link adventureworks.person.countryregion.CountryregionRow#countryregioncode()}
     */
@@ -39,13 +39,13 @@ public record StateprovinceRowUnsaved(
     */
   Defaulted<Flag> isonlystateprovinceflag,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public StateprovinceRowUnsaved(
     /** ISO standard state or province code. */
-    /* bpchar, max 3 chars */ String stateprovincecode,
+    String stateprovincecode,
     /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
       * Points to {@link adventureworks.person.countryregion.CountryregionRow#countryregioncode()}
       */
@@ -61,7 +61,7 @@ public record StateprovinceRowUnsaved(
   };
 
   /** ISO standard state or province code. */
-  public StateprovinceRowUnsaved withStateprovincecode(/* bpchar, max 3 chars */ String stateprovincecode) {
+  public StateprovinceRowUnsaved withStateprovincecode(String stateprovincecode) {
     return new StateprovinceRowUnsaved(stateprovincecode, countryregioncode, name, territoryid, stateprovinceid, isonlystateprovinceflag, rowguid, modifieddate);
   };
 
@@ -99,12 +99,12 @@ public record StateprovinceRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public StateprovinceRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public StateprovinceRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new StateprovinceRowUnsaved(stateprovincecode, countryregioncode, name, territoryid, stateprovinceid, isonlystateprovinceflag, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public StateprovinceRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public StateprovinceRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new StateprovinceRowUnsaved(stateprovincecode, countryregioncode, name, territoryid, stateprovinceid, isonlystateprovinceflag, rowguid, modifieddate);
   };
 
@@ -122,16 +122,16 @@ public record StateprovinceRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.isonlystateprovinceflag, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public StateprovinceRow toRow(
     java.util.function.Supplier<StateprovinceId> stateprovinceidDefault,
     java.util.function.Supplier<Flag> isonlystateprovinceflagDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new StateprovinceRow(stateprovinceid.getOrElse(stateprovinceidDefault), stateprovincecode, countryregioncode, isonlystateprovinceflag.getOrElse(isonlystateprovinceflagDefault), name, territoryid, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

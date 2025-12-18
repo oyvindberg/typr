@@ -6,17 +6,21 @@
 package testdb.mariatest_spatial_null
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.MariaType
-import typo.runtime.MariaTypes
 
 /** Type for the primary key of table `mariatest_spatial_null` */
 data class MariatestSpatialNullId(@JsonValue val value: Int) {
+  override fun toString(): kotlin.String {
+    return value.toString()
+  }
+
   companion object {
     val bijection: Bijection<MariatestSpatialNullId, Int> =
       Bijection.of(MariatestSpatialNullId::value, ::MariatestSpatialNullId)
 
     val pgType: MariaType<MariatestSpatialNullId> =
-      MariaTypes.int_.bimap(::MariatestSpatialNullId, MariatestSpatialNullId::value)
+      KotlinDbTypes.MariaTypes.int_.bimap(::MariatestSpatialNullId, MariatestSpatialNullId::value)
   }
 }

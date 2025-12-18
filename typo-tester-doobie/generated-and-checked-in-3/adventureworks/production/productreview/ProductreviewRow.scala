@@ -36,7 +36,7 @@ case class ProductreviewRow(
    */
   reviewdate: TypoLocalDateTime,
   /** Reviewer's e-mail address. */
-  emailaddress: /* max 50 chars */ String,
+  emailaddress: String,
   /** Product rating given by the reviewer. Scale is 1 to 5 with 5 as the highest rating.
    * Constraint CK_ProductReview_Rating affecting columns rating: (((rating >= 1) AND (rating <= 5)))
    */
@@ -67,9 +67,9 @@ case class ProductreviewRow(
 }
 
 object ProductreviewRow {
-  given decoder: Decoder[ProductreviewRow] = Decoder.forProduct8[ProductreviewRow, ProductreviewId, ProductId, Name, TypoLocalDateTime, /* max 50 chars */ String, Int, Option[/* max 3850 chars */ String], TypoLocalDateTime]("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")(ProductreviewRow.apply)(using ProductreviewId.decoder, ProductId.decoder, Name.decoder, TypoLocalDateTime.decoder, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeOption(using Decoder.decodeString), TypoLocalDateTime.decoder)
+  given decoder: Decoder[ProductreviewRow] = Decoder.forProduct8[ProductreviewRow, ProductreviewId, ProductId, Name, TypoLocalDateTime, String, Int, Option[/* max 3850 chars */ String], TypoLocalDateTime]("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")(ProductreviewRow.apply)(using ProductreviewId.decoder, ProductId.decoder, Name.decoder, TypoLocalDateTime.decoder, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeOption(using Decoder.decodeString), TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[ProductreviewRow] = Encoder.forProduct8[ProductreviewRow, ProductreviewId, ProductId, Name, TypoLocalDateTime, /* max 50 chars */ String, Int, Option[/* max 3850 chars */ String], TypoLocalDateTime]("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")(x => (x.productreviewid, x.productid, x.reviewername, x.reviewdate, x.emailaddress, x.rating, x.comments, x.modifieddate))(using ProductreviewId.encoder, ProductId.encoder, Name.encoder, TypoLocalDateTime.encoder, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeOption(using Encoder.encodeString), TypoLocalDateTime.encoder)
+  given encoder: Encoder[ProductreviewRow] = Encoder.forProduct8[ProductreviewRow, ProductreviewId, ProductId, Name, TypoLocalDateTime, String, Int, Option[/* max 3850 chars */ String], TypoLocalDateTime]("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")(x => (x.productreviewid, x.productid, x.reviewername, x.reviewdate, x.emailaddress, x.rating, x.comments, x.modifieddate))(using ProductreviewId.encoder, ProductId.encoder, Name.encoder, TypoLocalDateTime.encoder, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeOption(using Encoder.encodeString), TypoLocalDateTime.encoder)
 
   given pgText: Text[ProductreviewRow] = {
     Text.instance[ProductreviewRow]{ (row, sb) =>
@@ -107,7 +107,7 @@ object ProductreviewRow {
             productid = arr(1).asInstanceOf[ProductId],
             reviewername = arr(2).asInstanceOf[Name],
             reviewdate = arr(3).asInstanceOf[TypoLocalDateTime],
-            emailaddress = arr(4).asInstanceOf[/* max 50 chars */ String],
+            emailaddress = arr(4).asInstanceOf[String],
             rating = arr(5).asInstanceOf[Int],
             comments = arr(6).asInstanceOf[Option[/* max 3850 chars */ String]],
             modifieddate = arr(7).asInstanceOf[TypoLocalDateTime]

@@ -18,14 +18,14 @@ import typo.data.maria.Inet6;
 import typo.data.maria.MariaSet;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface MariatestnullFields extends FieldsExpr<MariatestnullRow> {
-  record Impl(List<Path> _path) implements MariatestnullFields, Relation<MariatestnullFields, MariatestnullRow> {
+  record Impl(List<Path> _path) implements MariatestnullFields, RelationStructure<MariatestnullFields, MariatestnullRow> {
     @Override
     public OptField<Byte, MariatestnullRow> tinyintCol() {
       return new OptField<Byte, MariatestnullRow>(_path, "tinyint_col", MariatestnullRow::tinyintCol, Optional.empty(), Optional.empty(), (row, value) -> row.withTinyintCol(value), MariaTypes.tinyint);
@@ -78,12 +78,12 @@ public interface MariatestnullFields extends FieldsExpr<MariatestnullRow> {
 
     @Override
     public OptField<BigDecimal, MariatestnullRow> decimalCol() {
-      return new OptField<BigDecimal, MariatestnullRow>(_path, "decimal_col", MariatestnullRow::decimalCol, Optional.empty(), Optional.empty(), (row, value) -> row.withDecimalCol(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, MariatestnullRow>(_path, "decimal_col", MariatestnullRow::decimalCol, Optional.empty(), Optional.empty(), (row, value) -> row.withDecimalCol(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, MariatestnullRow> numericCol() {
-      return new OptField<BigDecimal, MariatestnullRow>(_path, "numeric_col", MariatestnullRow::numericCol, Optional.empty(), Optional.empty(), (row, value) -> row.withNumericCol(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, MariatestnullRow>(_path, "numeric_col", MariatestnullRow::numericCol, Optional.empty(), Optional.empty(), (row, value) -> row.withNumericCol(value), MariaTypes.numeric);
     };
 
     @Override
@@ -238,17 +238,17 @@ public interface MariatestnullFields extends FieldsExpr<MariatestnullRow> {
 
     @Override
     public List<FieldLike<?, MariatestnullRow>> columns() {
-      return List.of(this.tinyintCol(), this.smallintCol(), this.mediumintCol(), this.intCol(), this.bigintCol(), this.tinyintUCol(), this.smallintUCol(), this.mediumintUCol(), this.intUCol(), this.bigintUCol(), this.decimalCol(), this.numericCol(), this.floatCol(), this.doubleCol(), this.boolCol(), this.bitCol(), this.bit1Col(), this.charCol(), this.varcharCol(), this.tinytextCol(), this.textCol(), this.mediumtextCol(), this.longtextCol(), this.binaryCol(), this.varbinaryCol(), this.tinyblobCol(), this.blobCol(), this.mediumblobCol(), this.longblobCol(), this.dateCol(), this.timeCol(), this.timeFspCol(), this.datetimeCol(), this.datetimeFspCol(), this.timestampCol(), this.timestampFspCol(), this.yearCol(), this.enumCol(), this.setCol(), this.jsonCol(), this.inet4Col(), this.inet6Col());
+      return java.util.List.of(this.tinyintCol(), this.smallintCol(), this.mediumintCol(), this.intCol(), this.bigintCol(), this.tinyintUCol(), this.smallintUCol(), this.mediumintUCol(), this.intUCol(), this.bigintUCol(), this.decimalCol(), this.numericCol(), this.floatCol(), this.doubleCol(), this.boolCol(), this.bitCol(), this.bit1Col(), this.charCol(), this.varcharCol(), this.tinytextCol(), this.textCol(), this.mediumtextCol(), this.longtextCol(), this.binaryCol(), this.varbinaryCol(), this.tinyblobCol(), this.blobCol(), this.mediumblobCol(), this.longblobCol(), this.dateCol(), this.timeCol(), this.timeFspCol(), this.datetimeCol(), this.datetimeFspCol(), this.timestampCol(), this.timestampFspCol(), this.yearCol(), this.enumCol(), this.setCol(), this.jsonCol(), this.inet4Col(), this.inet6Col());
     };
 
     @Override
-    public Relation<MariatestnullFields, MariatestnullRow> copy(List<Path> _path) {
+    public RelationStructure<MariatestnullFields, MariatestnullRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   OptField<Byte, MariatestnullRow> tinyintCol();

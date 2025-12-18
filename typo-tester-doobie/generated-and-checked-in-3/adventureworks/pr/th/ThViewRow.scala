@@ -28,7 +28,7 @@ case class ThViewRow(
   /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.transactiondate]] */
   transactiondate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.transactiontype]] */
-  transactiontype: /* bpchar, max 1 chars */ String,
+  transactiontype: String,
   /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.quantity]] */
   quantity: Int,
   /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.actualcost]] */
@@ -38,9 +38,9 @@ case class ThViewRow(
 )
 
 object ThViewRow {
-  given decoder: Decoder[ThViewRow] = Decoder.forProduct10[ThViewRow, TransactionhistoryId, TransactionhistoryId, ProductId, Int, Int, TypoLocalDateTime, /* bpchar, max 1 chars */ String, Int, BigDecimal, TypoLocalDateTime]("id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")(ThViewRow.apply)(using TransactionhistoryId.decoder, TransactionhistoryId.decoder, ProductId.decoder, Decoder.decodeInt, Decoder.decodeInt, TypoLocalDateTime.decoder, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+  given decoder: Decoder[ThViewRow] = Decoder.forProduct10[ThViewRow, TransactionhistoryId, TransactionhistoryId, ProductId, Int, Int, TypoLocalDateTime, String, Int, BigDecimal, TypoLocalDateTime]("id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")(ThViewRow.apply)(using TransactionhistoryId.decoder, TransactionhistoryId.decoder, ProductId.decoder, Decoder.decodeInt, Decoder.decodeInt, TypoLocalDateTime.decoder, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[ThViewRow] = Encoder.forProduct10[ThViewRow, TransactionhistoryId, TransactionhistoryId, ProductId, Int, Int, TypoLocalDateTime, /* bpchar, max 1 chars */ String, Int, BigDecimal, TypoLocalDateTime]("id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")(x => (x.id, x.transactionid, x.productid, x.referenceorderid, x.referenceorderlineid, x.transactiondate, x.transactiontype, x.quantity, x.actualcost, x.modifieddate))(using TransactionhistoryId.encoder, TransactionhistoryId.encoder, ProductId.encoder, Encoder.encodeInt, Encoder.encodeInt, TypoLocalDateTime.encoder, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
+  given encoder: Encoder[ThViewRow] = Encoder.forProduct10[ThViewRow, TransactionhistoryId, TransactionhistoryId, ProductId, Int, Int, TypoLocalDateTime, String, Int, BigDecimal, TypoLocalDateTime]("id", "transactionid", "productid", "referenceorderid", "referenceorderlineid", "transactiondate", "transactiontype", "quantity", "actualcost", "modifieddate")(x => (x.id, x.transactionid, x.productid, x.referenceorderid, x.referenceorderlineid, x.transactiondate, x.transactiontype, x.quantity, x.actualcost, x.modifieddate))(using TransactionhistoryId.encoder, TransactionhistoryId.encoder, ProductId.encoder, Encoder.encodeInt, Encoder.encodeInt, TypoLocalDateTime.encoder, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
 
   given read: Read[ThViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -62,7 +62,7 @@ object ThViewRow {
             referenceorderid = arr(3).asInstanceOf[Int],
             referenceorderlineid = arr(4).asInstanceOf[Int],
             transactiondate = arr(5).asInstanceOf[TypoLocalDateTime],
-            transactiontype = arr(6).asInstanceOf[/* bpchar, max 1 chars */ String],
+            transactiontype = arr(6).asInstanceOf[String],
             quantity = arr(7).asInstanceOf[Int],
             actualcost = arr(8).asInstanceOf[BigDecimal],
             modifieddate = arr(9).asInstanceOf[TypoLocalDateTime]

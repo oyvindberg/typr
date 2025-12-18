@@ -23,9 +23,9 @@ case class SViewRow(
   /** Points to [[adventureworks.sales.store.StoreRow.name]] */
   name: Name,
   /** Points to [[adventureworks.sales.store.StoreRow.salespersonid]] */
-  salespersonid: Option[BusinessentityId],
+  salespersonid: BusinessentityId,
   /** Points to [[adventureworks.sales.store.StoreRow.demographics]] */
-  demographics: Option[TypoXml],
+  demographics: TypoXml,
   /** Points to [[adventureworks.sales.store.StoreRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.sales.store.StoreRow.modifieddate]] */
@@ -33,17 +33,17 @@ case class SViewRow(
 )
 
 object SViewRow {
-  implicit lazy val decoder: Decoder[SViewRow] = Decoder.forProduct7[SViewRow, BusinessentityId, BusinessentityId, Name, Option[BusinessentityId], Option[TypoXml], TypoUUID, TypoLocalDateTime]("id", "businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate")(SViewRow.apply)(BusinessentityId.decoder, BusinessentityId.decoder, Name.decoder, Decoder.decodeOption(BusinessentityId.decoder), Decoder.decodeOption(TypoXml.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+  implicit lazy val decoder: Decoder[SViewRow] = Decoder.forProduct7[SViewRow, BusinessentityId, BusinessentityId, Name, BusinessentityId, TypoXml, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate")(SViewRow.apply)(BusinessentityId.decoder, BusinessentityId.decoder, Name.decoder, BusinessentityId.decoder, TypoXml.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  implicit lazy val encoder: Encoder[SViewRow] = Encoder.forProduct7[SViewRow, BusinessentityId, BusinessentityId, Name, Option[BusinessentityId], Option[TypoXml], TypoUUID, TypoLocalDateTime]("id", "businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.name, x.salespersonid, x.demographics, x.rowguid, x.modifieddate))(BusinessentityId.encoder, BusinessentityId.encoder, Name.encoder, Encoder.encodeOption(BusinessentityId.encoder), Encoder.encodeOption(TypoXml.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
+  implicit lazy val encoder: Encoder[SViewRow] = Encoder.forProduct7[SViewRow, BusinessentityId, BusinessentityId, Name, BusinessentityId, TypoXml, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "name", "salespersonid", "demographics", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.name, x.salespersonid, x.demographics, x.rowguid, x.modifieddate))(BusinessentityId.encoder, BusinessentityId.encoder, Name.encoder, BusinessentityId.encoder, TypoXml.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   implicit lazy val read: Read[SViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
         new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoXml.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
     ))(scala.reflect.ClassTag.Any).map { arr =>
@@ -51,8 +51,8 @@ object SViewRow {
         id = arr(0).asInstanceOf[BusinessentityId],
             businessentityid = arr(1).asInstanceOf[BusinessentityId],
             name = arr(2).asInstanceOf[Name],
-            salespersonid = arr(3).asInstanceOf[Option[BusinessentityId]],
-            demographics = arr(4).asInstanceOf[Option[TypoXml]],
+            salespersonid = arr(3).asInstanceOf[BusinessentityId],
+            demographics = arr(4).asInstanceOf[TypoXml],
             rowguid = arr(5).asInstanceOf[TypoUUID],
             modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
       )

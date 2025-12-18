@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class SohViewRepoImpl implements SohViewRepo {
@@ -19,9 +20,6 @@ public class SohViewRepoImpl implements SohViewRepo {
 
   @Override
   public List<SohViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text
-       from "sa"."soh"
-    """)).query(SohViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\"\nfrom \"sa\".\"soh\"\n")).query(SohViewRow._rowParser.all()).runUnchecked(c);
   };
 }

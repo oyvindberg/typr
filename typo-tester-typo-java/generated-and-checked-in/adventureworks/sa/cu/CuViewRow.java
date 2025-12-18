@@ -5,9 +5,10 @@
  */
 package adventureworks.sa.cu;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import adventureworks.sales.currency.CurrencyId;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -20,7 +21,7 @@ public record CuViewRow(
   /** Points to {@link adventureworks.sales.currency.CurrencyRow#name()} */
   Name name,
   /** Points to {@link adventureworks.sales.currency.CurrencyRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.currency.CurrencyRow#currencycode()} */
   public CuViewRow withId(CurrencyId id) {
@@ -38,9 +39,9 @@ public record CuViewRow(
   };
 
   /** Points to {@link adventureworks.sales.currency.CurrencyRow#modifieddate()} */
-  public CuViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CuViewRow withModifieddate(LocalDateTime modifieddate) {
     return new CuViewRow(id, currencycode, name, modifieddate);
   };
 
-  static RowParser<CuViewRow> _rowParser = RowParsers.of(CurrencyId.pgType, CurrencyId.pgType, Name.pgType, TypoLocalDateTime.pgType, CuViewRow::new, row -> new Object[]{row.id(), row.currencycode(), row.name(), row.modifieddate()});;
+  static RowParser<CuViewRow> _rowParser = RowParsers.of(CurrencyId.pgType, CurrencyId.pgType, Name.pgType, PgTypes.timestamp, CuViewRow::new, row -> new Object[]{row.id(), row.currencycode(), row.name(), row.modifieddate()});;
 }

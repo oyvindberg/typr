@@ -6,16 +6,16 @@
 package adventureworks.purchasing.purchaseorderheader
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.purchasing.shipmethod.ShipmethodId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: purchasing.purchaseorderheader
   * General purchase order information. See PurchaseOrderDetail.
@@ -29,12 +29,12 @@ data class PurchaseorderheaderRow(
   /** Incremental number to track changes to the purchase order over time.
     * Default: 0
     */
-  val revisionnumber: TypoShort,
+  val revisionnumber: Short,
   /** Order current status. 1 = Pending; 2 = Approved; 3 = Rejected; 4 = Complete
     * Default: 1
     * Constraint CK_PurchaseOrderHeader_Status affecting columns status: (((status >= 1) AND (status <= 4)))
     */
-  val status: TypoShort,
+  val status: Short,
   /** Employee who created the purchase order. Foreign key to Employee.BusinessEntityID.
     * Points to [adventureworks.humanresources.employee.EmployeeRow.businessentityid]
     */
@@ -51,11 +51,11 @@ data class PurchaseorderheaderRow(
     * Default: now()
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate: (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  val orderdate: TypoLocalDateTime,
+  val orderdate: LocalDateTime,
   /** Estimated shipment date from the vendor.
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate: (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  val shipdate: Optional<TypoLocalDateTime>,
+  val shipdate: LocalDateTime?,
   /** Purchase order subtotal. Computed as SUM(PurchaseOrderDetail.LineTotal)for the appropriate PurchaseOrderID.
     * Default: 0.00
     * Constraint CK_PurchaseOrderHeader_SubTotal affecting columns subtotal: ((subtotal >= 0.00))
@@ -72,25 +72,25 @@ data class PurchaseorderheaderRow(
     */
   val freight: BigDecimal,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): PurchaseorderheaderId = purchaseorderid
 
   fun toUnsavedRow(
     purchaseorderid: Defaulted<PurchaseorderheaderId>,
-    revisionnumber: Defaulted<TypoShort>,
-    status: Defaulted<TypoShort>,
-    orderdate: Defaulted<TypoLocalDateTime>,
+    revisionnumber: Defaulted<Short>,
+    status: Defaulted<Short>,
+    orderdate: Defaulted<LocalDateTime>,
     subtotal: Defaulted<BigDecimal>,
     taxamt: Defaulted<BigDecimal>,
     freight: Defaulted<BigDecimal>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): PurchaseorderheaderRowUnsaved = PurchaseorderheaderRowUnsaved(employeeid, vendorid, shipmethodid, shipdate, purchaseorderid, revisionnumber, status, orderdate, subtotal, taxamt, freight, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<PurchaseorderheaderRow> = RowParsers.of(PurchaseorderheaderId.pgType, TypoShort.pgType, TypoShort.pgType, BusinessentityId.pgType, BusinessentityId.pgType, ShipmethodId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> PurchaseorderheaderRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.purchaseorderid, row.revisionnumber, row.status, row.employeeid, row.vendorid, row.shipmethodid, row.orderdate, row.shipdate, row.subtotal, row.taxamt, row.freight, row.modifieddate) })
+    val _rowParser: RowParser<PurchaseorderheaderRow> = RowParsers.of(PurchaseorderheaderId.pgType, KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, BusinessentityId.pgType, BusinessentityId.pgType, ShipmethodId.pgType, PgTypes.timestamp, PgTypes.timestamp.nullable(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> PurchaseorderheaderRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.purchaseorderid, row.revisionnumber, row.status, row.employeeid, row.vendorid, row.shipmethodid, row.orderdate, row.shipdate, row.subtotal, row.taxamt, row.freight, row.modifieddate) })
 
     val pgText: PgText<PurchaseorderheaderRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

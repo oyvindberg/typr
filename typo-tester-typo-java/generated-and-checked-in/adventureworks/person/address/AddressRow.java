@@ -6,11 +6,10 @@
 package adventureworks.person.address;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.stateprovince.StateprovinceId;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -26,23 +25,23 @@ public record AddressRow(
     */
   AddressId addressid,
   /** First street address line. */
-  /* max 60 chars */ String addressline1,
+  String addressline1,
   /** Second street address line. */
   Optional</* max 60 chars */ String> addressline2,
   /** Name of the city. */
-  /* max 30 chars */ String city,
+  String city,
   /** Unique identification number for the state or province. Foreign key to StateProvince table.
     * Points to {@link adventureworks.person.stateprovince.StateprovinceRow#stateprovinceid()}
     */
   StateprovinceId stateprovinceid,
   /** Postal code for the street address. */
-  /* max 15 chars */ String postalcode,
+  String postalcode,
   /** Latitude and longitude of this address. */
-  Optional<TypoBytea> spatiallocation,
+  Optional<byte[]> spatiallocation,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for Address records.
     * Default: nextval('person.address_addressid_seq'::regclass)
@@ -52,7 +51,7 @@ public record AddressRow(
   };
 
   /** First street address line. */
-  public AddressRow withAddressline1(/* max 60 chars */ String addressline1) {
+  public AddressRow withAddressline1(String addressline1) {
     return new AddressRow(addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
@@ -62,7 +61,7 @@ public record AddressRow(
   };
 
   /** Name of the city. */
-  public AddressRow withCity(/* max 30 chars */ String city) {
+  public AddressRow withCity(String city) {
     return new AddressRow(addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
@@ -74,26 +73,26 @@ public record AddressRow(
   };
 
   /** Postal code for the street address. */
-  public AddressRow withPostalcode(/* max 15 chars */ String postalcode) {
+  public AddressRow withPostalcode(String postalcode) {
     return new AddressRow(addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
   /** Latitude and longitude of this address. */
-  public AddressRow withSpatiallocation(Optional<TypoBytea> spatiallocation) {
+  public AddressRow withSpatiallocation(Optional<byte[]> spatiallocation) {
     return new AddressRow(addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public AddressRow withRowguid(TypoUUID rowguid) {
+  public AddressRow withRowguid(UUID rowguid) {
     return new AddressRow(addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public AddressRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public AddressRow withModifieddate(LocalDateTime modifieddate) {
     return new AddressRow(addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
-  static RowParser<AddressRow> _rowParser = RowParsers.of(AddressId.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, StateprovinceId.pgType, PgTypes.text, TypoBytea.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, AddressRow::new, row -> new Object[]{row.addressid(), row.addressline1(), row.addressline2(), row.city(), row.stateprovinceid(), row.postalcode(), row.spatiallocation(), row.rowguid(), row.modifieddate()});;
+  static RowParser<AddressRow> _rowParser = RowParsers.of(AddressId.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, StateprovinceId.pgType, PgTypes.text, PgTypes.bytea.opt(), PgTypes.uuid, PgTypes.timestamp, AddressRow::new, row -> new Object[]{row.addressid(), row.addressline1(), row.addressline2(), row.city(), row.stateprovinceid(), row.postalcode(), row.spatiallocation(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<AddressRow> pgText =
     PgText.from(_rowParser);
@@ -104,8 +103,8 @@ public record AddressRow(
 
   public AddressRowUnsaved toUnsavedRow(
     Defaulted<AddressId> addressid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate);
   };

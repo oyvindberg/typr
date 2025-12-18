@@ -6,8 +6,8 @@
 package adventureworks.production.productdescription;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -23,11 +23,11 @@ public record ProductdescriptionRow(
     */
   ProductdescriptionId productdescriptionid,
   /** Description of the product. */
-  /* max 400 chars */ String description,
+  String description,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for ProductDescription records.
     * Default: nextval('production.productdescription_productdescriptionid_seq'::regclass)
@@ -37,21 +37,21 @@ public record ProductdescriptionRow(
   };
 
   /** Description of the product. */
-  public ProductdescriptionRow withDescription(/* max 400 chars */ String description) {
+  public ProductdescriptionRow withDescription(String description) {
     return new ProductdescriptionRow(productdescriptionid, description, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public ProductdescriptionRow withRowguid(TypoUUID rowguid) {
+  public ProductdescriptionRow withRowguid(UUID rowguid) {
     return new ProductdescriptionRow(productdescriptionid, description, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ProductdescriptionRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductdescriptionRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductdescriptionRow(productdescriptionid, description, rowguid, modifieddate);
   };
 
-  static RowParser<ProductdescriptionRow> _rowParser = RowParsers.of(ProductdescriptionId.pgType, PgTypes.text, TypoUUID.pgType, TypoLocalDateTime.pgType, ProductdescriptionRow::new, row -> new Object[]{row.productdescriptionid(), row.description(), row.rowguid(), row.modifieddate()});;
+  static RowParser<ProductdescriptionRow> _rowParser = RowParsers.of(ProductdescriptionId.pgType, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, ProductdescriptionRow::new, row -> new Object[]{row.productdescriptionid(), row.description(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<ProductdescriptionRow> pgText =
     PgText.from(_rowParser);
@@ -62,8 +62,8 @@ public record ProductdescriptionRow(
 
   public ProductdescriptionRowUnsaved toUnsavedRow(
     Defaulted<ProductdescriptionId> productdescriptionid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ProductdescriptionRowUnsaved(description, productdescriptionid, rowguid, modifieddate);
   };

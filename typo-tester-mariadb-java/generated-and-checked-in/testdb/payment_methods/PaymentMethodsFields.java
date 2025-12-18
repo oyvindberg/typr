@@ -9,16 +9,16 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface PaymentMethodsFields extends FieldsExpr<PaymentMethodsRow> {
-  record Impl(List<Path> _path) implements PaymentMethodsFields, Relation<PaymentMethodsFields, PaymentMethodsRow> {
+  record Impl(List<Path> _path) implements PaymentMethodsFields, RelationStructure<PaymentMethodsFields, PaymentMethodsRow> {
     @Override
     public IdField<PaymentMethodsId, PaymentMethodsRow> methodId() {
       return new IdField<PaymentMethodsId, PaymentMethodsRow>(_path, "method_id", PaymentMethodsRow::methodId, Optional.empty(), Optional.empty(), (row, value) -> row.withMethodId(value), PaymentMethodsId.pgType);
@@ -56,17 +56,17 @@ public interface PaymentMethodsFields extends FieldsExpr<PaymentMethodsRow> {
 
     @Override
     public List<FieldLike<?, PaymentMethodsRow>> columns() {
-      return List.of(this.methodId(), this.code(), this.name(), this.methodType(), this.processorConfig(), this.isActive(), this.sortOrder());
+      return java.util.List.of(this.methodId(), this.code(), this.name(), this.methodType(), this.processorConfig(), this.isActive(), this.sortOrder());
     };
 
     @Override
-    public Relation<PaymentMethodsFields, PaymentMethodsRow> copy(List<Path> _path) {
+    public RelationStructure<PaymentMethodsFields, PaymentMethodsRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<PaymentMethodsId, PaymentMethodsRow> methodId();

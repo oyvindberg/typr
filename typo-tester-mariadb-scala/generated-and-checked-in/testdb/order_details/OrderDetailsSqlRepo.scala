@@ -9,5 +9,5 @@ import java.sql.Connection
 import testdb.orders.OrdersId
 
 trait OrderDetailsSqlRepo {
-  def apply(orderId: /* user-picked */ OrdersId)(using c: Connection): java.util.List[OrderDetailsSqlRow]
+  def apply(orderId: /* user-picked */ OrdersId)(using c: Connection): List[OrderDetailsSqlRow]
 }

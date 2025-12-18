@@ -5,13 +5,13 @@
  */
 package adventureworks.hr.eph
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: hr.eph */
 data class EphViewRow(
@@ -20,15 +20,15 @@ data class EphViewRow(
   /** Points to [adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Points to [adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.ratechangedate] */
-  val ratechangedate: TypoLocalDateTime,
+  val ratechangedate: LocalDateTime,
   /** Points to [adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.rate] */
   val rate: BigDecimal,
   /** Points to [adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.payfrequency] */
-  val payfrequency: TypoShort,
+  val payfrequency: Short,
   /** Points to [adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<EphViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, TypoLocalDateTime.pgType, PgTypes.numeric, TypoShort.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> EphViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.ratechangedate, row.rate, row.payfrequency, row.modifieddate) })
+    val _rowParser: RowParser<EphViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.timestamp, PgTypes.numeric, KotlinDbTypes.PgTypes.int2, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> EphViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.ratechangedate, row.rate, row.payfrequency, row.modifieddate) })
   }
 }

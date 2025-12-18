@@ -18,7 +18,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -33,11 +32,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     ProductImagesId imageId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `product_images` where `image_id` = "),
-      ProductImagesId.pgType.encode(imageId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `product_images` where `image_id` = "), Fragment.encode(ProductImagesId.pgType, imageId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -45,8 +40,8 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     ProductImagesId[] imageIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : imageIds) { fragments.add(ProductImagesId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : imageIds) { fragments.add(Fragment.encode(ProductImagesId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `product_images` where `image_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -55,28 +50,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     ProductImagesRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `product_images`(`product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)
-         values ("""),
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.imageUrl()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.thumbnailUrl()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.altText()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.sortOrder()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isPrimary()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.imageData()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `product_images`(`product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)\nvalues ("), Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.imageUrl()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.thumbnailUrl()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.altText()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.sortOrder()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isPrimary()), Fragment.lit(", "), Fragment.encode(MariaTypes.longblob.opt(), unsaved.imageData()), Fragment.lit(")\nreturning `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`\n"))
       .updateReturning(ProductImagesRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -85,31 +59,19 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     ProductImagesRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`product_id`"));
-    values.add(interpolate(
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit("")));
     columns.add(Fragment.lit("`image_url`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.imageUrl()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.imageUrl()), Fragment.lit("")));
     unsaved.thumbnailUrl().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`thumbnail_url`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.altText().visit(
@@ -118,11 +80,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`alt_text`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.sortOrder().visit(
@@ -131,11 +89,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`sort_order`"));
-        values.add(interpolate(
-        MariaTypes.smallint.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.tinyintUnsigned, value), Fragment.lit("")));
       }
     );;
     unsaved.isPrimary().visit(
@@ -144,11 +98,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`is_primary`"));
-        values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool, value), Fragment.lit("")));
       }
     );;
     unsaved.imageData().visit(
@@ -157,25 +107,10 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`image_data`"));
-        values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longblob.opt(), value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `product_images`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `product_images`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`\n"));;
     return q.updateReturning(ProductImagesRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -186,10 +121,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
 
   @Override
   public List<ProductImagesRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`
-       from `product_images`
-    """)).query(ProductImagesRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`\nfrom `product_images`\n")).query(ProductImagesRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -197,14 +129,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     ProductImagesId imageId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`
-         from `product_images`
-         where `image_id` = """),
-      ProductImagesId.pgType.encode(imageId),
-      typo.runtime.Fragment.lit("")
-    ).query(ProductImagesRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`\nfrom `product_images`\nwhere `image_id` = "), Fragment.encode(ProductImagesId.pgType, imageId), Fragment.lit("")).query(ProductImagesRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -212,8 +137,8 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     ProductImagesId[] imageIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : imageIds) { fragments.add(ProductImagesId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : imageIds) { fragments.add(Fragment.encode(ProductImagesId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data` from `product_images` where `image_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ProductImagesRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -229,7 +154,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
 
   @Override
   public UpdateBuilder<ProductImagesFields, ProductImagesRow> update() {
-    return UpdateBuilder.of("`product_images`", ProductImagesFields.structure(), ProductImagesRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`product_images`", ProductImagesFields.structure(), ProductImagesRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -238,41 +163,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     Connection c
   ) {
     ProductImagesId imageId = row.imageId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `product_images`
-         set `product_id` = """),
-      ProductsId.pgType.encode(row.productId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `image_url` = """),
-      MariaTypes.text.encode(row.imageUrl()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `thumbnail_url` = """),
-      MariaTypes.text.opt().encode(row.thumbnailUrl()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `alt_text` = """),
-      MariaTypes.text.opt().encode(row.altText()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `sort_order` = """),
-      MariaTypes.smallint.encode(row.sortOrder()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `is_primary` = """),
-      MariaTypes.bool.encode(row.isPrimary()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `image_data` = """),
-      MariaTypes.blob.opt().encode(row.imageData()),
-      typo.runtime.Fragment.lit("""
-   
-         where `image_id` = """),
-      ProductImagesId.pgType.encode(imageId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `product_images`\nset `product_id` = "), Fragment.encode(ProductsId.pgType, row.productId()), Fragment.lit(",\n`image_url` = "), Fragment.encode(MariaTypes.varchar, row.imageUrl()), Fragment.lit(",\n`thumbnail_url` = "), Fragment.encode(MariaTypes.varchar.opt(), row.thumbnailUrl()), Fragment.lit(",\n`alt_text` = "), Fragment.encode(MariaTypes.varchar.opt(), row.altText()), Fragment.lit(",\n`sort_order` = "), Fragment.encode(MariaTypes.tinyintUnsigned, row.sortOrder()), Fragment.lit(",\n`is_primary` = "), Fragment.encode(MariaTypes.bool, row.isPrimary()), Fragment.lit(",\n`image_data` = "), Fragment.encode(MariaTypes.longblob.opt(), row.imageData()), Fragment.lit("\nwhere `image_id` = "), Fragment.encode(ProductImagesId.pgType, imageId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -280,34 +171,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     ProductImagesRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `product_images`(`product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)
-         VALUES ("""),
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.imageUrl()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.thumbnailUrl()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.altText()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.sortOrder()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isPrimary()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.imageData()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-         `image_url` = VALUES(`image_url`),
-         `thumbnail_url` = VALUES(`thumbnail_url`),
-         `alt_text` = VALUES(`alt_text`),
-         `sort_order` = VALUES(`sort_order`),
-         `is_primary` = VALUES(`is_primary`),
-         `image_data` = VALUES(`image_data`)
-         RETURNING `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `product_images`(`product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)\nVALUES ("), Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.imageUrl()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.thumbnailUrl()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.altText()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.sortOrder()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isPrimary()), Fragment.lit(", "), Fragment.encode(MariaTypes.longblob.opt(), unsaved.imageData()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`image_url` = VALUES(`image_url`),\n`thumbnail_url` = VALUES(`thumbnail_url`),\n`alt_text` = VALUES(`alt_text`),\n`sort_order` = VALUES(`sort_order`),\n`is_primary` = VALUES(`is_primary`),\n`image_data` = VALUES(`image_data`)\nRETURNING `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`"))
       .updateReturning(ProductImagesRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -317,18 +181,8 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     Iterator<ProductImagesRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `product_images`(`image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-                `image_url` = VALUES(`image_url`),
-                `thumbnail_url` = VALUES(`thumbnail_url`),
-                `alt_text` = VALUES(`alt_text`),
-                `sort_order` = VALUES(`sort_order`),
-                `is_primary` = VALUES(`is_primary`),
-                `image_data` = VALUES(`image_data`)
-                RETURNING `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`"""))
+    return interpolate(Fragment.lit("INSERT INTO `product_images`(`image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`image_url` = VALUES(`image_url`),\n`thumbnail_url` = VALUES(`thumbnail_url`),\n`alt_text` = VALUES(`alt_text`),\n`sort_order` = VALUES(`sort_order`),\n`is_primary` = VALUES(`is_primary`),\n`image_data` = VALUES(`image_data`)\nRETURNING `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`"))
       .updateReturningEach(ProductImagesRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

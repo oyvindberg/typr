@@ -6,69 +6,68 @@
 package testdb.mariatest_identity
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface MariatestIdentityRepo {
-  fun delete(): DeleteBuilder<MariatestIdentityFields, MariatestIdentityRow>
+  abstract fun delete(): DeleteBuilder<MariatestIdentityFields, MariatestIdentityRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     id: MariatestIdentityId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     ids: Array<MariatestIdentityId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: MariatestIdentityRow,
     c: Connection
   ): MariatestIdentityRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: MariatestIdentityRowUnsaved,
     c: Connection
   ): MariatestIdentityRow
 
-  fun select(): SelectBuilder<MariatestIdentityFields, MariatestIdentityRow>
+  abstract fun select(): SelectBuilder<MariatestIdentityFields, MariatestIdentityRow>
 
-  fun selectAll(c: Connection): List<MariatestIdentityRow>
+  abstract fun selectAll(c: Connection): List<MariatestIdentityRow>
 
-  fun selectById(
+  abstract fun selectById(
     id: MariatestIdentityId,
     c: Connection
-  ): Optional<MariatestIdentityRow>
+  ): MariatestIdentityRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     ids: Array<MariatestIdentityId>,
     c: Connection
   ): List<MariatestIdentityRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     ids: Array<MariatestIdentityId>,
     c: Connection
   ): Map<MariatestIdentityId, MariatestIdentityRow>
 
-  fun update(): UpdateBuilder<MariatestIdentityFields, MariatestIdentityRow>
+  abstract fun update(): UpdateBuilder<MariatestIdentityFields, MariatestIdentityRow>
 
-  fun update(
+  abstract fun update(
     row: MariatestIdentityRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: MariatestIdentityRow,
     c: Connection
   ): MariatestIdentityRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<MariatestIdentityRow>,
     c: Connection
   ): List<MariatestIdentityRow>

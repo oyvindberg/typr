@@ -7,11 +7,11 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_status.CustomerStatusId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.MariaSet
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -28,7 +28,7 @@ data class CustomersRowUnsaved(
   /** Default: NULL
 
     */
-  val phone: Defaulted<Optional<String>> = UseDefault(),
+  val phone: Defaulted<String?> = UseDefault(),
   /** Default: 'pending'
     * Points to [testdb.customer_status.CustomerStatusRow.statusCode]
     */
@@ -40,15 +40,15 @@ data class CustomersRowUnsaved(
   /** Default: NULL
 
     */
-  val preferences: Defaulted<Optional<String>> = UseDefault(),
+  val preferences: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("marketing_flags") val marketingFlags: Defaulted<Optional<MariaSet>> = UseDefault(),
+  @JsonProperty("marketing_flags") val marketingFlags: Defaulted<MariaSet?> = UseDefault(),
   /** Default: NULL
 
     */
-  val notes: Defaulted<Optional<String>> = UseDefault(),
+  val notes: Defaulted<String?> = UseDefault(),
   /** Default: current_timestamp(6)
 
     */
@@ -60,18 +60,18 @@ data class CustomersRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("last_login_at") val lastLoginAt: Defaulted<Optional<LocalDateTime>> = UseDefault()
+  @JsonProperty("last_login_at") val lastLoginAt: Defaulted<LocalDateTime?> = UseDefault()
 ) {
   fun toRow(
-    phoneDefault: () -> Optional<String>,
+    phoneDefault: () -> String?,
     statusDefault: () -> CustomerStatusId,
     tierDefault: () -> String,
-    preferencesDefault: () -> Optional<String>,
-    marketingFlagsDefault: () -> Optional<MariaSet>,
-    notesDefault: () -> Optional<String>,
+    preferencesDefault: () -> String?,
+    marketingFlagsDefault: () -> MariaSet?,
+    notesDefault: () -> String?,
     createdAtDefault: () -> LocalDateTime,
     updatedAtDefault: () -> LocalDateTime,
-    lastLoginAtDefault: () -> Optional<LocalDateTime>,
+    lastLoginAtDefault: () -> LocalDateTime?,
     customerIdDefault: () -> CustomersId
   ): CustomersRow = CustomersRow(customerId = customerIdDefault(), email = email, passwordHash = passwordHash, firstName = firstName, lastName = lastName, phone = phone.getOrElse(phoneDefault), status = status.getOrElse(statusDefault), tier = tier.getOrElse(tierDefault), preferences = preferences.getOrElse(preferencesDefault), marketingFlags = marketingFlags.getOrElse(marketingFlagsDefault), notes = notes.getOrElse(notesDefault), createdAt = createdAt.getOrElse(createdAtDefault), updatedAt = updatedAt.getOrElse(updatedAtDefault), lastLoginAt = lastLoginAt.getOrElse(lastLoginAtDefault))
 
@@ -85,22 +85,22 @@ data class CustomersRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.varchar.mariaText().unsafeEncode(row.lastName, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.phone, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.phone, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(CustomerStatusId.pgType.mariaText()).unsafeEncode(row.status, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.text.mariaText()).unsafeEncode(row.tier, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.preferences, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.preferences, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.set.opt().mariaText()).unsafeEncode(row.marketingFlags, sb)
+      Defaulted.mariaText(MariaTypes.set.nullable().mariaText()).unsafeEncode(row.marketingFlags, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.text.opt().mariaText()).unsafeEncode(row.notes, sb)
+      Defaulted.mariaText(MariaTypes.text.nullable().mariaText()).unsafeEncode(row.notes, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.createdAt, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.updatedAt, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.lastLoginAt, sb) })
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.lastLoginAt, sb) })
   }
 }

@@ -5,20 +5,20 @@
  */
 package adventureworks.sa.cr
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyId
 import adventureworks.sales.currencyrate.CurrencyrateId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sa.cr */
 data class CrViewRow(
   /** Points to [adventureworks.sales.currencyrate.CurrencyrateRow.currencyrateid] */
   val currencyrateid: CurrencyrateId,
   /** Points to [adventureworks.sales.currencyrate.CurrencyrateRow.currencyratedate] */
-  val currencyratedate: TypoLocalDateTime,
+  val currencyratedate: LocalDateTime,
   /** Points to [adventureworks.sales.currencyrate.CurrencyrateRow.fromcurrencycode] */
   val fromcurrencycode: CurrencyId,
   /** Points to [adventureworks.sales.currencyrate.CurrencyrateRow.tocurrencycode] */
@@ -28,9 +28,9 @@ data class CrViewRow(
   /** Points to [adventureworks.sales.currencyrate.CurrencyrateRow.endofdayrate] */
   val endofdayrate: BigDecimal,
   /** Points to [adventureworks.sales.currencyrate.CurrencyrateRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<CrViewRow> = RowParsers.of(CurrencyrateId.pgType, TypoLocalDateTime.pgType, CurrencyId.pgType, CurrencyId.pgType, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> CrViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.currencyrateid, row.currencyratedate, row.fromcurrencycode, row.tocurrencycode, row.averagerate, row.endofdayrate, row.modifieddate) })
+    val _rowParser: RowParser<CrViewRow> = RowParsers.of(CurrencyrateId.pgType, PgTypes.timestamp, CurrencyId.pgType, CurrencyId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> CrViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.currencyrateid, row.currencyratedate, row.fromcurrencycode, row.tocurrencycode, row.averagerate, row.endofdayrate, row.modifieddate) })
   }
 }

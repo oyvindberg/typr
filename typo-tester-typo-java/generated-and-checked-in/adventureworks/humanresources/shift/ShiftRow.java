@@ -6,10 +6,11 @@
 package adventureworks.humanresources.shift;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoLocalTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -25,11 +26,11 @@ public record ShiftRow(
   /** Shift description. */
   Name name,
   /** Shift start time. */
-  TypoLocalTime starttime,
+  LocalTime starttime,
   /** Shift end time. */
-  TypoLocalTime endtime,
+  LocalTime endtime,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for Shift records.
     * Default: nextval('humanresources.shift_shiftid_seq'::regclass)
@@ -44,21 +45,21 @@ public record ShiftRow(
   };
 
   /** Shift start time. */
-  public ShiftRow withStarttime(TypoLocalTime starttime) {
+  public ShiftRow withStarttime(LocalTime starttime) {
     return new ShiftRow(shiftid, name, starttime, endtime, modifieddate);
   };
 
   /** Shift end time. */
-  public ShiftRow withEndtime(TypoLocalTime endtime) {
+  public ShiftRow withEndtime(LocalTime endtime) {
     return new ShiftRow(shiftid, name, starttime, endtime, modifieddate);
   };
 
   /** Default: now() */
-  public ShiftRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ShiftRow withModifieddate(LocalDateTime modifieddate) {
     return new ShiftRow(shiftid, name, starttime, endtime, modifieddate);
   };
 
-  static RowParser<ShiftRow> _rowParser = RowParsers.of(ShiftId.pgType, Name.pgType, TypoLocalTime.pgType, TypoLocalTime.pgType, TypoLocalDateTime.pgType, ShiftRow::new, row -> new Object[]{row.shiftid(), row.name(), row.starttime(), row.endtime(), row.modifieddate()});;
+  static RowParser<ShiftRow> _rowParser = RowParsers.of(ShiftId.pgType, Name.pgType, PgTypes.time, PgTypes.time, PgTypes.timestamp, ShiftRow::new, row -> new Object[]{row.shiftid(), row.name(), row.starttime(), row.endtime(), row.modifieddate()});;
 
   static public PgText<ShiftRow> pgText =
     PgText.from(_rowParser);
@@ -69,7 +70,7 @@ public record ShiftRow(
 
   public ShiftRowUnsaved toUnsavedRow(
     Defaulted<ShiftId> shiftid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ShiftRowUnsaved(name, starttime, endtime, shiftid, modifieddate);
   };

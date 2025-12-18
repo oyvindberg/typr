@@ -13,15 +13,14 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VstorewithcontactsViewFields extends FieldsExpr<VstorewithcontactsViewRow> {
-  record Impl(List<Path> _path) implements VstorewithcontactsViewFields, Relation<VstorewithcontactsViewFields, VstorewithcontactsViewRow> {
+  record Impl(List<Path> _path) implements VstorewithcontactsViewFields, RelationStructure<VstorewithcontactsViewFields, VstorewithcontactsViewRow> {
     @Override
     public Field<BusinessentityId, VstorewithcontactsViewRow> businessentityid() {
       return new Field<BusinessentityId, VstorewithcontactsViewRow>(_path, "businessentityid", VstorewithcontactsViewRow::businessentityid, Optional.empty(), Optional.empty(), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
@@ -38,8 +37,8 @@ public interface VstorewithcontactsViewFields extends FieldsExpr<Vstorewithconta
     };
 
     @Override
-    public OptField</* max 8 chars */ String, VstorewithcontactsViewRow> title() {
-      return new OptField</* max 8 chars */ String, VstorewithcontactsViewRow>(_path, "title", VstorewithcontactsViewRow::title, Optional.empty(), Optional.empty(), (row, value) -> row.withTitle(value), PgTypes.text);
+    public Field<String, VstorewithcontactsViewRow> title() {
+      return new Field<String, VstorewithcontactsViewRow>(_path, "title", VstorewithcontactsViewRow::title, Optional.empty(), Optional.empty(), (row, value) -> row.withTitle(value), PgTypes.text);
     };
 
     @Override
@@ -48,8 +47,8 @@ public interface VstorewithcontactsViewFields extends FieldsExpr<Vstorewithconta
     };
 
     @Override
-    public OptField<Name, VstorewithcontactsViewRow> middlename() {
-      return new OptField<Name, VstorewithcontactsViewRow>(_path, "middlename", VstorewithcontactsViewRow::middlename, Optional.empty(), Optional.empty(), (row, value) -> row.withMiddlename(value), Name.pgType);
+    public Field<Name, VstorewithcontactsViewRow> middlename() {
+      return new Field<Name, VstorewithcontactsViewRow>(_path, "middlename", VstorewithcontactsViewRow::middlename, Optional.empty(), Optional.empty(), (row, value) -> row.withMiddlename(value), Name.pgType);
     };
 
     @Override
@@ -58,8 +57,8 @@ public interface VstorewithcontactsViewFields extends FieldsExpr<Vstorewithconta
     };
 
     @Override
-    public OptField</* max 10 chars */ String, VstorewithcontactsViewRow> suffix() {
-      return new OptField</* max 10 chars */ String, VstorewithcontactsViewRow>(_path, "suffix", VstorewithcontactsViewRow::suffix, Optional.empty(), Optional.empty(), (row, value) -> row.withSuffix(value), PgTypes.text);
+    public Field<String, VstorewithcontactsViewRow> suffix() {
+      return new Field<String, VstorewithcontactsViewRow>(_path, "suffix", VstorewithcontactsViewRow::suffix, Optional.empty(), Optional.empty(), (row, value) -> row.withSuffix(value), PgTypes.text);
     };
 
     @Override
@@ -73,8 +72,8 @@ public interface VstorewithcontactsViewFields extends FieldsExpr<Vstorewithconta
     };
 
     @Override
-    public OptField</* max 50 chars */ String, VstorewithcontactsViewRow> emailaddress() {
-      return new OptField</* max 50 chars */ String, VstorewithcontactsViewRow>(_path, "emailaddress", VstorewithcontactsViewRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
+    public Field<String, VstorewithcontactsViewRow> emailaddress() {
+      return new Field<String, VstorewithcontactsViewRow>(_path, "emailaddress", VstorewithcontactsViewRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
     };
 
     @Override
@@ -84,17 +83,17 @@ public interface VstorewithcontactsViewFields extends FieldsExpr<Vstorewithconta
 
     @Override
     public List<FieldLike<?, VstorewithcontactsViewRow>> columns() {
-      return List.of(this.businessentityid(), this.name(), this.contacttype(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.phonenumber(), this.phonenumbertype(), this.emailaddress(), this.emailpromotion());
+      return java.util.List.of(this.businessentityid(), this.name(), this.contacttype(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.phonenumber(), this.phonenumbertype(), this.emailaddress(), this.emailpromotion());
     };
 
     @Override
-    public Relation<VstorewithcontactsViewFields, VstorewithcontactsViewRow> copy(List<Path> _path) {
+    public RelationStructure<VstorewithcontactsViewFields, VstorewithcontactsViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<BusinessentityId, VstorewithcontactsViewRow> businessentityid();
@@ -103,21 +102,21 @@ public interface VstorewithcontactsViewFields extends FieldsExpr<Vstorewithconta
 
   Field<Name, VstorewithcontactsViewRow> contacttype();
 
-  OptField</* max 8 chars */ String, VstorewithcontactsViewRow> title();
+  Field<String, VstorewithcontactsViewRow> title();
 
   Field</* user-picked */ FirstName, VstorewithcontactsViewRow> firstname();
 
-  OptField<Name, VstorewithcontactsViewRow> middlename();
+  Field<Name, VstorewithcontactsViewRow> middlename();
 
   Field<Name, VstorewithcontactsViewRow> lastname();
 
-  OptField</* max 10 chars */ String, VstorewithcontactsViewRow> suffix();
+  Field<String, VstorewithcontactsViewRow> suffix();
 
   Field<Phone, VstorewithcontactsViewRow> phonenumber();
 
   Field<Name, VstorewithcontactsViewRow> phonenumbertype();
 
-  OptField</* max 50 chars */ String, VstorewithcontactsViewRow> emailaddress();
+  Field<String, VstorewithcontactsViewRow> emailaddress();
 
   Field<Integer, VstorewithcontactsViewRow> emailpromotion();
 

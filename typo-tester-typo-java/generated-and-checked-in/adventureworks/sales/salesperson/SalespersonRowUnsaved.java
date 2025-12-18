@@ -7,12 +7,12 @@ package adventureworks.sales.salesperson;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -51,9 +51,9 @@ public record SalespersonRowUnsaved(
     */
   Defaulted<BigDecimal> saleslastyear,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SalespersonRowUnsaved(
   
@@ -119,12 +119,12 @@ public record SalespersonRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public SalespersonRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public SalespersonRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new SalespersonRowUnsaved(businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalespersonRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SalespersonRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SalespersonRowUnsaved(businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate);
   };
 
@@ -144,9 +144,9 @@ public record SalespersonRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.saleslastyear, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public SalespersonRow toRow(
@@ -154,8 +154,8 @@ public record SalespersonRowUnsaved(
     java.util.function.Supplier<BigDecimal> commissionpctDefault,
     java.util.function.Supplier<BigDecimal> salesytdDefault,
     java.util.function.Supplier<BigDecimal> saleslastyearDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new SalespersonRow(businessentityid, territoryid, salesquota, bonus.getOrElse(bonusDefault), commissionpct.getOrElse(commissionpctDefault), salesytd.getOrElse(salesytdDefault), saleslastyear.getOrElse(saleslastyearDefault), rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

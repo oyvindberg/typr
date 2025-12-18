@@ -5,20 +5,21 @@
  */
 package adventureworks.humanresources.department;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface DepartmentFields extends FieldsExpr<DepartmentRow> {
-  record Impl(List<Path> _path) implements DepartmentFields, Relation<DepartmentFields, DepartmentRow> {
+  record Impl(List<Path> _path) implements DepartmentFields, RelationStructure<DepartmentFields, DepartmentRow> {
     @Override
     public IdField<DepartmentId, DepartmentRow> departmentid() {
       return new IdField<DepartmentId, DepartmentRow>(_path, "departmentid", DepartmentRow::departmentid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withDepartmentid(value), DepartmentId.pgType);
@@ -35,23 +36,23 @@ public interface DepartmentFields extends FieldsExpr<DepartmentRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, DepartmentRow> modifieddate() {
-      return new Field<TypoLocalDateTime, DepartmentRow>(_path, "modifieddate", DepartmentRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, DepartmentRow> modifieddate() {
+      return new Field<LocalDateTime, DepartmentRow>(_path, "modifieddate", DepartmentRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, DepartmentRow>> columns() {
-      return List.of(this.departmentid(), this.name(), this.groupname(), this.modifieddate());
+      return java.util.List.of(this.departmentid(), this.name(), this.groupname(), this.modifieddate());
     };
 
     @Override
-    public Relation<DepartmentFields, DepartmentRow> copy(List<Path> _path) {
+    public RelationStructure<DepartmentFields, DepartmentRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<DepartmentId, DepartmentRow> departmentid();
@@ -60,7 +61,7 @@ public interface DepartmentFields extends FieldsExpr<DepartmentRow> {
 
   Field<Name, DepartmentRow> groupname();
 
-  Field<TypoLocalDateTime, DepartmentRow> modifieddate();
+  Field<LocalDateTime, DepartmentRow> modifieddate();
 
   @Override
   List<FieldLike<?, DepartmentRow>> columns();

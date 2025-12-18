@@ -1,10 +1,9 @@
 package typo
 
 import typo.internal.external.ExternalTools
-import typo.internal.mariadb.MariaMetaDb
+import typo.internal.mariadb.{MariaMetaDb, MariaTypeMapperDb}
 import typo.internal.pg.{PgMetaDb, PgTypeMapperDb}
 import typo.internal.{Lazy, TypeMapperDb}
-import typo.internal.mariadb.MariaTypeMapperDb
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -15,8 +14,8 @@ case class MetaDb(
     domains: List[db.Domain]
 ) {
   val typeMapperDb: TypeMapperDb = dbType match {
-    case DbType.PostgreSQL             => PgTypeMapperDb(enums, domains)
-    case DbType.MariaDB | DbType.MySQL => MariaTypeMapperDb()
+    case DbType.PostgreSQL => PgTypeMapperDb(enums, domains)
+    case DbType.MariaDB    => MariaTypeMapperDb()
   }
 }
 
@@ -33,7 +32,6 @@ object MetaDb {
     ds.dbType match {
       case DbType.PostgreSQL => PgMetaDb.fromDb(logger, ds, viewSelector, schemaMode, externalTools)
       case DbType.MariaDB    => MariaMetaDb.fromDb(logger, ds, viewSelector, schemaMode)
-      case DbType.MySQL      => MariaMetaDb.fromDb(logger, ds, viewSelector, schemaMode) // Use MariaDB implementation for MySQL
     }
 
   /** Load metadata from PostgreSQL-specific input (for backwards compatibility) */

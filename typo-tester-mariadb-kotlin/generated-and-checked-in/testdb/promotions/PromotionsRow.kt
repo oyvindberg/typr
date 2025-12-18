@@ -8,13 +8,14 @@ package testdb.promotions
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import typo.data.maria.MariaSet
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: promotions
   * Primary key: promotion_id
@@ -31,7 +32,7 @@ data class PromotionsRow(
   /** 
     * Default: NULL
     */
-  val description: Optional<String>,
+  val description: String?,
   /**  */
   @JsonProperty("discount_type") val discountType: String,
   /**  */
@@ -39,11 +40,11 @@ data class PromotionsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("min_order_amount") val minOrderAmount: Optional<BigDecimal>,
+  @JsonProperty("min_order_amount") val minOrderAmount: BigDecimal?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("max_uses") val maxUses: Optional<Long>,
+  @JsonProperty("max_uses") val maxUses: Long?,
   /** 
     * Default: 0
     */
@@ -51,15 +52,15 @@ data class PromotionsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("max_uses_per_customer") val maxUsesPerCustomer: Optional<Short>,
+  @JsonProperty("max_uses_per_customer") val maxUsesPerCustomer: Short?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("applicable_to") val applicableTo: Optional<MariaSet>,
+  @JsonProperty("applicable_to") val applicableTo: MariaSet?,
   /** Complex eligibility rules
     * Default: NULL
     */
-  @JsonProperty("rules_json") val rulesJson: Optional<String>,
+  @JsonProperty("rules_json") val rulesJson: String?,
   /**  */
   @JsonProperty("valid_from") val validFrom: LocalDateTime,
   /**  */
@@ -76,21 +77,21 @@ data class PromotionsRow(
   fun id(): PromotionsId = promotionId
 
   fun toUnsavedRow(
-    description: Defaulted<Optional<String>>,
-    minOrderAmount: Defaulted<Optional<BigDecimal>>,
-    maxUses: Defaulted<Optional<Long>>,
+    description: Defaulted<String?>,
+    minOrderAmount: Defaulted<BigDecimal?>,
+    maxUses: Defaulted<Long?>,
     usesCount: Defaulted<Long>,
-    maxUsesPerCustomer: Defaulted<Optional<Short>>,
-    applicableTo: Defaulted<Optional<MariaSet>>,
-    rulesJson: Defaulted<Optional<String>>,
+    maxUsesPerCustomer: Defaulted<Short?>,
+    applicableTo: Defaulted<MariaSet?>,
+    rulesJson: Defaulted<String?>,
     isActive: Defaulted<Boolean>,
     createdAt: Defaulted<LocalDateTime>
   ): PromotionsRowUnsaved = PromotionsRowUnsaved(code, name, discountType, discountValue, validFrom, validTo, description, minOrderAmount, maxUses, usesCount, maxUsesPerCustomer, applicableTo, rulesJson, isActive, createdAt)
 
   companion object {
-    val _rowParser: RowParser<PromotionsRow> = RowParsers.of(PromotionsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text.opt(), MariaTypes.text, MariaTypes.decimal, MariaTypes.decimal.opt(), MariaTypes.intUnsigned.opt(), MariaTypes.intUnsigned, MariaTypes.tinyintUnsigned.opt(), MariaTypes.set.opt(), MariaTypes.longtext.opt(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.bool, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15 -> PromotionsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!) }, { row -> arrayOf<Any?>(row.promotionId, row.code, row.name, row.description, row.discountType, row.discountValue, row.minOrderAmount, row.maxUses, row.usesCount, row.maxUsesPerCustomer, row.applicableTo, row.rulesJson, row.validFrom, row.validTo, row.isActive, row.createdAt) })
+    val _rowParser: RowParser<PromotionsRow> = RowParsers.of(PromotionsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text.nullable(), MariaTypes.text, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.intUnsigned.nullable(), KotlinDbTypes.MariaTypes.intUnsigned, KotlinDbTypes.MariaTypes.tinyintUnsigned.nullable(), MariaTypes.set.nullable(), MariaTypes.longtext.nullable(), MariaTypes.datetime, MariaTypes.datetime, KotlinDbTypes.MariaTypes.bool, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15 -> PromotionsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!) }, { row -> arrayOf<Any?>(row.promotionId, row.code, row.name, row.description, row.discountType, row.discountValue, row.minOrderAmount, row.maxUses, row.usesCount, row.maxUsesPerCustomer, row.applicableTo, row.rulesJson, row.validFrom, row.validTo, row.isActive, row.createdAt) })
 
     val mariaText: MariaText<PromotionsRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

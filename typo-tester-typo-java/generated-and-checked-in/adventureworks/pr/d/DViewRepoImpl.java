@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class DViewRepoImpl implements DViewRepo {
@@ -19,9 +20,6 @@ public class DViewRepoImpl implements DViewRepo {
 
   @Override
   public List<DViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"
-       from "pr"."d"
-    """)).query(DViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\"\nfrom \"pr\".\"d\"\n")).query(DViewRow._rowParser.all()).runUnchecked(c);
   };
 }

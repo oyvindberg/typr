@@ -5,15 +5,14 @@
  */
 package adventureworks.sa.sp
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sa.sp */
 data class SpViewRow(
@@ -22,9 +21,9 @@ data class SpViewRow(
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.territoryid] */
-  val territoryid: Optional<SalesterritoryId>,
+  val territoryid: SalesterritoryId,
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.salesquota] */
-  val salesquota: Optional<BigDecimal>,
+  val salesquota: BigDecimal,
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.bonus] */
   val bonus: BigDecimal,
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.commissionpct] */
@@ -34,11 +33,11 @@ data class SpViewRow(
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.saleslastyear] */
   val saleslastyear: BigDecimal,
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SpViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> SpViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.territoryid, row.salesquota, row.bonus, row.commissionpct, row.salesytd, row.saleslastyear, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SpViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> SpViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.territoryid, row.salesquota, row.bonus, row.commissionpct, row.salesytd, row.saleslastyear, row.rowguid, row.modifieddate) })
   }
 }

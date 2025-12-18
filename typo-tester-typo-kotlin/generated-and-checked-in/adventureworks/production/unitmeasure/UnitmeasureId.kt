@@ -6,25 +6,25 @@
 package adventureworks.production.unitmeasure
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 
 /** Type for the primary key of table `production.unitmeasure` */
-data class UnitmeasureId(@JsonValue val value: /* bpchar, max 3 chars */ String) {
+data class UnitmeasureId(@JsonValue val value: String) {
   override fun toString(): kotlin.String {
     return value.toString()
   }
 
   companion object {
-    val bijection: Bijection<UnitmeasureId, /* bpchar, max 3 chars */ String> =
+    val bijection: Bijection<UnitmeasureId, String> =
       Bijection.of(UnitmeasureId::value, ::UnitmeasureId)
 
     val pgType: PgType<UnitmeasureId> =
-      PgTypes.text.bimap(::UnitmeasureId, UnitmeasureId::value)
+      PgTypes.bpchar.bimap(::UnitmeasureId, UnitmeasureId::value)
 
     val pgTypeArray: PgType<Array<UnitmeasureId>> =
-      PgTypes.textArray.bimap({ xs -> arrayMap.map(xs, ::UnitmeasureId, UnitmeasureId::class.java) }, { xs -> arrayMap.map(xs, UnitmeasureId::value, /* bpchar, max 3 chars */ String::class.java) })
+      PgTypes.bpcharArray.bimap({ xs -> arrayMap.map(xs, ::UnitmeasureId, UnitmeasureId::class.java) }, { xs -> arrayMap.map(xs, UnitmeasureId::value, String::class.java) })
   }
 }

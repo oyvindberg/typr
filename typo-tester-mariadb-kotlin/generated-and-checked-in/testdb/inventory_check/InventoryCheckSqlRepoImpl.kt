@@ -7,52 +7,18 @@ package testdb.inventory_check
 
 import java.math.BigInteger
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Fragment.interpolate
 
 class InventoryCheckSqlRepoImpl() : InventoryCheckSqlRepo {
   override fun apply(
-    warehouseId: Optional<Short>,
-    productId: Optional<BigInteger>,
-    lowStockOnly: Optional</* user-picked */ java.lang.Boolean>,
+    warehouseId: Short?,
+    productId: BigInteger?,
+    lowStockOnly: Boolean?,
     c: Connection
-  ): List<InventoryCheckSqlRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      -- Check inventory levels across warehouses
-      SELECT i.inventory_id,
-             p.product_id,
-             p.sku,
-             p.name AS product_name,
-             w.warehouse_id,
-             w.code AS warehouse_code,
-             w.name AS warehouse_name,
-             i.quantity_on_hand,
-             i.quantity_reserved,
-             (i.quantity_on_hand - i.quantity_reserved) AS available,
-             i.reorder_point,
-             i.bin_location
-      FROM inventory i
-      JOIN products p ON i.product_id = p.product_id
-      JOIN warehouses w ON i.warehouse_id = w.warehouse_id
-      WHERE (""".trimMargin()),
-    MariaTypes.smallint.opt().encode(warehouseId),
-    typo.runtime.Fragment.lit(" IS NULL OR i.warehouse_id = "),
-    MariaTypes.smallint.opt().encode(warehouseId),
-    typo.runtime.Fragment.lit("""
-      )
-        AND (""".trimMargin()),
-    MariaTypes.bigintUnsigned.opt().encode(productId),
-    typo.runtime.Fragment.lit(" IS NULL OR i.product_id = "),
-    MariaTypes.bigintUnsigned.opt().encode(productId),
-    typo.runtime.Fragment.lit("""
-      )
-        AND (""".trimMargin()),
-    MariaTypes.bool.opt().encode(lowStockOnly),
-    typo.runtime.Fragment.lit("""
-     IS NULL OR (i.quantity_on_hand - i.quantity_reserved) <= i.reorder_point)
-
-    """.trimMargin())
-  ).query(InventoryCheckSqlRow._rowParser.all()).runUnchecked(c)
+  ): List<InventoryCheckSqlRow> = interpolate(Fragment.lit("-- Check inventory levels across warehouses\nSELECT i.inventory_id,\n       p.product_id,\n       p.sku,\n       p.name AS product_name,\n       w.warehouse_id,\n       w.code AS warehouse_code,\n       w.name AS warehouse_name,\n       i.quantity_on_hand,\n       i.quantity_reserved,\n       (i.quantity_on_hand - i.quantity_reserved) AS available,\n       i.reorder_point,\n       i.bin_location\nFROM inventory i\nJOIN products p ON i.product_id = p.product_id\nJOIN warehouses w ON i.warehouse_id = w.warehouse_id\nWHERE ("), Fragment.encode(KotlinDbTypes.MariaTypes.tinyintUnsigned.nullable(), warehouseId), Fragment.lit(" IS NULL OR i.warehouse_id = "), Fragment.encode(KotlinDbTypes.MariaTypes.tinyintUnsigned.nullable(), warehouseId), Fragment.lit(")\n  AND ("), Fragment.encode(MariaTypes.bigintUnsigned.nullable(), productId), Fragment.lit(" IS NULL OR i.product_id = "), Fragment.encode(MariaTypes.bigintUnsigned.nullable(), productId), Fragment.lit(")\n  AND ("), Fragment.encode(KotlinDbTypes.MariaTypes.bool.nullable(), lowStockOnly), Fragment.lit(" IS NULL OR (i.quantity_on_hand - i.quantity_reserved) <= i.reorder_point)\n")).query(InventoryCheckSqlRow._rowParser.all()).runUnchecked(c)
 }

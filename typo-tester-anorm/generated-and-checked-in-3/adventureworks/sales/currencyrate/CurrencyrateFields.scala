@@ -11,10 +11,10 @@ import adventureworks.sales.currency.CurrencyId
 import adventureworks.sales.currency.CurrencyRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait CurrencyrateFields {
   def currencyrateid: IdField[CurrencyrateId, CurrencyrateRow]
@@ -33,11 +33,11 @@ trait CurrencyrateFields {
 }
 
 object CurrencyrateFields {
-  lazy val structure: Relation[CurrencyrateFields, CurrencyrateRow] =
+  lazy val structure: RelationStructure[CurrencyrateFields, CurrencyrateRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[CurrencyrateFields, CurrencyrateRow] {
+    extends RelationStructure[CurrencyrateFields, CurrencyrateRow] {
 
     override lazy val fields: CurrencyrateFields = new CurrencyrateFields {
       override def currencyrateid = IdField[CurrencyrateId, CurrencyrateRow](_path, "currencyrateid", None, Some("int4"), x => x.currencyrateid, (row, value) => row.copy(currencyrateid = value))

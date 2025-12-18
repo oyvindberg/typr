@@ -7,10 +7,10 @@ package testdb.v_customer_summary
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VCustomerSummaryViewRepo {
-  fun select(): SelectBuilder<VCustomerSummaryViewFields, VCustomerSummaryViewRow>
+  abstract fun select(): SelectBuilder<VCustomerSummaryViewFields, VCustomerSummaryViewRow>
 
-  fun selectAll(c: Connection): List<VCustomerSummaryViewRow>
+  abstract fun selectAll(c: Connection): List<VCustomerSummaryViewRow>
 }

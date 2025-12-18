@@ -7,48 +7,35 @@ package testdb.mariatest_identity
 
 import java.lang.RuntimeException
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
-import java.util.function.Function
-import java.util.stream.Collectors
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.DeleteBuilderMock
+import typo.scaladsl.DeleteParams
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.SelectBuilderMock
+import typo.scaladsl.SelectParams
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.UpdateBuilderMock
+import typo.scaladsl.UpdateParams
 
 case class MariatestIdentityRepoMock(
   toRow: MariatestIdentityRowUnsaved => MariatestIdentityRow,
-  map: HashMap[MariatestIdentityId, MariatestIdentityRow] = new HashMap[MariatestIdentityId, MariatestIdentityRow]()
+  map: scala.collection.mutable.Map[MariatestIdentityId, MariatestIdentityRow] = scala.collection.mutable.Map.empty[MariatestIdentityId, MariatestIdentityRow]
 ) extends MariatestIdentityRepo {
-  override def delete: DeleteBuilder[MariatestIdentityFields, MariatestIdentityRow] = {
-    new DeleteBuilderMock(
-      MariatestIdentityFields.structure,
-      () => new ArrayList(map.values()),
-      DeleteParams.empty(),
-      row => row.id,
-      id => map.remove(id): @scala.annotation.nowarn
-    )
-  }
+  override def delete: DeleteBuilder[MariatestIdentityFields, MariatestIdentityRow] = DeleteBuilderMock(MariatestIdentityFields.structure, () => map.values.toList, DeleteParams.empty(), row => row.id, id => map.remove(id): @scala.annotation.nowarn)
 
-  override def deleteById(id: MariatestIdentityId)(using c: Connection): java.lang.Boolean = Optional.ofNullable(map.remove(id)).isPresent()
+  override def deleteById(id: MariatestIdentityId)(using c: Connection): Boolean = map.remove(id).isDefined
 
-  override def deleteByIds(ids: Array[MariatestIdentityId])(using c: Connection): Integer = {
+  override def deleteByIds(ids: Array[MariatestIdentityId])(using c: Connection): Int = {
     var count = 0
-    ids.foreach { id => if (Optional.ofNullable(map.remove(id)).isPresent()) {
+    ids.foreach { id => if (map.remove(id).isDefined) {
       count = count + 1
     } }
     return count
   }
 
   override def insert(unsaved: MariatestIdentityRow)(using c: Connection): MariatestIdentityRow = {
-    if (map.containsKey(unsaved.id)) {
-      throw new RuntimeException(s"id $unsaved.id already exists")
+    if (map.contains(unsaved.id)) {
+      throw new RuntimeException(s"id ${unsaved.id} already exists")
     }
     map.put(unsaved.id, unsaved): @scala.annotation.nowarn
     return unsaved
@@ -56,33 +43,20 @@ case class MariatestIdentityRepoMock(
 
   override def insert(unsaved: MariatestIdentityRowUnsaved)(using c: Connection): MariatestIdentityRow = insert(toRow(unsaved))(using c)
 
-  override def select: SelectBuilder[MariatestIdentityFields, MariatestIdentityRow] = new SelectBuilderMock(MariatestIdentityFields.structure, () => new ArrayList(map.values()), SelectParams.empty())
+  override def select: SelectBuilder[MariatestIdentityFields, MariatestIdentityRow] = SelectBuilderMock(MariatestIdentityFields.structure, () => map.values.toList, SelectParams.empty())
 
-  override def selectAll(using c: Connection): java.util.List[MariatestIdentityRow] = new ArrayList(map.values())
+  override def selectAll(using c: Connection): List[MariatestIdentityRow] = map.values.toList
 
-  override def selectById(id: MariatestIdentityId)(using c: Connection): Optional[MariatestIdentityRow] = Optional.ofNullable(map.get(id))
+  override def selectById(id: MariatestIdentityId)(using c: Connection): Option[MariatestIdentityRow] = map.get(id)
 
-  override def selectByIds(ids: Array[MariatestIdentityId])(using c: Connection): java.util.List[MariatestIdentityRow] = {
-    val result = new ArrayList[MariatestIdentityRow]()
-    ids.foreach { id => val opt = Optional.ofNullable(map.get(id)); if (opt.isPresent()) {
-      result.add(opt.get()): @scala.annotation.nowarn
-    } }
-    return result
-  }
+  override def selectByIds(ids: Array[MariatestIdentityId])(using c: Connection): List[MariatestIdentityRow] = ids.flatMap(map.get(_)).toList
 
-  override def selectByIdsTracked(ids: Array[MariatestIdentityId])(using c: Connection): java.util.Map[MariatestIdentityId, MariatestIdentityRow] = selectByIds(ids)(using c).stream().collect(Collectors.toMap((row: MariatestIdentityRow) => row.id, Function.identity()))
+  override def selectByIdsTracked(ids: Array[MariatestIdentityId])(using c: Connection): Map[MariatestIdentityId, MariatestIdentityRow] = selectByIds(ids)(using c).map(x => (((row: MariatestIdentityRow) => row.id).apply(x), x)).toMap
 
-  override def update: UpdateBuilder[MariatestIdentityFields, MariatestIdentityRow] = {
-    new UpdateBuilderMock(
-      MariatestIdentityFields.structure,
-      () => new ArrayList(map.values()),
-      UpdateParams.empty(),
-      row => row
-    )
-  }
+  override def update: UpdateBuilder[MariatestIdentityFields, MariatestIdentityRow] = UpdateBuilderMock(MariatestIdentityFields.structure, () => map.values.toList, UpdateParams.empty(), row => row)
 
-  override def update(row: MariatestIdentityRow)(using c: Connection): java.lang.Boolean = {
-    val shouldUpdate = Optional.ofNullable(map.get(row.id)).filter(oldRow => (oldRow != row)).isPresent()
+  override def update(row: MariatestIdentityRow)(using c: Connection): Boolean = {
+    val shouldUpdate = map.get(row.id).filter(oldRow => (oldRow != row)).isDefined
     if (shouldUpdate) {
       map.put(row.id, row): @scala.annotation.nowarn
     }
@@ -94,13 +68,10 @@ case class MariatestIdentityRepoMock(
     return unsaved
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[MariatestIdentityRow])(using c: Connection): java.util.List[MariatestIdentityRow] = {
-    val result = new ArrayList[MariatestIdentityRow]()
-    while (unsaved.hasNext()) {
-      val row = unsaved.next()
+  override def upsertBatch(unsaved: Iterator[MariatestIdentityRow])(using c: Connection): List[MariatestIdentityRow] = {
+    unsaved.map { row =>
       map.put(row.id, row): @scala.annotation.nowarn
-      result.add(row): @scala.annotation.nowarn
-    }
-    return result
+      row
+    }.toList
   }
 }

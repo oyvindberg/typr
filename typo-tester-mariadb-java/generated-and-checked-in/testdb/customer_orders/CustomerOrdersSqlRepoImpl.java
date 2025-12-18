@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
 import testdb.customers.CustomersId;
+import typo.runtime.Fragment;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -19,33 +20,6 @@ public class CustomerOrdersSqlRepoImpl implements CustomerOrdersSqlRepo {
     Optional<String> orderStatus,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         -- Query customers with their orders
-         SELECT c.customer_id,
-                c.email,
-                c.first_name,
-                c.last_name,
-                c.tier,
-                o.order_id,
-                o.order_number,
-                o.order_status,
-                o.total_amount,
-                o.ordered_at
-         FROM customers c
-         LEFT JOIN orders o ON c.customer_id = o.customer_id
-         WHERE c.customer_id = """),
-      /* user-picked */ CustomersId.pgType.encode(customerId),
-      typo.runtime.Fragment.lit("""
-   
-           AND ("""),
-      MariaTypes.text.opt().encode(orderStatus),
-      typo.runtime.Fragment.lit(" IS NULL OR o.order_status = "),
-      MariaTypes.text.opt().encode(orderStatus),
-      typo.runtime.Fragment.lit("""
-      )
-
-      """)
-    ).query(CustomerOrdersSqlRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("-- Query customers with their orders\nSELECT c.customer_id,\n       c.email,\n       c.first_name,\n       c.last_name,\n       c.tier,\n       o.order_id,\n       o.order_number,\n       o.order_status,\n       o.total_amount,\n       o.ordered_at\nFROM customers c\nLEFT JOIN orders o ON c.customer_id = o.customer_id\nWHERE c.customer_id = "), Fragment.encode(CustomersId.pgType, customerId), Fragment.lit("\n  AND ("), Fragment.encode(MariaTypes.text.opt(), orderStatus), Fragment.lit(" IS NULL OR o.order_status = "), Fragment.encode(MariaTypes.text.opt(), orderStatus), Fragment.lit(")\n")).query(CustomerOrdersSqlRow._rowParser.all()).runUnchecked(c);
   };
 }

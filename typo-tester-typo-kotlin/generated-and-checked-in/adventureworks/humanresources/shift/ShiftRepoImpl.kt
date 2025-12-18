@@ -5,25 +5,21 @@
  */
 package adventureworks.humanresources.shift
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoLocalTime
 import adventureworks.public.Name
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class ShiftRepoImpl() : ShiftRepo {
   override fun delete(): DeleteBuilder<ShiftFields, ShiftRow> = DeleteBuilder.of("\"humanresources\".\"shift\"", ShiftFields.structure, Dialect.POSTGRESQL)
@@ -31,102 +27,44 @@ class ShiftRepoImpl() : ShiftRepo {
   override fun deleteById(
     shiftid: ShiftId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "humanresources"."shift" where "shiftid" = 
-    """.trimMargin()),
-    ShiftId.pgType.encode(shiftid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"humanresources\".\"shift\" where \"shiftid\" = "), Fragment.encode(ShiftId.pgType, shiftid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     shiftids: Array<ShiftId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "humanresources"."shift"
-               where "shiftid" = ANY(""".trimMargin()),
-             ShiftId.pgTypeArray.encode(shiftids),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = interpolate(Fragment.lit("delete\nfrom \"humanresources\".\"shift\"\nwhere \"shiftid\" = ANY("), Fragment.encode(ShiftId.pgTypeArray, shiftids), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: ShiftRow,
     c: Connection
-  ): ShiftRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "humanresources"."shift"("shiftid", "name", "starttime", "endtime", "modifieddate")
-      values (""".trimMargin()),
-    ShiftId.pgType.encode(unsaved.shiftid),
-    typo.runtime.Fragment.lit("::int4, "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoLocalTime.pgType.encode(unsaved.starttime),
-    typo.runtime.Fragment.lit("::time, "),
-    TypoLocalTime.pgType.encode(unsaved.endtime),
-    typo.runtime.Fragment.lit("::time, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text
-    """.trimMargin())
-  )
+  ): ShiftRow = interpolate(Fragment.lit("insert into \"humanresources\".\"shift\"(\"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\")\nvalues ("), Fragment.encode(ShiftId.pgType, unsaved.shiftid), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.time, unsaved.starttime), Fragment.lit("::time, "), Fragment.encode(PgTypes.time, unsaved.endtime), Fragment.lit("::time, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\"\n"))
     .updateReturning(ShiftRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: ShiftRowUnsaved,
     c: Connection
   ): ShiftRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"name\""))
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name),
-      typo.runtime.Fragment.lit("::varchar")
-    ))
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar")))
     columns.add(Fragment.lit("\"starttime\""))
-    values.add(interpolate(
-      TypoLocalTime.pgType.encode(unsaved.starttime),
-      typo.runtime.Fragment.lit("::time")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.time, unsaved.starttime), Fragment.lit("::time")))
     columns.add(Fragment.lit("\"endtime\""))
-    values.add(interpolate(
-      TypoLocalTime.pgType.encode(unsaved.endtime),
-      typo.runtime.Fragment.lit("::time")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.time, unsaved.endtime), Fragment.lit("::time")))
     unsaved.shiftid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"shiftid\""))
-      values.add(interpolate(
-        ShiftId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      )) }
+      values.add(interpolate(Fragment.encode(ShiftId.pgType, value), Fragment.lit("::int4"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "humanresources"."shift"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"humanresources\".\"shift\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\"\n"))
     return q.updateReturning(ShiftRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -134,49 +72,28 @@ class ShiftRepoImpl() : ShiftRepo {
     unsaved: MutableIterator<ShiftRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "humanresources"."shift"("shiftid", "name", "starttime", "endtime", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, ShiftRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"humanresources\".\"shift\"(\"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, ShiftRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<ShiftRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "humanresources"."shift"("name", "starttime", "endtime", "shiftid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, ShiftRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"humanresources\".\"shift\"(\"name\", \"starttime\", \"endtime\", \"shiftid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ShiftRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<ShiftFields, ShiftRow> = SelectBuilder.of("\"humanresources\".\"shift\"", ShiftFields.structure, ShiftRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<ShiftRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text
-    from "humanresources"."shift"
-  """.trimMargin())).query(ShiftRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<ShiftRow> = interpolate(Fragment.lit("select \"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\"\nfrom \"humanresources\".\"shift\"\n")).query(ShiftRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     shiftid: ShiftId,
     c: Connection
-  ): Optional<ShiftRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text
-      from "humanresources"."shift"
-      where "shiftid" = """.trimMargin()),
-    ShiftId.pgType.encode(shiftid),
-    typo.runtime.Fragment.lit("")
-  ).query(ShiftRow._rowParser.first()).runUnchecked(c)
+  ): ShiftRow? = interpolate(Fragment.lit("select \"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\"\nfrom \"humanresources\".\"shift\"\nwhere \"shiftid\" = "), Fragment.encode(ShiftId.pgType, shiftid), Fragment.lit("")).query(ShiftRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     shiftids: Array<ShiftId>,
     c: Connection
-  ): List<ShiftRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text
-      from "humanresources"."shift"
-      where "shiftid" = ANY(""".trimMargin()),
-    ShiftId.pgTypeArray.encode(shiftids),
-    typo.runtime.Fragment.lit(")")
-  ).query(ShiftRow._rowParser.all()).runUnchecked(c)
+  ): List<ShiftRow> = interpolate(Fragment.lit("select \"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\"\nfrom \"humanresources\".\"shift\"\nwhere \"shiftid\" = ANY("), Fragment.encode(ShiftId.pgTypeArray, shiftids), Fragment.lit(")")).query(ShiftRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     shiftids: Array<ShiftId>,
@@ -184,85 +101,32 @@ class ShiftRepoImpl() : ShiftRepo {
   ): Map<ShiftId, ShiftRow> {
     val ret: MutableMap<ShiftId, ShiftRow> = mutableMapOf<ShiftId, ShiftRow>()
     selectByIds(shiftids, c).forEach({ row -> ret.put(row.shiftid, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<ShiftFields, ShiftRow> = UpdateBuilder.of("\"humanresources\".\"shift\"", ShiftFields.structure, ShiftRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<ShiftFields, ShiftRow> = UpdateBuilder.of("\"humanresources\".\"shift\"", ShiftFields.structure, ShiftRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: ShiftRow,
     c: Connection
   ): Boolean {
     val shiftid: ShiftId = row.shiftid
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "humanresources"."shift"
-        set "name" = """.trimMargin()),
-      Name.pgType.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ::varchar,
-        "starttime" = """.trimMargin()),
-      TypoLocalTime.pgType.encode(row.starttime),
-      typo.runtime.Fragment.lit("""
-        ::time,
-        "endtime" = """.trimMargin()),
-      TypoLocalTime.pgType.encode(row.endtime),
-      typo.runtime.Fragment.lit("""
-        ::time,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "shiftid" = """.trimMargin()),
-      ShiftId.pgType.encode(shiftid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"humanresources\".\"shift\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name), Fragment.lit("::varchar,\n\"starttime\" = "), Fragment.encode(PgTypes.time, row.starttime), Fragment.lit("::time,\n\"endtime\" = "), Fragment.encode(PgTypes.time, row.endtime), Fragment.lit("::time,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"shiftid\" = "), Fragment.encode(ShiftId.pgType, shiftid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: ShiftRow,
     c: Connection
-  ): ShiftRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "humanresources"."shift"("shiftid", "name", "starttime", "endtime", "modifieddate")
-      values (""".trimMargin()),
-    ShiftId.pgType.encode(unsaved.shiftid),
-    typo.runtime.Fragment.lit("::int4, "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoLocalTime.pgType.encode(unsaved.starttime),
-    typo.runtime.Fragment.lit("::time, "),
-    TypoLocalTime.pgType.encode(unsaved.endtime),
-    typo.runtime.Fragment.lit("::time, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("shiftid")
-      do update set
-        "name" = EXCLUDED."name",
-      "starttime" = EXCLUDED."starttime",
-      "endtime" = EXCLUDED."endtime",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text""".trimMargin())
-  )
+  ): ShiftRow = interpolate(Fragment.lit("insert into \"humanresources\".\"shift\"(\"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\")\nvalues ("), Fragment.encode(ShiftId.pgType, unsaved.shiftid), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.time, unsaved.starttime), Fragment.lit("::time, "), Fragment.encode(PgTypes.time, unsaved.endtime), Fragment.lit("::time, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"shiftid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"starttime\" = EXCLUDED.\"starttime\",\n\"endtime\" = EXCLUDED.\"endtime\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\""))
     .updateReturning(ShiftRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<ShiftRow>,
     c: Connection
-  ): List<ShiftRow> = interpolate(typo.runtime.Fragment.lit("""
-                        insert into "humanresources"."shift"("shiftid", "name", "starttime", "endtime", "modifieddate")
-                        values (?::int4, ?::varchar, ?::time, ?::time, ?::timestamp)
-                        on conflict ("shiftid")
-                        do update set
-                          "name" = EXCLUDED."name",
-                        "starttime" = EXCLUDED."starttime",
-                        "endtime" = EXCLUDED."endtime",
-                        "modifieddate" = EXCLUDED."modifieddate"
-                        returning "shiftid", "name", "starttime"::text, "endtime"::text, "modifieddate"::text""".trimMargin()))
+  ): List<ShiftRow> = interpolate(Fragment.lit("insert into \"humanresources\".\"shift\"(\"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::time, ?::time, ?::timestamp)\non conflict (\"shiftid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"starttime\" = EXCLUDED.\"starttime\",\n\"endtime\" = EXCLUDED.\"endtime\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\""))
     .updateManyReturning(ShiftRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -270,22 +134,8 @@ class ShiftRepoImpl() : ShiftRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table shift_TEMP (like "humanresources"."shift") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy shift_TEMP("shiftid", "name", "starttime", "endtime", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, ShiftRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "humanresources"."shift"("shiftid", "name", "starttime", "endtime", "modifieddate")
-      select * from shift_TEMP
-      on conflict ("shiftid")
-      do update set
-        "name" = EXCLUDED."name",
-      "starttime" = EXCLUDED."starttime",
-      "endtime" = EXCLUDED."endtime",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table shift_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table shift_TEMP (like \"humanresources\".\"shift\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy shift_TEMP(\"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\") from stdin", batchSize, unsaved, c, ShiftRow.pgText)
+    return interpolate(Fragment.lit("insert into \"humanresources\".\"shift\"(\"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\")\nselect * from shift_TEMP\non conflict (\"shiftid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"starttime\" = EXCLUDED.\"starttime\",\n\"endtime\" = EXCLUDED.\"endtime\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table shift_TEMP;")).update().runUnchecked(c)
   }
 }

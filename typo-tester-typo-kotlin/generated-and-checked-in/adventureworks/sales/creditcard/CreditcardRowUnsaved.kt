@@ -7,32 +7,32 @@ package adventureworks.sales.creditcard
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.userdefined.CustomCreditcardId
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `sales.creditcard` which has not been persisted yet */
 data class CreditcardRowUnsaved(
   /** Credit card name. */
-  val cardtype: /* max 50 chars */ String,
+  val cardtype: String,
   /** Credit card number. */
-  val cardnumber: /* max 25 chars */ String,
+  val cardnumber: String,
   /** Credit card expiration month. */
-  val expmonth: TypoShort,
+  val expmonth: Short,
   /** Credit card expiration year. */
-  val expyear: TypoShort,
+  val expyear: Short,
   /** Default: nextval('sales.creditcard_creditcardid_seq'::regclass)
     * Primary key for CreditCard records.
     */
   val creditcardid: Defaulted</* user-picked */ CustomCreditcardId> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     creditcardidDefault: () -> /* user-picked */ CustomCreditcardId,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): CreditcardRow = CreditcardRow(creditcardid = creditcardid.getOrElse(creditcardidDefault), cardtype = cardtype, cardnumber = cardnumber, expmonth = expmonth, expyear = expyear, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -41,12 +41,12 @@ data class CreditcardRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.cardnumber, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.expmonth, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.expmonth, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.expyear, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.expyear, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(CustomCreditcardId.pgType.pgText()).unsafeEncode(row.creditcardid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

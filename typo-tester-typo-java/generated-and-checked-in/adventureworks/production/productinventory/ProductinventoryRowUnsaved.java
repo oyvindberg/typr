@@ -7,11 +7,10 @@ package adventureworks.production.productinventory;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.location.LocationId;
 import adventureworks.production.product.ProductId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -26,19 +25,19 @@ public record ProductinventoryRowUnsaved(
     */
   LocationId locationid,
   /** Storage compartment within an inventory location. */
-  /* max 10 chars */ String shelf,
+  String shelf,
   /** Storage container on a shelf in an inventory location.
     * Constraint CK_ProductInventory_Bin affecting columns bin:  (((bin >= 0) AND (bin <= 100)))
     */
-  TypoShort bin,
+  Short bin,
   /** Default: 0
     * Quantity of products in the inventory location.
     */
-  Defaulted<TypoShort> quantity,
+  Defaulted<Short> quantity,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductinventoryRowUnsaved(
     /** Product identification number. Foreign key to Product.ProductID.
@@ -50,11 +49,11 @@ public record ProductinventoryRowUnsaved(
       */
     LocationId locationid,
     /** Storage compartment within an inventory location. */
-    /* max 10 chars */ String shelf,
+    String shelf,
     /** Storage container on a shelf in an inventory location.
       * Constraint CK_ProductInventory_Bin affecting columns bin:  (((bin >= 0) AND (bin <= 100)))
       */
-    TypoShort bin
+    Short bin
   ) {
     this(productid, locationid, shelf, bin, new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
   };
@@ -74,31 +73,31 @@ public record ProductinventoryRowUnsaved(
   };
 
   /** Storage compartment within an inventory location. */
-  public ProductinventoryRowUnsaved withShelf(/* max 10 chars */ String shelf) {
+  public ProductinventoryRowUnsaved withShelf(String shelf) {
     return new ProductinventoryRowUnsaved(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Storage container on a shelf in an inventory location.
     * Constraint CK_ProductInventory_Bin affecting columns bin:  (((bin >= 0) AND (bin <= 100)))
     */
-  public ProductinventoryRowUnsaved withBin(TypoShort bin) {
+  public ProductinventoryRowUnsaved withBin(Short bin) {
     return new ProductinventoryRowUnsaved(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Default: 0
     * Quantity of products in the inventory location.
     */
-  public ProductinventoryRowUnsaved withQuantity(Defaulted<TypoShort> quantity) {
+  public ProductinventoryRowUnsaved withQuantity(Defaulted<Short> quantity) {
     return new ProductinventoryRowUnsaved(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public ProductinventoryRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public ProductinventoryRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new ProductinventoryRowUnsaved(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ProductinventoryRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductinventoryRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductinventoryRowUnsaved(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
@@ -110,19 +109,19 @@ public record ProductinventoryRowUnsaved(
       sb.append(PgText.DELIMETER);
       PgTypes.text.pgText().unsafeEncode(row.shelf, sb);
       sb.append(PgText.DELIMETER);
-      TypoShort.pgType.pgText().unsafeEncode(row.bin, sb);
+      PgTypes.int2.pgText().unsafeEncode(row.bin, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.quantity, sb);
+      Defaulted.pgText(PgTypes.int2.pgText()).unsafeEncode(row.quantity, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ProductinventoryRow toRow(
-    java.util.function.Supplier<TypoShort> quantityDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<Short> quantityDefault,
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ProductinventoryRow(productid, locationid, shelf, bin, quantity.getOrElse(quantityDefault), rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

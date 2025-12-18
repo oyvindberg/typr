@@ -9,12 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.orders.OrdersId
 import testdb.shipping_carriers.ShippingCarriersId
 import testdb.warehouses.WarehousesId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -35,19 +36,19 @@ data class ShipmentsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("tracking_number") val trackingNumber: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("tracking_number") val trackingNumber: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("weight_kg") val weightKg: Defaulted<Optional<BigDecimal>> = UseDefault(),
+  @JsonProperty("weight_kg") val weightKg: Defaulted<BigDecimal?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("dimensions_json") val dimensionsJson: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("dimensions_json") val dimensionsJson: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("label_data") val labelData: Defaulted<Optional<ByteArray>> = UseDefault(),
+  @JsonProperty("label_data") val labelData: Defaulted<ByteArray?> = UseDefault(),
   /** Default: 'pending'
 
     */
@@ -55,23 +56,23 @@ data class ShipmentsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("estimated_delivery_date") val estimatedDeliveryDate: Defaulted<Optional<LocalDate>> = UseDefault(),
+  @JsonProperty("estimated_delivery_date") val estimatedDeliveryDate: Defaulted<LocalDate?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("actual_delivery_at") val actualDeliveryAt: Defaulted<Optional<LocalDateTime>> = UseDefault(),
+  @JsonProperty("actual_delivery_at") val actualDeliveryAt: Defaulted<LocalDateTime?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("insurance_amount") val insuranceAmount: Defaulted<Optional<BigDecimal>> = UseDefault(),
+  @JsonProperty("insurance_amount") val insuranceAmount: Defaulted<BigDecimal?> = UseDefault(),
   /** Default: NULL
     * Points to [testdb.warehouses.WarehousesRow.warehouseId]
     */
-  @JsonProperty("origin_warehouse_id") val originWarehouseId: Defaulted<Optional<WarehousesId>> = UseDefault(),
+  @JsonProperty("origin_warehouse_id") val originWarehouseId: Defaulted<WarehousesId?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("shipped_at") val shippedAt: Defaulted<Optional<LocalDateTime>> = UseDefault(),
+  @JsonProperty("shipped_at") val shippedAt: Defaulted<LocalDateTime?> = UseDefault(),
   /** Default: current_timestamp(6)
 
     */
@@ -82,16 +83,16 @@ data class ShipmentsRowUnsaved(
   @JsonProperty("updated_at") val updatedAt: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
-    trackingNumberDefault: () -> Optional<String>,
-    weightKgDefault: () -> Optional<BigDecimal>,
-    dimensionsJsonDefault: () -> Optional<String>,
-    labelDataDefault: () -> Optional<ByteArray>,
+    trackingNumberDefault: () -> String?,
+    weightKgDefault: () -> BigDecimal?,
+    dimensionsJsonDefault: () -> String?,
+    labelDataDefault: () -> ByteArray?,
     statusDefault: () -> String,
-    estimatedDeliveryDateDefault: () -> Optional<LocalDate>,
-    actualDeliveryAtDefault: () -> Optional<LocalDateTime>,
-    insuranceAmountDefault: () -> Optional<BigDecimal>,
-    originWarehouseIdDefault: () -> Optional<WarehousesId>,
-    shippedAtDefault: () -> Optional<LocalDateTime>,
+    estimatedDeliveryDateDefault: () -> LocalDate?,
+    actualDeliveryAtDefault: () -> LocalDateTime?,
+    insuranceAmountDefault: () -> BigDecimal?,
+    originWarehouseIdDefault: () -> WarehousesId?,
+    shippedAtDefault: () -> LocalDateTime?,
     createdAtDefault: () -> LocalDateTime,
     updatedAtDefault: () -> LocalDateTime,
     shipmentIdDefault: () -> ShipmentsId
@@ -105,27 +106,27 @@ data class ShipmentsRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.varchar.mariaText().unsafeEncode(row.shippingMethod, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.shippingCost, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.shippingCost, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.trackingNumber, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.trackingNumber, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.weightKg, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.nullable().mariaText()).unsafeEncode(row.weightKg, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.dimensionsJson, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.dimensionsJson, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longblob.opt().mariaText()).unsafeEncode(row.labelData, sb)
+      Defaulted.mariaText(MariaTypes.longblob.nullable().mariaText()).unsafeEncode(row.labelData, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.text.mariaText()).unsafeEncode(row.status, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.date.opt().mariaText()).unsafeEncode(row.estimatedDeliveryDate, sb)
+      Defaulted.mariaText(MariaTypes.date.nullable().mariaText()).unsafeEncode(row.estimatedDeliveryDate, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.actualDeliveryAt, sb)
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.actualDeliveryAt, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.insuranceAmount, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.nullable().mariaText()).unsafeEncode(row.insuranceAmount, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(WarehousesId.pgType.opt().mariaText()).unsafeEncode(row.originWarehouseId, sb)
+      Defaulted.mariaText(WarehousesId.pgType.nullable().mariaText()).unsafeEncode(row.originWarehouseId, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.shippedAt, sb)
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.shippedAt, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.createdAt, sb)
       sb.append(MariaText.DELIMETER)

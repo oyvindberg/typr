@@ -5,46 +5,48 @@
  */
 package adventureworks.sales.salesreason
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SalesreasonFields : FieldsExpr<SalesreasonRow> {
-  override fun columns(): List<FieldLike<*, SalesreasonRow>>
+  abstract override fun columns(): List<FieldLike<*, SalesreasonRow>>
 
-  fun modifieddate(): Field<TypoLocalDateTime, SalesreasonRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SalesreasonRow>
 
-  fun name(): Field<Name, SalesreasonRow>
+  abstract fun name(): Field<Name, SalesreasonRow>
 
-  fun reasontype(): Field<Name, SalesreasonRow>
+  abstract fun reasontype(): Field<Name, SalesreasonRow>
 
-  override fun rowParser(): RowParser<SalesreasonRow> = SalesreasonRow._rowParser
+  override fun rowParser(): RowParser<SalesreasonRow> = SalesreasonRow._rowParser.underlying
 
-  fun salesreasonid(): IdField<SalesreasonId, SalesreasonRow>
+  abstract fun salesreasonid(): IdField<SalesreasonId, SalesreasonRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SalesreasonFields, Relation<SalesreasonFields, SalesreasonRow> {
-      override fun salesreasonid(): IdField<SalesreasonId, SalesreasonRow> = IdField<SalesreasonId, SalesreasonRow>(_path, "salesreasonid", SalesreasonRow::salesreasonid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(salesreasonid = value) }, SalesreasonId.pgType)
+    data class Impl(val _path: List<Path>) : SalesreasonFields, RelationStructure<SalesreasonFields, SalesreasonRow> {
+      override fun salesreasonid(): IdField<SalesreasonId, SalesreasonRow> = IdField<SalesreasonId, SalesreasonRow>(_path, "salesreasonid", SalesreasonRow::salesreasonid, null, "int4", { row, value -> row.copy(salesreasonid = value) }, SalesreasonId.pgType)
 
-      override fun name(): Field<Name, SalesreasonRow> = Field<Name, SalesreasonRow>(_path, "name", SalesreasonRow::name, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, SalesreasonRow> = Field<Name, SalesreasonRow>(_path, "name", SalesreasonRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun reasontype(): Field<Name, SalesreasonRow> = Field<Name, SalesreasonRow>(_path, "reasontype", SalesreasonRow::reasontype, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(reasontype = value) }, Name.pgType)
+      override fun reasontype(): Field<Name, SalesreasonRow> = Field<Name, SalesreasonRow>(_path, "reasontype", SalesreasonRow::reasontype, null, "varchar", { row, value -> row.copy(reasontype = value) }, Name.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SalesreasonRow> = Field<TypoLocalDateTime, SalesreasonRow>(_path, "modifieddate", SalesreasonRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SalesreasonRow> = Field<LocalDateTime, SalesreasonRow>(_path, "modifieddate", SalesreasonRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SalesreasonRow>> = listOf(this.salesreasonid(), this.name(), this.reasontype(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SalesreasonFields, SalesreasonRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SalesreasonRow>> = listOf(this.salesreasonid().underlying, this.name().underlying, this.reasontype().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SalesreasonFields, SalesreasonRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

@@ -5,15 +5,15 @@
  */
 package adventureworks.update_person_returning;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import java.sql.Connection;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface UpdatePersonReturningSqlRepo {
   List<UpdatePersonReturningSqlRow> apply(
     /* nullability unknown */ Optional<String> suffix,
-    /* nullability unknown */ Optional<TypoLocalDateTime> cutoff,
+    /* nullability unknown */ Optional<LocalDateTime> cutoff,
     Connection c
   );
 }

@@ -5,19 +5,19 @@
  */
 package testdb.categories
 
-import java.util.Optional
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.FieldsExpr0
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait CategoriesFields extends FieldsExpr[CategoriesRow] {
+trait CategoriesFields extends FieldsExpr0[CategoriesRow] {
   def categoryId: IdField[CategoriesId, CategoriesRow]
 
   def parentId: OptField[CategoriesId, CategoriesRow]
@@ -30,29 +30,29 @@ trait CategoriesFields extends FieldsExpr[CategoriesRow] {
 
   def imageUrl: OptField[String, CategoriesRow]
 
-  def sortOrder: Field[java.lang.Short, CategoriesRow]
+  def sortOrder: Field[Short, CategoriesRow]
 
-  def isVisible: Field[java.lang.Boolean, CategoriesRow]
+  def isVisible: Field[Boolean, CategoriesRow]
 
   def metadata: OptField[String, CategoriesRow]
 
-  def fkCategories: ForeignKey[CategoriesFields, CategoriesRow] = ForeignKey.of[CategoriesFields, CategoriesRow]("fk_category_parent").withColumnPair(parentId, _.categoryId)
+  def fkCategories: ForeignKey[CategoriesFields, CategoriesRow] = ForeignKey.of[CategoriesFields, CategoriesRow]("fk_category_parent").withColumnPair[CategoriesId](parentId, _.categoryId)
 
   override def columns: java.util.List[FieldLike[?, CategoriesRow]]
 
-  override def rowParser: RowParser[CategoriesRow] = CategoriesRow._rowParser
+  override def rowParser: RowParser[CategoriesRow] = CategoriesRow._rowParser.underlying
 }
 
 object CategoriesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CategoriesFields with Relation[CategoriesFields, CategoriesRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends CategoriesFields with RelationStructure[CategoriesFields, CategoriesRow] {
 
     override def categoryId: IdField[CategoriesId, CategoriesRow] = {
       new IdField[CategoriesId, CategoriesRow](
         _path,
         "category_id",
         _.categoryId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(categoryId = value),
         CategoriesId.pgType
       )
@@ -63,8 +63,8 @@ object CategoriesFields {
         _path,
         "parent_id",
         _.parentId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(parentId = value),
         CategoriesId.pgType
       )
@@ -75,8 +75,8 @@ object CategoriesFields {
         _path,
         "name",
         _.name,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(name = value),
         MariaTypes.varchar
       )
@@ -87,8 +87,8 @@ object CategoriesFields {
         _path,
         "slug",
         _.slug,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(slug = value),
         MariaTypes.varchar
       )
@@ -99,8 +99,8 @@ object CategoriesFields {
         _path,
         "description",
         _.description,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(description = value),
         MariaTypes.mediumtext
       )
@@ -111,34 +111,34 @@ object CategoriesFields {
         _path,
         "image_url",
         _.imageUrl,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(imageUrl = value),
         MariaTypes.varchar
       )
     }
 
-    override def sortOrder: Field[java.lang.Short, CategoriesRow] = {
-      new Field[java.lang.Short, CategoriesRow](
+    override def sortOrder: Field[Short, CategoriesRow] = {
+      new Field[Short, CategoriesRow](
         _path,
         "sort_order",
         _.sortOrder,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(sortOrder = value),
-        MariaTypes.smallint
+        ScalaDbTypes.MariaTypes.smallint
       )
     }
 
-    override def isVisible: Field[java.lang.Boolean, CategoriesRow] = {
-      new Field[java.lang.Boolean, CategoriesRow](
+    override def isVisible: Field[Boolean, CategoriesRow] = {
+      new Field[Boolean, CategoriesRow](
         _path,
         "is_visible",
         _.isVisible,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isVisible = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
@@ -147,17 +147,17 @@ object CategoriesFields {
         _path,
         "metadata",
         _.metadata,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(metadata = value),
         MariaTypes.longtext
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, CategoriesRow]] = java.util.List.of(this.categoryId, this.parentId, this.name, this.slug, this.description, this.imageUrl, this.sortOrder, this.isVisible, this.metadata)
+    override def columns: java.util.List[FieldLike[?, CategoriesRow]] = java.util.List.of(this.categoryId.underlying, this.parentId.underlying, this.name.underlying, this.slug.underlying, this.description.underlying, this.imageUrl.underlying, this.sortOrder.underlying, this.isVisible.underlying, this.metadata.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[CategoriesFields, CategoriesRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CategoriesFields, CategoriesRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

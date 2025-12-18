@@ -5,14 +5,12 @@
  */
 package adventureworks.sa.sod;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.product.ProductId;
 import adventureworks.sales.salesorderheader.SalesorderheaderId;
 import adventureworks.sales.specialoffer.SpecialofferId;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -26,9 +24,9 @@ public record SodViewRow(
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#salesorderdetailid()} */
   Integer salesorderdetailid,
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#carriertrackingnumber()} */
-  Optional</* max 25 chars */ String> carriertrackingnumber,
+  String carriertrackingnumber,
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#orderqty()} */
-  TypoShort orderqty,
+  Short orderqty,
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#productid()} */
   ProductId productid,
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#specialofferid()} */
@@ -38,9 +36,9 @@ public record SodViewRow(
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#unitpricediscount()} */
   BigDecimal unitpricediscount,
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#salesorderdetailid()} */
   public SodViewRow withId(Integer id) {
@@ -58,12 +56,12 @@ public record SodViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#carriertrackingnumber()} */
-  public SodViewRow withCarriertrackingnumber(Optional</* max 25 chars */ String> carriertrackingnumber) {
+  public SodViewRow withCarriertrackingnumber(String carriertrackingnumber) {
     return new SodViewRow(id, salesorderid, salesorderdetailid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, unitpricediscount, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#orderqty()} */
-  public SodViewRow withOrderqty(TypoShort orderqty) {
+  public SodViewRow withOrderqty(Short orderqty) {
     return new SodViewRow(id, salesorderid, salesorderdetailid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, unitpricediscount, rowguid, modifieddate);
   };
 
@@ -88,14 +86,14 @@ public record SodViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#rowguid()} */
-  public SodViewRow withRowguid(TypoUUID rowguid) {
+  public SodViewRow withRowguid(UUID rowguid) {
     return new SodViewRow(id, salesorderid, salesorderdetailid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, unitpricediscount, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderdetail.SalesorderdetailRow#modifieddate()} */
-  public SodViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SodViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SodViewRow(id, salesorderid, salesorderdetailid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, unitpricediscount, rowguid, modifieddate);
   };
 
-  static RowParser<SodViewRow> _rowParser = RowParsers.of(PgTypes.int4, SalesorderheaderId.pgType, PgTypes.int4, PgTypes.text.opt(), TypoShort.pgType, ProductId.pgType, SpecialofferId.pgType, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, SodViewRow::new, row -> new Object[]{row.id(), row.salesorderid(), row.salesorderdetailid(), row.carriertrackingnumber(), row.orderqty(), row.productid(), row.specialofferid(), row.unitprice(), row.unitpricediscount(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SodViewRow> _rowParser = RowParsers.of(PgTypes.int4, SalesorderheaderId.pgType, PgTypes.int4, PgTypes.text, PgTypes.int2, ProductId.pgType, SpecialofferId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, SodViewRow::new, row -> new Object[]{row.id(), row.salesorderid(), row.salesorderdetailid(), row.carriertrackingnumber(), row.orderqty(), row.productid(), row.specialofferid(), row.unitprice(), row.unitpricediscount(), row.rowguid(), row.modifieddate()});;
 }

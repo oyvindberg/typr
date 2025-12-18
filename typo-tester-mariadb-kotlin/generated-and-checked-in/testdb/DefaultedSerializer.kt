@@ -21,11 +21,11 @@ class DefaultedSerializer() : JsonSerializer<Defaulted<*>>() {
     gen: JsonGenerator,
     serializers: SerializerProvider
   ) {
-    when (value) {
+    when (val __r = value) {
       null -> gen.writeNull()
-      is UseDefault<*> -> { val u = value as UseDefault<*>; gen.writeString("defaulted") }
+      is UseDefault<*> -> { val u = __r as UseDefault<*>; gen.writeString("defaulted") }
       is Provided<*> -> {
-        val p = value as Provided<*>
+        val p = __r as Provided<*>
         gen.writeStartObject();
           gen.writeFieldName("provided");
           serializers.defaultSerializeValue(p.value, gen);

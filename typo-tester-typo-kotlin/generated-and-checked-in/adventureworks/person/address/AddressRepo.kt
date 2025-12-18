@@ -6,88 +6,87 @@
 package adventureworks.person.address
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface AddressRepo {
-  fun delete(): DeleteBuilder<AddressFields, AddressRow>
+  abstract fun delete(): DeleteBuilder<AddressFields, AddressRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     addressid: AddressId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     addressids: Array<AddressId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: AddressRow,
     c: Connection
   ): AddressRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: AddressRowUnsaved,
     c: Connection
   ): AddressRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<AddressRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<AddressRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<AddressFields, AddressRow>
+  abstract fun select(): SelectBuilder<AddressFields, AddressRow>
 
-  fun selectAll(c: Connection): List<AddressRow>
+  abstract fun selectAll(c: Connection): List<AddressRow>
 
-  fun selectById(
+  abstract fun selectById(
     addressid: AddressId,
     c: Connection
-  ): Optional<AddressRow>
+  ): AddressRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     addressids: Array<AddressId>,
     c: Connection
   ): List<AddressRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     addressids: Array<AddressId>,
     c: Connection
   ): Map<AddressId, AddressRow>
 
-  fun update(): UpdateBuilder<AddressFields, AddressRow>
+  abstract fun update(): UpdateBuilder<AddressFields, AddressRow>
 
-  fun update(
+  abstract fun update(
     row: AddressRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: AddressRow,
     c: Connection
   ): AddressRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<AddressRow>,
     c: Connection
   ): List<AddressRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<AddressRow>,
     batchSize: Int,
     c: Connection

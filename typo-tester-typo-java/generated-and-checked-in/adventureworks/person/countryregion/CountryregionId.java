@@ -12,8 +12,8 @@ import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 
 /** Type for the primary key of table `person.countryregion` */
-public record CountryregionId(@JsonValue /* max 3 chars */ String value) {
-  public CountryregionId withValue(/* max 3 chars */ String value) {
+public record CountryregionId(@JsonValue String value) {
+  public CountryregionId withValue(String value) {
     return new CountryregionId(value);
   };
 
@@ -22,12 +22,12 @@ public record CountryregionId(@JsonValue /* max 3 chars */ String value) {
     return value.toString();
   };
 
-  static public Bijection<CountryregionId, /* max 3 chars */ String> bijection =
+  static public Bijection<CountryregionId, String> bijection =
     Bijection.of(CountryregionId::value, CountryregionId::new);
 
   static public PgType<CountryregionId> pgType =
     PgTypes.text.bimap(CountryregionId::new, CountryregionId::value);
 
   static public PgType<CountryregionId[]> pgTypeArray =
-    PgTypes.textArray.bimap(xs -> arrayMap.map(xs, CountryregionId::new, CountryregionId.class), xs -> arrayMap.map(xs, CountryregionId::value, /* max 3 chars */ String.class));
+    PgTypes.textArray.bimap(xs -> arrayMap.map(xs, CountryregionId::new, CountryregionId.class), xs -> arrayMap.map(xs, CountryregionId::value, String.class));
 }

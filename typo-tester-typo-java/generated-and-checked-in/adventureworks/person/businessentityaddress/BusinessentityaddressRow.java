@@ -6,12 +6,13 @@
 package adventureworks.person.businessentityaddress;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.address.AddressId;
 import adventureworks.person.addresstype.AddresstypeId;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -33,9 +34,9 @@ public record BusinessentityaddressRow(
     */
   AddresstypeId addresstypeid,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key. Foreign key to BusinessEntity.BusinessEntityID.
     * Points to {@link adventureworks.person.businessentity.BusinessentityRow#businessentityid()}
@@ -59,21 +60,21 @@ public record BusinessentityaddressRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public BusinessentityaddressRow withRowguid(TypoUUID rowguid) {
+  public BusinessentityaddressRow withRowguid(UUID rowguid) {
     return new BusinessentityaddressRow(businessentityid, addressid, addresstypeid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public BusinessentityaddressRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public BusinessentityaddressRow withModifieddate(LocalDateTime modifieddate) {
     return new BusinessentityaddressRow(businessentityid, addressid, addresstypeid, rowguid, modifieddate);
   };
 
-  static RowParser<BusinessentityaddressRow> _rowParser = RowParsers.of(BusinessentityId.pgType, AddressId.pgType, AddresstypeId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, BusinessentityaddressRow::new, row -> new Object[]{row.businessentityid(), row.addressid(), row.addresstypeid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<BusinessentityaddressRow> _rowParser = RowParsers.of(BusinessentityId.pgType, AddressId.pgType, AddresstypeId.pgType, PgTypes.uuid, PgTypes.timestamp, BusinessentityaddressRow::new, row -> new Object[]{row.businessentityid(), row.addressid(), row.addresstypeid(), row.rowguid(), row.modifieddate()});;
 
   static public BusinessentityaddressRow apply(
     BusinessentityaddressId compositeId,
-    TypoUUID rowguid,
-    TypoLocalDateTime modifieddate
+    UUID rowguid,
+    LocalDateTime modifieddate
   ) {
     return new BusinessentityaddressRow(compositeId.businessentityid(), compositeId.addressid(), compositeId.addresstypeid(), rowguid, modifieddate);
   };
@@ -90,8 +91,8 @@ public record BusinessentityaddressRow(
   };
 
   public BusinessentityaddressRowUnsaved toUnsavedRow(
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new BusinessentityaddressRowUnsaved(businessentityid, addressid, addresstypeid, rowguid, modifieddate);
   };

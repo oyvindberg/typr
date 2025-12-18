@@ -7,9 +7,10 @@ package adventureworks.production.unitmeasure;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.unitmeasure` which has not been persisted yet */
 public record UnitmeasureRowUnsaved(
@@ -18,7 +19,7 @@ public record UnitmeasureRowUnsaved(
   /** Unit of measure description. */
   Name name,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public UnitmeasureRowUnsaved(
     /** Primary key. */
@@ -40,7 +41,7 @@ public record UnitmeasureRowUnsaved(
   };
 
   /** Default: now() */
-  public UnitmeasureRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public UnitmeasureRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate);
   };
 
@@ -50,10 +51,10 @@ public record UnitmeasureRowUnsaved(
       sb.append(PgText.DELIMETER);
       Name.pgType.pgText().unsafeEncode(row.name, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public UnitmeasureRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public UnitmeasureRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new UnitmeasureRow(unitmeasurecode, name, modifieddate.getOrElse(modifieddateDefault));
   };
 }

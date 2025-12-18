@@ -10,7 +10,7 @@ import testdb.orders.OrdersId;
 
 public interface UpdateOrderStatusSqlRepo {
   Integer apply(
-    /* user-picked */ String newStatus,
+    String newStatus,
     /* user-picked */ OrdersId orderId,
     Connection c
   );

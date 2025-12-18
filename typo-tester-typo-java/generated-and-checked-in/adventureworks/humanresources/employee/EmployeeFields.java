@@ -5,67 +5,66 @@
  */
 package adventureworks.humanresources.employee;
 
-import adventureworks.customtypes.TypoLocalDate;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.person.PersonFields;
 import adventureworks.person.person.PersonRow;
 import adventureworks.public_.Flag;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface EmployeeFields extends FieldsExpr<EmployeeRow> {
-  record Impl(List<Path> _path) implements EmployeeFields, Relation<EmployeeFields, EmployeeRow> {
+  record Impl(List<Path> _path) implements EmployeeFields, RelationStructure<EmployeeFields, EmployeeRow> {
     @Override
     public IdField<BusinessentityId, EmployeeRow> businessentityid() {
       return new IdField<BusinessentityId, EmployeeRow>(_path, "businessentityid", EmployeeRow::businessentityid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
     };
 
     @Override
-    public Field</* max 15 chars */ String, EmployeeRow> nationalidnumber() {
-      return new Field</* max 15 chars */ String, EmployeeRow>(_path, "nationalidnumber", EmployeeRow::nationalidnumber, Optional.empty(), Optional.empty(), (row, value) -> row.withNationalidnumber(value), PgTypes.text);
+    public Field<String, EmployeeRow> nationalidnumber() {
+      return new Field<String, EmployeeRow>(_path, "nationalidnumber", EmployeeRow::nationalidnumber, Optional.empty(), Optional.empty(), (row, value) -> row.withNationalidnumber(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 256 chars */ String, EmployeeRow> loginid() {
-      return new Field</* max 256 chars */ String, EmployeeRow>(_path, "loginid", EmployeeRow::loginid, Optional.empty(), Optional.empty(), (row, value) -> row.withLoginid(value), PgTypes.text);
+    public Field<String, EmployeeRow> loginid() {
+      return new Field<String, EmployeeRow>(_path, "loginid", EmployeeRow::loginid, Optional.empty(), Optional.empty(), (row, value) -> row.withLoginid(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 50 chars */ String, EmployeeRow> jobtitle() {
-      return new Field</* max 50 chars */ String, EmployeeRow>(_path, "jobtitle", EmployeeRow::jobtitle, Optional.empty(), Optional.empty(), (row, value) -> row.withJobtitle(value), PgTypes.text);
+    public Field<String, EmployeeRow> jobtitle() {
+      return new Field<String, EmployeeRow>(_path, "jobtitle", EmployeeRow::jobtitle, Optional.empty(), Optional.empty(), (row, value) -> row.withJobtitle(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoLocalDate, EmployeeRow> birthdate() {
-      return new Field<TypoLocalDate, EmployeeRow>(_path, "birthdate", EmployeeRow::birthdate, Optional.of("text"), Optional.of("date"), (row, value) -> row.withBirthdate(value), TypoLocalDate.pgType);
+    public Field<LocalDate, EmployeeRow> birthdate() {
+      return new Field<LocalDate, EmployeeRow>(_path, "birthdate", EmployeeRow::birthdate, Optional.empty(), Optional.of("date"), (row, value) -> row.withBirthdate(value), PgTypes.date);
     };
 
     @Override
-    public Field</* bpchar, max 1 chars */ String, EmployeeRow> maritalstatus() {
-      return new Field</* bpchar, max 1 chars */ String, EmployeeRow>(_path, "maritalstatus", EmployeeRow::maritalstatus, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withMaritalstatus(value), PgTypes.bpchar);
+    public Field<String, EmployeeRow> maritalstatus() {
+      return new Field<String, EmployeeRow>(_path, "maritalstatus", EmployeeRow::maritalstatus, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withMaritalstatus(value), PgTypes.bpchar);
     };
 
     @Override
-    public Field</* bpchar, max 1 chars */ String, EmployeeRow> gender() {
-      return new Field</* bpchar, max 1 chars */ String, EmployeeRow>(_path, "gender", EmployeeRow::gender, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withGender(value), PgTypes.bpchar);
+    public Field<String, EmployeeRow> gender() {
+      return new Field<String, EmployeeRow>(_path, "gender", EmployeeRow::gender, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withGender(value), PgTypes.bpchar);
     };
 
     @Override
-    public Field<TypoLocalDate, EmployeeRow> hiredate() {
-      return new Field<TypoLocalDate, EmployeeRow>(_path, "hiredate", EmployeeRow::hiredate, Optional.of("text"), Optional.of("date"), (row, value) -> row.withHiredate(value), TypoLocalDate.pgType);
+    public Field<LocalDate, EmployeeRow> hiredate() {
+      return new Field<LocalDate, EmployeeRow>(_path, "hiredate", EmployeeRow::hiredate, Optional.empty(), Optional.of("date"), (row, value) -> row.withHiredate(value), PgTypes.date);
     };
 
     @Override
@@ -74,13 +73,13 @@ public interface EmployeeFields extends FieldsExpr<EmployeeRow> {
     };
 
     @Override
-    public Field<TypoShort, EmployeeRow> vacationhours() {
-      return new Field<TypoShort, EmployeeRow>(_path, "vacationhours", EmployeeRow::vacationhours, Optional.empty(), Optional.of("int2"), (row, value) -> row.withVacationhours(value), TypoShort.pgType);
+    public Field<Short, EmployeeRow> vacationhours() {
+      return new Field<Short, EmployeeRow>(_path, "vacationhours", EmployeeRow::vacationhours, Optional.empty(), Optional.of("int2"), (row, value) -> row.withVacationhours(value), PgTypes.int2);
     };
 
     @Override
-    public Field<TypoShort, EmployeeRow> sickleavehours() {
-      return new Field<TypoShort, EmployeeRow>(_path, "sickleavehours", EmployeeRow::sickleavehours, Optional.empty(), Optional.of("int2"), (row, value) -> row.withSickleavehours(value), TypoShort.pgType);
+    public Field<Short, EmployeeRow> sickleavehours() {
+      return new Field<Short, EmployeeRow>(_path, "sickleavehours", EmployeeRow::sickleavehours, Optional.empty(), Optional.of("int2"), (row, value) -> row.withSickleavehours(value), PgTypes.int2);
     };
 
     @Override
@@ -89,13 +88,13 @@ public interface EmployeeFields extends FieldsExpr<EmployeeRow> {
     };
 
     @Override
-    public Field<TypoUUID, EmployeeRow> rowguid() {
-      return new Field<TypoUUID, EmployeeRow>(_path, "rowguid", EmployeeRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, EmployeeRow> rowguid() {
+      return new Field<UUID, EmployeeRow>(_path, "rowguid", EmployeeRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, EmployeeRow> modifieddate() {
-      return new Field<TypoLocalDateTime, EmployeeRow>(_path, "modifieddate", EmployeeRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, EmployeeRow> modifieddate() {
+      return new Field<LocalDateTime, EmployeeRow>(_path, "modifieddate", EmployeeRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -105,51 +104,51 @@ public interface EmployeeFields extends FieldsExpr<EmployeeRow> {
 
     @Override
     public List<FieldLike<?, EmployeeRow>> columns() {
-      return List.of(this.businessentityid(), this.nationalidnumber(), this.loginid(), this.jobtitle(), this.birthdate(), this.maritalstatus(), this.gender(), this.hiredate(), this.salariedflag(), this.vacationhours(), this.sickleavehours(), this.currentflag(), this.rowguid(), this.modifieddate(), this.organizationnode());
+      return java.util.List.of(this.businessentityid(), this.nationalidnumber(), this.loginid(), this.jobtitle(), this.birthdate(), this.maritalstatus(), this.gender(), this.hiredate(), this.salariedflag(), this.vacationhours(), this.sickleavehours(), this.currentflag(), this.rowguid(), this.modifieddate(), this.organizationnode());
     };
 
     @Override
-    public Relation<EmployeeFields, EmployeeRow> copy(List<Path> _path) {
+    public RelationStructure<EmployeeFields, EmployeeRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BusinessentityId, EmployeeRow> businessentityid();
 
-  Field</* max 15 chars */ String, EmployeeRow> nationalidnumber();
+  Field<String, EmployeeRow> nationalidnumber();
 
-  Field</* max 256 chars */ String, EmployeeRow> loginid();
+  Field<String, EmployeeRow> loginid();
 
-  Field</* max 50 chars */ String, EmployeeRow> jobtitle();
+  Field<String, EmployeeRow> jobtitle();
 
-  Field<TypoLocalDate, EmployeeRow> birthdate();
+  Field<LocalDate, EmployeeRow> birthdate();
 
-  Field</* bpchar, max 1 chars */ String, EmployeeRow> maritalstatus();
+  Field<String, EmployeeRow> maritalstatus();
 
-  Field</* bpchar, max 1 chars */ String, EmployeeRow> gender();
+  Field<String, EmployeeRow> gender();
 
-  Field<TypoLocalDate, EmployeeRow> hiredate();
+  Field<LocalDate, EmployeeRow> hiredate();
 
   Field<Flag, EmployeeRow> salariedflag();
 
-  Field<TypoShort, EmployeeRow> vacationhours();
+  Field<Short, EmployeeRow> vacationhours();
 
-  Field<TypoShort, EmployeeRow> sickleavehours();
+  Field<Short, EmployeeRow> sickleavehours();
 
   Field<Flag, EmployeeRow> currentflag();
 
-  Field<TypoUUID, EmployeeRow> rowguid();
+  Field<UUID, EmployeeRow> rowguid();
 
-  Field<TypoLocalDateTime, EmployeeRow> modifieddate();
+  Field<LocalDateTime, EmployeeRow> modifieddate();
 
   OptField<String, EmployeeRow> organizationnode();
 
   default ForeignKey<PersonFields, PersonRow> fkPersonPerson() {
-    return ForeignKey.<PersonFields, PersonRow>of("humanresources.FK_Employee_Person_BusinessEntityID").withColumnPair(businessentityid(), PersonFields::businessentityid);
+    return ForeignKey.<PersonFields, PersonRow>of("humanresources.FK_Employee_Person_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), PersonFields::businessentityid);
   };
 
   @Override

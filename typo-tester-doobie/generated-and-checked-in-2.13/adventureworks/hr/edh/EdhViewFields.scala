@@ -11,10 +11,9 @@ import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait EdhViewFields {
   def id: Field[BusinessentityId, EdhViewRow]
@@ -22,16 +21,16 @@ trait EdhViewFields {
   def departmentid: Field[DepartmentId, EdhViewRow]
   def shiftid: Field[ShiftId, EdhViewRow]
   def startdate: Field[TypoLocalDate, EdhViewRow]
-  def enddate: OptField[TypoLocalDate, EdhViewRow]
+  def enddate: Field[TypoLocalDate, EdhViewRow]
   def modifieddate: Field[TypoLocalDateTime, EdhViewRow]
 }
 
 object EdhViewFields {
-  lazy val structure: Relation[EdhViewFields, EdhViewRow] =
+  lazy val structure: RelationStructure[EdhViewFields, EdhViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[EdhViewFields, EdhViewRow] {
+    extends RelationStructure[EdhViewFields, EdhViewRow] {
 
     override lazy val fields: EdhViewFields = new EdhViewFields {
       override def id = Field[BusinessentityId, EdhViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
@@ -39,7 +38,7 @@ object EdhViewFields {
       override def departmentid = Field[DepartmentId, EdhViewRow](_path, "departmentid", None, None, x => x.departmentid, (row, value) => row.copy(departmentid = value))
       override def shiftid = Field[ShiftId, EdhViewRow](_path, "shiftid", None, None, x => x.shiftid, (row, value) => row.copy(shiftid = value))
       override def startdate = Field[TypoLocalDate, EdhViewRow](_path, "startdate", Some("text"), None, x => x.startdate, (row, value) => row.copy(startdate = value))
-      override def enddate = OptField[TypoLocalDate, EdhViewRow](_path, "enddate", Some("text"), None, x => x.enddate, (row, value) => row.copy(enddate = value))
+      override def enddate = Field[TypoLocalDate, EdhViewRow](_path, "enddate", Some("text"), None, x => x.enddate, (row, value) => row.copy(enddate = value))
       override def modifieddate = Field[TypoLocalDateTime, EdhViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
 

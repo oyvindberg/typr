@@ -16,14 +16,14 @@ import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface TitledpersonFields extends FieldsExpr<TitledpersonRow> {
-  record Impl(List<Path> _path) implements TitledpersonFields, Relation<TitledpersonFields, TitledpersonRow> {
+  record Impl(List<Path> _path) implements TitledpersonFields, RelationStructure<TitledpersonFields, TitledpersonRow> {
     @Override
     public Field<TitleDomainId, TitledpersonRow> titleShort() {
       return new Field<TitleDomainId, TitledpersonRow>(_path, "title_short", TitledpersonRow::titleShort, Optional.empty(), Optional.of("text"), (row, value) -> row.withTitleShort(value), TitleDomainId.pgType);
@@ -41,17 +41,17 @@ public interface TitledpersonFields extends FieldsExpr<TitledpersonRow> {
 
     @Override
     public List<FieldLike<?, TitledpersonRow>> columns() {
-      return List.of(this.titleShort(), this.title(), this.name());
+      return java.util.List.of(this.titleShort(), this.title(), this.name());
     };
 
     @Override
-    public Relation<TitledpersonFields, TitledpersonRow> copy(List<Path> _path) {
+    public RelationStructure<TitledpersonFields, TitledpersonRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<TitleDomainId, TitledpersonRow> titleShort();
@@ -61,11 +61,11 @@ public interface TitledpersonFields extends FieldsExpr<TitledpersonRow> {
   Field<String, TitledpersonRow> name();
 
   default ForeignKey<TitleFields, TitleRow> fkTitle() {
-    return ForeignKey.<TitleFields, TitleRow>of("public.titledperson_title_fkey").withColumnPair(title(), TitleFields::code);
+    return ForeignKey.<TitleFields, TitleRow>of("public.titledperson_title_fkey").<TitleId>withColumnPair(title(), TitleFields::code);
   };
 
   default ForeignKey<TitleDomainFields, TitleDomainRow> fkTitleDomain() {
-    return ForeignKey.<TitleDomainFields, TitleDomainRow>of("public.titledperson_title_short_fkey").withColumnPair(titleShort(), TitleDomainFields::code);
+    return ForeignKey.<TitleDomainFields, TitleDomainRow>of("public.titledperson_title_short_fkey").<TitleDomainId>withColumnPair(titleShort(), TitleDomainFields::code);
   };
 
   @Override

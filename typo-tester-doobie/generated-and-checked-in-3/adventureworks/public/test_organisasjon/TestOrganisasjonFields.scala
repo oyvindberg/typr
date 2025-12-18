@@ -6,20 +6,20 @@
 package adventureworks.public.test_organisasjon
 
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait TestOrganisasjonFields {
   def organisasjonskode: IdField[TestOrganisasjonId, TestOrganisasjonRow]
 }
 
 object TestOrganisasjonFields {
-  lazy val structure: Relation[TestOrganisasjonFields, TestOrganisasjonRow] =
+  lazy val structure: RelationStructure[TestOrganisasjonFields, TestOrganisasjonRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[TestOrganisasjonFields, TestOrganisasjonRow] {
+    extends RelationStructure[TestOrganisasjonFields, TestOrganisasjonRow] {
 
     override lazy val fields: TestOrganisasjonFields = new TestOrganisasjonFields {
       override def organisasjonskode = IdField[TestOrganisasjonId, TestOrganisasjonRow](_path, "organisasjonskode", None, None, x => x.organisasjonskode, (row, value) => row.copy(organisasjonskode = value))

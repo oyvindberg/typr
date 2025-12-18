@@ -7,10 +7,11 @@ package adventureworks.production.productmodelillustration;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.illustration.IllustrationId;
 import adventureworks.production.productmodel.ProductmodelId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.productmodelillustration` which has not been persisted yet */
 public record ProductmodelillustrationRowUnsaved(
@@ -23,7 +24,7 @@ public record ProductmodelillustrationRowUnsaved(
     */
   IllustrationId illustrationid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductmodelillustrationRowUnsaved(
     /** Primary key. Foreign key to ProductModel.ProductModelID.
@@ -53,7 +54,7 @@ public record ProductmodelillustrationRowUnsaved(
   };
 
   /** Default: now() */
-  public ProductmodelillustrationRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductmodelillustrationRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductmodelillustrationRowUnsaved(productmodelid, illustrationid, modifieddate);
   };
 
@@ -63,10 +64,10 @@ public record ProductmodelillustrationRowUnsaved(
       sb.append(PgText.DELIMETER);
       IllustrationId.pgType.pgText().unsafeEncode(row.illustrationid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public ProductmodelillustrationRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public ProductmodelillustrationRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new ProductmodelillustrationRow(productmodelid, illustrationid, modifieddate.getOrElse(modifieddateDefault));
   };
 }

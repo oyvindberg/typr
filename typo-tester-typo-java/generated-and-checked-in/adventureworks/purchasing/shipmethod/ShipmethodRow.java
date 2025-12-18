@@ -6,10 +6,10 @@
 package adventureworks.purchasing.shipmethod;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -37,9 +37,9 @@ public record ShipmethodRow(
     */
   BigDecimal shiprate,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for ShipMethod records.
     * Default: nextval('purchasing.shipmethod_shipmethodid_seq'::regclass)
@@ -70,16 +70,16 @@ public record ShipmethodRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public ShipmethodRow withRowguid(TypoUUID rowguid) {
+  public ShipmethodRow withRowguid(UUID rowguid) {
     return new ShipmethodRow(shipmethodid, name, shipbase, shiprate, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ShipmethodRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ShipmethodRow withModifieddate(LocalDateTime modifieddate) {
     return new ShipmethodRow(shipmethodid, name, shipbase, shiprate, rowguid, modifieddate);
   };
 
-  static RowParser<ShipmethodRow> _rowParser = RowParsers.of(ShipmethodId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, ShipmethodRow::new, row -> new Object[]{row.shipmethodid(), row.name(), row.shipbase(), row.shiprate(), row.rowguid(), row.modifieddate()});;
+  static RowParser<ShipmethodRow> _rowParser = RowParsers.of(ShipmethodId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, ShipmethodRow::new, row -> new Object[]{row.shipmethodid(), row.name(), row.shipbase(), row.shiprate(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<ShipmethodRow> pgText =
     PgText.from(_rowParser);
@@ -92,8 +92,8 @@ public record ShipmethodRow(
     Defaulted<ShipmethodId> shipmethodid,
     Defaulted<BigDecimal> shipbase,
     Defaulted<BigDecimal> shiprate,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ShipmethodRowUnsaved(name, shipmethodid, shipbase, shiprate, rowguid, modifieddate);
   };

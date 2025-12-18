@@ -5,32 +5,31 @@
  */
 package adventureworks.production.productinventory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.location.LocationFields;
 import adventureworks.production.location.LocationId;
 import adventureworks.production.location.LocationRow;
 import adventureworks.production.product.ProductFields;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.product.ProductRow;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface ProductinventoryFields extends FieldsExpr<ProductinventoryRow> {
-  record Impl(List<Path> _path) implements ProductinventoryFields, Relation<ProductinventoryFields, ProductinventoryRow> {
+  record Impl(List<Path> _path) implements ProductinventoryFields, RelationStructure<ProductinventoryFields, ProductinventoryRow> {
     @Override
     public IdField<ProductId, ProductinventoryRow> productid() {
       return new IdField<ProductId, ProductinventoryRow>(_path, "productid", ProductinventoryRow::productid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withProductid(value), ProductId.pgType);
@@ -42,65 +41,65 @@ public interface ProductinventoryFields extends FieldsExpr<ProductinventoryRow> 
     };
 
     @Override
-    public Field</* max 10 chars */ String, ProductinventoryRow> shelf() {
-      return new Field</* max 10 chars */ String, ProductinventoryRow>(_path, "shelf", ProductinventoryRow::shelf, Optional.empty(), Optional.empty(), (row, value) -> row.withShelf(value), PgTypes.text);
+    public Field<String, ProductinventoryRow> shelf() {
+      return new Field<String, ProductinventoryRow>(_path, "shelf", ProductinventoryRow::shelf, Optional.empty(), Optional.empty(), (row, value) -> row.withShelf(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoShort, ProductinventoryRow> bin() {
-      return new Field<TypoShort, ProductinventoryRow>(_path, "bin", ProductinventoryRow::bin, Optional.empty(), Optional.of("int2"), (row, value) -> row.withBin(value), TypoShort.pgType);
+    public Field<Short, ProductinventoryRow> bin() {
+      return new Field<Short, ProductinventoryRow>(_path, "bin", ProductinventoryRow::bin, Optional.empty(), Optional.of("int2"), (row, value) -> row.withBin(value), PgTypes.int2);
     };
 
     @Override
-    public Field<TypoShort, ProductinventoryRow> quantity() {
-      return new Field<TypoShort, ProductinventoryRow>(_path, "quantity", ProductinventoryRow::quantity, Optional.empty(), Optional.of("int2"), (row, value) -> row.withQuantity(value), TypoShort.pgType);
+    public Field<Short, ProductinventoryRow> quantity() {
+      return new Field<Short, ProductinventoryRow>(_path, "quantity", ProductinventoryRow::quantity, Optional.empty(), Optional.of("int2"), (row, value) -> row.withQuantity(value), PgTypes.int2);
     };
 
     @Override
-    public Field<TypoUUID, ProductinventoryRow> rowguid() {
-      return new Field<TypoUUID, ProductinventoryRow>(_path, "rowguid", ProductinventoryRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, ProductinventoryRow> rowguid() {
+      return new Field<UUID, ProductinventoryRow>(_path, "rowguid", ProductinventoryRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, ProductinventoryRow> modifieddate() {
-      return new Field<TypoLocalDateTime, ProductinventoryRow>(_path, "modifieddate", ProductinventoryRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ProductinventoryRow> modifieddate() {
+      return new Field<LocalDateTime, ProductinventoryRow>(_path, "modifieddate", ProductinventoryRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, ProductinventoryRow>> columns() {
-      return List.of(this.productid(), this.locationid(), this.shelf(), this.bin(), this.quantity(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.productid(), this.locationid(), this.shelf(), this.bin(), this.quantity(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<ProductinventoryFields, ProductinventoryRow> copy(List<Path> _path) {
+    public RelationStructure<ProductinventoryFields, ProductinventoryRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ProductId, ProductinventoryRow> productid();
 
   IdField<LocationId, ProductinventoryRow> locationid();
 
-  Field</* max 10 chars */ String, ProductinventoryRow> shelf();
+  Field<String, ProductinventoryRow> shelf();
 
-  Field<TypoShort, ProductinventoryRow> bin();
+  Field<Short, ProductinventoryRow> bin();
 
-  Field<TypoShort, ProductinventoryRow> quantity();
+  Field<Short, ProductinventoryRow> quantity();
 
-  Field<TypoUUID, ProductinventoryRow> rowguid();
+  Field<UUID, ProductinventoryRow> rowguid();
 
-  Field<TypoLocalDateTime, ProductinventoryRow> modifieddate();
+  Field<LocalDateTime, ProductinventoryRow> modifieddate();
 
   default ForeignKey<LocationFields, LocationRow> fkLocation() {
-    return ForeignKey.<LocationFields, LocationRow>of("production.FK_ProductInventory_Location_LocationID").withColumnPair(locationid(), LocationFields::locationid);
+    return ForeignKey.<LocationFields, LocationRow>of("production.FK_ProductInventory_Location_LocationID").<LocationId>withColumnPair(locationid(), LocationFields::locationid);
   };
 
   default ForeignKey<ProductFields, ProductRow> fkProduct() {
-    return ForeignKey.<ProductFields, ProductRow>of("production.FK_ProductInventory_Product_ProductID").withColumnPair(productid(), ProductFields::productid);
+    return ForeignKey.<ProductFields, ProductRow>of("production.FK_ProductInventory_Product_ProductID").<ProductId>withColumnPair(productid(), ProductFields::productid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(ProductinventoryId compositeId) {

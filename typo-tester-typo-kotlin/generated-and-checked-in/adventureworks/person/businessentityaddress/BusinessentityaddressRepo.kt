@@ -6,88 +6,87 @@
 package adventureworks.person.businessentityaddress
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface BusinessentityaddressRepo {
-  fun delete(): DeleteBuilder<BusinessentityaddressFields, BusinessentityaddressRow>
+  abstract fun delete(): DeleteBuilder<BusinessentityaddressFields, BusinessentityaddressRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: BusinessentityaddressId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<BusinessentityaddressId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: BusinessentityaddressRow,
     c: Connection
   ): BusinessentityaddressRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: BusinessentityaddressRowUnsaved,
     c: Connection
   ): BusinessentityaddressRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<BusinessentityaddressRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<BusinessentityaddressRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<BusinessentityaddressFields, BusinessentityaddressRow>
+  abstract fun select(): SelectBuilder<BusinessentityaddressFields, BusinessentityaddressRow>
 
-  fun selectAll(c: Connection): List<BusinessentityaddressRow>
+  abstract fun selectAll(c: Connection): List<BusinessentityaddressRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: BusinessentityaddressId,
     c: Connection
-  ): Optional<BusinessentityaddressRow>
+  ): BusinessentityaddressRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<BusinessentityaddressId>,
     c: Connection
   ): List<BusinessentityaddressRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<BusinessentityaddressId>,
     c: Connection
   ): Map<BusinessentityaddressId, BusinessentityaddressRow>
 
-  fun update(): UpdateBuilder<BusinessentityaddressFields, BusinessentityaddressRow>
+  abstract fun update(): UpdateBuilder<BusinessentityaddressFields, BusinessentityaddressRow>
 
-  fun update(
+  abstract fun update(
     row: BusinessentityaddressRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: BusinessentityaddressRow,
     c: Connection
   ): BusinessentityaddressRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<BusinessentityaddressRow>,
     c: Connection
   ): List<BusinessentityaddressRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<BusinessentityaddressRow>,
     batchSize: Int,
     c: Connection

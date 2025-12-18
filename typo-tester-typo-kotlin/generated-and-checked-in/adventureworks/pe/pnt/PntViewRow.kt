@@ -5,11 +5,12 @@
  */
 package adventureworks.pe.pnt
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.public.Name
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pe.pnt */
 data class PntViewRow(
@@ -20,9 +21,9 @@ data class PntViewRow(
   /** Points to [adventureworks.person.phonenumbertype.PhonenumbertypeRow.name] */
   val name: Name,
   /** Points to [adventureworks.person.phonenumbertype.PhonenumbertypeRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PntViewRow> = RowParsers.of(PhonenumbertypeId.pgType, PhonenumbertypeId.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> PntViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.phonenumbertypeid, row.name, row.modifieddate) })
+    val _rowParser: RowParser<PntViewRow> = RowParsers.of(PhonenumbertypeId.pgType, PhonenumbertypeId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> PntViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.phonenumbertypeid, row.name, row.modifieddate) })
   }
 }

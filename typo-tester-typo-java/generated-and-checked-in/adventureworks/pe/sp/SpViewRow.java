@@ -5,13 +5,13 @@
  */
 package adventureworks.pe.sp;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.person.stateprovince.StateprovinceId;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
 import adventureworks.sales.salesterritory.SalesterritoryId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -23,7 +23,7 @@ public record SpViewRow(
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#stateprovinceid()} */
   StateprovinceId stateprovinceid,
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#stateprovincecode()} */
-  /* bpchar, max 3 chars */ String stateprovincecode,
+  String stateprovincecode,
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#countryregioncode()} */
   CountryregionId countryregioncode,
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#isonlystateprovinceflag()} */
@@ -33,9 +33,9 @@ public record SpViewRow(
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#territoryid()} */
   SalesterritoryId territoryid,
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#stateprovinceid()} */
   public SpViewRow withId(StateprovinceId id) {
@@ -48,7 +48,7 @@ public record SpViewRow(
   };
 
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#stateprovincecode()} */
-  public SpViewRow withStateprovincecode(/* bpchar, max 3 chars */ String stateprovincecode) {
+  public SpViewRow withStateprovincecode(String stateprovincecode) {
     return new SpViewRow(id, stateprovinceid, stateprovincecode, countryregioncode, isonlystateprovinceflag, name, territoryid, rowguid, modifieddate);
   };
 
@@ -73,14 +73,14 @@ public record SpViewRow(
   };
 
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#rowguid()} */
-  public SpViewRow withRowguid(TypoUUID rowguid) {
+  public SpViewRow withRowguid(UUID rowguid) {
     return new SpViewRow(id, stateprovinceid, stateprovincecode, countryregioncode, isonlystateprovinceflag, name, territoryid, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#modifieddate()} */
-  public SpViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SpViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SpViewRow(id, stateprovinceid, stateprovincecode, countryregioncode, isonlystateprovinceflag, name, territoryid, rowguid, modifieddate);
   };
 
-  static RowParser<SpViewRow> _rowParser = RowParsers.of(StateprovinceId.pgType, StateprovinceId.pgType, PgTypes.bpchar, CountryregionId.pgType, Flag.pgType, Name.pgType, SalesterritoryId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, SpViewRow::new, row -> new Object[]{row.id(), row.stateprovinceid(), row.stateprovincecode(), row.countryregioncode(), row.isonlystateprovinceflag(), row.name(), row.territoryid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SpViewRow> _rowParser = RowParsers.of(StateprovinceId.pgType, StateprovinceId.pgType, PgTypes.bpchar, CountryregionId.pgType, Flag.pgType, Name.pgType, SalesterritoryId.pgType, PgTypes.uuid, PgTypes.timestamp, SpViewRow::new, row -> new Object[]{row.id(), row.stateprovinceid(), row.stateprovincecode(), row.countryregioncode(), row.isonlystateprovinceflag(), row.name(), row.territoryid(), row.rowguid(), row.modifieddate()});;
 }

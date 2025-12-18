@@ -19,7 +19,7 @@ public record VstateprovincecountryregionMVRow(
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#stateprovinceid()} */
   StateprovinceId stateprovinceid,
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#stateprovincecode()} */
-  /* bpchar, max 3 chars */ String stateprovincecode,
+  String stateprovincecode,
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#isonlystateprovinceflag()} */
   Flag isonlystateprovinceflag,
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#name()} */
@@ -37,7 +37,7 @@ public record VstateprovincecountryregionMVRow(
   };
 
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#stateprovincecode()} */
-  public VstateprovincecountryregionMVRow withStateprovincecode(/* bpchar, max 3 chars */ String stateprovincecode) {
+  public VstateprovincecountryregionMVRow withStateprovincecode(String stateprovincecode) {
     return new VstateprovincecountryregionMVRow(stateprovinceid, stateprovincecode, isonlystateprovinceflag, stateprovincename, territoryid, countryregioncode, countryregionname);
   };
 

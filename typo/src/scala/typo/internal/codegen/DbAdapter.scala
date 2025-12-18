@@ -32,6 +32,15 @@ trait DbAdapter {
   /** Type cast for column in INSERT/UPDATE (write) - returns cast suffix or empty */
   def columnWriteCast(col: ComputedColumn): Code
 
+  /** Get the type name for write cast (used for array unnest casts) */
+  def writeCastTypeName(col: ComputedColumn): Option[String]
+
+  /** Write cast for a database type (for SQL file parameters) */
+  def writeCast(dbType: db.Type, udtName: Option[String]): Option[SqlCastValue]
+
+  /** Read cast for a database type (for SQL file columns) */
+  def readCast(dbType: db.Type): Option[SqlCastValue]
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 2: Runtime Type System
   // ═══════════════════════════════════════════════════════════════════════════
@@ -52,13 +61,13 @@ trait DbAdapter {
   def textFieldName: jvm.Ident
 
   /** Dialect reference for DSL (Dialect.POSTGRESQL or Dialect.MARIADB) */
-  def dialectRef: Code
+  def dialectRef(lang: Lang): Code
 
-  /** Lookup runtime type instance for a JVM type */
-  def lookupType(tpe: jvm.Type, pkg: jvm.QIdent, lang: Lang): Code
+  /** Lookup runtime type instance for a TypoType */
+  def lookupType(typoType: TypoType, naming: Naming, typeSupport: TypeSupport): Code
 
-  /** Lookup runtime type instance for a database type */
-  def lookupTypeByDbType(dbType: db.Type, Types: jvm.Type.Qualified, naming: Naming): Code
+  /** Lookup runtime type instance for a WellKnownPrimitive */
+  def lookupPrimitive(primitive: analysis.WellKnownPrimitive, typeSupport: TypeSupport): Code
 
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 3: Capabilities

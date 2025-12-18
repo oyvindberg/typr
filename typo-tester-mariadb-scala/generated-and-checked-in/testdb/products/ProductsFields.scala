@@ -6,23 +6,23 @@
 package testdb.products
 
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.brands.BrandsFields
 import testdb.brands.BrandsId
 import testdb.brands.BrandsRow
 import typo.data.maria.MariaSet
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.FieldsExpr0
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait ProductsFields extends FieldsExpr[ProductsRow] {
+trait ProductsFields extends FieldsExpr0[ProductsRow] {
   def productId: IdField[ProductsId, ProductsRow]
 
   def sku: Field[String, ProductsRow]
@@ -35,11 +35,11 @@ trait ProductsFields extends FieldsExpr[ProductsRow] {
 
   def fullDescription: OptField[String, ProductsRow]
 
-  def basePrice: Field[java.math.BigDecimal, ProductsRow]
+  def basePrice: Field[BigDecimal, ProductsRow]
 
-  def costPrice: OptField[java.math.BigDecimal, ProductsRow]
+  def costPrice: OptField[BigDecimal, ProductsRow]
 
-  def weightKg: OptField[java.math.BigDecimal, ProductsRow]
+  def weightKg: OptField[BigDecimal, ProductsRow]
 
   def dimensionsJson: OptField[String, ProductsRow]
 
@@ -59,23 +59,23 @@ trait ProductsFields extends FieldsExpr[ProductsRow] {
 
   def publishedAt: OptField[LocalDateTime, ProductsRow]
 
-  def fkBrands: ForeignKey[BrandsFields, BrandsRow] = ForeignKey.of[BrandsFields, BrandsRow]("fk_product_brand").withColumnPair(brandId, _.brandId)
+  def fkBrands: ForeignKey[BrandsFields, BrandsRow] = ForeignKey.of[BrandsFields, BrandsRow]("fk_product_brand").withColumnPair[BrandsId](brandId, _.brandId)
 
   override def columns: java.util.List[FieldLike[?, ProductsRow]]
 
-  override def rowParser: RowParser[ProductsRow] = ProductsRow._rowParser
+  override def rowParser: RowParser[ProductsRow] = ProductsRow._rowParser.underlying
 }
 
 object ProductsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductsFields with Relation[ProductsFields, ProductsRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends ProductsFields with RelationStructure[ProductsFields, ProductsRow] {
 
     override def productId: IdField[ProductsId, ProductsRow] = {
       new IdField[ProductsId, ProductsRow](
         _path,
         "product_id",
         _.productId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(productId = value),
         ProductsId.pgType
       )
@@ -86,8 +86,8 @@ object ProductsFields {
         _path,
         "sku",
         _.sku,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(sku = value),
         MariaTypes.varchar
       )
@@ -98,8 +98,8 @@ object ProductsFields {
         _path,
         "brand_id",
         _.brandId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(brandId = value),
         BrandsId.pgType
       )
@@ -110,8 +110,8 @@ object ProductsFields {
         _path,
         "name",
         _.name,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(name = value),
         MariaTypes.varchar
       )
@@ -122,8 +122,8 @@ object ProductsFields {
         _path,
         "short_description",
         _.shortDescription,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(shortDescription = value),
         MariaTypes.varchar
       )
@@ -134,46 +134,46 @@ object ProductsFields {
         _path,
         "full_description",
         _.fullDescription,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(fullDescription = value),
         MariaTypes.longtext
       )
     }
 
-    override def basePrice: Field[java.math.BigDecimal, ProductsRow] = {
-      new Field[java.math.BigDecimal, ProductsRow](
+    override def basePrice: Field[BigDecimal, ProductsRow] = {
+      new Field[BigDecimal, ProductsRow](
         _path,
         "base_price",
         _.basePrice,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(basePrice = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def costPrice: OptField[java.math.BigDecimal, ProductsRow] = {
-      new OptField[java.math.BigDecimal, ProductsRow](
+    override def costPrice: OptField[BigDecimal, ProductsRow] = {
+      new OptField[BigDecimal, ProductsRow](
         _path,
         "cost_price",
         _.costPrice,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(costPrice = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def weightKg: OptField[java.math.BigDecimal, ProductsRow] = {
-      new OptField[java.math.BigDecimal, ProductsRow](
+    override def weightKg: OptField[BigDecimal, ProductsRow] = {
+      new OptField[BigDecimal, ProductsRow](
         _path,
         "weight_kg",
         _.weightKg,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(weightKg = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
@@ -182,8 +182,8 @@ object ProductsFields {
         _path,
         "dimensions_json",
         _.dimensionsJson,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(dimensionsJson = value),
         MariaTypes.longtext
       )
@@ -194,8 +194,8 @@ object ProductsFields {
         _path,
         "status",
         _.status,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(status = value),
         MariaTypes.text
       )
@@ -206,8 +206,8 @@ object ProductsFields {
         _path,
         "tax_class",
         _.taxClass,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(taxClass = value),
         MariaTypes.text
       )
@@ -218,8 +218,8 @@ object ProductsFields {
         _path,
         "tags",
         _.tags,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(tags = value),
         MariaTypes.set
       )
@@ -230,8 +230,8 @@ object ProductsFields {
         _path,
         "attributes",
         _.attributes,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(attributes = value),
         MariaTypes.longtext
       )
@@ -242,8 +242,8 @@ object ProductsFields {
         _path,
         "seo_metadata",
         _.seoMetadata,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(seoMetadata = value),
         MariaTypes.longtext
       )
@@ -254,8 +254,8 @@ object ProductsFields {
         _path,
         "created_at",
         _.createdAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(createdAt = value),
         MariaTypes.datetime
       )
@@ -266,8 +266,8 @@ object ProductsFields {
         _path,
         "updated_at",
         _.updatedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(updatedAt = value),
         MariaTypes.datetime
       )
@@ -278,17 +278,17 @@ object ProductsFields {
         _path,
         "published_at",
         _.publishedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(publishedAt = value),
         MariaTypes.datetime
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, ProductsRow]] = java.util.List.of(this.productId, this.sku, this.brandId, this.name, this.shortDescription, this.fullDescription, this.basePrice, this.costPrice, this.weightKg, this.dimensionsJson, this.status, this.taxClass, this.tags, this.attributes, this.seoMetadata, this.createdAt, this.updatedAt, this.publishedAt)
+    override def columns: java.util.List[FieldLike[?, ProductsRow]] = java.util.List.of(this.productId.underlying, this.sku.underlying, this.brandId.underlying, this.name.underlying, this.shortDescription.underlying, this.fullDescription.underlying, this.basePrice.underlying, this.costPrice.underlying, this.weightKg.underlying, this.dimensionsJson.underlying, this.status.underlying, this.taxClass.underlying, this.tags.underlying, this.attributes.underlying, this.seoMetadata.underlying, this.createdAt.underlying, this.updatedAt.underlying, this.publishedAt.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[ProductsFields, ProductsRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductsFields, ProductsRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

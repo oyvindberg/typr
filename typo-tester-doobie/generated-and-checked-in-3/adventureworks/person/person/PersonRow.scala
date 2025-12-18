@@ -32,7 +32,7 @@ case class PersonRow(
   /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
    * Constraint CK_Person_PersonType affecting columns persontype: (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
    */
-  persontype: /* bpchar, max 2 chars */ String,
+  persontype: String,
   /** 0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order.
    * Default: false
    */
@@ -88,9 +88,9 @@ case class PersonRow(
 }
 
 object PersonRow {
-  given decoder: Decoder[PersonRow] = Decoder.forProduct13[PersonRow, BusinessentityId, /* bpchar, max 2 chars */ String, NameStyle, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Int, Option[TypoXml], Option[TypoXml], TypoUUID, TypoLocalDateTime]("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")(PersonRow.apply)(using BusinessentityId.decoder, Decoder.decodeString, NameStyle.decoder, Decoder.decodeOption(using Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeInt, Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[PersonRow] = Decoder.forProduct13[PersonRow, BusinessentityId, String, NameStyle, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Int, Option[TypoXml], Option[TypoXml], TypoUUID, TypoLocalDateTime]("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")(PersonRow.apply)(using BusinessentityId.decoder, Decoder.decodeString, NameStyle.decoder, Decoder.decodeOption(using Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeInt, Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[PersonRow] = Encoder.forProduct13[PersonRow, BusinessentityId, /* bpchar, max 2 chars */ String, NameStyle, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Int, Option[TypoXml], Option[TypoXml], TypoUUID, TypoLocalDateTime]("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")(x => (x.businessentityid, x.persontype, x.namestyle, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.emailpromotion, x.additionalcontactinfo, x.demographics, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, Encoder.encodeString, NameStyle.encoder, Encoder.encodeOption(using Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeInt, Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[PersonRow] = Encoder.forProduct13[PersonRow, BusinessentityId, String, NameStyle, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Int, Option[TypoXml], Option[TypoXml], TypoUUID, TypoLocalDateTime]("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")(x => (x.businessentityid, x.persontype, x.namestyle, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.emailpromotion, x.additionalcontactinfo, x.demographics, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, Encoder.encodeString, NameStyle.encoder, Encoder.encodeOption(using Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeInt, Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given pgText: Text[PersonRow] = {
     Text.instance[PersonRow]{ (row, sb) =>
@@ -140,7 +140,7 @@ object PersonRow {
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       PersonRow(
         businessentityid = arr(0).asInstanceOf[BusinessentityId],
-            persontype = arr(1).asInstanceOf[/* bpchar, max 2 chars */ String],
+            persontype = arr(1).asInstanceOf[String],
             namestyle = arr(2).asInstanceOf[NameStyle],
             title = arr(3).asInstanceOf[Option[/* max 8 chars */ String]],
             firstname = arr(4).asInstanceOf[/* user-picked */ FirstName],

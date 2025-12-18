@@ -16,6 +16,12 @@ case class FilesRelation(
     options: InternalOptions,
     fks: List[db.ForeignKey]
 ) {
+  // TypeMapperJvmNew (used for DbLibTypo) doesn't need timestamp casts
+  // TypeMapperJvmOld (used for all other libs) needs them
+  private val sqlCast: SqlCast = options.dbLib match {
+    case Some(_: DbLibTypo) => new SqlCast(needsTimestampCasts = false)
+    case _                  => new SqlCast(needsTimestampCasts = true)
+  }
   def RowFile(rowType: DbLib.RowType, comment: Option[String], maybeUnsavedRow: Option[(ComputedRowUnsaved, ComputedDefault)]): Option[jvm.File] =
     maybeCols.map { cols =>
       val members = List[Iterable[jvm.ClassMember]](
@@ -61,9 +67,9 @@ case class FilesRelation(
           )
         },
         maybeUnsavedRow.map { case (unsaved, defaults) =>
-          val (partOfId, rest) = unsaved.defaultedCols.partition { case ComputedRowUnsaved.DefaultedCol(col, _) => names.isIdColumn(col.dbName) }
-          val partOfIdParams = partOfId.map { case ComputedRowUnsaved.DefaultedCol(col, _) => jvm.Param(col.name, col.tpe) }
-          val restParams = rest.map { case ComputedRowUnsaved.DefaultedCol(col, _) =>
+          val (partOfId, rest) = unsaved.defaultedCols.partition { case ComputedRowUnsaved.DefaultedCol(col, _, _) => names.isIdColumn(col.dbName) }
+          val partOfIdParams = partOfId.map { case ComputedRowUnsaved.DefaultedCol(col, _, _) => jvm.Param(col.name, col.tpe) }
+          val restParams = rest.map { case ComputedRowUnsaved.DefaultedCol(col, _, _) =>
             jvm.Param(col.name, col.tpe).copy(default = Some(code"${defaults.Defaulted}.${defaults.Provided}(this.${col.name})"))
           }
           val params = partOfIdParams ++ restParams
@@ -237,11 +243,11 @@ case class FilesRelation(
     // Interface/trait methods for each column
     val colMethods: List[jvm.Method] = cols.toList.map { col =>
       val (cls, tpe) =
-        if (names.isIdColumn(col.dbName)) (jvm.Type.dsl.IdField, col.tpe)
+        if (names.isIdColumn(col.dbName)) (lang.dsl.IdField, col.tpe)
         else
           col.tpe match {
-            case lang.Optional(underlying) => (jvm.Type.dsl.OptField, underlying)
-            case _                         => (jvm.Type.dsl.Field, col.tpe)
+            case lang.Optional(underlying) => (lang.dsl.OptField, underlying)
+            case _                         => (lang.dsl.Field, col.tpe)
           }
       jvm.Method(Nil, jvm.Comments.Empty, Nil, col.name, Nil, Nil, cls.of(tpe, names.RowName), Nil, jvm.Body.Abstract, isOverride = false, isDefault = false)
     }
@@ -257,23 +263,34 @@ case class FilesRelation(
               val otherTableSource = Source.Table(fk.otherTable)
               val otherFieldsType = jvm.Type.Qualified(naming.fieldsName(otherTableSource))
               val otherRowType = jvm.Type.Qualified(naming.rowName(otherTableSource))
-              val fkType = jvm.Type.dsl.ForeignKey.of(otherFieldsType, otherRowType)
+              val fkType = lang.dsl.ForeignKey.of(otherFieldsType, otherRowType)
               val fkName = naming.fk(relation.name, fk, includeCols = byOtherTable(fk.otherTable).size > 1)
-
-              // Language-agnostic column pairs using AST nodes
-              val columnPairs = fk.cols.zip(fk.otherCols).map { case (col, otherCol) =>
-                val thisField = jvm.SelfNullary(naming.field(col))
-                val otherGetter = jvm.FieldGetterRef(otherFieldsType, naming.field(otherCol))
-                code".withColumnPair($thisField, $otherGetter)"
-              }
 
               // ForeignKey.of[F, R](constraintName) using GenericMethodCall
               val fkConstruction = jvm.GenericMethodCall(
-                jvm.Type.dsl.ForeignKey.code,
+                lang.dsl.ForeignKey.code,
                 jvm.Ident("of"),
                 List(otherFieldsType, otherRowType),
                 List(jvm.Arg.Pos(jvm.StrLit(fk.constraintName.value).code))
               )
+
+              // Chain withColumnPair calls with explicit type parameters for Kotlin
+              val colsByName: Map[db.ColName, ComputedColumn] = maybeCols.map(_.toList.map(c => c.dbName -> c).toMap).getOrElse(Map.empty)
+              val colPairs: List[(db.ColName, db.ColName)] = fk.cols.zip(fk.otherCols).toList
+              val fkWithPairs = colPairs.foldLeft(fkConstruction.code) { case (acc, (colName, otherColName)) =>
+                val thisField = jvm.SelfNullary(naming.field(colName))
+                val otherGetter = jvm.FieldGetterRef(otherFieldsType, naming.field(otherColName))
+                // Strip nullables since we don't track nullability in the type-system at this level
+                val colType = colsByName.get(colName).map(col => col.tpe.stripNullable(lang)).getOrElse(jvm.Type.Qualified("Any")) // fallback to Any if not found
+                jvm
+                  .GenericMethodCall(
+                    acc,
+                    jvm.Ident("withColumnPair"),
+                    List(colType),
+                    List(jvm.Arg.Pos(thisField.code), jvm.Arg.Pos(otherGetter.code))
+                  )
+                  .code
+              }
 
               val method = jvm.Method(
                 annotations = Nil,
@@ -284,7 +301,7 @@ case class FilesRelation(
                 implicitParams = Nil,
                 tpe = fkType,
                 throws = Nil,
-                body = jvm.Body.Expr(code"$fkConstruction${columnPairs.mkCode("\n")}"),
+                body = jvm.Body.Expr(fkWithPairs),
                 isOverride = false,
                 isDefault = true
               )
@@ -298,7 +315,7 @@ case class FilesRelation(
     // Extract FK methods for composite foreign keys
     val extractFkMember: List[jvm.Method] =
       maybeFkAnalysis.toList.flatMap(_.extractFksIdsFromRow).flatMap { (x: FkAnalysis.ExtractFkId) =>
-        val predicateType = jvm.Type.dsl.SqlExpr.of(lang.Boolean)
+        val predicateType = lang.dsl.SqlExpr.of(lang.Boolean)
         val idParam = jvm.Param(jvm.Ident("id"), x.otherCompositeIdType)
         val idsParam = jvm.Param(jvm.Ident("ids"), lang.ListType.tpe.of(x.otherCompositeIdType))
 
@@ -325,11 +342,11 @@ case class FilesRelation(
 
         val inMethod = {
           val parts = x.colPairs.map { case (otherCol, thisCol) =>
-            val pgType = dbLib.lookupDbTypeInstance(thisCol)
+            val pgType = dbLib.lookupType(thisCol)
             val fieldExpr = jvm.SelfNullary(thisCol.name)
             dbLib.compositeInPart(thisCol.tpe, x.otherCompositeIdType, names.RowName, fieldExpr, otherCol.name, pgType)
           }
-          val body = jvm.Type.dsl.CompositeIn.construct(lang.ListType.create(parts), idsParam.name.code)
+          val body = dbLib.compositeInConstruct(lang.ListType.create(parts.toList), idsParam.name.code)
           jvm.Method(
             annotations = Nil,
             comments = jvm.Comments.Empty,
@@ -353,7 +370,7 @@ case class FilesRelation(
       names.maybeId
         .collect {
           case x: IdComputed.Composite if x.cols.forall(_.dbCol.nullability == Nullability.NoNulls) =>
-            val predicateType = jvm.Type.dsl.SqlExpr.of(lang.Boolean)
+            val predicateType = lang.dsl.SqlExpr.of(lang.Boolean)
             val idParam = jvm.Param(x.paramName, x.tpe)
             val idsParam = jvm.Param(x.paramName.appended("s"), lang.ListType.tpe.of(x.tpe))
 
@@ -389,9 +406,9 @@ case class FilesRelation(
                 tpe = predicateType,
                 throws = Nil,
                 body = jvm.Body.Expr(
-                  jvm.Type.dsl.CompositeIn.construct(
+                  dbLib.compositeInConstruct(
                     lang.ListType.create(x.cols.map { col =>
-                      val pgType = dbLib.lookupDbTypeInstance(col)
+                      val pgType = dbLib.lookupType(col)
                       val fieldExpr = jvm.SelfNullary(col.name)
                       dbLib.compositeInPart(col.tpe, x.tpe, names.RowName, fieldExpr, col.name, pgType)
                     }.toList),
@@ -409,19 +426,36 @@ case class FilesRelation(
 
     // Structure implementation - now a record that implements both Relation and Fields
     val ImplName = jvm.Ident("Impl")
-    val pathList = lang.ListType.tpe.of(jvm.Type.dsl.Path)
-    val generalizedColumn = jvm.Type.dsl.FieldLikeNoHkt.of(jvm.Type.Wildcard, names.RowName)
-    val columnsList = lang.ListType.tpe.of(generalizedColumn)
+    // For interface compliance, _path, copy and columns must use java.util.List (required by Java interface)
+    // Also must use typo.dsl types (Java types) not typo.scaladsl types (Scala wrappers)
+    // For Kotlin, we use Kotlin's List which maps to java.util.List at runtime
+    val javaPathList = lang match {
+      case _: LangKotlin => TypesKotlin.List.of(jvm.Type.Qualified("typo.dsl.Path"))
+      case _             => TypesJava.List.of(jvm.Type.Qualified("typo.dsl.Path"))
+    }
+    def emptyPathList: jvm.Code = lang match {
+      case _: LangKotlin => code"emptyList<typo.dsl.Path>()"
+      case _             => code"java.util.Collections.emptyList()"
+    }
+    // columns() must also return java.util.List with Java FieldLike type for FieldsExpr interface compliance
+    // For Kotlin, use Kotlin's List type which maps to java.util.List at runtime
+    val javaFieldLike = jvm.Type.Qualified("typo.dsl.SqlExpr.FieldLike").of(jvm.Type.Wildcard, names.RowName)
+    val javaColumnsList = lang match {
+      case _: LangKotlin => TypesKotlin.List.of(javaFieldLike)
+      case _             => TypesJava.List.of(javaFieldLike)
+    }
 
     // Field implementations for the record
     // Uses _path to avoid conflicts with tables that have a 'path' column
     val fieldImplMethods: List[jvm.Method] = cols.toList.map { col =>
-      val (cls, tpe) =
-        if (names.isIdColumn(col.dbName)) (jvm.Type.dsl.IdField, col.tpe)
+      // For OptField, we need the inner type (unwrapped from Nullable)
+      // The pgType parameter should match the field type parameter T, not Option[T]
+      val (cls, tpe, typoTypeForLookup) =
+        if (names.isIdColumn(col.dbName)) (lang.dsl.IdField, col.tpe, col.typoType)
         else
-          col.tpe match {
-            case lang.Optional(underlying) => (jvm.Type.dsl.OptField, underlying)
-            case _                         => (jvm.Type.dsl.Field, col.tpe)
+          col.typoType match {
+            case TypoType.Nullable(_, inner) => (lang.dsl.OptField, inner.jvmType, inner)
+            case _                           => (lang.dsl.Field, col.tpe, col.typoType)
           }
 
       jvm.Method(
@@ -440,16 +474,16 @@ case class FilesRelation(
               code"_path",
               jvm.StrLit(col.dbName.value),
               jvm.FieldGetterRef(names.RowName, col.name),
-              SqlCast.fromPg(col.dbCol.tpe) match {
-                case Some(sqlCast) => lang.Optional.some(jvm.StrLit(sqlCast.typeName))
-                case None          => lang.Optional.none
+              sqlCast.fromPg(col.dbCol.tpe) match {
+                case Some(cast) => lang.Optional.some(jvm.StrLit(cast.typeName))
+                case None       => lang.Optional.none
               },
-              SqlCast.toPg(col.dbCol) match {
-                case Some(sqlCast) => lang.Optional.some(jvm.StrLit(sqlCast.typeName))
-                case None          => lang.Optional.none
+              sqlCast.toPg(col.dbCol) match {
+                case Some(cast) => lang.Optional.some(jvm.StrLit(cast.typeName))
+                case None       => lang.Optional.none
               },
               lang.rowSetter(col.name),
-              dbLib.lookupDbTypeInstance(tpe, col.dbCol.tpe)
+              dbLib.lookupType(typoTypeForLookup)
             )
         ),
         isOverride = true,
@@ -458,9 +492,23 @@ case class FilesRelation(
     }
 
     // columns() method - calls each column accessor on this
-    val columnsExpr = lang.ListType.create(cols.toList.map { c =>
-      jvm.ApplyNullary(code"this", c.name).code
-    })
+    // Must use java.util.List for FieldsExpr interface compliance
+    // For Scala scalaDsl: must access .underlying to convert Scala wrappers to Java types
+    // For Scala javaDsl: types are already Java, no conversion needed
+    // For Kotlin: use listOf() which returns kotlin.collections.List (maps to java.util.List at runtime)
+    val columnsExpr = {
+      val elements = cols.toList.map { c =>
+        val accessor = jvm.ApplyNullary(code"this", c.name).code
+        lang.dsl.dslPackage match {
+          case "typo.scaladsl" | "typo.kotlindsl" => code"$accessor.underlying"
+          case _                                  => accessor
+        }
+      }
+      lang match {
+        case _: LangKotlin => code"listOf(${elements.mkCode(", ")})"
+        case _             => code"java.util.List.of(${elements.mkCode(", ")})"
+      }
+    }
 
     val columnsImplMethod = jvm.Method(
       annotations = Nil,
@@ -469,53 +517,90 @@ case class FilesRelation(
       name = jvm.Ident("columns"),
       params = Nil,
       implicitParams = Nil,
-      tpe = columnsList,
+      tpe = javaColumnsList,
       throws = Nil,
       body = jvm.Body.Expr(columnsExpr),
       isOverride = true,
       isDefault = false
     )
 
-    // copy method - uses _path to avoid conflicts with tables that have a 'path' column
-    val copyPathParam = jvm.Param(jvm.Ident("_path"), pathList)
-    val copyMethod = jvm.Method(
+    // withPaths method - uses _path to avoid conflicts with tables that have a 'path' column
+    val copyPathParam = jvm.Param(jvm.Ident("_path"), javaPathList)
+    val withPathsMethod = jvm.Method(
       Nil,
       jvm.Comments.Empty,
       Nil,
-      jvm.Ident("copy"),
+      jvm.Ident("withPaths"),
       List(copyPathParam),
       Nil,
-      jvm.Type.dsl.StructureRelation.of(fieldsName, names.RowName),
+      lang.dsl.StructureRelation.of(fieldsName, names.RowName),
       Nil,
       jvm.Body.Expr(jvm.New(jvm.Type.Qualified(ImplName), List(jvm.Arg.Pos(copyPathParam.name.code)))),
       isOverride = true,
       isDefault = false
     )
 
-    // The nested Impl record - implements both Relation and the Fields interface
+    // For Kotlin: need explicit _path() method since data class property `_path` generates `get_path()` not `_path()`
+    // The Java interface RelationStructure requires a method named `_path()`
+    val pathOverrideMethod: Option[jvm.Method] = lang match {
+      case _: LangKotlin =>
+        Some(
+          jvm.Method(
+            Nil,
+            jvm.Comments.Empty,
+            Nil,
+            jvm.Ident("_path"),
+            Nil,
+            Nil,
+            javaPathList,
+            Nil,
+            jvm.Body.Expr(code"_path"),
+            isOverride = true,
+            isDefault = false
+          )
+        )
+      case _ => None
+    }
+
+    // The nested Impl record - implements both Fields and RelationStructure interfaces
     // Uses _path to avoid conflicts with tables that have a 'path' column
+    // Order: Fields first, then RelationStructure (both are interfaces)
     val implRecord = jvm.NestedRecord(
       isPrivate = false,
       name = ImplName,
-      params = List(jvm.Param(jvm.Ident("_path"), pathList)),
-      implements = List(fieldsName, jvm.Type.dsl.StructureRelation.of(fieldsName, names.RowName)),
-      members = fieldImplMethods ++ List(columnsImplMethod, copyMethod)
+      params = List(jvm.Param(jvm.Ident("_path"), javaPathList)),
+      implements = List(fieldsName, lang.dsl.StructureRelation.of(fieldsName, names.RowName)),
+      members = fieldImplMethods ++ pathOverrideMethod.toList ++ List(columnsImplMethod, withPathsMethod)
     )
 
-    // Static structure method
-    val structureMethod = jvm.Method(
-      Nil,
-      jvm.Comments.Empty,
-      Nil,
-      jvm.Ident("structure"),
-      Nil,
-      Nil,
-      jvm.Type.Qualified(ImplName),
-      Nil,
-      jvm.Body.Expr(jvm.New(jvm.Type.Qualified(ImplName), List(jvm.Arg.Pos(lang.ListType.create(Nil))))),
-      isOverride = false,
-      isDefault = false
-    )
+    // Static structure - method for Java, property (val) for Kotlin
+    // Kotlin needs a property so that `FieldsType.structure` (property access) works
+    // Java needs a method so that `FieldsType.structure()` (method call via prop) works
+    val structureMember: jvm.ClassMember = lang match {
+      case _: LangKotlin =>
+        jvm.Value(
+          Nil,
+          jvm.Ident("structure"),
+          jvm.Type.Qualified(ImplName),
+          Some(jvm.New(jvm.Type.Qualified(ImplName), List(jvm.Arg.Pos(emptyPathList))).code),
+          isLazy = false,
+          isOverride = false
+        )
+      case _ =>
+        jvm.Method(
+          Nil,
+          jvm.Comments.Empty,
+          Nil,
+          jvm.Ident("structure"),
+          Nil,
+          Nil,
+          jvm.Type.Qualified(ImplName),
+          Nil,
+          jvm.Body.Expr(jvm.New(jvm.Type.Qualified(ImplName), List(jvm.Arg.Pos(emptyPathList)))),
+          isOverride = false,
+          isDefault = false
+        )
+    }
 
     // FieldsExpr methods: columns(), decodeRow(), encodeRow()
     val columnsMethod = jvm.Method(
@@ -525,7 +610,7 @@ case class FilesRelation(
       name = jvm.Ident("columns"),
       params = Nil,
       implicitParams = Nil,
-      tpe = columnsList,
+      tpe = javaColumnsList,
       throws = Nil,
       body = jvm.Body.Abstract,
       isOverride = true,
@@ -534,7 +619,18 @@ case class FilesRelation(
 
     // Generate rowParser() method that returns RowParser<Row>
     // Uses the Row's existing _rowParser static field
-    val rowParserType = jvm.Type.runtime.RowParser.of(names.RowName)
+    // For Kotlin and Scala DSL: must use Java typo.runtime.RowParser type (not wrapper) since we implement Java FieldsExpr
+    // and access .underlying to get the Java parser from the wrapper
+    val (rowParserType, rowParserBody) = lang match {
+      case _: LangKotlin =>
+        val javaRowParser = jvm.Type.Qualified("typo.runtime.RowParser").of(names.RowName)
+        (javaRowParser, code"${names.RowName}._rowParser.underlying")
+      case scala: LangScala if scala.dsl == DslQualifiedNames.Scala =>
+        val javaRowParser = jvm.Type.Qualified("typo.runtime.RowParser").of(names.RowName)
+        (javaRowParser, code"${names.RowName}._rowParser.underlying")
+      case _ =>
+        (lang.dsl.RowParser.of(names.RowName), code"${names.RowName}._rowParser")
+    }
     val rowParserMethod = jvm.Method(
       annotations = Nil,
       comments = jvm.Comments.Empty,
@@ -544,7 +640,7 @@ case class FilesRelation(
       implicitParams = Nil,
       tpe = rowParserType,
       throws = Nil,
-      body = jvm.Body.Expr(code"${names.RowName}._rowParser"),
+      body = jvm.Body.Expr(rowParserBody),
       isOverride = true,
       isDefault = true
     )
@@ -552,7 +648,12 @@ case class FilesRelation(
     // All interface members: column methods (abstract), FK methods (with default body), FieldsExpr methods
     val allMembers: List[jvm.ClassMember] = colMethods ++ fkMembers ++ extractFkMember ++ compositeIdMembers ++ List(columnsMethod, rowParserMethod)
 
-    // Build the interface/trait using jvm.Class
+    // Use FieldsExpr0 if available (Scala DSL), otherwise FieldsExpr
+    // FieldsExpr0 is an abstract class workaround for Scala 3 compiler bug
+    val fieldsExprType: jvm.Type = lang.dsl.FieldsExpr0.getOrElse(lang.dsl.FieldsExpr).of(names.RowName)
+
+    // Build the Fields interface using jvm.Class
+    // Fields is an interface (not abstract class) to avoid downstream Java issues
     val fieldsClass = jvm.Class(
       annotations = Nil,
       comments = jvm.Comments.Empty,
@@ -562,9 +663,9 @@ case class FilesRelation(
       params = Nil,
       implicitParams = Nil,
       `extends` = None,
-      implements = List(jvm.Type.dsl.FieldsExpr.of(names.RowName)),
+      implements = List(fieldsExprType),
       members = allMembers,
-      staticMembers = List(structureMethod, implRecord)
+      staticMembers = List(structureMember, implRecord)
     )
 
     jvm.File(fieldsName, fieldsClass.code, Nil, scope = Scope.Main)
@@ -573,11 +674,11 @@ case class FilesRelation(
   private def fieldsFileScala(fieldsName: jvm.Type.Qualified, cols: NonEmptyList[ComputedColumn], dbLib: DbLib): jvm.File = {
     val colMembers = cols.map { col =>
       val (cls, tpe) =
-        if (names.isIdColumn(col.dbName)) (jvm.Type.dsl.IdField, col.tpe)
+        if (names.isIdColumn(col.dbName)) (lang.dsl.IdField, col.tpe)
         else
           col.tpe match {
-            case lang.Optional(underlying) => (jvm.Type.dsl.OptField, underlying)
-            case _                         => (jvm.Type.dsl.Field, col.tpe)
+            case lang.Optional(underlying) => (lang.dsl.OptField, underlying)
+            case _                         => (lang.dsl.Field, col.tpe)
           }
       code"def ${col.name}: ${cls.of(tpe, names.RowName)}"
     }
@@ -590,7 +691,7 @@ case class FilesRelation(
             .sortBy(_.constraintName.value)
             .map { fk =>
               val otherTableSource = Source.Table(fk.otherTable)
-              val fkType = jvm.Type.dsl.ForeignKey.of(
+              val fkType = lang.dsl.ForeignKey.of(
                 jvm.Type.Qualified(naming.fieldsName(otherTableSource)),
                 jvm.Type.Qualified(naming.rowName(otherTableSource))
               )
@@ -611,7 +712,7 @@ case class FilesRelation(
 
     val extractFkMember: List[jvm.Code] =
       maybeFkAnalysis.toList.flatMap(_.extractFksIdsFromRow).flatMap { (x: FkAnalysis.ExtractFkId) =>
-        val predicateType = jvm.Type.dsl.SqlExpr.of(lang.Boolean)
+        val predicateType = lang.dsl.SqlExpr.of(lang.Boolean)
         val is = {
           val expr = x.colPairs
             .map { case (otherCol, thisCol) => code"${thisCol.name}.isEqual(id.${otherCol.name})" }
@@ -622,10 +723,11 @@ case class FilesRelation(
         }
         val in = {
           val parts = x.colPairs.map { case (otherCol, thisCol) =>
-            code"${jvm.Type.dsl.CompositeTuplePart.of(x.otherCompositeIdType)}(${thisCol.name})(_.${otherCol.name})(using ${dbLib.resolveConstAs(jvm.Type.ArrayOf(thisCol.tpe))}, implicitly)"
+            val arrayTypoType = TypoType.Array(jvm.Type.ArrayOf(thisCol.tpe), thisCol.typoType)
+            code"${lang.dsl.CompositeTuplePart.of(x.otherCompositeIdType)}(${thisCol.name})(_.${otherCol.name})(using ${dbLib.resolveConstAs(arrayTypoType)}, implicitly)"
           }
           code"""|def extract${x.name}In(ids: ${jvm.Type.ArrayOf(x.otherCompositeIdType)}): $predicateType =
-                 |  new ${jvm.Type.dsl.CompositeIn}(ids)(${parts.mkCode(", ")})
+                 |  new ${lang.dsl.CompositeIn}(ids)(${parts.mkCode(", ")})
                  |""".stripMargin
         }
 
@@ -636,7 +738,7 @@ case class FilesRelation(
       names.maybeId
         .collect {
           case x: IdComputed.Composite if x.cols.forall(_.dbCol.nullability == Nullability.NoNulls) =>
-            val predicateType = jvm.Type.dsl.SqlExpr.of(lang.Boolean)
+            val predicateType = lang.dsl.SqlExpr.of(lang.Boolean)
             val is = {
               val id = x.paramName
               val expr = x.cols
@@ -650,9 +752,12 @@ case class FilesRelation(
             val in = {
               val ids = x.paramName.appended("s")
               val parts =
-                x.cols.map(col => code"${jvm.Type.dsl.CompositeTuplePart.of(x.tpe)}(${col.name})(_.${col.name})(using ${dbLib.resolveConstAs(jvm.Type.ArrayOf(col.tpe))}, implicitly)")
+                x.cols.map { col =>
+                  val arrayTypoType = TypoType.Array(jvm.Type.ArrayOf(col.tpe), col.typoType)
+                  code"${lang.dsl.CompositeTuplePart.of(x.tpe)}(${col.name})(_.${col.name})(using ${dbLib.resolveConstAs(arrayTypoType)}, implicitly)"
+                }
               code"""|def compositeIdIn($ids: ${jvm.Type.ArrayOf(x.tpe)}): $predicateType =
-                     |  new ${jvm.Type.dsl.CompositeIn}($ids)(${parts.mkCode(", ")})
+                     |  new ${lang.dsl.CompositeIn}($ids)(${parts.mkCode(", ")})
                      |""".stripMargin
             }
 
@@ -666,27 +771,27 @@ case class FilesRelation(
       cols
         .map { col =>
           val (cls, tpe) =
-            if (names.isIdColumn(col.dbName)) (jvm.Type.dsl.IdField, col.tpe)
+            if (names.isIdColumn(col.dbName)) (lang.dsl.IdField, col.tpe)
             else
               col.tpe match {
-                case lang.Optional(underlying) => (jvm.Type.dsl.OptField, underlying)
-                case _                         => (jvm.Type.dsl.Field, col.tpe)
+                case lang.Optional(underlying) => (lang.dsl.OptField, underlying)
+                case _                         => (lang.dsl.Field, col.tpe)
               }
 
-          val readSqlCast = SqlCast.fromPg(col.dbCol.tpe) match {
-            case Some(sqlCast) => lang.Optional.some(jvm.StrLit(sqlCast.typeName))
-            case None          => lang.Optional.none
+          val readSqlCast = sqlCast.fromPg(col.dbCol.tpe) match {
+            case Some(cast) => lang.Optional.some(jvm.StrLit(cast.typeName))
+            case None       => lang.Optional.none
           }
-          val writeSqlCast = SqlCast.toPg(col.dbCol) match {
-            case Some(sqlCast) => lang.Optional.some(jvm.StrLit(sqlCast.typeName))
-            case None          => lang.Optional.none
+          val writeSqlCast = sqlCast.toPg(col.dbCol) match {
+            case Some(cast) => lang.Optional.some(jvm.StrLit(cast.typeName))
+            case None       => lang.Optional.none
           }
           code"override def ${col.name} = ${cls.of(tpe, names.RowName)}(_path, ${jvm.StrLit(col.dbName.value)}, $readSqlCast, $writeSqlCast, x => x.${col.name}, (row, value) => row.copy(${col.name} = value))"
         }
         .mkCode("\n")
 
-    val pathList = lang.ListType.tpe.of(jvm.Type.dsl.Path)
-    val generalizedColumn = jvm.Type.dsl.FieldLikeNoHkt.of(jvm.Type.Wildcard, names.RowName)
+    val pathList = lang.ListType.tpe.of(lang.dsl.Path)
+    val generalizedColumn = lang.dsl.FieldLikeNoHkt.of(jvm.Type.Wildcard, names.RowName)
     val columnsList = lang.ListType.tpe.of(generalizedColumn)
 
     val str =
@@ -695,11 +800,11 @@ case class FilesRelation(
              |}
              |
              |object ${fieldsName.name} {
-             |  lazy val structure: ${jvm.Type.dsl.StructureRelation}[$fieldsName, ${names.RowName}] =
+             |  lazy val structure: ${lang.dsl.StructureRelation}[$fieldsName, ${names.RowName}] =
              |    new $ImplName(${lang.ListType.create(Nil)})
              |
              |  private final class $ImplName(val _path: $pathList)
-             |    extends ${jvm.Type.dsl.StructureRelation.of(fieldsName, names.RowName)} {
+             |    extends ${lang.dsl.StructureRelation.of(fieldsName, names.RowName)} {
              |
              |    override lazy val fields: ${fieldsName.name} = new ${fieldsName.name} {
              |      $members

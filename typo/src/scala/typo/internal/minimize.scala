@@ -11,6 +11,8 @@ object minimize {
       entryPoints.foreach { f =>
         def goTree(tree: jvm.Tree): Unit = {
           tree match {
+            case jvm.Import(imp, _) =>
+              goTree(imp)
             case jvm.IgnoreResult(expr) =>
               go(expr)
             case jvm.NotNull(expr) =>
@@ -190,6 +192,8 @@ object minimize {
               targs.foreach(goTree)
             case jvm.Type.ArrayOf(value) =>
               goTree(value)
+            case jvm.Type.KotlinNullable(underlying) =>
+              goTree(underlying)
             case jvm.Type.Qualified(value) =>
               goTree(value)
             case jvm.Type.Abstract(_, _) =>

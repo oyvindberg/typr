@@ -6,9 +6,9 @@
 package adventureworks.production.location;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -36,7 +36,7 @@ public record LocationRow(
     */
   BigDecimal availability,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for Location records.
     * Default: nextval('production.location_locationid_seq'::regclass)
@@ -67,11 +67,11 @@ public record LocationRow(
   };
 
   /** Default: now() */
-  public LocationRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public LocationRow withModifieddate(LocalDateTime modifieddate) {
     return new LocationRow(locationid, name, costrate, availability, modifieddate);
   };
 
-  static RowParser<LocationRow> _rowParser = RowParsers.of(LocationId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, LocationRow::new, row -> new Object[]{row.locationid(), row.name(), row.costrate(), row.availability(), row.modifieddate()});;
+  static RowParser<LocationRow> _rowParser = RowParsers.of(LocationId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, LocationRow::new, row -> new Object[]{row.locationid(), row.name(), row.costrate(), row.availability(), row.modifieddate()});;
 
   static public PgText<LocationRow> pgText =
     PgText.from(_rowParser);
@@ -84,7 +84,7 @@ public record LocationRow(
     Defaulted<LocationId> locationid,
     Defaulted<BigDecimal> costrate,
     Defaulted<BigDecimal> availability,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new LocationRowUnsaved(name, locationid, costrate, availability, modifieddate);
   };

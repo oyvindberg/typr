@@ -30,7 +30,7 @@ case class StateprovinceRow(
    */
   stateprovinceid: StateprovinceId,
   /** ISO standard state or province code. */
-  stateprovincecode: /* bpchar, max 3 chars */ String,
+  stateprovincecode: String,
   /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
    * Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]]
    */

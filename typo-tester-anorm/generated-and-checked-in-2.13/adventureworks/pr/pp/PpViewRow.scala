@@ -27,13 +27,13 @@ case class PpViewRow(
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.productphotoid]] */
   productphotoid: ProductphotoId,
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.thumbnailphoto]] */
-  thumbnailphoto: Option[TypoBytea],
+  thumbnailphoto: TypoBytea,
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.thumbnailphotofilename]] */
-  thumbnailphotofilename: Option[/* max 50 chars */ String],
+  thumbnailphotofilename: String,
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.largephoto]] */
-  largephoto: Option[TypoBytea],
+  largephoto: TypoBytea,
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.largephotofilename]] */
-  largephotofilename: Option[/* max 50 chars */ String],
+  largephotofilename: String,
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -45,10 +45,10 @@ object PpViewRow {
           PpViewRow(
             id = json.\("id").as(ProductphotoId.reads),
             productphotoid = json.\("productphotoid").as(ProductphotoId.reads),
-            thumbnailphoto = json.\("thumbnailphoto").toOption.map(_.as(TypoBytea.reads)),
-            thumbnailphotofilename = json.\("thumbnailphotofilename").toOption.map(_.as(Reads.StringReads)),
-            largephoto = json.\("largephoto").toOption.map(_.as(TypoBytea.reads)),
-            largephotofilename = json.\("largephotofilename").toOption.map(_.as(Reads.StringReads)),
+            thumbnailphoto = json.\("thumbnailphoto").as(TypoBytea.reads),
+            thumbnailphotofilename = json.\("thumbnailphotofilename").as(Reads.StringReads),
+            largephoto = json.\("largephoto").as(TypoBytea.reads),
+            largephotofilename = json.\("largephotofilename").as(Reads.StringReads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
         )
@@ -62,10 +62,10 @@ object PpViewRow {
         PpViewRow(
           id = row(idx + 0)(ProductphotoId.column),
           productphotoid = row(idx + 1)(ProductphotoId.column),
-          thumbnailphoto = row(idx + 2)(Column.columnToOption(TypoBytea.column)),
-          thumbnailphotofilename = row(idx + 3)(Column.columnToOption(Column.columnToString)),
-          largephoto = row(idx + 4)(Column.columnToOption(TypoBytea.column)),
-          largephotofilename = row(idx + 5)(Column.columnToOption(Column.columnToString)),
+          thumbnailphoto = row(idx + 2)(TypoBytea.column),
+          thumbnailphotofilename = row(idx + 3)(Column.columnToString),
+          largephoto = row(idx + 4)(TypoBytea.column),
+          largephotofilename = row(idx + 5)(Column.columnToString),
           modifieddate = row(idx + 6)(TypoLocalDateTime.column)
         )
       )
@@ -77,10 +77,10 @@ object PpViewRow {
       new JsObject(ListMap[String, JsValue](
         "id" -> ProductphotoId.writes.writes(o.id),
         "productphotoid" -> ProductphotoId.writes.writes(o.productphotoid),
-        "thumbnailphoto" -> Writes.OptionWrites(TypoBytea.writes).writes(o.thumbnailphoto),
-        "thumbnailphotofilename" -> Writes.OptionWrites(Writes.StringWrites).writes(o.thumbnailphotofilename),
-        "largephoto" -> Writes.OptionWrites(TypoBytea.writes).writes(o.largephoto),
-        "largephotofilename" -> Writes.OptionWrites(Writes.StringWrites).writes(o.largephotofilename),
+        "thumbnailphoto" -> TypoBytea.writes.writes(o.thumbnailphoto),
+        "thumbnailphotofilename" -> Writes.StringWrites.writes(o.thumbnailphotofilename),
+        "largephoto" -> TypoBytea.writes.writes(o.largephoto),
+        "largephotofilename" -> Writes.StringWrites.writes(o.largephotofilename),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))
     )

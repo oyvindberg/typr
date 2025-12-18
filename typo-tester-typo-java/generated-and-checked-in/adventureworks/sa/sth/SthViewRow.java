@@ -5,11 +5,11 @@
  */
 package adventureworks.sa.sth;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -22,13 +22,13 @@ public record SthViewRow(
   /** Points to {@link adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow#territoryid()} */
   SalesterritoryId territoryid,
   /** Points to {@link adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow#startdate()} */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Points to {@link adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow#enddate()} */
-  Optional<TypoLocalDateTime> enddate,
+  LocalDateTime enddate,
   /** Points to {@link adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow#territoryid()} */
   public SthViewRow withId(SalesterritoryId id) {
@@ -46,24 +46,24 @@ public record SthViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow#startdate()} */
-  public SthViewRow withStartdate(TypoLocalDateTime startdate) {
+  public SthViewRow withStartdate(LocalDateTime startdate) {
     return new SthViewRow(id, businessentityid, territoryid, startdate, enddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow#enddate()} */
-  public SthViewRow withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public SthViewRow withEnddate(LocalDateTime enddate) {
     return new SthViewRow(id, businessentityid, territoryid, startdate, enddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow#rowguid()} */
-  public SthViewRow withRowguid(TypoUUID rowguid) {
+  public SthViewRow withRowguid(UUID rowguid) {
     return new SthViewRow(id, businessentityid, territoryid, startdate, enddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow#modifieddate()} */
-  public SthViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SthViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SthViewRow(id, businessentityid, territoryid, startdate, enddate, rowguid, modifieddate);
   };
 
-  static RowParser<SthViewRow> _rowParser = RowParsers.of(SalesterritoryId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, SthViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.territoryid(), row.startdate(), row.enddate(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SthViewRow> _rowParser = RowParsers.of(SalesterritoryId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.uuid, PgTypes.timestamp, SthViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.territoryid(), row.startdate(), row.enddate(), row.rowguid(), row.modifieddate()});;
 }

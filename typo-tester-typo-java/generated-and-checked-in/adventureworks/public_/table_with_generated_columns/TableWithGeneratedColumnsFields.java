@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface TableWithGeneratedColumnsFields extends FieldsExpr<TableWithGeneratedColumnsRow> {
-  record Impl(List<Path> _path) implements TableWithGeneratedColumnsFields, Relation<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> {
+  record Impl(List<Path> _path) implements TableWithGeneratedColumnsFields, RelationStructure<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> {
     @Override
     public IdField<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow> name() {
       return new IdField<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow>(_path, "name", TableWithGeneratedColumnsRow::name, Optional.empty(), Optional.empty(), (row, value) -> row.withName(value), TableWithGeneratedColumnsId.pgType);
@@ -30,17 +30,17 @@ public interface TableWithGeneratedColumnsFields extends FieldsExpr<TableWithGen
 
     @Override
     public List<FieldLike<?, TableWithGeneratedColumnsRow>> columns() {
-      return List.of(this.name(), this.nameTypeAlways());
+      return java.util.List.of(this.name(), this.nameTypeAlways());
     };
 
     @Override
-    public Relation<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> copy(List<Path> _path) {
+    public RelationStructure<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow> name();

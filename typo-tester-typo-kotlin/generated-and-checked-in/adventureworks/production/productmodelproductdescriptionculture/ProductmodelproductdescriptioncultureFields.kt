@@ -5,7 +5,6 @@
  */
 package adventureworks.production.productmodelproductdescriptionculture
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureFields
 import adventureworks.production.culture.CultureId
 import adventureworks.production.culture.CultureRow
@@ -15,58 +14,61 @@ import adventureworks.production.productdescription.ProductdescriptionRow
 import adventureworks.production.productmodel.ProductmodelFields
 import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.production.productmodel.ProductmodelRow
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface ProductmodelproductdescriptioncultureFields : FieldsExpr<ProductmodelproductdescriptioncultureRow> {
-  override fun columns(): List<FieldLike<*, ProductmodelproductdescriptioncultureRow>>
+  abstract override fun columns(): List<FieldLike<*, ProductmodelproductdescriptioncultureRow>>
 
   fun compositeIdIn(compositeIds: List<ProductmodelproductdescriptioncultureId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<ProductmodelId, ProductmodelproductdescriptioncultureId, ProductmodelproductdescriptioncultureRow>(productmodelid(), ProductmodelproductdescriptioncultureId::productmodelid, ProductmodelId.pgType), Part<ProductdescriptionId, ProductmodelproductdescriptioncultureId, ProductmodelproductdescriptioncultureRow>(productdescriptionid(), ProductmodelproductdescriptioncultureId::productdescriptionid, ProductdescriptionId.pgType), Part<CultureId, ProductmodelproductdescriptioncultureId, ProductmodelproductdescriptioncultureRow>(cultureid(), ProductmodelproductdescriptioncultureId::cultureid, CultureId.pgType)), compositeIds)
 
   fun compositeIdIs(compositeId: ProductmodelproductdescriptioncultureId): SqlExpr<Boolean> = SqlExpr.all(productmodelid().isEqual(compositeId.productmodelid), productdescriptionid().isEqual(compositeId.productdescriptionid), cultureid().isEqual(compositeId.cultureid))
 
-  fun cultureid(): IdField<CultureId, ProductmodelproductdescriptioncultureRow>
+  abstract fun cultureid(): IdField<CultureId, ProductmodelproductdescriptioncultureRow>
 
-  fun fkCulture(): ForeignKey<CultureFields, CultureRow> = ForeignKey.of<CultureFields, CultureRow>("production.FK_ProductModelProductDescriptionCulture_Culture_CultureID").withColumnPair(cultureid(), CultureFields::cultureid)
+  fun fkCulture(): ForeignKey<CultureFields, CultureRow> = ForeignKey.of<CultureFields, CultureRow>("production.FK_ProductModelProductDescriptionCulture_Culture_CultureID").withColumnPair<CultureId>(cultureid(), CultureFields::cultureid)
 
-  fun fkProductdescription(): ForeignKey<ProductdescriptionFields, ProductdescriptionRow> = ForeignKey.of<ProductdescriptionFields, ProductdescriptionRow>("production.FK_ProductModelProductDescriptionCulture_ProductDescription_Pro").withColumnPair(productdescriptionid(), ProductdescriptionFields::productdescriptionid)
+  fun fkProductdescription(): ForeignKey<ProductdescriptionFields, ProductdescriptionRow> = ForeignKey.of<ProductdescriptionFields, ProductdescriptionRow>("production.FK_ProductModelProductDescriptionCulture_ProductDescription_Pro").withColumnPair<ProductdescriptionId>(productdescriptionid(), ProductdescriptionFields::productdescriptionid)
 
-  fun fkProductmodel(): ForeignKey<ProductmodelFields, ProductmodelRow> = ForeignKey.of<ProductmodelFields, ProductmodelRow>("production.FK_ProductModelProductDescriptionCulture_ProductModel_ProductMo").withColumnPair(productmodelid(), ProductmodelFields::productmodelid)
+  fun fkProductmodel(): ForeignKey<ProductmodelFields, ProductmodelRow> = ForeignKey.of<ProductmodelFields, ProductmodelRow>("production.FK_ProductModelProductDescriptionCulture_ProductModel_ProductMo").withColumnPair<ProductmodelId>(productmodelid(), ProductmodelFields::productmodelid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, ProductmodelproductdescriptioncultureRow>
+  abstract fun modifieddate(): Field<LocalDateTime, ProductmodelproductdescriptioncultureRow>
 
-  fun productdescriptionid(): IdField<ProductdescriptionId, ProductmodelproductdescriptioncultureRow>
+  abstract fun productdescriptionid(): IdField<ProductdescriptionId, ProductmodelproductdescriptioncultureRow>
 
-  fun productmodelid(): IdField<ProductmodelId, ProductmodelproductdescriptioncultureRow>
+  abstract fun productmodelid(): IdField<ProductmodelId, ProductmodelproductdescriptioncultureRow>
 
-  override fun rowParser(): RowParser<ProductmodelproductdescriptioncultureRow> = ProductmodelproductdescriptioncultureRow._rowParser
+  override fun rowParser(): RowParser<ProductmodelproductdescriptioncultureRow> = ProductmodelproductdescriptioncultureRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductmodelproductdescriptioncultureFields, Relation<ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow> {
-      override fun productmodelid(): IdField<ProductmodelId, ProductmodelproductdescriptioncultureRow> = IdField<ProductmodelId, ProductmodelproductdescriptioncultureRow>(_path, "productmodelid", ProductmodelproductdescriptioncultureRow::productmodelid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productmodelid = value) }, ProductmodelId.pgType)
+    data class Impl(val _path: List<Path>) : ProductmodelproductdescriptioncultureFields, RelationStructure<ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow> {
+      override fun productmodelid(): IdField<ProductmodelId, ProductmodelproductdescriptioncultureRow> = IdField<ProductmodelId, ProductmodelproductdescriptioncultureRow>(_path, "productmodelid", ProductmodelproductdescriptioncultureRow::productmodelid, null, "int4", { row, value -> row.copy(productmodelid = value) }, ProductmodelId.pgType)
 
-      override fun productdescriptionid(): IdField<ProductdescriptionId, ProductmodelproductdescriptioncultureRow> = IdField<ProductdescriptionId, ProductmodelproductdescriptioncultureRow>(_path, "productdescriptionid", ProductmodelproductdescriptioncultureRow::productdescriptionid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productdescriptionid = value) }, ProductdescriptionId.pgType)
+      override fun productdescriptionid(): IdField<ProductdescriptionId, ProductmodelproductdescriptioncultureRow> = IdField<ProductdescriptionId, ProductmodelproductdescriptioncultureRow>(_path, "productdescriptionid", ProductmodelproductdescriptioncultureRow::productdescriptionid, null, "int4", { row, value -> row.copy(productdescriptionid = value) }, ProductdescriptionId.pgType)
 
-      override fun cultureid(): IdField<CultureId, ProductmodelproductdescriptioncultureRow> = IdField<CultureId, ProductmodelproductdescriptioncultureRow>(_path, "cultureid", ProductmodelproductdescriptioncultureRow::cultureid, Optional.empty(), Optional.of("bpchar"), { row, value -> row.copy(cultureid = value) }, CultureId.pgType)
+      override fun cultureid(): IdField<CultureId, ProductmodelproductdescriptioncultureRow> = IdField<CultureId, ProductmodelproductdescriptioncultureRow>(_path, "cultureid", ProductmodelproductdescriptioncultureRow::cultureid, null, "bpchar", { row, value -> row.copy(cultureid = value) }, CultureId.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, ProductmodelproductdescriptioncultureRow> = Field<TypoLocalDateTime, ProductmodelproductdescriptioncultureRow>(_path, "modifieddate", ProductmodelproductdescriptioncultureRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, ProductmodelproductdescriptioncultureRow> = Field<LocalDateTime, ProductmodelproductdescriptioncultureRow>(_path, "modifieddate", ProductmodelproductdescriptioncultureRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, ProductmodelproductdescriptioncultureRow>> = listOf(this.productmodelid(), this.productdescriptionid(), this.cultureid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ProductmodelproductdescriptioncultureRow>> = listOf(this.productmodelid().underlying, this.productdescriptionid().underlying, this.cultureid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

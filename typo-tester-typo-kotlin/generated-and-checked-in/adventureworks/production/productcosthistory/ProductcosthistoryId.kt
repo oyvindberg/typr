@@ -5,11 +5,11 @@
  */
 package adventureworks.production.productcosthistory
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
+import java.time.LocalDateTime
 
 /** Type for the composite primary key of table `production.productcosthistory` */
 data class ProductcosthistoryId(
   val productid: ProductId,
-  val startdate: TypoLocalDateTime
+  val startdate: LocalDateTime
 )

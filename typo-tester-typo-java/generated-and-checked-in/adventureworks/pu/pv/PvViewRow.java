@@ -5,12 +5,11 @@
  */
 package adventureworks.pu.pv;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.unitmeasure.UnitmeasureId;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -28,19 +27,19 @@ public record PvViewRow(
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#standardprice()} */
   BigDecimal standardprice,
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#lastreceiptcost()} */
-  Optional<BigDecimal> lastreceiptcost,
+  BigDecimal lastreceiptcost,
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#lastreceiptdate()} */
-  Optional<TypoLocalDateTime> lastreceiptdate,
+  LocalDateTime lastreceiptdate,
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#minorderqty()} */
   Integer minorderqty,
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#maxorderqty()} */
   Integer maxorderqty,
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#onorderqty()} */
-  Optional<Integer> onorderqty,
+  Integer onorderqty,
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#unitmeasurecode()} */
   UnitmeasureId unitmeasurecode,
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#productid()} */
   public PvViewRow withId(ProductId id) {
@@ -68,12 +67,12 @@ public record PvViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#lastreceiptcost()} */
-  public PvViewRow withLastreceiptcost(Optional<BigDecimal> lastreceiptcost) {
+  public PvViewRow withLastreceiptcost(BigDecimal lastreceiptcost) {
     return new PvViewRow(id, productid, businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate);
   };
 
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#lastreceiptdate()} */
-  public PvViewRow withLastreceiptdate(Optional<TypoLocalDateTime> lastreceiptdate) {
+  public PvViewRow withLastreceiptdate(LocalDateTime lastreceiptdate) {
     return new PvViewRow(id, productid, businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate);
   };
 
@@ -88,7 +87,7 @@ public record PvViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#onorderqty()} */
-  public PvViewRow withOnorderqty(Optional<Integer> onorderqty) {
+  public PvViewRow withOnorderqty(Integer onorderqty) {
     return new PvViewRow(id, productid, businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate);
   };
 
@@ -98,9 +97,9 @@ public record PvViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.productvendor.ProductvendorRow#modifieddate()} */
-  public PvViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PvViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PvViewRow(id, productid, businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate);
   };
 
-  static RowParser<PvViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, BusinessentityId.pgType, PgTypes.int4, PgTypes.numeric, PgTypes.numeric.opt(), TypoLocalDateTime.pgType.opt(), PgTypes.int4, PgTypes.int4, PgTypes.int4.opt(), UnitmeasureId.pgType, TypoLocalDateTime.pgType, PvViewRow::new, row -> new Object[]{row.id(), row.productid(), row.businessentityid(), row.averageleadtime(), row.standardprice(), row.lastreceiptcost(), row.lastreceiptdate(), row.minorderqty(), row.maxorderqty(), row.onorderqty(), row.unitmeasurecode(), row.modifieddate()});;
+  static RowParser<PvViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, BusinessentityId.pgType, PgTypes.int4, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, PgTypes.int4, PgTypes.int4, PgTypes.int4, UnitmeasureId.pgType, PgTypes.timestamp, PvViewRow::new, row -> new Object[]{row.id(), row.productid(), row.businessentityid(), row.averageleadtime(), row.standardprice(), row.lastreceiptcost(), row.lastreceiptdate(), row.minorderqty(), row.maxorderqty(), row.onorderqty(), row.unitmeasurecode(), row.modifieddate()});;
 }

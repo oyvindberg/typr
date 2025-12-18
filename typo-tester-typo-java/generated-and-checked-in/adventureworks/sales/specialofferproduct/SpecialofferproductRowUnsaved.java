@@ -7,11 +7,12 @@ package adventureworks.sales.specialofferproduct;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.product.ProductId;
 import adventureworks.sales.specialoffer.SpecialofferId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.specialofferproduct` which has not been persisted yet */
 public record SpecialofferproductRowUnsaved(
@@ -24,9 +25,9 @@ public record SpecialofferproductRowUnsaved(
     */
   ProductId productid,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SpecialofferproductRowUnsaved(
     /** Primary key for SpecialOfferProduct records.
@@ -56,12 +57,12 @@ public record SpecialofferproductRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public SpecialofferproductRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public SpecialofferproductRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new SpecialofferproductRowUnsaved(specialofferid, productid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SpecialofferproductRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SpecialofferproductRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SpecialofferproductRowUnsaved(specialofferid, productid, rowguid, modifieddate);
   };
 
@@ -71,14 +72,14 @@ public record SpecialofferproductRowUnsaved(
       sb.append(PgText.DELIMETER);
       ProductId.pgType.pgText().unsafeEncode(row.productid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public SpecialofferproductRow toRow(
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new SpecialofferproductRow(specialofferid, productid, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

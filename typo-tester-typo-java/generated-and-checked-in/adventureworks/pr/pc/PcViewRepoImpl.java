@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class PcViewRepoImpl implements PcViewRepo {
@@ -19,9 +20,6 @@ public class PcViewRepoImpl implements PcViewRepo {
 
   @Override
   public List<PcViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "productcategoryid", "name", "rowguid", "modifieddate"::text
-       from "pr"."pc"
-    """)).query(PcViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"pr\".\"pc\"\n")).query(PcViewRow._rowParser.all()).runUnchecked(c);
   };
 }

@@ -28,13 +28,13 @@ case class VstorewithdemographicsViewRow(
   name: Name,
   annualSales: TypoMoney,
   annualRevenue: TypoMoney,
-  bankName: /* max 50 chars */ String,
-  businessType: /* max 5 chars */ String,
+  bankName: String,
+  businessType: String,
   yearOpened: Int,
-  specialty: /* max 50 chars */ String,
+  specialty: String,
   squareFeet: Int,
-  brands: /* max 30 chars */ String,
-  internet: /* max 30 chars */ String,
+  brands: String,
+  internet: String,
   numberEmployees: Int
 )
 

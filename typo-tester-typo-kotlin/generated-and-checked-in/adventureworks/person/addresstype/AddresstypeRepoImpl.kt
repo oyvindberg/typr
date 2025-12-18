@@ -5,25 +5,21 @@
  */
 package adventureworks.person.addresstype
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class AddresstypeRepoImpl() : AddresstypeRepo {
   override fun delete(): DeleteBuilder<AddresstypeFields, AddresstypeRow> = DeleteBuilder.of("\"person\".\"addresstype\"", AddresstypeFields.structure, Dialect.POSTGRESQL)
@@ -31,98 +27,45 @@ class AddresstypeRepoImpl() : AddresstypeRepo {
   override fun deleteById(
     addresstypeid: AddresstypeId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "person"."addresstype" where "addresstypeid" = 
-    """.trimMargin()),
-    AddresstypeId.pgType.encode(addresstypeid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"person\".\"addresstype\" where \"addresstypeid\" = "), Fragment.encode(AddresstypeId.pgType, addresstypeid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     addresstypeids: Array<AddresstypeId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "person"."addresstype"
-               where "addresstypeid" = ANY(""".trimMargin()),
-             AddresstypeId.pgTypeArray.encode(addresstypeids),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = interpolate(Fragment.lit("delete\nfrom \"person\".\"addresstype\"\nwhere \"addresstypeid\" = ANY("), Fragment.encode(AddresstypeId.pgTypeArray, addresstypeids), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: AddresstypeRow,
     c: Connection
-  ): AddresstypeRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate")
-      values (""".trimMargin()),
-    AddresstypeId.pgType.encode(unsaved.addresstypeid),
-    typo.runtime.Fragment.lit("::int4, "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "addresstypeid", "name", "rowguid", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): AddresstypeRow = interpolate(Fragment.lit("insert into \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(AddresstypeId.pgType, unsaved.addresstypeid), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\n"))
     .updateReturning(AddresstypeRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: AddresstypeRowUnsaved,
     c: Connection
   ): AddresstypeRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"name\""))
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name),
-      typo.runtime.Fragment.lit("::varchar")
-    ))
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar")))
     unsaved.addresstypeid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"addresstypeid\""))
-      values.add(interpolate(
-        AddresstypeId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      )) }
+      values.add(interpolate(Fragment.encode(AddresstypeId.pgType, value), Fragment.lit("::int4"))) }
     );
     unsaved.rowguid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"rowguid\""))
-      values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."addresstype"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "addresstypeid", "name", "rowguid", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"person\".\"addresstype\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\n"))
     return q.updateReturning(AddresstypeRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -130,49 +73,28 @@ class AddresstypeRepoImpl() : AddresstypeRepo {
     unsaved: MutableIterator<AddresstypeRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, AddresstypeRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, AddresstypeRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<AddresstypeRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "person"."addresstype"("name", "addresstypeid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, AddresstypeRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"person\".\"addresstype\"(\"name\", \"addresstypeid\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, AddresstypeRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<AddresstypeFields, AddresstypeRow> = SelectBuilder.of("\"person\".\"addresstype\"", AddresstypeFields.structure, AddresstypeRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<AddresstypeRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "addresstypeid", "name", "rowguid", "modifieddate"::text
-    from "person"."addresstype"
-  """.trimMargin())).query(AddresstypeRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<AddresstypeRow> = interpolate(Fragment.lit("select \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"addresstype\"\n")).query(AddresstypeRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     addresstypeid: AddresstypeId,
     c: Connection
-  ): Optional<AddresstypeRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "addresstypeid", "name", "rowguid", "modifieddate"::text
-      from "person"."addresstype"
-      where "addresstypeid" = """.trimMargin()),
-    AddresstypeId.pgType.encode(addresstypeid),
-    typo.runtime.Fragment.lit("")
-  ).query(AddresstypeRow._rowParser.first()).runUnchecked(c)
+  ): AddresstypeRow? = interpolate(Fragment.lit("select \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"addresstype\"\nwhere \"addresstypeid\" = "), Fragment.encode(AddresstypeId.pgType, addresstypeid), Fragment.lit("")).query(AddresstypeRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     addresstypeids: Array<AddresstypeId>,
     c: Connection
-  ): List<AddresstypeRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "addresstypeid", "name", "rowguid", "modifieddate"::text
-      from "person"."addresstype"
-      where "addresstypeid" = ANY(""".trimMargin()),
-    AddresstypeId.pgTypeArray.encode(addresstypeids),
-    typo.runtime.Fragment.lit(")")
-  ).query(AddresstypeRow._rowParser.all()).runUnchecked(c)
+  ): List<AddresstypeRow> = interpolate(Fragment.lit("select \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"addresstype\"\nwhere \"addresstypeid\" = ANY("), Fragment.encode(AddresstypeId.pgTypeArray, addresstypeids), Fragment.lit(")")).query(AddresstypeRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     addresstypeids: Array<AddresstypeId>,
@@ -180,77 +102,32 @@ class AddresstypeRepoImpl() : AddresstypeRepo {
   ): Map<AddresstypeId, AddresstypeRow> {
     val ret: MutableMap<AddresstypeId, AddresstypeRow> = mutableMapOf<AddresstypeId, AddresstypeRow>()
     selectByIds(addresstypeids, c).forEach({ row -> ret.put(row.addresstypeid, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<AddresstypeFields, AddresstypeRow> = UpdateBuilder.of("\"person\".\"addresstype\"", AddresstypeFields.structure, AddresstypeRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<AddresstypeFields, AddresstypeRow> = UpdateBuilder.of("\"person\".\"addresstype\"", AddresstypeFields.structure, AddresstypeRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: AddresstypeRow,
     c: Connection
   ): Boolean {
     val addresstypeid: AddresstypeId = row.addresstypeid
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "person"."addresstype"
-        set "name" = """.trimMargin()),
-      Name.pgType.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ::varchar,
-        "rowguid" = """.trimMargin()),
-      TypoUUID.pgType.encode(row.rowguid),
-      typo.runtime.Fragment.lit("""
-        ::uuid,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "addresstypeid" = """.trimMargin()),
-      AddresstypeId.pgType.encode(addresstypeid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"person\".\"addresstype\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name), Fragment.lit("::varchar,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"addresstypeid\" = "), Fragment.encode(AddresstypeId.pgType, addresstypeid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: AddresstypeRow,
     c: Connection
-  ): AddresstypeRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate")
-      values (""".trimMargin()),
-    AddresstypeId.pgType.encode(unsaved.addresstypeid),
-    typo.runtime.Fragment.lit("::int4, "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("addresstypeid")
-      do update set
-        "name" = EXCLUDED."name",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "addresstypeid", "name", "rowguid", "modifieddate"::text""".trimMargin())
-  )
+  ): AddresstypeRow = interpolate(Fragment.lit("insert into \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(AddresstypeId.pgType, unsaved.addresstypeid), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"addresstypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\""))
     .updateReturning(AddresstypeRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<AddresstypeRow>,
     c: Connection
-  ): List<AddresstypeRow> = interpolate(typo.runtime.Fragment.lit("""
-                              insert into "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate")
-                              values (?::int4, ?::varchar, ?::uuid, ?::timestamp)
-                              on conflict ("addresstypeid")
-                              do update set
-                                "name" = EXCLUDED."name",
-                              "rowguid" = EXCLUDED."rowguid",
-                              "modifieddate" = EXCLUDED."modifieddate"
-                              returning "addresstypeid", "name", "rowguid", "modifieddate"::text""".trimMargin()))
+  ): List<AddresstypeRow> = interpolate(Fragment.lit("insert into \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::uuid, ?::timestamp)\non conflict (\"addresstypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\""))
     .updateManyReturning(AddresstypeRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -258,21 +135,8 @@ class AddresstypeRepoImpl() : AddresstypeRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table addresstype_TEMP (like "person"."addresstype") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy addresstype_TEMP("addresstypeid", "name", "rowguid", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, AddresstypeRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate")
-      select * from addresstype_TEMP
-      on conflict ("addresstypeid")
-      do update set
-        "name" = EXCLUDED."name",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table addresstype_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table addresstype_TEMP (like \"person\".\"addresstype\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy addresstype_TEMP(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, AddresstypeRow.pgText)
+    return interpolate(Fragment.lit("insert into \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\")\nselect * from addresstype_TEMP\non conflict (\"addresstypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table addresstype_TEMP;")).update().runUnchecked(c)
   }
 }

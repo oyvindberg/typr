@@ -5,13 +5,7 @@ package codegen
 import typo.jvm.Code.TypeOps
 
 case class JsonLibJackson(pkg: jvm.QIdent, default: ComputedDefault, lang: Lang) extends JsonLib {
-  // Language-specific top type for instantiation (can't use wildcard to instantiate)
-  val topType: jvm.Type = lang match {
-    case _: LangScala => TypesScala.Any
-    case LangKotlin   => TypesKotlin.Any
-    case LangJava     => TypesJava.Object
-    case other        => sys.error(s"Unsupported language: $other")
-  }
+  val topType: jvm.Type = lang.topType
 
   // Jackson annotation types
   val JsonProperty = jvm.Type.Qualified("com.fasterxml.jackson.annotation.JsonProperty")
@@ -75,8 +69,8 @@ case class JsonLibJackson(pkg: jvm.QIdent, default: ComputedDefault, lang: Lang)
       // In Kotlin, use javaClass.name instead of getClass().getName()
       defaultCase = Some {
         val className = lang match {
-          case LangKotlin => code"$value.javaClass.name"
-          case _          => code"$value.getClass().getName()"
+          case _: LangKotlin => code"$value.javaClass.name"
+          case _             => code"$value.getClass().getName()"
         }
         code"throw ${IOException.construct(code"${jvm.StrLit("Unknown Defaulted subtype: ")} + $className")}"
       }

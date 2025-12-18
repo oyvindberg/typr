@@ -5,12 +5,12 @@
  */
 package adventureworks.production.document;
 
-import adventureworks.customtypes.TypoUUID;
 import java.sql.Connection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.DeleteBuilder;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
@@ -71,7 +71,7 @@ public interface DocumentRepo {
   );
 
   Optional<DocumentRow> selectByUniqueRowguid(
-    TypoUUID rowguid,
+    UUID rowguid,
     Connection c
   );
 

@@ -16,9 +16,14 @@ public record ShippingCarriersId(@JsonValue Short value) {
     return new ShippingCarriersId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<ShippingCarriersId, Short> bijection =
     Bijection.of(ShippingCarriersId::value, ShippingCarriersId::new);
 
   static public MariaType<ShippingCarriersId> pgType =
-    MariaTypes.smallint.bimap(ShippingCarriersId::new, ShippingCarriersId::value);
+    MariaTypes.tinyintUnsigned.bimap(ShippingCarriersId::new, ShippingCarriersId::value);
 }

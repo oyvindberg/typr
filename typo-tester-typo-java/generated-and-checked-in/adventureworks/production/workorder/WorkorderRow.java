@@ -6,10 +6,9 @@
 package adventureworks.production.workorder;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.scrapreason.ScrapreasonId;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -36,23 +35,23 @@ public record WorkorderRow(
   /** Quantity that failed inspection.
     * Constraint CK_WorkOrder_ScrappedQty affecting columns scrappedqty: ((scrappedqty >= 0))
     */
-  TypoShort scrappedqty,
+  Short scrappedqty,
   /** Work order start date.
     * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Work order end date.
     * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  Optional<TypoLocalDateTime> enddate,
+  Optional<LocalDateTime> enddate,
   /** Work order due date. */
-  TypoLocalDateTime duedate,
+  LocalDateTime duedate,
   /** Reason for inspection failure.
     * Points to {@link adventureworks.production.scrapreason.ScrapreasonRow#scrapreasonid()}
     */
   Optional<ScrapreasonId> scrapreasonid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for WorkOrder records.
     * Default: nextval('production.workorder_workorderid_seq'::regclass)
@@ -78,26 +77,26 @@ public record WorkorderRow(
   /** Quantity that failed inspection.
     * Constraint CK_WorkOrder_ScrappedQty affecting columns scrappedqty: ((scrappedqty >= 0))
     */
-  public WorkorderRow withScrappedqty(TypoShort scrappedqty) {
+  public WorkorderRow withScrappedqty(Short scrappedqty) {
     return new WorkorderRow(workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
   /** Work order start date.
     * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public WorkorderRow withStartdate(TypoLocalDateTime startdate) {
+  public WorkorderRow withStartdate(LocalDateTime startdate) {
     return new WorkorderRow(workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
   /** Work order end date.
     * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public WorkorderRow withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public WorkorderRow withEnddate(Optional<LocalDateTime> enddate) {
     return new WorkorderRow(workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
   /** Work order due date. */
-  public WorkorderRow withDuedate(TypoLocalDateTime duedate) {
+  public WorkorderRow withDuedate(LocalDateTime duedate) {
     return new WorkorderRow(workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
@@ -109,11 +108,11 @@ public record WorkorderRow(
   };
 
   /** Default: now() */
-  public WorkorderRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public WorkorderRow withModifieddate(LocalDateTime modifieddate) {
     return new WorkorderRow(workorderid, productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate);
   };
 
-  static RowParser<WorkorderRow> _rowParser = RowParsers.of(WorkorderId.pgType, ProductId.pgType, PgTypes.int4, TypoShort.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType, ScrapreasonId.pgType.opt(), TypoLocalDateTime.pgType, WorkorderRow::new, row -> new Object[]{row.workorderid(), row.productid(), row.orderqty(), row.scrappedqty(), row.startdate(), row.enddate(), row.duedate(), row.scrapreasonid(), row.modifieddate()});;
+  static RowParser<WorkorderRow> _rowParser = RowParsers.of(WorkorderId.pgType, ProductId.pgType, PgTypes.int4, PgTypes.int2, PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.timestamp, ScrapreasonId.pgType.opt(), PgTypes.timestamp, WorkorderRow::new, row -> new Object[]{row.workorderid(), row.productid(), row.orderqty(), row.scrappedqty(), row.startdate(), row.enddate(), row.duedate(), row.scrapreasonid(), row.modifieddate()});;
 
   static public PgText<WorkorderRow> pgText =
     PgText.from(_rowParser);
@@ -124,7 +123,7 @@ public record WorkorderRow(
 
   public WorkorderRowUnsaved toUnsavedRow(
     Defaulted<WorkorderId> workorderid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new WorkorderRowUnsaved(productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, workorderid, modifieddate);
   };

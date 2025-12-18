@@ -11,15 +11,15 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.production.location.LocationId
 import adventureworks.production.product.ProductId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait PiViewFields {
   def id: Field[ProductId, PiViewRow]
   def productid: Field[ProductId, PiViewRow]
   def locationid: Field[LocationId, PiViewRow]
-  def shelf: Field[/* max 10 chars */ String, PiViewRow]
+  def shelf: Field[String, PiViewRow]
   def bin: Field[TypoShort, PiViewRow]
   def quantity: Field[TypoShort, PiViewRow]
   def rowguid: Field[TypoUUID, PiViewRow]
@@ -27,17 +27,17 @@ trait PiViewFields {
 }
 
 object PiViewFields {
-  lazy val structure: Relation[PiViewFields, PiViewRow] =
+  lazy val structure: RelationStructure[PiViewFields, PiViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PiViewFields, PiViewRow] {
+    extends RelationStructure[PiViewFields, PiViewRow] {
 
     override lazy val fields: PiViewFields = new PiViewFields {
       override def id = Field[ProductId, PiViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def productid = Field[ProductId, PiViewRow](_path, "productid", None, None, x => x.productid, (row, value) => row.copy(productid = value))
       override def locationid = Field[LocationId, PiViewRow](_path, "locationid", None, None, x => x.locationid, (row, value) => row.copy(locationid = value))
-      override def shelf = Field[/* max 10 chars */ String, PiViewRow](_path, "shelf", None, None, x => x.shelf, (row, value) => row.copy(shelf = value))
+      override def shelf = Field[String, PiViewRow](_path, "shelf", None, None, x => x.shelf, (row, value) => row.copy(shelf = value))
       override def bin = Field[TypoShort, PiViewRow](_path, "bin", None, None, x => x.bin, (row, value) => row.copy(bin = value))
       override def quantity = Field[TypoShort, PiViewRow](_path, "quantity", None, None, x => x.quantity, (row, value) => row.copy(quantity = value))
       override def rowguid = Field[TypoUUID, PiViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))

@@ -6,10 +6,10 @@
 package testdb.hardcoded.compositepk.person
 
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PersonFields {
   def one: IdField[Long, PersonRow]
@@ -18,11 +18,11 @@ trait PersonFields {
 }
 
 object PersonFields {
-  lazy val structure: Relation[PersonFields, PersonRow] =
+  lazy val structure: RelationStructure[PersonFields, PersonRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PersonFields, PersonRow] {
+    extends RelationStructure[PersonFields, PersonRow] {
 
     override lazy val fields: PersonFields = new PersonFields {
       override def one = IdField[Long, PersonRow](_path, "one", None, Some("int8"), x => x.one, (row, value) => row.copy(one = value))

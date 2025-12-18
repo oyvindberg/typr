@@ -6,20 +6,20 @@
 package adventureworks.production.product
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.production.productsubcategory.ProductsubcategoryId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import adventureworks.public.Flag
 import adventureworks.public.Name
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.product
   * Products sold or used in the manfacturing of sold products.
@@ -33,7 +33,7 @@ data class ProductRow(
   /** Name of the product. */
   val name: Name,
   /** Unique product identification number. */
-  val productnumber: /* max 25 chars */ String,
+  val productnumber: String,
   /** 0 = Product is purchased, 1 = Product is manufactured in-house.
     * Default: true
     */
@@ -43,15 +43,15 @@ data class ProductRow(
     */
   val finishedgoodsflag: Flag,
   /** Product color. */
-  val color: Optional</* max 15 chars */ String>,
+  val color: /* max 15 chars */ String?,
   /** Minimum inventory quantity.
     * Constraint CK_Product_SafetyStockLevel affecting columns safetystocklevel: ((safetystocklevel > 0))
     */
-  val safetystocklevel: TypoShort,
+  val safetystocklevel: Short,
   /** Inventory level that triggers a purchase order or work order.
     * Constraint CK_Product_ReorderPoint affecting columns reorderpoint: ((reorderpoint > 0))
     */
-  val reorderpoint: TypoShort,
+  val reorderpoint: Short,
   /** Standard cost of the product.
     * Constraint CK_Product_StandardCost affecting columns standardcost: ((standardcost >= 0.00))
     */
@@ -61,19 +61,19 @@ data class ProductRow(
     */
   val listprice: BigDecimal,
   /** Product size. */
-  val size: Optional</* max 5 chars */ String>,
+  val size: /* max 5 chars */ String?,
   /** Unit of measure for Size column.
     * Points to [adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]
     */
-  val sizeunitmeasurecode: Optional<UnitmeasureId>,
+  val sizeunitmeasurecode: UnitmeasureId?,
   /** Unit of measure for Weight column.
     * Points to [adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]
     */
-  val weightunitmeasurecode: Optional<UnitmeasureId>,
+  val weightunitmeasurecode: UnitmeasureId?,
   /** Product weight.
     * Constraint CK_Product_Weight affecting columns weight: ((weight > 0.00))
     */
-  val weight: Optional<BigDecimal>,
+  val weight: BigDecimal?,
   /** Number of days required to manufacture the product.
     * Constraint CK_Product_DaysToManufacture affecting columns daystomanufacture: ((daystomanufacture >= 0))
     */
@@ -81,37 +81,37 @@ data class ProductRow(
   /** R = Road, M = Mountain, T = Touring, S = Standard
     * Constraint CK_Product_ProductLine affecting columns productline: (((upper((productline)::text) = ANY (ARRAY['S'::text, 'T'::text, 'M'::text, 'R'::text])) OR (productline IS NULL)))
     */
-  val productline: Optional</* bpchar, max 2 chars */ String>,
+  val productline: /* bpchar, max 2 chars */ String?,
   /** H = High, M = Medium, L = Low
     * Constraint CK_Product_Class affecting columns class: (((upper((class)::text) = ANY (ARRAY['L'::text, 'M'::text, 'H'::text])) OR (class IS NULL)))
     */
-  val `class`: Optional</* bpchar, max 2 chars */ String>,
+  val `class`: /* bpchar, max 2 chars */ String?,
   /** W = Womens, M = Mens, U = Universal
     * Constraint CK_Product_Style affecting columns style: (((upper((style)::text) = ANY (ARRAY['W'::text, 'M'::text, 'U'::text])) OR (style IS NULL)))
     */
-  val style: Optional</* bpchar, max 2 chars */ String>,
+  val style: /* bpchar, max 2 chars */ String?,
   /** Product is a member of this product subcategory. Foreign key to ProductSubCategory.ProductSubCategoryID.
     * Points to [adventureworks.production.productsubcategory.ProductsubcategoryRow.productsubcategoryid]
     */
-  val productsubcategoryid: Optional<ProductsubcategoryId>,
+  val productsubcategoryid: ProductsubcategoryId?,
   /** Product is a member of this product model. Foreign key to ProductModel.ProductModelID.
     * Points to [adventureworks.production.productmodel.ProductmodelRow.productmodelid]
     */
-  val productmodelid: Optional<ProductmodelId>,
+  val productmodelid: ProductmodelId?,
   /** Date the product was available for sale.
     * Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate: (((sellenddate >= sellstartdate) OR (sellenddate IS NULL)))
     */
-  val sellstartdate: TypoLocalDateTime,
+  val sellstartdate: LocalDateTime,
   /** Date the product was no longer available for sale.
     * Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate: (((sellenddate >= sellstartdate) OR (sellenddate IS NULL)))
     */
-  val sellenddate: Optional<TypoLocalDateTime>,
+  val sellenddate: LocalDateTime?,
   /** Date the product was discontinued. */
-  val discontinueddate: Optional<TypoLocalDateTime>,
+  val discontinueddate: LocalDateTime?,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): ProductId = productid
 
@@ -119,14 +119,14 @@ data class ProductRow(
     productid: Defaulted<ProductId>,
     makeflag: Defaulted<Flag>,
     finishedgoodsflag: Defaulted<Flag>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): ProductRowUnsaved = ProductRowUnsaved(name, productnumber, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, `class`, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, productid, makeflag, finishedgoodsflag, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductRow> = RowParsers.of(ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text.opt(), TypoShort.pgType, TypoShort.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.text.opt(), UnitmeasureId.pgType.opt(), UnitmeasureId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.int4, PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), ProductsubcategoryId.pgType.opt(), ProductmodelId.pgType.opt(), TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24 -> ProductRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!, t22!!, t23!!, t24!!) }, { row -> arrayOf<Any?>(row.productid, row.name, row.productnumber, row.makeflag, row.finishedgoodsflag, row.color, row.safetystocklevel, row.reorderpoint, row.standardcost, row.listprice, row.size, row.sizeunitmeasurecode, row.weightunitmeasurecode, row.weight, row.daystomanufacture, row.productline, row.`class`, row.style, row.productsubcategoryid, row.productmodelid, row.sellstartdate, row.sellenddate, row.discontinueddate, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<ProductRow> = RowParsers.of(ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text.nullable(), KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, PgTypes.numeric, PgTypes.numeric, PgTypes.text.nullable(), UnitmeasureId.pgType.nullable(), UnitmeasureId.pgType.nullable(), PgTypes.numeric.nullable(), KotlinDbTypes.PgTypes.int4, PgTypes.bpchar.nullable(), PgTypes.bpchar.nullable(), PgTypes.bpchar.nullable(), ProductsubcategoryId.pgType.nullable(), ProductmodelId.pgType.nullable(), PgTypes.timestamp, PgTypes.timestamp.nullable(), PgTypes.timestamp.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24 -> ProductRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!, t22!!, t23!!, t24!!) }, { row -> arrayOf<Any?>(row.productid, row.name, row.productnumber, row.makeflag, row.finishedgoodsflag, row.color, row.safetystocklevel, row.reorderpoint, row.standardcost, row.listprice, row.size, row.sizeunitmeasurecode, row.weightunitmeasurecode, row.weight, row.daystomanufacture, row.productline, row.`class`, row.style, row.productsubcategoryid, row.productmodelid, row.sellstartdate, row.sellenddate, row.discontinueddate, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<ProductRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

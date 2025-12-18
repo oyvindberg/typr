@@ -7,14 +7,14 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_status.CustomerStatusId
 import testdb.customtypes.Defaulted
 import typo.data.maria.MariaSet
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
 
 /** Table: customers
  * Primary key: customer_id
@@ -35,7 +35,7 @@ case class CustomersRow(
   /** 
    * Default: NULL
    */
-  phone: Optional[String],
+  phone: Option[String],
   /** 
    * Default: 'pending'
    * Points to [[testdb.customer_status.CustomerStatusRow.statusCode]]
@@ -48,15 +48,15 @@ case class CustomersRow(
   /** 
    * Default: NULL
    */
-  preferences: Optional[String],
+  preferences: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("marketing_flags") marketingFlags: Optional[MariaSet],
+  @JsonProperty("marketing_flags") marketingFlags: Option[MariaSet],
   /** 
    * Default: NULL
    */
-  notes: Optional[String],
+  notes: Option[String],
   /** 
    * Default: current_timestamp(6)
    */
@@ -68,20 +68,20 @@ case class CustomersRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("last_login_at") lastLoginAt: Optional[LocalDateTime]
+  @JsonProperty("last_login_at") lastLoginAt: Option[LocalDateTime]
 ) {
   def id: CustomersId = customerId
 
   def toUnsavedRow(
-    phone: Defaulted[Optional[String]] = Defaulted.Provided(this.phone),
+    phone: Defaulted[Option[String]] = Defaulted.Provided(this.phone),
     status: Defaulted[CustomerStatusId] = Defaulted.Provided(this.status),
     tier: Defaulted[String] = Defaulted.Provided(this.tier),
-    preferences: Defaulted[Optional[String]] = Defaulted.Provided(this.preferences),
-    marketingFlags: Defaulted[Optional[MariaSet]] = Defaulted.Provided(this.marketingFlags),
-    notes: Defaulted[Optional[String]] = Defaulted.Provided(this.notes),
+    preferences: Defaulted[Option[String]] = Defaulted.Provided(this.preferences),
+    marketingFlags: Defaulted[Option[MariaSet]] = Defaulted.Provided(this.marketingFlags),
+    notes: Defaulted[Option[String]] = Defaulted.Provided(this.notes),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.updatedAt),
-    lastLoginAt: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.lastLoginAt)
+    lastLoginAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.lastLoginAt)
   ): CustomersRowUnsaved = {
     new CustomersRowUnsaved(
       email,
@@ -102,7 +102,7 @@ case class CustomersRow(
 }
 
 object CustomersRow {
-  val `_rowParser`: RowParser[CustomersRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.binary, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), CustomerStatusId.pgType, MariaTypes.text, MariaTypes.longtext.opt(), MariaTypes.set.opt(), MariaTypes.text.opt(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.opt(), CustomersRow.apply, row => Array[Object](row.customerId.asInstanceOf[Object], row.email.asInstanceOf[Object], row.passwordHash.asInstanceOf[Object], row.firstName.asInstanceOf[Object], row.lastName.asInstanceOf[Object], row.phone.asInstanceOf[Object], row.status.asInstanceOf[Object], row.tier.asInstanceOf[Object], row.preferences.asInstanceOf[Object], row.marketingFlags.asInstanceOf[Object], row.notes.asInstanceOf[Object], row.createdAt.asInstanceOf[Object], row.updatedAt.asInstanceOf[Object], row.lastLoginAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[CustomersRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.binary, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, CustomerStatusId.pgType, MariaTypes.text, MariaTypes.longtext.nullable, MariaTypes.set.nullable, MariaTypes.text.nullable, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable)(CustomersRow.apply)(row => Array[Any](row.customerId, row.email, row.passwordHash, row.firstName, row.lastName, row.phone, row.status, row.tier, row.preferences, row.marketingFlags, row.notes, row.createdAt, row.updatedAt, row.lastLoginAt))
 
-  given mariaText: MariaText[CustomersRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[CustomersRow] = MariaText.from(`_rowParser`.underlying)
 }

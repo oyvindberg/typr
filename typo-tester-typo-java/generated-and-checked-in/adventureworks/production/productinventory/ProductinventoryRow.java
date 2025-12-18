@@ -6,11 +6,10 @@
 package adventureworks.production.productinventory;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.location.LocationId;
 import adventureworks.production.product.ProductId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -30,19 +29,19 @@ public record ProductinventoryRow(
     */
   LocationId locationid,
   /** Storage compartment within an inventory location. */
-  /* max 10 chars */ String shelf,
+  String shelf,
   /** Storage container on a shelf in an inventory location.
     * Constraint CK_ProductInventory_Bin affecting columns bin: (((bin >= 0) AND (bin <= 100)))
     */
-  TypoShort bin,
+  Short bin,
   /** Quantity of products in the inventory location.
     * Default: 0
     */
-  TypoShort quantity,
+  Short quantity,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Product identification number. Foreign key to Product.ProductID.
     * Points to {@link adventureworks.production.product.ProductRow#productid()}
@@ -59,43 +58,43 @@ public record ProductinventoryRow(
   };
 
   /** Storage compartment within an inventory location. */
-  public ProductinventoryRow withShelf(/* max 10 chars */ String shelf) {
+  public ProductinventoryRow withShelf(String shelf) {
     return new ProductinventoryRow(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Storage container on a shelf in an inventory location.
     * Constraint CK_ProductInventory_Bin affecting columns bin: (((bin >= 0) AND (bin <= 100)))
     */
-  public ProductinventoryRow withBin(TypoShort bin) {
+  public ProductinventoryRow withBin(Short bin) {
     return new ProductinventoryRow(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Quantity of products in the inventory location.
     * Default: 0
     */
-  public ProductinventoryRow withQuantity(TypoShort quantity) {
+  public ProductinventoryRow withQuantity(Short quantity) {
     return new ProductinventoryRow(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public ProductinventoryRow withRowguid(TypoUUID rowguid) {
+  public ProductinventoryRow withRowguid(UUID rowguid) {
     return new ProductinventoryRow(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ProductinventoryRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductinventoryRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductinventoryRow(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
-  static RowParser<ProductinventoryRow> _rowParser = RowParsers.of(ProductId.pgType, LocationId.pgType, PgTypes.text, TypoShort.pgType, TypoShort.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, ProductinventoryRow::new, row -> new Object[]{row.productid(), row.locationid(), row.shelf(), row.bin(), row.quantity(), row.rowguid(), row.modifieddate()});;
+  static RowParser<ProductinventoryRow> _rowParser = RowParsers.of(ProductId.pgType, LocationId.pgType, PgTypes.text, PgTypes.int2, PgTypes.int2, PgTypes.uuid, PgTypes.timestamp, ProductinventoryRow::new, row -> new Object[]{row.productid(), row.locationid(), row.shelf(), row.bin(), row.quantity(), row.rowguid(), row.modifieddate()});;
 
   static public ProductinventoryRow apply(
     ProductinventoryId compositeId,
-    /* max 10 chars */ String shelf,
-    TypoShort bin,
-    TypoShort quantity,
-    TypoUUID rowguid,
-    TypoLocalDateTime modifieddate
+    String shelf,
+    Short bin,
+    Short quantity,
+    UUID rowguid,
+    LocalDateTime modifieddate
   ) {
     return new ProductinventoryRow(compositeId.productid(), compositeId.locationid(), shelf, bin, quantity, rowguid, modifieddate);
   };
@@ -112,9 +111,9 @@ public record ProductinventoryRow(
   };
 
   public ProductinventoryRowUnsaved toUnsavedRow(
-    Defaulted<TypoShort> quantity,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<Short> quantity,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ProductinventoryRowUnsaved(productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };

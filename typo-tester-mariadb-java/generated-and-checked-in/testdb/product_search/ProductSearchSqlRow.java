@@ -22,7 +22,7 @@ public record ProductSearchSqlRow(
   /** Points to {@link testdb.products.ProductsRow#name()} */
   String name,
   /** Points to {@link testdb.products.ProductsRow#shortDescription()} */
-  @JsonProperty("short_description") Optional<String> shortDescription,
+  @JsonProperty("short_description") String shortDescription,
   /** Points to {@link testdb.products.ProductsRow#basePrice()} */
   @JsonProperty("base_price") BigDecimal basePrice,
   /** Points to {@link testdb.products.ProductsRow#status()} */
@@ -46,7 +46,7 @@ public record ProductSearchSqlRow(
   };
 
   /** Points to {@link testdb.products.ProductsRow#shortDescription()} */
-  public ProductSearchSqlRow withShortDescription(Optional<String> shortDescription) {
+  public ProductSearchSqlRow withShortDescription(String shortDescription) {
     return new ProductSearchSqlRow(productId, sku, name, shortDescription, basePrice, status, brandName);
   };
 
@@ -65,5 +65,5 @@ public record ProductSearchSqlRow(
     return new ProductSearchSqlRow(productId, sku, name, shortDescription, basePrice, status, brandName);
   };
 
-  static RowParser<ProductSearchSqlRow> _rowParser = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.text, MariaTypes.varchar.opt(), ProductSearchSqlRow::new, row -> new Object[]{row.productId(), row.sku(), row.name(), row.shortDescription(), row.basePrice(), row.status(), row.brandName()});;
+  static RowParser<ProductSearchSqlRow> _rowParser = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.numeric, MariaTypes.text, MariaTypes.varchar.opt(), ProductSearchSqlRow::new, row -> new Object[]{row.productId(), row.sku(), row.name(), row.shortDescription(), row.basePrice(), row.status(), row.brandName()});;
 }

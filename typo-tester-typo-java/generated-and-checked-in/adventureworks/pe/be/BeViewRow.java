@@ -5,9 +5,10 @@
  */
 package adventureworks.pe.be;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -18,9 +19,9 @@ public record BeViewRow(
   /** Points to {@link adventureworks.person.businessentity.BusinessentityRow#businessentityid()} */
   BusinessentityId businessentityid,
   /** Points to {@link adventureworks.person.businessentity.BusinessentityRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.person.businessentity.BusinessentityRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.businessentity.BusinessentityRow#businessentityid()} */
   public BeViewRow withId(BusinessentityId id) {
@@ -33,14 +34,14 @@ public record BeViewRow(
   };
 
   /** Points to {@link adventureworks.person.businessentity.BusinessentityRow#rowguid()} */
-  public BeViewRow withRowguid(TypoUUID rowguid) {
+  public BeViewRow withRowguid(UUID rowguid) {
     return new BeViewRow(id, businessentityid, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.businessentity.BusinessentityRow#modifieddate()} */
-  public BeViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public BeViewRow withModifieddate(LocalDateTime modifieddate) {
     return new BeViewRow(id, businessentityid, rowguid, modifieddate);
   };
 
-  static RowParser<BeViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, BeViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<BeViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.uuid, PgTypes.timestamp, BeViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.rowguid(), row.modifieddate()});;
 }

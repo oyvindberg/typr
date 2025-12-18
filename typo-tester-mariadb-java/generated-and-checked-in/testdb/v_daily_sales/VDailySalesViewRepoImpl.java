@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VDailySalesViewRepoImpl implements VDailySalesViewRepo {
@@ -19,9 +20,6 @@ public class VDailySalesViewRepoImpl implements VDailySalesViewRepo {
 
   @Override
   public List<VDailySalesViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `order_date`, `order_count`, `unique_customers`, `items_sold`, `gross_sales`, `total_discounts`, `total_shipping`, `total_tax`, `net_sales`, `avg_order_value`
-       from `v_daily_sales`
-    """)).query(VDailySalesViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `order_date`, `order_count`, `unique_customers`, `items_sold`, `gross_sales`, `total_discounts`, `total_shipping`, `total_tax`, `net_sales`, `avg_order_value`\nfrom `v_daily_sales`\n")).query(VDailySalesViewRow._rowParser.all()).runUnchecked(c);
   };
 }

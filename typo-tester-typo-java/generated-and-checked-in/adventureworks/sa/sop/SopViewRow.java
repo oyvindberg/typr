@@ -5,10 +5,11 @@
  */
 package adventureworks.sa.sop;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.product.ProductId;
 import adventureworks.sales.specialoffer.SpecialofferId;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -21,9 +22,9 @@ public record SopViewRow(
   /** Points to {@link adventureworks.sales.specialofferproduct.SpecialofferproductRow#productid()} */
   ProductId productid,
   /** Points to {@link adventureworks.sales.specialofferproduct.SpecialofferproductRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.sales.specialofferproduct.SpecialofferproductRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.specialofferproduct.SpecialofferproductRow#specialofferid()} */
   public SopViewRow withId(SpecialofferId id) {
@@ -41,14 +42,14 @@ public record SopViewRow(
   };
 
   /** Points to {@link adventureworks.sales.specialofferproduct.SpecialofferproductRow#rowguid()} */
-  public SopViewRow withRowguid(TypoUUID rowguid) {
+  public SopViewRow withRowguid(UUID rowguid) {
     return new SopViewRow(id, specialofferid, productid, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.specialofferproduct.SpecialofferproductRow#modifieddate()} */
-  public SopViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SopViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SopViewRow(id, specialofferid, productid, rowguid, modifieddate);
   };
 
-  static RowParser<SopViewRow> _rowParser = RowParsers.of(SpecialofferId.pgType, SpecialofferId.pgType, ProductId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, SopViewRow::new, row -> new Object[]{row.id(), row.specialofferid(), row.productid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SopViewRow> _rowParser = RowParsers.of(SpecialofferId.pgType, SpecialofferId.pgType, ProductId.pgType, PgTypes.uuid, PgTypes.timestamp, SopViewRow::new, row -> new Object[]{row.id(), row.specialofferid(), row.productid(), row.rowguid(), row.modifieddate()});;
 }

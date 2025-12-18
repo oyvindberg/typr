@@ -5,30 +5,31 @@
  */
 package adventureworks.sales.specialofferproduct;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.product.ProductFields;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.product.ProductRow;
 import adventureworks.sales.specialoffer.SpecialofferFields;
 import adventureworks.sales.specialoffer.SpecialofferId;
 import adventureworks.sales.specialoffer.SpecialofferRow;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SpecialofferproductFields extends FieldsExpr<SpecialofferproductRow> {
-  record Impl(List<Path> _path) implements SpecialofferproductFields, Relation<SpecialofferproductFields, SpecialofferproductRow> {
+  record Impl(List<Path> _path) implements SpecialofferproductFields, RelationStructure<SpecialofferproductFields, SpecialofferproductRow> {
     @Override
     public IdField<SpecialofferId, SpecialofferproductRow> specialofferid() {
       return new IdField<SpecialofferId, SpecialofferproductRow>(_path, "specialofferid", SpecialofferproductRow::specialofferid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withSpecialofferid(value), SpecialofferId.pgType);
@@ -40,44 +41,44 @@ public interface SpecialofferproductFields extends FieldsExpr<Specialofferproduc
     };
 
     @Override
-    public Field<TypoUUID, SpecialofferproductRow> rowguid() {
-      return new Field<TypoUUID, SpecialofferproductRow>(_path, "rowguid", SpecialofferproductRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, SpecialofferproductRow> rowguid() {
+      return new Field<UUID, SpecialofferproductRow>(_path, "rowguid", SpecialofferproductRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SpecialofferproductRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SpecialofferproductRow>(_path, "modifieddate", SpecialofferproductRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SpecialofferproductRow> modifieddate() {
+      return new Field<LocalDateTime, SpecialofferproductRow>(_path, "modifieddate", SpecialofferproductRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SpecialofferproductRow>> columns() {
-      return List.of(this.specialofferid(), this.productid(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.specialofferid(), this.productid(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SpecialofferproductFields, SpecialofferproductRow> copy(List<Path> _path) {
+    public RelationStructure<SpecialofferproductFields, SpecialofferproductRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<SpecialofferId, SpecialofferproductRow> specialofferid();
 
   IdField<ProductId, SpecialofferproductRow> productid();
 
-  Field<TypoUUID, SpecialofferproductRow> rowguid();
+  Field<UUID, SpecialofferproductRow> rowguid();
 
-  Field<TypoLocalDateTime, SpecialofferproductRow> modifieddate();
+  Field<LocalDateTime, SpecialofferproductRow> modifieddate();
 
   default ForeignKey<ProductFields, ProductRow> fkProductionProduct() {
-    return ForeignKey.<ProductFields, ProductRow>of("sales.FK_SpecialOfferProduct_Product_ProductID").withColumnPair(productid(), ProductFields::productid);
+    return ForeignKey.<ProductFields, ProductRow>of("sales.FK_SpecialOfferProduct_Product_ProductID").<ProductId>withColumnPair(productid(), ProductFields::productid);
   };
 
   default ForeignKey<SpecialofferFields, SpecialofferRow> fkSpecialoffer() {
-    return ForeignKey.<SpecialofferFields, SpecialofferRow>of("sales.FK_SpecialOfferProduct_SpecialOffer_SpecialOfferID").withColumnPair(specialofferid(), SpecialofferFields::specialofferid);
+    return ForeignKey.<SpecialofferFields, SpecialofferRow>of("sales.FK_SpecialOfferProduct_SpecialOffer_SpecialOfferID").<SpecialofferId>withColumnPair(specialofferid(), SpecialofferFields::specialofferid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(SpecialofferproductId compositeId) {

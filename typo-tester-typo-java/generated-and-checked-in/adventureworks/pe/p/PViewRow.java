@@ -5,14 +5,13 @@
  */
 package adventureworks.pe.p;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import adventureworks.public_.NameStyle;
 import adventureworks.userdefined.FirstName;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -24,29 +23,29 @@ public record PViewRow(
   /** Points to {@link adventureworks.person.person.PersonRow#businessentityid()} */
   BusinessentityId businessentityid,
   /** Points to {@link adventureworks.person.person.PersonRow#persontype()} */
-  /* bpchar, max 2 chars */ String persontype,
+  String persontype,
   /** Points to {@link adventureworks.person.person.PersonRow#namestyle()} */
   NameStyle namestyle,
   /** Points to {@link adventureworks.person.person.PersonRow#title()} */
-  Optional</* max 8 chars */ String> title,
+  String title,
   /** Points to {@link adventureworks.person.person.PersonRow#firstname()} */
   /* user-picked */ FirstName firstname,
   /** Points to {@link adventureworks.person.person.PersonRow#middlename()} */
-  Optional<Name> middlename,
+  Name middlename,
   /** Points to {@link adventureworks.person.person.PersonRow#lastname()} */
   Name lastname,
   /** Points to {@link adventureworks.person.person.PersonRow#suffix()} */
-  Optional</* max 10 chars */ String> suffix,
+  String suffix,
   /** Points to {@link adventureworks.person.person.PersonRow#emailpromotion()} */
   Integer emailpromotion,
   /** Points to {@link adventureworks.person.person.PersonRow#additionalcontactinfo()} */
-  Optional<TypoXml> additionalcontactinfo,
+  Xml additionalcontactinfo,
   /** Points to {@link adventureworks.person.person.PersonRow#demographics()} */
-  Optional<TypoXml> demographics,
+  Xml demographics,
   /** Points to {@link adventureworks.person.person.PersonRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.person.person.PersonRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.person.PersonRow#businessentityid()} */
   public PViewRow withId(BusinessentityId id) {
@@ -59,7 +58,7 @@ public record PViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#persontype()} */
-  public PViewRow withPersontype(/* bpchar, max 2 chars */ String persontype) {
+  public PViewRow withPersontype(String persontype) {
     return new PViewRow(id, businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
@@ -69,7 +68,7 @@ public record PViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#title()} */
-  public PViewRow withTitle(Optional</* max 8 chars */ String> title) {
+  public PViewRow withTitle(String title) {
     return new PViewRow(id, businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
@@ -79,7 +78,7 @@ public record PViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#middlename()} */
-  public PViewRow withMiddlename(Optional<Name> middlename) {
+  public PViewRow withMiddlename(Name middlename) {
     return new PViewRow(id, businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
@@ -89,7 +88,7 @@ public record PViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#suffix()} */
-  public PViewRow withSuffix(Optional</* max 10 chars */ String> suffix) {
+  public PViewRow withSuffix(String suffix) {
     return new PViewRow(id, businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
@@ -99,24 +98,24 @@ public record PViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#additionalcontactinfo()} */
-  public PViewRow withAdditionalcontactinfo(Optional<TypoXml> additionalcontactinfo) {
+  public PViewRow withAdditionalcontactinfo(Xml additionalcontactinfo) {
     return new PViewRow(id, businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#demographics()} */
-  public PViewRow withDemographics(Optional<TypoXml> demographics) {
+  public PViewRow withDemographics(Xml demographics) {
     return new PViewRow(id, businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#rowguid()} */
-  public PViewRow withRowguid(TypoUUID rowguid) {
+  public PViewRow withRowguid(UUID rowguid) {
     return new PViewRow(id, businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#modifieddate()} */
-  public PViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PViewRow(id, businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
-  static RowParser<PViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.bpchar, NameStyle.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.int4, TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, PViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.persontype(), row.namestyle(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.emailpromotion(), row.additionalcontactinfo(), row.demographics(), row.rowguid(), row.modifieddate()});;
+  static RowParser<PViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.bpchar, NameStyle.pgType, PgTypes.text, FirstName.pgType, Name.pgType, Name.pgType, PgTypes.text, PgTypes.int4, PgTypes.xml, PgTypes.xml, PgTypes.uuid, PgTypes.timestamp, PViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.persontype(), row.namestyle(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.emailpromotion(), row.additionalcontactinfo(), row.demographics(), row.rowguid(), row.modifieddate()});;
 }

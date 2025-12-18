@@ -7,10 +7,10 @@ package testdb.v_inventory_status
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VInventoryStatusViewRepo {
-  fun select(): SelectBuilder<VInventoryStatusViewFields, VInventoryStatusViewRow>
+  abstract fun select(): SelectBuilder<VInventoryStatusViewFields, VInventoryStatusViewRow>
 
-  fun selectAll(c: Connection): List<VInventoryStatusViewRow>
+  abstract fun selectAll(c: Connection): List<VInventoryStatusViewRow>
 }

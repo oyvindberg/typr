@@ -261,9 +261,9 @@ public record OrdersRowUnsaved(
       sb.append(MariaText.DELIMETER);
       CustomersId.pgType.mariaText().unsafeEncode(row.customerId, sb);
       sb.append(MariaText.DELIMETER);
-      MariaTypes.decimal.mariaText().unsafeEncode(row.subtotal, sb);
+      MariaTypes.numeric.mariaText().unsafeEncode(row.subtotal, sb);
       sb.append(MariaText.DELIMETER);
-      MariaTypes.decimal.mariaText().unsafeEncode(row.totalAmount, sb);
+      MariaTypes.numeric.mariaText().unsafeEncode(row.totalAmount, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.text.mariaText()).unsafeEncode(row.orderStatus, sb);
       sb.append(MariaText.DELIMETER);
@@ -273,11 +273,11 @@ public record OrdersRowUnsaved(
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(CustomerAddressesId.pgType.opt().mariaText()).unsafeEncode(row.billingAddressId, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.mariaText()).unsafeEncode(row.shippingCost, sb);
+      Defaulted.mariaText(MariaTypes.numeric.mariaText()).unsafeEncode(row.shippingCost, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.mariaText()).unsafeEncode(row.taxAmount, sb);
+      Defaulted.mariaText(MariaTypes.numeric.mariaText()).unsafeEncode(row.taxAmount, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.mariaText()).unsafeEncode(row.discountAmount, sb);
+      Defaulted.mariaText(MariaTypes.numeric.mariaText()).unsafeEncode(row.discountAmount, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.char_.mariaText()).unsafeEncode(row.currencyCode, sb);
       sb.append(MariaText.DELIMETER);

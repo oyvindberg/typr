@@ -6,9 +6,10 @@
 package testdb.brands
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -21,24 +22,24 @@ data class BrandsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("logo_blob") val logoBlob: Defaulted<Optional<ByteArray>> = UseDefault(),
+  @JsonProperty("logo_blob") val logoBlob: Defaulted<ByteArray?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("website_url") val websiteUrl: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("website_url") val websiteUrl: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("country_of_origin") val countryOfOrigin: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("country_of_origin") val countryOfOrigin: Defaulted<String?> = UseDefault(),
   /** Default: 1
 
     */
   @JsonProperty("is_active") val isActive: Defaulted<Boolean> = UseDefault()
 ) {
   fun toRow(
-    logoBlobDefault: () -> Optional<ByteArray>,
-    websiteUrlDefault: () -> Optional<String>,
-    countryOfOriginDefault: () -> Optional<String>,
+    logoBlobDefault: () -> ByteArray?,
+    websiteUrlDefault: () -> String?,
+    countryOfOriginDefault: () -> String?,
     isActiveDefault: () -> Boolean,
     brandIdDefault: () -> BrandsId
   ): BrandsRow = BrandsRow(brandId = brandIdDefault(), name = name, slug = slug, logoBlob = logoBlob.getOrElse(logoBlobDefault), websiteUrl = websiteUrl.getOrElse(websiteUrlDefault), countryOfOrigin = countryOfOrigin.getOrElse(countryOfOriginDefault), isActive = isActive.getOrElse(isActiveDefault))
@@ -49,12 +50,12 @@ data class BrandsRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.varchar.mariaText().unsafeEncode(row.slug, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.mediumblob.opt().mariaText()).unsafeEncode(row.logoBlob, sb)
+      Defaulted.mariaText(MariaTypes.mediumblob.nullable().mariaText()).unsafeEncode(row.logoBlob, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.websiteUrl, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.websiteUrl, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.char_.opt().mariaText()).unsafeEncode(row.countryOfOrigin, sb)
+      Defaulted.mariaText(MariaTypes.char_.nullable().mariaText()).unsafeEncode(row.countryOfOrigin, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb) })
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb) })
   }
 }

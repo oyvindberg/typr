@@ -7,7 +7,6 @@ package adventureworks.sales.vstorewithaddresses;
 
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
-import java.util.Optional;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -21,15 +20,15 @@ public record VstorewithaddressesViewRow(
   /** Points to {@link adventureworks.person.addresstype.AddresstypeRow#name()} */
   Name addresstype,
   /** Points to {@link adventureworks.person.address.AddressRow#addressline1()} */
-  /* max 60 chars */ String addressline1,
+  String addressline1,
   /** Points to {@link adventureworks.person.address.AddressRow#addressline2()} */
-  Optional</* max 60 chars */ String> addressline2,
+  String addressline2,
   /** Points to {@link adventureworks.person.address.AddressRow#city()} */
-  /* max 30 chars */ String city,
+  String city,
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#name()} */
   Name stateprovincename,
   /** Points to {@link adventureworks.person.address.AddressRow#postalcode()} */
-  /* max 15 chars */ String postalcode,
+  String postalcode,
   /** Points to {@link adventureworks.person.countryregion.CountryregionRow#name()} */
   Name countryregionname
 ) {
@@ -49,17 +48,17 @@ public record VstorewithaddressesViewRow(
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#addressline1()} */
-  public VstorewithaddressesViewRow withAddressline1(/* max 60 chars */ String addressline1) {
+  public VstorewithaddressesViewRow withAddressline1(String addressline1) {
     return new VstorewithaddressesViewRow(businessentityid, name, addresstype, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#addressline2()} */
-  public VstorewithaddressesViewRow withAddressline2(Optional</* max 60 chars */ String> addressline2) {
+  public VstorewithaddressesViewRow withAddressline2(String addressline2) {
     return new VstorewithaddressesViewRow(businessentityid, name, addresstype, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#city()} */
-  public VstorewithaddressesViewRow withCity(/* max 30 chars */ String city) {
+  public VstorewithaddressesViewRow withCity(String city) {
     return new VstorewithaddressesViewRow(businessentityid, name, addresstype, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname);
   };
 
@@ -69,7 +68,7 @@ public record VstorewithaddressesViewRow(
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#postalcode()} */
-  public VstorewithaddressesViewRow withPostalcode(/* max 15 chars */ String postalcode) {
+  public VstorewithaddressesViewRow withPostalcode(String postalcode) {
     return new VstorewithaddressesViewRow(businessentityid, name, addresstype, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname);
   };
 
@@ -78,5 +77,5 @@ public record VstorewithaddressesViewRow(
     return new VstorewithaddressesViewRow(businessentityid, name, addresstype, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname);
   };
 
-  static RowParser<VstorewithaddressesViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, VstorewithaddressesViewRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.addresstype(), row.addressline1(), row.addressline2(), row.city(), row.stateprovincename(), row.postalcode(), row.countryregionname()});;
+  static RowParser<VstorewithaddressesViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, VstorewithaddressesViewRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.addresstype(), row.addressline1(), row.addressline2(), row.city(), row.stateprovincename(), row.postalcode(), row.countryregionname()});;
 }

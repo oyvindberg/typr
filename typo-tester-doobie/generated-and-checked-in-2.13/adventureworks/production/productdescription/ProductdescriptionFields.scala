@@ -8,28 +8,28 @@ package adventureworks.production.productdescription
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait ProductdescriptionFields {
   def productdescriptionid: IdField[ProductdescriptionId, ProductdescriptionRow]
-  def description: Field[/* max 400 chars */ String, ProductdescriptionRow]
+  def description: Field[String, ProductdescriptionRow]
   def rowguid: Field[TypoUUID, ProductdescriptionRow]
   def modifieddate: Field[TypoLocalDateTime, ProductdescriptionRow]
 }
 
 object ProductdescriptionFields {
-  lazy val structure: Relation[ProductdescriptionFields, ProductdescriptionRow] =
+  lazy val structure: RelationStructure[ProductdescriptionFields, ProductdescriptionRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductdescriptionFields, ProductdescriptionRow] {
+    extends RelationStructure[ProductdescriptionFields, ProductdescriptionRow] {
 
     override lazy val fields: ProductdescriptionFields = new ProductdescriptionFields {
       override def productdescriptionid = IdField[ProductdescriptionId, ProductdescriptionRow](_path, "productdescriptionid", None, Some("int4"), x => x.productdescriptionid, (row, value) => row.copy(productdescriptionid = value))
-      override def description = Field[/* max 400 chars */ String, ProductdescriptionRow](_path, "description", None, None, x => x.description, (row, value) => row.copy(description = value))
+      override def description = Field[String, ProductdescriptionRow](_path, "description", None, None, x => x.description, (row, value) => row.copy(description = value))
       override def rowguid = Field[TypoUUID, ProductdescriptionRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductdescriptionRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }

@@ -7,13 +7,14 @@ package adventureworks.sales.store;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.store` which has not been persisted yet */
 public record StoreRowUnsaved(
@@ -28,11 +29,11 @@ public record StoreRowUnsaved(
     */
   Optional<BusinessentityId> salespersonid,
   /** Demographic informationg about the store such as the number of employees, annual sales and store type. */
-  Optional<TypoXml> demographics,
+  Optional<Xml> demographics,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public StoreRowUnsaved(
     /** Primary key. Foreign key to Customer.BusinessEntityID.
@@ -65,17 +66,17 @@ public record StoreRowUnsaved(
   };
 
   /** Demographic informationg about the store such as the number of employees, annual sales and store type. */
-  public StoreRowUnsaved withDemographics(Optional<TypoXml> demographics) {
+  public StoreRowUnsaved withDemographics(Optional<Xml> demographics) {
     return new StoreRowUnsaved(businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public StoreRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public StoreRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new StoreRowUnsaved(businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public StoreRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public StoreRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new StoreRowUnsaved(businessentityid, name, salespersonid, demographics, rowguid, modifieddate);
   };
 
@@ -87,16 +88,16 @@ public record StoreRowUnsaved(
       sb.append(PgText.DELIMETER);
       BusinessentityId.pgType.opt().pgText().unsafeEncode(row.salespersonid, sb);
       sb.append(PgText.DELIMETER);
-      TypoXml.pgType.opt().pgText().unsafeEncode(row.demographics, sb);
+      PgTypes.xml.opt().pgText().unsafeEncode(row.demographics, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public StoreRow toRow(
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new StoreRow(businessentityid, name, salespersonid, demographics, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

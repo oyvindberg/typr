@@ -6,11 +6,12 @@
 package adventureworks.person.businessentitycontact;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.contacttype.ContacttypeId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -32,9 +33,9 @@ public record BusinessentitycontactRow(
     */
   ContacttypeId contacttypeid,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key. Foreign key to BusinessEntity.BusinessEntityID.
     * Points to {@link adventureworks.person.businessentity.BusinessentityRow#businessentityid()}
@@ -58,21 +59,21 @@ public record BusinessentitycontactRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public BusinessentitycontactRow withRowguid(TypoUUID rowguid) {
+  public BusinessentitycontactRow withRowguid(UUID rowguid) {
     return new BusinessentitycontactRow(businessentityid, personid, contacttypeid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public BusinessentitycontactRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public BusinessentitycontactRow withModifieddate(LocalDateTime modifieddate) {
     return new BusinessentitycontactRow(businessentityid, personid, contacttypeid, rowguid, modifieddate);
   };
 
-  static RowParser<BusinessentitycontactRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, ContacttypeId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, BusinessentitycontactRow::new, row -> new Object[]{row.businessentityid(), row.personid(), row.contacttypeid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<BusinessentitycontactRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, ContacttypeId.pgType, PgTypes.uuid, PgTypes.timestamp, BusinessentitycontactRow::new, row -> new Object[]{row.businessentityid(), row.personid(), row.contacttypeid(), row.rowguid(), row.modifieddate()});;
 
   static public BusinessentitycontactRow apply(
     BusinessentitycontactId compositeId,
-    TypoUUID rowguid,
-    TypoLocalDateTime modifieddate
+    UUID rowguid,
+    LocalDateTime modifieddate
   ) {
     return new BusinessentitycontactRow(compositeId.businessentityid(), compositeId.personid(), compositeId.contacttypeid(), rowguid, modifieddate);
   };
@@ -89,8 +90,8 @@ public record BusinessentitycontactRow(
   };
 
   public BusinessentitycontactRowUnsaved toUnsavedRow(
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new BusinessentitycontactRowUnsaved(businessentityid, personid, contacttypeid, rowguid, modifieddate);
   };

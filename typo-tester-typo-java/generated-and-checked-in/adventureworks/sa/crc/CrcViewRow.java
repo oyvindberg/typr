@@ -5,9 +5,10 @@
  */
 package adventureworks.sa.crc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.sales.currency.CurrencyId;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -18,7 +19,7 @@ public record CrcViewRow(
   /** Points to {@link adventureworks.sales.countryregioncurrency.CountryregioncurrencyRow#currencycode()} */
   CurrencyId currencycode,
   /** Points to {@link adventureworks.sales.countryregioncurrency.CountryregioncurrencyRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.countryregioncurrency.CountryregioncurrencyRow#countryregioncode()} */
   public CrcViewRow withCountryregioncode(CountryregionId countryregioncode) {
@@ -31,9 +32,9 @@ public record CrcViewRow(
   };
 
   /** Points to {@link adventureworks.sales.countryregioncurrency.CountryregioncurrencyRow#modifieddate()} */
-  public CrcViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CrcViewRow withModifieddate(LocalDateTime modifieddate) {
     return new CrcViewRow(countryregioncode, currencycode, modifieddate);
   };
 
-  static RowParser<CrcViewRow> _rowParser = RowParsers.of(CountryregionId.pgType, CurrencyId.pgType, TypoLocalDateTime.pgType, CrcViewRow::new, row -> new Object[]{row.countryregioncode(), row.currencycode(), row.modifieddate()});;
+  static RowParser<CrcViewRow> _rowParser = RowParsers.of(CountryregionId.pgType, CurrencyId.pgType, PgTypes.timestamp, CrcViewRow::new, row -> new Object[]{row.countryregioncode(), row.currencycode(), row.modifieddate()});;
 }

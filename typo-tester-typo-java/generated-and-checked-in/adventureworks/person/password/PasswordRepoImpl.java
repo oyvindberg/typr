@@ -5,8 +5,6 @@
  */
 package adventureworks.person.password;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -20,11 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class PasswordRepoImpl implements PasswordRepo {
   @Override
@@ -37,13 +33,7 @@ public class PasswordRepoImpl implements PasswordRepo {
     BusinessentityId businessentityid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "person"."password" where "businessentityid" = 
-      """),
-      BusinessentityId.pgType.encode(businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"person\".\"password\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -51,14 +41,7 @@ public class PasswordRepoImpl implements PasswordRepo {
     BusinessentityId[] businessentityids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "person"."password"
-                  where "businessentityid" = ANY("""),
-               BusinessentityId.pgTypeArray.encode(businessentityids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"person\".\"password\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -68,24 +51,7 @@ public class PasswordRepoImpl implements PasswordRepo {
     PasswordRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."password"("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")
-         values ("""),
-      BusinessentityId.pgType.encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.encode(unsaved.passwordhash()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.text.encode(unsaved.passwordsalt()),
-      typo.runtime.Fragment.lit(", "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"password\"(\"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text, unsaved.passwordhash()), Fragment.lit(", "), Fragment.encode(PgTypes.text, unsaved.passwordsalt()), Fragment.lit(", "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(PasswordRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -94,35 +60,21 @@ public class PasswordRepoImpl implements PasswordRepo {
     PasswordRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"businessentityid\""));
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"passwordhash\""));
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.passwordhash()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.passwordhash()), Fragment.lit("")));
     columns.add(Fragment.lit("\"passwordsalt\""));
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.passwordsalt()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.passwordsalt()), Fragment.lit("")));
     unsaved.rowguid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -131,26 +83,10 @@ public class PasswordRepoImpl implements PasswordRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."password"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"person\".\"password\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(PasswordRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -160,9 +96,7 @@ public class PasswordRepoImpl implements PasswordRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."password"("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, PasswordRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"password\"(\"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, PasswordRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -172,9 +106,7 @@ public class PasswordRepoImpl implements PasswordRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."password"("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, PasswordRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"password\"(\"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, PasswordRowUnsaved.pgText);
   };
 
   @Override
@@ -184,10 +116,7 @@ public class PasswordRepoImpl implements PasswordRepo {
 
   @Override
   public List<PasswordRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text
-       from "person"."password"
-    """)).query(PasswordRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"password\"\n")).query(PasswordRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -195,14 +124,7 @@ public class PasswordRepoImpl implements PasswordRepo {
     BusinessentityId businessentityid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text
-         from "person"."password"
-         where "businessentityid" = """),
-      BusinessentityId.pgType.encode(businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).query(PasswordRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"password\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).query(PasswordRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -210,14 +132,7 @@ public class PasswordRepoImpl implements PasswordRepo {
     BusinessentityId[] businessentityids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text
-         from "person"."password"
-         where "businessentityid" = ANY("""),
-      BusinessentityId.pgTypeArray.encode(businessentityids),
-      typo.runtime.Fragment.lit(")")
-    ).query(PasswordRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"password\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")")).query(PasswordRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -232,7 +147,7 @@ public class PasswordRepoImpl implements PasswordRepo {
 
   @Override
   public UpdateBuilder<PasswordFields, PasswordRow> update() {
-    return UpdateBuilder.of("\"person\".\"password\"", PasswordFields.structure(), PasswordRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"person\".\"password\"", PasswordFields.structure(), PasswordRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -241,29 +156,7 @@ public class PasswordRepoImpl implements PasswordRepo {
     Connection c
   ) {
     BusinessentityId businessentityid = row.businessentityid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "person"."password"
-         set "passwordhash" = """),
-      PgTypes.text.encode(row.passwordhash()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "passwordsalt" = """),
-      PgTypes.text.encode(row.passwordsalt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "businessentityid" = """),
-      BusinessentityId.pgType.encode(businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"person\".\"password\"\nset \"passwordhash\" = "), Fragment.encode(PgTypes.text, row.passwordhash()), Fragment.lit(",\n\"passwordsalt\" = "), Fragment.encode(PgTypes.text, row.passwordsalt()), Fragment.lit(",\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -271,29 +164,7 @@ public class PasswordRepoImpl implements PasswordRepo {
     PasswordRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."password"("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")
-         values ("""),
-      BusinessentityId.pgType.encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.encode(unsaved.passwordhash()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.text.encode(unsaved.passwordsalt()),
-      typo.runtime.Fragment.lit(", "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("businessentityid")
-         do update set
-           "passwordhash" = EXCLUDED."passwordhash",
-         "passwordsalt" = EXCLUDED."passwordsalt",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"password\"(\"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text, unsaved.passwordhash()), Fragment.lit(", "), Fragment.encode(PgTypes.text, unsaved.passwordsalt()), Fragment.lit(", "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"businessentityid\")\ndo update set\n  \"passwordhash\" = EXCLUDED.\"passwordhash\",\n\"passwordsalt\" = EXCLUDED.\"passwordsalt\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\""))
       .updateReturning(PasswordRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -303,18 +174,9 @@ public class PasswordRepoImpl implements PasswordRepo {
     Iterator<PasswordRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "person"."password"("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")
-                values (?::int4, ?, ?, ?::uuid, ?::timestamp)
-                on conflict ("businessentityid")
-                do update set
-                  "passwordhash" = EXCLUDED."passwordhash",
-                "passwordsalt" = EXCLUDED."passwordsalt",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"person\".\"password\"(\"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?, ?, ?::uuid, ?::timestamp)\non conflict (\"businessentityid\")\ndo update set\n  \"passwordhash\" = EXCLUDED.\"passwordhash\",\n\"passwordsalt\" = EXCLUDED.\"passwordsalt\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(PasswordRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -324,22 +186,8 @@ public class PasswordRepoImpl implements PasswordRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table password_TEMP (like "person"."password") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy password_TEMP("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, PasswordRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "person"."password"("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")
-       select * from password_TEMP
-       on conflict ("businessentityid")
-       do update set
-         "passwordhash" = EXCLUDED."passwordhash",
-       "passwordsalt" = EXCLUDED."passwordsalt",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table password_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table password_TEMP (like \"person\".\"password\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy password_TEMP(\"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, PasswordRow.pgText);
+    return interpolate(Fragment.lit("insert into \"person\".\"password\"(\"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\")\nselect * from password_TEMP\non conflict (\"businessentityid\")\ndo update set\n  \"passwordhash\" = EXCLUDED.\"passwordhash\",\n\"passwordsalt\" = EXCLUDED.\"passwordsalt\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table password_TEMP;")).update().runUnchecked(c);
   };
 }

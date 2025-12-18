@@ -7,15 +7,13 @@ package adventureworks.pr.pc
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class PcViewRepoImpl() : PcViewRepo {
   override fun select(): SelectBuilder<PcViewFields, PcViewRow> = SelectBuilder.of("\"pr\".\"pc\"", PcViewFields.structure, PcViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<PcViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "productcategoryid", "name", "rowguid", "modifieddate"::text
-    from "pr"."pc"
-  """.trimMargin())).query(PcViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<PcViewRow> = interpolate(Fragment.lit("select \"id\", \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"pr\".\"pc\"\n")).query(PcViewRow._rowParser.all()).runUnchecked(c)
 }

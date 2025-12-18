@@ -5,8 +5,6 @@
  */
 package adventureworks.production.productcategory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -20,10 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class ProductcategoryRepoImpl implements ProductcategoryRepo {
   @Override
@@ -36,13 +33,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     ProductcategoryId productcategoryid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "production"."productcategory" where "productcategoryid" = 
-      """),
-      ProductcategoryId.pgType.encode(productcategoryid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"production\".\"productcategory\" where \"productcategoryid\" = "), Fragment.encode(ProductcategoryId.pgType, productcategoryid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -50,14 +41,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     ProductcategoryId[] productcategoryids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "production"."productcategory"
-                  where "productcategoryid" = ANY("""),
-               ProductcategoryId.pgTypeArray.encode(productcategoryids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"production\".\"productcategory\"\nwhere \"productcategoryid\" = ANY("), Fragment.encode(ProductcategoryId.pgTypeArray, productcategoryids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -67,22 +51,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     ProductcategoryRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."productcategory"("productcategoryid", "name", "rowguid", "modifieddate")
-         values ("""),
-      ProductcategoryId.pgType.encode(unsaved.productcategoryid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "productcategoryid", "name", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"productcategory\"(\"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductcategoryId.pgType, unsaved.productcategoryid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(ProductcategoryRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -91,23 +60,17 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     ProductcategoryRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved.productcategoryid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"productcategoryid\""));
-        values.add(interpolate(
-        ProductcategoryId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(ProductcategoryId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.rowguid().visit(
@@ -116,10 +79,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -128,26 +88,10 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."productcategory"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "productcategoryid", "name", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"production\".\"productcategory\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(ProductcategoryRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -157,9 +101,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."productcategory"("productcategoryid", "name", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, ProductcategoryRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"productcategory\"(\"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, ProductcategoryRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -169,9 +111,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."productcategory"("name", "productcategoryid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, ProductcategoryRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"productcategory\"(\"name\", \"productcategoryid\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ProductcategoryRowUnsaved.pgText);
   };
 
   @Override
@@ -181,10 +121,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
 
   @Override
   public List<ProductcategoryRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "productcategoryid", "name", "rowguid", "modifieddate"::text
-       from "production"."productcategory"
-    """)).query(ProductcategoryRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productcategory\"\n")).query(ProductcategoryRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -192,14 +129,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     ProductcategoryId productcategoryid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productcategoryid", "name", "rowguid", "modifieddate"::text
-         from "production"."productcategory"
-         where "productcategoryid" = """),
-      ProductcategoryId.pgType.encode(productcategoryid),
-      typo.runtime.Fragment.lit("")
-    ).query(ProductcategoryRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productcategory\"\nwhere \"productcategoryid\" = "), Fragment.encode(ProductcategoryId.pgType, productcategoryid), Fragment.lit("")).query(ProductcategoryRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -207,14 +137,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     ProductcategoryId[] productcategoryids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productcategoryid", "name", "rowguid", "modifieddate"::text
-         from "production"."productcategory"
-         where "productcategoryid" = ANY("""),
-      ProductcategoryId.pgTypeArray.encode(productcategoryids),
-      typo.runtime.Fragment.lit(")")
-    ).query(ProductcategoryRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productcategory\"\nwhere \"productcategoryid\" = ANY("), Fragment.encode(ProductcategoryId.pgTypeArray, productcategoryids), Fragment.lit(")")).query(ProductcategoryRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -229,7 +152,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
 
   @Override
   public UpdateBuilder<ProductcategoryFields, ProductcategoryRow> update() {
-    return UpdateBuilder.of("\"production\".\"productcategory\"", ProductcategoryFields.structure(), ProductcategoryRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"production\".\"productcategory\"", ProductcategoryFields.structure(), ProductcategoryRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -238,25 +161,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     Connection c
   ) {
     ProductcategoryId productcategoryid = row.productcategoryid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "production"."productcategory"
-         set "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "productcategoryid" = """),
-      ProductcategoryId.pgType.encode(productcategoryid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"production\".\"productcategory\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"productcategoryid\" = "), Fragment.encode(ProductcategoryId.pgType, productcategoryid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -264,26 +169,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     ProductcategoryRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."productcategory"("productcategoryid", "name", "rowguid", "modifieddate")
-         values ("""),
-      ProductcategoryId.pgType.encode(unsaved.productcategoryid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("productcategoryid")
-         do update set
-           "name" = EXCLUDED."name",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "productcategoryid", "name", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"productcategory\"(\"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductcategoryId.pgType, unsaved.productcategoryid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"productcategoryid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\""))
       .updateReturning(ProductcategoryRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -293,17 +179,9 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     Iterator<ProductcategoryRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "production"."productcategory"("productcategoryid", "name", "rowguid", "modifieddate")
-                values (?::int4, ?::varchar, ?::uuid, ?::timestamp)
-                on conflict ("productcategoryid")
-                do update set
-                  "name" = EXCLUDED."name",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "productcategoryid", "name", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"production\".\"productcategory\"(\"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::uuid, ?::timestamp)\non conflict (\"productcategoryid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(ProductcategoryRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -313,21 +191,8 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table productcategory_TEMP (like "production"."productcategory") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy productcategory_TEMP("productcategoryid", "name", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, ProductcategoryRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "production"."productcategory"("productcategoryid", "name", "rowguid", "modifieddate")
-       select * from productcategory_TEMP
-       on conflict ("productcategoryid")
-       do update set
-         "name" = EXCLUDED."name",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table productcategory_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table productcategory_TEMP (like \"production\".\"productcategory\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy productcategory_TEMP(\"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, ProductcategoryRow.pgText);
+    return interpolate(Fragment.lit("insert into \"production\".\"productcategory\"(\"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\")\nselect * from productcategory_TEMP\non conflict (\"productcategoryid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table productcategory_TEMP;")).update().runUnchecked(c);
   };
 }

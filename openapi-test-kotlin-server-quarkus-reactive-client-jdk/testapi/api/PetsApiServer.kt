@@ -12,7 +12,7 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import java.lang.IllegalStateException
-import java.util.Optional
+import Int
 import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
@@ -21,7 +21,7 @@ import testapi.model.PetId
 
 interface PetsApiServer : PetsApi {
   /** Create a pet */
-  override fun createPet(body: PetCreate): Uni<Response201400<Pet, Error>>
+  abstract override fun createPet(body: PetCreate): Uni<Response201400<Pet, Error>>
 
   /** Endpoint wrapper for createPet - handles response status codes */
   @POST
@@ -30,22 +30,22 @@ interface PetsApiServer : PetsApi {
   @Produces(value = [MediaType.APPLICATION_JSON])
   @SecurityRequirement(name = "oauth2", scopes = ["write:pets"])
   @SecurityRequirement(name = "apiKeyHeader")
-  fun createPetEndpoint(body: PetCreate): Uni<Response> = createPet(body).map({ response: Response201400<*, *> -> when (val __r = response) {
-    is Created<*> -> { val r = __r as Created<*>; Response.status(201).entity(r.value).build() }
-    is BadRequest<*> -> { val r = __r as BadRequest<*>; Response.status(400).entity(r.value).build() }
+  fun createPetEndpoint(body: PetCreate): Uni<Response> = createPet(body).map({ response: Response201400 -> when (val __r = response) {
+    is Created -> { val r = __r as Created; Response.status(201).entity(r.value).build() }
+    is BadRequest -> { val r = __r as BadRequest; Response.status(400).entity(r.value).build() }
     else -> throw IllegalStateException("Unexpected response type")
   } })
 
   /** Delete a pet */
   @DELETE
   @Path("/{petId}")
-  override fun deletePet(
+  abstract override fun deletePet(
     /** The pet ID */
     petId: PetId
   ): Uni<Unit>
 
   /** Get a pet by ID */
-  override fun getPet(
+  abstract override fun getPet(
     /** The pet ID */
     petId: PetId
   ): Uni<Response200404<Pet, Error>>
@@ -57,9 +57,9 @@ interface PetsApiServer : PetsApi {
   fun getPetEndpoint(
     /** The pet ID */
     petId: PetId
-  ): Uni<Response> = getPet(petId).map({ response: Response200404<*, *> -> when (val __r = response) {
-    is Ok<*> -> { val r = __r as Ok<*>; Response.ok(r.value).build() }
-    is NotFound<*> -> { val r = __r as NotFound<*>; Response.status(404).entity(r.value).build() }
+  ): Uni<Response> = getPet(petId).map({ response: Response200404 -> when (val __r = response) {
+    is Ok -> { val r = __r as Ok; Response.ok(r.value).build() }
+    is NotFound -> { val r = __r as NotFound; Response.status(404).entity(r.value).build() }
     else -> throw IllegalStateException("Unexpected response type")
   } })
 
@@ -67,7 +67,7 @@ interface PetsApiServer : PetsApi {
   @GET
   @Path("/{petId}/photo")
   @Produces(value = [MediaType.APPLICATION_OCTET_STREAM])
-  override fun getPetPhoto(
+  abstract override fun getPetPhoto(
     /** The pet ID */
     petId: PetId
   ): Uni<Unit>
@@ -76,11 +76,11 @@ interface PetsApiServer : PetsApi {
   @GET
   @Path("")
   @Produces(value = [MediaType.APPLICATION_JSON])
-  override fun listPets(
+  abstract override fun listPets(
     /** Maximum number of pets to return */
-    limit: Optional<Integer>,
+    limit: Integer?,
     /** Filter by status */
-    status: Optional<String>
+    status: String?
   ): Uni<List<Pet>>
 
   /** Upload a pet photo */
@@ -88,7 +88,7 @@ interface PetsApiServer : PetsApi {
   @Path("/{petId}/photo")
   @Consumes(value = [MediaType.MULTIPART_FORM_DATA])
   @Produces(value = [MediaType.APPLICATION_JSON])
-  override fun uploadPetPhoto(
+  abstract override fun uploadPetPhoto(
     /** The pet ID */
     petId: PetId,
     /** Optional caption for the photo */

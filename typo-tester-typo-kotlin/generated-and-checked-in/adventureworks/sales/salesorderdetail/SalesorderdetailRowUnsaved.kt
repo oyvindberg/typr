@@ -7,14 +7,14 @@ package adventureworks.sales.salesorderdetail
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.specialoffer.SpecialofferId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -25,11 +25,11 @@ data class SalesorderdetailRowUnsaved(
     */
   val salesorderid: SalesorderheaderId,
   /** Shipment tracking number supplied by the shipper. */
-  val carriertrackingnumber: Optional</* max 25 chars */ String> = Optional.empty(),
+  val carriertrackingnumber: /* max 25 chars */ String? = null,
   /** Quantity ordered per product.
     * Constraint CK_SalesOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0))
     */
-  val orderqty: TypoShort,
+  val orderqty: Short,
   /** Product sold to customer. Foreign key to Product.ProductID.
     * Points to [adventureworks.sales.specialofferproduct.SpecialofferproductRow.productid]
     */
@@ -52,24 +52,24 @@ data class SalesorderdetailRowUnsaved(
     */
   val unitpricediscount: Defaulted<BigDecimal> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     salesorderdetailidDefault: () -> Int,
     unitpricediscountDefault: () -> BigDecimal,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): SalesorderdetailRow = SalesorderdetailRow(salesorderid = salesorderid, salesorderdetailid = salesorderdetailid.getOrElse(salesorderdetailidDefault), carriertrackingnumber = carriertrackingnumber, orderqty = orderqty, productid = productid, specialofferid = specialofferid, unitprice = unitprice, unitpricediscount = unitpricediscount.getOrElse(unitpricediscountDefault), rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<SalesorderdetailRowUnsaved> =
       PgText.instance({ row, sb -> SalesorderheaderId.pgType.pgText().unsafeEncode(row.salesorderid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.carriertrackingnumber, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.carriertrackingnumber, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.orderqty, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.orderqty, sb)
       sb.append(PgText.DELIMETER)
       ProductId.pgType.pgText().unsafeEncode(row.productid, sb)
       sb.append(PgText.DELIMETER)
@@ -77,12 +77,12 @@ data class SalesorderdetailRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.numeric.pgText().unsafeEncode(row.unitprice, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.salesorderdetailid, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.salesorderdetailid, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.unitpricediscount, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

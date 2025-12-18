@@ -10,8 +10,8 @@ import java.time.LocalDateTime
 import testdb.customer_status.CustomerStatusId
 import testdb.customers.CustomersId
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
 
 /** SQL file: simple_customer_lookup.sql */
 case class SimpleCustomerLookupSqlRow(
@@ -32,5 +32,5 @@ case class SimpleCustomerLookupSqlRow(
 )
 
 object SimpleCustomerLookupSqlRow {
-  val `_rowParser`: RowParser[SimpleCustomerLookupSqlRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, SimpleCustomerLookupSqlRow.apply, row => Array[Object](row.customerId.asInstanceOf[Object], row.email.asInstanceOf[Object], row.firstName.asInstanceOf[Object], row.lastName.asInstanceOf[Object], row.tier.asInstanceOf[Object], row.status.asInstanceOf[Object], row.createdAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[SimpleCustomerLookupSqlRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime)(SimpleCustomerLookupSqlRow.apply)(row => Array[Any](row.customerId, row.email, row.firstName, row.lastName, row.tier, row.status, row.createdAt))
 }

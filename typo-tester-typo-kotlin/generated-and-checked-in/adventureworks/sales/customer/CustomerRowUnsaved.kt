@@ -7,54 +7,55 @@ package adventureworks.sales.customer
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `sales.customer` which has not been persisted yet */
 data class CustomerRowUnsaved(
   /** Foreign key to Person.BusinessEntityID
     * Points to [adventureworks.person.person.PersonRow.businessentityid]
     */
-  val personid: Optional<BusinessentityId> = Optional.empty(),
+  val personid: BusinessentityId? = null,
   /** Foreign key to Store.BusinessEntityID
     * Points to [adventureworks.sales.store.StoreRow.businessentityid]
     */
-  val storeid: Optional<BusinessentityId> = Optional.empty(),
+  val storeid: BusinessentityId? = null,
   /** ID of the territory in which the customer is located. Foreign key to SalesTerritory.SalesTerritoryID.
     * Points to [adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]
     */
-  val territoryid: Optional<SalesterritoryId> = Optional.empty(),
+  val territoryid: SalesterritoryId? = null,
   /** Default: nextval('sales.customer_customerid_seq'::regclass)
     * Primary key.
     */
   val customerid: Defaulted<CustomerId> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     customeridDefault: () -> CustomerId,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): CustomerRow = CustomerRow(customerid = customerid.getOrElse(customeridDefault), personid = personid, storeid = storeid, territoryid = territoryid, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<CustomerRowUnsaved> =
-      PgText.instance({ row, sb -> BusinessentityId.pgType.opt().pgText().unsafeEncode(row.personid, sb)
+      PgText.instance({ row, sb -> BusinessentityId.pgType.nullable().pgText().unsafeEncode(row.personid, sb)
       sb.append(PgText.DELIMETER)
-      BusinessentityId.pgType.opt().pgText().unsafeEncode(row.storeid, sb)
+      BusinessentityId.pgType.nullable().pgText().unsafeEncode(row.storeid, sb)
       sb.append(PgText.DELIMETER)
-      SalesterritoryId.pgType.opt().pgText().unsafeEncode(row.territoryid, sb)
+      SalesterritoryId.pgType.nullable().pgText().unsafeEncode(row.territoryid, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(CustomerId.pgType.pgText()).unsafeEncode(row.customerid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

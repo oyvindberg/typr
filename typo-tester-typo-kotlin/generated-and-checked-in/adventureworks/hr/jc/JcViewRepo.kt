@@ -7,10 +7,10 @@ package adventureworks.hr.jc
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface JcViewRepo {
-  fun select(): SelectBuilder<JcViewFields, JcViewRow>
+  abstract fun select(): SelectBuilder<JcViewFields, JcViewRow>
 
-  fun selectAll(c: Connection): List<JcViewRow>
+  abstract fun selectAll(c: Connection): List<JcViewRow>
 }

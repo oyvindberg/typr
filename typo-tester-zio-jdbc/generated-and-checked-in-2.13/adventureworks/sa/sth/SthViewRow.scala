@@ -27,7 +27,7 @@ case class SthViewRow(
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.modifieddate]] */
@@ -44,7 +44,7 @@ object SthViewRow {
             businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             territoryid = SalesterritoryId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
             startdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
-            enddate = JdbcDecoder.optionDecoder(TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 4, rs)._2,
+            enddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
           )
@@ -57,7 +57,7 @@ object SthViewRow {
       val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
       val territoryid = jsonObj.get("territoryid").toRight("Missing field 'territoryid'").flatMap(_.as(SalesterritoryId.jsonDecoder))
       val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-      val enddate = jsonObj.get("enddate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(JsonDecoder.option(TypoLocalDateTime.jsonDecoder)))
+      val enddate = jsonObj.get("enddate").toRight("Missing field 'enddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       if (id.isRight && businessentityid.isRight && territoryid.isRight && startdate.isRight && enddate.isRight && rowguid.isRight && modifieddate.isRight)
@@ -83,7 +83,7 @@ object SthViewRow {
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.startdate, indent, out)
         out.write(",")
         out.write(""""enddate":""")
-        JsonEncoder.option(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.enddate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.enddate, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

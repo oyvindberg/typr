@@ -7,9 +7,10 @@ package adventureworks.humanresources.department;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `humanresources.department` which has not been persisted yet */
 public record DepartmentRowUnsaved(
@@ -22,7 +23,7 @@ public record DepartmentRowUnsaved(
     */
   Defaulted<DepartmentId> departmentid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public DepartmentRowUnsaved(
     /** Name of the department. */
@@ -51,7 +52,7 @@ public record DepartmentRowUnsaved(
   };
 
   /** Default: now() */
-  public DepartmentRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public DepartmentRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new DepartmentRowUnsaved(name, groupname, departmentid, modifieddate);
   };
 
@@ -63,12 +64,12 @@ public record DepartmentRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(DepartmentId.pgType.pgText()).unsafeEncode(row.departmentid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public DepartmentRow toRow(
     java.util.function.Supplier<DepartmentId> departmentidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new DepartmentRow(departmentid.getOrElse(departmentidDefault), name, groupname, modifieddate.getOrElse(modifieddateDefault));
   };

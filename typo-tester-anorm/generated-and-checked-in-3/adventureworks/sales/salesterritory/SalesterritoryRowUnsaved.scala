@@ -30,7 +30,7 @@ case class SalesterritoryRowUnsaved(
    */
   countryregioncode: CountryregionId,
   /** Geographic area to which the sales territory belong. */
-  group: /* max 50 chars */ String,
+  group: String,
   /** Default: nextval('sales.salesterritory_territoryid_seq'::regclass)
    * Primary key for SalesTerritory records.
    */

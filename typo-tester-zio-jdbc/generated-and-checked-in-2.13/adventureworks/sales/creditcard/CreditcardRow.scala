@@ -27,9 +27,9 @@ case class CreditcardRow(
    */
   creditcardid: /* user-picked */ CustomCreditcardId,
   /** Credit card name. */
-  cardtype: /* max 50 chars */ String,
+  cardtype: String,
   /** Credit card number. */
-  cardnumber: /* max 25 chars */ String,
+  cardnumber: String,
   /** Credit card expiration month. */
   expmonth: TypoShort,
   /** Credit card expiration year. */

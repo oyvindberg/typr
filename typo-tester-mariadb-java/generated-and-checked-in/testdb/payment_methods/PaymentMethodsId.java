@@ -16,9 +16,14 @@ public record PaymentMethodsId(@JsonValue Short value) {
     return new PaymentMethodsId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<PaymentMethodsId, Short> bijection =
     Bijection.of(PaymentMethodsId::value, PaymentMethodsId::new);
 
   static public MariaType<PaymentMethodsId> pgType =
-    MariaTypes.smallint.bimap(PaymentMethodsId::new, PaymentMethodsId::value);
+    MariaTypes.tinyintUnsigned.bimap(PaymentMethodsId::new, PaymentMethodsId::value);
 }

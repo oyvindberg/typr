@@ -5,24 +5,23 @@
  */
 package adventureworks.sa.sp;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SpViewFields extends FieldsExpr<SpViewRow> {
-  record Impl(List<Path> _path) implements SpViewFields, Relation<SpViewFields, SpViewRow> {
+  record Impl(List<Path> _path) implements SpViewFields, RelationStructure<SpViewFields, SpViewRow> {
     @Override
     public Field<BusinessentityId, SpViewRow> id() {
       return new Field<BusinessentityId, SpViewRow>(_path, "id", SpViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), BusinessentityId.pgType);
@@ -34,13 +33,13 @@ public interface SpViewFields extends FieldsExpr<SpViewRow> {
     };
 
     @Override
-    public OptField<SalesterritoryId, SpViewRow> territoryid() {
-      return new OptField<SalesterritoryId, SpViewRow>(_path, "territoryid", SpViewRow::territoryid, Optional.empty(), Optional.empty(), (row, value) -> row.withTerritoryid(value), SalesterritoryId.pgType);
+    public Field<SalesterritoryId, SpViewRow> territoryid() {
+      return new Field<SalesterritoryId, SpViewRow>(_path, "territoryid", SpViewRow::territoryid, Optional.empty(), Optional.empty(), (row, value) -> row.withTerritoryid(value), SalesterritoryId.pgType);
     };
 
     @Override
-    public OptField<BigDecimal, SpViewRow> salesquota() {
-      return new OptField<BigDecimal, SpViewRow>(_path, "salesquota", SpViewRow::salesquota, Optional.empty(), Optional.empty(), (row, value) -> row.withSalesquota(value), PgTypes.numeric);
+    public Field<BigDecimal, SpViewRow> salesquota() {
+      return new Field<BigDecimal, SpViewRow>(_path, "salesquota", SpViewRow::salesquota, Optional.empty(), Optional.empty(), (row, value) -> row.withSalesquota(value), PgTypes.numeric);
     };
 
     @Override
@@ -64,37 +63,37 @@ public interface SpViewFields extends FieldsExpr<SpViewRow> {
     };
 
     @Override
-    public Field<TypoUUID, SpViewRow> rowguid() {
-      return new Field<TypoUUID, SpViewRow>(_path, "rowguid", SpViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, SpViewRow> rowguid() {
+      return new Field<UUID, SpViewRow>(_path, "rowguid", SpViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SpViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SpViewRow>(_path, "modifieddate", SpViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SpViewRow> modifieddate() {
+      return new Field<LocalDateTime, SpViewRow>(_path, "modifieddate", SpViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SpViewRow>> columns() {
-      return List.of(this.id(), this.businessentityid(), this.territoryid(), this.salesquota(), this.bonus(), this.commissionpct(), this.salesytd(), this.saleslastyear(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.businessentityid(), this.territoryid(), this.salesquota(), this.bonus(), this.commissionpct(), this.salesytd(), this.saleslastyear(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SpViewFields, SpViewRow> copy(List<Path> _path) {
+    public RelationStructure<SpViewFields, SpViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<BusinessentityId, SpViewRow> id();
 
   Field<BusinessentityId, SpViewRow> businessentityid();
 
-  OptField<SalesterritoryId, SpViewRow> territoryid();
+  Field<SalesterritoryId, SpViewRow> territoryid();
 
-  OptField<BigDecimal, SpViewRow> salesquota();
+  Field<BigDecimal, SpViewRow> salesquota();
 
   Field<BigDecimal, SpViewRow> bonus();
 
@@ -104,9 +103,9 @@ public interface SpViewFields extends FieldsExpr<SpViewRow> {
 
   Field<BigDecimal, SpViewRow> saleslastyear();
 
-  Field<TypoUUID, SpViewRow> rowguid();
+  Field<UUID, SpViewRow> rowguid();
 
-  Field<TypoLocalDateTime, SpViewRow> modifieddate();
+  Field<LocalDateTime, SpViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, SpViewRow>> columns();

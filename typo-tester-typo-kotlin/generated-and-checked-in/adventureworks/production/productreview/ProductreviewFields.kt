@@ -5,70 +5,72 @@
  */
 package adventureworks.production.productreview
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductFields
 import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface ProductreviewFields : FieldsExpr<ProductreviewRow> {
-  override fun columns(): List<FieldLike<*, ProductreviewRow>>
+  abstract override fun columns(): List<FieldLike<*, ProductreviewRow>>
 
-  fun comments(): OptField</* max 3850 chars */ String, ProductreviewRow>
+  abstract fun comments(): OptField</* max 3850 chars */ String, ProductreviewRow>
 
-  fun emailaddress(): Field</* max 50 chars */ String, ProductreviewRow>
+  abstract fun emailaddress(): Field<String, ProductreviewRow>
 
-  fun fkProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("production.FK_ProductReview_Product_ProductID").withColumnPair(productid(), ProductFields::productid)
+  fun fkProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("production.FK_ProductReview_Product_ProductID").withColumnPair<ProductId>(productid(), ProductFields::productid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, ProductreviewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, ProductreviewRow>
 
-  fun productid(): Field<ProductId, ProductreviewRow>
+  abstract fun productid(): Field<ProductId, ProductreviewRow>
 
-  fun productreviewid(): IdField<ProductreviewId, ProductreviewRow>
+  abstract fun productreviewid(): IdField<ProductreviewId, ProductreviewRow>
 
-  fun rating(): Field<Int, ProductreviewRow>
+  abstract fun rating(): Field<Int, ProductreviewRow>
 
-  fun reviewdate(): Field<TypoLocalDateTime, ProductreviewRow>
+  abstract fun reviewdate(): Field<LocalDateTime, ProductreviewRow>
 
-  fun reviewername(): Field<Name, ProductreviewRow>
+  abstract fun reviewername(): Field<Name, ProductreviewRow>
 
-  override fun rowParser(): RowParser<ProductreviewRow> = ProductreviewRow._rowParser
+  override fun rowParser(): RowParser<ProductreviewRow> = ProductreviewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductreviewFields, Relation<ProductreviewFields, ProductreviewRow> {
-      override fun productreviewid(): IdField<ProductreviewId, ProductreviewRow> = IdField<ProductreviewId, ProductreviewRow>(_path, "productreviewid", ProductreviewRow::productreviewid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productreviewid = value) }, ProductreviewId.pgType)
+    data class Impl(val _path: List<Path>) : ProductreviewFields, RelationStructure<ProductreviewFields, ProductreviewRow> {
+      override fun productreviewid(): IdField<ProductreviewId, ProductreviewRow> = IdField<ProductreviewId, ProductreviewRow>(_path, "productreviewid", ProductreviewRow::productreviewid, null, "int4", { row, value -> row.copy(productreviewid = value) }, ProductreviewId.pgType)
 
-      override fun productid(): Field<ProductId, ProductreviewRow> = Field<ProductId, ProductreviewRow>(_path, "productid", ProductreviewRow::productid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+      override fun productid(): Field<ProductId, ProductreviewRow> = Field<ProductId, ProductreviewRow>(_path, "productid", ProductreviewRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun reviewername(): Field<Name, ProductreviewRow> = Field<Name, ProductreviewRow>(_path, "reviewername", ProductreviewRow::reviewername, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(reviewername = value) }, Name.pgType)
+      override fun reviewername(): Field<Name, ProductreviewRow> = Field<Name, ProductreviewRow>(_path, "reviewername", ProductreviewRow::reviewername, null, "varchar", { row, value -> row.copy(reviewername = value) }, Name.pgType)
 
-      override fun reviewdate(): Field<TypoLocalDateTime, ProductreviewRow> = Field<TypoLocalDateTime, ProductreviewRow>(_path, "reviewdate", ProductreviewRow::reviewdate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(reviewdate = value) }, TypoLocalDateTime.pgType)
+      override fun reviewdate(): Field<LocalDateTime, ProductreviewRow> = Field<LocalDateTime, ProductreviewRow>(_path, "reviewdate", ProductreviewRow::reviewdate, null, "timestamp", { row, value -> row.copy(reviewdate = value) }, PgTypes.timestamp)
 
-      override fun emailaddress(): Field</* max 50 chars */ String, ProductreviewRow> = Field</* max 50 chars */ String, ProductreviewRow>(_path, "emailaddress", ProductreviewRow::emailaddress, Optional.empty(), Optional.empty(), { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
+      override fun emailaddress(): Field<String, ProductreviewRow> = Field<String, ProductreviewRow>(_path, "emailaddress", ProductreviewRow::emailaddress, null, null, { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
 
-      override fun rating(): Field<Int, ProductreviewRow> = Field<Int, ProductreviewRow>(_path, "rating", ProductreviewRow::rating, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(rating = value) }, PgTypes.int4)
+      override fun rating(): Field<Int, ProductreviewRow> = Field<Int, ProductreviewRow>(_path, "rating", ProductreviewRow::rating, null, "int4", { row, value -> row.copy(rating = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun comments(): OptField</* max 3850 chars */ String, ProductreviewRow> = OptField</* max 3850 chars */ String, ProductreviewRow>(_path, "comments", ProductreviewRow::comments, Optional.empty(), Optional.empty(), { row, value -> row.copy(comments = value) }, PgTypes.text)
+      override fun comments(): OptField<String, ProductreviewRow> = OptField<String, ProductreviewRow>(_path, "comments", ProductreviewRow::comments, null, null, { row, value -> row.copy(comments = value) }, PgTypes.text)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, ProductreviewRow> = Field<TypoLocalDateTime, ProductreviewRow>(_path, "modifieddate", ProductreviewRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, ProductreviewRow> = Field<LocalDateTime, ProductreviewRow>(_path, "modifieddate", ProductreviewRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, ProductreviewRow>> = listOf(this.productreviewid(), this.productid(), this.reviewername(), this.reviewdate(), this.emailaddress(), this.rating(), this.comments(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ProductreviewFields, ProductreviewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ProductreviewRow>> = listOf(this.productreviewid().underlying, this.productid().underlying, this.reviewername().underlying, this.reviewdate().underlying, this.emailaddress().underlying, this.rating().underlying, this.comments().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ProductreviewFields, ProductreviewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

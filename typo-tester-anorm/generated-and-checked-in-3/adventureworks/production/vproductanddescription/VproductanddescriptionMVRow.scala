@@ -31,7 +31,7 @@ case class VproductanddescriptionMVRow(
   /** Points to [[adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.cultureid]] */
   cultureid: CultureId,
   /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.description]] */
-  description: /* max 400 chars */ String
+  description: String
 )
 
 object VproductanddescriptionMVRow {

@@ -6,15 +6,18 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public record PetId(@JsonValue String value) {
   public PetId withValue(String value) {
     return new PetId(value);
-  };
+  }
+  ;
 
   @Override
   public String toString() {
     return value;
-  };
+  }
+  ;
 
   /** Converts a String to this type for Spring @PathVariable binding */
-  static public PetId valueOf(String s) {
+  public static PetId valueOf(String s) {
     return new PetId(s);
-  };
+  }
+  ;
 }

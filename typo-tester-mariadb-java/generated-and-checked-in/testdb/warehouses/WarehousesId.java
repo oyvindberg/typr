@@ -16,9 +16,14 @@ public record WarehousesId(@JsonValue Short value) {
     return new WarehousesId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<WarehousesId, Short> bijection =
     Bijection.of(WarehousesId::value, WarehousesId::new);
 
   static public MariaType<WarehousesId> pgType =
-    MariaTypes.smallint.bimap(WarehousesId::new, WarehousesId::value);
+    MariaTypes.tinyintUnsigned.bimap(WarehousesId::new, WarehousesId::value);
 }

@@ -7,12 +7,12 @@ package testdb.audit_log
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.Inet6
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
 
 /** This class corresponds to a row in table `audit_log` which has not been persisted yet */
 case class AuditLogRowUnsaved(
@@ -25,15 +25,15 @@ case class AuditLogRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("old_values") oldValues: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("old_values") oldValues: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("new_values") newValues: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("new_values") newValues: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("changed_by") changedBy: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("changed_by") changedBy: Defaulted[Option[String]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
@@ -41,19 +41,19 @@ case class AuditLogRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("client_ip") clientIp: Defaulted[Optional[Inet6]] = new UseDefault(),
+  @JsonProperty("client_ip") clientIp: Defaulted[Option[Inet6]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("session_id") sessionId: Defaulted[Optional[Array[Byte]]] = new UseDefault()
+  @JsonProperty("session_id") sessionId: Defaulted[Option[Array[Byte]]] = new UseDefault()
 ) {
   def toRow(
-    oldValuesDefault: => Optional[String],
-    newValuesDefault: => Optional[String],
-    changedByDefault: => Optional[String],
+    oldValuesDefault: => Option[String],
+    newValuesDefault: => Option[String],
+    changedByDefault: => Option[String],
     changedAtDefault: => LocalDateTime,
-    clientIpDefault: => Optional[Inet6],
-    sessionIdDefault: => Optional[Array[Byte]],
+    clientIpDefault: => Option[Inet6],
+    sessionIdDefault: => Option[Array[Byte]],
     logIdDefault: => AuditLogId
   ): AuditLogRow = {
     new AuditLogRow(
@@ -72,5 +72,5 @@ case class AuditLogRowUnsaved(
 }
 
 object AuditLogRowUnsaved {
-  given mariaText: MariaText[AuditLogRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.tableName, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.recordId, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.action, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.oldValues, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.newValues, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.changedBy, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.changedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.inet6.opt().mariaText).unsafeEncode(row.clientIp, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varbinary.opt().mariaText).unsafeEncode(row.sessionId, sb) })
+  given mariaText: MariaText[AuditLogRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.tableName, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.recordId, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.action, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.oldValues, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.newValues, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.changedBy, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.changedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.inet6.nullable.mariaText).unsafeEncode(row.clientIp, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varbinary.nullable.mariaText).unsafeEncode(row.sessionId, sb) })
 }

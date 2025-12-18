@@ -7,9 +7,9 @@ package adventureworks.production.productlistpricehistory;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -23,17 +23,17 @@ public record ProductlistpricehistoryRowUnsaved(
   /** List price start date.
     * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** List price end date
     * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  Optional<TypoLocalDateTime> enddate,
+  Optional<LocalDateTime> enddate,
   /** Product list price.
     * Constraint CK_ProductListPriceHistory_ListPrice affecting columns listprice:  ((listprice > 0.00))
     */
   BigDecimal listprice,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductlistpricehistoryRowUnsaved(
     /** Product identification number. Foreign key to Product.ProductID
@@ -43,7 +43,7 @@ public record ProductlistpricehistoryRowUnsaved(
     /** List price start date.
       * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
       */
-    TypoLocalDateTime startdate,
+    LocalDateTime startdate,
     /** Product list price.
       * Constraint CK_ProductListPriceHistory_ListPrice affecting columns listprice:  ((listprice > 0.00))
       */
@@ -62,14 +62,14 @@ public record ProductlistpricehistoryRowUnsaved(
   /** List price start date.
     * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public ProductlistpricehistoryRowUnsaved withStartdate(TypoLocalDateTime startdate) {
+  public ProductlistpricehistoryRowUnsaved withStartdate(LocalDateTime startdate) {
     return new ProductlistpricehistoryRowUnsaved(productid, startdate, enddate, listprice, modifieddate);
   };
 
   /** List price end date
     * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public ProductlistpricehistoryRowUnsaved withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public ProductlistpricehistoryRowUnsaved withEnddate(Optional<LocalDateTime> enddate) {
     return new ProductlistpricehistoryRowUnsaved(productid, startdate, enddate, listprice, modifieddate);
   };
 
@@ -81,7 +81,7 @@ public record ProductlistpricehistoryRowUnsaved(
   };
 
   /** Default: now() */
-  public ProductlistpricehistoryRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductlistpricehistoryRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductlistpricehistoryRowUnsaved(productid, startdate, enddate, listprice, modifieddate);
   };
 
@@ -89,16 +89,16 @@ public record ProductlistpricehistoryRowUnsaved(
     PgText.instance((row, sb) -> {
       ProductId.pgType.pgText().unsafeEncode(row.productid, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.startdate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.startdate, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.enddate, sb);
+      PgTypes.timestamp.opt().pgText().unsafeEncode(row.enddate, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.numeric.pgText().unsafeEncode(row.listprice, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public ProductlistpricehistoryRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public ProductlistpricehistoryRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new ProductlistpricehistoryRow(productid, startdate, enddate, listprice, modifieddate.getOrElse(modifieddateDefault));
   };
 }

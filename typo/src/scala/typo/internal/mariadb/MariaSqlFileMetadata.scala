@@ -303,9 +303,9 @@ object MariaSqlFileMetadata {
 
     val paramsWithTypes = decomposed.params.zipWithIndex.map { case (param, idx) =>
       // Match by position or name
-      val (paramName, hasUserOverride) = param match {
-        case DecomposedSql.NotNamedParam          => (s"param$idx", false)
-        case DecomposedSql.NamedParam(parsedName) => (parsedName.name.value, parsedName.bareOverriddenType.isDefined)
+      val (paramName, userOverriddenType) = param match {
+        case DecomposedSql.NotNamedParam          => (s"param$idx", None)
+        case DecomposedSql.NamedParam(parsedName) => (parsedName.name.value, parsedName.overriddenType)
       }
 
       val matchingParams = paramsByName.getOrElse(paramName, Nil)
@@ -326,11 +326,14 @@ object MariaSqlFileMetadata {
         columnSchema <- tableSchema.get(sourceColumn)
       } yield columnSchema.`type`
 
-      // If user provided a type override, we can use a placeholder type (the actual type will be resolved later)
-      // Otherwise, prefer schema type > sqlglot inferred type
-      val effectiveType =
-        if (hasUserOverride) Some("VARCHAR") // Placeholder - user override will take precedence in ComputedSqlFile
-        else schemaType.orElse(sqlglotParam.flatMap(_.inferredType))
+      // Get DB type from user-specified type override
+      val fallbackFromUserType: Option[String] = userOverriddenType.flatMap {
+        case OverriddenType.Primitive(p) => Some(mariaDbTypeNameFor(p))
+        case OverriddenType.Qualified(_) => None // Qualified types provide their own pgType
+      }
+
+      // Prefer schema type > sqlglot inferred type > user type fallback
+      val effectiveType = schemaType.orElse(sqlglotParam.flatMap(_.inferredType)).orElse(fallbackFromUserType)
 
       // Check nullability from any parameter occurrence (any with nullable hint means nullable)
       val hasNullableHint = matchingParams.exists(_.nullableHint)
@@ -375,5 +378,23 @@ object MariaSqlFileMetadata {
       )
       found.result()
     }
+  }
+
+  /** Map well-known primitives to MariaDB type names for parameter type inference */
+  private def mariaDbTypeNameFor(p: WellKnownPrimitive): String = p match {
+    case WellKnownPrimitive.String        => "varchar"
+    case WellKnownPrimitive.Boolean       => "tinyint(1)"
+    case WellKnownPrimitive.Byte          => "tinyint"
+    case WellKnownPrimitive.Short         => "smallint"
+    case WellKnownPrimitive.Int           => "int"
+    case WellKnownPrimitive.Long          => "bigint"
+    case WellKnownPrimitive.Float         => "float"
+    case WellKnownPrimitive.Double        => "double"
+    case WellKnownPrimitive.BigDecimal    => "decimal"
+    case WellKnownPrimitive.LocalDate     => "date"
+    case WellKnownPrimitive.LocalTime     => "time"
+    case WellKnownPrimitive.LocalDateTime => "datetime"
+    case WellKnownPrimitive.Instant       => "timestamp"
+    case WellKnownPrimitive.UUID          => "char(36)"
   }
 }

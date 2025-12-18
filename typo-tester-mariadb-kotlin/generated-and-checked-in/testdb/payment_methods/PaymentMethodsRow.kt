@@ -6,12 +6,13 @@
 package testdb.payment_methods
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: payment_methods
   * Primary key: method_id
@@ -30,7 +31,7 @@ data class PaymentMethodsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("processor_config") val processorConfig: Optional<String>,
+  @JsonProperty("processor_config") val processorConfig: String?,
   /** 
     * Default: 1
     */
@@ -43,15 +44,15 @@ data class PaymentMethodsRow(
   fun id(): PaymentMethodsId = methodId
 
   fun toUnsavedRow(
-    processorConfig: Defaulted<Optional<String>>,
+    processorConfig: Defaulted<String?>,
     isActive: Defaulted<Boolean>,
     sortOrder: Defaulted<Byte>
   ): PaymentMethodsRowUnsaved = PaymentMethodsRowUnsaved(code, name, methodType, processorConfig, isActive, sortOrder)
 
   companion object {
-    val _rowParser: RowParser<PaymentMethodsRow> = RowParsers.of(PaymentMethodsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.longtext.opt(), MariaTypes.bool, MariaTypes.tinyint, { t0, t1, t2, t3, t4, t5, t6 -> PaymentMethodsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.methodId, row.code, row.name, row.methodType, row.processorConfig, row.isActive, row.sortOrder) })
+    val _rowParser: RowParser<PaymentMethodsRow> = RowParsers.of(PaymentMethodsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.tinyint, { t0, t1, t2, t3, t4, t5, t6 -> PaymentMethodsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.methodId, row.code, row.name, row.methodType, row.processorConfig, row.isActive, row.sortOrder) })
 
     val mariaText: MariaText<PaymentMethodsRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

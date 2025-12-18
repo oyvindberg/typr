@@ -5,74 +5,74 @@
  */
 package adventureworks.pr.bom
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface BomViewFields : FieldsExpr<BomViewRow> {
-  fun billofmaterialsid(): Field<Int, BomViewRow>
+  abstract fun billofmaterialsid(): Field<Int, BomViewRow>
 
-  fun bomlevel(): Field<TypoShort, BomViewRow>
+  abstract fun bomlevel(): Field<Short, BomViewRow>
 
-  override fun columns(): List<FieldLike<*, BomViewRow>>
+  abstract override fun columns(): List<FieldLike<*, BomViewRow>>
 
-  fun componentid(): Field<ProductId, BomViewRow>
+  abstract fun componentid(): Field<ProductId, BomViewRow>
 
-  fun enddate(): OptField<TypoLocalDateTime, BomViewRow>
+  abstract fun enddate(): Field<LocalDateTime, BomViewRow>
 
-  fun id(): Field<Int, BomViewRow>
+  abstract fun id(): Field<Int, BomViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, BomViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, BomViewRow>
 
-  fun perassemblyqty(): Field<BigDecimal, BomViewRow>
+  abstract fun perassemblyqty(): Field<BigDecimal, BomViewRow>
 
-  fun productassemblyid(): OptField<ProductId, BomViewRow>
+  abstract fun productassemblyid(): Field<ProductId, BomViewRow>
 
-  override fun rowParser(): RowParser<BomViewRow> = BomViewRow._rowParser
+  override fun rowParser(): RowParser<BomViewRow> = BomViewRow._rowParser.underlying
 
-  fun startdate(): Field<TypoLocalDateTime, BomViewRow>
+  abstract fun startdate(): Field<LocalDateTime, BomViewRow>
 
-  fun unitmeasurecode(): Field<UnitmeasureId, BomViewRow>
+  abstract fun unitmeasurecode(): Field<UnitmeasureId, BomViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : BomViewFields, Relation<BomViewFields, BomViewRow> {
-      override fun id(): Field<Int, BomViewRow> = Field<Int, BomViewRow>(_path, "id", BomViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, PgTypes.int4)
+    data class Impl(val _path: List<Path>) : BomViewFields, RelationStructure<BomViewFields, BomViewRow> {
+      override fun id(): Field<Int, BomViewRow> = Field<Int, BomViewRow>(_path, "id", BomViewRow::id, null, null, { row, value -> row.copy(id = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun billofmaterialsid(): Field<Int, BomViewRow> = Field<Int, BomViewRow>(_path, "billofmaterialsid", BomViewRow::billofmaterialsid, Optional.empty(), Optional.empty(), { row, value -> row.copy(billofmaterialsid = value) }, PgTypes.int4)
+      override fun billofmaterialsid(): Field<Int, BomViewRow> = Field<Int, BomViewRow>(_path, "billofmaterialsid", BomViewRow::billofmaterialsid, null, null, { row, value -> row.copy(billofmaterialsid = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun productassemblyid(): OptField<ProductId, BomViewRow> = OptField<ProductId, BomViewRow>(_path, "productassemblyid", BomViewRow::productassemblyid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productassemblyid = value) }, ProductId.pgType)
+      override fun productassemblyid(): Field<ProductId, BomViewRow> = Field<ProductId, BomViewRow>(_path, "productassemblyid", BomViewRow::productassemblyid, null, null, { row, value -> row.copy(productassemblyid = value) }, ProductId.pgType)
 
-      override fun componentid(): Field<ProductId, BomViewRow> = Field<ProductId, BomViewRow>(_path, "componentid", BomViewRow::componentid, Optional.empty(), Optional.empty(), { row, value -> row.copy(componentid = value) }, ProductId.pgType)
+      override fun componentid(): Field<ProductId, BomViewRow> = Field<ProductId, BomViewRow>(_path, "componentid", BomViewRow::componentid, null, null, { row, value -> row.copy(componentid = value) }, ProductId.pgType)
 
-      override fun startdate(): Field<TypoLocalDateTime, BomViewRow> = Field<TypoLocalDateTime, BomViewRow>(_path, "startdate", BomViewRow::startdate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(startdate = value) }, TypoLocalDateTime.pgType)
+      override fun startdate(): Field<LocalDateTime, BomViewRow> = Field<LocalDateTime, BomViewRow>(_path, "startdate", BomViewRow::startdate, null, null, { row, value -> row.copy(startdate = value) }, PgTypes.timestamp)
 
-      override fun enddate(): OptField<TypoLocalDateTime, BomViewRow> = OptField<TypoLocalDateTime, BomViewRow>(_path, "enddate", BomViewRow::enddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(enddate = value) }, TypoLocalDateTime.pgType)
+      override fun enddate(): Field<LocalDateTime, BomViewRow> = Field<LocalDateTime, BomViewRow>(_path, "enddate", BomViewRow::enddate, null, null, { row, value -> row.copy(enddate = value) }, PgTypes.timestamp)
 
-      override fun unitmeasurecode(): Field<UnitmeasureId, BomViewRow> = Field<UnitmeasureId, BomViewRow>(_path, "unitmeasurecode", BomViewRow::unitmeasurecode, Optional.empty(), Optional.empty(), { row, value -> row.copy(unitmeasurecode = value) }, UnitmeasureId.pgType)
+      override fun unitmeasurecode(): Field<UnitmeasureId, BomViewRow> = Field<UnitmeasureId, BomViewRow>(_path, "unitmeasurecode", BomViewRow::unitmeasurecode, null, null, { row, value -> row.copy(unitmeasurecode = value) }, UnitmeasureId.pgType)
 
-      override fun bomlevel(): Field<TypoShort, BomViewRow> = Field<TypoShort, BomViewRow>(_path, "bomlevel", BomViewRow::bomlevel, Optional.empty(), Optional.empty(), { row, value -> row.copy(bomlevel = value) }, TypoShort.pgType)
+      override fun bomlevel(): Field<Short, BomViewRow> = Field<Short, BomViewRow>(_path, "bomlevel", BomViewRow::bomlevel, null, null, { row, value -> row.copy(bomlevel = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun perassemblyqty(): Field<BigDecimal, BomViewRow> = Field<BigDecimal, BomViewRow>(_path, "perassemblyqty", BomViewRow::perassemblyqty, Optional.empty(), Optional.empty(), { row, value -> row.copy(perassemblyqty = value) }, PgTypes.numeric)
+      override fun perassemblyqty(): Field<BigDecimal, BomViewRow> = Field<BigDecimal, BomViewRow>(_path, "perassemblyqty", BomViewRow::perassemblyqty, null, null, { row, value -> row.copy(perassemblyqty = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, BomViewRow> = Field<TypoLocalDateTime, BomViewRow>(_path, "modifieddate", BomViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, BomViewRow> = Field<LocalDateTime, BomViewRow>(_path, "modifieddate", BomViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, BomViewRow>> = listOf(this.id(), this.billofmaterialsid(), this.productassemblyid(), this.componentid(), this.startdate(), this.enddate(), this.unitmeasurecode(), this.bomlevel(), this.perassemblyqty(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<BomViewFields, BomViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, BomViewRow>> = listOf(this.id().underlying, this.billofmaterialsid().underlying, this.productassemblyid().underlying, this.componentid().underlying, this.startdate().underlying, this.enddate().underlying, this.unitmeasurecode().underlying, this.bomlevel().underlying, this.perassemblyqty().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<BomViewFields, BomViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

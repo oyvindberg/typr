@@ -64,7 +64,7 @@ public record PriceTiersRowUnsaved(
       sb.append(MariaText.DELIMETER);
       MariaTypes.text.mariaText().unsafeEncode(row.discountType, sb);
       sb.append(MariaText.DELIMETER);
-      MariaTypes.decimal.mariaText().unsafeEncode(row.discountValue, sb);
+      MariaTypes.numeric.mariaText().unsafeEncode(row.discountValue, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.intUnsigned.mariaText()).unsafeEncode(row.minQuantity, sb);
     });

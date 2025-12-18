@@ -6,13 +6,14 @@
 package adventureworks.person.businessentitycontact
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.contacttype.ContacttypeId
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: person.businessentitycontact
   * Cross-reference table mapping stores, vendors, and employees to people
@@ -32,29 +33,29 @@ data class BusinessentitycontactRow(
     */
   val contacttypeid: ContacttypeId,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): BusinessentitycontactId = BusinessentitycontactId(businessentityid, personid, contacttypeid)
 
   fun id(): BusinessentitycontactId = this.compositeId()
 
   fun toUnsavedRow(
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): BusinessentitycontactRowUnsaved = BusinessentitycontactRowUnsaved(businessentityid, personid, contacttypeid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<BusinessentitycontactRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, ContacttypeId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> BusinessentitycontactRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.personid, row.contacttypeid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<BusinessentitycontactRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, ContacttypeId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> BusinessentitycontactRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.personid, row.contacttypeid, row.rowguid, row.modifieddate) })
 
     fun apply(
       compositeId: BusinessentitycontactId,
-      rowguid: TypoUUID,
-      modifieddate: TypoLocalDateTime
+      rowguid: UUID,
+      modifieddate: LocalDateTime
     ): BusinessentitycontactRow = BusinessentitycontactRow(compositeId.businessentityid, compositeId.personid, compositeId.contacttypeid, rowguid, modifieddate)
 
     val pgText: PgText<BusinessentitycontactRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

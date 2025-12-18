@@ -5,33 +5,18 @@
  */
 package adventureworks.update_person_returning
 
-import adventureworks.customtypes.TypoLocalDateTime
 import java.sql.Connection
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Fragment.interpolate
 
 class UpdatePersonReturningSqlRepoImpl() : UpdatePersonReturningSqlRepo {
   override fun apply(
-    suffix: /* nullability unknown */ Optional<String>,
-    cutoff: /* nullability unknown */ Optional<TypoLocalDateTime>,
+    suffix: /* nullability unknown */ String?,
+    cutoff: /* nullability unknown */ LocalDateTime?,
     c: Connection
-  ): List<UpdatePersonReturningSqlRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      with row as (
-        update person.person
-      set firstname = firstname || '-' || """.trimMargin()),
-    PgTypes.text.opt().encode(suffix),
-    typo.runtime.Fragment.lit("""
-  
-      where modifieddate < """.trimMargin()),
-    TypoLocalDateTime.pgType.opt().encode(cutoff),
-    typo.runtime.Fragment.lit("""
-      ::timestamp
-      returning firstname, modifieddate
-      )
-      select row."firstname", row."modifieddate"::text
-      from row""".trimMargin())
-  ).query(UpdatePersonReturningSqlRow._rowParser.all()).runUnchecked(c)
+  ): List<UpdatePersonReturningSqlRow> = interpolate(Fragment.lit("update person.person\nset firstname = firstname || '-' || "), Fragment.encode(PgTypes.text.nullable(), suffix), Fragment.lit("\nwhere modifieddate < "), Fragment.encode(PgTypes.timestamp.nullable(), cutoff), Fragment.lit("::timestamp\nreturning firstname, modifieddate")).query(UpdatePersonReturningSqlRow._rowParser.all()).runUnchecked(c)
 }

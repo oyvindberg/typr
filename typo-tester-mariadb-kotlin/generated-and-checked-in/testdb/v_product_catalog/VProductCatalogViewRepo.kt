@@ -7,10 +7,10 @@ package testdb.v_product_catalog
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VProductCatalogViewRepo {
-  fun select(): SelectBuilder<VProductCatalogViewFields, VProductCatalogViewRow>
+  abstract fun select(): SelectBuilder<VProductCatalogViewFields, VProductCatalogViewRow>
 
-  fun selectAll(c: Connection): List<VProductCatalogViewRow>
+  abstract fun selectAll(c: Connection): List<VProductCatalogViewRow>
 }

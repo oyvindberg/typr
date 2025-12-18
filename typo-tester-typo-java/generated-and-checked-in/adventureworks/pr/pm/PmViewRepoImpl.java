@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class PmViewRepoImpl implements PmViewRepo {
@@ -19,9 +20,6 @@ public class PmViewRepoImpl implements PmViewRepo {
 
   @Override
   public List<PmViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate"::text
-       from "pr"."pm"
-    """)).query(PmViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\"\nfrom \"pr\".\"pm\"\n")).query(PmViewRow._rowParser.all()).runUnchecked(c);
   };
 }

@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.RowParser;
 
 public interface TestOrganisasjonFields extends FieldsExpr<TestOrganisasjonRow> {
-  record Impl(List<Path> _path) implements TestOrganisasjonFields, Relation<TestOrganisasjonFields, TestOrganisasjonRow> {
+  record Impl(List<Path> _path) implements TestOrganisasjonFields, RelationStructure<TestOrganisasjonFields, TestOrganisasjonRow> {
     @Override
     public IdField<TestOrganisasjonId, TestOrganisasjonRow> organisasjonskode() {
       return new IdField<TestOrganisasjonId, TestOrganisasjonRow>(_path, "organisasjonskode", TestOrganisasjonRow::organisasjonskode, Optional.empty(), Optional.empty(), (row, value) -> row.withOrganisasjonskode(value), TestOrganisasjonId.pgType);
@@ -23,17 +23,17 @@ public interface TestOrganisasjonFields extends FieldsExpr<TestOrganisasjonRow> 
 
     @Override
     public List<FieldLike<?, TestOrganisasjonRow>> columns() {
-      return List.of(this.organisasjonskode());
+      return java.util.List.of(this.organisasjonskode());
     };
 
     @Override
-    public Relation<TestOrganisasjonFields, TestOrganisasjonRow> copy(List<Path> _path) {
+    public RelationStructure<TestOrganisasjonFields, TestOrganisasjonRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<TestOrganisasjonId, TestOrganisasjonRow> organisasjonskode();

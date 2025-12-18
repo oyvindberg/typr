@@ -5,17 +5,17 @@
  */
 package adventureworks.pe.p
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.public.NameStyle
 import adventureworks.userdefined.FirstName
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.data.Xml
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pe.p */
 data class PViewRow(
@@ -24,31 +24,31 @@ data class PViewRow(
   /** Points to [adventureworks.person.person.PersonRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Points to [adventureworks.person.person.PersonRow.persontype] */
-  val persontype: /* bpchar, max 2 chars */ String,
+  val persontype: String,
   /** Points to [adventureworks.person.person.PersonRow.namestyle] */
   val namestyle: NameStyle,
   /** Points to [adventureworks.person.person.PersonRow.title] */
-  val title: Optional</* max 8 chars */ String>,
+  val title: String,
   /** Points to [adventureworks.person.person.PersonRow.firstname] */
   val firstname: /* user-picked */ FirstName,
   /** Points to [adventureworks.person.person.PersonRow.middlename] */
-  val middlename: Optional<Name>,
+  val middlename: Name,
   /** Points to [adventureworks.person.person.PersonRow.lastname] */
   val lastname: Name,
   /** Points to [adventureworks.person.person.PersonRow.suffix] */
-  val suffix: Optional</* max 10 chars */ String>,
+  val suffix: String,
   /** Points to [adventureworks.person.person.PersonRow.emailpromotion] */
   val emailpromotion: Int,
   /** Points to [adventureworks.person.person.PersonRow.additionalcontactinfo] */
-  val additionalcontactinfo: Optional<TypoXml>,
+  val additionalcontactinfo: Xml,
   /** Points to [adventureworks.person.person.PersonRow.demographics] */
-  val demographics: Optional<TypoXml>,
+  val demographics: Xml,
   /** Points to [adventureworks.person.person.PersonRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.person.person.PersonRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.bpchar, NameStyle.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.int4, TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> PViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.persontype, row.namestyle, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.emailpromotion, row.additionalcontactinfo, row.demographics, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<PViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.bpchar, NameStyle.pgType, PgTypes.text, FirstName.pgType, Name.pgType, Name.pgType, PgTypes.text, KotlinDbTypes.PgTypes.int4, PgTypes.xml, PgTypes.xml, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> PViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.persontype, row.namestyle, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.emailpromotion, row.additionalcontactinfo, row.demographics, row.rowguid, row.modifieddate) })
   }
 }

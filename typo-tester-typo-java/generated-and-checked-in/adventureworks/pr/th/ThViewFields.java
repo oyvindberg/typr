@@ -5,22 +5,22 @@
  */
 package adventureworks.pr.th;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.transactionhistory.TransactionhistoryId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface ThViewFields extends FieldsExpr<ThViewRow> {
-  record Impl(List<Path> _path) implements ThViewFields, Relation<ThViewFields, ThViewRow> {
+  record Impl(List<Path> _path) implements ThViewFields, RelationStructure<ThViewFields, ThViewRow> {
     @Override
     public Field<TransactionhistoryId, ThViewRow> id() {
       return new Field<TransactionhistoryId, ThViewRow>(_path, "id", ThViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), TransactionhistoryId.pgType);
@@ -47,13 +47,13 @@ public interface ThViewFields extends FieldsExpr<ThViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, ThViewRow> transactiondate() {
-      return new Field<TypoLocalDateTime, ThViewRow>(_path, "transactiondate", ThViewRow::transactiondate, Optional.of("text"), Optional.empty(), (row, value) -> row.withTransactiondate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ThViewRow> transactiondate() {
+      return new Field<LocalDateTime, ThViewRow>(_path, "transactiondate", ThViewRow::transactiondate, Optional.empty(), Optional.empty(), (row, value) -> row.withTransactiondate(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field</* bpchar, max 1 chars */ String, ThViewRow> transactiontype() {
-      return new Field</* bpchar, max 1 chars */ String, ThViewRow>(_path, "transactiontype", ThViewRow::transactiontype, Optional.empty(), Optional.empty(), (row, value) -> row.withTransactiontype(value), PgTypes.bpchar);
+    public Field<String, ThViewRow> transactiontype() {
+      return new Field<String, ThViewRow>(_path, "transactiontype", ThViewRow::transactiontype, Optional.empty(), Optional.empty(), (row, value) -> row.withTransactiontype(value), PgTypes.bpchar);
     };
 
     @Override
@@ -67,23 +67,23 @@ public interface ThViewFields extends FieldsExpr<ThViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, ThViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, ThViewRow>(_path, "modifieddate", ThViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ThViewRow> modifieddate() {
+      return new Field<LocalDateTime, ThViewRow>(_path, "modifieddate", ThViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, ThViewRow>> columns() {
-      return List.of(this.id(), this.transactionid(), this.productid(), this.referenceorderid(), this.referenceorderlineid(), this.transactiondate(), this.transactiontype(), this.quantity(), this.actualcost(), this.modifieddate());
+      return java.util.List.of(this.id(), this.transactionid(), this.productid(), this.referenceorderid(), this.referenceorderlineid(), this.transactiondate(), this.transactiontype(), this.quantity(), this.actualcost(), this.modifieddate());
     };
 
     @Override
-    public Relation<ThViewFields, ThViewRow> copy(List<Path> _path) {
+    public RelationStructure<ThViewFields, ThViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<TransactionhistoryId, ThViewRow> id();
@@ -96,15 +96,15 @@ public interface ThViewFields extends FieldsExpr<ThViewRow> {
 
   Field<Integer, ThViewRow> referenceorderlineid();
 
-  Field<TypoLocalDateTime, ThViewRow> transactiondate();
+  Field<LocalDateTime, ThViewRow> transactiondate();
 
-  Field</* bpchar, max 1 chars */ String, ThViewRow> transactiontype();
+  Field<String, ThViewRow> transactiontype();
 
   Field<Integer, ThViewRow> quantity();
 
   Field<BigDecimal, ThViewRow> actualcost();
 
-  Field<TypoLocalDateTime, ThViewRow> modifieddate();
+  Field<LocalDateTime, ThViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, ThViewRow>> columns();

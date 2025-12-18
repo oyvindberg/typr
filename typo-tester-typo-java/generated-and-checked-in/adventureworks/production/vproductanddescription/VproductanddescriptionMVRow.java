@@ -23,7 +23,7 @@ public record VproductanddescriptionMVRow(
   /** Points to {@link adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow#cultureid()} */
   CultureId cultureid,
   /** Points to {@link adventureworks.production.productdescription.ProductdescriptionRow#description()} */
-  /* max 400 chars */ String description
+  String description
 ) {
   /** Points to {@link adventureworks.production.product.ProductRow#productid()} */
   public VproductanddescriptionMVRow withProductid(ProductId productid) {
@@ -46,7 +46,7 @@ public record VproductanddescriptionMVRow(
   };
 
   /** Points to {@link adventureworks.production.productdescription.ProductdescriptionRow#description()} */
-  public VproductanddescriptionMVRow withDescription(/* max 400 chars */ String description) {
+  public VproductanddescriptionMVRow withDescription(String description) {
     return new VproductanddescriptionMVRow(productid, name, productmodel, cultureid, description);
   };
 

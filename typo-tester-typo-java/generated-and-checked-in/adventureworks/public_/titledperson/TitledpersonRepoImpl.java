@@ -14,10 +14,10 @@ import typo.dsl.DeleteBuilder;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class TitledpersonRepoImpl implements TitledpersonRepo {
   @Override
@@ -30,20 +30,7 @@ public class TitledpersonRepoImpl implements TitledpersonRepo {
     TitledpersonRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."titledperson"("title_short", "title", "name")
-         values ("""),
-      TitleDomainId.pgType.encode(unsaved.titleShort()),
-      typo.runtime.Fragment.lit("::text, "),
-      TitleId.pgType.encode(unsaved.title()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "title_short", "title", "name"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"titledperson\"(\"title_short\", \"title\", \"name\")\nvalues ("), Fragment.encode(TitleDomainId.pgType, unsaved.titleShort()), Fragment.lit("::text, "), Fragment.encode(TitleId.pgType, unsaved.title()), Fragment.lit(", "), Fragment.encode(PgTypes.text, unsaved.name()), Fragment.lit(")\nreturning \"title_short\", \"title\", \"name\"\n"))
       .updateReturning(TitledpersonRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -53,9 +40,7 @@ public class TitledpersonRepoImpl implements TitledpersonRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "public"."titledperson"("title_short", "title", "name") FROM STDIN
-    """), batchSize, unsaved, c, TitledpersonRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"public\".\"titledperson\"(\"title_short\", \"title\", \"name\") FROM STDIN", batchSize, unsaved, c, TitledpersonRow.pgText);
   };
 
   @Override
@@ -65,14 +50,11 @@ public class TitledpersonRepoImpl implements TitledpersonRepo {
 
   @Override
   public List<TitledpersonRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "title_short", "title", "name"
-       from "public"."titledperson"
-    """)).query(TitledpersonRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"title_short\", \"title\", \"name\"\nfrom \"public\".\"titledperson\"\n")).query(TitledpersonRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<TitledpersonFields, TitledpersonRow> update() {
-    return UpdateBuilder.of("\"public\".\"titledperson\"", TitledpersonFields.structure(), TitledpersonRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"public\".\"titledperson\"", TitledpersonFields.structure(), TitledpersonRow._rowParser, Dialect.POSTGRESQL);
   };
 }

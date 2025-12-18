@@ -6,10 +6,11 @@
 package adventureworks.production.productdocument;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.document.DocumentId;
 import adventureworks.production.product.ProductId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -23,7 +24,7 @@ public record ProductdocumentRow(
     */
   ProductId productid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate,
+  LocalDateTime modifieddate,
   /** Document identification number. Foreign key to Document.DocumentNode.
     * Default: '/'::character varying
     * Points to {@link adventureworks.production.document.DocumentRow#documentnode()}
@@ -38,7 +39,7 @@ public record ProductdocumentRow(
   };
 
   /** Default: now() */
-  public ProductdocumentRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductdocumentRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductdocumentRow(productid, modifieddate, documentnode);
   };
 
@@ -50,11 +51,11 @@ public record ProductdocumentRow(
     return new ProductdocumentRow(productid, modifieddate, documentnode);
   };
 
-  static RowParser<ProductdocumentRow> _rowParser = RowParsers.of(ProductId.pgType, TypoLocalDateTime.pgType, DocumentId.pgType, ProductdocumentRow::new, row -> new Object[]{row.productid(), row.modifieddate(), row.documentnode()});;
+  static RowParser<ProductdocumentRow> _rowParser = RowParsers.of(ProductId.pgType, PgTypes.timestamp, DocumentId.pgType, ProductdocumentRow::new, row -> new Object[]{row.productid(), row.modifieddate(), row.documentnode()});;
 
   static public ProductdocumentRow apply(
     ProductdocumentId compositeId,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new ProductdocumentRow(compositeId.productid(), modifieddate, compositeId.documentnode());
   };
@@ -72,7 +73,7 @@ public record ProductdocumentRow(
 
   public ProductdocumentRowUnsaved toUnsavedRow(
     Defaulted<DocumentId> documentnode,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ProductdocumentRowUnsaved(productid, modifieddate, documentnode);
   };

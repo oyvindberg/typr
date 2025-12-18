@@ -16,34 +16,44 @@ case class MariaTypeMapperDb() extends TypeMapperDb {
     val baseType = normalized.replace("UNSIGNED", "").trim.split("\\s+")(0)
 
     baseType match {
-      // Integer types
-      case "TINYINT" =>
+      // Integer types - including INT1/INT2/INT3/INT4/INT8 aliases and U-prefixed unsigned aliases
+      case "TINYINT" | "INT1" =>
         if (isUnsigned) db.MariaType.TinyIntUnsigned
         else db.MariaType.TinyInt
+      case "UTINYINT" | "UINT1" =>
+        db.MariaType.TinyIntUnsigned
 
-      case "SMALLINT" =>
+      case "SMALLINT" | "INT2" =>
         if (isUnsigned) db.MariaType.SmallIntUnsigned
         else db.MariaType.SmallInt
+      case "USMALLINT" | "UINT2" =>
+        db.MariaType.SmallIntUnsigned
 
-      case "MEDIUMINT" =>
+      case "MEDIUMINT" | "INT3" | "MIDDLEINT" =>
         if (isUnsigned) db.MariaType.MediumIntUnsigned
         else db.MariaType.MediumInt
+      case "UMEDIUMINT" | "UINT3" =>
+        db.MariaType.MediumIntUnsigned
 
-      case "INT" | "INTEGER" =>
+      case "INT" | "INTEGER" | "INT4" =>
         if (isUnsigned) db.MariaType.IntUnsigned
         else db.MariaType.Int
+      case "UINT" | "UINTEGER" | "UINT4" =>
+        db.MariaType.IntUnsigned
 
-      case "BIGINT" | "UBIGINT" =>
-        if (isUnsigned || baseType == "UBIGINT") db.MariaType.BigIntUnsigned
+      case "BIGINT" | "INT8" =>
+        if (isUnsigned) db.MariaType.BigIntUnsigned
         else db.MariaType.BigInt
+      case "UBIGINT" | "UINT8" | "SERIAL" =>
+        db.MariaType.BigIntUnsigned
 
-      // Fixed-point
-      case "DECIMAL" | "NUMERIC" =>
+      // Fixed-point (DEC and FIXED are MySQL/MariaDB aliases for DECIMAL)
+      case "DECIMAL" | "NUMERIC" | "DEC" | "FIXED" =>
         db.MariaType.Decimal(None, None)
 
-      // Floating-point
-      case "FLOAT"  => db.MariaType.Float
-      case "DOUBLE" => db.MariaType.Double
+      // Floating-point (REAL is an alias for DOUBLE in MariaDB by default)
+      case "FLOAT"           => db.MariaType.Float
+      case "DOUBLE" | "REAL" => db.MariaType.Double
 
       // Boolean
       case "BOOLEAN" | "BOOL" => db.MariaType.Boolean

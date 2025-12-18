@@ -20,40 +20,40 @@ interface TestDomainInsert {
   /** Domain `public.AccountNumber`
     * No constraint
     */
-  fun publicAccountNumber(random: Random): AccountNumber
+  abstract fun publicAccountNumber(random: Random): AccountNumber
 
   /** Domain `public.Flag`
     * No constraint
     */
-  fun publicFlag(random: Random): Flag
+  abstract fun publicFlag(random: Random): Flag
 
   /** Domain `public.mydomain`
     * No constraint
     */
-  fun publicMydomain(random: Random): Mydomain
+  abstract fun publicMydomain(random: Random): Mydomain
 
   /** Domain `public.Name`
     * No constraint
     */
-  fun publicName(random: Random): Name
+  abstract fun publicName(random: Random): Name
 
   /** Domain `public.NameStyle`
     * No constraint
     */
-  fun publicNameStyle(random: Random): NameStyle
+  abstract fun publicNameStyle(random: Random): NameStyle
 
   /** Domain `public.OrderNumber`
     * No constraint
     */
-  fun publicOrderNumber(random: Random): OrderNumber
+  abstract fun publicOrderNumber(random: Random): OrderNumber
 
   /** Domain `public.Phone`
     * No constraint
     */
-  fun publicPhone(random: Random): Phone
+  abstract fun publicPhone(random: Random): Phone
 
   /** Domain `public.short_text`
     * Constraint: CHECK ((length(VALUE) <= 55))
     */
-  fun publicShortText(random: Random): ShortText
+  abstract fun publicShortText(random: Random): ShortText
 }

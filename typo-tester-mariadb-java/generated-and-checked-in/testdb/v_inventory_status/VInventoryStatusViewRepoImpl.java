@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VInventoryStatusViewRepoImpl implements VInventoryStatusViewRepo {
@@ -19,9 +20,6 @@ public class VInventoryStatusViewRepoImpl implements VInventoryStatusViewRepo {
 
   @Override
   public List<VInventoryStatusViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `product_id`, `sku`, `product_name`, `warehouse_id`, `warehouse_code`, `warehouse_name`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `available`, `reorder_point`, `stock_status`, `bin_location`, `last_counted_at`
-       from `v_inventory_status`
-    """)).query(VInventoryStatusViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `product_id`, `sku`, `product_name`, `warehouse_id`, `warehouse_code`, `warehouse_name`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `available`, `reorder_point`, `stock_status`, `bin_location`, `last_counted_at`\nfrom `v_inventory_status`\n")).query(VInventoryStatusViewRow._rowParser.all()).runUnchecked(c);
   };
 }

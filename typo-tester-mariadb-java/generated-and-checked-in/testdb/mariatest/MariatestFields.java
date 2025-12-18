@@ -18,15 +18,15 @@ import typo.data.maria.Inet6;
 import typo.data.maria.MariaSet;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface MariatestFields extends FieldsExpr<MariatestRow> {
-  record Impl(List<Path> _path) implements MariatestFields, Relation<MariatestFields, MariatestRow> {
+  record Impl(List<Path> _path) implements MariatestFields, RelationStructure<MariatestFields, MariatestRow> {
     @Override
     public Field<Byte, MariatestRow> tinyintCol() {
       return new Field<Byte, MariatestRow>(_path, "tinyint_col", MariatestRow::tinyintCol, Optional.empty(), Optional.empty(), (row, value) -> row.withTinyintCol(value), MariaTypes.tinyint);
@@ -79,12 +79,12 @@ public interface MariatestFields extends FieldsExpr<MariatestRow> {
 
     @Override
     public Field<BigDecimal, MariatestRow> decimalCol() {
-      return new Field<BigDecimal, MariatestRow>(_path, "decimal_col", MariatestRow::decimalCol, Optional.empty(), Optional.empty(), (row, value) -> row.withDecimalCol(value), MariaTypes.decimal);
+      return new Field<BigDecimal, MariatestRow>(_path, "decimal_col", MariatestRow::decimalCol, Optional.empty(), Optional.empty(), (row, value) -> row.withDecimalCol(value), MariaTypes.numeric);
     };
 
     @Override
     public Field<BigDecimal, MariatestRow> numericCol() {
-      return new Field<BigDecimal, MariatestRow>(_path, "numeric_col", MariatestRow::numericCol, Optional.empty(), Optional.empty(), (row, value) -> row.withNumericCol(value), MariaTypes.decimal);
+      return new Field<BigDecimal, MariatestRow>(_path, "numeric_col", MariatestRow::numericCol, Optional.empty(), Optional.empty(), (row, value) -> row.withNumericCol(value), MariaTypes.numeric);
     };
 
     @Override
@@ -239,17 +239,17 @@ public interface MariatestFields extends FieldsExpr<MariatestRow> {
 
     @Override
     public List<FieldLike<?, MariatestRow>> columns() {
-      return List.of(this.tinyintCol(), this.smallintCol(), this.mediumintCol(), this.intCol(), this.bigintCol(), this.tinyintUCol(), this.smallintUCol(), this.mediumintUCol(), this.intUCol(), this.bigintUCol(), this.decimalCol(), this.numericCol(), this.floatCol(), this.doubleCol(), this.boolCol(), this.bitCol(), this.bit1Col(), this.charCol(), this.varcharCol(), this.tinytextCol(), this.textCol(), this.mediumtextCol(), this.longtextCol(), this.binaryCol(), this.varbinaryCol(), this.tinyblobCol(), this.blobCol(), this.mediumblobCol(), this.longblobCol(), this.dateCol(), this.timeCol(), this.timeFspCol(), this.datetimeCol(), this.datetimeFspCol(), this.timestampCol(), this.timestampFspCol(), this.yearCol(), this.enumCol(), this.setCol(), this.jsonCol(), this.inet4Col(), this.inet6Col());
+      return java.util.List.of(this.tinyintCol(), this.smallintCol(), this.mediumintCol(), this.intCol(), this.bigintCol(), this.tinyintUCol(), this.smallintUCol(), this.mediumintUCol(), this.intUCol(), this.bigintUCol(), this.decimalCol(), this.numericCol(), this.floatCol(), this.doubleCol(), this.boolCol(), this.bitCol(), this.bit1Col(), this.charCol(), this.varcharCol(), this.tinytextCol(), this.textCol(), this.mediumtextCol(), this.longtextCol(), this.binaryCol(), this.varbinaryCol(), this.tinyblobCol(), this.blobCol(), this.mediumblobCol(), this.longblobCol(), this.dateCol(), this.timeCol(), this.timeFspCol(), this.datetimeCol(), this.datetimeFspCol(), this.timestampCol(), this.timestampFspCol(), this.yearCol(), this.enumCol(), this.setCol(), this.jsonCol(), this.inet4Col(), this.inet6Col());
     };
 
     @Override
-    public Relation<MariatestFields, MariatestRow> copy(List<Path> _path) {
+    public RelationStructure<MariatestFields, MariatestRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<Byte, MariatestRow> tinyintCol();

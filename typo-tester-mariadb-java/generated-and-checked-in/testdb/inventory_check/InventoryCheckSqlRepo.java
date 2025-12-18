@@ -14,7 +14,7 @@ public interface InventoryCheckSqlRepo {
   List<InventoryCheckSqlRow> apply(
     Optional<Short> warehouseId,
     Optional<BigInteger> productId,
-    Optional</* user-picked */ Boolean> lowStockOnly,
+    Optional<Boolean> lowStockOnly,
     Connection c
   );
 }

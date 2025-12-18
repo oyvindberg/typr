@@ -17,43 +17,44 @@ import typo.data.maria.Inet6
 import typo.data.maria.MariaSet
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: mariatest
  * Primary key: int_col
  */
 case class MariatestRow(
   /**  */
-  @JsonProperty("tinyint_col") tinyintCol: java.lang.Byte,
+  @JsonProperty("tinyint_col") tinyintCol: Byte,
   /**  */
-  @JsonProperty("smallint_col") smallintCol: java.lang.Short,
+  @JsonProperty("smallint_col") smallintCol: Short,
   /**  */
-  @JsonProperty("mediumint_col") mediumintCol: Integer,
+  @JsonProperty("mediumint_col") mediumintCol: Int,
   /**  */
   @JsonProperty("int_col") intCol: MariatestId,
   /**  */
-  @JsonProperty("bigint_col") bigintCol: java.lang.Long,
+  @JsonProperty("bigint_col") bigintCol: Long,
   /**  */
-  @JsonProperty("tinyint_u_col") tinyintUCol: java.lang.Short,
+  @JsonProperty("tinyint_u_col") tinyintUCol: Short,
   /**  */
-  @JsonProperty("smallint_u_col") smallintUCol: Integer,
+  @JsonProperty("smallint_u_col") smallintUCol: Int,
   /**  */
-  @JsonProperty("mediumint_u_col") mediumintUCol: Integer,
+  @JsonProperty("mediumint_u_col") mediumintUCol: Int,
   /**  */
-  @JsonProperty("int_u_col") intUCol: java.lang.Long,
+  @JsonProperty("int_u_col") intUCol: Long,
   /**  */
   @JsonProperty("bigint_u_col") bigintUCol: BigInteger,
   /**  */
-  @JsonProperty("decimal_col") decimalCol: java.math.BigDecimal,
+  @JsonProperty("decimal_col") decimalCol: BigDecimal,
   /**  */
-  @JsonProperty("numeric_col") numericCol: java.math.BigDecimal,
+  @JsonProperty("numeric_col") numericCol: BigDecimal,
   /**  */
-  @JsonProperty("float_col") floatCol: java.lang.Float,
+  @JsonProperty("float_col") floatCol: Float,
   /**  */
-  @JsonProperty("double_col") doubleCol: java.lang.Double,
+  @JsonProperty("double_col") doubleCol: Double,
   /**  */
-  @JsonProperty("bool_col") boolCol: java.lang.Boolean,
+  @JsonProperty("bool_col") boolCol: Boolean,
   /**  */
   @JsonProperty("bit_col") bitCol: Array[Byte],
   /**  */
@@ -167,7 +168,7 @@ case class MariatestRow(
 }
 
 object MariatestRow {
-  val `_rowParser`: RowParser[MariatestRow] = RowParsers.of(MariaTypes.tinyint, MariaTypes.smallint, MariaTypes.mediumint, MariatestId.pgType, MariaTypes.bigint, MariaTypes.tinyintUnsigned, MariaTypes.smallintUnsigned, MariaTypes.mediumintUnsigned, MariaTypes.intUnsigned, MariaTypes.bigintUnsigned, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.float_, MariaTypes.double_, MariaTypes.bool, MariaTypes.bit, MariaTypes.bit, MariaTypes.char_, MariaTypes.varchar, MariaTypes.tinytext, MariaTypes.text, MariaTypes.mediumtext, MariaTypes.longtext, MariaTypes.binary, MariaTypes.varbinary, MariaTypes.tinyblob, MariaTypes.blob, MariaTypes.mediumblob, MariaTypes.longblob, MariaTypes.date, MariaTypes.time, MariaTypes.time, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.timestamp, MariaTypes.timestamp, MariaTypes.year, MariaTypes.text, MariaTypes.set, MariaTypes.longtext, MariaTypes.inet4, MariaTypes.inet6, MariatestRow.apply, row => Array[Object](row.tinyintCol.asInstanceOf[Object], row.smallintCol.asInstanceOf[Object], row.mediumintCol.asInstanceOf[Object], row.intCol.asInstanceOf[Object], row.bigintCol.asInstanceOf[Object], row.tinyintUCol.asInstanceOf[Object], row.smallintUCol.asInstanceOf[Object], row.mediumintUCol.asInstanceOf[Object], row.intUCol.asInstanceOf[Object], row.bigintUCol.asInstanceOf[Object], row.decimalCol.asInstanceOf[Object], row.numericCol.asInstanceOf[Object], row.floatCol.asInstanceOf[Object], row.doubleCol.asInstanceOf[Object], row.boolCol.asInstanceOf[Object], row.bitCol.asInstanceOf[Object], row.bit1Col.asInstanceOf[Object], row.charCol.asInstanceOf[Object], row.varcharCol.asInstanceOf[Object], row.tinytextCol.asInstanceOf[Object], row.textCol.asInstanceOf[Object], row.mediumtextCol.asInstanceOf[Object], row.longtextCol.asInstanceOf[Object], row.binaryCol.asInstanceOf[Object], row.varbinaryCol.asInstanceOf[Object], row.tinyblobCol.asInstanceOf[Object], row.blobCol.asInstanceOf[Object], row.mediumblobCol.asInstanceOf[Object], row.longblobCol.asInstanceOf[Object], row.dateCol.asInstanceOf[Object], row.timeCol.asInstanceOf[Object], row.timeFspCol.asInstanceOf[Object], row.datetimeCol.asInstanceOf[Object], row.datetimeFspCol.asInstanceOf[Object], row.timestampCol.asInstanceOf[Object], row.timestampFspCol.asInstanceOf[Object], row.yearCol.asInstanceOf[Object], row.enumCol.asInstanceOf[Object], row.setCol.asInstanceOf[Object], row.jsonCol.asInstanceOf[Object], row.inet4Col.asInstanceOf[Object], row.inet6Col.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[MariatestRow] = RowParsers.of(ScalaDbTypes.MariaTypes.tinyint, ScalaDbTypes.MariaTypes.smallint, ScalaDbTypes.MariaTypes.mediumint, MariatestId.pgType, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.tinyintUnsigned, ScalaDbTypes.MariaTypes.smallintUnsigned, ScalaDbTypes.MariaTypes.mediumintUnsigned, ScalaDbTypes.MariaTypes.intUnsigned, MariaTypes.bigintUnsigned, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.float_, ScalaDbTypes.MariaTypes.double_, ScalaDbTypes.MariaTypes.bool, MariaTypes.bit, MariaTypes.bit, MariaTypes.char_, MariaTypes.varchar, MariaTypes.tinytext, MariaTypes.text, MariaTypes.mediumtext, MariaTypes.longtext, MariaTypes.binary, MariaTypes.varbinary, MariaTypes.tinyblob, MariaTypes.blob, MariaTypes.mediumblob, MariaTypes.longblob, MariaTypes.date, MariaTypes.time, MariaTypes.time, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.timestamp, MariaTypes.timestamp, MariaTypes.year, MariaTypes.text, MariaTypes.set, MariaTypes.longtext, MariaTypes.inet4, MariaTypes.inet6)(MariatestRow.apply)(row => Array[Any](row.tinyintCol, row.smallintCol, row.mediumintCol, row.intCol, row.bigintCol, row.tinyintUCol, row.smallintUCol, row.mediumintUCol, row.intUCol, row.bigintUCol, row.decimalCol, row.numericCol, row.floatCol, row.doubleCol, row.boolCol, row.bitCol, row.bit1Col, row.charCol, row.varcharCol, row.tinytextCol, row.textCol, row.mediumtextCol, row.longtextCol, row.binaryCol, row.varbinaryCol, row.tinyblobCol, row.blobCol, row.mediumblobCol, row.longblobCol, row.dateCol, row.timeCol, row.timeFspCol, row.datetimeCol, row.datetimeFspCol, row.timestampCol, row.timestampFspCol, row.yearCol, row.enumCol, row.setCol, row.jsonCol, row.inet4Col, row.inet6Col))
 
-  given mariaText: MariaText[MariatestRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[MariatestRow] = MariaText.from(`_rowParser`.underlying)
 }

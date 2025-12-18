@@ -5,7 +5,6 @@
  */
 package adventureworks.production.productproductphoto;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.productphoto.ProductphotoId;
 import adventureworks.public_.Flag;
@@ -21,11 +20,10 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
   @Override
@@ -38,17 +36,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
     ProductproductphotoId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "production"."productproductphoto" where "productid" = 
-      """),
-      ProductId.pgType.encode(compositeId.productid()),
-      typo.runtime.Fragment.lit("""
-       AND "productphotoid" = 
-      """),
-      ProductphotoId.pgType.encode(compositeId.productphotoid()),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"production\".\"productproductphoto\" where \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid()), Fragment.lit(" AND \"productphotoid\" = "), Fragment.encode(ProductphotoId.pgType, compositeId.productphotoid()), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -58,20 +46,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
   ) {
     ProductId[] productid = arrayMap.map(compositeIds, ProductproductphotoId::productid, ProductId.class);;
     ProductphotoId[] productphotoid = arrayMap.map(compositeIds, ProductproductphotoId::productphotoid, ProductphotoId.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         delete
-         from "production"."productproductphoto"
-         where ("productid", "productphotoid")
-         in (select unnest("""),
-      ProductId.pgTypeArray.encode(productid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      ProductphotoId.pgTypeArray.encode(productphotoid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """)
-    ).update().runUnchecked(c);
+    return interpolate(Fragment.lit("delete\nfrom \"production\".\"productproductphoto\"\nwhere (\"productid\", \"productphotoid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductphotoId.pgTypeArray, productphotoid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c);
   };
 
   @Override
@@ -79,22 +54,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
     ProductproductphotoRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."productproductphoto"("productid", "productphotoid", "primary", "modifieddate")
-         values ("""),
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      ProductphotoId.pgType.encode(unsaved.productphotoid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Flag.pgType.encode(unsaved.primary()),
-      typo.runtime.Fragment.lit("::bool, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "productid", "productphotoid", "primary", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"productproductphoto\"(\"productid\", \"productphotoid\", \"primary\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4, "), Fragment.encode(ProductphotoId.pgType, unsaved.productphotoid()), Fragment.lit("::int4, "), Fragment.encode(Flag.pgType, unsaved.primary()), Fragment.lit("::bool, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"productid\", \"productphotoid\", \"primary\", \"modifieddate\"\n"))
       .updateReturning(ProductproductphotoRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -103,28 +63,19 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
     ProductproductphotoRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"productid\""));
-    values.add(interpolate(
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"productphotoid\""));
-    values.add(interpolate(
-      ProductphotoId.pgType.encode(unsaved.productphotoid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(ProductphotoId.pgType, unsaved.productphotoid()), Fragment.lit("::int4")));
     unsaved.primary().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"primary\""));
-        values.add(interpolate(
-        Flag.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      ));
+        values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -133,26 +84,10 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."productproductphoto"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "productid", "productphotoid", "primary", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"production\".\"productproductphoto\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"productid\", \"productphotoid\", \"primary\", \"modifieddate\"\n"));;
     return q.updateReturning(ProductproductphotoRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -162,9 +97,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."productproductphoto"("productid", "productphotoid", "primary", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, ProductproductphotoRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"productproductphoto\"(\"productid\", \"productphotoid\", \"primary\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, ProductproductphotoRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -174,9 +107,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."productproductphoto"("productid", "productphotoid", "primary", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, ProductproductphotoRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"productproductphoto\"(\"productid\", \"productphotoid\", \"primary\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ProductproductphotoRowUnsaved.pgText);
   };
 
   @Override
@@ -186,10 +117,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
 
   @Override
   public List<ProductproductphotoRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "productid", "productphotoid", "primary", "modifieddate"::text
-       from "production"."productproductphoto"
-    """)).query(ProductproductphotoRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productid\", \"productphotoid\", \"primary\", \"modifieddate\"\nfrom \"production\".\"productproductphoto\"\n")).query(ProductproductphotoRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -197,18 +125,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
     ProductproductphotoId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productid", "productphotoid", "primary", "modifieddate"::text
-         from "production"."productproductphoto"
-         where "productid" = """),
-      ProductId.pgType.encode(compositeId.productid()),
-      typo.runtime.Fragment.lit("""
-       AND "productphotoid" = 
-      """),
-      ProductphotoId.pgType.encode(compositeId.productphotoid()),
-      typo.runtime.Fragment.lit("")
-    ).query(ProductproductphotoRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productid\", \"productphotoid\", \"primary\", \"modifieddate\"\nfrom \"production\".\"productproductphoto\"\nwhere \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid()), Fragment.lit(" AND \"productphotoid\" = "), Fragment.encode(ProductphotoId.pgType, compositeId.productphotoid()), Fragment.lit("")).query(ProductproductphotoRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -218,20 +135,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
   ) {
     ProductId[] productid = arrayMap.map(compositeIds, ProductproductphotoId::productid, ProductId.class);;
     ProductphotoId[] productphotoid = arrayMap.map(compositeIds, ProductproductphotoId::productphotoid, ProductphotoId.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productid", "productphotoid", "primary", "modifieddate"::text
-         from "production"."productproductphoto"
-         where ("productid", "productphotoid")
-         in (select unnest("""),
-      ProductId.pgTypeArray.encode(productid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      ProductphotoId.pgTypeArray.encode(productphotoid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """)
-    ).query(ProductproductphotoRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productid\", \"productphotoid\", \"primary\", \"modifieddate\"\nfrom \"production\".\"productproductphoto\"\nwhere (\"productid\", \"productphotoid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductphotoId.pgTypeArray, productphotoid), Fragment.lit("::int4[]))\n")).query(ProductproductphotoRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -246,7 +150,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
 
   @Override
   public UpdateBuilder<ProductproductphotoFields, ProductproductphotoRow> update() {
-    return UpdateBuilder.of("\"production\".\"productproductphoto\"", ProductproductphotoFields.structure(), ProductproductphotoRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"production\".\"productproductphoto\"", ProductproductphotoFields.structure(), ProductproductphotoRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -255,25 +159,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
     Connection c
   ) {
     ProductproductphotoId compositeId = row.compositeId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "production"."productproductphoto"
-         set "primary" = """),
-      Flag.pgType.encode(row.primary()),
-      typo.runtime.Fragment.lit("""
-         ::bool,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "productid" = """),
-      ProductId.pgType.encode(compositeId.productid()),
-      typo.runtime.Fragment.lit("""
-       AND "productphotoid" = 
-      """),
-      ProductphotoId.pgType.encode(compositeId.productphotoid()),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"production\".\"productproductphoto\"\nset \"primary\" = "), Fragment.encode(Flag.pgType, row.primary()), Fragment.lit("::bool,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid()), Fragment.lit(" AND \"productphotoid\" = "), Fragment.encode(ProductphotoId.pgType, compositeId.productphotoid()), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -281,25 +167,7 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
     ProductproductphotoRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."productproductphoto"("productid", "productphotoid", "primary", "modifieddate")
-         values ("""),
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      ProductphotoId.pgType.encode(unsaved.productphotoid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Flag.pgType.encode(unsaved.primary()),
-      typo.runtime.Fragment.lit("::bool, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("productid", "productphotoid")
-         do update set
-           "primary" = EXCLUDED."primary",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "productid", "productphotoid", "primary", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"productproductphoto\"(\"productid\", \"productphotoid\", \"primary\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4, "), Fragment.encode(ProductphotoId.pgType, unsaved.productphotoid()), Fragment.lit("::int4, "), Fragment.encode(Flag.pgType, unsaved.primary()), Fragment.lit("::bool, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"productid\", \"productphotoid\")\ndo update set\n  \"primary\" = EXCLUDED.\"primary\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productid\", \"productphotoid\", \"primary\", \"modifieddate\""))
       .updateReturning(ProductproductphotoRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -309,16 +177,9 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
     Iterator<ProductproductphotoRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "production"."productproductphoto"("productid", "productphotoid", "primary", "modifieddate")
-                values (?::int4, ?::int4, ?::bool, ?::timestamp)
-                on conflict ("productid", "productphotoid")
-                do update set
-                  "primary" = EXCLUDED."primary",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "productid", "productphotoid", "primary", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"production\".\"productproductphoto\"(\"productid\", \"productphotoid\", \"primary\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?::bool, ?::timestamp)\non conflict (\"productid\", \"productphotoid\")\ndo update set\n  \"primary\" = EXCLUDED.\"primary\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productid\", \"productphotoid\", \"primary\", \"modifieddate\""))
       .updateManyReturning(ProductproductphotoRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -328,20 +189,8 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table productproductphoto_TEMP (like "production"."productproductphoto") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy productproductphoto_TEMP("productid", "productphotoid", "primary", "modifieddate") from stdin
-    """), batchSize, unsaved, c, ProductproductphotoRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "production"."productproductphoto"("productid", "productphotoid", "primary", "modifieddate")
-       select * from productproductphoto_TEMP
-       on conflict ("productid", "productphotoid")
-       do update set
-         "primary" = EXCLUDED."primary",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table productproductphoto_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table productproductphoto_TEMP (like \"production\".\"productproductphoto\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy productproductphoto_TEMP(\"productid\", \"productphotoid\", \"primary\", \"modifieddate\") from stdin", batchSize, unsaved, c, ProductproductphotoRow.pgText);
+    return interpolate(Fragment.lit("insert into \"production\".\"productproductphoto\"(\"productid\", \"productphotoid\", \"primary\", \"modifieddate\")\nselect * from productproductphoto_TEMP\non conflict (\"productid\", \"productphotoid\")\ndo update set\n  \"primary\" = EXCLUDED.\"primary\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table productproductphoto_TEMP;")).update().runUnchecked(c);
   };
 }

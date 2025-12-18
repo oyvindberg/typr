@@ -5,21 +5,21 @@
  */
 package adventureworks.pr.i;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.production.illustration.IllustrationId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import typo.data.Xml;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface IViewFields extends FieldsExpr<IViewRow> {
-  record Impl(List<Path> _path) implements IViewFields, Relation<IViewFields, IViewRow> {
+  record Impl(List<Path> _path) implements IViewFields, RelationStructure<IViewFields, IViewRow> {
     @Override
     public Field<IllustrationId, IViewRow> id() {
       return new Field<IllustrationId, IViewRow>(_path, "id", IViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), IllustrationId.pgType);
@@ -31,37 +31,37 @@ public interface IViewFields extends FieldsExpr<IViewRow> {
     };
 
     @Override
-    public OptField<TypoXml, IViewRow> diagram() {
-      return new OptField<TypoXml, IViewRow>(_path, "diagram", IViewRow::diagram, Optional.empty(), Optional.empty(), (row, value) -> row.withDiagram(value), TypoXml.pgType);
+    public Field<Xml, IViewRow> diagram() {
+      return new Field<Xml, IViewRow>(_path, "diagram", IViewRow::diagram, Optional.empty(), Optional.empty(), (row, value) -> row.withDiagram(value), PgTypes.xml);
     };
 
     @Override
-    public Field<TypoLocalDateTime, IViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, IViewRow>(_path, "modifieddate", IViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, IViewRow> modifieddate() {
+      return new Field<LocalDateTime, IViewRow>(_path, "modifieddate", IViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, IViewRow>> columns() {
-      return List.of(this.id(), this.illustrationid(), this.diagram(), this.modifieddate());
+      return java.util.List.of(this.id(), this.illustrationid(), this.diagram(), this.modifieddate());
     };
 
     @Override
-    public Relation<IViewFields, IViewRow> copy(List<Path> _path) {
+    public RelationStructure<IViewFields, IViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<IllustrationId, IViewRow> id();
 
   Field<IllustrationId, IViewRow> illustrationid();
 
-  OptField<TypoXml, IViewRow> diagram();
+  Field<Xml, IViewRow> diagram();
 
-  Field<TypoLocalDateTime, IViewRow> modifieddate();
+  Field<LocalDateTime, IViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, IViewRow>> columns();

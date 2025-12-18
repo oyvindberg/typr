@@ -17,15 +17,15 @@ import org.mariadb.jdbc.type.Point;
 import org.mariadb.jdbc.type.Polygon;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface MariatestSpatialNullFields extends FieldsExpr<MariatestSpatialNullRow> {
-  record Impl(List<Path> _path) implements MariatestSpatialNullFields, Relation<MariatestSpatialNullFields, MariatestSpatialNullRow> {
+  record Impl(List<Path> _path) implements MariatestSpatialNullFields, RelationStructure<MariatestSpatialNullFields, MariatestSpatialNullRow> {
     @Override
     public IdField<MariatestSpatialNullId, MariatestSpatialNullRow> id() {
       return new IdField<MariatestSpatialNullId, MariatestSpatialNullRow>(_path, "id", MariatestSpatialNullRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), MariatestSpatialNullId.pgType);
@@ -73,17 +73,17 @@ public interface MariatestSpatialNullFields extends FieldsExpr<MariatestSpatialN
 
     @Override
     public List<FieldLike<?, MariatestSpatialNullRow>> columns() {
-      return List.of(this.id(), this.geometryCol(), this.pointCol(), this.linestringCol(), this.polygonCol(), this.multipointCol(), this.multilinestringCol(), this.multipolygonCol(), this.geometrycollectionCol());
+      return java.util.List.of(this.id(), this.geometryCol(), this.pointCol(), this.linestringCol(), this.polygonCol(), this.multipointCol(), this.multilinestringCol(), this.multipolygonCol(), this.geometrycollectionCol());
     };
 
     @Override
-    public Relation<MariatestSpatialNullFields, MariatestSpatialNullRow> copy(List<Path> _path) {
+    public RelationStructure<MariatestSpatialNullFields, MariatestSpatialNullRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<MariatestSpatialNullId, MariatestSpatialNullRow> id();

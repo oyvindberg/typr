@@ -7,12 +7,12 @@ package adventureworks.production.workorderrouting
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.location.LocationId
 import adventureworks.production.workorder.WorkorderId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -25,7 +25,7 @@ data class WorkorderroutingRowUnsaved(
   /** Primary key. Foreign key to Product.ProductID. */
   val productid: Int,
   /** Primary key. Indicates the manufacturing process sequence. */
-  val operationsequence: TypoShort,
+  val operationsequence: Short,
   /** Manufacturing location where the part is processed. Foreign key to Location.LocationID.
     * Points to [adventureworks.production.location.LocationRow.locationid]
     */
@@ -33,23 +33,23 @@ data class WorkorderroutingRowUnsaved(
   /** Planned manufacturing start date.
     * Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate:  ((scheduledenddate >= scheduledstartdate))
     */
-  val scheduledstartdate: TypoLocalDateTime,
+  val scheduledstartdate: LocalDateTime,
   /** Planned manufacturing end date.
     * Constraint CK_WorkOrderRouting_ScheduledEndDate affecting columns scheduledenddate, scheduledstartdate:  ((scheduledenddate >= scheduledstartdate))
     */
-  val scheduledenddate: TypoLocalDateTime,
+  val scheduledenddate: LocalDateTime,
   /** Actual start date.
     * Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate:  (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL)))
     */
-  val actualstartdate: Optional<TypoLocalDateTime> = Optional.empty(),
+  val actualstartdate: LocalDateTime? = null,
   /** Actual end date.
     * Constraint CK_WorkOrderRouting_ActualEndDate affecting columns actualenddate, actualstartdate:  (((actualenddate >= actualstartdate) OR (actualenddate IS NULL) OR (actualstartdate IS NULL)))
     */
-  val actualenddate: Optional<TypoLocalDateTime> = Optional.empty(),
+  val actualenddate: LocalDateTime? = null,
   /** Number of manufacturing hours used.
     * Constraint CK_WorkOrderRouting_ActualResourceHrs affecting columns actualresourcehrs:  ((actualresourcehrs >= 0.0000))
     */
-  val actualresourcehrs: Optional<BigDecimal> = Optional.empty(),
+  val actualresourcehrs: BigDecimal? = null,
   /** Estimated manufacturing cost.
     * Constraint CK_WorkOrderRouting_PlannedCost affecting columns plannedcost:  ((plannedcost > 0.00))
     */
@@ -57,36 +57,36 @@ data class WorkorderroutingRowUnsaved(
   /** Actual manufacturing cost.
     * Constraint CK_WorkOrderRouting_ActualCost affecting columns actualcost:  ((actualcost > 0.00))
     */
-  val actualcost: Optional<BigDecimal> = Optional.empty(),
+  val actualcost: BigDecimal? = null,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
-  fun toRow(modifieddateDefault: () -> TypoLocalDateTime): WorkorderroutingRow = WorkorderroutingRow(workorderid = workorderid, productid = productid, operationsequence = operationsequence, locationid = locationid, scheduledstartdate = scheduledstartdate, scheduledenddate = scheduledenddate, actualstartdate = actualstartdate, actualenddate = actualenddate, actualresourcehrs = actualresourcehrs, plannedcost = plannedcost, actualcost = actualcost, modifieddate = modifieddate.getOrElse(modifieddateDefault))
+  fun toRow(modifieddateDefault: () -> LocalDateTime): WorkorderroutingRow = WorkorderroutingRow(workorderid = workorderid, productid = productid, operationsequence = operationsequence, locationid = locationid, scheduledstartdate = scheduledstartdate, scheduledenddate = scheduledenddate, actualstartdate = actualstartdate, actualenddate = actualenddate, actualresourcehrs = actualresourcehrs, plannedcost = plannedcost, actualcost = actualcost, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<WorkorderroutingRowUnsaved> =
       PgText.instance({ row, sb -> WorkorderId.pgType.pgText().unsafeEncode(row.workorderid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.int4.pgText().unsafeEncode(row.productid, sb)
+      KotlinDbTypes.PgTypes.int4.pgText().unsafeEncode(row.productid, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.operationsequence, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.operationsequence, sb)
       sb.append(PgText.DELIMETER)
       LocationId.pgType.pgText().unsafeEncode(row.locationid, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.scheduledstartdate, sb)
+      PgTypes.timestamp.pgText().unsafeEncode(row.scheduledstartdate, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.scheduledenddate, sb)
+      PgTypes.timestamp.pgText().unsafeEncode(row.scheduledenddate, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.actualstartdate, sb)
+      PgTypes.timestamp.nullable().pgText().unsafeEncode(row.actualstartdate, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.actualenddate, sb)
+      PgTypes.timestamp.nullable().pgText().unsafeEncode(row.actualenddate, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.numeric.opt().pgText().unsafeEncode(row.actualresourcehrs, sb)
+      PgTypes.numeric.nullable().pgText().unsafeEncode(row.actualresourcehrs, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.numeric.pgText().unsafeEncode(row.plannedcost, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.numeric.opt().pgText().unsafeEncode(row.actualcost, sb)
+      PgTypes.numeric.nullable().pgText().unsafeEncode(row.actualcost, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

@@ -7,48 +7,35 @@ package testdb.mariatest_spatial_null
 
 import java.lang.RuntimeException
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
-import java.util.function.Function
-import java.util.stream.Collectors
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.DeleteBuilderMock
+import typo.scaladsl.DeleteParams
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.SelectBuilderMock
+import typo.scaladsl.SelectParams
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.UpdateBuilderMock
+import typo.scaladsl.UpdateParams
 
 case class MariatestSpatialNullRepoMock(
   toRow: MariatestSpatialNullRowUnsaved => MariatestSpatialNullRow,
-  map: HashMap[MariatestSpatialNullId, MariatestSpatialNullRow] = new HashMap[MariatestSpatialNullId, MariatestSpatialNullRow]()
+  map: scala.collection.mutable.Map[MariatestSpatialNullId, MariatestSpatialNullRow] = scala.collection.mutable.Map.empty[MariatestSpatialNullId, MariatestSpatialNullRow]
 ) extends MariatestSpatialNullRepo {
-  override def delete: DeleteBuilder[MariatestSpatialNullFields, MariatestSpatialNullRow] = {
-    new DeleteBuilderMock(
-      MariatestSpatialNullFields.structure,
-      () => new ArrayList(map.values()),
-      DeleteParams.empty(),
-      row => row.id,
-      id => map.remove(id): @scala.annotation.nowarn
-    )
-  }
+  override def delete: DeleteBuilder[MariatestSpatialNullFields, MariatestSpatialNullRow] = DeleteBuilderMock(MariatestSpatialNullFields.structure, () => map.values.toList, DeleteParams.empty(), row => row.id, id => map.remove(id): @scala.annotation.nowarn)
 
-  override def deleteById(id: MariatestSpatialNullId)(using c: Connection): java.lang.Boolean = Optional.ofNullable(map.remove(id)).isPresent()
+  override def deleteById(id: MariatestSpatialNullId)(using c: Connection): Boolean = map.remove(id).isDefined
 
-  override def deleteByIds(ids: Array[MariatestSpatialNullId])(using c: Connection): Integer = {
+  override def deleteByIds(ids: Array[MariatestSpatialNullId])(using c: Connection): Int = {
     var count = 0
-    ids.foreach { id => if (Optional.ofNullable(map.remove(id)).isPresent()) {
+    ids.foreach { id => if (map.remove(id).isDefined) {
       count = count + 1
     } }
     return count
   }
 
   override def insert(unsaved: MariatestSpatialNullRow)(using c: Connection): MariatestSpatialNullRow = {
-    if (map.containsKey(unsaved.id)) {
-      throw new RuntimeException(s"id $unsaved.id already exists")
+    if (map.contains(unsaved.id)) {
+      throw new RuntimeException(s"id ${unsaved.id} already exists")
     }
     map.put(unsaved.id, unsaved): @scala.annotation.nowarn
     return unsaved
@@ -56,33 +43,20 @@ case class MariatestSpatialNullRepoMock(
 
   override def insert(unsaved: MariatestSpatialNullRowUnsaved)(using c: Connection): MariatestSpatialNullRow = insert(toRow(unsaved))(using c)
 
-  override def select: SelectBuilder[MariatestSpatialNullFields, MariatestSpatialNullRow] = new SelectBuilderMock(MariatestSpatialNullFields.structure, () => new ArrayList(map.values()), SelectParams.empty())
+  override def select: SelectBuilder[MariatestSpatialNullFields, MariatestSpatialNullRow] = SelectBuilderMock(MariatestSpatialNullFields.structure, () => map.values.toList, SelectParams.empty())
 
-  override def selectAll(using c: Connection): java.util.List[MariatestSpatialNullRow] = new ArrayList(map.values())
+  override def selectAll(using c: Connection): List[MariatestSpatialNullRow] = map.values.toList
 
-  override def selectById(id: MariatestSpatialNullId)(using c: Connection): Optional[MariatestSpatialNullRow] = Optional.ofNullable(map.get(id))
+  override def selectById(id: MariatestSpatialNullId)(using c: Connection): Option[MariatestSpatialNullRow] = map.get(id)
 
-  override def selectByIds(ids: Array[MariatestSpatialNullId])(using c: Connection): java.util.List[MariatestSpatialNullRow] = {
-    val result = new ArrayList[MariatestSpatialNullRow]()
-    ids.foreach { id => val opt = Optional.ofNullable(map.get(id)); if (opt.isPresent()) {
-      result.add(opt.get()): @scala.annotation.nowarn
-    } }
-    return result
-  }
+  override def selectByIds(ids: Array[MariatestSpatialNullId])(using c: Connection): List[MariatestSpatialNullRow] = ids.flatMap(map.get(_)).toList
 
-  override def selectByIdsTracked(ids: Array[MariatestSpatialNullId])(using c: Connection): java.util.Map[MariatestSpatialNullId, MariatestSpatialNullRow] = selectByIds(ids)(using c).stream().collect(Collectors.toMap((row: MariatestSpatialNullRow) => row.id, Function.identity()))
+  override def selectByIdsTracked(ids: Array[MariatestSpatialNullId])(using c: Connection): Map[MariatestSpatialNullId, MariatestSpatialNullRow] = selectByIds(ids)(using c).map(x => (((row: MariatestSpatialNullRow) => row.id).apply(x), x)).toMap
 
-  override def update: UpdateBuilder[MariatestSpatialNullFields, MariatestSpatialNullRow] = {
-    new UpdateBuilderMock(
-      MariatestSpatialNullFields.structure,
-      () => new ArrayList(map.values()),
-      UpdateParams.empty(),
-      row => row
-    )
-  }
+  override def update: UpdateBuilder[MariatestSpatialNullFields, MariatestSpatialNullRow] = UpdateBuilderMock(MariatestSpatialNullFields.structure, () => map.values.toList, UpdateParams.empty(), row => row)
 
-  override def update(row: MariatestSpatialNullRow)(using c: Connection): java.lang.Boolean = {
-    val shouldUpdate = Optional.ofNullable(map.get(row.id)).filter(oldRow => (oldRow != row)).isPresent()
+  override def update(row: MariatestSpatialNullRow)(using c: Connection): Boolean = {
+    val shouldUpdate = map.get(row.id).filter(oldRow => (oldRow != row)).isDefined
     if (shouldUpdate) {
       map.put(row.id, row): @scala.annotation.nowarn
     }
@@ -94,13 +68,10 @@ case class MariatestSpatialNullRepoMock(
     return unsaved
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[MariatestSpatialNullRow])(using c: Connection): java.util.List[MariatestSpatialNullRow] = {
-    val result = new ArrayList[MariatestSpatialNullRow]()
-    while (unsaved.hasNext()) {
-      val row = unsaved.next()
+  override def upsertBatch(unsaved: Iterator[MariatestSpatialNullRow])(using c: Connection): List[MariatestSpatialNullRow] = {
+    unsaved.map { row =>
       map.put(row.id, row): @scala.annotation.nowarn
-      result.add(row): @scala.annotation.nowarn
-    }
-    return result
+      row
+    }.toList
   }
 }

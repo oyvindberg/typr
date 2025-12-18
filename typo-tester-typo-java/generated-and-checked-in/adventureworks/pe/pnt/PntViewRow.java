@@ -5,9 +5,10 @@
  */
 package adventureworks.pe.pnt;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.phonenumbertype.PhonenumbertypeId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -20,7 +21,7 @@ public record PntViewRow(
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#name()} */
   Name name,
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#phonenumbertypeid()} */
   public PntViewRow withId(PhonenumbertypeId id) {
@@ -38,9 +39,9 @@ public record PntViewRow(
   };
 
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#modifieddate()} */
-  public PntViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PntViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PntViewRow(id, phonenumbertypeid, name, modifieddate);
   };
 
-  static RowParser<PntViewRow> _rowParser = RowParsers.of(PhonenumbertypeId.pgType, PhonenumbertypeId.pgType, Name.pgType, TypoLocalDateTime.pgType, PntViewRow::new, row -> new Object[]{row.id(), row.phonenumbertypeid(), row.name(), row.modifieddate()});;
+  static RowParser<PntViewRow> _rowParser = RowParsers.of(PhonenumbertypeId.pgType, PhonenumbertypeId.pgType, Name.pgType, PgTypes.timestamp, PntViewRow::new, row -> new Object[]{row.id(), row.phonenumbertypeid(), row.name(), row.modifieddate()});;
 }

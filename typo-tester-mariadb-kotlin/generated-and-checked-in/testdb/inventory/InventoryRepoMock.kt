@@ -8,23 +8,21 @@ package testdb.inventory
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class InventoryRepoMock(
   val toRow: (InventoryRowUnsaved) -> InventoryRow,
@@ -35,7 +33,7 @@ data class InventoryRepoMock(
   override fun deleteById(
     inventoryId: InventoryId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(inventoryId)).isPresent()
+  ): Boolean = map.remove(inventoryId) != null
 
   override fun deleteByIds(
     inventoryIds: Array<InventoryId>,
@@ -43,7 +41,7 @@ data class InventoryRepoMock(
   ): Int {
     var count = 0
     for (id in inventoryIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -55,7 +53,7 @@ data class InventoryRepoMock(
     c: Connection
   ): InventoryRow {
     if (map.containsKey(unsaved.inventoryId)) {
-      throw RuntimeException(str("id $unsaved.inventoryId already exists"))
+      throw RuntimeException("id " + unsaved.inventoryId + " already exists")
     }
     map[unsaved.inventoryId] = unsaved
     return unsaved
@@ -73,7 +71,7 @@ data class InventoryRepoMock(
   override fun selectById(
     inventoryId: InventoryId,
     c: Connection
-  ): Optional<InventoryRow> = Optional.ofNullable(map[inventoryId])
+  ): InventoryRow? = map[inventoryId]
 
   override fun selectByIds(
     inventoryIds: Array<InventoryId>,
@@ -81,9 +79,9 @@ data class InventoryRepoMock(
   ): List<InventoryRow> {
     val result = ArrayList<InventoryRow>()
     for (id in inventoryIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -98,7 +96,7 @@ data class InventoryRepoMock(
     productId: ProductsId,
     warehouseId: WarehousesId,
     c: Connection
-  ): Optional<InventoryRow> = Optional.ofNullable(map.values.toList().find({ v -> (productId == v.productId) && (warehouseId == v.warehouseId) }))
+  ): InventoryRow? = map.values.toList().find({ v -> (productId == v.productId) && (warehouseId == v.warehouseId) })
 
   override fun update(): UpdateBuilder<InventoryFields, InventoryRow> = UpdateBuilderMock(InventoryFields.structure, { map.values.toList() }, UpdateParams.empty(), { row -> row })
 
@@ -106,7 +104,7 @@ data class InventoryRepoMock(
     row: InventoryRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.inventoryId]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.inventoryId]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.inventoryId] = row
     }

@@ -5,24 +5,21 @@
  */
 package adventureworks.person.countryregion
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class CountryregionRepoImpl() : CountryregionRepo {
   override fun delete(): DeleteBuilder<CountryregionFields, CountryregionRow> = DeleteBuilder.of("\"person\".\"countryregion\"", CountryregionFields.structure, Dialect.POSTGRESQL)
@@ -30,86 +27,37 @@ class CountryregionRepoImpl() : CountryregionRepo {
   override fun deleteById(
     countryregioncode: CountryregionId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "person"."countryregion" where "countryregioncode" = 
-    """.trimMargin()),
-    CountryregionId.pgType.encode(countryregioncode),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"person\".\"countryregion\" where \"countryregioncode\" = "), Fragment.encode(CountryregionId.pgType, countryregioncode), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     countryregioncodes: Array<CountryregionId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "person"."countryregion"
-               where "countryregioncode" = ANY(""".trimMargin()),
-             CountryregionId.pgTypeArray.encode(countryregioncodes),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = interpolate(Fragment.lit("delete\nfrom \"person\".\"countryregion\"\nwhere \"countryregioncode\" = ANY("), Fragment.encode(CountryregionId.pgTypeArray, countryregioncodes), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: CountryregionRow,
     c: Connection
-  ): CountryregionRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "person"."countryregion"("countryregioncode", "name", "modifieddate")
-      values (""".trimMargin()),
-    CountryregionId.pgType.encode(unsaved.countryregioncode),
-    typo.runtime.Fragment.lit(", "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "countryregioncode", "name", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): CountryregionRow = interpolate(Fragment.lit("insert into \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\")\nvalues ("), Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode), Fragment.lit(", "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"countryregioncode\", \"name\", \"modifieddate\"\n"))
     .updateReturning(CountryregionRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: CountryregionRowUnsaved,
     c: Connection
   ): CountryregionRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"countryregioncode\""))
-    values.add(interpolate(
-      CountryregionId.pgType.encode(unsaved.countryregioncode),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode), Fragment.lit("")))
     columns.add(Fragment.lit("\"name\""))
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name),
-      typo.runtime.Fragment.lit("::varchar")
-    ))
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar")))
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."countryregion"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "countryregioncode", "name", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"person\".\"countryregion\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"countryregioncode\", \"name\", \"modifieddate\"\n"))
     return q.updateReturning(CountryregionRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -117,49 +65,28 @@ class CountryregionRepoImpl() : CountryregionRepo {
     unsaved: MutableIterator<CountryregionRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "person"."countryregion"("countryregioncode", "name", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, CountryregionRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, CountryregionRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<CountryregionRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "person"."countryregion"("countryregioncode", "name", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, CountryregionRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, CountryregionRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<CountryregionFields, CountryregionRow> = SelectBuilder.of("\"person\".\"countryregion\"", CountryregionFields.structure, CountryregionRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<CountryregionRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "countryregioncode", "name", "modifieddate"::text
-    from "person"."countryregion"
-  """.trimMargin())).query(CountryregionRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<CountryregionRow> = interpolate(Fragment.lit("select \"countryregioncode\", \"name\", \"modifieddate\"\nfrom \"person\".\"countryregion\"\n")).query(CountryregionRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     countryregioncode: CountryregionId,
     c: Connection
-  ): Optional<CountryregionRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "countryregioncode", "name", "modifieddate"::text
-      from "person"."countryregion"
-      where "countryregioncode" = """.trimMargin()),
-    CountryregionId.pgType.encode(countryregioncode),
-    typo.runtime.Fragment.lit("")
-  ).query(CountryregionRow._rowParser.first()).runUnchecked(c)
+  ): CountryregionRow? = interpolate(Fragment.lit("select \"countryregioncode\", \"name\", \"modifieddate\"\nfrom \"person\".\"countryregion\"\nwhere \"countryregioncode\" = "), Fragment.encode(CountryregionId.pgType, countryregioncode), Fragment.lit("")).query(CountryregionRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     countryregioncodes: Array<CountryregionId>,
     c: Connection
-  ): List<CountryregionRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "countryregioncode", "name", "modifieddate"::text
-      from "person"."countryregion"
-      where "countryregioncode" = ANY(""".trimMargin()),
-    CountryregionId.pgTypeArray.encode(countryregioncodes),
-    typo.runtime.Fragment.lit(")")
-  ).query(CountryregionRow._rowParser.all()).runUnchecked(c)
+  ): List<CountryregionRow> = interpolate(Fragment.lit("select \"countryregioncode\", \"name\", \"modifieddate\"\nfrom \"person\".\"countryregion\"\nwhere \"countryregioncode\" = ANY("), Fragment.encode(CountryregionId.pgTypeArray, countryregioncodes), Fragment.lit(")")).query(CountryregionRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     countryregioncodes: Array<CountryregionId>,
@@ -167,69 +94,32 @@ class CountryregionRepoImpl() : CountryregionRepo {
   ): Map<CountryregionId, CountryregionRow> {
     val ret: MutableMap<CountryregionId, CountryregionRow> = mutableMapOf<CountryregionId, CountryregionRow>()
     selectByIds(countryregioncodes, c).forEach({ row -> ret.put(row.countryregioncode, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<CountryregionFields, CountryregionRow> = UpdateBuilder.of("\"person\".\"countryregion\"", CountryregionFields.structure, CountryregionRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<CountryregionFields, CountryregionRow> = UpdateBuilder.of("\"person\".\"countryregion\"", CountryregionFields.structure, CountryregionRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: CountryregionRow,
     c: Connection
   ): Boolean {
     val countryregioncode: CountryregionId = row.countryregioncode
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "person"."countryregion"
-        set "name" = """.trimMargin()),
-      Name.pgType.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ::varchar,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "countryregioncode" = """.trimMargin()),
-      CountryregionId.pgType.encode(countryregioncode),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"person\".\"countryregion\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name), Fragment.lit("::varchar,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"countryregioncode\" = "), Fragment.encode(CountryregionId.pgType, countryregioncode), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: CountryregionRow,
     c: Connection
-  ): CountryregionRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "person"."countryregion"("countryregioncode", "name", "modifieddate")
-      values (""".trimMargin()),
-    CountryregionId.pgType.encode(unsaved.countryregioncode),
-    typo.runtime.Fragment.lit(", "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("countryregioncode")
-      do update set
-        "name" = EXCLUDED."name",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "countryregioncode", "name", "modifieddate"::text""".trimMargin())
-  )
+  ): CountryregionRow = interpolate(Fragment.lit("insert into \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\")\nvalues ("), Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode), Fragment.lit(", "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"countryregioncode\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"countryregioncode\", \"name\", \"modifieddate\""))
     .updateReturning(CountryregionRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<CountryregionRow>,
     c: Connection
-  ): List<CountryregionRow> = interpolate(typo.runtime.Fragment.lit("""
-                                insert into "person"."countryregion"("countryregioncode", "name", "modifieddate")
-                                values (?, ?::varchar, ?::timestamp)
-                                on conflict ("countryregioncode")
-                                do update set
-                                  "name" = EXCLUDED."name",
-                                "modifieddate" = EXCLUDED."modifieddate"
-                                returning "countryregioncode", "name", "modifieddate"::text""".trimMargin()))
+  ): List<CountryregionRow> = interpolate(Fragment.lit("insert into \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\")\nvalues (?, ?::varchar, ?::timestamp)\non conflict (\"countryregioncode\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"countryregioncode\", \"name\", \"modifieddate\""))
     .updateManyReturning(CountryregionRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -237,20 +127,8 @@ class CountryregionRepoImpl() : CountryregionRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table countryregion_TEMP (like "person"."countryregion") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy countryregion_TEMP("countryregioncode", "name", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, CountryregionRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "person"."countryregion"("countryregioncode", "name", "modifieddate")
-      select * from countryregion_TEMP
-      on conflict ("countryregioncode")
-      do update set
-        "name" = EXCLUDED."name",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table countryregion_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table countryregion_TEMP (like \"person\".\"countryregion\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy countryregion_TEMP(\"countryregioncode\", \"name\", \"modifieddate\") from stdin", batchSize, unsaved, c, CountryregionRow.pgText)
+    return interpolate(Fragment.lit("insert into \"person\".\"countryregion\"(\"countryregioncode\", \"name\", \"modifieddate\")\nselect * from countryregion_TEMP\non conflict (\"countryregioncode\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table countryregion_TEMP;")).update().runUnchecked(c)
   }
 }

@@ -5,13 +5,11 @@
  */
 package adventureworks.pu.v;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.AccountNumber;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -27,15 +25,15 @@ public record VViewRow(
   /** Points to {@link adventureworks.purchasing.vendor.VendorRow#name()} */
   Name name,
   /** Points to {@link adventureworks.purchasing.vendor.VendorRow#creditrating()} */
-  TypoShort creditrating,
+  Short creditrating,
   /** Points to {@link adventureworks.purchasing.vendor.VendorRow#preferredvendorstatus()} */
   Flag preferredvendorstatus,
   /** Points to {@link adventureworks.purchasing.vendor.VendorRow#activeflag()} */
   Flag activeflag,
   /** Points to {@link adventureworks.purchasing.vendor.VendorRow#purchasingwebserviceurl()} */
-  Optional</* max 1024 chars */ String> purchasingwebserviceurl,
+  String purchasingwebserviceurl,
   /** Points to {@link adventureworks.purchasing.vendor.VendorRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.purchasing.vendor.VendorRow#businessentityid()} */
   public VViewRow withId(BusinessentityId id) {
@@ -58,7 +56,7 @@ public record VViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.vendor.VendorRow#creditrating()} */
-  public VViewRow withCreditrating(TypoShort creditrating) {
+  public VViewRow withCreditrating(Short creditrating) {
     return new VViewRow(id, businessentityid, accountnumber, name, creditrating, preferredvendorstatus, activeflag, purchasingwebserviceurl, modifieddate);
   };
 
@@ -73,14 +71,14 @@ public record VViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.vendor.VendorRow#purchasingwebserviceurl()} */
-  public VViewRow withPurchasingwebserviceurl(Optional</* max 1024 chars */ String> purchasingwebserviceurl) {
+  public VViewRow withPurchasingwebserviceurl(String purchasingwebserviceurl) {
     return new VViewRow(id, businessentityid, accountnumber, name, creditrating, preferredvendorstatus, activeflag, purchasingwebserviceurl, modifieddate);
   };
 
   /** Points to {@link adventureworks.purchasing.vendor.VendorRow#modifieddate()} */
-  public VViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public VViewRow withModifieddate(LocalDateTime modifieddate) {
     return new VViewRow(id, businessentityid, accountnumber, name, creditrating, preferredvendorstatus, activeflag, purchasingwebserviceurl, modifieddate);
   };
 
-  static RowParser<VViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, AccountNumber.pgType, Name.pgType, TypoShort.pgType, Flag.pgType, Flag.pgType, PgTypes.text.opt(), TypoLocalDateTime.pgType, VViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.accountnumber(), row.name(), row.creditrating(), row.preferredvendorstatus(), row.activeflag(), row.purchasingwebserviceurl(), row.modifieddate()});;
+  static RowParser<VViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, AccountNumber.pgType, Name.pgType, PgTypes.int2, Flag.pgType, Flag.pgType, PgTypes.text, PgTypes.timestamp, VViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.accountnumber(), row.name(), row.creditrating(), row.preferredvendorstatus(), row.activeflag(), row.purchasingwebserviceurl(), row.modifieddate()});;
 }

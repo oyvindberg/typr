@@ -9,9 +9,9 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait EphViewFields {
   def id: Field[BusinessentityId, EphViewRow]
@@ -23,11 +23,11 @@ trait EphViewFields {
 }
 
 object EphViewFields {
-  lazy val structure: Relation[EphViewFields, EphViewRow] =
+  lazy val structure: RelationStructure[EphViewFields, EphViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[EphViewFields, EphViewRow] {
+    extends RelationStructure[EphViewFields, EphViewRow] {
 
     override lazy val fields: EphViewFields = new EphViewFields {
       override def id = Field[BusinessentityId, EphViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))

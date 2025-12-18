@@ -7,15 +7,13 @@ package adventureworks.pr.ppp
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class PppViewRepoImpl() : PppViewRepo {
   override fun select(): SelectBuilder<PppViewFields, PppViewRow> = SelectBuilder.of("\"pr\".\"ppp\"", PppViewFields.structure, PppViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<PppViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "productid", "productphotoid", "primary", "modifieddate"::text
-    from "pr"."ppp"
-  """.trimMargin())).query(PppViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<PppViewRow> = interpolate(Fragment.lit("select \"productid\", \"productphotoid\", \"primary\", \"modifieddate\"\nfrom \"pr\".\"ppp\"\n")).query(PppViewRow._rowParser.all()).runUnchecked(c)
 }

@@ -6,69 +6,68 @@
 package testdb.customer_addresses
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface CustomerAddressesRepo {
-  fun delete(): DeleteBuilder<CustomerAddressesFields, CustomerAddressesRow>
+  abstract fun delete(): DeleteBuilder<CustomerAddressesFields, CustomerAddressesRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     addressId: CustomerAddressesId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     addressIds: Array<CustomerAddressesId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: CustomerAddressesRow,
     c: Connection
   ): CustomerAddressesRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: CustomerAddressesRowUnsaved,
     c: Connection
   ): CustomerAddressesRow
 
-  fun select(): SelectBuilder<CustomerAddressesFields, CustomerAddressesRow>
+  abstract fun select(): SelectBuilder<CustomerAddressesFields, CustomerAddressesRow>
 
-  fun selectAll(c: Connection): List<CustomerAddressesRow>
+  abstract fun selectAll(c: Connection): List<CustomerAddressesRow>
 
-  fun selectById(
+  abstract fun selectById(
     addressId: CustomerAddressesId,
     c: Connection
-  ): Optional<CustomerAddressesRow>
+  ): CustomerAddressesRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     addressIds: Array<CustomerAddressesId>,
     c: Connection
   ): List<CustomerAddressesRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     addressIds: Array<CustomerAddressesId>,
     c: Connection
   ): Map<CustomerAddressesId, CustomerAddressesRow>
 
-  fun update(): UpdateBuilder<CustomerAddressesFields, CustomerAddressesRow>
+  abstract fun update(): UpdateBuilder<CustomerAddressesFields, CustomerAddressesRow>
 
-  fun update(
+  abstract fun update(
     row: CustomerAddressesRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: CustomerAddressesRow,
     c: Connection
   ): CustomerAddressesRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<CustomerAddressesRow>,
     c: Connection
   ): List<CustomerAddressesRow>

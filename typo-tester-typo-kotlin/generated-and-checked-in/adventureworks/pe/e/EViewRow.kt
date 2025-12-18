@@ -5,13 +5,13 @@
  */
 package adventureworks.pe.e
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pe.e */
 data class EViewRow(
@@ -22,13 +22,13 @@ data class EViewRow(
   /** Points to [adventureworks.person.emailaddress.EmailaddressRow.emailaddressid] */
   val emailaddressid: Int,
   /** Points to [adventureworks.person.emailaddress.EmailaddressRow.emailaddress] */
-  val emailaddress: Optional</* max 50 chars */ String>,
+  val emailaddress: String,
   /** Points to [adventureworks.person.emailaddress.EmailaddressRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.person.emailaddress.EmailaddressRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<EViewRow> = RowParsers.of(PgTypes.int4, BusinessentityId.pgType, PgTypes.int4, PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> EViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.emailaddressid, row.emailaddress, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<EViewRow> = RowParsers.of(KotlinDbTypes.PgTypes.int4, BusinessentityId.pgType, KotlinDbTypes.PgTypes.int4, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> EViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.emailaddressid, row.emailaddress, row.rowguid, row.modifieddate) })
   }
 }

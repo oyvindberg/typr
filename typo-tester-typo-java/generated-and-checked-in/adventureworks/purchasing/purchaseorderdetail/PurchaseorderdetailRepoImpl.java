@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 import static typo.runtime.Fragment.interpolate;
@@ -25,10 +26,7 @@ public class PurchaseorderdetailRepoImpl implements PurchaseorderdetailRepo {
 
   @Override
   public List<PurchaseorderdetailRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "purchaseorderid", "purchaseorderdetailid", "duedate"::text, "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"::text
-       from "purchasing"."purchaseorderdetail"
-    """)).query(PurchaseorderdetailRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"purchaseorderid\", \"purchaseorderdetailid\", \"duedate\", \"orderqty\", \"productid\", \"unitprice\", \"receivedqty\", \"rejectedqty\", \"modifieddate\"\nfrom \"purchasing\".\"purchaseorderdetail\"\n")).query(PurchaseorderdetailRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -36,18 +34,7 @@ public class PurchaseorderdetailRepoImpl implements PurchaseorderdetailRepo {
     PurchaseorderdetailId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "purchaseorderid", "purchaseorderdetailid", "duedate"::text, "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"::text
-         from "purchasing"."purchaseorderdetail"
-         where "purchaseorderid" = """),
-      PurchaseorderheaderId.pgType.encode(compositeId.purchaseorderid()),
-      typo.runtime.Fragment.lit("""
-       AND "purchaseorderdetailid" = 
-      """),
-      PgTypes.int4.encode(compositeId.purchaseorderdetailid()),
-      typo.runtime.Fragment.lit("")
-    ).query(PurchaseorderdetailRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"purchaseorderid\", \"purchaseorderdetailid\", \"duedate\", \"orderqty\", \"productid\", \"unitprice\", \"receivedqty\", \"rejectedqty\", \"modifieddate\"\nfrom \"purchasing\".\"purchaseorderdetail\"\nwhere \"purchaseorderid\" = "), Fragment.encode(PurchaseorderheaderId.pgType, compositeId.purchaseorderid()), Fragment.lit(" AND \"purchaseorderdetailid\" = "), Fragment.encode(PgTypes.int4, compositeId.purchaseorderdetailid()), Fragment.lit("")).query(PurchaseorderdetailRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -57,20 +44,7 @@ public class PurchaseorderdetailRepoImpl implements PurchaseorderdetailRepo {
   ) {
     PurchaseorderheaderId[] purchaseorderid = arrayMap.map(compositeIds, PurchaseorderdetailId::purchaseorderid, PurchaseorderheaderId.class);;
     Integer[] purchaseorderdetailid = arrayMap.map(compositeIds, PurchaseorderdetailId::purchaseorderdetailid, Integer.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "purchaseorderid", "purchaseorderdetailid", "duedate"::text, "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"::text
-         from "purchasing"."purchaseorderdetail"
-         where ("purchaseorderid", "purchaseorderdetailid")
-         in (select unnest("""),
-      PurchaseorderheaderId.pgTypeArray.encode(purchaseorderid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      PgTypes.int4Array.encode(purchaseorderdetailid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """)
-    ).query(PurchaseorderdetailRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"purchaseorderid\", \"purchaseorderdetailid\", \"duedate\", \"orderqty\", \"productid\", \"unitprice\", \"receivedqty\", \"rejectedqty\", \"modifieddate\"\nfrom \"purchasing\".\"purchaseorderdetail\"\nwhere (\"purchaseorderid\", \"purchaseorderdetailid\")\nin (select unnest("), Fragment.encode(PurchaseorderheaderId.pgTypeArray, purchaseorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, purchaseorderdetailid), Fragment.lit("::int4[]))\n")).query(PurchaseorderdetailRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override

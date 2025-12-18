@@ -32,7 +32,7 @@ case class SodViewRow(
   /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.salesorderdetailid]] */
   salesorderdetailid: Int,
   /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.carriertrackingnumber]] */
-  carriertrackingnumber: Option[/* max 25 chars */ String],
+  carriertrackingnumber: String,
   /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.orderqty]] */
   orderqty: TypoShort,
   /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.productid]] */
@@ -57,7 +57,7 @@ object SodViewRow {
             id = json.\("id").as(Reads.IntReads),
             salesorderid = json.\("salesorderid").as(SalesorderheaderId.reads),
             salesorderdetailid = json.\("salesorderdetailid").as(Reads.IntReads),
-            carriertrackingnumber = json.\("carriertrackingnumber").toOption.map(_.as(Reads.StringReads)),
+            carriertrackingnumber = json.\("carriertrackingnumber").as(Reads.StringReads),
             orderqty = json.\("orderqty").as(TypoShort.reads),
             productid = json.\("productid").as(ProductId.reads),
             specialofferid = json.\("specialofferid").as(SpecialofferId.reads),
@@ -78,7 +78,7 @@ object SodViewRow {
           id = row(idx + 0)(using Column.columnToInt),
           salesorderid = row(idx + 1)(using SalesorderheaderId.column),
           salesorderdetailid = row(idx + 2)(using Column.columnToInt),
-          carriertrackingnumber = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
+          carriertrackingnumber = row(idx + 3)(using Column.columnToString),
           orderqty = row(idx + 4)(using TypoShort.column),
           productid = row(idx + 5)(using ProductId.column),
           specialofferid = row(idx + 6)(using SpecialofferId.column),
@@ -97,7 +97,7 @@ object SodViewRow {
         "id" -> Writes.IntWrites.writes(o.id),
         "salesorderid" -> SalesorderheaderId.writes.writes(o.salesorderid),
         "salesorderdetailid" -> Writes.IntWrites.writes(o.salesorderdetailid),
-        "carriertrackingnumber" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.carriertrackingnumber),
+        "carriertrackingnumber" -> Writes.StringWrites.writes(o.carriertrackingnumber),
         "orderqty" -> TypoShort.writes.writes(o.orderqty),
         "productid" -> ProductId.writes.writes(o.productid),
         "specialofferid" -> SpecialofferId.writes.writes(o.specialofferid),

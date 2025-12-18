@@ -19,76 +19,114 @@ object MariaDbAdapter extends DbAdapter {
   // MariaDB doesn't need PostgreSQL-style casts
   def columnReadCast(col: ComputedColumn): Code = Code.Empty
   def columnWriteCast(col: ComputedColumn): Code = Code.Empty
+  def writeCastTypeName(col: ComputedColumn): Option[String] = None
+  def writeCast(dbType: db.Type, udtName: Option[String]): Option[SqlCastValue] = None
+  def readCast(dbType: db.Type): Option[SqlCastValue] = None
 
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 2: Runtime Type System
   // ═══════════════════════════════════════════════════════════════════════════
 
+  val KotlinDbTypes: jvm.Type.Qualified = jvm.Type.Qualified("typo.kotlindsl.KotlinDbTypes")
+  val KotlinNullableExtension: jvm.Type.Qualified = jvm.Type.Qualified("typo.kotlindsl.nullable")
+  val ScalaDbTypes: jvm.Type.Qualified = jvm.Type.Qualified("typo.scaladsl.ScalaDbTypes")
+  val ScalaDbTypeOps: jvm.Type.Qualified = jvm.Type.Qualified("typo.scaladsl.MariaTypeOps")
   val Types: jvm.Type.Qualified = jvm.Type.Qualified("typo.runtime.MariaTypes")
   val TypeClass: jvm.Type.Qualified = jvm.Type.Qualified("typo.runtime.MariaType")
   val TextClass: jvm.Type.Qualified = jvm.Type.Qualified("typo.runtime.MariaText")
   val typeFieldName: jvm.Ident = jvm.Ident("pgType") // Keep same name for compatibility
   val textFieldName: jvm.Ident = jvm.Ident("mariaText")
-  val dialectRef: Code = code"${jvm.Type.dsl.Dialect}.MARIADB"
+  def dialectRef(lang: Lang): Code = code"${lang.dsl.Dialect}.MARIADB"
 
-  def lookupType(tpe: jvm.Type, pkg: jvm.QIdent, lang: Lang): Code =
-    jvm.Type.base(tpe) match {
-      case TypesJava.BigDecimal                    => code"$Types.numeric"
-      case TypesJava.BigInteger                    => code"$Types.bigintUnsigned"
-      case TypesJava.Boolean | TypesKotlin.Boolean => code"$Types.bool"
-      case TypesJava.Double | TypesKotlin.Double   => code"$Types.double_"
-      case TypesJava.Float | TypesKotlin.Float     => code"$Types.float_"
-      case TypesJava.Byte | TypesKotlin.Byte       => code"$Types.tinyint"
-      case TypesJava.Short | TypesKotlin.Short     => code"$Types.smallint"
-      case TypesJava.Integer | TypesKotlin.Int     => code"$Types.int_"
-      case TypesJava.Long | TypesKotlin.Long       => code"$Types.bigint"
-      case TypesJava.String | TypesKotlin.String   => code"$Types.text"
-      case TypesJava.UUID                          => code"$Types.uuid"
-      case TypesJava.LocalDate                     => code"$Types.date"
-      case TypesJava.LocalTime                     => code"$Types.time"
-      case TypesJava.LocalDateTime                 => code"$Types.datetime"
-      case TypesJava.Year                          => code"$Types.year"
-      case TypesJava.maria.MariaSet                => code"$Types.set"
-      case TypesJava.runtime.Json                  => code"$Types.json"
-      case TypesJava.maria.Inet4                   => code"$Types.inet4"
-      case TypesJava.maria.Inet6                   => code"$Types.inet6"
-      case TypesJava.maria.Geometry                => code"$Types.geometry"
-      case TypesJava.maria.Point                   => code"$Types.point"
-      case TypesJava.maria.LineString              => code"$Types.linestring"
-      case TypesJava.maria.Polygon                 => code"$Types.polygon"
-      case TypesJava.maria.MultiPoint              => code"$Types.multipoint"
-      case TypesJava.maria.MultiLineString         => code"$Types.multilinestring"
-      case TypesJava.maria.MultiPolygon            => code"$Types.multipolygon"
-      case TypesJava.maria.GeometryCollection      => code"$Types.geometrycollection"
-      case lang.Optional(targ)                     => code"${lookupType(targ, pkg, lang)}.opt()"
-      case lang.ByteArrayType                      => code"$Types.blob"
-      // generated type
-      case x: jvm.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
-        code"$tpe.$typeFieldName"
-      // generated array type - MariaDB doesn't support arrays but keep for compatibility
-      case jvm.Type.ArrayOf(targ: jvm.Type.Qualified) =>
-        lookupType(targ, pkg, lang).code ++ code"Array"
-      case other => sys.error(s"MariaDbAdapter.lookupType: Unsupported type: $other")
+  def lookupType(typoType: TypoType, naming: Naming, typeSupport: TypeSupport): Code =
+    typoType match {
+      case TypoType.Standard(_, dbType) =>
+        lookupByDbType(dbType, typeSupport)
+
+      case TypoType.Nullable(_, inner) =>
+        val innerCode = lookupType(inner, naming, typeSupport)
+        typeSupport match {
+          case TypeSupportScala  => code"${jvm.Import(ScalaDbTypeOps)}$innerCode.nullable"
+          case TypeSupportKotlin => code"${jvm.Import(KotlinNullableExtension)}$innerCode.nullable()"
+          case _                 => code"$innerCode.opt()"
+        }
+
+      case TypoType.Generated(_, _, qualifiedType) =>
+        code"$qualifiedType.$typeFieldName"
+
+      case TypoType.UserDefined(_, _, userType) =>
+        userType match {
+          case Left(qualifiedType) =>
+            // Qualified user types must provide their own pgType/mariaType field
+            code"$qualifiedType.$typeFieldName"
+          case Right(primitive) =>
+            // Well-known primitives use the adapter's lookup
+            lookupPrimitive(primitive, typeSupport)
+        }
+
+      case TypoType.Array(_, _) =>
+        sys.error("MariaDbAdapter.lookupType: MariaDB does not support array types")
     }
 
-  def lookupTypeByDbType(dbType: db.Type, Types: jvm.Type.Qualified, naming: Naming): Code =
+  def lookupPrimitive(primitive: analysis.WellKnownPrimitive, typeSupport: TypeSupport): Code = {
+    // Helper to get primitive type code based on language
+    def primitiveType(name: String): Code = {
+      val nameIdent = jvm.Ident(name)
+      typeSupport match {
+        case TypeSupportScala    => code"$ScalaDbTypes.MariaTypes.$nameIdent"
+        case TypeSupportKotlin   => code"$KotlinDbTypes.MariaTypes.$nameIdent"
+        case TypeSupportJava | _ => code"$Types.$nameIdent"
+      }
+    }
+
+    primitive match {
+      case analysis.WellKnownPrimitive.String        => code"$Types.varchar"
+      case analysis.WellKnownPrimitive.Boolean       => primitiveType("bool")
+      case analysis.WellKnownPrimitive.Byte          => primitiveType("tinyint")
+      case analysis.WellKnownPrimitive.Short         => primitiveType("smallint")
+      case analysis.WellKnownPrimitive.Int           => primitiveType("int_")
+      case analysis.WellKnownPrimitive.Long          => primitiveType("bigint")
+      case analysis.WellKnownPrimitive.Float         => primitiveType("float_")
+      case analysis.WellKnownPrimitive.Double        => primitiveType("double_")
+      case analysis.WellKnownPrimitive.BigDecimal    => primitiveType("numeric")
+      case analysis.WellKnownPrimitive.LocalDate     => code"$Types.date"
+      case analysis.WellKnownPrimitive.LocalTime     => code"$Types.time"
+      case analysis.WellKnownPrimitive.LocalDateTime => code"$Types.datetime"
+      case analysis.WellKnownPrimitive.Instant       => code"$Types.timestamp"
+      case analysis.WellKnownPrimitive.UUID          => code"$Types.char_" // UUID as CHAR(36) in MariaDB
+    }
+  }
+
+  private def lookupByDbType(dbType: db.Type, typeSupport: TypeSupport): Code = {
+    // Helper to get primitive type code based on language
+    def primitiveType(name: String): Code = {
+      val nameIdent = jvm.Ident(name)
+      typeSupport match {
+        case TypeSupportScala    => code"$ScalaDbTypes.MariaTypes.$nameIdent"
+        case TypeSupportKotlin   => code"$KotlinDbTypes.MariaTypes.$nameIdent"
+        case TypeSupportJava | _ => code"$Types.$nameIdent"
+      }
+    }
+
     dbType match {
-      // MariaDB types
-      case db.MariaType.TinyInt            => code"$Types.tinyint"
-      case db.MariaType.SmallInt           => code"$Types.smallint"
-      case db.MariaType.MediumInt          => code"$Types.mediumint"
-      case db.MariaType.Int                => code"$Types.int_"
-      case db.MariaType.BigInt             => code"$Types.bigint"
-      case db.MariaType.TinyIntUnsigned    => code"$Types.tinyintUnsigned"
-      case db.MariaType.SmallIntUnsigned   => code"$Types.smallintUnsigned"
-      case db.MariaType.MediumIntUnsigned  => code"$Types.mediumintUnsigned"
-      case db.MariaType.IntUnsigned        => code"$Types.intUnsigned"
+      // Primitive types with language-specific overrides
+      case db.MariaType.TinyInt           => primitiveType("tinyint")
+      case db.MariaType.SmallInt          => primitiveType("smallint")
+      case db.MariaType.MediumInt         => primitiveType("mediumint")
+      case db.MariaType.Int               => primitiveType("int_")
+      case db.MariaType.BigInt            => primitiveType("bigint")
+      case db.MariaType.TinyIntUnsigned   => primitiveType("tinyintUnsigned")
+      case db.MariaType.SmallIntUnsigned  => primitiveType("smallintUnsigned")
+      case db.MariaType.MediumIntUnsigned => primitiveType("mediumintUnsigned")
+      case db.MariaType.IntUnsigned       => primitiveType("intUnsigned")
+      case db.MariaType.Float             => primitiveType("float_")
+      case db.MariaType.Double            => primitiveType("double_")
+      case db.MariaType.Decimal(_, _)     => primitiveType("numeric")
+      case db.MariaType.Boolean           => primitiveType("bool")
+      case db.MariaType.Bit(Some(1))      => primitiveType("bit1")
+
+      // Non-primitive types use base Types
       case db.MariaType.BigIntUnsigned     => code"$Types.bigintUnsigned"
-      case db.MariaType.Decimal(_, _)      => code"$Types.decimal"
-      case db.MariaType.Float              => code"$Types.float_"
-      case db.MariaType.Double             => code"$Types.double_"
-      case db.MariaType.Boolean            => code"$Types.bool"
-      case db.MariaType.Bit(Some(1))       => code"$Types.bit1"
       case db.MariaType.Bit(_)             => code"$Types.bit"
       case db.MariaType.Char(_)            => code"$Types.char_"
       case db.MariaType.VarChar(_)         => code"$Types.varchar"
@@ -120,12 +158,11 @@ object MariaDbAdapter extends DbAdapter {
       case db.MariaType.MultiLineString    => code"$Types.multilinestring"
       case db.MariaType.MultiPolygon       => code"$Types.multipolygon"
       case db.MariaType.GeometryCollection => code"$Types.geometrycollection"
-
-      case db.Unknown(sqlType) =>
-        sys.error(s"MariaDbAdapter.lookupTypeByDbType: Cannot lookup for unknown type: $sqlType")
+      case db.Unknown(_)                   => code"$Types.unknown"
       case _: db.PgType =>
-        sys.error(s"MariaDbAdapter.lookupTypeByDbType: Cannot lookup PostgreSQL type in MariaDB adapter")
+        sys.error(s"MariaDbAdapter.lookupByDbType: Cannot lookup PostgreSQL type in MariaDB adapter")
     }
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 3: Capabilities

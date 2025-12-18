@@ -7,14 +7,15 @@ package testdb.product_prices
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.price_tiers.PriceTiersId
 import testdb.products.ProductsId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: product_prices
  * Primary key: price_id
@@ -32,9 +33,9 @@ case class ProductPricesRow(
    * Default: NULL
    * Points to [[testdb.price_tiers.PriceTiersRow.tierId]]
    */
-  @JsonProperty("tier_id") tierId: Optional[PriceTiersId],
+  @JsonProperty("tier_id") tierId: Option[PriceTiersId],
   /**  */
-  price: java.math.BigDecimal,
+  price: BigDecimal,
   /** 
    * Default: 'USD'
    */
@@ -44,14 +45,14 @@ case class ProductPricesRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("valid_to") validTo: Optional[LocalDate]
+  @JsonProperty("valid_to") validTo: Option[LocalDate]
 ) {
   def id: ProductPricesId = priceId
 
   def toUnsavedRow(
-    tierId: Defaulted[Optional[PriceTiersId]] = Defaulted.Provided(this.tierId),
+    tierId: Defaulted[Option[PriceTiersId]] = Defaulted.Provided(this.tierId),
     currencyCode: Defaulted[String] = Defaulted.Provided(this.currencyCode),
-    validTo: Defaulted[Optional[LocalDate]] = Defaulted.Provided(this.validTo)
+    validTo: Defaulted[Option[LocalDate]] = Defaulted.Provided(this.validTo)
   ): ProductPricesRowUnsaved = {
     new ProductPricesRowUnsaved(
       productId,
@@ -65,7 +66,7 @@ case class ProductPricesRow(
 }
 
 object ProductPricesRow {
-  val `_rowParser`: RowParser[ProductPricesRow] = RowParsers.of(ProductPricesId.pgType, ProductsId.pgType, PriceTiersId.pgType.opt(), MariaTypes.decimal, MariaTypes.char_, MariaTypes.date, MariaTypes.date.opt(), ProductPricesRow.apply, row => Array[Object](row.priceId.asInstanceOf[Object], row.productId.asInstanceOf[Object], row.tierId.asInstanceOf[Object], row.price.asInstanceOf[Object], row.currencyCode.asInstanceOf[Object], row.validFrom.asInstanceOf[Object], row.validTo.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[ProductPricesRow] = RowParsers.of(ProductPricesId.pgType, ProductsId.pgType, PriceTiersId.pgType.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.date, MariaTypes.date.nullable)(ProductPricesRow.apply)(row => Array[Any](row.priceId, row.productId, row.tierId, row.price, row.currencyCode, row.validFrom, row.validTo))
 
-  given mariaText: MariaText[ProductPricesRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[ProductPricesRow] = MariaText.from(`_rowParser`.underlying)
 }

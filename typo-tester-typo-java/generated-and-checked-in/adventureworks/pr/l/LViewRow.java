@@ -5,10 +5,10 @@
  */
 package adventureworks.pr.l;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.location.LocationId;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -26,7 +26,7 @@ public record LViewRow(
   /** Points to {@link adventureworks.production.location.LocationRow#availability()} */
   BigDecimal availability,
   /** Points to {@link adventureworks.production.location.LocationRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.location.LocationRow#locationid()} */
   public LViewRow withId(LocationId id) {
@@ -54,9 +54,9 @@ public record LViewRow(
   };
 
   /** Points to {@link adventureworks.production.location.LocationRow#modifieddate()} */
-  public LViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public LViewRow withModifieddate(LocalDateTime modifieddate) {
     return new LViewRow(id, locationid, name, costrate, availability, modifieddate);
   };
 
-  static RowParser<LViewRow> _rowParser = RowParsers.of(LocationId.pgType, LocationId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, LViewRow::new, row -> new Object[]{row.id(), row.locationid(), row.name(), row.costrate(), row.availability(), row.modifieddate()});;
+  static RowParser<LViewRow> _rowParser = RowParsers.of(LocationId.pgType, LocationId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, LViewRow::new, row -> new Object[]{row.id(), row.locationid(), row.name(), row.costrate(), row.availability(), row.modifieddate()});;
 }

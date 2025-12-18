@@ -16,9 +16,14 @@ public record CustomerStatusId(@JsonValue String value) {
     return new CustomerStatusId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<CustomerStatusId, String> bijection =
     Bijection.of(CustomerStatusId::value, CustomerStatusId::new);
 
   static public MariaType<CustomerStatusId> pgType =
-    MariaTypes.text.bimap(CustomerStatusId::new, CustomerStatusId::value);
+    MariaTypes.varchar.bimap(CustomerStatusId::new, CustomerStatusId::value);
 }

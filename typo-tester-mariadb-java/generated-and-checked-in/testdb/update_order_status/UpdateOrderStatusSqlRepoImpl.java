@@ -7,42 +7,17 @@ package testdb.update_order_status;
 
 import java.sql.Connection;
 import testdb.orders.OrdersId;
+import typo.runtime.Fragment;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
 public class UpdateOrderStatusSqlRepoImpl implements UpdateOrderStatusSqlRepo {
   @Override
   public Integer apply(
-    /* user-picked */ String newStatus,
+    String newStatus,
     /* user-picked */ OrdersId orderId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         -- Update order status
-         UPDATE orders
-         SET order_status = """),
-      MariaTypes.text.encode(newStatus),
-      typo.runtime.Fragment.lit("""
-         ,
-             confirmed_at = CASE WHEN """),
-      MariaTypes.text.encode(newStatus),
-      typo.runtime.Fragment.lit("""
-          = 'confirmed' THEN NOW(6) ELSE confirmed_at END,
-             shipped_at = CASE WHEN """),
-      MariaTypes.text.encode(newStatus),
-      typo.runtime.Fragment.lit("""
-          = 'shipped' THEN NOW(6) ELSE shipped_at END,
-             delivered_at = CASE WHEN """),
-      MariaTypes.text.encode(newStatus),
-      typo.runtime.Fragment.lit("""
-          = 'delivered' THEN NOW(6) ELSE delivered_at END
-         WHERE order_id = """),
-      /* user-picked */ OrdersId.pgType.encode(orderId),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).update().runUnchecked(c);
+    return interpolate(Fragment.lit("-- Update order status\nUPDATE orders\nSET order_status = "), Fragment.encode(MariaTypes.varchar, newStatus), Fragment.lit(",\n    confirmed_at = CASE WHEN "), Fragment.encode(MariaTypes.varchar, newStatus), Fragment.lit(" = 'confirmed' THEN NOW(6) ELSE confirmed_at END,\n    shipped_at = CASE WHEN "), Fragment.encode(MariaTypes.varchar, newStatus), Fragment.lit(" = 'shipped' THEN NOW(6) ELSE shipped_at END,\n    delivered_at = CASE WHEN "), Fragment.encode(MariaTypes.varchar, newStatus), Fragment.lit(" = 'delivered' THEN NOW(6) ELSE delivered_at END\nWHERE order_id = "), Fragment.encode(OrdersId.pgType, orderId), Fragment.lit("\n")).update().runUnchecked(c);
   };
 }

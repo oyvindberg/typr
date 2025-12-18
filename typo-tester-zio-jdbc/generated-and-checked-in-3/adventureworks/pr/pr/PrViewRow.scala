@@ -29,11 +29,11 @@ case class PrViewRow(
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.reviewdate]] */
   reviewdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.emailaddress]] */
-  emailaddress: /* max 50 chars */ String,
+  emailaddress: String,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.rating]] */
   rating: Int,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.comments]] */
-  comments: Option[/* max 3850 chars */ String],
+  comments: String,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -51,7 +51,7 @@ object PrViewRow {
             reviewdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             emailaddress = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 5, rs)._2,
             rating = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 6, rs)._2,
-            comments = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 7, rs)._2,
+            comments = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 7, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2
           )
     }
@@ -66,7 +66,7 @@ object PrViewRow {
       val reviewdate = jsonObj.get("reviewdate").toRight("Missing field 'reviewdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       val emailaddress = jsonObj.get("emailaddress").toRight("Missing field 'emailaddress'").flatMap(_.as(using JsonDecoder.string))
       val rating = jsonObj.get("rating").toRight("Missing field 'rating'").flatMap(_.as(using JsonDecoder.int))
-      val comments = jsonObj.get("comments").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val comments = jsonObj.get("comments").toRight("Missing field 'comments'").flatMap(_.as(using JsonDecoder.string))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (id.isRight && productreviewid.isRight && productid.isRight && reviewername.isRight && reviewdate.isRight && emailaddress.isRight && rating.isRight && comments.isRight && modifieddate.isRight)
         Right(PrViewRow(id = id.toOption.get, productreviewid = productreviewid.toOption.get, productid = productid.toOption.get, reviewername = reviewername.toOption.get, reviewdate = reviewdate.toOption.get, emailaddress = emailaddress.toOption.get, rating = rating.toOption.get, comments = comments.toOption.get, modifieddate = modifieddate.toOption.get))
@@ -100,7 +100,7 @@ object PrViewRow {
         JsonEncoder.int.unsafeEncode(a.rating, indent, out)
         out.write(",")
         out.write(""""comments":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.comments, indent, out)
+        JsonEncoder.string.unsafeEncode(a.comments, indent, out)
         out.write(",")
         out.write(""""modifieddate":""")
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)

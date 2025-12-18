@@ -9,5 +9,5 @@ import java.sql.Connection
 import kotlin.collections.List
 
 interface CteTestSqlRepo {
-  fun apply(c: Connection): List<CteTestSqlRow>
+  abstract fun apply(c: Connection): List<CteTestSqlRow>
 }

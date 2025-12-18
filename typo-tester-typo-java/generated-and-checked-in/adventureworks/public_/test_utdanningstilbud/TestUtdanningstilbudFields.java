@@ -13,17 +13,17 @@ import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface TestUtdanningstilbudFields extends FieldsExpr<TestUtdanningstilbudRow> {
-  record Impl(List<Path> _path) implements TestUtdanningstilbudFields, Relation<TestUtdanningstilbudFields, TestUtdanningstilbudRow> {
+  record Impl(List<Path> _path) implements TestUtdanningstilbudFields, RelationStructure<TestUtdanningstilbudFields, TestUtdanningstilbudRow> {
     @Override
     public IdField<TestOrganisasjonId, TestUtdanningstilbudRow> organisasjonskode() {
       return new IdField<TestOrganisasjonId, TestUtdanningstilbudRow>(_path, "organisasjonskode", TestUtdanningstilbudRow::organisasjonskode, Optional.empty(), Optional.empty(), (row, value) -> row.withOrganisasjonskode(value), TestOrganisasjonId.pgType);
@@ -36,17 +36,17 @@ public interface TestUtdanningstilbudFields extends FieldsExpr<TestUtdanningstil
 
     @Override
     public List<FieldLike<?, TestUtdanningstilbudRow>> columns() {
-      return List.of(this.organisasjonskode(), this.utdanningsmulighetKode());
+      return java.util.List.of(this.organisasjonskode(), this.utdanningsmulighetKode());
     };
 
     @Override
-    public Relation<TestUtdanningstilbudFields, TestUtdanningstilbudRow> copy(List<Path> _path) {
+    public RelationStructure<TestUtdanningstilbudFields, TestUtdanningstilbudRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<TestOrganisasjonId, TestUtdanningstilbudRow> organisasjonskode();
@@ -54,7 +54,7 @@ public interface TestUtdanningstilbudFields extends FieldsExpr<TestUtdanningstil
   IdField<String, TestUtdanningstilbudRow> utdanningsmulighetKode();
 
   default ForeignKey<TestOrganisasjonFields, TestOrganisasjonRow> fkTestOrganisasjon() {
-    return ForeignKey.<TestOrganisasjonFields, TestOrganisasjonRow>of("public.test_utdanningstilbud_organisasjonskode_fkey").withColumnPair(organisasjonskode(), TestOrganisasjonFields::organisasjonskode);
+    return ForeignKey.<TestOrganisasjonFields, TestOrganisasjonRow>of("public.test_utdanningstilbud_organisasjonskode_fkey").<TestOrganisasjonId>withColumnPair(organisasjonskode(), TestOrganisasjonFields::organisasjonskode);
   };
 
   default SqlExpr<Boolean> compositeIdIs(TestUtdanningstilbudId compositeId) {

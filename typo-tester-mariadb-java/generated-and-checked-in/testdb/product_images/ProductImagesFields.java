@@ -13,16 +13,16 @@ import testdb.products.ProductsRow;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface ProductImagesFields extends FieldsExpr<ProductImagesRow> {
-  record Impl(List<Path> _path) implements ProductImagesFields, Relation<ProductImagesFields, ProductImagesRow> {
+  record Impl(List<Path> _path) implements ProductImagesFields, RelationStructure<ProductImagesFields, ProductImagesRow> {
     @Override
     public IdField<ProductImagesId, ProductImagesRow> imageId() {
       return new IdField<ProductImagesId, ProductImagesRow>(_path, "image_id", ProductImagesRow::imageId, Optional.empty(), Optional.empty(), (row, value) -> row.withImageId(value), ProductImagesId.pgType);
@@ -65,17 +65,17 @@ public interface ProductImagesFields extends FieldsExpr<ProductImagesRow> {
 
     @Override
     public List<FieldLike<?, ProductImagesRow>> columns() {
-      return List.of(this.imageId(), this.productId(), this.imageUrl(), this.thumbnailUrl(), this.altText(), this.sortOrder(), this.isPrimary(), this.imageData());
+      return java.util.List.of(this.imageId(), this.productId(), this.imageUrl(), this.thumbnailUrl(), this.altText(), this.sortOrder(), this.isPrimary(), this.imageData());
     };
 
     @Override
-    public Relation<ProductImagesFields, ProductImagesRow> copy(List<Path> _path) {
+    public RelationStructure<ProductImagesFields, ProductImagesRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ProductImagesId, ProductImagesRow> imageId();
@@ -95,7 +95,7 @@ public interface ProductImagesFields extends FieldsExpr<ProductImagesRow> {
   OptField<byte[], ProductImagesRow> imageData();
 
   default ForeignKey<ProductsFields, ProductsRow> fkProducts() {
-    return ForeignKey.<ProductsFields, ProductsRow>of("fk_pi_product").withColumnPair(productId(), ProductsFields::productId);
+    return ForeignKey.<ProductsFields, ProductsRow>of("fk_pi_product").<ProductsId>withColumnPair(productId(), ProductsFields::productId);
   };
 
   @Override

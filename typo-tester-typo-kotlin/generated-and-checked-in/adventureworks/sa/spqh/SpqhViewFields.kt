@@ -5,56 +5,57 @@
  */
 package adventureworks.sa.spqh
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SpqhViewFields : FieldsExpr<SpqhViewRow> {
-  fun businessentityid(): Field<BusinessentityId, SpqhViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, SpqhViewRow>
 
-  override fun columns(): List<FieldLike<*, SpqhViewRow>>
+  abstract override fun columns(): List<FieldLike<*, SpqhViewRow>>
 
-  fun id(): Field<BusinessentityId, SpqhViewRow>
+  abstract fun id(): Field<BusinessentityId, SpqhViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, SpqhViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SpqhViewRow>
 
-  fun quotadate(): Field<TypoLocalDateTime, SpqhViewRow>
+  abstract fun quotadate(): Field<LocalDateTime, SpqhViewRow>
 
-  override fun rowParser(): RowParser<SpqhViewRow> = SpqhViewRow._rowParser
+  override fun rowParser(): RowParser<SpqhViewRow> = SpqhViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, SpqhViewRow>
+  abstract fun rowguid(): Field<UUID, SpqhViewRow>
 
-  fun salesquota(): Field<BigDecimal, SpqhViewRow>
+  abstract fun salesquota(): Field<BigDecimal, SpqhViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SpqhViewFields, Relation<SpqhViewFields, SpqhViewRow> {
-      override fun id(): Field<BusinessentityId, SpqhViewRow> = Field<BusinessentityId, SpqhViewRow>(_path, "id", SpqhViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : SpqhViewFields, RelationStructure<SpqhViewFields, SpqhViewRow> {
+      override fun id(): Field<BusinessentityId, SpqhViewRow> = Field<BusinessentityId, SpqhViewRow>(_path, "id", SpqhViewRow::id, null, null, { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
 
-      override fun businessentityid(): Field<BusinessentityId, SpqhViewRow> = Field<BusinessentityId, SpqhViewRow>(_path, "businessentityid", SpqhViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, SpqhViewRow> = Field<BusinessentityId, SpqhViewRow>(_path, "businessentityid", SpqhViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun quotadate(): Field<TypoLocalDateTime, SpqhViewRow> = Field<TypoLocalDateTime, SpqhViewRow>(_path, "quotadate", SpqhViewRow::quotadate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(quotadate = value) }, TypoLocalDateTime.pgType)
+      override fun quotadate(): Field<LocalDateTime, SpqhViewRow> = Field<LocalDateTime, SpqhViewRow>(_path, "quotadate", SpqhViewRow::quotadate, null, null, { row, value -> row.copy(quotadate = value) }, PgTypes.timestamp)
 
-      override fun salesquota(): Field<BigDecimal, SpqhViewRow> = Field<BigDecimal, SpqhViewRow>(_path, "salesquota", SpqhViewRow::salesquota, Optional.empty(), Optional.empty(), { row, value -> row.copy(salesquota = value) }, PgTypes.numeric)
+      override fun salesquota(): Field<BigDecimal, SpqhViewRow> = Field<BigDecimal, SpqhViewRow>(_path, "salesquota", SpqhViewRow::salesquota, null, null, { row, value -> row.copy(salesquota = value) }, PgTypes.numeric)
 
-      override fun rowguid(): Field<TypoUUID, SpqhViewRow> = Field<TypoUUID, SpqhViewRow>(_path, "rowguid", SpqhViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, SpqhViewRow> = Field<UUID, SpqhViewRow>(_path, "rowguid", SpqhViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SpqhViewRow> = Field<TypoLocalDateTime, SpqhViewRow>(_path, "modifieddate", SpqhViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SpqhViewRow> = Field<LocalDateTime, SpqhViewRow>(_path, "modifieddate", SpqhViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SpqhViewRow>> = listOf(this.id(), this.businessentityid(), this.quotadate(), this.salesquota(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SpqhViewFields, SpqhViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SpqhViewRow>> = listOf(this.id().underlying, this.businessentityid().underlying, this.quotadate().underlying, this.salesquota().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SpqhViewFields, SpqhViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

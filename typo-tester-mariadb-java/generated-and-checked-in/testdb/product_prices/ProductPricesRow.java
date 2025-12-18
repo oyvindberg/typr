@@ -93,7 +93,7 @@ public record ProductPricesRow(
     return new ProductPricesRow(priceId, productId, tierId, price, currencyCode, validFrom, validTo);
   };
 
-  static RowParser<ProductPricesRow> _rowParser = RowParsers.of(ProductPricesId.pgType, ProductsId.pgType, PriceTiersId.pgType.opt(), MariaTypes.decimal, MariaTypes.char_, MariaTypes.date, MariaTypes.date.opt(), ProductPricesRow::new, row -> new Object[]{row.priceId(), row.productId(), row.tierId(), row.price(), row.currencyCode(), row.validFrom(), row.validTo()});;
+  static RowParser<ProductPricesRow> _rowParser = RowParsers.of(ProductPricesId.pgType, ProductsId.pgType, PriceTiersId.pgType.opt(), MariaTypes.numeric, MariaTypes.char_, MariaTypes.date, MariaTypes.date.opt(), ProductPricesRow::new, row -> new Object[]{row.priceId(), row.productId(), row.tierId(), row.price(), row.currencyCode(), row.validFrom(), row.validTo()});;
 
   static public MariaText<ProductPricesRow> mariaText =
     MariaText.from(_rowParser);

@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
+import typo.runtime.Fragment;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -22,49 +23,6 @@ public class ProductSearchSqlRepoImpl implements ProductSearchSqlRepo {
     Long limit,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         -- Search products with optional filters
-         SELECT p.product_id,
-                p.sku,
-                p.name,
-                p.short_description,
-                p.base_price,
-                p.status,
-                b.name AS brand_name
-         FROM products p
-         LEFT JOIN brands b ON p.brand_id = b.brand_id
-         WHERE ("""),
-      MariaTypes.int_.opt().encode(brandId),
-      typo.runtime.Fragment.lit(" IS NULL OR p.brand_id = "),
-      MariaTypes.int_.opt().encode(brandId),
-      typo.runtime.Fragment.lit("""
-         )
-           AND ("""),
-      MariaTypes.numeric.opt().encode(minPrice),
-      typo.runtime.Fragment.lit(" IS NULL OR p.base_price >= "),
-      MariaTypes.numeric.opt().encode(minPrice),
-      typo.runtime.Fragment.lit("""
-         )
-           AND ("""),
-      MariaTypes.numeric.opt().encode(maxPrice),
-      typo.runtime.Fragment.lit(" IS NULL OR p.base_price <= "),
-      MariaTypes.numeric.opt().encode(maxPrice),
-      typo.runtime.Fragment.lit("""
-         )
-           AND ("""),
-      MariaTypes.text.opt().encode(status),
-      typo.runtime.Fragment.lit(" IS NULL OR p.status = "),
-      MariaTypes.text.opt().encode(status),
-      typo.runtime.Fragment.lit("""
-         )
-         ORDER BY p.name
-         LIMIT """),
-      MariaTypes.bigint.encode(limit),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(ProductSearchSqlRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("-- Search products with optional filters\nSELECT p.product_id,\n       p.sku,\n       p.name,\n       p.short_description,\n       p.base_price,\n       p.status,\n       b.name AS brand_name\nFROM products p\nLEFT JOIN brands b ON p.brand_id = b.brand_id\nWHERE ("), Fragment.encode(MariaTypes.smallintUnsigned.opt(), brandId), Fragment.lit(" IS NULL OR p.brand_id = "), Fragment.encode(MariaTypes.smallintUnsigned.opt(), brandId), Fragment.lit(")\n  AND ("), Fragment.encode(MariaTypes.numeric.opt(), minPrice), Fragment.lit(" IS NULL OR p.base_price >= "), Fragment.encode(MariaTypes.numeric.opt(), minPrice), Fragment.lit(")\n  AND ("), Fragment.encode(MariaTypes.numeric.opt(), maxPrice), Fragment.lit(" IS NULL OR p.base_price <= "), Fragment.encode(MariaTypes.numeric.opt(), maxPrice), Fragment.lit(")\n  AND ("), Fragment.encode(MariaTypes.text.opt(), status), Fragment.lit(" IS NULL OR p.status = "), Fragment.encode(MariaTypes.text.opt(), status), Fragment.lit(")\nORDER BY p.name\nLIMIT "), Fragment.encode(MariaTypes.bigint, limit), Fragment.lit("\n")).query(ProductSearchSqlRow._rowParser.all()).runUnchecked(c);
   };
 }

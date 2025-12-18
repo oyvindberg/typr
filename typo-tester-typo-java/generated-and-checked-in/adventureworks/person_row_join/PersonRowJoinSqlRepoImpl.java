@@ -7,16 +7,12 @@ package adventureworks.person_row_join;
 
 import java.sql.Connection;
 import java.util.List;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class PersonRowJoinSqlRepoImpl implements PersonRowJoinSqlRepo {
   @Override
   public List<PersonRowJoinSqlRow> apply(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       SELECT s.businessentityid,
-              (select array_agg(ROW(a.emailaddress, a.rowguid)) from person.emailaddress a where a.businessentityid = s.businessentityid) as email,
-              (select ARRAY[ROW(a.emailaddress, a.rowguid)] from person.emailaddress a where a.businessentityid = s.businessentityid) as emails
-       FROM sales.salesperson s
-    """)).query(PersonRowJoinSqlRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("SELECT s.businessentityid,\n       (select array_agg(ROW(a.emailaddress, a.rowguid)) from person.emailaddress a where a.businessentityid = s.businessentityid) as email,\n       (select ARRAY[ROW(a.emailaddress, a.rowguid)] from person.emailaddress a where a.businessentityid = s.businessentityid) as emails\nFROM sales.salesperson s\n")).query(PersonRowJoinSqlRow._rowParser.all()).runUnchecked(c);
   };
 }

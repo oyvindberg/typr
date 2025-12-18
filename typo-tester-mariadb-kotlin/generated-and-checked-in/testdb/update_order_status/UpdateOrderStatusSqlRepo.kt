@@ -9,8 +9,8 @@ import java.sql.Connection
 import testdb.orders.OrdersId
 
 interface UpdateOrderStatusSqlRepo {
-  fun apply(
-    newStatus: /* user-picked */ java.lang.String,
+  abstract fun apply(
+    newStatus: String,
     orderId: /* user-picked */ OrdersId,
     c: Connection
   ): Int

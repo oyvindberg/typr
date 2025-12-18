@@ -7,9 +7,9 @@ package adventureworks.production.productreview;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -23,7 +23,7 @@ public record ProductreviewRowUnsaved(
   /** Name of the reviewer. */
   Name reviewername,
   /** Reviewer's e-mail address. */
-  /* max 50 chars */ String emailaddress,
+  String emailaddress,
   /** Product rating given by the reviewer. Scale is 1 to 5 with 5 as the highest rating.
     * Constraint CK_ProductReview_Rating affecting columns rating:  (((rating >= 1) AND (rating <= 5)))
     */
@@ -37,9 +37,9 @@ public record ProductreviewRowUnsaved(
   /** Default: now()
     * Date review was submitted.
     */
-  Defaulted<TypoLocalDateTime> reviewdate,
+  Defaulted<LocalDateTime> reviewdate,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductreviewRowUnsaved(
     /** Product identification number. Foreign key to Product.ProductID.
@@ -49,7 +49,7 @@ public record ProductreviewRowUnsaved(
     /** Name of the reviewer. */
     Name reviewername,
     /** Reviewer's e-mail address. */
-    /* max 50 chars */ String emailaddress,
+    String emailaddress,
     /** Product rating given by the reviewer. Scale is 1 to 5 with 5 as the highest rating.
       * Constraint CK_ProductReview_Rating affecting columns rating:  (((rating >= 1) AND (rating <= 5)))
       */
@@ -71,7 +71,7 @@ public record ProductreviewRowUnsaved(
   };
 
   /** Reviewer's e-mail address. */
-  public ProductreviewRowUnsaved withEmailaddress(/* max 50 chars */ String emailaddress) {
+  public ProductreviewRowUnsaved withEmailaddress(String emailaddress) {
     return new ProductreviewRowUnsaved(productid, reviewername, emailaddress, rating, comments, productreviewid, reviewdate, modifieddate);
   };
 
@@ -97,12 +97,12 @@ public record ProductreviewRowUnsaved(
   /** Default: now()
     * Date review was submitted.
     */
-  public ProductreviewRowUnsaved withReviewdate(Defaulted<TypoLocalDateTime> reviewdate) {
+  public ProductreviewRowUnsaved withReviewdate(Defaulted<LocalDateTime> reviewdate) {
     return new ProductreviewRowUnsaved(productid, reviewername, emailaddress, rating, comments, productreviewid, reviewdate, modifieddate);
   };
 
   /** Default: now() */
-  public ProductreviewRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductreviewRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductreviewRowUnsaved(productid, reviewername, emailaddress, rating, comments, productreviewid, reviewdate, modifieddate);
   };
 
@@ -120,15 +120,15 @@ public record ProductreviewRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(ProductreviewId.pgType.pgText()).unsafeEncode(row.productreviewid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.reviewdate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.reviewdate, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ProductreviewRow toRow(
     java.util.function.Supplier<ProductreviewId> productreviewidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> reviewdateDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> reviewdateDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ProductreviewRow(productreviewid.getOrElse(productreviewidDefault), productid, reviewername, reviewdate.getOrElse(reviewdateDefault), emailaddress, rating, comments, modifieddate.getOrElse(modifieddateDefault));
   };

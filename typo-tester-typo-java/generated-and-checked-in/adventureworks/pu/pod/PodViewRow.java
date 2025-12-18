@@ -5,11 +5,10 @@
  */
 package adventureworks.pu.pod;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -23,9 +22,9 @@ public record PodViewRow(
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#purchaseorderdetailid()} */
   Integer purchaseorderdetailid,
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#duedate()} */
-  TypoLocalDateTime duedate,
+  LocalDateTime duedate,
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#orderqty()} */
-  TypoShort orderqty,
+  Short orderqty,
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#productid()} */
   ProductId productid,
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#unitprice()} */
@@ -35,7 +34,7 @@ public record PodViewRow(
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#rejectedqty()} */
   BigDecimal rejectedqty,
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#purchaseorderdetailid()} */
   public PodViewRow withId(Integer id) {
@@ -53,12 +52,12 @@ public record PodViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#duedate()} */
-  public PodViewRow withDuedate(TypoLocalDateTime duedate) {
+  public PodViewRow withDuedate(LocalDateTime duedate) {
     return new PodViewRow(id, purchaseorderid, purchaseorderdetailid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, modifieddate);
   };
 
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#orderqty()} */
-  public PodViewRow withOrderqty(TypoShort orderqty) {
+  public PodViewRow withOrderqty(Short orderqty) {
     return new PodViewRow(id, purchaseorderid, purchaseorderdetailid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, modifieddate);
   };
 
@@ -83,9 +82,9 @@ public record PodViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow#modifieddate()} */
-  public PodViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PodViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PodViewRow(id, purchaseorderid, purchaseorderdetailid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, modifieddate);
   };
 
-  static RowParser<PodViewRow> _rowParser = RowParsers.of(PgTypes.int4, PurchaseorderheaderId.pgType, PgTypes.int4, TypoLocalDateTime.pgType, TypoShort.pgType, ProductId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, PodViewRow::new, row -> new Object[]{row.id(), row.purchaseorderid(), row.purchaseorderdetailid(), row.duedate(), row.orderqty(), row.productid(), row.unitprice(), row.receivedqty(), row.rejectedqty(), row.modifieddate()});;
+  static RowParser<PodViewRow> _rowParser = RowParsers.of(PgTypes.int4, PurchaseorderheaderId.pgType, PgTypes.int4, PgTypes.timestamp, PgTypes.int2, ProductId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, PodViewRow::new, row -> new Object[]{row.id(), row.purchaseorderid(), row.purchaseorderdetailid(), row.duedate(), row.orderqty(), row.productid(), row.unitprice(), row.receivedqty(), row.rejectedqty(), row.modifieddate()});;
 }

@@ -7,11 +7,12 @@ package adventureworks.humanresources.jobcandidate;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import typo.data.Xml;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `humanresources.jobcandidate` which has not been persisted yet */
 public record JobcandidateRowUnsaved(
@@ -20,13 +21,13 @@ public record JobcandidateRowUnsaved(
     */
   Optional<BusinessentityId> businessentityid,
   /** RÃ©sumÃ© in XML format. */
-  Optional<TypoXml> resume,
+  Optional<Xml> resume,
   /** Default: nextval('humanresources.jobcandidate_jobcandidateid_seq'::regclass)
     * Primary key for JobCandidate records.
     */
   Defaulted<JobcandidateId> jobcandidateid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public JobcandidateRowUnsaved() {
     this(Optional.empty(), Optional.empty(), new UseDefault<>(), new UseDefault<>());
@@ -40,7 +41,7 @@ public record JobcandidateRowUnsaved(
   };
 
   /** RÃ©sumÃ© in XML format. */
-  public JobcandidateRowUnsaved withResume(Optional<TypoXml> resume) {
+  public JobcandidateRowUnsaved withResume(Optional<Xml> resume) {
     return new JobcandidateRowUnsaved(businessentityid, resume, jobcandidateid, modifieddate);
   };
 
@@ -52,7 +53,7 @@ public record JobcandidateRowUnsaved(
   };
 
   /** Default: now() */
-  public JobcandidateRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public JobcandidateRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new JobcandidateRowUnsaved(businessentityid, resume, jobcandidateid, modifieddate);
   };
 
@@ -60,16 +61,16 @@ public record JobcandidateRowUnsaved(
     PgText.instance((row, sb) -> {
       BusinessentityId.pgType.opt().pgText().unsafeEncode(row.businessentityid, sb);
       sb.append(PgText.DELIMETER);
-      TypoXml.pgType.opt().pgText().unsafeEncode(row.resume, sb);
+      PgTypes.xml.opt().pgText().unsafeEncode(row.resume, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(JobcandidateId.pgType.pgText()).unsafeEncode(row.jobcandidateid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public JobcandidateRow toRow(
     java.util.function.Supplier<JobcandidateId> jobcandidateidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new JobcandidateRow(jobcandidateid.getOrElse(jobcandidateidDefault), businessentityid, resume, modifieddate.getOrElse(modifieddateDefault));
   };

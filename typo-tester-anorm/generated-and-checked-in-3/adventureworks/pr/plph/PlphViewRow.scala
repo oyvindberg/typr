@@ -28,7 +28,7 @@ case class PlphViewRow(
   /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.listprice]] */
   listprice: BigDecimal,
   /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.modifieddate]] */
@@ -43,7 +43,7 @@ object PlphViewRow {
             id = json.\("id").as(ProductId.reads),
             productid = json.\("productid").as(ProductId.reads),
             startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-            enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            enddate = json.\("enddate").as(TypoLocalDateTime.reads),
             listprice = json.\("listprice").as(Reads.bigDecReads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
@@ -59,7 +59,7 @@ object PlphViewRow {
           id = row(idx + 0)(using ProductId.column),
           productid = row(idx + 1)(using ProductId.column),
           startdate = row(idx + 2)(using TypoLocalDateTime.column),
-          enddate = row(idx + 3)(using Column.columnToOption(using TypoLocalDateTime.column)),
+          enddate = row(idx + 3)(using TypoLocalDateTime.column),
           listprice = row(idx + 4)(using Column.columnToScalaBigDecimal),
           modifieddate = row(idx + 5)(using TypoLocalDateTime.column)
         )
@@ -73,7 +73,7 @@ object PlphViewRow {
         "id" -> ProductId.writes.writes(o.id),
         "productid" -> ProductId.writes.writes(o.productid),
         "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-        "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
+        "enddate" -> TypoLocalDateTime.writes.writes(o.enddate),
         "listprice" -> Writes.BigDecimalWrites.writes(o.listprice),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))

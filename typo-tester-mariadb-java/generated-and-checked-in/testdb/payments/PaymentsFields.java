@@ -19,16 +19,16 @@ import typo.data.maria.Inet6;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface PaymentsFields extends FieldsExpr<PaymentsRow> {
-  record Impl(List<Path> _path) implements PaymentsFields, Relation<PaymentsFields, PaymentsRow> {
+  record Impl(List<Path> _path) implements PaymentsFields, RelationStructure<PaymentsFields, PaymentsRow> {
     @Override
     public IdField<PaymentsId, PaymentsRow> paymentId() {
       return new IdField<PaymentsId, PaymentsRow>(_path, "payment_id", PaymentsRow::paymentId, Optional.empty(), Optional.empty(), (row, value) -> row.withPaymentId(value), PaymentsId.pgType);
@@ -51,7 +51,7 @@ public interface PaymentsFields extends FieldsExpr<PaymentsRow> {
 
     @Override
     public Field<BigDecimal, PaymentsRow> amount() {
-      return new Field<BigDecimal, PaymentsRow>(_path, "amount", PaymentsRow::amount, Optional.empty(), Optional.empty(), (row, value) -> row.withAmount(value), MariaTypes.decimal);
+      return new Field<BigDecimal, PaymentsRow>(_path, "amount", PaymentsRow::amount, Optional.empty(), Optional.empty(), (row, value) -> row.withAmount(value), MariaTypes.numeric);
     };
 
     @Override
@@ -91,17 +91,17 @@ public interface PaymentsFields extends FieldsExpr<PaymentsRow> {
 
     @Override
     public List<FieldLike<?, PaymentsRow>> columns() {
-      return List.of(this.paymentId(), this.orderId(), this.methodId(), this.transactionId(), this.amount(), this.currencyCode(), this.status(), this.processorResponse(), this.errorMessage(), this.ipAddress(), this.createdAt(), this.processedAt());
+      return java.util.List.of(this.paymentId(), this.orderId(), this.methodId(), this.transactionId(), this.amount(), this.currencyCode(), this.status(), this.processorResponse(), this.errorMessage(), this.ipAddress(), this.createdAt(), this.processedAt());
     };
 
     @Override
-    public Relation<PaymentsFields, PaymentsRow> copy(List<Path> _path) {
+    public RelationStructure<PaymentsFields, PaymentsRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<PaymentsId, PaymentsRow> paymentId();
@@ -129,11 +129,11 @@ public interface PaymentsFields extends FieldsExpr<PaymentsRow> {
   OptField<LocalDateTime, PaymentsRow> processedAt();
 
   default ForeignKey<PaymentMethodsFields, PaymentMethodsRow> fkPaymentMethods() {
-    return ForeignKey.<PaymentMethodsFields, PaymentMethodsRow>of("fk_pay_method").withColumnPair(methodId(), PaymentMethodsFields::methodId);
+    return ForeignKey.<PaymentMethodsFields, PaymentMethodsRow>of("fk_pay_method").<PaymentMethodsId>withColumnPair(methodId(), PaymentMethodsFields::methodId);
   };
 
   default ForeignKey<OrdersFields, OrdersRow> fkOrders() {
-    return ForeignKey.<OrdersFields, OrdersRow>of("fk_pay_order").withColumnPair(orderId(), OrdersFields::orderId);
+    return ForeignKey.<OrdersFields, OrdersRow>of("fk_pay_order").<OrdersId>withColumnPair(orderId(), OrdersFields::orderId);
   };
 
   @Override

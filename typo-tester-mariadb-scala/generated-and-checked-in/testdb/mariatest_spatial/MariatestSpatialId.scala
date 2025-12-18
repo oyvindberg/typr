@@ -6,15 +6,15 @@
 package testdb.mariatest_spatial
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
 import typo.runtime.MariaType
-import typo.runtime.MariaTypes
+import typo.scaladsl.Bijection
+import typo.scaladsl.ScalaDbTypes
 
 /** Type for the primary key of table `mariatest_spatial` */
-case class MariatestSpatialId(@JsonValue value: Integer) extends scala.AnyVal
+case class MariatestSpatialId(@JsonValue value: Int) extends scala.AnyVal
 
 object MariatestSpatialId {
-  given bijection: Bijection[MariatestSpatialId, Integer] = Bijection.apply[MariatestSpatialId, Integer](_.value)(MariatestSpatialId.apply)
+  given bijection: Bijection[MariatestSpatialId, Int] = Bijection.apply[MariatestSpatialId, Int](_.value)(MariatestSpatialId.apply)
 
-  given pgType: MariaType[MariatestSpatialId] = MariaTypes.int_.bimap(MariatestSpatialId.apply, _.value)
+  given pgType: MariaType[MariatestSpatialId] = ScalaDbTypes.MariaTypes.int_.bimap(MariatestSpatialId.apply, _.value)
 }

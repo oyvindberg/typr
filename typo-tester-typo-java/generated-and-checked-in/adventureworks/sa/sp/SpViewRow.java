@@ -5,12 +5,11 @@
  */
 package adventureworks.sa.sp;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -22,9 +21,9 @@ public record SpViewRow(
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#businessentityid()} */
   BusinessentityId businessentityid,
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#territoryid()} */
-  Optional<SalesterritoryId> territoryid,
+  SalesterritoryId territoryid,
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#salesquota()} */
-  Optional<BigDecimal> salesquota,
+  BigDecimal salesquota,
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#bonus()} */
   BigDecimal bonus,
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#commissionpct()} */
@@ -34,9 +33,9 @@ public record SpViewRow(
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#saleslastyear()} */
   BigDecimal saleslastyear,
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#businessentityid()} */
   public SpViewRow withId(BusinessentityId id) {
@@ -49,12 +48,12 @@ public record SpViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#territoryid()} */
-  public SpViewRow withTerritoryid(Optional<SalesterritoryId> territoryid) {
+  public SpViewRow withTerritoryid(SalesterritoryId territoryid) {
     return new SpViewRow(id, businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#salesquota()} */
-  public SpViewRow withSalesquota(Optional<BigDecimal> salesquota) {
+  public SpViewRow withSalesquota(BigDecimal salesquota) {
     return new SpViewRow(id, businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate);
   };
 
@@ -79,14 +78,14 @@ public record SpViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#rowguid()} */
-  public SpViewRow withRowguid(TypoUUID rowguid) {
+  public SpViewRow withRowguid(UUID rowguid) {
     return new SpViewRow(id, businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#modifieddate()} */
-  public SpViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SpViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SpViewRow(id, businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate);
   };
 
-  static RowParser<SpViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, SpViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.territoryid(), row.salesquota(), row.bonus(), row.commissionpct(), row.salesytd(), row.saleslastyear(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SpViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, SpViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.territoryid(), row.salesquota(), row.bonus(), row.commissionpct(), row.salesytd(), row.saleslastyear(), row.rowguid(), row.modifieddate()});;
 }

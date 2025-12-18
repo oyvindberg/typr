@@ -5,11 +5,11 @@
  */
 package adventureworks.humanresources.employeepayhistory
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
+import java.time.LocalDateTime
 
 /** Type for the composite primary key of table `humanresources.employeepayhistory` */
 data class EmployeepayhistoryId(
   val businessentityid: BusinessentityId,
-  val ratechangedate: TypoLocalDateTime
+  val ratechangedate: LocalDateTime
 )

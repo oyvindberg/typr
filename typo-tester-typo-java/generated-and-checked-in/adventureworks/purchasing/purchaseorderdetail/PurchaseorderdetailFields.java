@@ -5,8 +5,6 @@
  */
 package adventureworks.purchasing.purchaseorderdetail;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductFields;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.product.ProductRow;
@@ -14,23 +12,24 @@ import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderFields;
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId;
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PurchaseorderdetailFields extends FieldsExpr<PurchaseorderdetailRow> {
-  record Impl(List<Path> _path) implements PurchaseorderdetailFields, Relation<PurchaseorderdetailFields, PurchaseorderdetailRow> {
+  record Impl(List<Path> _path) implements PurchaseorderdetailFields, RelationStructure<PurchaseorderdetailFields, PurchaseorderdetailRow> {
     @Override
     public IdField<PurchaseorderheaderId, PurchaseorderdetailRow> purchaseorderid() {
       return new IdField<PurchaseorderheaderId, PurchaseorderdetailRow>(_path, "purchaseorderid", PurchaseorderdetailRow::purchaseorderid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withPurchaseorderid(value), PurchaseorderheaderId.pgType);
@@ -42,13 +41,13 @@ public interface PurchaseorderdetailFields extends FieldsExpr<Purchaseorderdetai
     };
 
     @Override
-    public Field<TypoLocalDateTime, PurchaseorderdetailRow> duedate() {
-      return new Field<TypoLocalDateTime, PurchaseorderdetailRow>(_path, "duedate", PurchaseorderdetailRow::duedate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withDuedate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PurchaseorderdetailRow> duedate() {
+      return new Field<LocalDateTime, PurchaseorderdetailRow>(_path, "duedate", PurchaseorderdetailRow::duedate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withDuedate(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field<TypoShort, PurchaseorderdetailRow> orderqty() {
-      return new Field<TypoShort, PurchaseorderdetailRow>(_path, "orderqty", PurchaseorderdetailRow::orderqty, Optional.empty(), Optional.of("int2"), (row, value) -> row.withOrderqty(value), TypoShort.pgType);
+    public Field<Short, PurchaseorderdetailRow> orderqty() {
+      return new Field<Short, PurchaseorderdetailRow>(_path, "orderqty", PurchaseorderdetailRow::orderqty, Optional.empty(), Optional.of("int2"), (row, value) -> row.withOrderqty(value), PgTypes.int2);
     };
 
     @Override
@@ -72,32 +71,32 @@ public interface PurchaseorderdetailFields extends FieldsExpr<Purchaseorderdetai
     };
 
     @Override
-    public Field<TypoLocalDateTime, PurchaseorderdetailRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PurchaseorderdetailRow>(_path, "modifieddate", PurchaseorderdetailRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PurchaseorderdetailRow> modifieddate() {
+      return new Field<LocalDateTime, PurchaseorderdetailRow>(_path, "modifieddate", PurchaseorderdetailRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PurchaseorderdetailRow>> columns() {
-      return List.of(this.purchaseorderid(), this.purchaseorderdetailid(), this.duedate(), this.orderqty(), this.productid(), this.unitprice(), this.receivedqty(), this.rejectedqty(), this.modifieddate());
+      return java.util.List.of(this.purchaseorderid(), this.purchaseorderdetailid(), this.duedate(), this.orderqty(), this.productid(), this.unitprice(), this.receivedqty(), this.rejectedqty(), this.modifieddate());
     };
 
     @Override
-    public Relation<PurchaseorderdetailFields, PurchaseorderdetailRow> copy(List<Path> _path) {
+    public RelationStructure<PurchaseorderdetailFields, PurchaseorderdetailRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<PurchaseorderheaderId, PurchaseorderdetailRow> purchaseorderid();
 
   IdField<Integer, PurchaseorderdetailRow> purchaseorderdetailid();
 
-  Field<TypoLocalDateTime, PurchaseorderdetailRow> duedate();
+  Field<LocalDateTime, PurchaseorderdetailRow> duedate();
 
-  Field<TypoShort, PurchaseorderdetailRow> orderqty();
+  Field<Short, PurchaseorderdetailRow> orderqty();
 
   Field<ProductId, PurchaseorderdetailRow> productid();
 
@@ -107,14 +106,14 @@ public interface PurchaseorderdetailFields extends FieldsExpr<Purchaseorderdetai
 
   Field<BigDecimal, PurchaseorderdetailRow> rejectedqty();
 
-  Field<TypoLocalDateTime, PurchaseorderdetailRow> modifieddate();
+  Field<LocalDateTime, PurchaseorderdetailRow> modifieddate();
 
   default ForeignKey<ProductFields, ProductRow> fkProductionProduct() {
-    return ForeignKey.<ProductFields, ProductRow>of("purchasing.FK_PurchaseOrderDetail_Product_ProductID").withColumnPair(productid(), ProductFields::productid);
+    return ForeignKey.<ProductFields, ProductRow>of("purchasing.FK_PurchaseOrderDetail_Product_ProductID").<ProductId>withColumnPair(productid(), ProductFields::productid);
   };
 
   default ForeignKey<PurchaseorderheaderFields, PurchaseorderheaderRow> fkPurchaseorderheader() {
-    return ForeignKey.<PurchaseorderheaderFields, PurchaseorderheaderRow>of("purchasing.FK_PurchaseOrderDetail_PurchaseOrderHeader_PurchaseOrderID").withColumnPair(purchaseorderid(), PurchaseorderheaderFields::purchaseorderid);
+    return ForeignKey.<PurchaseorderheaderFields, PurchaseorderheaderRow>of("purchasing.FK_PurchaseOrderDetail_PurchaseOrderHeader_PurchaseOrderID").<PurchaseorderheaderId>withColumnPair(purchaseorderid(), PurchaseorderheaderFields::purchaseorderid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(PurchaseorderdetailId compositeId) {

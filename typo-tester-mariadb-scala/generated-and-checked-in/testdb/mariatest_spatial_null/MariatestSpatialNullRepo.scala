@@ -6,17 +6,16 @@
 package testdb.mariatest_spatial_null
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait MariatestSpatialNullRepo {
   def delete: DeleteBuilder[MariatestSpatialNullFields, MariatestSpatialNullRow]
 
-  def deleteById(id: MariatestSpatialNullId)(using c: Connection): java.lang.Boolean
+  def deleteById(id: MariatestSpatialNullId)(using c: Connection): Boolean
 
-  def deleteByIds(ids: Array[MariatestSpatialNullId])(using c: Connection): Integer
+  def deleteByIds(ids: Array[MariatestSpatialNullId])(using c: Connection): Int
 
   def insert(unsaved: MariatestSpatialNullRow)(using c: Connection): MariatestSpatialNullRow
 
@@ -24,19 +23,19 @@ trait MariatestSpatialNullRepo {
 
   def select: SelectBuilder[MariatestSpatialNullFields, MariatestSpatialNullRow]
 
-  def selectAll(using c: Connection): java.util.List[MariatestSpatialNullRow]
+  def selectAll(using c: Connection): List[MariatestSpatialNullRow]
 
-  def selectById(id: MariatestSpatialNullId)(using c: Connection): Optional[MariatestSpatialNullRow]
+  def selectById(id: MariatestSpatialNullId)(using c: Connection): Option[MariatestSpatialNullRow]
 
-  def selectByIds(ids: Array[MariatestSpatialNullId])(using c: Connection): java.util.List[MariatestSpatialNullRow]
+  def selectByIds(ids: Array[MariatestSpatialNullId])(using c: Connection): List[MariatestSpatialNullRow]
 
-  def selectByIdsTracked(ids: Array[MariatestSpatialNullId])(using c: Connection): java.util.Map[MariatestSpatialNullId, MariatestSpatialNullRow]
+  def selectByIdsTracked(ids: Array[MariatestSpatialNullId])(using c: Connection): Map[MariatestSpatialNullId, MariatestSpatialNullRow]
 
   def update: UpdateBuilder[MariatestSpatialNullFields, MariatestSpatialNullRow]
 
-  def update(row: MariatestSpatialNullRow)(using c: Connection): java.lang.Boolean
+  def update(row: MariatestSpatialNullRow)(using c: Connection): Boolean
 
   def upsert(unsaved: MariatestSpatialNullRow)(using c: Connection): MariatestSpatialNullRow
 
-  def upsertBatch(unsaved: java.util.Iterator[MariatestSpatialNullRow])(using c: Connection): java.util.List[MariatestSpatialNullRow]
+  def upsertBatch(unsaved: Iterator[MariatestSpatialNullRow])(using c: Connection): List[MariatestSpatialNullRow]
 }

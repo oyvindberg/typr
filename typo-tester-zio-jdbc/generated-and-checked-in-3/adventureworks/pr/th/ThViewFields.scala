@@ -9,9 +9,9 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.production.transactionhistory.TransactionhistoryId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait ThViewFields {
   def id: Field[TransactionhistoryId, ThViewRow]
@@ -20,18 +20,18 @@ trait ThViewFields {
   def referenceorderid: Field[Int, ThViewRow]
   def referenceorderlineid: Field[Int, ThViewRow]
   def transactiondate: Field[TypoLocalDateTime, ThViewRow]
-  def transactiontype: Field[/* bpchar, max 1 chars */ String, ThViewRow]
+  def transactiontype: Field[String, ThViewRow]
   def quantity: Field[Int, ThViewRow]
   def actualcost: Field[BigDecimal, ThViewRow]
   def modifieddate: Field[TypoLocalDateTime, ThViewRow]
 }
 
 object ThViewFields {
-  lazy val structure: Relation[ThViewFields, ThViewRow] =
+  lazy val structure: RelationStructure[ThViewFields, ThViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ThViewFields, ThViewRow] {
+    extends RelationStructure[ThViewFields, ThViewRow] {
 
     override lazy val fields: ThViewFields = new ThViewFields {
       override def id = Field[TransactionhistoryId, ThViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
@@ -40,7 +40,7 @@ object ThViewFields {
       override def referenceorderid = Field[Int, ThViewRow](_path, "referenceorderid", None, None, x => x.referenceorderid, (row, value) => row.copy(referenceorderid = value))
       override def referenceorderlineid = Field[Int, ThViewRow](_path, "referenceorderlineid", None, None, x => x.referenceorderlineid, (row, value) => row.copy(referenceorderlineid = value))
       override def transactiondate = Field[TypoLocalDateTime, ThViewRow](_path, "transactiondate", Some("text"), None, x => x.transactiondate, (row, value) => row.copy(transactiondate = value))
-      override def transactiontype = Field[/* bpchar, max 1 chars */ String, ThViewRow](_path, "transactiontype", None, None, x => x.transactiontype, (row, value) => row.copy(transactiontype = value))
+      override def transactiontype = Field[String, ThViewRow](_path, "transactiontype", None, None, x => x.transactiontype, (row, value) => row.copy(transactiontype = value))
       override def quantity = Field[Int, ThViewRow](_path, "quantity", None, None, x => x.quantity, (row, value) => row.copy(quantity = value))
       override def actualcost = Field[BigDecimal, ThViewRow](_path, "actualcost", None, None, x => x.actualcost, (row, value) => row.copy(actualcost = value))
       override def modifieddate = Field[TypoLocalDateTime, ThViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))

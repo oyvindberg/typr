@@ -7,11 +7,11 @@ package adventureworks.sales.salesterritory;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -24,7 +24,7 @@ public record SalesterritoryRowUnsaved(
     */
   CountryregionId countryregioncode,
   /** Geographic area to which the sales territory belong. */
-  /* max 50 chars */ String group,
+  String group,
   /** Default: nextval('sales.salesterritory_territoryid_seq'::regclass)
     * Primary key for SalesTerritory records.
     */
@@ -50,9 +50,9 @@ public record SalesterritoryRowUnsaved(
     */
   Defaulted<BigDecimal> costlastyear,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SalesterritoryRowUnsaved(
     /** Sales territory description */
@@ -62,7 +62,7 @@ public record SalesterritoryRowUnsaved(
       */
     CountryregionId countryregioncode,
     /** Geographic area to which the sales territory belong. */
-    /* max 50 chars */ String group
+    String group
   ) {
     this(name, countryregioncode, group, new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
   };
@@ -80,7 +80,7 @@ public record SalesterritoryRowUnsaved(
   };
 
   /** Geographic area to which the sales territory belong. */
-  public SalesterritoryRowUnsaved withGroup(/* max 50 chars */ String group) {
+  public SalesterritoryRowUnsaved withGroup(String group) {
     return new SalesterritoryRowUnsaved(name, countryregioncode, group, territoryid, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate);
   };
 
@@ -124,12 +124,12 @@ public record SalesterritoryRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public SalesterritoryRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public SalesterritoryRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new SalesterritoryRowUnsaved(name, countryregioncode, group, territoryid, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalesterritoryRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SalesterritoryRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SalesterritoryRowUnsaved(name, countryregioncode, group, territoryid, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate);
   };
 
@@ -151,9 +151,9 @@ public record SalesterritoryRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.costlastyear, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public SalesterritoryRow toRow(
@@ -162,8 +162,8 @@ public record SalesterritoryRowUnsaved(
     java.util.function.Supplier<BigDecimal> saleslastyearDefault,
     java.util.function.Supplier<BigDecimal> costytdDefault,
     java.util.function.Supplier<BigDecimal> costlastyearDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new SalesterritoryRow(territoryid.getOrElse(territoryidDefault), name, countryregioncode, group, salesytd.getOrElse(salesytdDefault), saleslastyear.getOrElse(saleslastyearDefault), costytd.getOrElse(costytdDefault), costlastyear.getOrElse(costlastyearDefault), rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

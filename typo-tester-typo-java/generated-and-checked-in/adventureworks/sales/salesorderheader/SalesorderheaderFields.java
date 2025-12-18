@@ -5,9 +5,6 @@
  */
 package adventureworks.sales.salesorderheader;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.address.AddressFields;
 import adventureworks.person.address.AddressId;
 import adventureworks.person.address.AddressRow;
@@ -33,49 +30,51 @@ import adventureworks.sales.salesterritory.SalesterritoryId;
 import adventureworks.sales.salesterritory.SalesterritoryRow;
 import adventureworks.userdefined.CustomCreditcardId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SalesorderheaderFields extends FieldsExpr<SalesorderheaderRow> {
-  record Impl(List<Path> _path) implements SalesorderheaderFields, Relation<SalesorderheaderFields, SalesorderheaderRow> {
+  record Impl(List<Path> _path) implements SalesorderheaderFields, RelationStructure<SalesorderheaderFields, SalesorderheaderRow> {
     @Override
     public IdField<SalesorderheaderId, SalesorderheaderRow> salesorderid() {
       return new IdField<SalesorderheaderId, SalesorderheaderRow>(_path, "salesorderid", SalesorderheaderRow::salesorderid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withSalesorderid(value), SalesorderheaderId.pgType);
     };
 
     @Override
-    public Field<TypoShort, SalesorderheaderRow> revisionnumber() {
-      return new Field<TypoShort, SalesorderheaderRow>(_path, "revisionnumber", SalesorderheaderRow::revisionnumber, Optional.empty(), Optional.of("int2"), (row, value) -> row.withRevisionnumber(value), TypoShort.pgType);
+    public Field<Short, SalesorderheaderRow> revisionnumber() {
+      return new Field<Short, SalesorderheaderRow>(_path, "revisionnumber", SalesorderheaderRow::revisionnumber, Optional.empty(), Optional.of("int2"), (row, value) -> row.withRevisionnumber(value), PgTypes.int2);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SalesorderheaderRow> orderdate() {
-      return new Field<TypoLocalDateTime, SalesorderheaderRow>(_path, "orderdate", SalesorderheaderRow::orderdate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withOrderdate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SalesorderheaderRow> orderdate() {
+      return new Field<LocalDateTime, SalesorderheaderRow>(_path, "orderdate", SalesorderheaderRow::orderdate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withOrderdate(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SalesorderheaderRow> duedate() {
-      return new Field<TypoLocalDateTime, SalesorderheaderRow>(_path, "duedate", SalesorderheaderRow::duedate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withDuedate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SalesorderheaderRow> duedate() {
+      return new Field<LocalDateTime, SalesorderheaderRow>(_path, "duedate", SalesorderheaderRow::duedate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withDuedate(value), PgTypes.timestamp);
     };
 
     @Override
-    public OptField<TypoLocalDateTime, SalesorderheaderRow> shipdate() {
-      return new OptField<TypoLocalDateTime, SalesorderheaderRow>(_path, "shipdate", SalesorderheaderRow::shipdate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withShipdate(value), TypoLocalDateTime.pgType);
+    public OptField<LocalDateTime, SalesorderheaderRow> shipdate() {
+      return new OptField<LocalDateTime, SalesorderheaderRow>(_path, "shipdate", SalesorderheaderRow::shipdate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withShipdate(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field<TypoShort, SalesorderheaderRow> status() {
-      return new Field<TypoShort, SalesorderheaderRow>(_path, "status", SalesorderheaderRow::status, Optional.empty(), Optional.of("int2"), (row, value) -> row.withStatus(value), TypoShort.pgType);
+    public Field<Short, SalesorderheaderRow> status() {
+      return new Field<Short, SalesorderheaderRow>(_path, "status", SalesorderheaderRow::status, Optional.empty(), Optional.of("int2"), (row, value) -> row.withStatus(value), PgTypes.int2);
     };
 
     @Override
@@ -129,8 +128,8 @@ public interface SalesorderheaderFields extends FieldsExpr<SalesorderheaderRow> 
     };
 
     @Override
-    public OptField</* max 15 chars */ String, SalesorderheaderRow> creditcardapprovalcode() {
-      return new OptField</* max 15 chars */ String, SalesorderheaderRow>(_path, "creditcardapprovalcode", SalesorderheaderRow::creditcardapprovalcode, Optional.empty(), Optional.empty(), (row, value) -> row.withCreditcardapprovalcode(value), PgTypes.text);
+    public OptField<String, SalesorderheaderRow> creditcardapprovalcode() {
+      return new OptField<String, SalesorderheaderRow>(_path, "creditcardapprovalcode", SalesorderheaderRow::creditcardapprovalcode, Optional.empty(), Optional.empty(), (row, value) -> row.withCreditcardapprovalcode(value), PgTypes.text);
     };
 
     @Override
@@ -159,46 +158,46 @@ public interface SalesorderheaderFields extends FieldsExpr<SalesorderheaderRow> 
     };
 
     @Override
-    public OptField</* max 128 chars */ String, SalesorderheaderRow> comment() {
-      return new OptField</* max 128 chars */ String, SalesorderheaderRow>(_path, "comment", SalesorderheaderRow::comment, Optional.empty(), Optional.empty(), (row, value) -> row.withComment(value), PgTypes.text);
+    public OptField<String, SalesorderheaderRow> comment() {
+      return new OptField<String, SalesorderheaderRow>(_path, "comment", SalesorderheaderRow::comment, Optional.empty(), Optional.empty(), (row, value) -> row.withComment(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoUUID, SalesorderheaderRow> rowguid() {
-      return new Field<TypoUUID, SalesorderheaderRow>(_path, "rowguid", SalesorderheaderRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, SalesorderheaderRow> rowguid() {
+      return new Field<UUID, SalesorderheaderRow>(_path, "rowguid", SalesorderheaderRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SalesorderheaderRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SalesorderheaderRow>(_path, "modifieddate", SalesorderheaderRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SalesorderheaderRow> modifieddate() {
+      return new Field<LocalDateTime, SalesorderheaderRow>(_path, "modifieddate", SalesorderheaderRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SalesorderheaderRow>> columns() {
-      return List.of(this.salesorderid(), this.revisionnumber(), this.orderdate(), this.duedate(), this.shipdate(), this.status(), this.onlineorderflag(), this.purchaseordernumber(), this.accountnumber(), this.customerid(), this.salespersonid(), this.territoryid(), this.billtoaddressid(), this.shiptoaddressid(), this.shipmethodid(), this.creditcardid(), this.creditcardapprovalcode(), this.currencyrateid(), this.subtotal(), this.taxamt(), this.freight(), this.totaldue(), this.comment(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.salesorderid(), this.revisionnumber(), this.orderdate(), this.duedate(), this.shipdate(), this.status(), this.onlineorderflag(), this.purchaseordernumber(), this.accountnumber(), this.customerid(), this.salespersonid(), this.territoryid(), this.billtoaddressid(), this.shiptoaddressid(), this.shipmethodid(), this.creditcardid(), this.creditcardapprovalcode(), this.currencyrateid(), this.subtotal(), this.taxamt(), this.freight(), this.totaldue(), this.comment(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SalesorderheaderFields, SalesorderheaderRow> copy(List<Path> _path) {
+    public RelationStructure<SalesorderheaderFields, SalesorderheaderRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<SalesorderheaderId, SalesorderheaderRow> salesorderid();
 
-  Field<TypoShort, SalesorderheaderRow> revisionnumber();
+  Field<Short, SalesorderheaderRow> revisionnumber();
 
-  Field<TypoLocalDateTime, SalesorderheaderRow> orderdate();
+  Field<LocalDateTime, SalesorderheaderRow> orderdate();
 
-  Field<TypoLocalDateTime, SalesorderheaderRow> duedate();
+  Field<LocalDateTime, SalesorderheaderRow> duedate();
 
-  OptField<TypoLocalDateTime, SalesorderheaderRow> shipdate();
+  OptField<LocalDateTime, SalesorderheaderRow> shipdate();
 
-  Field<TypoShort, SalesorderheaderRow> status();
+  Field<Short, SalesorderheaderRow> status();
 
   Field<Flag, SalesorderheaderRow> onlineorderflag();
 
@@ -234,40 +233,40 @@ public interface SalesorderheaderFields extends FieldsExpr<SalesorderheaderRow> 
 
   OptField</* max 128 chars */ String, SalesorderheaderRow> comment();
 
-  Field<TypoUUID, SalesorderheaderRow> rowguid();
+  Field<UUID, SalesorderheaderRow> rowguid();
 
-  Field<TypoLocalDateTime, SalesorderheaderRow> modifieddate();
+  Field<LocalDateTime, SalesorderheaderRow> modifieddate();
 
   default ForeignKey<AddressFields, AddressRow> fkPersonAddressBilltoaddressid() {
-    return ForeignKey.<AddressFields, AddressRow>of("sales.FK_SalesOrderHeader_Address_BillToAddressID").withColumnPair(billtoaddressid(), AddressFields::addressid);
+    return ForeignKey.<AddressFields, AddressRow>of("sales.FK_SalesOrderHeader_Address_BillToAddressID").<AddressId>withColumnPair(billtoaddressid(), AddressFields::addressid);
   };
 
   default ForeignKey<AddressFields, AddressRow> fkPersonAddressShiptoaddressid() {
-    return ForeignKey.<AddressFields, AddressRow>of("sales.FK_SalesOrderHeader_Address_ShipToAddressID").withColumnPair(shiptoaddressid(), AddressFields::addressid);
+    return ForeignKey.<AddressFields, AddressRow>of("sales.FK_SalesOrderHeader_Address_ShipToAddressID").<AddressId>withColumnPair(shiptoaddressid(), AddressFields::addressid);
   };
 
   default ForeignKey<CreditcardFields, CreditcardRow> fkCreditcard() {
-    return ForeignKey.<CreditcardFields, CreditcardRow>of("sales.FK_SalesOrderHeader_CreditCard_CreditCardID").withColumnPair(creditcardid(), CreditcardFields::creditcardid);
+    return ForeignKey.<CreditcardFields, CreditcardRow>of("sales.FK_SalesOrderHeader_CreditCard_CreditCardID").</* user-picked */ CustomCreditcardId>withColumnPair(creditcardid(), CreditcardFields::creditcardid);
   };
 
   default ForeignKey<CurrencyrateFields, CurrencyrateRow> fkCurrencyrate() {
-    return ForeignKey.<CurrencyrateFields, CurrencyrateRow>of("sales.FK_SalesOrderHeader_CurrencyRate_CurrencyRateID").withColumnPair(currencyrateid(), CurrencyrateFields::currencyrateid);
+    return ForeignKey.<CurrencyrateFields, CurrencyrateRow>of("sales.FK_SalesOrderHeader_CurrencyRate_CurrencyRateID").<CurrencyrateId>withColumnPair(currencyrateid(), CurrencyrateFields::currencyrateid);
   };
 
   default ForeignKey<CustomerFields, CustomerRow> fkCustomer() {
-    return ForeignKey.<CustomerFields, CustomerRow>of("sales.FK_SalesOrderHeader_Customer_CustomerID").withColumnPair(customerid(), CustomerFields::customerid);
+    return ForeignKey.<CustomerFields, CustomerRow>of("sales.FK_SalesOrderHeader_Customer_CustomerID").<CustomerId>withColumnPair(customerid(), CustomerFields::customerid);
   };
 
   default ForeignKey<SalespersonFields, SalespersonRow> fkSalesperson() {
-    return ForeignKey.<SalespersonFields, SalespersonRow>of("sales.FK_SalesOrderHeader_SalesPerson_SalesPersonID").withColumnPair(salespersonid(), SalespersonFields::businessentityid);
+    return ForeignKey.<SalespersonFields, SalespersonRow>of("sales.FK_SalesOrderHeader_SalesPerson_SalesPersonID").<BusinessentityId>withColumnPair(salespersonid(), SalespersonFields::businessentityid);
   };
 
   default ForeignKey<SalesterritoryFields, SalesterritoryRow> fkSalesterritory() {
-    return ForeignKey.<SalesterritoryFields, SalesterritoryRow>of("sales.FK_SalesOrderHeader_SalesTerritory_TerritoryID").withColumnPair(territoryid(), SalesterritoryFields::territoryid);
+    return ForeignKey.<SalesterritoryFields, SalesterritoryRow>of("sales.FK_SalesOrderHeader_SalesTerritory_TerritoryID").<SalesterritoryId>withColumnPair(territoryid(), SalesterritoryFields::territoryid);
   };
 
   default ForeignKey<ShipmethodFields, ShipmethodRow> fkPurchasingShipmethod() {
-    return ForeignKey.<ShipmethodFields, ShipmethodRow>of("sales.FK_SalesOrderHeader_ShipMethod_ShipMethodID").withColumnPair(shipmethodid(), ShipmethodFields::shipmethodid);
+    return ForeignKey.<ShipmethodFields, ShipmethodRow>of("sales.FK_SalesOrderHeader_ShipMethod_ShipMethodID").<ShipmethodId>withColumnPair(shipmethodid(), ShipmethodFields::shipmethodid);
   };
 
   @Override

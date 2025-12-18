@@ -5,12 +5,12 @@
  */
 package adventureworks.pr.i
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoXml
 import adventureworks.production.illustration.IllustrationId
-import java.util.Optional
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.data.Xml
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pr.i */
 data class IViewRow(
@@ -19,11 +19,11 @@ data class IViewRow(
   /** Points to [adventureworks.production.illustration.IllustrationRow.illustrationid] */
   val illustrationid: IllustrationId,
   /** Points to [adventureworks.production.illustration.IllustrationRow.diagram] */
-  val diagram: Optional<TypoXml>,
+  val diagram: Xml,
   /** Points to [adventureworks.production.illustration.IllustrationRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<IViewRow> = RowParsers.of(IllustrationId.pgType, IllustrationId.pgType, TypoXml.pgType.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> IViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.illustrationid, row.diagram, row.modifieddate) })
+    val _rowParser: RowParser<IViewRow> = RowParsers.of(IllustrationId.pgType, IllustrationId.pgType, PgTypes.xml, PgTypes.timestamp, { t0, t1, t2, t3 -> IViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.illustrationid, row.diagram, row.modifieddate) })
   }
 }

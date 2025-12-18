@@ -6,14 +6,14 @@
 package adventureworks.production.productcosthistory
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.productcosthistory
   * Changes in the cost of a product over time.
@@ -27,35 +27,35 @@ data class ProductcosthistoryRow(
   /** Product cost start date.
     * Constraint CK_ProductCostHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Product cost end date.
     * Constraint CK_ProductCostHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val enddate: Optional<TypoLocalDateTime>,
+  val enddate: LocalDateTime?,
   /** Standard cost of the product.
     * Constraint CK_ProductCostHistory_StandardCost affecting columns standardcost: ((standardcost >= 0.00))
     */
   val standardcost: BigDecimal,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): ProductcosthistoryId = ProductcosthistoryId(productid, startdate)
 
   fun id(): ProductcosthistoryId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): ProductcosthistoryRowUnsaved = ProductcosthistoryRowUnsaved(productid, startdate, enddate, standardcost, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): ProductcosthistoryRowUnsaved = ProductcosthistoryRowUnsaved(productid, startdate, enddate, standardcost, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductcosthistoryRow> = RowParsers.of(ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> ProductcosthistoryRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.productid, row.startdate, row.enddate, row.standardcost, row.modifieddate) })
+    val _rowParser: RowParser<ProductcosthistoryRow> = RowParsers.of(ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp.nullable(), PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> ProductcosthistoryRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.productid, row.startdate, row.enddate, row.standardcost, row.modifieddate) })
 
     fun apply(
       compositeId: ProductcosthistoryId,
-      enddate: Optional<TypoLocalDateTime>,
+      enddate: LocalDateTime?,
       standardcost: BigDecimal,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): ProductcosthistoryRow = ProductcosthistoryRow(compositeId.productid, compositeId.startdate, enddate, standardcost, modifieddate)
 
     val pgText: PgText<ProductcosthistoryRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

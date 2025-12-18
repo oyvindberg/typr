@@ -10,56 +10,57 @@ import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.public.Flag
 import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
-import java.util.Optional
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface VstateprovincecountryregionMVFields : FieldsExpr<VstateprovincecountryregionMVRow> {
-  override fun columns(): List<FieldLike<*, VstateprovincecountryregionMVRow>>
+  abstract override fun columns(): List<FieldLike<*, VstateprovincecountryregionMVRow>>
 
-  fun countryregioncode(): Field<CountryregionId, VstateprovincecountryregionMVRow>
+  abstract fun countryregioncode(): Field<CountryregionId, VstateprovincecountryregionMVRow>
 
-  fun countryregionname(): Field<Name, VstateprovincecountryregionMVRow>
+  abstract fun countryregionname(): Field<Name, VstateprovincecountryregionMVRow>
 
-  fun isonlystateprovinceflag(): Field<Flag, VstateprovincecountryregionMVRow>
+  abstract fun isonlystateprovinceflag(): Field<Flag, VstateprovincecountryregionMVRow>
 
-  override fun rowParser(): RowParser<VstateprovincecountryregionMVRow> = VstateprovincecountryregionMVRow._rowParser
+  override fun rowParser(): RowParser<VstateprovincecountryregionMVRow> = VstateprovincecountryregionMVRow._rowParser.underlying
 
-  fun stateprovincecode(): Field</* bpchar, max 3 chars */ String, VstateprovincecountryregionMVRow>
+  abstract fun stateprovincecode(): Field<String, VstateprovincecountryregionMVRow>
 
-  fun stateprovinceid(): Field<StateprovinceId, VstateprovincecountryregionMVRow>
+  abstract fun stateprovinceid(): Field<StateprovinceId, VstateprovincecountryregionMVRow>
 
-  fun stateprovincename(): Field<Name, VstateprovincecountryregionMVRow>
+  abstract fun stateprovincename(): Field<Name, VstateprovincecountryregionMVRow>
 
-  fun territoryid(): Field<SalesterritoryId, VstateprovincecountryregionMVRow>
+  abstract fun territoryid(): Field<SalesterritoryId, VstateprovincecountryregionMVRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : VstateprovincecountryregionMVFields, Relation<VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow> {
-      override fun stateprovinceid(): Field<StateprovinceId, VstateprovincecountryregionMVRow> = Field<StateprovinceId, VstateprovincecountryregionMVRow>(_path, "stateprovinceid", VstateprovincecountryregionMVRow::stateprovinceid, Optional.empty(), Optional.empty(), { row, value -> row.copy(stateprovinceid = value) }, StateprovinceId.pgType)
+    data class Impl(val _path: List<Path>) : VstateprovincecountryregionMVFields, RelationStructure<VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow> {
+      override fun stateprovinceid(): Field<StateprovinceId, VstateprovincecountryregionMVRow> = Field<StateprovinceId, VstateprovincecountryregionMVRow>(_path, "stateprovinceid", VstateprovincecountryregionMVRow::stateprovinceid, null, null, { row, value -> row.copy(stateprovinceid = value) }, StateprovinceId.pgType)
 
-      override fun stateprovincecode(): Field</* bpchar, max 3 chars */ String, VstateprovincecountryregionMVRow> = Field</* bpchar, max 3 chars */ String, VstateprovincecountryregionMVRow>(_path, "stateprovincecode", VstateprovincecountryregionMVRow::stateprovincecode, Optional.empty(), Optional.empty(), { row, value -> row.copy(stateprovincecode = value) }, PgTypes.bpchar)
+      override fun stateprovincecode(): Field<String, VstateprovincecountryregionMVRow> = Field<String, VstateprovincecountryregionMVRow>(_path, "stateprovincecode", VstateprovincecountryregionMVRow::stateprovincecode, null, null, { row, value -> row.copy(stateprovincecode = value) }, PgTypes.bpchar)
 
-      override fun isonlystateprovinceflag(): Field<Flag, VstateprovincecountryregionMVRow> = Field<Flag, VstateprovincecountryregionMVRow>(_path, "isonlystateprovinceflag", VstateprovincecountryregionMVRow::isonlystateprovinceflag, Optional.empty(), Optional.empty(), { row, value -> row.copy(isonlystateprovinceflag = value) }, Flag.pgType)
+      override fun isonlystateprovinceflag(): Field<Flag, VstateprovincecountryregionMVRow> = Field<Flag, VstateprovincecountryregionMVRow>(_path, "isonlystateprovinceflag", VstateprovincecountryregionMVRow::isonlystateprovinceflag, null, null, { row, value -> row.copy(isonlystateprovinceflag = value) }, Flag.pgType)
 
-      override fun stateprovincename(): Field<Name, VstateprovincecountryregionMVRow> = Field<Name, VstateprovincecountryregionMVRow>(_path, "stateprovincename", VstateprovincecountryregionMVRow::stateprovincename, Optional.empty(), Optional.empty(), { row, value -> row.copy(stateprovincename = value) }, Name.pgType)
+      override fun stateprovincename(): Field<Name, VstateprovincecountryregionMVRow> = Field<Name, VstateprovincecountryregionMVRow>(_path, "stateprovincename", VstateprovincecountryregionMVRow::stateprovincename, null, null, { row, value -> row.copy(stateprovincename = value) }, Name.pgType)
 
-      override fun territoryid(): Field<SalesterritoryId, VstateprovincecountryregionMVRow> = Field<SalesterritoryId, VstateprovincecountryregionMVRow>(_path, "territoryid", VstateprovincecountryregionMVRow::territoryid, Optional.empty(), Optional.empty(), { row, value -> row.copy(territoryid = value) }, SalesterritoryId.pgType)
+      override fun territoryid(): Field<SalesterritoryId, VstateprovincecountryregionMVRow> = Field<SalesterritoryId, VstateprovincecountryregionMVRow>(_path, "territoryid", VstateprovincecountryregionMVRow::territoryid, null, null, { row, value -> row.copy(territoryid = value) }, SalesterritoryId.pgType)
 
-      override fun countryregioncode(): Field<CountryregionId, VstateprovincecountryregionMVRow> = Field<CountryregionId, VstateprovincecountryregionMVRow>(_path, "countryregioncode", VstateprovincecountryregionMVRow::countryregioncode, Optional.empty(), Optional.empty(), { row, value -> row.copy(countryregioncode = value) }, CountryregionId.pgType)
+      override fun countryregioncode(): Field<CountryregionId, VstateprovincecountryregionMVRow> = Field<CountryregionId, VstateprovincecountryregionMVRow>(_path, "countryregioncode", VstateprovincecountryregionMVRow::countryregioncode, null, null, { row, value -> row.copy(countryregioncode = value) }, CountryregionId.pgType)
 
-      override fun countryregionname(): Field<Name, VstateprovincecountryregionMVRow> = Field<Name, VstateprovincecountryregionMVRow>(_path, "countryregionname", VstateprovincecountryregionMVRow::countryregionname, Optional.empty(), Optional.empty(), { row, value -> row.copy(countryregionname = value) }, Name.pgType)
+      override fun countryregionname(): Field<Name, VstateprovincecountryregionMVRow> = Field<Name, VstateprovincecountryregionMVRow>(_path, "countryregionname", VstateprovincecountryregionMVRow::countryregionname, null, null, { row, value -> row.copy(countryregionname = value) }, Name.pgType)
 
-      override fun columns(): List<FieldLike<*, VstateprovincecountryregionMVRow>> = listOf(this.stateprovinceid(), this.stateprovincecode(), this.isonlystateprovinceflag(), this.stateprovincename(), this.territoryid(), this.countryregioncode(), this.countryregionname())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, VstateprovincecountryregionMVRow>> = listOf(this.stateprovinceid().underlying, this.stateprovincecode().underlying, this.isonlystateprovinceflag().underlying, this.stateprovincename().underlying, this.territoryid().underlying, this.countryregioncode().underlying, this.countryregionname().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

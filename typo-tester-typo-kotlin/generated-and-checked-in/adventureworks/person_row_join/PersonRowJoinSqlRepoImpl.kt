@@ -7,13 +7,9 @@ package adventureworks.person_row_join
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.Fragment.interpolate
 
 class PersonRowJoinSqlRepoImpl() : PersonRowJoinSqlRepo {
-  override fun apply(c: Connection): List<PersonRowJoinSqlRow> = interpolate(typo.runtime.Fragment.lit("""
-    SELECT s.businessentityid,
-           (select array_agg(ROW(a.emailaddress, a.rowguid)) from person.emailaddress a where a.businessentityid = s.businessentityid) as email,
-           (select ARRAY[ROW(a.emailaddress, a.rowguid)] from person.emailaddress a where a.businessentityid = s.businessentityid) as emails
-    FROM sales.salesperson s
-  """.trimMargin())).query(PersonRowJoinSqlRow._rowParser.all()).runUnchecked(c)
+  override fun apply(c: Connection): List<PersonRowJoinSqlRow> = interpolate(Fragment.lit("SELECT s.businessentityid,\n       (select array_agg(ROW(a.emailaddress, a.rowguid)) from person.emailaddress a where a.businessentityid = s.businessentityid) as email,\n       (select ARRAY[ROW(a.emailaddress, a.rowguid)] from person.emailaddress a where a.businessentityid = s.businessentityid) as emails\nFROM sales.salesperson s\n")).query(PersonRowJoinSqlRow._rowParser.all()).runUnchecked(c)
 }

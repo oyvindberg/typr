@@ -158,7 +158,7 @@ public record PaymentsRowUnsaved(
       sb.append(MariaText.DELIMETER);
       PaymentMethodsId.pgType.mariaText().unsafeEncode(row.methodId, sb);
       sb.append(MariaText.DELIMETER);
-      MariaTypes.decimal.mariaText().unsafeEncode(row.amount, sb);
+      MariaTypes.numeric.mariaText().unsafeEncode(row.amount, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.transactionId, sb);
       sb.append(MariaText.DELIMETER);

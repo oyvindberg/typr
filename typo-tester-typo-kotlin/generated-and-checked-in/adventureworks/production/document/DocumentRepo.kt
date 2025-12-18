@@ -5,95 +5,94 @@
  */
 package adventureworks.production.document
 
-import adventureworks.customtypes.TypoUUID
 import java.sql.Connection
-import java.util.Optional
+import java.util.UUID
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface DocumentRepo {
-  fun delete(): DeleteBuilder<DocumentFields, DocumentRow>
+  abstract fun delete(): DeleteBuilder<DocumentFields, DocumentRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     documentnode: DocumentId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     documentnodes: Array<DocumentId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: DocumentRow,
     c: Connection
   ): DocumentRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: DocumentRowUnsaved,
     c: Connection
   ): DocumentRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<DocumentRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<DocumentRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<DocumentFields, DocumentRow>
+  abstract fun select(): SelectBuilder<DocumentFields, DocumentRow>
 
-  fun selectAll(c: Connection): List<DocumentRow>
+  abstract fun selectAll(c: Connection): List<DocumentRow>
 
-  fun selectById(
+  abstract fun selectById(
     documentnode: DocumentId,
     c: Connection
-  ): Optional<DocumentRow>
+  ): DocumentRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     documentnodes: Array<DocumentId>,
     c: Connection
   ): List<DocumentRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     documentnodes: Array<DocumentId>,
     c: Connection
   ): Map<DocumentId, DocumentRow>
 
-  fun selectByUniqueRowguid(
-    rowguid: TypoUUID,
+  abstract fun selectByUniqueRowguid(
+    rowguid: UUID,
     c: Connection
-  ): Optional<DocumentRow>
+  ): DocumentRow?
 
-  fun update(): UpdateBuilder<DocumentFields, DocumentRow>
+  abstract fun update(): UpdateBuilder<DocumentFields, DocumentRow>
 
-  fun update(
+  abstract fun update(
     row: DocumentRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: DocumentRow,
     c: Connection
   ): DocumentRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<DocumentRow>,
     c: Connection
   ): List<DocumentRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<DocumentRow>,
     batchSize: Int,
     c: Connection

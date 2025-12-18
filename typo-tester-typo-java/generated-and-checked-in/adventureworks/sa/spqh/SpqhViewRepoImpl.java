@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class SpqhViewRepoImpl implements SpqhViewRepo {
@@ -19,9 +20,6 @@ public class SpqhViewRepoImpl implements SpqhViewRepo {
 
   @Override
   public List<SpqhViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text
-       from "sa"."spqh"
-    """)).query(SpqhViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\"\nfrom \"sa\".\"spqh\"\n")).query(SpqhViewRow._rowParser.all()).runUnchecked(c);
   };
 }

@@ -7,11 +7,12 @@ package testdb.order_details
 
 import java.sql.Connection
 import testdb.orders.OrdersId
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Fragment
+import typo.scaladsl.Fragment.sql
 
 class OrderDetailsSqlRepoImpl extends OrderDetailsSqlRepo {
-  override def apply(orderId: /* user-picked */ OrdersId)(using c: Connection): java.util.List[OrderDetailsSqlRow] = {
-    interpolate"""-- Get order with all items
+  override def apply(orderId: /* user-picked */ OrdersId)(using c: Connection): List[OrderDetailsSqlRow] = {
+    sql"""-- Get order with all items
     SELECT o.order_id,
            o.order_number,
            o.order_status,
@@ -31,7 +32,7 @@ class OrderDetailsSqlRepoImpl extends OrderDetailsSqlRepo {
            oi.line_total
     FROM orders o
     JOIN order_items oi ON o.order_id = oi.order_id
-    WHERE o.order_id = ${/* user-picked */ OrdersId.pgType.encode(orderId)}
+    WHERE o.order_id = ${Fragment.encode(OrdersId.pgType, orderId)}
     """.query(OrderDetailsSqlRow.`_rowParser`.all()).runUnchecked(c)
   }
 }

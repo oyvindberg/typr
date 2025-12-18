@@ -6,17 +6,16 @@
 package testdb.brands
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait BrandsRepo {
   def delete: DeleteBuilder[BrandsFields, BrandsRow]
 
-  def deleteById(brandId: BrandsId)(using c: Connection): java.lang.Boolean
+  def deleteById(brandId: BrandsId)(using c: Connection): Boolean
 
-  def deleteByIds(brandIds: Array[BrandsId])(using c: Connection): Integer
+  def deleteByIds(brandIds: Array[BrandsId])(using c: Connection): Int
 
   def insert(unsaved: BrandsRow)(using c: Connection): BrandsRow
 
@@ -24,21 +23,21 @@ trait BrandsRepo {
 
   def select: SelectBuilder[BrandsFields, BrandsRow]
 
-  def selectAll(using c: Connection): java.util.List[BrandsRow]
+  def selectAll(using c: Connection): List[BrandsRow]
 
-  def selectById(brandId: BrandsId)(using c: Connection): Optional[BrandsRow]
+  def selectById(brandId: BrandsId)(using c: Connection): Option[BrandsRow]
 
-  def selectByIds(brandIds: Array[BrandsId])(using c: Connection): java.util.List[BrandsRow]
+  def selectByIds(brandIds: Array[BrandsId])(using c: Connection): List[BrandsRow]
 
-  def selectByIdsTracked(brandIds: Array[BrandsId])(using c: Connection): java.util.Map[BrandsId, BrandsRow]
+  def selectByIdsTracked(brandIds: Array[BrandsId])(using c: Connection): Map[BrandsId, BrandsRow]
 
-  def selectByUniqueSlug(slug: String)(using c: Connection): Optional[BrandsRow]
+  def selectByUniqueSlug(slug: String)(using c: Connection): Option[BrandsRow]
 
   def update: UpdateBuilder[BrandsFields, BrandsRow]
 
-  def update(row: BrandsRow)(using c: Connection): java.lang.Boolean
+  def update(row: BrandsRow)(using c: Connection): Boolean
 
   def upsert(unsaved: BrandsRow)(using c: Connection): BrandsRow
 
-  def upsertBatch(unsaved: java.util.Iterator[BrandsRow])(using c: Connection): java.util.List[BrandsRow]
+  def upsertBatch(unsaved: Iterator[BrandsRow])(using c: Connection): List[BrandsRow]
 }

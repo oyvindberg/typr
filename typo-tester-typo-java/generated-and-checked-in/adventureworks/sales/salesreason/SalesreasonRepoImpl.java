@@ -5,7 +5,6 @@
  */
 package adventureworks.sales.salesreason;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -19,10 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class SalesreasonRepoImpl implements SalesreasonRepo {
   @Override
@@ -35,13 +33,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     SalesreasonId salesreasonid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "sales"."salesreason" where "salesreasonid" = 
-      """),
-      SalesreasonId.pgType.encode(salesreasonid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"sales\".\"salesreason\" where \"salesreasonid\" = "), Fragment.encode(SalesreasonId.pgType, salesreasonid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -49,14 +41,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     SalesreasonId[] salesreasonids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "sales"."salesreason"
-                  where "salesreasonid" = ANY("""),
-               SalesreasonId.pgTypeArray.encode(salesreasonids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"sales\".\"salesreason\"\nwhere \"salesreasonid\" = ANY("), Fragment.encode(SalesreasonId.pgTypeArray, salesreasonids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -66,22 +51,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     SalesreasonRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "sales"."salesreason"("salesreasonid", "name", "reasontype", "modifieddate")
-         values ("""),
-      SalesreasonId.pgType.encode(unsaved.salesreasonid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      Name.pgType.encode(unsaved.reasontype()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "salesreasonid", "name", "reasontype", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"sales\".\"salesreason\"(\"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\")\nvalues ("), Fragment.encode(SalesreasonId.pgType, unsaved.salesreasonid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(Name.pgType, unsaved.reasontype()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\"\n"))
       .updateReturning(SalesreasonRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -90,28 +60,19 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     SalesreasonRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"reasontype\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.reasontype()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.reasontype()), Fragment.lit("::varchar")));
     unsaved.salesreasonid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"salesreasonid\""));
-        values.add(interpolate(
-        SalesreasonId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(SalesreasonId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -120,26 +81,10 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "sales"."salesreason"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "salesreasonid", "name", "reasontype", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"sales\".\"salesreason\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\"\n"));;
     return q.updateReturning(SalesreasonRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -149,9 +94,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "sales"."salesreason"("salesreasonid", "name", "reasontype", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, SalesreasonRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"sales\".\"salesreason\"(\"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, SalesreasonRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -161,9 +104,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "sales"."salesreason"("name", "reasontype", "salesreasonid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, SalesreasonRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"sales\".\"salesreason\"(\"name\", \"reasontype\", \"salesreasonid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, SalesreasonRowUnsaved.pgText);
   };
 
   @Override
@@ -173,10 +114,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
 
   @Override
   public List<SalesreasonRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "salesreasonid", "name", "reasontype", "modifieddate"::text
-       from "sales"."salesreason"
-    """)).query(SalesreasonRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\"\nfrom \"sales\".\"salesreason\"\n")).query(SalesreasonRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -184,14 +122,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     SalesreasonId salesreasonid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "salesreasonid", "name", "reasontype", "modifieddate"::text
-         from "sales"."salesreason"
-         where "salesreasonid" = """),
-      SalesreasonId.pgType.encode(salesreasonid),
-      typo.runtime.Fragment.lit("")
-    ).query(SalesreasonRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\"\nfrom \"sales\".\"salesreason\"\nwhere \"salesreasonid\" = "), Fragment.encode(SalesreasonId.pgType, salesreasonid), Fragment.lit("")).query(SalesreasonRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -199,14 +130,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     SalesreasonId[] salesreasonids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "salesreasonid", "name", "reasontype", "modifieddate"::text
-         from "sales"."salesreason"
-         where "salesreasonid" = ANY("""),
-      SalesreasonId.pgTypeArray.encode(salesreasonids),
-      typo.runtime.Fragment.lit(")")
-    ).query(SalesreasonRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\"\nfrom \"sales\".\"salesreason\"\nwhere \"salesreasonid\" = ANY("), Fragment.encode(SalesreasonId.pgTypeArray, salesreasonids), Fragment.lit(")")).query(SalesreasonRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -221,7 +145,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
 
   @Override
   public UpdateBuilder<SalesreasonFields, SalesreasonRow> update() {
-    return UpdateBuilder.of("\"sales\".\"salesreason\"", SalesreasonFields.structure(), SalesreasonRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"sales\".\"salesreason\"", SalesreasonFields.structure(), SalesreasonRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -230,25 +154,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     Connection c
   ) {
     SalesreasonId salesreasonid = row.salesreasonid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "sales"."salesreason"
-         set "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "reasontype" = """),
-      Name.pgType.encode(row.reasontype()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "salesreasonid" = """),
-      SalesreasonId.pgType.encode(salesreasonid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"sales\".\"salesreason\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"reasontype\" = "), Fragment.encode(Name.pgType, row.reasontype()), Fragment.lit("::varchar,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"salesreasonid\" = "), Fragment.encode(SalesreasonId.pgType, salesreasonid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -256,26 +162,7 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     SalesreasonRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "sales"."salesreason"("salesreasonid", "name", "reasontype", "modifieddate")
-         values ("""),
-      SalesreasonId.pgType.encode(unsaved.salesreasonid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      Name.pgType.encode(unsaved.reasontype()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("salesreasonid")
-         do update set
-           "name" = EXCLUDED."name",
-         "reasontype" = EXCLUDED."reasontype",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "salesreasonid", "name", "reasontype", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"sales\".\"salesreason\"(\"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\")\nvalues ("), Fragment.encode(SalesreasonId.pgType, unsaved.salesreasonid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(Name.pgType, unsaved.reasontype()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"salesreasonid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"reasontype\" = EXCLUDED.\"reasontype\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\""))
       .updateReturning(SalesreasonRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -285,17 +172,9 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     Iterator<SalesreasonRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "sales"."salesreason"("salesreasonid", "name", "reasontype", "modifieddate")
-                values (?::int4, ?::varchar, ?::varchar, ?::timestamp)
-                on conflict ("salesreasonid")
-                do update set
-                  "name" = EXCLUDED."name",
-                "reasontype" = EXCLUDED."reasontype",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "salesreasonid", "name", "reasontype", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"sales\".\"salesreason\"(\"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::varchar, ?::timestamp)\non conflict (\"salesreasonid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"reasontype\" = EXCLUDED.\"reasontype\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\""))
       .updateManyReturning(SalesreasonRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -305,21 +184,8 @@ public class SalesreasonRepoImpl implements SalesreasonRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table salesreason_TEMP (like "sales"."salesreason") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy salesreason_TEMP("salesreasonid", "name", "reasontype", "modifieddate") from stdin
-    """), batchSize, unsaved, c, SalesreasonRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "sales"."salesreason"("salesreasonid", "name", "reasontype", "modifieddate")
-       select * from salesreason_TEMP
-       on conflict ("salesreasonid")
-       do update set
-         "name" = EXCLUDED."name",
-       "reasontype" = EXCLUDED."reasontype",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table salesreason_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table salesreason_TEMP (like \"sales\".\"salesreason\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy salesreason_TEMP(\"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\") from stdin", batchSize, unsaved, c, SalesreasonRow.pgText);
+    return interpolate(Fragment.lit("insert into \"sales\".\"salesreason\"(\"salesreasonid\", \"name\", \"reasontype\", \"modifieddate\")\nselect * from salesreason_TEMP\non conflict (\"salesreasonid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"reasontype\" = EXCLUDED.\"reasontype\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table salesreason_TEMP;")).update().runUnchecked(c);
   };
 }

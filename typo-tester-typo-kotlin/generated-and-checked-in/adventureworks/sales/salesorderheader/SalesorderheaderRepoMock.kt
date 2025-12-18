@@ -8,21 +8,19 @@ package adventureworks.sales.salesorderheader
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class SalesorderheaderRepoMock(
   val toRow: (SalesorderheaderRowUnsaved) -> SalesorderheaderRow,
@@ -33,7 +31,7 @@ data class SalesorderheaderRepoMock(
   override fun deleteById(
     salesorderid: SalesorderheaderId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(salesorderid)).isPresent()
+  ): Boolean = map.remove(salesorderid) != null
 
   override fun deleteByIds(
     salesorderids: Array<SalesorderheaderId>,
@@ -41,7 +39,7 @@ data class SalesorderheaderRepoMock(
   ): Int {
     var count = 0
     for (id in salesorderids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class SalesorderheaderRepoMock(
     c: Connection
   ): SalesorderheaderRow {
     if (map.containsKey(unsaved.salesorderid)) {
-      throw RuntimeException(str("id $unsaved.salesorderid already exists"))
+      throw RuntimeException("id " + unsaved.salesorderid + " already exists")
     }
     map[unsaved.salesorderid] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class SalesorderheaderRepoMock(
   override fun selectById(
     salesorderid: SalesorderheaderId,
     c: Connection
-  ): Optional<SalesorderheaderRow> = Optional.ofNullable(map[salesorderid])
+  ): SalesorderheaderRow? = map[salesorderid]
 
   override fun selectByIds(
     salesorderids: Array<SalesorderheaderId>,
@@ -109,9 +107,9 @@ data class SalesorderheaderRepoMock(
   ): List<SalesorderheaderRow> {
     val result = ArrayList<SalesorderheaderRow>()
     for (id in salesorderids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class SalesorderheaderRepoMock(
     row: SalesorderheaderRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.salesorderid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.salesorderid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.salesorderid] = row
     }

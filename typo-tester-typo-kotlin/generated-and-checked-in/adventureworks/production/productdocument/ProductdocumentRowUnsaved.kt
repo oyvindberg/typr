@@ -7,10 +7,11 @@ package adventureworks.production.productdocument
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `production.productdocument` which has not been persisted yet */
 data class ProductdocumentRowUnsaved(
@@ -19,7 +20,7 @@ data class ProductdocumentRowUnsaved(
     */
   val productid: ProductId,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault(),
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault(),
   /** Default: '/'::character varying
     * Document identification number. Foreign key to Document.DocumentNode.
     * Points to [adventureworks.production.document.DocumentRow.documentnode]
@@ -27,7 +28,7 @@ data class ProductdocumentRowUnsaved(
   val documentnode: Defaulted<DocumentId> = UseDefault()
 ) {
   fun toRow(
-    modifieddateDefault: () -> TypoLocalDateTime,
+    modifieddateDefault: () -> LocalDateTime,
     documentnodeDefault: () -> DocumentId
   ): ProductdocumentRow = ProductdocumentRow(productid = productid, modifieddate = modifieddate.getOrElse(modifieddateDefault), documentnode = documentnode.getOrElse(documentnodeDefault))
 
@@ -35,7 +36,7 @@ data class ProductdocumentRowUnsaved(
     val pgText: PgText<ProductdocumentRowUnsaved> =
       PgText.instance({ row, sb -> ProductId.pgType.pgText().unsafeEncode(row.productid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb)
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(DocumentId.pgType.pgText()).unsafeEncode(row.documentnode, sb) })
   }

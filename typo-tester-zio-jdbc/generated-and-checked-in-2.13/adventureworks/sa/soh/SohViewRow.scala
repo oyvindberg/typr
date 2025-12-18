@@ -39,21 +39,21 @@ case class SohViewRow(
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.duedate]] */
   duedate: TypoLocalDateTime,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.shipdate]] */
-  shipdate: Option[TypoLocalDateTime],
+  shipdate: TypoLocalDateTime,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.status]] */
   status: TypoShort,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.onlineorderflag]] */
   onlineorderflag: Flag,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.purchaseordernumber]] */
-  purchaseordernumber: Option[OrderNumber],
+  purchaseordernumber: OrderNumber,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.accountnumber]] */
-  accountnumber: Option[AccountNumber],
+  accountnumber: AccountNumber,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.customerid]] */
   customerid: CustomerId,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid]] */
-  salespersonid: Option[BusinessentityId],
+  salespersonid: BusinessentityId,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.territoryid]] */
-  territoryid: Option[SalesterritoryId],
+  territoryid: SalesterritoryId,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.billtoaddressid]] */
   billtoaddressid: AddressId,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.shiptoaddressid]] */
@@ -61,11 +61,11 @@ case class SohViewRow(
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.shipmethodid]] */
   shipmethodid: ShipmethodId,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.creditcardid]] */
-  creditcardid: Option[/* user-picked */ CustomCreditcardId],
+  creditcardid: /* user-picked */ CustomCreditcardId,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.creditcardapprovalcode]] */
-  creditcardapprovalcode: Option[/* max 15 chars */ String],
+  creditcardapprovalcode: String,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.currencyrateid]] */
-  currencyrateid: Option[CurrencyrateId],
+  currencyrateid: CurrencyrateId,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.subtotal]] */
   subtotal: BigDecimal,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.taxamt]] */
@@ -73,9 +73,9 @@ case class SohViewRow(
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.freight]] */
   freight: BigDecimal,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.totaldue]] */
-  totaldue: Option[BigDecimal],
+  totaldue: BigDecimal,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.comment]] */
-  comment: Option[/* max 128 chars */ String],
+  comment: String,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.sales.salesorderheader.SalesorderheaderRow.modifieddate]] */
@@ -93,25 +93,25 @@ object SohViewRow {
             revisionnumber = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
             orderdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
             duedate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-            shipdate = JdbcDecoder.optionDecoder(TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 5, rs)._2,
+            shipdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             status = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
             onlineorderflag = Flag.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
-            purchaseordernumber = JdbcDecoder.optionDecoder(OrderNumber.jdbcDecoder).unsafeDecode(columIndex + 8, rs)._2,
-            accountnumber = JdbcDecoder.optionDecoder(AccountNumber.jdbcDecoder).unsafeDecode(columIndex + 9, rs)._2,
+            purchaseordernumber = OrderNumber.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2,
+            accountnumber = AccountNumber.jdbcDecoder.unsafeDecode(columIndex + 9, rs)._2,
             customerid = CustomerId.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2,
-            salespersonid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 11, rs)._2,
-            territoryid = JdbcDecoder.optionDecoder(SalesterritoryId.jdbcDecoder).unsafeDecode(columIndex + 12, rs)._2,
+            salespersonid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 11, rs)._2,
+            territoryid = SalesterritoryId.jdbcDecoder.unsafeDecode(columIndex + 12, rs)._2,
             billtoaddressid = AddressId.jdbcDecoder.unsafeDecode(columIndex + 13, rs)._2,
             shiptoaddressid = AddressId.jdbcDecoder.unsafeDecode(columIndex + 14, rs)._2,
             shipmethodid = ShipmethodId.jdbcDecoder.unsafeDecode(columIndex + 15, rs)._2,
-            creditcardid = JdbcDecoder.optionDecoder(CustomCreditcardId.jdbcDecoder).unsafeDecode(columIndex + 16, rs)._2,
-            creditcardapprovalcode = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 17, rs)._2,
-            currencyrateid = JdbcDecoder.optionDecoder(CurrencyrateId.jdbcDecoder).unsafeDecode(columIndex + 18, rs)._2,
+            creditcardid = CustomCreditcardId.jdbcDecoder.unsafeDecode(columIndex + 16, rs)._2,
+            creditcardapprovalcode = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 17, rs)._2,
+            currencyrateid = CurrencyrateId.jdbcDecoder.unsafeDecode(columIndex + 18, rs)._2,
             subtotal = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 19, rs)._2,
             taxamt = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 20, rs)._2,
             freight = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 21, rs)._2,
-            totaldue = JdbcDecoder.optionDecoder(JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 22, rs)._2,
-            comment = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 23, rs)._2,
+            totaldue = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 22, rs)._2,
+            comment = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 23, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 24, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 25, rs)._2
           )
@@ -125,25 +125,25 @@ object SohViewRow {
       val revisionnumber = jsonObj.get("revisionnumber").toRight("Missing field 'revisionnumber'").flatMap(_.as(TypoShort.jsonDecoder))
       val orderdate = jsonObj.get("orderdate").toRight("Missing field 'orderdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       val duedate = jsonObj.get("duedate").toRight("Missing field 'duedate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-      val shipdate = jsonObj.get("shipdate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(JsonDecoder.option(TypoLocalDateTime.jsonDecoder)))
+      val shipdate = jsonObj.get("shipdate").toRight("Missing field 'shipdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       val status = jsonObj.get("status").toRight("Missing field 'status'").flatMap(_.as(TypoShort.jsonDecoder))
       val onlineorderflag = jsonObj.get("onlineorderflag").toRight("Missing field 'onlineorderflag'").flatMap(_.as(Flag.jsonDecoder))
-      val purchaseordernumber = jsonObj.get("purchaseordernumber").fold[Either[String, Option[OrderNumber]]](Right(None))(_.as(JsonDecoder.option(OrderNumber.jsonDecoder)))
-      val accountnumber = jsonObj.get("accountnumber").fold[Either[String, Option[AccountNumber]]](Right(None))(_.as(JsonDecoder.option(AccountNumber.jsonDecoder)))
+      val purchaseordernumber = jsonObj.get("purchaseordernumber").toRight("Missing field 'purchaseordernumber'").flatMap(_.as(OrderNumber.jsonDecoder))
+      val accountnumber = jsonObj.get("accountnumber").toRight("Missing field 'accountnumber'").flatMap(_.as(AccountNumber.jsonDecoder))
       val customerid = jsonObj.get("customerid").toRight("Missing field 'customerid'").flatMap(_.as(CustomerId.jsonDecoder))
-      val salespersonid = jsonObj.get("salespersonid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
-      val territoryid = jsonObj.get("territoryid").fold[Either[String, Option[SalesterritoryId]]](Right(None))(_.as(JsonDecoder.option(SalesterritoryId.jsonDecoder)))
+      val salespersonid = jsonObj.get("salespersonid").toRight("Missing field 'salespersonid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val territoryid = jsonObj.get("territoryid").toRight("Missing field 'territoryid'").flatMap(_.as(SalesterritoryId.jsonDecoder))
       val billtoaddressid = jsonObj.get("billtoaddressid").toRight("Missing field 'billtoaddressid'").flatMap(_.as(AddressId.jsonDecoder))
       val shiptoaddressid = jsonObj.get("shiptoaddressid").toRight("Missing field 'shiptoaddressid'").flatMap(_.as(AddressId.jsonDecoder))
       val shipmethodid = jsonObj.get("shipmethodid").toRight("Missing field 'shipmethodid'").flatMap(_.as(ShipmethodId.jsonDecoder))
-      val creditcardid = jsonObj.get("creditcardid").fold[Either[String, Option[CustomCreditcardId]]](Right(None))(_.as(JsonDecoder.option(CustomCreditcardId.jsonDecoder)))
-      val creditcardapprovalcode = jsonObj.get("creditcardapprovalcode").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val currencyrateid = jsonObj.get("currencyrateid").fold[Either[String, Option[CurrencyrateId]]](Right(None))(_.as(JsonDecoder.option(CurrencyrateId.jsonDecoder)))
+      val creditcardid = jsonObj.get("creditcardid").toRight("Missing field 'creditcardid'").flatMap(_.as(CustomCreditcardId.jsonDecoder))
+      val creditcardapprovalcode = jsonObj.get("creditcardapprovalcode").toRight("Missing field 'creditcardapprovalcode'").flatMap(_.as(JsonDecoder.string))
+      val currencyrateid = jsonObj.get("currencyrateid").toRight("Missing field 'currencyrateid'").flatMap(_.as(CurrencyrateId.jsonDecoder))
       val subtotal = jsonObj.get("subtotal").toRight("Missing field 'subtotal'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
       val taxamt = jsonObj.get("taxamt").toRight("Missing field 'taxamt'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
       val freight = jsonObj.get("freight").toRight("Missing field 'freight'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
-      val totaldue = jsonObj.get("totaldue").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.scalaBigDecimal)))
-      val comment = jsonObj.get("comment").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val totaldue = jsonObj.get("totaldue").toRight("Missing field 'totaldue'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
+      val comment = jsonObj.get("comment").toRight("Missing field 'comment'").flatMap(_.as(JsonDecoder.string))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       if (id.isRight && salesorderid.isRight && revisionnumber.isRight && orderdate.isRight && duedate.isRight && shipdate.isRight && status.isRight && onlineorderflag.isRight && purchaseordernumber.isRight && accountnumber.isRight && customerid.isRight && salespersonid.isRight && territoryid.isRight && billtoaddressid.isRight && shiptoaddressid.isRight && shipmethodid.isRight && creditcardid.isRight && creditcardapprovalcode.isRight && currencyrateid.isRight && subtotal.isRight && taxamt.isRight && freight.isRight && totaldue.isRight && comment.isRight && rowguid.isRight && modifieddate.isRight)
@@ -172,7 +172,7 @@ object SohViewRow {
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.duedate, indent, out)
         out.write(",")
         out.write(""""shipdate":""")
-        JsonEncoder.option(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.shipdate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.shipdate, indent, out)
         out.write(",")
         out.write(""""status":""")
         TypoShort.jsonEncoder.unsafeEncode(a.status, indent, out)
@@ -181,19 +181,19 @@ object SohViewRow {
         Flag.jsonEncoder.unsafeEncode(a.onlineorderflag, indent, out)
         out.write(",")
         out.write(""""purchaseordernumber":""")
-        JsonEncoder.option(OrderNumber.jsonEncoder).unsafeEncode(a.purchaseordernumber, indent, out)
+        OrderNumber.jsonEncoder.unsafeEncode(a.purchaseordernumber, indent, out)
         out.write(",")
         out.write(""""accountnumber":""")
-        JsonEncoder.option(AccountNumber.jsonEncoder).unsafeEncode(a.accountnumber, indent, out)
+        AccountNumber.jsonEncoder.unsafeEncode(a.accountnumber, indent, out)
         out.write(",")
         out.write(""""customerid":""")
         CustomerId.jsonEncoder.unsafeEncode(a.customerid, indent, out)
         out.write(",")
         out.write(""""salespersonid":""")
-        JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.salespersonid, indent, out)
+        BusinessentityId.jsonEncoder.unsafeEncode(a.salespersonid, indent, out)
         out.write(",")
         out.write(""""territoryid":""")
-        JsonEncoder.option(SalesterritoryId.jsonEncoder).unsafeEncode(a.territoryid, indent, out)
+        SalesterritoryId.jsonEncoder.unsafeEncode(a.territoryid, indent, out)
         out.write(",")
         out.write(""""billtoaddressid":""")
         AddressId.jsonEncoder.unsafeEncode(a.billtoaddressid, indent, out)
@@ -205,13 +205,13 @@ object SohViewRow {
         ShipmethodId.jsonEncoder.unsafeEncode(a.shipmethodid, indent, out)
         out.write(",")
         out.write(""""creditcardid":""")
-        JsonEncoder.option(CustomCreditcardId.jsonEncoder).unsafeEncode(a.creditcardid, indent, out)
+        CustomCreditcardId.jsonEncoder.unsafeEncode(a.creditcardid, indent, out)
         out.write(",")
         out.write(""""creditcardapprovalcode":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.creditcardapprovalcode, indent, out)
+        JsonEncoder.string.unsafeEncode(a.creditcardapprovalcode, indent, out)
         out.write(",")
         out.write(""""currencyrateid":""")
-        JsonEncoder.option(CurrencyrateId.jsonEncoder).unsafeEncode(a.currencyrateid, indent, out)
+        CurrencyrateId.jsonEncoder.unsafeEncode(a.currencyrateid, indent, out)
         out.write(",")
         out.write(""""subtotal":""")
         JsonEncoder.scalaBigDecimal.unsafeEncode(a.subtotal, indent, out)
@@ -223,10 +223,10 @@ object SohViewRow {
         JsonEncoder.scalaBigDecimal.unsafeEncode(a.freight, indent, out)
         out.write(",")
         out.write(""""totaldue":""")
-        JsonEncoder.option(JsonEncoder.scalaBigDecimal).unsafeEncode(a.totaldue, indent, out)
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.totaldue, indent, out)
         out.write(",")
         out.write(""""comment":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.comment, indent, out)
+        JsonEncoder.string.unsafeEncode(a.comment, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

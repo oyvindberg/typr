@@ -15,7 +15,7 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `person.countryregion` */
-case class CountryregionId(value: /* max 3 chars */ String) extends scala.AnyVal
+case class CountryregionId(value: String) extends scala.AnyVal
 
 object CountryregionId {
   implicit lazy val arrayJdbcDecoder: JdbcDecoder[Array[CountryregionId]] = adventureworks.StringArrayDecoder.map(_.map(CountryregionId.apply))
@@ -24,7 +24,7 @@ object CountryregionId {
 
   implicit lazy val arraySetter: Setter[Array[CountryregionId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
 
-  implicit lazy val bijection: Bijection[CountryregionId, /* max 3 chars */ String] = Bijection.apply[CountryregionId, /* max 3 chars */ String](_.value)(CountryregionId.apply)
+  implicit lazy val bijection: Bijection[CountryregionId, String] = Bijection.apply[CountryregionId, String](_.value)(CountryregionId.apply)
 
   implicit lazy val jdbcDecoder: JdbcDecoder[CountryregionId] = JdbcDecoder.stringDecoder.map(CountryregionId.apply)
 

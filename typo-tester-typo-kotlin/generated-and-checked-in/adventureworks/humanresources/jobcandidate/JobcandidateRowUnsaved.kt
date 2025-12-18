@@ -7,40 +7,41 @@ package adventureworks.humanresources.jobcandidate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.data.Xml
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `humanresources.jobcandidate` which has not been persisted yet */
 data class JobcandidateRowUnsaved(
   /** Employee identification number if applicant was hired. Foreign key to Employee.BusinessEntityID.
     * Points to [adventureworks.humanresources.employee.EmployeeRow.businessentityid]
     */
-  val businessentityid: Optional<BusinessentityId> = Optional.empty(),
+  val businessentityid: BusinessentityId? = null,
   /** RÃ©sumÃ© in XML format. */
-  val resume: Optional<TypoXml> = Optional.empty(),
+  val resume: Xml? = null,
   /** Default: nextval('humanresources.jobcandidate_jobcandidateid_seq'::regclass)
     * Primary key for JobCandidate records.
     */
   val jobcandidateid: Defaulted<JobcandidateId> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     jobcandidateidDefault: () -> JobcandidateId,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): JobcandidateRow = JobcandidateRow(jobcandidateid = jobcandidateid.getOrElse(jobcandidateidDefault), businessentityid = businessentityid, resume = resume, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<JobcandidateRowUnsaved> =
-      PgText.instance({ row, sb -> BusinessentityId.pgType.opt().pgText().unsafeEncode(row.businessentityid, sb)
+      PgText.instance({ row, sb -> BusinessentityId.pgType.nullable().pgText().unsafeEncode(row.businessentityid, sb)
       sb.append(PgText.DELIMETER)
-      TypoXml.pgType.opt().pgText().unsafeEncode(row.resume, sb)
+      PgTypes.xml.nullable().pgText().unsafeEncode(row.resume, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(JobcandidateId.pgType.pgText()).unsafeEncode(row.jobcandidateid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

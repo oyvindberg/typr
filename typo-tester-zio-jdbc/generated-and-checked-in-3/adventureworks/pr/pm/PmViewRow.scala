@@ -26,9 +26,9 @@ case class PmViewRow(
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.catalogdescription]] */
-  catalogdescription: Option[TypoXml],
+  catalogdescription: TypoXml,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.instructions]] */
-  instructions: Option[TypoXml],
+  instructions: TypoXml,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
@@ -44,8 +44,8 @@ object PmViewRow {
             id = ProductmodelId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             productmodelid = ProductmodelId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             name = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-            catalogdescription = JdbcDecoder.optionDecoder(using TypoXml.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
-            instructions = JdbcDecoder.optionDecoder(using TypoXml.jdbcDecoder).unsafeDecode(columIndex + 4, rs)._2,
+            catalogdescription = TypoXml.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            instructions = TypoXml.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2
           )
@@ -57,8 +57,8 @@ object PmViewRow {
       val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using ProductmodelId.jsonDecoder))
       val productmodelid = jsonObj.get("productmodelid").toRight("Missing field 'productmodelid'").flatMap(_.as(using ProductmodelId.jsonDecoder))
       val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
-      val catalogdescription = jsonObj.get("catalogdescription").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(using JsonDecoder.option(using TypoXml.jsonDecoder)))
-      val instructions = jsonObj.get("instructions").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(using JsonDecoder.option(using TypoXml.jsonDecoder)))
+      val catalogdescription = jsonObj.get("catalogdescription").toRight("Missing field 'catalogdescription'").flatMap(_.as(using TypoXml.jsonDecoder))
+      val instructions = jsonObj.get("instructions").toRight("Missing field 'instructions'").flatMap(_.as(using TypoXml.jsonDecoder))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (id.isRight && productmodelid.isRight && name.isRight && catalogdescription.isRight && instructions.isRight && rowguid.isRight && modifieddate.isRight)
@@ -81,10 +81,10 @@ object PmViewRow {
         Name.jsonEncoder.unsafeEncode(a.name, indent, out)
         out.write(",")
         out.write(""""catalogdescription":""")
-        JsonEncoder.option(using TypoXml.jsonEncoder).unsafeEncode(a.catalogdescription, indent, out)
+        TypoXml.jsonEncoder.unsafeEncode(a.catalogdescription, indent, out)
         out.write(",")
         out.write(""""instructions":""")
-        JsonEncoder.option(using TypoXml.jsonEncoder).unsafeEncode(a.instructions, indent, out)
+        TypoXml.jsonEncoder.unsafeEncode(a.instructions, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

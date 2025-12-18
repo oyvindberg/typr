@@ -6,7 +6,7 @@
 package adventureworks.information_schema
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -20,9 +20,9 @@ data class SqlIdentifier(@JsonValue val value: String) {
       Bijection.of(SqlIdentifier::value, ::SqlIdentifier)
 
     val pgType: PgType<SqlIdentifier> =
-      PgTypes.text.bimap(::SqlIdentifier, SqlIdentifier::value).renamed("\"information_schema\".\"sql_identifier\"")
+      PgTypes.name.bimap(::SqlIdentifier, SqlIdentifier::value).renamed("\"information_schema\".\"sql_identifier\"")
 
     val pgTypeArray: PgType<Array<SqlIdentifier>> =
-      PgTypes.textArray.bimap({ xs -> arrayMap.map(xs, ::SqlIdentifier, SqlIdentifier::class.java) }, { xs -> arrayMap.map(xs, SqlIdentifier::value, String::class.java) }).renamed("\"information_schema\".\"sql_identifier\"[]")
+      PgTypes.nameArray.bimap({ xs -> arrayMap.map(xs, ::SqlIdentifier, SqlIdentifier::class.java) }, { xs -> arrayMap.map(xs, SqlIdentifier::value, String::class.java) }).renamed("\"information_schema\".\"sql_identifier\"[]")
   }
 }

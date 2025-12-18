@@ -6,9 +6,9 @@
 package testdb.mariatestnull
 
 import java.sql.Connection
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait MariatestnullRepo {
   def delete: DeleteBuilder[MariatestnullFields, MariatestnullRow]
@@ -19,7 +19,7 @@ trait MariatestnullRepo {
 
   def select: SelectBuilder[MariatestnullFields, MariatestnullRow]
 
-  def selectAll(using c: Connection): java.util.List[MariatestnullRow]
+  def selectAll(using c: Connection): List[MariatestnullRow]
 
   def update: UpdateBuilder[MariatestnullFields, MariatestnullRow]
 }

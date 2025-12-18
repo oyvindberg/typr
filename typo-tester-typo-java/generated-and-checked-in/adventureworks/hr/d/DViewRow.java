@@ -5,9 +5,10 @@
  */
 package adventureworks.hr.d;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.humanresources.department.DepartmentId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -22,7 +23,7 @@ public record DViewRow(
   /** Points to {@link adventureworks.humanresources.department.DepartmentRow#groupname()} */
   Name groupname,
   /** Points to {@link adventureworks.humanresources.department.DepartmentRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.humanresources.department.DepartmentRow#departmentid()} */
   public DViewRow withId(DepartmentId id) {
@@ -45,9 +46,9 @@ public record DViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.department.DepartmentRow#modifieddate()} */
-  public DViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public DViewRow withModifieddate(LocalDateTime modifieddate) {
     return new DViewRow(id, departmentid, name, groupname, modifieddate);
   };
 
-  static RowParser<DViewRow> _rowParser = RowParsers.of(DepartmentId.pgType, DepartmentId.pgType, Name.pgType, Name.pgType, TypoLocalDateTime.pgType, DViewRow::new, row -> new Object[]{row.id(), row.departmentid(), row.name(), row.groupname(), row.modifieddate()});;
+  static RowParser<DViewRow> _rowParser = RowParsers.of(DepartmentId.pgType, DepartmentId.pgType, Name.pgType, Name.pgType, PgTypes.timestamp, DViewRow::new, row -> new Object[]{row.id(), row.departmentid(), row.name(), row.groupname(), row.modifieddate()});;
 }

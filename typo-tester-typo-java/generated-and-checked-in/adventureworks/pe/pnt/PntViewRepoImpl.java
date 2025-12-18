@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class PntViewRepoImpl implements PntViewRepo {
@@ -19,9 +20,6 @@ public class PntViewRepoImpl implements PntViewRepo {
 
   @Override
   public List<PntViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "phonenumbertypeid", "name", "modifieddate"::text
-       from "pe"."pnt"
-    """)).query(PntViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"phonenumbertypeid\", \"name\", \"modifieddate\"\nfrom \"pe\".\"pnt\"\n")).query(PntViewRow._rowParser.all()).runUnchecked(c);
   };
 }

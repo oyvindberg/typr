@@ -5,10 +5,11 @@
  */
 package adventureworks.update_person_returning;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import java.sql.Connection;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import typo.runtime.Fragment;
 import typo.runtime.PgTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -16,25 +17,9 @@ public class UpdatePersonReturningSqlRepoImpl implements UpdatePersonReturningSq
   @Override
   public List<UpdatePersonReturningSqlRow> apply(
     /* nullability unknown */ Optional<String> suffix,
-    /* nullability unknown */ Optional<TypoLocalDateTime> cutoff,
+    /* nullability unknown */ Optional<LocalDateTime> cutoff,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         with row as (
-           update person.person
-         set firstname = firstname || '-' || """),
-      PgTypes.text.opt().encode(suffix),
-      typo.runtime.Fragment.lit("""
-   
-         where modifieddate < """),
-      TypoLocalDateTime.pgType.opt().encode(cutoff),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         returning firstname, modifieddate
-         )
-         select row."firstname", row."modifieddate"::text
-         from row""")
-    ).query(UpdatePersonReturningSqlRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("update person.person\nset firstname = firstname || '-' || "), Fragment.encode(PgTypes.text.opt(), suffix), Fragment.lit("\nwhere modifieddate < "), Fragment.encode(PgTypes.timestamp.opt(), cutoff), Fragment.lit("::timestamp\nreturning firstname, modifieddate")).query(UpdatePersonReturningSqlRow._rowParser.all()).runUnchecked(c);
   };
 }

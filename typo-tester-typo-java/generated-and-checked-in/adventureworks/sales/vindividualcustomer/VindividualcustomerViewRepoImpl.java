@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VindividualcustomerViewRepoImpl implements VindividualcustomerViewRepo {
@@ -19,9 +20,6 @@ public class VindividualcustomerViewRepoImpl implements VindividualcustomerViewR
 
   @Override
   public List<VindividualcustomerViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addresstype", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "demographics"
-       from "sales"."vindividualcustomer"
-    """)).query(VindividualcustomerViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"phonenumber\", \"phonenumbertype\", \"emailaddress\", \"emailpromotion\", \"addresstype\", \"addressline1\", \"addressline2\", \"city\", \"stateprovincename\", \"postalcode\", \"countryregionname\", \"demographics\"\nfrom \"sales\".\"vindividualcustomer\"\n")).query(VindividualcustomerViewRow._rowParser.all()).runUnchecked(c);
   };
 }

@@ -4,7 +4,7 @@ package codegen
 
 import typo.jvm.Code
 
-object PostgresAdapter extends DbAdapter {
+class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
   val dbType: DbType = DbType.PostgreSQL
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -16,69 +16,204 @@ object PostgresAdapter extends DbAdapter {
   def typeCast(value: Code, typeName: String): Code =
     if (typeName.isEmpty) value else code"$value::$typeName"
 
+  // Cast logic for reading from PostgreSQL
   def columnReadCast(col: ComputedColumn): Code =
-    SqlCast.fromPgCode(col)
+    readCast(col.dbCol.tpe).fold(jvm.Code.Empty)(_.asCode)
 
+  // Cast logic for writing to PostgreSQL
   def columnWriteCast(col: ComputedColumn): Code =
-    SqlCast.toPgCode(col)
+    writeCast(col.dbCol.tpe, col.dbCol.udtName).fold(jvm.Code.Empty)(_.asCode)
+
+  // Get the type name for write cast (used for array unnest casts)
+  def writeCastTypeName(col: ComputedColumn): Option[String] =
+    writeCast(col.dbCol.tpe, col.dbCol.udtName).map(_.typeName)
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SQL Cast Logic
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Cast to correctly insert into PG */
+  def writeCast(dbType: db.Type, udtName: Option[String]): Option[SqlCastValue] =
+    dbType match {
+      case x: db.PgType =>
+        x match {
+          case db.Unknown(sqlType)                                       => Some(SqlCastValue(sqlType))
+          case _: db.MariaType                                           => None
+          case db.PgType.EnumRef(enm)                                    => Some(SqlCastValue(enm.name.value))
+          case db.PgType.Boolean | db.PgType.Text | db.PgType.VarChar(_) => None
+          case _: db.PgType =>
+            udtName.map {
+              case ArrayName(x) => SqlCastValue(x + "[]")
+              case other        => SqlCastValue(other)
+            }
+        }
+      case _ => None
+    }
+
+  /** Avoid whatever the postgres driver does for these data formats by going through basic data types */
+  def readCast(dbType: db.Type): Option[SqlCastValue] =
+    dbType match {
+      case x: db.PgType =>
+        x match {
+          case db.Unknown(_) =>
+            Some(SqlCastValue("text"))
+          case db.PgType.Array(db.Unknown(_)) | db.PgType.Array(db.PgType.DomainRef(_, _, db.Unknown(_))) =>
+            Some(SqlCastValue("text[]"))
+          case db.PgType.DomainRef(_, _, underlying) =>
+            readCast(underlying)
+          case db.PgType.PGmoney =>
+            Some(SqlCastValue("numeric"))
+          case db.PgType.Vector =>
+            if (needsTimestampCasts) Some(SqlCastValue("float4[]")) else None
+          case db.PgType.Array(db.PgType.PGmoney) =>
+            Some(SqlCastValue("numeric[]"))
+          case db.PgType.Array(db.PgType.DomainRef(_, underlying, _)) =>
+            Some(SqlCastValue(underlying + "[]"))
+          case db.PgType.TimestampTz | db.PgType.Timestamp | db.PgType.TimeTz | db.PgType.Time | db.PgType.Date =>
+            if (needsTimestampCasts) Some(SqlCastValue("text")) else None
+          case db.PgType.Array(db.PgType.TimestampTz | db.PgType.Timestamp | db.PgType.TimeTz | db.PgType.Time | db.PgType.Date) =>
+            if (needsTimestampCasts) Some(SqlCastValue("text[]")) else None
+          case _ => None
+        }
+      case _ => None
+    }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 2: Runtime Type System
   // ═══════════════════════════════════════════════════════════════════════════
 
+  val KotlinDbTypes = jvm.Type.Qualified("typo.kotlindsl.KotlinDbTypes")
+  val KotlinNullableExtension = jvm.Type.Qualified("typo.kotlindsl.nullable")
+  val ScalaDbTypes = jvm.Type.Qualified("typo.scaladsl.ScalaDbTypes")
+  val ScalaDbTypeOps = jvm.Type.Qualified("typo.scaladsl.PgTypeOps")
   val Types: jvm.Type.Qualified = jvm.Type.Qualified("typo.runtime.PgTypes")
   val TypeClass: jvm.Type.Qualified = jvm.Type.Qualified("typo.runtime.PgType")
   val TextClass: jvm.Type.Qualified = jvm.Type.Qualified("typo.runtime.PgText")
   val typeFieldName: jvm.Ident = jvm.Ident("pgType")
   val textFieldName: jvm.Ident = jvm.Ident("pgText")
-  val dialectRef: Code = code"${jvm.Type.dsl.Dialect}.POSTGRESQL"
 
-  def lookupType(tpe: jvm.Type, pkg: jvm.QIdent, lang: Lang): Code =
-    jvm.Type.base(tpe) match {
-      case TypesJava.BigDecimal                    => code"$Types.numeric"
-      case TypesJava.BigInteger                    => code"$Types.numeric"
-      case TypesJava.Boolean | TypesKotlin.Boolean => code"$Types.bool"
-      case TypesJava.Double | TypesKotlin.Double   => code"$Types.float8"
-      case TypesJava.Float | TypesKotlin.Float     => code"$Types.float4"
-      case TypesJava.Byte | TypesKotlin.Byte       => code"$Types.tinyint"
-      case TypesJava.Short | TypesKotlin.Short     => code"$Types.int2"
-      case TypesJava.Integer | TypesKotlin.Int     => code"$Types.int4"
-      case TypesJava.Long | TypesKotlin.Long       => code"$Types.int8"
-      case TypesJava.String | TypesKotlin.String   => code"$Types.text"
-      case TypesJava.UUID                          => code"$Types.uuid"
-      case TypesJava.LocalDate                     => code"$Types.date"
-      case TypesJava.LocalTime                     => code"$Types.time"
-      case TypesJava.LocalDateTime                 => code"$Types.timestamp"
-      case TypesJava.runtime.Json                  => code"$Types.json"
-      case lang.Optional(targ)                     => code"${lookupType(targ, pkg, lang)}.opt()"
-      case lang.ByteArrayType                      => code"$Types.bytea"
-      // generated type
-      case x: jvm.Type.Qualified if x.value.idents.startsWith(pkg.idents) =>
-        code"$tpe.$typeFieldName"
-      // generated array type
-      case jvm.Type.ArrayOf(targ: jvm.Type.Qualified) =>
-        lookupType(targ, pkg, lang).code ++ code"Array"
-      case other => sys.error(s"PostgresAdapter.lookupType: Unsupported type: $other")
+  def dialectRef(lang: Lang): Code = code"${lang.dsl.Dialect}.POSTGRESQL"
+
+  def lookupType(typoType: TypoType, naming: Naming, typeSupport: TypeSupport): Code = typoType match {
+    case TypoType.Standard(_, dbType) =>
+      lookupByDbType(dbType, naming, typeSupport)
+
+    case TypoType.Nullable(_, inner) =>
+      val innerCode = lookupType(inner, naming, typeSupport)
+      typeSupport match {
+        case TypeSupportScala  => code"${jvm.Import(ScalaDbTypeOps)}$innerCode.nullable"
+        case TypeSupportKotlin => code"${jvm.Import(KotlinNullableExtension)}$innerCode.nullable()"
+        case _                 => code"$innerCode.opt()"
+      }
+
+    case TypoType.Generated(_, _, qualifiedType) =>
+      code"$qualifiedType.$typeFieldName"
+
+    case TypoType.UserDefined(_, _, userType) =>
+      userType match {
+        case Left(qualifiedType) =>
+          // Qualified user types must provide their own pgType field
+          code"$qualifiedType.$typeFieldName"
+        case Right(primitive) =>
+          // Well-known primitives use the adapter's lookup
+          lookupPrimitive(primitive, typeSupport)
+      }
+
+    case TypoType.Array(_, element) =>
+      // For Scala, use unboxed primitive arrays (int[], long[], etc.) for better performance
+      // For Java/Kotlin, use boxed arrays (Integer[], Long[], etc.)
+      typeSupport match {
+        case TypeSupportScala =>
+          element match {
+            case TypoType.Standard(_, dbType) =>
+              dbType match {
+                case db.PgType.Boolean => code"$Types.boolArrayUnboxed"
+                case db.PgType.Int2    => code"$Types.int2ArrayUnboxed"
+                case db.PgType.Int4    => code"$Types.int4ArrayUnboxed"
+                case db.PgType.Int8    => code"$Types.int8ArrayUnboxed"
+                case db.PgType.Float4  => code"$Types.float4ArrayUnboxed"
+                case db.PgType.Float8  => code"$Types.float8ArrayUnboxed"
+                case db.PgType.Numeric => code"$ScalaDbTypes.PgTypes.numericArray"
+                case _                 => code"${lookupType(element, naming, TypeSupportJava)}Array"
+              }
+            case _ => code"${lookupType(element, naming, TypeSupportJava)}Array"
+          }
+        case _ =>
+          // Java and Kotlin use boxed arrays
+          code"${lookupType(element, naming, TypeSupportJava)}Array"
+      }
+  }
+
+  def lookupPrimitive(primitive: analysis.WellKnownPrimitive, typeSupport: TypeSupport): Code = {
+    // Helper to get primitive type code based on language
+    def primitiveType(name: String): Code = {
+      val nameIdent = jvm.Ident(name)
+      typeSupport match {
+        case TypeSupportScala    => code"$ScalaDbTypes.PgTypes.$nameIdent"
+        case TypeSupportKotlin   => code"$KotlinDbTypes.PgTypes.$nameIdent"
+        case TypeSupportJava | _ => code"$Types.$nameIdent"
+      }
     }
 
-  def lookupTypeByDbType(dbType: db.Type, Types: jvm.Type.Qualified, naming: Naming): Code =
+    primitive match {
+      case analysis.WellKnownPrimitive.String     => code"$Types.text"
+      case analysis.WellKnownPrimitive.Boolean    => primitiveType("bool")
+      case analysis.WellKnownPrimitive.Byte       => primitiveType("int2")
+      case analysis.WellKnownPrimitive.Short      => primitiveType("int2")
+      case analysis.WellKnownPrimitive.Int        => primitiveType("int4")
+      case analysis.WellKnownPrimitive.Long       => primitiveType("int8")
+      case analysis.WellKnownPrimitive.Float      => primitiveType("float4")
+      case analysis.WellKnownPrimitive.Double     => primitiveType("float8")
+      case analysis.WellKnownPrimitive.BigDecimal =>
+        // BigDecimal uses java.math.BigDecimal in Kotlin, so use base PgTypes
+        typeSupport match {
+          case TypeSupportKotlin => code"$Types.numeric"
+          case _                 => primitiveType("numeric")
+        }
+      case analysis.WellKnownPrimitive.LocalDate     => code"$Types.date"
+      case analysis.WellKnownPrimitive.LocalTime     => code"$Types.time"
+      case analysis.WellKnownPrimitive.LocalDateTime => code"$Types.timestamp"
+      case analysis.WellKnownPrimitive.Instant       => code"$Types.timestamptz"
+      case analysis.WellKnownPrimitive.UUID          => code"$Types.uuid"
+    }
+  }
+
+  private def lookupByDbType(dbType: db.Type, naming: Naming, typeSupport: TypeSupport): Code = {
+    // Helper to get primitive type code based on language
+    def primitiveType(name: String): Code = {
+      val nameIdent = jvm.Ident(name)
+      typeSupport match {
+        case TypeSupportScala    => code"$ScalaDbTypes.PgTypes.$nameIdent"
+        case TypeSupportKotlin   => code"$KotlinDbTypes.PgTypes.$nameIdent"
+        case TypeSupportJava | _ => code"$Types.$nameIdent"
+      }
+    }
+
     dbType match {
-      case db.PgType.Boolean       => code"$Types.bool"
+      // Primitive types with language-specific overrides
+      case db.PgType.Boolean => primitiveType("bool")
+      case db.PgType.Int2    => primitiveType("int2")
+      case db.PgType.Int4    => primitiveType("int4")
+      case db.PgType.Int8    => primitiveType("int8")
+      case db.PgType.Float4  => primitiveType("float4")
+      case db.PgType.Float8  => primitiveType("float8")
+      case db.PgType.Numeric =>
+        // BigDecimal uses java.math.BigDecimal in Kotlin, so use base PgTypes
+        typeSupport match {
+          case TypeSupportKotlin => code"$Types.numeric"
+          case _                 => primitiveType("numeric")
+        }
+      case db.PgType.Hstore => primitiveType("hstore")
+
+      // Non-primitive types use base Types
       case db.PgType.Bytea         => code"$Types.bytea"
       case db.PgType.Bpchar(_)     => code"$Types.bpchar"
       case db.PgType.Char          => code"$Types.char"
       case db.PgType.Date          => code"$Types.date"
-      case db.PgType.Float4        => code"$Types.float4"
-      case db.PgType.Float8        => code"$Types.float8"
-      case db.PgType.Hstore        => code"$Types.hstore"
       case db.PgType.Inet          => code"$Types.inet"
-      case db.PgType.Int2          => code"$Types.int2"
-      case db.PgType.Int4          => code"$Types.int4"
-      case db.PgType.Int8          => code"$Types.int8"
       case db.PgType.Json          => code"$Types.json"
       case db.PgType.Jsonb         => code"$Types.jsonb"
       case db.PgType.Name          => code"$Types.name"
-      case db.PgType.Numeric       => code"$Types.numeric"
       case db.PgType.Oid           => code"$Types.oid"
       case db.PgType.PGInterval    => code"$Types.interval"
       case db.PgType.PGbox         => code"$Types.box"
@@ -116,18 +251,36 @@ object PostgresAdapter extends DbAdapter {
       case db.PgType.Xml           => code"$Types.xml"
       case db.PgType.VarChar(_)    => code"$Types.text"
       case db.PgType.Vector        => code"$Types.vector"
+      case db.Unknown(_)           => code"$Types.unknown"
 
       case db.PgType.DomainRef(name, _, _) =>
         code"${jvm.Type.Qualified(naming.domainName(name))}.$typeFieldName"
       case db.PgType.EnumRef(enm) =>
         code"${jvm.Type.Qualified(naming.enumName(enm.name))}.$typeFieldName"
       case db.PgType.Array(inner) =>
-        code"${lookupTypeByDbType(inner, Types, naming)}Array"
-      case db.Unknown(sqlType) =>
-        sys.error(s"PostgresAdapter.lookupTypeByDbType: Cannot lookup for unknown type: $sqlType")
+        // For Scala, use unboxed primitive arrays for better performance
+        // For Java/Kotlin, use boxed arrays
+        typeSupport match {
+          case TypeSupportScala =>
+            inner match {
+              case db.PgType.Boolean => code"$Types.boolArrayUnboxed"
+              case db.PgType.Int2    => code"$Types.int2ArrayUnboxed"
+              case db.PgType.Int4    => code"$Types.int4ArrayUnboxed"
+              case db.PgType.Int8    => code"$Types.int8ArrayUnboxed"
+              case db.PgType.Float4  => code"$Types.float4ArrayUnboxed"
+              case db.PgType.Float8  => code"$Types.float8ArrayUnboxed"
+              case db.PgType.Numeric => code"$ScalaDbTypes.PgTypes.numericArray"
+              case _                 => code"${lookupByDbType(inner, naming, TypeSupportJava)}Array"
+            }
+          case _ =>
+            // Java and Kotlin use boxed arrays
+            code"${lookupByDbType(inner, naming, TypeSupportJava)}Array"
+        }
+
       case _: db.MariaType =>
-        sys.error(s"PostgresAdapter.lookupTypeByDbType: Cannot lookup MariaDB type in PostgreSQL adapter")
+        sys.error(s"PostgresAdapter.lookupByDbType: Cannot lookup MariaDB type in PostgreSQL adapter")
     }
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 3: Capabilities
@@ -176,4 +329,9 @@ object PostgresAdapter extends DbAdapter {
 
   def createTempTableLike(tempName: String, sourceTable: Code): Code =
     code"create temporary table $tempName (like $sourceTable) on commit drop"
+}
+
+object PostgresAdapter {
+  val WithTimestampCasts = new PostgresAdapter(needsTimestampCasts = true)
+  val NoTimestampCasts = new PostgresAdapter(needsTimestampCasts = false)
 }

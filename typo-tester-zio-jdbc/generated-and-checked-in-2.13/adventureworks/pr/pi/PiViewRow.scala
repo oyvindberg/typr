@@ -26,7 +26,7 @@ case class PiViewRow(
   /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.locationid]] */
   locationid: LocationId,
   /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.shelf]] */
-  shelf: /* max 10 chars */ String,
+  shelf: String,
   /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.bin]] */
   bin: TypoShort,
   /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.quantity]] */

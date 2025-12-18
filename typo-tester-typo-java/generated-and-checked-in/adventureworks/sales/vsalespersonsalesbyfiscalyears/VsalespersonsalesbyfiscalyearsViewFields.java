@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VsalespersonsalesbyfiscalyearsViewFields extends FieldsExpr<VsalespersonsalesbyfiscalyearsViewRow> {
-  record Impl(List<Path> _path) implements VsalespersonsalesbyfiscalyearsViewFields, Relation<VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow> {
+  record Impl(List<Path> _path) implements VsalespersonsalesbyfiscalyearsViewFields, RelationStructure<VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow> {
     @Override
     public Field<Integer, VsalespersonsalesbyfiscalyearsViewRow> salesPersonID() {
       return new Field<Integer, VsalespersonsalesbyfiscalyearsViewRow>(_path, "SalesPersonID", VsalespersonsalesbyfiscalyearsViewRow::salesPersonID, Optional.empty(), Optional.empty(), (row, value) -> row.withSalesPersonID(value), PgTypes.int4);
@@ -55,17 +55,17 @@ public interface VsalespersonsalesbyfiscalyearsViewFields extends FieldsExpr<Vsa
 
     @Override
     public List<FieldLike<?, VsalespersonsalesbyfiscalyearsViewRow>> columns() {
-      return List.of(this.salesPersonID(), this.fullName(), this.jobTitle(), this.salesTerritory(), this._2012(), this._2013(), this._2014());
+      return java.util.List.of(this.salesPersonID(), this.fullName(), this.jobTitle(), this.salesTerritory(), this._2012(), this._2013(), this._2014());
     };
 
     @Override
-    public Relation<VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow> copy(List<Path> _path) {
+    public RelationStructure<VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<Integer, VsalespersonsalesbyfiscalyearsViewRow> salesPersonID();

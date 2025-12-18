@@ -13,14 +13,14 @@ import adventureworks.public.Flag
 import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait SpViewFields {
   def id: Field[StateprovinceId, SpViewRow]
   def stateprovinceid: Field[StateprovinceId, SpViewRow]
-  def stateprovincecode: Field[/* bpchar, max 3 chars */ String, SpViewRow]
+  def stateprovincecode: Field[String, SpViewRow]
   def countryregioncode: Field[CountryregionId, SpViewRow]
   def isonlystateprovinceflag: Field[Flag, SpViewRow]
   def name: Field[Name, SpViewRow]
@@ -30,16 +30,16 @@ trait SpViewFields {
 }
 
 object SpViewFields {
-  lazy val structure: Relation[SpViewFields, SpViewRow] =
+  lazy val structure: RelationStructure[SpViewFields, SpViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SpViewFields, SpViewRow] {
+    extends RelationStructure[SpViewFields, SpViewRow] {
 
     override lazy val fields: SpViewFields = new SpViewFields {
       override def id = Field[StateprovinceId, SpViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def stateprovinceid = Field[StateprovinceId, SpViewRow](_path, "stateprovinceid", None, None, x => x.stateprovinceid, (row, value) => row.copy(stateprovinceid = value))
-      override def stateprovincecode = Field[/* bpchar, max 3 chars */ String, SpViewRow](_path, "stateprovincecode", None, None, x => x.stateprovincecode, (row, value) => row.copy(stateprovincecode = value))
+      override def stateprovincecode = Field[String, SpViewRow](_path, "stateprovincecode", None, None, x => x.stateprovincecode, (row, value) => row.copy(stateprovincecode = value))
       override def countryregioncode = Field[CountryregionId, SpViewRow](_path, "countryregioncode", None, None, x => x.countryregioncode, (row, value) => row.copy(countryregioncode = value))
       override def isonlystateprovinceflag = Field[Flag, SpViewRow](_path, "isonlystateprovinceflag", None, None, x => x.isonlystateprovinceflag, (row, value) => row.copy(isonlystateprovinceflag = value))
       override def name = Field[Name, SpViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))

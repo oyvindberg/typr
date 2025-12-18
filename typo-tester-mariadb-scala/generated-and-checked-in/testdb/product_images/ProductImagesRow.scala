@@ -6,13 +6,14 @@
 package testdb.product_images
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.products.ProductsId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: product_images
  * Primary key: image_id
@@ -31,32 +32,32 @@ case class ProductImagesRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("thumbnail_url") thumbnailUrl: Optional[String],
+  @JsonProperty("thumbnail_url") thumbnailUrl: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("alt_text") altText: Optional[String],
+  @JsonProperty("alt_text") altText: Option[String],
   /** 
    * Default: 0
    */
-  @JsonProperty("sort_order") sortOrder: java.lang.Short,
+  @JsonProperty("sort_order") sortOrder: Short,
   /** 
    * Default: 0
    */
-  @JsonProperty("is_primary") isPrimary: java.lang.Boolean,
+  @JsonProperty("is_primary") isPrimary: Boolean,
   /** Optional embedded image data
    * Default: NULL
    */
-  @JsonProperty("image_data") imageData: Optional[Array[Byte]]
+  @JsonProperty("image_data") imageData: Option[Array[Byte]]
 ) {
   def id: ProductImagesId = imageId
 
   def toUnsavedRow(
-    thumbnailUrl: Defaulted[Optional[String]] = Defaulted.Provided(this.thumbnailUrl),
-    altText: Defaulted[Optional[String]] = Defaulted.Provided(this.altText),
-    sortOrder: Defaulted[java.lang.Short] = Defaulted.Provided(this.sortOrder),
-    isPrimary: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isPrimary),
-    imageData: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.imageData)
+    thumbnailUrl: Defaulted[Option[String]] = Defaulted.Provided(this.thumbnailUrl),
+    altText: Defaulted[Option[String]] = Defaulted.Provided(this.altText),
+    sortOrder: Defaulted[Short] = Defaulted.Provided(this.sortOrder),
+    isPrimary: Defaulted[Boolean] = Defaulted.Provided(this.isPrimary),
+    imageData: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.imageData)
   ): ProductImagesRowUnsaved = {
     new ProductImagesRowUnsaved(
       productId,
@@ -71,7 +72,7 @@ case class ProductImagesRow(
 }
 
 object ProductImagesRow {
-  val `_rowParser`: RowParser[ProductImagesRow] = RowParsers.of(ProductImagesId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.varchar.opt(), MariaTypes.tinyintUnsigned, MariaTypes.bool, MariaTypes.longblob.opt(), ProductImagesRow.apply, row => Array[Object](row.imageId.asInstanceOf[Object], row.productId.asInstanceOf[Object], row.imageUrl.asInstanceOf[Object], row.thumbnailUrl.asInstanceOf[Object], row.altText.asInstanceOf[Object], row.sortOrder.asInstanceOf[Object], row.isPrimary.asInstanceOf[Object], row.imageData.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[ProductImagesRow] = RowParsers.of(ProductImagesId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.tinyintUnsigned, ScalaDbTypes.MariaTypes.bool, MariaTypes.longblob.nullable)(ProductImagesRow.apply)(row => Array[Any](row.imageId, row.productId, row.imageUrl, row.thumbnailUrl, row.altText, row.sortOrder, row.isPrimary, row.imageData))
 
-  given mariaText: MariaText[ProductImagesRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[ProductImagesRow] = MariaText.from(`_rowParser`.underlying)
 }

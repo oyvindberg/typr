@@ -6,88 +6,87 @@
 package adventureworks.humanresources.shift
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ShiftRepo {
-  fun delete(): DeleteBuilder<ShiftFields, ShiftRow>
+  abstract fun delete(): DeleteBuilder<ShiftFields, ShiftRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     shiftid: ShiftId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     shiftids: Array<ShiftId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ShiftRow,
     c: Connection
   ): ShiftRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ShiftRowUnsaved,
     c: Connection
   ): ShiftRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<ShiftRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<ShiftRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<ShiftFields, ShiftRow>
+  abstract fun select(): SelectBuilder<ShiftFields, ShiftRow>
 
-  fun selectAll(c: Connection): List<ShiftRow>
+  abstract fun selectAll(c: Connection): List<ShiftRow>
 
-  fun selectById(
+  abstract fun selectById(
     shiftid: ShiftId,
     c: Connection
-  ): Optional<ShiftRow>
+  ): ShiftRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     shiftids: Array<ShiftId>,
     c: Connection
   ): List<ShiftRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     shiftids: Array<ShiftId>,
     c: Connection
   ): Map<ShiftId, ShiftRow>
 
-  fun update(): UpdateBuilder<ShiftFields, ShiftRow>
+  abstract fun update(): UpdateBuilder<ShiftFields, ShiftRow>
 
-  fun update(
+  abstract fun update(
     row: ShiftRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ShiftRow,
     c: Connection
   ): ShiftRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<ShiftRow>,
     c: Connection
   ): List<ShiftRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<ShiftRow>,
     batchSize: Int,
     c: Connection

@@ -20,7 +20,7 @@ case class FlaffRow(
   /** Points to [[adventureworks.public.flaff.FlaffRow.code]] */
   code: ShortText,
   /** Points to [[adventureworks.public.flaff.FlaffRow.anotherCode]] */
-  anotherCode: /* max 20 chars */ String,
+  anotherCode: String,
   /** Points to [[adventureworks.public.flaff.FlaffRow.someNumber]] */
   someNumber: Int,
   specifier: ShortText,
@@ -53,9 +53,9 @@ object FlaffRow {
     )
   }
 
-  given decoder: Decoder[FlaffRow] = Decoder.forProduct5[FlaffRow, ShortText, /* max 20 chars */ String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(FlaffRow.apply)(using ShortText.decoder, Decoder.decodeString, Decoder.decodeInt, ShortText.decoder, Decoder.decodeOption(using ShortText.decoder))
+  given decoder: Decoder[FlaffRow] = Decoder.forProduct5[FlaffRow, ShortText, String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(FlaffRow.apply)(using ShortText.decoder, Decoder.decodeString, Decoder.decodeInt, ShortText.decoder, Decoder.decodeOption(using ShortText.decoder))
 
-  given encoder: Encoder[FlaffRow] = Encoder.forProduct5[FlaffRow, ShortText, /* max 20 chars */ String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(x => (x.code, x.anotherCode, x.someNumber, x.specifier, x.parentspecifier))(using ShortText.encoder, Encoder.encodeString, Encoder.encodeInt, ShortText.encoder, Encoder.encodeOption(using ShortText.encoder))
+  given encoder: Encoder[FlaffRow] = Encoder.forProduct5[FlaffRow, ShortText, String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(x => (x.code, x.anotherCode, x.someNumber, x.specifier, x.parentspecifier))(using ShortText.encoder, Encoder.encodeString, Encoder.encodeInt, ShortText.encoder, Encoder.encodeOption(using ShortText.encoder))
 
   given pgText: Text[FlaffRow] = {
     Text.instance[FlaffRow]{ (row, sb) =>
@@ -81,7 +81,7 @@ object FlaffRow {
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       FlaffRow(
         code = arr(0).asInstanceOf[ShortText],
-            anotherCode = arr(1).asInstanceOf[/* max 20 chars */ String],
+            anotherCode = arr(1).asInstanceOf[String],
             someNumber = arr(2).asInstanceOf[Int],
             specifier = arr(3).asInstanceOf[ShortText],
             parentspecifier = arr(4).asInstanceOf[Option[ShortText]]

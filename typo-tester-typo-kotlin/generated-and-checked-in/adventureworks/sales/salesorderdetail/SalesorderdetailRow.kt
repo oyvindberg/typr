@@ -6,19 +6,19 @@
 package adventureworks.sales.salesorderdetail
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.specialoffer.SpecialofferId
 import adventureworks.sales.specialofferproduct.SpecialofferproductId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: sales.salesorderdetail
   * Individual products associated with a specific sales order. See SalesOrderHeader.
@@ -34,11 +34,11 @@ data class SalesorderdetailRow(
     */
   val salesorderdetailid: Int,
   /** Shipment tracking number supplied by the shipper. */
-  val carriertrackingnumber: Optional</* max 25 chars */ String>,
+  val carriertrackingnumber: /* max 25 chars */ String?,
   /** Quantity ordered per product.
     * Constraint CK_SalesOrderDetail_OrderQty affecting columns orderqty: ((orderqty > 0))
     */
-  val orderqty: TypoShort,
+  val orderqty: Short,
   /** Product sold to customer. Foreign key to Product.ProductID.
     * Points to [adventureworks.sales.specialofferproduct.SpecialofferproductRow.productid]
     */
@@ -57,9 +57,9 @@ data class SalesorderdetailRow(
     */
   val unitpricediscount: BigDecimal,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): SalesorderdetailId = SalesorderdetailId(salesorderid, salesorderdetailid)
 
@@ -70,26 +70,26 @@ data class SalesorderdetailRow(
   fun toUnsavedRow(
     salesorderdetailid: Defaulted<Int>,
     unitpricediscount: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): SalesorderdetailRowUnsaved = SalesorderdetailRowUnsaved(salesorderid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, salesorderdetailid, unitpricediscount, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SalesorderdetailRow> = RowParsers.of(SalesorderheaderId.pgType, PgTypes.int4, PgTypes.text.opt(), TypoShort.pgType, ProductId.pgType, SpecialofferId.pgType, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> SalesorderdetailRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.salesorderid, row.salesorderdetailid, row.carriertrackingnumber, row.orderqty, row.productid, row.specialofferid, row.unitprice, row.unitpricediscount, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SalesorderdetailRow> = RowParsers.of(SalesorderheaderId.pgType, KotlinDbTypes.PgTypes.int4, PgTypes.text.nullable(), KotlinDbTypes.PgTypes.int2, ProductId.pgType, SpecialofferId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> SalesorderdetailRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.salesorderid, row.salesorderdetailid, row.carriertrackingnumber, row.orderqty, row.productid, row.specialofferid, row.unitprice, row.unitpricediscount, row.rowguid, row.modifieddate) })
 
     fun apply(
       compositeId: SalesorderdetailId,
-      carriertrackingnumber: Optional</* max 25 chars */ String>,
-      orderqty: TypoShort,
+      carriertrackingnumber: /* max 25 chars */ String?,
+      orderqty: Short,
       productid: ProductId,
       specialofferid: SpecialofferId,
       unitprice: BigDecimal,
       unitpricediscount: BigDecimal,
-      rowguid: TypoUUID,
-      modifieddate: TypoLocalDateTime
+      rowguid: UUID,
+      modifieddate: LocalDateTime
     ): SalesorderdetailRow = SalesorderdetailRow(compositeId.salesorderid, compositeId.salesorderdetailid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, unitpricediscount, rowguid, modifieddate)
 
     val pgText: PgText<SalesorderdetailRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

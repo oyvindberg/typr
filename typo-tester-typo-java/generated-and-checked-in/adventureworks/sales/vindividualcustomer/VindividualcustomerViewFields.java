@@ -5,32 +5,31 @@
  */
 package adventureworks.sales.vindividualcustomer;
 
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import adventureworks.public_.Phone;
 import adventureworks.userdefined.FirstName;
 import java.util.List;
 import java.util.Optional;
+import typo.data.Xml;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VindividualcustomerViewFields extends FieldsExpr<VindividualcustomerViewRow> {
-  record Impl(List<Path> _path) implements VindividualcustomerViewFields, Relation<VindividualcustomerViewFields, VindividualcustomerViewRow> {
+  record Impl(List<Path> _path) implements VindividualcustomerViewFields, RelationStructure<VindividualcustomerViewFields, VindividualcustomerViewRow> {
     @Override
     public Field<BusinessentityId, VindividualcustomerViewRow> businessentityid() {
       return new Field<BusinessentityId, VindividualcustomerViewRow>(_path, "businessentityid", VindividualcustomerViewRow::businessentityid, Optional.empty(), Optional.empty(), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
     };
 
     @Override
-    public OptField</* max 8 chars */ String, VindividualcustomerViewRow> title() {
-      return new OptField</* max 8 chars */ String, VindividualcustomerViewRow>(_path, "title", VindividualcustomerViewRow::title, Optional.empty(), Optional.empty(), (row, value) -> row.withTitle(value), PgTypes.text);
+    public Field<String, VindividualcustomerViewRow> title() {
+      return new Field<String, VindividualcustomerViewRow>(_path, "title", VindividualcustomerViewRow::title, Optional.empty(), Optional.empty(), (row, value) -> row.withTitle(value), PgTypes.text);
     };
 
     @Override
@@ -39,8 +38,8 @@ public interface VindividualcustomerViewFields extends FieldsExpr<Vindividualcus
     };
 
     @Override
-    public OptField<Name, VindividualcustomerViewRow> middlename() {
-      return new OptField<Name, VindividualcustomerViewRow>(_path, "middlename", VindividualcustomerViewRow::middlename, Optional.empty(), Optional.empty(), (row, value) -> row.withMiddlename(value), Name.pgType);
+    public Field<Name, VindividualcustomerViewRow> middlename() {
+      return new Field<Name, VindividualcustomerViewRow>(_path, "middlename", VindividualcustomerViewRow::middlename, Optional.empty(), Optional.empty(), (row, value) -> row.withMiddlename(value), Name.pgType);
     };
 
     @Override
@@ -49,8 +48,8 @@ public interface VindividualcustomerViewFields extends FieldsExpr<Vindividualcus
     };
 
     @Override
-    public OptField</* max 10 chars */ String, VindividualcustomerViewRow> suffix() {
-      return new OptField</* max 10 chars */ String, VindividualcustomerViewRow>(_path, "suffix", VindividualcustomerViewRow::suffix, Optional.empty(), Optional.empty(), (row, value) -> row.withSuffix(value), PgTypes.text);
+    public Field<String, VindividualcustomerViewRow> suffix() {
+      return new Field<String, VindividualcustomerViewRow>(_path, "suffix", VindividualcustomerViewRow::suffix, Optional.empty(), Optional.empty(), (row, value) -> row.withSuffix(value), PgTypes.text);
     };
 
     @Override
@@ -64,8 +63,8 @@ public interface VindividualcustomerViewFields extends FieldsExpr<Vindividualcus
     };
 
     @Override
-    public OptField</* max 50 chars */ String, VindividualcustomerViewRow> emailaddress() {
-      return new OptField</* max 50 chars */ String, VindividualcustomerViewRow>(_path, "emailaddress", VindividualcustomerViewRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
+    public Field<String, VindividualcustomerViewRow> emailaddress() {
+      return new Field<String, VindividualcustomerViewRow>(_path, "emailaddress", VindividualcustomerViewRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
     };
 
     @Override
@@ -79,18 +78,18 @@ public interface VindividualcustomerViewFields extends FieldsExpr<Vindividualcus
     };
 
     @Override
-    public Field</* max 60 chars */ String, VindividualcustomerViewRow> addressline1() {
-      return new Field</* max 60 chars */ String, VindividualcustomerViewRow>(_path, "addressline1", VindividualcustomerViewRow::addressline1, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline1(value), PgTypes.text);
+    public Field<String, VindividualcustomerViewRow> addressline1() {
+      return new Field<String, VindividualcustomerViewRow>(_path, "addressline1", VindividualcustomerViewRow::addressline1, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline1(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 60 chars */ String, VindividualcustomerViewRow> addressline2() {
-      return new OptField</* max 60 chars */ String, VindividualcustomerViewRow>(_path, "addressline2", VindividualcustomerViewRow::addressline2, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline2(value), PgTypes.text);
+    public Field<String, VindividualcustomerViewRow> addressline2() {
+      return new Field<String, VindividualcustomerViewRow>(_path, "addressline2", VindividualcustomerViewRow::addressline2, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline2(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 30 chars */ String, VindividualcustomerViewRow> city() {
-      return new Field</* max 30 chars */ String, VindividualcustomerViewRow>(_path, "city", VindividualcustomerViewRow::city, Optional.empty(), Optional.empty(), (row, value) -> row.withCity(value), PgTypes.text);
+    public Field<String, VindividualcustomerViewRow> city() {
+      return new Field<String, VindividualcustomerViewRow>(_path, "city", VindividualcustomerViewRow::city, Optional.empty(), Optional.empty(), (row, value) -> row.withCity(value), PgTypes.text);
     };
 
     @Override
@@ -99,8 +98,8 @@ public interface VindividualcustomerViewFields extends FieldsExpr<Vindividualcus
     };
 
     @Override
-    public Field</* max 15 chars */ String, VindividualcustomerViewRow> postalcode() {
-      return new Field</* max 15 chars */ String, VindividualcustomerViewRow>(_path, "postalcode", VindividualcustomerViewRow::postalcode, Optional.empty(), Optional.empty(), (row, value) -> row.withPostalcode(value), PgTypes.text);
+    public Field<String, VindividualcustomerViewRow> postalcode() {
+      return new Field<String, VindividualcustomerViewRow>(_path, "postalcode", VindividualcustomerViewRow::postalcode, Optional.empty(), Optional.empty(), (row, value) -> row.withPostalcode(value), PgTypes.text);
     };
 
     @Override
@@ -109,60 +108,60 @@ public interface VindividualcustomerViewFields extends FieldsExpr<Vindividualcus
     };
 
     @Override
-    public OptField<TypoXml, VindividualcustomerViewRow> demographics() {
-      return new OptField<TypoXml, VindividualcustomerViewRow>(_path, "demographics", VindividualcustomerViewRow::demographics, Optional.empty(), Optional.empty(), (row, value) -> row.withDemographics(value), TypoXml.pgType);
+    public Field<Xml, VindividualcustomerViewRow> demographics() {
+      return new Field<Xml, VindividualcustomerViewRow>(_path, "demographics", VindividualcustomerViewRow::demographics, Optional.empty(), Optional.empty(), (row, value) -> row.withDemographics(value), PgTypes.xml);
     };
 
     @Override
     public List<FieldLike<?, VindividualcustomerViewRow>> columns() {
-      return List.of(this.businessentityid(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.phonenumber(), this.phonenumbertype(), this.emailaddress(), this.emailpromotion(), this.addresstype(), this.addressline1(), this.addressline2(), this.city(), this.stateprovincename(), this.postalcode(), this.countryregionname(), this.demographics());
+      return java.util.List.of(this.businessentityid(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.phonenumber(), this.phonenumbertype(), this.emailaddress(), this.emailpromotion(), this.addresstype(), this.addressline1(), this.addressline2(), this.city(), this.stateprovincename(), this.postalcode(), this.countryregionname(), this.demographics());
     };
 
     @Override
-    public Relation<VindividualcustomerViewFields, VindividualcustomerViewRow> copy(List<Path> _path) {
+    public RelationStructure<VindividualcustomerViewFields, VindividualcustomerViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<BusinessentityId, VindividualcustomerViewRow> businessentityid();
 
-  OptField</* max 8 chars */ String, VindividualcustomerViewRow> title();
+  Field<String, VindividualcustomerViewRow> title();
 
   Field</* user-picked */ FirstName, VindividualcustomerViewRow> firstname();
 
-  OptField<Name, VindividualcustomerViewRow> middlename();
+  Field<Name, VindividualcustomerViewRow> middlename();
 
   Field<Name, VindividualcustomerViewRow> lastname();
 
-  OptField</* max 10 chars */ String, VindividualcustomerViewRow> suffix();
+  Field<String, VindividualcustomerViewRow> suffix();
 
   Field<Phone, VindividualcustomerViewRow> phonenumber();
 
   Field<Name, VindividualcustomerViewRow> phonenumbertype();
 
-  OptField</* max 50 chars */ String, VindividualcustomerViewRow> emailaddress();
+  Field<String, VindividualcustomerViewRow> emailaddress();
 
   Field<Integer, VindividualcustomerViewRow> emailpromotion();
 
   Field<Name, VindividualcustomerViewRow> addresstype();
 
-  Field</* max 60 chars */ String, VindividualcustomerViewRow> addressline1();
+  Field<String, VindividualcustomerViewRow> addressline1();
 
-  OptField</* max 60 chars */ String, VindividualcustomerViewRow> addressline2();
+  Field<String, VindividualcustomerViewRow> addressline2();
 
-  Field</* max 30 chars */ String, VindividualcustomerViewRow> city();
+  Field<String, VindividualcustomerViewRow> city();
 
   Field<Name, VindividualcustomerViewRow> stateprovincename();
 
-  Field</* max 15 chars */ String, VindividualcustomerViewRow> postalcode();
+  Field<String, VindividualcustomerViewRow> postalcode();
 
   Field<Name, VindividualcustomerViewRow> countryregionname();
 
-  OptField<TypoXml, VindividualcustomerViewRow> demographics();
+  Field<Xml, VindividualcustomerViewRow> demographics();
 
   @Override
   List<FieldLike<?, VindividualcustomerViewRow>> columns();

@@ -6,69 +6,68 @@
 package testdb.reviews
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ReviewsRepo {
-  fun delete(): DeleteBuilder<ReviewsFields, ReviewsRow>
+  abstract fun delete(): DeleteBuilder<ReviewsFields, ReviewsRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     reviewId: ReviewsId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     reviewIds: Array<ReviewsId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ReviewsRow,
     c: Connection
   ): ReviewsRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ReviewsRowUnsaved,
     c: Connection
   ): ReviewsRow
 
-  fun select(): SelectBuilder<ReviewsFields, ReviewsRow>
+  abstract fun select(): SelectBuilder<ReviewsFields, ReviewsRow>
 
-  fun selectAll(c: Connection): List<ReviewsRow>
+  abstract fun selectAll(c: Connection): List<ReviewsRow>
 
-  fun selectById(
+  abstract fun selectById(
     reviewId: ReviewsId,
     c: Connection
-  ): Optional<ReviewsRow>
+  ): ReviewsRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     reviewIds: Array<ReviewsId>,
     c: Connection
   ): List<ReviewsRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     reviewIds: Array<ReviewsId>,
     c: Connection
   ): Map<ReviewsId, ReviewsRow>
 
-  fun update(): UpdateBuilder<ReviewsFields, ReviewsRow>
+  abstract fun update(): UpdateBuilder<ReviewsFields, ReviewsRow>
 
-  fun update(
+  abstract fun update(
     row: ReviewsRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ReviewsRow,
     c: Connection
   ): ReviewsRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<ReviewsRow>,
     c: Connection
   ): List<ReviewsRow>

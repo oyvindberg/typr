@@ -16,15 +16,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import typo.dsl.DeleteBuilder;
-import typo.dsl.DeleteBuilder.DeleteBuilderMock;
+import typo.dsl.DeleteBuilderMock;
 import typo.dsl.DeleteParams;
 import typo.dsl.SelectBuilder;
 import typo.dsl.SelectBuilderMock;
 import typo.dsl.SelectParams;
 import typo.dsl.UpdateBuilder;
-import typo.dsl.UpdateBuilder.UpdateBuilderMock;
+import typo.dsl.UpdateBuilderMock;
 import typo.dsl.UpdateParams;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public record PromotionsRepoMock(
   java.util.function.Function<PromotionsRowUnsaved, PromotionsRow> toRow,
@@ -75,7 +74,7 @@ public record PromotionsRepoMock(
     Connection c
   ) {
     if (map.containsKey(unsaved.promotionId())) {
-      throw new RuntimeException(str("id $unsaved.promotionId() already exists"));
+      throw new RuntimeException("id " + unsaved.promotionId() + " already exists");
     };
     map.put(unsaved.promotionId(), unsaved);
     return unsaved;

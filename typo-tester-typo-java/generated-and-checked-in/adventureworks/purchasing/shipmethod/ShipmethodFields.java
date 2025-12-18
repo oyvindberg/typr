@@ -5,23 +5,23 @@
  */
 package adventureworks.purchasing.shipmethod;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface ShipmethodFields extends FieldsExpr<ShipmethodRow> {
-  record Impl(List<Path> _path) implements ShipmethodFields, Relation<ShipmethodFields, ShipmethodRow> {
+  record Impl(List<Path> _path) implements ShipmethodFields, RelationStructure<ShipmethodFields, ShipmethodRow> {
     @Override
     public IdField<ShipmethodId, ShipmethodRow> shipmethodid() {
       return new IdField<ShipmethodId, ShipmethodRow>(_path, "shipmethodid", ShipmethodRow::shipmethodid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withShipmethodid(value), ShipmethodId.pgType);
@@ -43,28 +43,28 @@ public interface ShipmethodFields extends FieldsExpr<ShipmethodRow> {
     };
 
     @Override
-    public Field<TypoUUID, ShipmethodRow> rowguid() {
-      return new Field<TypoUUID, ShipmethodRow>(_path, "rowguid", ShipmethodRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, ShipmethodRow> rowguid() {
+      return new Field<UUID, ShipmethodRow>(_path, "rowguid", ShipmethodRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, ShipmethodRow> modifieddate() {
-      return new Field<TypoLocalDateTime, ShipmethodRow>(_path, "modifieddate", ShipmethodRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ShipmethodRow> modifieddate() {
+      return new Field<LocalDateTime, ShipmethodRow>(_path, "modifieddate", ShipmethodRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, ShipmethodRow>> columns() {
-      return List.of(this.shipmethodid(), this.name(), this.shipbase(), this.shiprate(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.shipmethodid(), this.name(), this.shipbase(), this.shiprate(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<ShipmethodFields, ShipmethodRow> copy(List<Path> _path) {
+    public RelationStructure<ShipmethodFields, ShipmethodRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ShipmethodId, ShipmethodRow> shipmethodid();
@@ -75,9 +75,9 @@ public interface ShipmethodFields extends FieldsExpr<ShipmethodRow> {
 
   Field<BigDecimal, ShipmethodRow> shiprate();
 
-  Field<TypoUUID, ShipmethodRow> rowguid();
+  Field<UUID, ShipmethodRow> rowguid();
 
-  Field<TypoLocalDateTime, ShipmethodRow> modifieddate();
+  Field<LocalDateTime, ShipmethodRow> modifieddate();
 
   @Override
   List<FieldLike<?, ShipmethodRow>> columns();

@@ -6,11 +6,12 @@
 package testdb.payment_methods
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `payment_methods` which has not been persisted yet */
 case class PaymentMethodsRowUnsaved(
@@ -23,20 +24,20 @@ case class PaymentMethodsRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("processor_config") processorConfig: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("processor_config") processorConfig: Defaulted[Option[String]] = new UseDefault(),
   /** Default: 1
 
    */
-  @JsonProperty("is_active") isActive: Defaulted[java.lang.Boolean] = new UseDefault(),
+  @JsonProperty("is_active") isActive: Defaulted[Boolean] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("sort_order") sortOrder: Defaulted[java.lang.Byte] = new UseDefault()
+  @JsonProperty("sort_order") sortOrder: Defaulted[Byte] = new UseDefault()
 ) {
   def toRow(
-    processorConfigDefault: => Optional[String],
-    isActiveDefault: => java.lang.Boolean,
-    sortOrderDefault: => java.lang.Byte,
+    processorConfigDefault: => Option[String],
+    isActiveDefault: => Boolean,
+    sortOrderDefault: => Byte,
     methodIdDefault: => PaymentMethodsId
   ): PaymentMethodsRow = {
     new PaymentMethodsRow(
@@ -52,5 +53,5 @@ case class PaymentMethodsRowUnsaved(
 }
 
 object PaymentMethodsRowUnsaved {
-  given mariaText: MariaText[PaymentMethodsRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.code, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.methodType, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.processorConfig, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isActive, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinyint.mariaText).unsafeEncode(row.sortOrder, sb) })
+  given mariaText: MariaText[PaymentMethodsRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.code, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.methodType, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.processorConfig, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isActive, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.tinyint.mariaText).unsafeEncode(row.sortOrder, sb) })
 }

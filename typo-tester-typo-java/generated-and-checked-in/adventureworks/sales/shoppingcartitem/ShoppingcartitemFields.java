@@ -5,32 +5,32 @@
  */
 package adventureworks.sales.shoppingcartitem;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductFields;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.product.ProductRow;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface ShoppingcartitemFields extends FieldsExpr<ShoppingcartitemRow> {
-  record Impl(List<Path> _path) implements ShoppingcartitemFields, Relation<ShoppingcartitemFields, ShoppingcartitemRow> {
+  record Impl(List<Path> _path) implements ShoppingcartitemFields, RelationStructure<ShoppingcartitemFields, ShoppingcartitemRow> {
     @Override
     public IdField<ShoppingcartitemId, ShoppingcartitemRow> shoppingcartitemid() {
       return new IdField<ShoppingcartitemId, ShoppingcartitemRow>(_path, "shoppingcartitemid", ShoppingcartitemRow::shoppingcartitemid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withShoppingcartitemid(value), ShoppingcartitemId.pgType);
     };
 
     @Override
-    public Field</* max 50 chars */ String, ShoppingcartitemRow> shoppingcartid() {
-      return new Field</* max 50 chars */ String, ShoppingcartitemRow>(_path, "shoppingcartid", ShoppingcartitemRow::shoppingcartid, Optional.empty(), Optional.empty(), (row, value) -> row.withShoppingcartid(value), PgTypes.text);
+    public Field<String, ShoppingcartitemRow> shoppingcartid() {
+      return new Field<String, ShoppingcartitemRow>(_path, "shoppingcartid", ShoppingcartitemRow::shoppingcartid, Optional.empty(), Optional.empty(), (row, value) -> row.withShoppingcartid(value), PgTypes.text);
     };
 
     @Override
@@ -44,44 +44,44 @@ public interface ShoppingcartitemFields extends FieldsExpr<ShoppingcartitemRow> 
     };
 
     @Override
-    public Field<TypoLocalDateTime, ShoppingcartitemRow> datecreated() {
-      return new Field<TypoLocalDateTime, ShoppingcartitemRow>(_path, "datecreated", ShoppingcartitemRow::datecreated, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withDatecreated(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ShoppingcartitemRow> datecreated() {
+      return new Field<LocalDateTime, ShoppingcartitemRow>(_path, "datecreated", ShoppingcartitemRow::datecreated, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withDatecreated(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field<TypoLocalDateTime, ShoppingcartitemRow> modifieddate() {
-      return new Field<TypoLocalDateTime, ShoppingcartitemRow>(_path, "modifieddate", ShoppingcartitemRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ShoppingcartitemRow> modifieddate() {
+      return new Field<LocalDateTime, ShoppingcartitemRow>(_path, "modifieddate", ShoppingcartitemRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, ShoppingcartitemRow>> columns() {
-      return List.of(this.shoppingcartitemid(), this.shoppingcartid(), this.quantity(), this.productid(), this.datecreated(), this.modifieddate());
+      return java.util.List.of(this.shoppingcartitemid(), this.shoppingcartid(), this.quantity(), this.productid(), this.datecreated(), this.modifieddate());
     };
 
     @Override
-    public Relation<ShoppingcartitemFields, ShoppingcartitemRow> copy(List<Path> _path) {
+    public RelationStructure<ShoppingcartitemFields, ShoppingcartitemRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ShoppingcartitemId, ShoppingcartitemRow> shoppingcartitemid();
 
-  Field</* max 50 chars */ String, ShoppingcartitemRow> shoppingcartid();
+  Field<String, ShoppingcartitemRow> shoppingcartid();
 
   Field<Integer, ShoppingcartitemRow> quantity();
 
   Field<ProductId, ShoppingcartitemRow> productid();
 
-  Field<TypoLocalDateTime, ShoppingcartitemRow> datecreated();
+  Field<LocalDateTime, ShoppingcartitemRow> datecreated();
 
-  Field<TypoLocalDateTime, ShoppingcartitemRow> modifieddate();
+  Field<LocalDateTime, ShoppingcartitemRow> modifieddate();
 
   default ForeignKey<ProductFields, ProductRow> fkProductionProduct() {
-    return ForeignKey.<ProductFields, ProductRow>of("sales.FK_ShoppingCartItem_Product_ProductID").withColumnPair(productid(), ProductFields::productid);
+    return ForeignKey.<ProductFields, ProductRow>of("sales.FK_ShoppingCartItem_Product_ProductID").<ProductId>withColumnPair(productid(), ProductFields::productid);
   };
 
   @Override

@@ -6,74 +6,73 @@
 package testdb.warehouses
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface WarehousesRepo {
-  fun delete(): DeleteBuilder<WarehousesFields, WarehousesRow>
+  abstract fun delete(): DeleteBuilder<WarehousesFields, WarehousesRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     warehouseId: WarehousesId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     warehouseIds: Array<WarehousesId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: WarehousesRow,
     c: Connection
   ): WarehousesRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: WarehousesRowUnsaved,
     c: Connection
   ): WarehousesRow
 
-  fun select(): SelectBuilder<WarehousesFields, WarehousesRow>
+  abstract fun select(): SelectBuilder<WarehousesFields, WarehousesRow>
 
-  fun selectAll(c: Connection): List<WarehousesRow>
+  abstract fun selectAll(c: Connection): List<WarehousesRow>
 
-  fun selectById(
+  abstract fun selectById(
     warehouseId: WarehousesId,
     c: Connection
-  ): Optional<WarehousesRow>
+  ): WarehousesRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     warehouseIds: Array<WarehousesId>,
     c: Connection
   ): List<WarehousesRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     warehouseIds: Array<WarehousesId>,
     c: Connection
   ): Map<WarehousesId, WarehousesRow>
 
-  fun selectByUniqueCode(
+  abstract fun selectByUniqueCode(
     code: String,
     c: Connection
-  ): Optional<WarehousesRow>
+  ): WarehousesRow?
 
-  fun update(): UpdateBuilder<WarehousesFields, WarehousesRow>
+  abstract fun update(): UpdateBuilder<WarehousesFields, WarehousesRow>
 
-  fun update(
+  abstract fun update(
     row: WarehousesRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: WarehousesRow,
     c: Connection
   ): WarehousesRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<WarehousesRow>,
     c: Connection
   ): List<WarehousesRow>

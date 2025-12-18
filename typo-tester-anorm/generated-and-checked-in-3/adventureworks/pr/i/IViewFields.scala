@@ -9,29 +9,28 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
 import adventureworks.production.illustration.IllustrationId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait IViewFields {
   def id: Field[IllustrationId, IViewRow]
   def illustrationid: Field[IllustrationId, IViewRow]
-  def diagram: OptField[TypoXml, IViewRow]
+  def diagram: Field[TypoXml, IViewRow]
   def modifieddate: Field[TypoLocalDateTime, IViewRow]
 }
 
 object IViewFields {
-  lazy val structure: Relation[IViewFields, IViewRow] =
+  lazy val structure: RelationStructure[IViewFields, IViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[IViewFields, IViewRow] {
+    extends RelationStructure[IViewFields, IViewRow] {
 
     override lazy val fields: IViewFields = new IViewFields {
       override def id = Field[IllustrationId, IViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def illustrationid = Field[IllustrationId, IViewRow](_path, "illustrationid", None, None, x => x.illustrationid, (row, value) => row.copy(illustrationid = value))
-      override def diagram = OptField[TypoXml, IViewRow](_path, "diagram", None, None, x => x.diagram, (row, value) => row.copy(diagram = value))
+      override def diagram = Field[TypoXml, IViewRow](_path, "diagram", None, None, x => x.diagram, (row, value) => row.copy(diagram = value))
       override def modifieddate = Field[TypoLocalDateTime, IViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
 

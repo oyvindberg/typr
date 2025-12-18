@@ -6,9 +6,10 @@
 package testdb.payment_methods
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -23,7 +24,7 @@ data class PaymentMethodsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("processor_config") val processorConfig: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("processor_config") val processorConfig: Defaulted<String?> = UseDefault(),
   /** Default: 1
 
     */
@@ -34,7 +35,7 @@ data class PaymentMethodsRowUnsaved(
   @JsonProperty("sort_order") val sortOrder: Defaulted<Byte> = UseDefault()
 ) {
   fun toRow(
-    processorConfigDefault: () -> Optional<String>,
+    processorConfigDefault: () -> String?,
     isActiveDefault: () -> Boolean,
     sortOrderDefault: () -> Byte,
     methodIdDefault: () -> PaymentMethodsId
@@ -48,10 +49,10 @@ data class PaymentMethodsRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.text.mariaText().unsafeEncode(row.methodType, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.processorConfig, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.processorConfig, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.tinyint.mariaText()).unsafeEncode(row.sortOrder, sb) })
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.tinyint.mariaText()).unsafeEncode(row.sortOrder, sb) })
   }
 }

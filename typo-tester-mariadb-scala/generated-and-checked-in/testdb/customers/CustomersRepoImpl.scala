@@ -6,87 +6,85 @@
 package testdb.customers
 
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
+import scala.collection.mutable.ListBuffer
 import testdb.customer_status.CustomerStatusId
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.Dialect
+import typo.scaladsl.Fragment
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.Fragment.sql
 
 class CustomersRepoImpl extends CustomersRepo {
   override def delete: DeleteBuilder[CustomersFields, CustomersRow] = DeleteBuilder.of("`customers`", CustomersFields.structure, Dialect.MARIADB)
 
-  override def deleteById(customerId: CustomersId)(using c: Connection): java.lang.Boolean = interpolate"delete from `customers` where `customer_id` = ${CustomersId.pgType.encode(customerId)}".update().runUnchecked(c) > 0
+  override def deleteById(customerId: CustomersId)(using c: Connection): Boolean = sql"delete from `customers` where `customer_id` = ${Fragment.encode(CustomersId.pgType, customerId)}".update().runUnchecked(c) > 0
 
-  override def deleteByIds(customerIds: Array[CustomersId])(using c: Connection): Integer = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    customerIds.foreach { id => fragments.add(CustomersId.pgType.encode(id)) }
+  override def deleteByIds(customerIds: Array[CustomersId])(using c: Connection): Int = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    customerIds.foreach { id => fragments.addOne(Fragment.encode(CustomersId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `customers` where `customer_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: CustomersRow)(using c: Connection): CustomersRow = {
-  interpolate"""insert into `customers`(`email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
-    values (${MariaTypes.text.encode(unsaved.email)}, ${MariaTypes.blob.encode(unsaved.passwordHash)}, ${MariaTypes.text.encode(unsaved.firstName)}, ${MariaTypes.text.encode(unsaved.lastName)}, ${MariaTypes.text.opt().encode(unsaved.phone)}, ${CustomerStatusId.pgType.encode(unsaved.status)}, ${MariaTypes.text.encode(unsaved.tier)}, ${MariaTypes.text.opt().encode(unsaved.preferences)}, ${MariaTypes.set.opt().encode(unsaved.marketingFlags)}, ${MariaTypes.text.opt().encode(unsaved.notes)}, ${MariaTypes.datetime.encode(unsaved.createdAt)}, ${MariaTypes.datetime.encode(unsaved.updatedAt)}, ${MariaTypes.datetime.opt().encode(unsaved.lastLoginAt)})
+  sql"""insert into `customers`(`email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
+    values (${Fragment.encode(MariaTypes.varchar, unsaved.email)}, ${Fragment.encode(MariaTypes.binary, unsaved.passwordHash)}, ${Fragment.encode(MariaTypes.varchar, unsaved.firstName)}, ${Fragment.encode(MariaTypes.varchar, unsaved.lastName)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.phone)}, ${Fragment.encode(CustomerStatusId.pgType, unsaved.status)}, ${Fragment.encode(MariaTypes.text, unsaved.tier)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.preferences)}, ${Fragment.encode(MariaTypes.set.nullable, unsaved.marketingFlags)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.notes)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.lastLoginAt)})
     returning `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
     """
     .updateReturning(CustomersRow.`_rowParser`.exactlyOne()).runUnchecked(c)
   }
 
   override def insert(unsaved: CustomersRowUnsaved)(using c: Connection): CustomersRow = {
-    val columns: ArrayList[Literal] = new ArrayList[Literal]()
-    val values: ArrayList[Fragment] = new ArrayList[Fragment]()
-    columns.add(Fragment.lit("`email`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.email)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`password_hash`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.blob.encode(unsaved.passwordHash)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`first_name`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.firstName)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`last_name`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.lastName)}"): @scala.annotation.nowarn
+    val columns: ListBuffer[Fragment] = ListBuffer()
+    val values: ListBuffer[Fragment] = ListBuffer()
+    columns.addOne(Fragment.lit("`email`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.email)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`password_hash`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.binary, unsaved.passwordHash)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`first_name`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.firstName)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`last_name`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.lastName)}"): @scala.annotation.nowarn
     unsaved.phone.visit(
       {  },
-      value => { columns.add(Fragment.lit("`phone`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`phone`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.varchar.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.status.visit(
       {  },
-      value => { columns.add(Fragment.lit("`status`")): @scala.annotation.nowarn; values.add(interpolate"${CustomerStatusId.pgType.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`status`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(CustomerStatusId.pgType, value)}"): @scala.annotation.nowarn }
     );
     unsaved.tier.visit(
       {  },
-      value => { columns.add(Fragment.lit("`tier`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`tier`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.text, value)}"): @scala.annotation.nowarn }
     );
     unsaved.preferences.visit(
       {  },
-      value => { columns.add(Fragment.lit("`preferences`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`preferences`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longtext.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.marketingFlags.visit(
       {  },
-      value => { columns.add(Fragment.lit("`marketing_flags`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.set.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`marketing_flags`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.set.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.notes.visit(
       {  },
-      value => { columns.add(Fragment.lit("`notes`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`notes`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.text.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.createdAt.visit(
       {  },
-      value => { columns.add(Fragment.lit("`created_at`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.datetime.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`created_at`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.datetime, value)}"): @scala.annotation.nowarn }
     );
     unsaved.updatedAt.visit(
       {  },
-      value => { columns.add(Fragment.lit("`updated_at`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.datetime.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`updated_at`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.datetime, value)}"): @scala.annotation.nowarn }
     );
     unsaved.lastLoginAt.visit(
       {  },
-      value => { columns.add(Fragment.lit("`last_login_at`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.datetime.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`last_login_at`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.datetime.nullable, value)}"): @scala.annotation.nowarn }
     );
     val q: Fragment = {
-      interpolate"""insert into `customers`(${Fragment.comma(columns)})
+      sql"""insert into `customers`(${Fragment.comma(columns)})
       values (${Fragment.comma(values)})
       returning `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
       """
@@ -96,61 +94,61 @@ class CustomersRepoImpl extends CustomersRepo {
 
   override def select: SelectBuilder[CustomersFields, CustomersRow] = SelectBuilder.of("`customers`", CustomersFields.structure, CustomersRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[CustomersRow] = {
-    interpolate"""select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
+  override def selectAll(using c: Connection): List[CustomersRow] = {
+    sql"""select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
     from `customers`
     """.query(CustomersRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectById(customerId: CustomersId)(using c: Connection): Optional[CustomersRow] = {
-    interpolate"""select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
+  override def selectById(customerId: CustomersId)(using c: Connection): Option[CustomersRow] = {
+    sql"""select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
     from `customers`
-    where `customer_id` = ${CustomersId.pgType.encode(customerId)}""".query(CustomersRow.`_rowParser`.first()).runUnchecked(c)
+    where `customer_id` = ${Fragment.encode(CustomersId.pgType, customerId)}""".query(CustomersRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def selectByIds(customerIds: Array[CustomersId])(using c: Connection): java.util.List[CustomersRow] = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    customerIds.foreach { id => fragments.add(CustomersId.pgType.encode(id)) }
+  override def selectByIds(customerIds: Array[CustomersId])(using c: Connection): List[CustomersRow] = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    customerIds.foreach { id => fragments.addOne(Fragment.encode(CustomersId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at` from `customers` where `customer_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(CustomersRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectByIdsTracked(customerIds: Array[CustomersId])(using c: Connection): java.util.Map[CustomersId, CustomersRow] = {
-    val ret: HashMap[CustomersId, CustomersRow] = new HashMap[CustomersId, CustomersRow]()
-    selectByIds(customerIds)(using c).forEach(row => ret.put(row.customerId, row): @scala.annotation.nowarn)
-    return ret
+  override def selectByIdsTracked(customerIds: Array[CustomersId])(using c: Connection): Map[CustomersId, CustomersRow] = {
+    val ret: scala.collection.mutable.Map[CustomersId, CustomersRow] = scala.collection.mutable.Map.empty[CustomersId, CustomersRow]
+    selectByIds(customerIds)(using c).foreach(row => ret.put(row.customerId, row): @scala.annotation.nowarn)
+    return ret.toMap
   }
 
-  override def selectByUniqueEmail(email: String)(using c: Connection): Optional[CustomersRow] = {
-    interpolate"""select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
+  override def selectByUniqueEmail(email: String)(using c: Connection): Option[CustomersRow] = {
+    sql"""select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
     from `customers`
-    where `email` = ${MariaTypes.text.encode(email)}
+    where `email` = ${Fragment.encode(MariaTypes.varchar, email)}
     """.query(CustomersRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def update: UpdateBuilder[CustomersFields, CustomersRow] = UpdateBuilder.of("`customers`", CustomersFields.structure, CustomersRow.`_rowParser`.all(), Dialect.MARIADB)
+  override def update: UpdateBuilder[CustomersFields, CustomersRow] = UpdateBuilder.of("`customers`", CustomersFields.structure, CustomersRow.`_rowParser`, Dialect.MARIADB)
 
-  override def update(row: CustomersRow)(using c: Connection): java.lang.Boolean = {
+  override def update(row: CustomersRow)(using c: Connection): Boolean = {
     val customerId: CustomersId = row.customerId
-    return interpolate"""update `customers`
-    set `email` = ${MariaTypes.text.encode(row.email)},
-    `password_hash` = ${MariaTypes.blob.encode(row.passwordHash)},
-    `first_name` = ${MariaTypes.text.encode(row.firstName)},
-    `last_name` = ${MariaTypes.text.encode(row.lastName)},
-    `phone` = ${MariaTypes.text.opt().encode(row.phone)},
-    `status` = ${CustomerStatusId.pgType.encode(row.status)},
-    `tier` = ${MariaTypes.text.encode(row.tier)},
-    `preferences` = ${MariaTypes.text.opt().encode(row.preferences)},
-    `marketing_flags` = ${MariaTypes.set.opt().encode(row.marketingFlags)},
-    `notes` = ${MariaTypes.text.opt().encode(row.notes)},
-    `created_at` = ${MariaTypes.datetime.encode(row.createdAt)},
-    `updated_at` = ${MariaTypes.datetime.encode(row.updatedAt)},
-    `last_login_at` = ${MariaTypes.datetime.opt().encode(row.lastLoginAt)}
-    where `customer_id` = ${CustomersId.pgType.encode(customerId)}""".update().runUnchecked(c) > 0
+    return sql"""update `customers`
+    set `email` = ${Fragment.encode(MariaTypes.varchar, row.email)},
+    `password_hash` = ${Fragment.encode(MariaTypes.binary, row.passwordHash)},
+    `first_name` = ${Fragment.encode(MariaTypes.varchar, row.firstName)},
+    `last_name` = ${Fragment.encode(MariaTypes.varchar, row.lastName)},
+    `phone` = ${Fragment.encode(MariaTypes.varchar.nullable, row.phone)},
+    `status` = ${Fragment.encode(CustomerStatusId.pgType, row.status)},
+    `tier` = ${Fragment.encode(MariaTypes.text, row.tier)},
+    `preferences` = ${Fragment.encode(MariaTypes.longtext.nullable, row.preferences)},
+    `marketing_flags` = ${Fragment.encode(MariaTypes.set.nullable, row.marketingFlags)},
+    `notes` = ${Fragment.encode(MariaTypes.text.nullable, row.notes)},
+    `created_at` = ${Fragment.encode(MariaTypes.datetime, row.createdAt)},
+    `updated_at` = ${Fragment.encode(MariaTypes.datetime, row.updatedAt)},
+    `last_login_at` = ${Fragment.encode(MariaTypes.datetime.nullable, row.lastLoginAt)}
+    where `customer_id` = ${Fragment.encode(CustomersId.pgType, customerId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: CustomersRow)(using c: Connection): CustomersRow = {
-  interpolate"""INSERT INTO `customers`(`email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
-    VALUES (${MariaTypes.text.encode(unsaved.email)}, ${MariaTypes.blob.encode(unsaved.passwordHash)}, ${MariaTypes.text.encode(unsaved.firstName)}, ${MariaTypes.text.encode(unsaved.lastName)}, ${MariaTypes.text.opt().encode(unsaved.phone)}, ${CustomerStatusId.pgType.encode(unsaved.status)}, ${MariaTypes.text.encode(unsaved.tier)}, ${MariaTypes.text.opt().encode(unsaved.preferences)}, ${MariaTypes.set.opt().encode(unsaved.marketingFlags)}, ${MariaTypes.text.opt().encode(unsaved.notes)}, ${MariaTypes.datetime.encode(unsaved.createdAt)}, ${MariaTypes.datetime.encode(unsaved.updatedAt)}, ${MariaTypes.datetime.opt().encode(unsaved.lastLoginAt)})
+  sql"""INSERT INTO `customers`(`email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
+    VALUES (${Fragment.encode(MariaTypes.varchar, unsaved.email)}, ${Fragment.encode(MariaTypes.binary, unsaved.passwordHash)}, ${Fragment.encode(MariaTypes.varchar, unsaved.firstName)}, ${Fragment.encode(MariaTypes.varchar, unsaved.lastName)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.phone)}, ${Fragment.encode(CustomerStatusId.pgType, unsaved.status)}, ${Fragment.encode(MariaTypes.text, unsaved.tier)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.preferences)}, ${Fragment.encode(MariaTypes.set.nullable, unsaved.marketingFlags)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.notes)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.lastLoginAt)})
     ON DUPLICATE KEY UPDATE `email` = VALUES(`email`),
     `password_hash` = VALUES(`password_hash`),
     `first_name` = VALUES(`first_name`),
@@ -169,8 +167,8 @@ class CustomersRepoImpl extends CustomersRepo {
     .runUnchecked(c)
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[CustomersRow])(using c: Connection): java.util.List[CustomersRow] = {
-    interpolate"""INSERT INTO `customers`(`customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
+  override def upsertBatch(unsaved: Iterator[CustomersRow])(using c: Connection): List[CustomersRow] = {
+    sql"""INSERT INTO `customers`(`customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE `email` = VALUES(`email`),
     `password_hash` = VALUES(`password_hash`),
@@ -187,6 +185,6 @@ class CustomersRepoImpl extends CustomersRepo {
     `last_login_at` = VALUES(`last_login_at`)
     RETURNING `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`"""
       .updateReturningEach(CustomersRow.`_rowParser`, unsaved)
-      .runUnchecked(c)
+    .runUnchecked(c)
   }
 }

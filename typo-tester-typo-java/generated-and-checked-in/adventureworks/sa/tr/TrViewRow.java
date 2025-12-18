@@ -5,13 +5,12 @@
  */
 package adventureworks.sa.tr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.stateprovince.StateprovinceId;
 import adventureworks.public_.Name;
 import adventureworks.sales.salestaxrate.SalestaxrateId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -25,15 +24,15 @@ public record TrViewRow(
   /** Points to {@link adventureworks.sales.salestaxrate.SalestaxrateRow#stateprovinceid()} */
   StateprovinceId stateprovinceid,
   /** Points to {@link adventureworks.sales.salestaxrate.SalestaxrateRow#taxtype()} */
-  TypoShort taxtype,
+  Short taxtype,
   /** Points to {@link adventureworks.sales.salestaxrate.SalestaxrateRow#taxrate()} */
   BigDecimal taxrate,
   /** Points to {@link adventureworks.sales.salestaxrate.SalestaxrateRow#name()} */
   Name name,
   /** Points to {@link adventureworks.sales.salestaxrate.SalestaxrateRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.sales.salestaxrate.SalestaxrateRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.salestaxrate.SalestaxrateRow#salestaxrateid()} */
   public TrViewRow withId(SalestaxrateId id) {
@@ -51,7 +50,7 @@ public record TrViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salestaxrate.SalestaxrateRow#taxtype()} */
-  public TrViewRow withTaxtype(TypoShort taxtype) {
+  public TrViewRow withTaxtype(Short taxtype) {
     return new TrViewRow(id, salestaxrateid, stateprovinceid, taxtype, taxrate, name, rowguid, modifieddate);
   };
 
@@ -66,14 +65,14 @@ public record TrViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salestaxrate.SalestaxrateRow#rowguid()} */
-  public TrViewRow withRowguid(TypoUUID rowguid) {
+  public TrViewRow withRowguid(UUID rowguid) {
     return new TrViewRow(id, salestaxrateid, stateprovinceid, taxtype, taxrate, name, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salestaxrate.SalestaxrateRow#modifieddate()} */
-  public TrViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public TrViewRow withModifieddate(LocalDateTime modifieddate) {
     return new TrViewRow(id, salestaxrateid, stateprovinceid, taxtype, taxrate, name, rowguid, modifieddate);
   };
 
-  static RowParser<TrViewRow> _rowParser = RowParsers.of(SalestaxrateId.pgType, SalestaxrateId.pgType, StateprovinceId.pgType, TypoShort.pgType, PgTypes.numeric, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, TrViewRow::new, row -> new Object[]{row.id(), row.salestaxrateid(), row.stateprovinceid(), row.taxtype(), row.taxrate(), row.name(), row.rowguid(), row.modifieddate()});;
+  static RowParser<TrViewRow> _rowParser = RowParsers.of(SalestaxrateId.pgType, SalestaxrateId.pgType, StateprovinceId.pgType, PgTypes.int2, PgTypes.numeric, Name.pgType, PgTypes.uuid, PgTypes.timestamp, TrViewRow::new, row -> new Object[]{row.id(), row.salestaxrateid(), row.stateprovinceid(), row.taxtype(), row.taxrate(), row.name(), row.rowguid(), row.modifieddate()});;
 }

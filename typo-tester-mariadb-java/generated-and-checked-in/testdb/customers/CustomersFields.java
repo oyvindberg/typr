@@ -15,16 +15,16 @@ import typo.data.maria.MariaSet;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface CustomersFields extends FieldsExpr<CustomersRow> {
-  record Impl(List<Path> _path) implements CustomersFields, Relation<CustomersFields, CustomersRow> {
+  record Impl(List<Path> _path) implements CustomersFields, RelationStructure<CustomersFields, CustomersRow> {
     @Override
     public IdField<CustomersId, CustomersRow> customerId() {
       return new IdField<CustomersId, CustomersRow>(_path, "customer_id", CustomersRow::customerId, Optional.empty(), Optional.empty(), (row, value) -> row.withCustomerId(value), CustomersId.pgType);
@@ -97,17 +97,17 @@ public interface CustomersFields extends FieldsExpr<CustomersRow> {
 
     @Override
     public List<FieldLike<?, CustomersRow>> columns() {
-      return List.of(this.customerId(), this.email(), this.passwordHash(), this.firstName(), this.lastName(), this.phone(), this.status(), this.tier(), this.preferences(), this.marketingFlags(), this.notes(), this.createdAt(), this.updatedAt(), this.lastLoginAt());
+      return java.util.List.of(this.customerId(), this.email(), this.passwordHash(), this.firstName(), this.lastName(), this.phone(), this.status(), this.tier(), this.preferences(), this.marketingFlags(), this.notes(), this.createdAt(), this.updatedAt(), this.lastLoginAt());
     };
 
     @Override
-    public Relation<CustomersFields, CustomersRow> copy(List<Path> _path) {
+    public RelationStructure<CustomersFields, CustomersRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<CustomersId, CustomersRow> customerId();
@@ -139,7 +139,7 @@ public interface CustomersFields extends FieldsExpr<CustomersRow> {
   OptField<LocalDateTime, CustomersRow> lastLoginAt();
 
   default ForeignKey<CustomerStatusFields, CustomerStatusRow> fkCustomerStatus() {
-    return ForeignKey.<CustomerStatusFields, CustomerStatusRow>of("fk_customer_status").withColumnPair(status(), CustomerStatusFields::statusCode);
+    return ForeignKey.<CustomerStatusFields, CustomerStatusRow>of("fk_customer_status").<CustomerStatusId>withColumnPair(status(), CustomerStatusFields::statusCode);
   };
 
   @Override

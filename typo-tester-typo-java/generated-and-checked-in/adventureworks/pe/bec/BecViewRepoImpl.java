@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class BecViewRepoImpl implements BecViewRepo {
@@ -19,9 +20,6 @@ public class BecViewRepoImpl implements BecViewRepo {
 
   @Override
   public List<BecViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate"::text
-       from "pe"."bec"
-    """)).query(BecViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"businessentityid\", \"personid\", \"contacttypeid\", \"rowguid\", \"modifieddate\"\nfrom \"pe\".\"bec\"\n")).query(BecViewRow._rowParser.all()).runUnchecked(c);
   };
 }

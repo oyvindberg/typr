@@ -5,10 +5,10 @@
  */
 package adventureworks.pr.th;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.transactionhistory.TransactionhistoryId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -26,15 +26,15 @@ public record ThViewRow(
   /** Points to {@link adventureworks.production.transactionhistory.TransactionhistoryRow#referenceorderlineid()} */
   Integer referenceorderlineid,
   /** Points to {@link adventureworks.production.transactionhistory.TransactionhistoryRow#transactiondate()} */
-  TypoLocalDateTime transactiondate,
+  LocalDateTime transactiondate,
   /** Points to {@link adventureworks.production.transactionhistory.TransactionhistoryRow#transactiontype()} */
-  /* bpchar, max 1 chars */ String transactiontype,
+  String transactiontype,
   /** Points to {@link adventureworks.production.transactionhistory.TransactionhistoryRow#quantity()} */
   Integer quantity,
   /** Points to {@link adventureworks.production.transactionhistory.TransactionhistoryRow#actualcost()} */
   BigDecimal actualcost,
   /** Points to {@link adventureworks.production.transactionhistory.TransactionhistoryRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.transactionhistory.TransactionhistoryRow#transactionid()} */
   public ThViewRow withId(TransactionhistoryId id) {
@@ -62,12 +62,12 @@ public record ThViewRow(
   };
 
   /** Points to {@link adventureworks.production.transactionhistory.TransactionhistoryRow#transactiondate()} */
-  public ThViewRow withTransactiondate(TypoLocalDateTime transactiondate) {
+  public ThViewRow withTransactiondate(LocalDateTime transactiondate) {
     return new ThViewRow(id, transactionid, productid, referenceorderid, referenceorderlineid, transactiondate, transactiontype, quantity, actualcost, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.transactionhistory.TransactionhistoryRow#transactiontype()} */
-  public ThViewRow withTransactiontype(/* bpchar, max 1 chars */ String transactiontype) {
+  public ThViewRow withTransactiontype(String transactiontype) {
     return new ThViewRow(id, transactionid, productid, referenceorderid, referenceorderlineid, transactiondate, transactiontype, quantity, actualcost, modifieddate);
   };
 
@@ -82,9 +82,9 @@ public record ThViewRow(
   };
 
   /** Points to {@link adventureworks.production.transactionhistory.TransactionhistoryRow#modifieddate()} */
-  public ThViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ThViewRow withModifieddate(LocalDateTime modifieddate) {
     return new ThViewRow(id, transactionid, productid, referenceorderid, referenceorderlineid, transactiondate, transactiontype, quantity, actualcost, modifieddate);
   };
 
-  static RowParser<ThViewRow> _rowParser = RowParsers.of(TransactionhistoryId.pgType, TransactionhistoryId.pgType, ProductId.pgType, PgTypes.int4, PgTypes.int4, TypoLocalDateTime.pgType, PgTypes.bpchar, PgTypes.int4, PgTypes.numeric, TypoLocalDateTime.pgType, ThViewRow::new, row -> new Object[]{row.id(), row.transactionid(), row.productid(), row.referenceorderid(), row.referenceorderlineid(), row.transactiondate(), row.transactiontype(), row.quantity(), row.actualcost(), row.modifieddate()});;
+  static RowParser<ThViewRow> _rowParser = RowParsers.of(TransactionhistoryId.pgType, TransactionhistoryId.pgType, ProductId.pgType, PgTypes.int4, PgTypes.int4, PgTypes.timestamp, PgTypes.bpchar, PgTypes.int4, PgTypes.numeric, PgTypes.timestamp, ThViewRow::new, row -> new Object[]{row.id(), row.transactionid(), row.productid(), row.referenceorderid(), row.referenceorderlineid(), row.transactiondate(), row.transactiontype(), row.quantity(), row.actualcost(), row.modifieddate()});;
 }

@@ -6,43 +6,17 @@
 package testdb.customer_orders
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import testdb.customers.CustomersId
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Fragment.interpolate
 
 class CustomerOrdersSqlRepoImpl() : CustomerOrdersSqlRepo {
   override fun apply(
     customerId: /* user-picked */ CustomersId,
-    orderStatus: Optional<String>,
+    orderStatus: String?,
     c: Connection
-  ): List<CustomerOrdersSqlRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      -- Query customers with their orders
-      SELECT c.customer_id,
-             c.email,
-             c.first_name,
-             c.last_name,
-             c.tier,
-             o.order_id,
-             o.order_number,
-             o.order_status,
-             o.total_amount,
-             o.ordered_at
-      FROM customers c
-      LEFT JOIN orders o ON c.customer_id = o.customer_id
-      WHERE c.customer_id = """.trimMargin()),
-    /* user-picked */ CustomersId.pgType.encode(customerId),
-    typo.runtime.Fragment.lit("""
-  
-        AND (""".trimMargin()),
-    MariaTypes.text.opt().encode(orderStatus),
-    typo.runtime.Fragment.lit(" IS NULL OR o.order_status = "),
-    MariaTypes.text.opt().encode(orderStatus),
-    typo.runtime.Fragment.lit("""
-    )
-
-    """.trimMargin())
-  ).query(CustomerOrdersSqlRow._rowParser.all()).runUnchecked(c)
+  ): List<CustomerOrdersSqlRow> = interpolate(Fragment.lit("-- Query customers with their orders\nSELECT c.customer_id,\n       c.email,\n       c.first_name,\n       c.last_name,\n       c.tier,\n       o.order_id,\n       o.order_number,\n       o.order_status,\n       o.total_amount,\n       o.ordered_at\nFROM customers c\nLEFT JOIN orders o ON c.customer_id = o.customer_id\nWHERE c.customer_id = "), Fragment.encode(CustomersId.pgType, customerId), Fragment.lit("\n  AND ("), Fragment.encode(MariaTypes.text.nullable(), orderStatus), Fragment.lit(" IS NULL OR o.order_status = "), Fragment.encode(MariaTypes.text.nullable(), orderStatus), Fragment.lit(")\n")).query(CustomerOrdersSqlRow._rowParser.all()).runUnchecked(c)
 }

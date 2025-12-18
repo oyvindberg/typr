@@ -6,12 +6,12 @@
 package adventureworks.production.productdescription
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.productdescription
   * Product descriptions in several languages.
@@ -23,24 +23,24 @@ data class ProductdescriptionRow(
     */
   val productdescriptionid: ProductdescriptionId,
   /** Description of the product. */
-  val description: /* max 400 chars */ String,
+  val description: String,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): ProductdescriptionId = productdescriptionid
 
   fun toUnsavedRow(
     productdescriptionid: Defaulted<ProductdescriptionId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): ProductdescriptionRowUnsaved = ProductdescriptionRowUnsaved(description, productdescriptionid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductdescriptionRow> = RowParsers.of(ProductdescriptionId.pgType, PgTypes.text, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> ProductdescriptionRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productdescriptionid, row.description, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<ProductdescriptionRow> = RowParsers.of(ProductdescriptionId.pgType, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3 -> ProductdescriptionRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productdescriptionid, row.description, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<ProductdescriptionRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

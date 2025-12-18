@@ -19,7 +19,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -34,11 +33,7 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
     ProductPricesId priceId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `product_prices` where `price_id` = "),
-      ProductPricesId.pgType.encode(priceId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `product_prices` where `price_id` = "), Fragment.encode(ProductPricesId.pgType, priceId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -46,8 +41,8 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
     ProductPricesId[] priceIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : priceIds) { fragments.add(ProductPricesId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : priceIds) { fragments.add(Fragment.encode(ProductPricesId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `product_prices` where `price_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -56,26 +51,7 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
     ProductPricesRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
-         values ("""),
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit(", "),
-      PriceTiersId.pgType.opt().encode(unsaved.tierId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.price()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.currencyCode()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.date.encode(unsaved.validFrom()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.date.opt().encode(unsaved.validTo()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)\nvalues ("), Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit(", "), Fragment.encode(PriceTiersId.pgType.opt(), unsaved.tierId()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.price()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.currencyCode()), Fragment.lit(", "), Fragment.encode(MariaTypes.date, unsaved.validFrom()), Fragment.lit(", "), Fragment.encode(MariaTypes.date.opt(), unsaved.validTo()), Fragment.lit(")\nreturning `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`\n"))
       .updateReturning(ProductPricesRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -84,37 +60,21 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
     ProductPricesRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`product_id`"));
-    values.add(interpolate(
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit("")));
     columns.add(Fragment.lit("`price`"));
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.price()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.numeric, unsaved.price()), Fragment.lit("")));
     columns.add(Fragment.lit("`valid_from`"));
-    values.add(interpolate(
-      MariaTypes.date.encode(unsaved.validFrom()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.date, unsaved.validFrom()), Fragment.lit("")));
     unsaved.tierId().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`tier_id`"));
-        values.add(interpolate(
-        PriceTiersId.pgType.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(PriceTiersId.pgType.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.currencyCode().visit(
@@ -123,11 +83,7 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`currency_code`"));
-        values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.char_, value), Fragment.lit("")));
       }
     );;
     unsaved.validTo().visit(
@@ -136,25 +92,10 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`valid_to`"));
-        values.add(interpolate(
-        MariaTypes.date.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.date.opt(), value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `product_prices`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `product_prices`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`\n"));;
     return q.updateReturning(ProductPricesRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -165,10 +106,7 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
 
   @Override
   public List<ProductPricesRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
-       from `product_prices`
-    """)).query(ProductPricesRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`\nfrom `product_prices`\n")).query(ProductPricesRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -176,14 +114,7 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
     ProductPricesId priceId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
-         from `product_prices`
-         where `price_id` = """),
-      ProductPricesId.pgType.encode(priceId),
-      typo.runtime.Fragment.lit("")
-    ).query(ProductPricesRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`\nfrom `product_prices`\nwhere `price_id` = "), Fragment.encode(ProductPricesId.pgType, priceId), Fragment.lit("")).query(ProductPricesRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -191,8 +122,8 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
     ProductPricesId[] priceIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : priceIds) { fragments.add(ProductPricesId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : priceIds) { fragments.add(Fragment.encode(ProductPricesId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to` from `product_prices` where `price_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ProductPricesRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -208,7 +139,7 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
 
   @Override
   public UpdateBuilder<ProductPricesFields, ProductPricesRow> update() {
-    return UpdateBuilder.of("`product_prices`", ProductPricesFields.structure(), ProductPricesRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`product_prices`", ProductPricesFields.structure(), ProductPricesRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -217,37 +148,7 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
     Connection c
   ) {
     ProductPricesId priceId = row.priceId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `product_prices`
-         set `product_id` = """),
-      ProductsId.pgType.encode(row.productId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `tier_id` = """),
-      PriceTiersId.pgType.opt().encode(row.tierId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `price` = """),
-      MariaTypes.numeric.encode(row.price()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `currency_code` = """),
-      MariaTypes.text.encode(row.currencyCode()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `valid_from` = """),
-      MariaTypes.date.encode(row.validFrom()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `valid_to` = """),
-      MariaTypes.date.opt().encode(row.validTo()),
-      typo.runtime.Fragment.lit("""
-   
-         where `price_id` = """),
-      ProductPricesId.pgType.encode(priceId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `product_prices`\nset `product_id` = "), Fragment.encode(ProductsId.pgType, row.productId()), Fragment.lit(",\n`tier_id` = "), Fragment.encode(PriceTiersId.pgType.opt(), row.tierId()), Fragment.lit(",\n`price` = "), Fragment.encode(MariaTypes.numeric, row.price()), Fragment.lit(",\n`currency_code` = "), Fragment.encode(MariaTypes.char_, row.currencyCode()), Fragment.lit(",\n`valid_from` = "), Fragment.encode(MariaTypes.date, row.validFrom()), Fragment.lit(",\n`valid_to` = "), Fragment.encode(MariaTypes.date.opt(), row.validTo()), Fragment.lit("\nwhere `price_id` = "), Fragment.encode(ProductPricesId.pgType, priceId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -255,31 +156,7 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
     ProductPricesRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
-         VALUES ("""),
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit(", "),
-      PriceTiersId.pgType.opt().encode(unsaved.tierId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.price()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.currencyCode()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.date.encode(unsaved.validFrom()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.date.opt().encode(unsaved.validTo()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-         `tier_id` = VALUES(`tier_id`),
-         `price` = VALUES(`price`),
-         `currency_code` = VALUES(`currency_code`),
-         `valid_from` = VALUES(`valid_from`),
-         `valid_to` = VALUES(`valid_to`)
-         RETURNING `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)\nVALUES ("), Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit(", "), Fragment.encode(PriceTiersId.pgType.opt(), unsaved.tierId()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.price()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.currencyCode()), Fragment.lit(", "), Fragment.encode(MariaTypes.date, unsaved.validFrom()), Fragment.lit(", "), Fragment.encode(MariaTypes.date.opt(), unsaved.validTo()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`tier_id` = VALUES(`tier_id`),\n`price` = VALUES(`price`),\n`currency_code` = VALUES(`currency_code`),\n`valid_from` = VALUES(`valid_from`),\n`valid_to` = VALUES(`valid_to`)\nRETURNING `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`"))
       .updateReturning(ProductPricesRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -289,17 +166,8 @@ public class ProductPricesRepoImpl implements ProductPricesRepo {
     Iterator<ProductPricesRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `product_prices`(`price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-                `tier_id` = VALUES(`tier_id`),
-                `price` = VALUES(`price`),
-                `currency_code` = VALUES(`currency_code`),
-                `valid_from` = VALUES(`valid_from`),
-                `valid_to` = VALUES(`valid_to`)
-                RETURNING `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`"""))
+    return interpolate(Fragment.lit("INSERT INTO `product_prices`(`price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)\nVALUES (?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`tier_id` = VALUES(`tier_id`),\n`price` = VALUES(`price`),\n`currency_code` = VALUES(`currency_code`),\n`valid_from` = VALUES(`valid_from`),\n`valid_to` = VALUES(`valid_to`)\nRETURNING `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`"))
       .updateReturningEach(ProductPricesRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

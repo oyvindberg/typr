@@ -6,9 +6,10 @@
 package adventureworks.person.businessentity;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -22,9 +23,9 @@ public record BusinessentityRow(
     */
   BusinessentityId businessentityid,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for all customers, vendors, and employees.
     * Default: nextval('person.businessentity_businessentityid_seq'::regclass)
@@ -34,16 +35,16 @@ public record BusinessentityRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public BusinessentityRow withRowguid(TypoUUID rowguid) {
+  public BusinessentityRow withRowguid(UUID rowguid) {
     return new BusinessentityRow(businessentityid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public BusinessentityRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public BusinessentityRow withModifieddate(LocalDateTime modifieddate) {
     return new BusinessentityRow(businessentityid, rowguid, modifieddate);
   };
 
-  static RowParser<BusinessentityRow> _rowParser = RowParsers.of(BusinessentityId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, BusinessentityRow::new, row -> new Object[]{row.businessentityid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<BusinessentityRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.uuid, PgTypes.timestamp, BusinessentityRow::new, row -> new Object[]{row.businessentityid(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<BusinessentityRow> pgText =
     PgText.from(_rowParser);
@@ -54,8 +55,8 @@ public record BusinessentityRow(
 
   public BusinessentityRowUnsaved toUnsavedRow(
     Defaulted<BusinessentityId> businessentityid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new BusinessentityRowUnsaved(businessentityid, rowguid, modifieddate);
   };

@@ -5,32 +5,32 @@
  */
 package adventureworks.humanresources.vjobcandidateeducation
 
-import adventureworks.customtypes.TypoLocalDate
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
+import java.time.LocalDate
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: humanresources.vjobcandidateeducation */
 data class VjobcandidateeducationViewRow(
   /** Points to [adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid] */
   val jobcandidateid: JobcandidateId,
-  @JsonProperty("Edu.Level") val eduLevel: /* nullability unknown */ Optional</* max 50 chars */ String>,
-  @JsonProperty("Edu.StartDate") val eduStartDate: /* nullability unknown */ Optional<TypoLocalDate>,
-  @JsonProperty("Edu.EndDate") val eduEndDate: /* nullability unknown */ Optional<TypoLocalDate>,
-  @JsonProperty("Edu.Degree") val eduDegree: /* nullability unknown */ Optional</* max 50 chars */ String>,
-  @JsonProperty("Edu.Major") val eduMajor: /* nullability unknown */ Optional</* max 50 chars */ String>,
-  @JsonProperty("Edu.Minor") val eduMinor: /* nullability unknown */ Optional</* max 50 chars */ String>,
-  @JsonProperty("Edu.GPA") val eduGPA: /* nullability unknown */ Optional</* max 5 chars */ String>,
-  @JsonProperty("Edu.GPAScale") val eduGPAScale: /* nullability unknown */ Optional</* max 5 chars */ String>,
-  @JsonProperty("Edu.School") val eduSchool: /* nullability unknown */ Optional</* max 100 chars */ String>,
-  @JsonProperty("Edu.Loc.CountryRegion") val eduLocCountryRegion: /* nullability unknown */ Optional</* max 100 chars */ String>,
-  @JsonProperty("Edu.Loc.State") val eduLocState: /* nullability unknown */ Optional</* max 100 chars */ String>,
-  @JsonProperty("Edu.Loc.City") val eduLocCity: /* nullability unknown */ Optional</* max 100 chars */ String>
+  @JsonProperty("Edu.Level") val eduLevel: /* max 50 chars */ String?,
+  @JsonProperty("Edu.StartDate") val eduStartDate: LocalDate?,
+  @JsonProperty("Edu.EndDate") val eduEndDate: LocalDate?,
+  @JsonProperty("Edu.Degree") val eduDegree: /* max 50 chars */ String?,
+  @JsonProperty("Edu.Major") val eduMajor: /* max 50 chars */ String?,
+  @JsonProperty("Edu.Minor") val eduMinor: /* max 50 chars */ String?,
+  @JsonProperty("Edu.GPA") val eduGPA: /* max 5 chars */ String?,
+  @JsonProperty("Edu.GPAScale") val eduGPAScale: /* max 5 chars */ String?,
+  @JsonProperty("Edu.School") val eduSchool: /* max 100 chars */ String?,
+  @JsonProperty("Edu.Loc.CountryRegion") val eduLocCountryRegion: /* max 100 chars */ String?,
+  @JsonProperty("Edu.Loc.State") val eduLocState: /* max 100 chars */ String?,
+  @JsonProperty("Edu.Loc.City") val eduLocCity: /* max 100 chars */ String?
 ) {
   companion object {
-    val _rowParser: RowParser<VjobcandidateeducationViewRow> = RowParsers.of(JobcandidateId.pgType, PgTypes.text.opt(), TypoLocalDate.pgType.opt(), TypoLocalDate.pgType.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> VjobcandidateeducationViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.jobcandidateid, row.eduLevel, row.eduStartDate, row.eduEndDate, row.eduDegree, row.eduMajor, row.eduMinor, row.eduGPA, row.eduGPAScale, row.eduSchool, row.eduLocCountryRegion, row.eduLocState, row.eduLocCity) })
+    val _rowParser: RowParser<VjobcandidateeducationViewRow> = RowParsers.of(JobcandidateId.pgType, PgTypes.text.nullable(), PgTypes.date.nullable(), PgTypes.date.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> VjobcandidateeducationViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.jobcandidateid, row.eduLevel, row.eduStartDate, row.eduEndDate, row.eduDegree, row.eduMajor, row.eduMinor, row.eduGPA, row.eduGPAScale, row.eduSchool, row.eduLocCountryRegion, row.eduLocState, row.eduLocCity) })
   }
 }

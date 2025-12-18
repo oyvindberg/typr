@@ -6,69 +6,68 @@
 package testdb.mariatest
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface MariatestRepo {
-  fun delete(): DeleteBuilder<MariatestFields, MariatestRow>
+  abstract fun delete(): DeleteBuilder<MariatestFields, MariatestRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     intCol: MariatestId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     intCols: Array<MariatestId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: MariatestRow,
     c: Connection
   ): MariatestRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: MariatestRowUnsaved,
     c: Connection
   ): MariatestRow
 
-  fun select(): SelectBuilder<MariatestFields, MariatestRow>
+  abstract fun select(): SelectBuilder<MariatestFields, MariatestRow>
 
-  fun selectAll(c: Connection): List<MariatestRow>
+  abstract fun selectAll(c: Connection): List<MariatestRow>
 
-  fun selectById(
+  abstract fun selectById(
     intCol: MariatestId,
     c: Connection
-  ): Optional<MariatestRow>
+  ): MariatestRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     intCols: Array<MariatestId>,
     c: Connection
   ): List<MariatestRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     intCols: Array<MariatestId>,
     c: Connection
   ): Map<MariatestId, MariatestRow>
 
-  fun update(): UpdateBuilder<MariatestFields, MariatestRow>
+  abstract fun update(): UpdateBuilder<MariatestFields, MariatestRow>
 
-  fun update(
+  abstract fun update(
     row: MariatestRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: MariatestRow,
     c: Connection
   ): MariatestRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<MariatestRow>,
     c: Connection
   ): List<MariatestRow>

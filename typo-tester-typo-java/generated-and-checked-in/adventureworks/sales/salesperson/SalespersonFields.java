@@ -5,8 +5,6 @@
  */
 package adventureworks.sales.salesperson;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.humanresources.employee.EmployeeFields;
 import adventureworks.humanresources.employee.EmployeeRow;
 import adventureworks.person.businessentity.BusinessentityId;
@@ -14,21 +12,23 @@ import adventureworks.sales.salesterritory.SalesterritoryFields;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import adventureworks.sales.salesterritory.SalesterritoryRow;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SalespersonFields extends FieldsExpr<SalespersonRow> {
-  record Impl(List<Path> _path) implements SalespersonFields, Relation<SalespersonFields, SalespersonRow> {
+  record Impl(List<Path> _path) implements SalespersonFields, RelationStructure<SalespersonFields, SalespersonRow> {
     @Override
     public IdField<BusinessentityId, SalespersonRow> businessentityid() {
       return new IdField<BusinessentityId, SalespersonRow>(_path, "businessentityid", SalespersonRow::businessentityid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
@@ -65,28 +65,28 @@ public interface SalespersonFields extends FieldsExpr<SalespersonRow> {
     };
 
     @Override
-    public Field<TypoUUID, SalespersonRow> rowguid() {
-      return new Field<TypoUUID, SalespersonRow>(_path, "rowguid", SalespersonRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, SalespersonRow> rowguid() {
+      return new Field<UUID, SalespersonRow>(_path, "rowguid", SalespersonRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SalespersonRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SalespersonRow>(_path, "modifieddate", SalespersonRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SalespersonRow> modifieddate() {
+      return new Field<LocalDateTime, SalespersonRow>(_path, "modifieddate", SalespersonRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SalespersonRow>> columns() {
-      return List.of(this.businessentityid(), this.territoryid(), this.salesquota(), this.bonus(), this.commissionpct(), this.salesytd(), this.saleslastyear(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.businessentityid(), this.territoryid(), this.salesquota(), this.bonus(), this.commissionpct(), this.salesytd(), this.saleslastyear(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SalespersonFields, SalespersonRow> copy(List<Path> _path) {
+    public RelationStructure<SalespersonFields, SalespersonRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BusinessentityId, SalespersonRow> businessentityid();
@@ -103,16 +103,16 @@ public interface SalespersonFields extends FieldsExpr<SalespersonRow> {
 
   Field<BigDecimal, SalespersonRow> saleslastyear();
 
-  Field<TypoUUID, SalespersonRow> rowguid();
+  Field<UUID, SalespersonRow> rowguid();
 
-  Field<TypoLocalDateTime, SalespersonRow> modifieddate();
+  Field<LocalDateTime, SalespersonRow> modifieddate();
 
   default ForeignKey<EmployeeFields, EmployeeRow> fkHumanresourcesEmployee() {
-    return ForeignKey.<EmployeeFields, EmployeeRow>of("sales.FK_SalesPerson_Employee_BusinessEntityID").withColumnPair(businessentityid(), EmployeeFields::businessentityid);
+    return ForeignKey.<EmployeeFields, EmployeeRow>of("sales.FK_SalesPerson_Employee_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), EmployeeFields::businessentityid);
   };
 
   default ForeignKey<SalesterritoryFields, SalesterritoryRow> fkSalesterritory() {
-    return ForeignKey.<SalesterritoryFields, SalesterritoryRow>of("sales.FK_SalesPerson_SalesTerritory_TerritoryID").withColumnPair(territoryid(), SalesterritoryFields::territoryid);
+    return ForeignKey.<SalesterritoryFields, SalesterritoryRow>of("sales.FK_SalesPerson_SalesTerritory_TerritoryID").<SalesterritoryId>withColumnPair(territoryid(), SalesterritoryFields::territoryid);
   };
 
   @Override

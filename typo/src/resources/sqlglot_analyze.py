@@ -840,13 +840,9 @@ def analyze_sql(sql: str, sqlglot_schema: MappingSchema, sqlglot_schema_dict: di
                 inferred_type = str(select_col.type)
 
             # Get direct source using the qualified/annotated AST
-            direct_source_start = time.time()
             source_table, source_col, is_expr = get_direct_column_source(
                 annotated, col_name, sqlglot_schema_dict, dialect
             )
-            direct_source_time = time.time() - direct_source_start
-            if direct_source_time > 0.05:
-                print(f"      get_direct_column_source for {col_name}: {direct_source_time*1000:.0f}ms", file=sys.stderr)
 
 
             # Check nullable from join

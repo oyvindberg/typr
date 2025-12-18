@@ -7,48 +7,35 @@ package testdb.warehouses
 
 import java.lang.RuntimeException
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
-import java.util.function.Function
-import java.util.stream.Collectors
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.DeleteBuilderMock
+import typo.scaladsl.DeleteParams
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.SelectBuilderMock
+import typo.scaladsl.SelectParams
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.UpdateBuilderMock
+import typo.scaladsl.UpdateParams
 
 case class WarehousesRepoMock(
   toRow: WarehousesRowUnsaved => WarehousesRow,
-  map: HashMap[WarehousesId, WarehousesRow] = new HashMap[WarehousesId, WarehousesRow]()
+  map: scala.collection.mutable.Map[WarehousesId, WarehousesRow] = scala.collection.mutable.Map.empty[WarehousesId, WarehousesRow]
 ) extends WarehousesRepo {
-  override def delete: DeleteBuilder[WarehousesFields, WarehousesRow] = {
-    new DeleteBuilderMock(
-      WarehousesFields.structure,
-      () => new ArrayList(map.values()),
-      DeleteParams.empty(),
-      row => row.warehouseId,
-      id => map.remove(id): @scala.annotation.nowarn
-    )
-  }
+  override def delete: DeleteBuilder[WarehousesFields, WarehousesRow] = DeleteBuilderMock(WarehousesFields.structure, () => map.values.toList, DeleteParams.empty(), row => row.warehouseId, id => map.remove(id): @scala.annotation.nowarn)
 
-  override def deleteById(warehouseId: WarehousesId)(using c: Connection): java.lang.Boolean = Optional.ofNullable(map.remove(warehouseId)).isPresent()
+  override def deleteById(warehouseId: WarehousesId)(using c: Connection): Boolean = map.remove(warehouseId).isDefined
 
-  override def deleteByIds(warehouseIds: Array[WarehousesId])(using c: Connection): Integer = {
+  override def deleteByIds(warehouseIds: Array[WarehousesId])(using c: Connection): Int = {
     var count = 0
-    warehouseIds.foreach { id => if (Optional.ofNullable(map.remove(id)).isPresent()) {
+    warehouseIds.foreach { id => if (map.remove(id).isDefined) {
       count = count + 1
     } }
     return count
   }
 
   override def insert(unsaved: WarehousesRow)(using c: Connection): WarehousesRow = {
-    if (map.containsKey(unsaved.warehouseId)) {
-      throw new RuntimeException(s"id $unsaved.warehouseId already exists")
+    if (map.contains(unsaved.warehouseId)) {
+      throw new RuntimeException(s"id ${unsaved.warehouseId} already exists")
     }
     map.put(unsaved.warehouseId, unsaved): @scala.annotation.nowarn
     return unsaved
@@ -56,35 +43,22 @@ case class WarehousesRepoMock(
 
   override def insert(unsaved: WarehousesRowUnsaved)(using c: Connection): WarehousesRow = insert(toRow(unsaved))(using c)
 
-  override def select: SelectBuilder[WarehousesFields, WarehousesRow] = new SelectBuilderMock(WarehousesFields.structure, () => new ArrayList(map.values()), SelectParams.empty())
+  override def select: SelectBuilder[WarehousesFields, WarehousesRow] = SelectBuilderMock(WarehousesFields.structure, () => map.values.toList, SelectParams.empty())
 
-  override def selectAll(using c: Connection): java.util.List[WarehousesRow] = new ArrayList(map.values())
+  override def selectAll(using c: Connection): List[WarehousesRow] = map.values.toList
 
-  override def selectById(warehouseId: WarehousesId)(using c: Connection): Optional[WarehousesRow] = Optional.ofNullable(map.get(warehouseId))
+  override def selectById(warehouseId: WarehousesId)(using c: Connection): Option[WarehousesRow] = map.get(warehouseId)
 
-  override def selectByIds(warehouseIds: Array[WarehousesId])(using c: Connection): java.util.List[WarehousesRow] = {
-    val result = new ArrayList[WarehousesRow]()
-    warehouseIds.foreach { id => val opt = Optional.ofNullable(map.get(id)); if (opt.isPresent()) {
-      result.add(opt.get()): @scala.annotation.nowarn
-    } }
-    return result
-  }
+  override def selectByIds(warehouseIds: Array[WarehousesId])(using c: Connection): List[WarehousesRow] = warehouseIds.flatMap(map.get(_)).toList
 
-  override def selectByIdsTracked(warehouseIds: Array[WarehousesId])(using c: Connection): java.util.Map[WarehousesId, WarehousesRow] = selectByIds(warehouseIds)(using c).stream().collect(Collectors.toMap((row: WarehousesRow) => row.warehouseId, Function.identity()))
+  override def selectByIdsTracked(warehouseIds: Array[WarehousesId])(using c: Connection): Map[WarehousesId, WarehousesRow] = selectByIds(warehouseIds)(using c).map(x => (((row: WarehousesRow) => row.warehouseId).apply(x), x)).toMap
 
-  override def selectByUniqueCode(code: String)(using c: Connection): Optional[WarehousesRow] = new ArrayList(map.values()).stream().filter(v => (code == v.code)).findFirst()
+  override def selectByUniqueCode(code: String)(using c: Connection): Option[WarehousesRow] = map.values.toList.find(v => (code == v.code))
 
-  override def update: UpdateBuilder[WarehousesFields, WarehousesRow] = {
-    new UpdateBuilderMock(
-      WarehousesFields.structure,
-      () => new ArrayList(map.values()),
-      UpdateParams.empty(),
-      row => row
-    )
-  }
+  override def update: UpdateBuilder[WarehousesFields, WarehousesRow] = UpdateBuilderMock(WarehousesFields.structure, () => map.values.toList, UpdateParams.empty(), row => row)
 
-  override def update(row: WarehousesRow)(using c: Connection): java.lang.Boolean = {
-    val shouldUpdate = Optional.ofNullable(map.get(row.warehouseId)).filter(oldRow => (oldRow != row)).isPresent()
+  override def update(row: WarehousesRow)(using c: Connection): Boolean = {
+    val shouldUpdate = map.get(row.warehouseId).filter(oldRow => (oldRow != row)).isDefined
     if (shouldUpdate) {
       map.put(row.warehouseId, row): @scala.annotation.nowarn
     }
@@ -96,13 +70,10 @@ case class WarehousesRepoMock(
     return unsaved
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[WarehousesRow])(using c: Connection): java.util.List[WarehousesRow] = {
-    val result = new ArrayList[WarehousesRow]()
-    while (unsaved.hasNext()) {
-      val row = unsaved.next()
+  override def upsertBatch(unsaved: Iterator[WarehousesRow])(using c: Connection): List[WarehousesRow] = {
+    unsaved.map { row =>
       map.put(row.warehouseId, row): @scala.annotation.nowarn
-      result.add(row): @scala.annotation.nowarn
-    }
-    return result
+      row
+    }.toList
   }
 }

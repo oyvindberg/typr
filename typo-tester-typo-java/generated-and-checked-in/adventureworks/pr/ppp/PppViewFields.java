@@ -5,21 +5,22 @@
  */
 package adventureworks.pr.ppp;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.productphoto.ProductphotoId;
 import adventureworks.public_.Flag;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PppViewFields extends FieldsExpr<PppViewRow> {
-  record Impl(List<Path> _path) implements PppViewFields, Relation<PppViewFields, PppViewRow> {
+  record Impl(List<Path> _path) implements PppViewFields, RelationStructure<PppViewFields, PppViewRow> {
     @Override
     public Field<ProductId, PppViewRow> productid() {
       return new Field<ProductId, PppViewRow>(_path, "productid", PppViewRow::productid, Optional.empty(), Optional.empty(), (row, value) -> row.withProductid(value), ProductId.pgType);
@@ -36,23 +37,23 @@ public interface PppViewFields extends FieldsExpr<PppViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PppViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PppViewRow>(_path, "modifieddate", PppViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PppViewRow> modifieddate() {
+      return new Field<LocalDateTime, PppViewRow>(_path, "modifieddate", PppViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PppViewRow>> columns() {
-      return List.of(this.productid(), this.productphotoid(), this.primary(), this.modifieddate());
+      return java.util.List.of(this.productid(), this.productphotoid(), this.primary(), this.modifieddate());
     };
 
     @Override
-    public Relation<PppViewFields, PppViewRow> copy(List<Path> _path) {
+    public RelationStructure<PppViewFields, PppViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductId, PppViewRow> productid();
@@ -61,7 +62,7 @@ public interface PppViewFields extends FieldsExpr<PppViewRow> {
 
   Field<Flag, PppViewRow> primary();
 
-  Field<TypoLocalDateTime, PppViewRow> modifieddate();
+  Field<LocalDateTime, PppViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PppViewRow>> columns();

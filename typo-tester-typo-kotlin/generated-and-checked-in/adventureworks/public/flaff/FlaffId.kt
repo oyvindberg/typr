@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /** Type for the composite primary key of table `public.flaff` */
 data class FlaffId(
   val code: ShortText,
-  @JsonProperty("another_code") val anotherCode: /* max 20 chars */ String,
+  @JsonProperty("another_code") val anotherCode: String,
   @JsonProperty("some_number") val someNumber: Int,
   val specifier: ShortText
 )

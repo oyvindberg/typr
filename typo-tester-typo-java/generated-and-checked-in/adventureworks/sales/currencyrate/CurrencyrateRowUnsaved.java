@@ -7,16 +7,16 @@ package adventureworks.sales.currencyrate;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.sales.currency.CurrencyId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.currencyrate` which has not been persisted yet */
 public record CurrencyrateRowUnsaved(
   /** Date and time the exchange rate was obtained. */
-  TypoLocalDateTime currencyratedate,
+  LocalDateTime currencyratedate,
   /** Exchange rate was converted from this currency code.
     * Points to {@link adventureworks.sales.currency.CurrencyRow#currencycode()}
     */
@@ -34,11 +34,11 @@ public record CurrencyrateRowUnsaved(
     */
   Defaulted<CurrencyrateId> currencyrateid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public CurrencyrateRowUnsaved(
     /** Date and time the exchange rate was obtained. */
-    TypoLocalDateTime currencyratedate,
+    LocalDateTime currencyratedate,
     /** Exchange rate was converted from this currency code.
       * Points to {@link adventureworks.sales.currency.CurrencyRow#currencycode()}
       */
@@ -56,7 +56,7 @@ public record CurrencyrateRowUnsaved(
   };
 
   /** Date and time the exchange rate was obtained. */
-  public CurrencyrateRowUnsaved withCurrencyratedate(TypoLocalDateTime currencyratedate) {
+  public CurrencyrateRowUnsaved withCurrencyratedate(LocalDateTime currencyratedate) {
     return new CurrencyrateRowUnsaved(currencyratedate, fromcurrencycode, tocurrencycode, averagerate, endofdayrate, currencyrateid, modifieddate);
   };
 
@@ -92,13 +92,13 @@ public record CurrencyrateRowUnsaved(
   };
 
   /** Default: now() */
-  public CurrencyrateRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public CurrencyrateRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new CurrencyrateRowUnsaved(currencyratedate, fromcurrencycode, tocurrencycode, averagerate, endofdayrate, currencyrateid, modifieddate);
   };
 
   static public PgText<CurrencyrateRowUnsaved> pgText =
     PgText.instance((row, sb) -> {
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.currencyratedate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.currencyratedate, sb);
       sb.append(PgText.DELIMETER);
       CurrencyId.pgType.pgText().unsafeEncode(row.fromcurrencycode, sb);
       sb.append(PgText.DELIMETER);
@@ -110,12 +110,12 @@ public record CurrencyrateRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(CurrencyrateId.pgType.pgText()).unsafeEncode(row.currencyrateid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public CurrencyrateRow toRow(
     java.util.function.Supplier<CurrencyrateId> currencyrateidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new CurrencyrateRow(currencyrateid.getOrElse(currencyrateidDefault), currencyratedate, fromcurrencycode, tocurrencycode, averagerate, endofdayrate, modifieddate.getOrElse(modifieddateDefault));
   };

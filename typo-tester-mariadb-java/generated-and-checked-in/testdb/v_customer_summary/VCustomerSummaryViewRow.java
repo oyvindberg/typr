@@ -140,5 +140,5 @@ public record VCustomerSummaryViewRow(
     return new VCustomerSummaryViewRow(customerId, email, fullName, tier, status, createdAt, lastLoginAt, totalOrders, lifetimeValue, lastOrderDate);
   };
 
-  static RowParser<VCustomerSummaryViewRow> _rowParser = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, MariaTypes.datetime.opt(), MariaTypes.bigint, MariaTypes.decimal, MariaTypes.datetime.opt(), VCustomerSummaryViewRow::new, row -> new Object[]{row.customerId(), row.email(), row.fullName(), row.tier(), row.status(), row.createdAt(), row.lastLoginAt(), row.totalOrders(), row.lifetimeValue(), row.lastOrderDate()});;
+  static RowParser<VCustomerSummaryViewRow> _rowParser = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, MariaTypes.datetime.opt(), MariaTypes.bigint, MariaTypes.numeric, MariaTypes.datetime.opt(), VCustomerSummaryViewRow::new, row -> new Object[]{row.customerId(), row.email(), row.fullName(), row.tier(), row.status(), row.createdAt(), row.lastLoginAt(), row.totalOrders(), row.lifetimeValue(), row.lastOrderDate()});;
 }

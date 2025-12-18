@@ -15,9 +15,9 @@ import typo.dsl.DeleteBuilder;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class TitleDomainRepoImpl implements TitleDomainRepo {
   @Override
@@ -30,13 +30,7 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
     TitleDomainId code,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "public"."title_domain" where "code" = 
-      """),
-      TitleDomainId.pgType.encode(code),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"public\".\"title_domain\" where \"code\" = "), Fragment.encode(TitleDomainId.pgType, code), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,14 +38,7 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
     TitleDomainId[] codes,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "public"."title_domain"
-                  where "code" = ANY("""),
-               TitleDomainId.pgTypeArray.encode(codes),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"public\".\"title_domain\"\nwhere \"code\" = ANY("), Fragment.encode(TitleDomainId.pgTypeArray, codes), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -61,16 +48,7 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
     TitleDomainRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."title_domain"("code")
-         values ("""),
-      TitleDomainId.pgType.encode(unsaved.code()),
-      typo.runtime.Fragment.lit("""
-         ::text)
-         returning "code"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"title_domain\"(\"code\")\nvalues ("), Fragment.encode(TitleDomainId.pgType, unsaved.code()), Fragment.lit("::text)\nreturning \"code\"\n"))
       .updateReturning(TitleDomainRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -80,9 +58,7 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "public"."title_domain"("code") FROM STDIN
-    """), batchSize, unsaved, c, TitleDomainRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"public\".\"title_domain\"(\"code\") FROM STDIN", batchSize, unsaved, c, TitleDomainRow.pgText);
   };
 
   @Override
@@ -92,10 +68,7 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
 
   @Override
   public List<TitleDomainRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "code"
-       from "public"."title_domain"
-    """)).query(TitleDomainRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"code\"\nfrom \"public\".\"title_domain\"\n")).query(TitleDomainRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -103,14 +76,7 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
     TitleDomainId code,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "code"
-         from "public"."title_domain"
-         where "code" = """),
-      TitleDomainId.pgType.encode(code),
-      typo.runtime.Fragment.lit("")
-    ).query(TitleDomainRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"code\"\nfrom \"public\".\"title_domain\"\nwhere \"code\" = "), Fragment.encode(TitleDomainId.pgType, code), Fragment.lit("")).query(TitleDomainRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -118,14 +84,7 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
     TitleDomainId[] codes,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "code"
-         from "public"."title_domain"
-         where "code" = ANY("""),
-      TitleDomainId.pgTypeArray.encode(codes),
-      typo.runtime.Fragment.lit(")")
-    ).query(TitleDomainRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"code\"\nfrom \"public\".\"title_domain\"\nwhere \"code\" = ANY("), Fragment.encode(TitleDomainId.pgTypeArray, codes), Fragment.lit(")")).query(TitleDomainRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -140,7 +99,7 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
 
   @Override
   public UpdateBuilder<TitleDomainFields, TitleDomainRow> update() {
-    return UpdateBuilder.of("\"public\".\"title_domain\"", TitleDomainFields.structure(), TitleDomainRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"public\".\"title_domain\"", TitleDomainFields.structure(), TitleDomainRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -148,17 +107,7 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
     TitleDomainRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."title_domain"("code")
-         values ("""),
-      TitleDomainId.pgType.encode(unsaved.code()),
-      typo.runtime.Fragment.lit("""
-         ::text)
-         on conflict ("code")
-         do update set "code" = EXCLUDED."code"
-         returning "code\"""")
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"title_domain\"(\"code\")\nvalues ("), Fragment.encode(TitleDomainId.pgType, unsaved.code()), Fragment.lit("::text)\non conflict (\"code\")\ndo update set \"code\" = EXCLUDED.\"code\"\nreturning \"code\""))
       .updateReturning(TitleDomainRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -168,14 +117,9 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
     Iterator<TitleDomainRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "public"."title_domain"("code")
-                values (?::text)
-                on conflict ("code")
-                do update set "code" = EXCLUDED."code"
-                returning "code\""""))
+    return interpolate(Fragment.lit("insert into \"public\".\"title_domain\"(\"code\")\nvalues (?::text)\non conflict (\"code\")\ndo update set \"code\" = EXCLUDED.\"code\"\nreturning \"code\""))
       .updateManyReturning(TitleDomainRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -185,18 +129,8 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table title_domain_TEMP (like "public"."title_domain") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy title_domain_TEMP("code") from stdin
-    """), batchSize, unsaved, c, TitleDomainRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "public"."title_domain"("code")
-       select * from title_domain_TEMP
-       on conflict ("code")
-       do nothing
-       ;
-       drop table title_domain_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table title_domain_TEMP (like \"public\".\"title_domain\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy title_domain_TEMP(\"code\") from stdin", batchSize, unsaved, c, TitleDomainRow.pgText);
+    return interpolate(Fragment.lit("insert into \"public\".\"title_domain\"(\"code\")\nselect * from title_domain_TEMP\non conflict (\"code\")\ndo nothing\n;\ndrop table title_domain_TEMP;")).update().runUnchecked(c);
   };
 }

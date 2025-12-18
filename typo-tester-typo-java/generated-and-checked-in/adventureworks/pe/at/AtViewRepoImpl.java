@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class AtViewRepoImpl implements AtViewRepo {
@@ -19,9 +20,6 @@ public class AtViewRepoImpl implements AtViewRepo {
 
   @Override
   public List<AtViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "addresstypeid", "name", "rowguid", "modifieddate"::text
-       from "pe"."at"
-    """)).query(AtViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"pe\".\"at\"\n")).query(AtViewRow._rowParser.all()).runUnchecked(c);
   };
 }

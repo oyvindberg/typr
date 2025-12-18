@@ -15,9 +15,9 @@ import typo.dsl.DeleteBuilder;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
   @Override
@@ -30,13 +30,7 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
     TestOrganisasjonId organisasjonskode,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "public"."test_organisasjon" where "organisasjonskode" = 
-      """),
-      TestOrganisasjonId.pgType.encode(organisasjonskode),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"public\".\"test_organisasjon\" where \"organisasjonskode\" = "), Fragment.encode(TestOrganisasjonId.pgType, organisasjonskode), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,14 +38,7 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
     TestOrganisasjonId[] organisasjonskodes,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "public"."test_organisasjon"
-                  where "organisasjonskode" = ANY("""),
-               TestOrganisasjonId.pgTypeArray.encode(organisasjonskodes),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"public\".\"test_organisasjon\"\nwhere \"organisasjonskode\" = ANY("), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskodes), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -61,16 +48,7 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
     TestOrganisasjonRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."test_organisasjon"("organisasjonskode")
-         values ("""),
-      TestOrganisasjonId.pgType.encode(unsaved.organisasjonskode()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "organisasjonskode"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"test_organisasjon\"(\"organisasjonskode\")\nvalues ("), Fragment.encode(TestOrganisasjonId.pgType, unsaved.organisasjonskode()), Fragment.lit(")\nreturning \"organisasjonskode\"\n"))
       .updateReturning(TestOrganisasjonRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -80,9 +58,7 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "public"."test_organisasjon"("organisasjonskode") FROM STDIN
-    """), batchSize, unsaved, c, TestOrganisasjonRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"public\".\"test_organisasjon\"(\"organisasjonskode\") FROM STDIN", batchSize, unsaved, c, TestOrganisasjonRow.pgText);
   };
 
   @Override
@@ -92,10 +68,7 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
 
   @Override
   public List<TestOrganisasjonRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "organisasjonskode"
-       from "public"."test_organisasjon"
-    """)).query(TestOrganisasjonRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"organisasjonskode\"\nfrom \"public\".\"test_organisasjon\"\n")).query(TestOrganisasjonRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -103,14 +76,7 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
     TestOrganisasjonId organisasjonskode,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "organisasjonskode"
-         from "public"."test_organisasjon"
-         where "organisasjonskode" = """),
-      TestOrganisasjonId.pgType.encode(organisasjonskode),
-      typo.runtime.Fragment.lit("")
-    ).query(TestOrganisasjonRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"organisasjonskode\"\nfrom \"public\".\"test_organisasjon\"\nwhere \"organisasjonskode\" = "), Fragment.encode(TestOrganisasjonId.pgType, organisasjonskode), Fragment.lit("")).query(TestOrganisasjonRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -118,14 +84,7 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
     TestOrganisasjonId[] organisasjonskodes,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "organisasjonskode"
-         from "public"."test_organisasjon"
-         where "organisasjonskode" = ANY("""),
-      TestOrganisasjonId.pgTypeArray.encode(organisasjonskodes),
-      typo.runtime.Fragment.lit(")")
-    ).query(TestOrganisasjonRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"organisasjonskode\"\nfrom \"public\".\"test_organisasjon\"\nwhere \"organisasjonskode\" = ANY("), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskodes), Fragment.lit(")")).query(TestOrganisasjonRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -140,7 +99,7 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
 
   @Override
   public UpdateBuilder<TestOrganisasjonFields, TestOrganisasjonRow> update() {
-    return UpdateBuilder.of("\"public\".\"test_organisasjon\"", TestOrganisasjonFields.structure(), TestOrganisasjonRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"public\".\"test_organisasjon\"", TestOrganisasjonFields.structure(), TestOrganisasjonRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -148,17 +107,7 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
     TestOrganisasjonRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."test_organisasjon"("organisasjonskode")
-         values ("""),
-      TestOrganisasjonId.pgType.encode(unsaved.organisasjonskode()),
-      typo.runtime.Fragment.lit("""
-         )
-         on conflict ("organisasjonskode")
-         do update set "organisasjonskode" = EXCLUDED."organisasjonskode"
-         returning "organisasjonskode\"""")
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"test_organisasjon\"(\"organisasjonskode\")\nvalues ("), Fragment.encode(TestOrganisasjonId.pgType, unsaved.organisasjonskode()), Fragment.lit(")\non conflict (\"organisasjonskode\")\ndo update set \"organisasjonskode\" = EXCLUDED.\"organisasjonskode\"\nreturning \"organisasjonskode\""))
       .updateReturning(TestOrganisasjonRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -168,14 +117,9 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
     Iterator<TestOrganisasjonRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "public"."test_organisasjon"("organisasjonskode")
-                values (?)
-                on conflict ("organisasjonskode")
-                do update set "organisasjonskode" = EXCLUDED."organisasjonskode"
-                returning "organisasjonskode\""""))
+    return interpolate(Fragment.lit("insert into \"public\".\"test_organisasjon\"(\"organisasjonskode\")\nvalues (?)\non conflict (\"organisasjonskode\")\ndo update set \"organisasjonskode\" = EXCLUDED.\"organisasjonskode\"\nreturning \"organisasjonskode\""))
       .updateManyReturning(TestOrganisasjonRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -185,18 +129,8 @@ public class TestOrganisasjonRepoImpl implements TestOrganisasjonRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table test_organisasjon_TEMP (like "public"."test_organisasjon") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy test_organisasjon_TEMP("organisasjonskode") from stdin
-    """), batchSize, unsaved, c, TestOrganisasjonRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "public"."test_organisasjon"("organisasjonskode")
-       select * from test_organisasjon_TEMP
-       on conflict ("organisasjonskode")
-       do nothing
-       ;
-       drop table test_organisasjon_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table test_organisasjon_TEMP (like \"public\".\"test_organisasjon\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy test_organisasjon_TEMP(\"organisasjonskode\") from stdin", batchSize, unsaved, c, TestOrganisasjonRow.pgText);
+    return interpolate(Fragment.lit("insert into \"public\".\"test_organisasjon\"(\"organisasjonskode\")\nselect * from test_organisasjon_TEMP\non conflict (\"organisasjonskode\")\ndo nothing\n;\ndrop table test_organisasjon_TEMP;")).update().runUnchecked(c);
   };
 }

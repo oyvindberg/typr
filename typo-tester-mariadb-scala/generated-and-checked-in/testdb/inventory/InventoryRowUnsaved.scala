@@ -7,13 +7,14 @@ package testdb.inventory
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `inventory` which has not been persisted yet */
 case class InventoryRowUnsaved(
@@ -28,44 +29,44 @@ case class InventoryRowUnsaved(
   /** Default: 0
 
    */
-  @JsonProperty("quantity_on_hand") quantityOnHand: Defaulted[Integer] = new UseDefault(),
+  @JsonProperty("quantity_on_hand") quantityOnHand: Defaulted[Int] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("quantity_reserved") quantityReserved: Defaulted[Integer] = new UseDefault(),
+  @JsonProperty("quantity_reserved") quantityReserved: Defaulted[Int] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("quantity_on_order") quantityOnOrder: Defaulted[Integer] = new UseDefault(),
+  @JsonProperty("quantity_on_order") quantityOnOrder: Defaulted[Int] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("reorder_point") reorderPoint: Defaulted[Integer] = new UseDefault(),
+  @JsonProperty("reorder_point") reorderPoint: Defaulted[Int] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("reorder_quantity") reorderQuantity: Defaulted[Integer] = new UseDefault(),
+  @JsonProperty("reorder_quantity") reorderQuantity: Defaulted[Int] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("bin_location") binLocation: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("bin_location") binLocation: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("last_counted_at") lastCountedAt: Defaulted[Optional[LocalDateTime]] = new UseDefault(),
+  @JsonProperty("last_counted_at") lastCountedAt: Defaulted[Option[LocalDateTime]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
   @JsonProperty("updated_at") updatedAt: Defaulted[LocalDateTime] = new UseDefault()
 ) {
   def toRow(
-    quantityOnHandDefault: => Integer,
-    quantityReservedDefault: => Integer,
-    quantityOnOrderDefault: => Integer,
-    reorderPointDefault: => Integer,
-    reorderQuantityDefault: => Integer,
-    binLocationDefault: => Optional[String],
-    lastCountedAtDefault: => Optional[LocalDateTime],
+    quantityOnHandDefault: => Int,
+    quantityReservedDefault: => Int,
+    quantityOnOrderDefault: => Int,
+    reorderPointDefault: => Int,
+    reorderQuantityDefault: => Int,
+    binLocationDefault: => Option[String],
+    lastCountedAtDefault: => Option[LocalDateTime],
     updatedAtDefault: => LocalDateTime,
     inventoryIdDefault: => InventoryId
   ): InventoryRow = {
@@ -86,5 +87,5 @@ case class InventoryRowUnsaved(
 }
 
 object InventoryRowUnsaved {
-  given mariaText: MariaText[InventoryRowUnsaved] = MariaText.instance((row, sb) => { ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); WarehousesId.pgType.mariaText.unsafeEncode(row.warehouseId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.int_.mariaText).unsafeEncode(row.quantityOnHand, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.int_.mariaText).unsafeEncode(row.quantityReserved, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.int_.mariaText).unsafeEncode(row.quantityOnOrder, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.int_.mariaText).unsafeEncode(row.reorderPoint, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.int_.mariaText).unsafeEncode(row.reorderQuantity, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.binLocation, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.lastCountedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.updatedAt, sb) })
+  given mariaText: MariaText[InventoryRowUnsaved] = MariaText.instance((row, sb) => { ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); WarehousesId.pgType.mariaText.unsafeEncode(row.warehouseId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.int_.mariaText).unsafeEncode(row.quantityOnHand, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.int_.mariaText).unsafeEncode(row.quantityReserved, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.int_.mariaText).unsafeEncode(row.quantityOnOrder, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.int_.mariaText).unsafeEncode(row.reorderPoint, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.int_.mariaText).unsafeEncode(row.reorderQuantity, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.binLocation, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.lastCountedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.updatedAt, sb) })
 }

@@ -6,12 +6,11 @@
 package adventureworks.sales.salestaxrate;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.stateprovince.StateprovinceId;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -33,7 +32,7 @@ public record SalestaxrateRow(
   /** 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
     * Constraint CK_SalesTaxRate_TaxType affecting columns taxtype: (((taxtype >= 1) AND (taxtype <= 3)))
     */
-  TypoShort taxtype,
+  Short taxtype,
   /** Tax rate amount.
     * Default: 0.00
     */
@@ -41,9 +40,9 @@ public record SalestaxrateRow(
   /** Tax rate description. */
   Name name,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for SalesTaxRate records.
     * Default: nextval('sales.salestaxrate_salestaxrateid_seq'::regclass)
@@ -62,7 +61,7 @@ public record SalestaxrateRow(
   /** 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
     * Constraint CK_SalesTaxRate_TaxType affecting columns taxtype: (((taxtype >= 1) AND (taxtype <= 3)))
     */
-  public SalestaxrateRow withTaxtype(TypoShort taxtype) {
+  public SalestaxrateRow withTaxtype(Short taxtype) {
     return new SalestaxrateRow(salestaxrateid, stateprovinceid, taxtype, taxrate, name, rowguid, modifieddate);
   };
 
@@ -79,16 +78,16 @@ public record SalestaxrateRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public SalestaxrateRow withRowguid(TypoUUID rowguid) {
+  public SalestaxrateRow withRowguid(UUID rowguid) {
     return new SalestaxrateRow(salestaxrateid, stateprovinceid, taxtype, taxrate, name, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalestaxrateRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SalestaxrateRow withModifieddate(LocalDateTime modifieddate) {
     return new SalestaxrateRow(salestaxrateid, stateprovinceid, taxtype, taxrate, name, rowguid, modifieddate);
   };
 
-  static RowParser<SalestaxrateRow> _rowParser = RowParsers.of(SalestaxrateId.pgType, StateprovinceId.pgType, TypoShort.pgType, PgTypes.numeric, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, SalestaxrateRow::new, row -> new Object[]{row.salestaxrateid(), row.stateprovinceid(), row.taxtype(), row.taxrate(), row.name(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SalestaxrateRow> _rowParser = RowParsers.of(SalestaxrateId.pgType, StateprovinceId.pgType, PgTypes.int2, PgTypes.numeric, Name.pgType, PgTypes.uuid, PgTypes.timestamp, SalestaxrateRow::new, row -> new Object[]{row.salestaxrateid(), row.stateprovinceid(), row.taxtype(), row.taxrate(), row.name(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<SalestaxrateRow> pgText =
     PgText.from(_rowParser);
@@ -100,8 +99,8 @@ public record SalestaxrateRow(
   public SalestaxrateRowUnsaved toUnsavedRow(
     Defaulted<SalestaxrateId> salestaxrateid,
     Defaulted<BigDecimal> taxrate,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new SalestaxrateRowUnsaved(stateprovinceid, taxtype, name, salestaxrateid, taxrate, rowguid, modifieddate);
   };

@@ -6,9 +6,10 @@
 package adventureworks.production.culture;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -22,7 +23,7 @@ public record CultureRow(
   /** Culture description. */
   Name name,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for Culture records. */
   public CultureRow withCultureid(CultureId cultureid) {
@@ -35,11 +36,11 @@ public record CultureRow(
   };
 
   /** Default: now() */
-  public CultureRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CultureRow withModifieddate(LocalDateTime modifieddate) {
     return new CultureRow(cultureid, name, modifieddate);
   };
 
-  static RowParser<CultureRow> _rowParser = RowParsers.of(CultureId.pgType, Name.pgType, TypoLocalDateTime.pgType, CultureRow::new, row -> new Object[]{row.cultureid(), row.name(), row.modifieddate()});;
+  static RowParser<CultureRow> _rowParser = RowParsers.of(CultureId.pgType, Name.pgType, PgTypes.timestamp, CultureRow::new, row -> new Object[]{row.cultureid(), row.name(), row.modifieddate()});;
 
   static public PgText<CultureRow> pgText =
     PgText.from(_rowParser);
@@ -48,7 +49,7 @@ public record CultureRow(
     return cultureid;
   };
 
-  public CultureRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public CultureRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new CultureRowUnsaved(cultureid, name, modifieddate);
   };
 }

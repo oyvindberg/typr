@@ -6,9 +6,10 @@
 package testdb.categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -21,15 +22,15 @@ data class CategoriesRowUnsaved(
   /** Default: NULL
     * Points to [testdb.categories.CategoriesRow.categoryId]
     */
-  @JsonProperty("parent_id") val parentId: Defaulted<Optional<CategoriesId>> = UseDefault(),
+  @JsonProperty("parent_id") val parentId: Defaulted<CategoriesId?> = UseDefault(),
   /** Default: NULL
 
     */
-  val description: Defaulted<Optional<String>> = UseDefault(),
+  val description: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("image_url") val imageUrl: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("image_url") val imageUrl: Defaulted<String?> = UseDefault(),
   /** Default: 0
 
     */
@@ -41,15 +42,15 @@ data class CategoriesRowUnsaved(
   /** Default: NULL
 
     */
-  val metadata: Defaulted<Optional<String>> = UseDefault()
+  val metadata: Defaulted<String?> = UseDefault()
 ) {
   fun toRow(
-    parentIdDefault: () -> Optional<CategoriesId>,
-    descriptionDefault: () -> Optional<String>,
-    imageUrlDefault: () -> Optional<String>,
+    parentIdDefault: () -> CategoriesId?,
+    descriptionDefault: () -> String?,
+    imageUrlDefault: () -> String?,
     sortOrderDefault: () -> Short,
     isVisibleDefault: () -> Boolean,
-    metadataDefault: () -> Optional<String>,
+    metadataDefault: () -> String?,
     categoryIdDefault: () -> CategoriesId
   ): CategoriesRow = CategoriesRow(categoryId = categoryIdDefault(), parentId = parentId.getOrElse(parentIdDefault), name = name, slug = slug, description = description.getOrElse(descriptionDefault), imageUrl = imageUrl.getOrElse(imageUrlDefault), sortOrder = sortOrder.getOrElse(sortOrderDefault), isVisible = isVisible.getOrElse(isVisibleDefault), metadata = metadata.getOrElse(metadataDefault))
 
@@ -59,16 +60,16 @@ data class CategoriesRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.varchar.mariaText().unsafeEncode(row.slug, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(CategoriesId.pgType.opt().mariaText()).unsafeEncode(row.parentId, sb)
+      Defaulted.mariaText(CategoriesId.pgType.nullable().mariaText()).unsafeEncode(row.parentId, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.mediumtext.opt().mariaText()).unsafeEncode(row.description, sb)
+      Defaulted.mariaText(MariaTypes.mediumtext.nullable().mariaText()).unsafeEncode(row.description, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.imageUrl, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.imageUrl, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.smallint.mariaText()).unsafeEncode(row.sortOrder, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.smallint.mariaText()).unsafeEncode(row.sortOrder, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isVisible, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isVisible, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.metadata, sb) })
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.metadata, sb) })
   }
 }

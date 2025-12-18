@@ -48,5 +48,5 @@ public record CteTestSqlRow(
     return new CteTestSqlRow(customerId, email, firstName, orderCount, totalSpent, favoriteBrand);
   };
 
-  static RowParser<CteTestSqlRow> _rowParser = RowParsers.of(MariaTypes.bigintUnsigned, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.bigint, MariaTypes.decimal, MariaTypes.varchar.opt(), CteTestSqlRow::new, row -> new Object[]{row.customerId(), row.email(), row.firstName(), row.orderCount(), row.totalSpent(), row.favoriteBrand()});;
+  static RowParser<CteTestSqlRow> _rowParser = RowParsers.of(MariaTypes.bigintUnsigned, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.bigint, MariaTypes.numeric, MariaTypes.varchar.opt(), CteTestSqlRow::new, row -> new Object[]{row.customerId(), row.email(), row.firstName(), row.orderCount(), row.totalSpent(), row.favoriteBrand()});;
 }

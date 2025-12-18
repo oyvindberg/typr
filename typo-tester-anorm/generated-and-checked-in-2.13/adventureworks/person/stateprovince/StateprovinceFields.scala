@@ -17,14 +17,14 @@ import adventureworks.sales.salesterritory.SalesterritoryId
 import adventureworks.sales.salesterritory.SalesterritoryRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait StateprovinceFields {
   def stateprovinceid: IdField[StateprovinceId, StateprovinceRow]
-  def stateprovincecode: Field[/* bpchar, max 3 chars */ String, StateprovinceRow]
+  def stateprovincecode: Field[String, StateprovinceRow]
   def countryregioncode: Field[CountryregionId, StateprovinceRow]
   def isonlystateprovinceflag: Field[Flag, StateprovinceRow]
   def name: Field[Name, StateprovinceRow]
@@ -40,15 +40,15 @@ trait StateprovinceFields {
 }
 
 object StateprovinceFields {
-  lazy val structure: Relation[StateprovinceFields, StateprovinceRow] =
+  lazy val structure: RelationStructure[StateprovinceFields, StateprovinceRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[StateprovinceFields, StateprovinceRow] {
+    extends RelationStructure[StateprovinceFields, StateprovinceRow] {
 
     override lazy val fields: StateprovinceFields = new StateprovinceFields {
       override def stateprovinceid = IdField[StateprovinceId, StateprovinceRow](_path, "stateprovinceid", None, Some("int4"), x => x.stateprovinceid, (row, value) => row.copy(stateprovinceid = value))
-      override def stateprovincecode = Field[/* bpchar, max 3 chars */ String, StateprovinceRow](_path, "stateprovincecode", None, Some("bpchar"), x => x.stateprovincecode, (row, value) => row.copy(stateprovincecode = value))
+      override def stateprovincecode = Field[String, StateprovinceRow](_path, "stateprovincecode", None, Some("bpchar"), x => x.stateprovincecode, (row, value) => row.copy(stateprovincecode = value))
       override def countryregioncode = Field[CountryregionId, StateprovinceRow](_path, "countryregioncode", None, None, x => x.countryregioncode, (row, value) => row.copy(countryregioncode = value))
       override def isonlystateprovinceflag = Field[Flag, StateprovinceRow](_path, "isonlystateprovinceflag", None, Some("bool"), x => x.isonlystateprovinceflag, (row, value) => row.copy(isonlystateprovinceflag = value))
       override def name = Field[Name, StateprovinceRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))

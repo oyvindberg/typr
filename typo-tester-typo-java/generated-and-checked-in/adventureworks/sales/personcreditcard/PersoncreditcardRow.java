@@ -6,10 +6,11 @@
 package adventureworks.sales.personcreditcard;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.userdefined.CustomCreditcardId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -27,7 +28,7 @@ public record PersoncreditcardRow(
     */
   /* user-picked */ CustomCreditcardId creditcardid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Business entity identification number. Foreign key to Person.BusinessEntityID.
     * Points to {@link adventureworks.person.person.PersonRow#businessentityid()}
@@ -44,15 +45,15 @@ public record PersoncreditcardRow(
   };
 
   /** Default: now() */
-  public PersoncreditcardRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PersoncreditcardRow withModifieddate(LocalDateTime modifieddate) {
     return new PersoncreditcardRow(businessentityid, creditcardid, modifieddate);
   };
 
-  static RowParser<PersoncreditcardRow> _rowParser = RowParsers.of(BusinessentityId.pgType, CustomCreditcardId.pgType, TypoLocalDateTime.pgType, PersoncreditcardRow::new, row -> new Object[]{row.businessentityid(), row.creditcardid(), row.modifieddate()});;
+  static RowParser<PersoncreditcardRow> _rowParser = RowParsers.of(BusinessentityId.pgType, CustomCreditcardId.pgType, PgTypes.timestamp, PersoncreditcardRow::new, row -> new Object[]{row.businessentityid(), row.creditcardid(), row.modifieddate()});;
 
   static public PersoncreditcardRow apply(
     PersoncreditcardId compositeId,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new PersoncreditcardRow(compositeId.businessentityid(), compositeId.creditcardid(), modifieddate);
   };
@@ -68,7 +69,7 @@ public record PersoncreditcardRow(
     return this.compositeId();
   };
 
-  public PersoncreditcardRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public PersoncreditcardRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new PersoncreditcardRowUnsaved(businessentityid, creditcardid, modifieddate);
   };
 }

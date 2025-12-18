@@ -3,7 +3,7 @@ package scripts
 import typo.openapi.{OpenApiCodegen, OpenApiOptions, OpenApiServerLib}
 import typo.internal.FileSync
 import typo.jvm
-import typo.internal.codegen.{addPackageAndImports, LangJava, LangKotlin}
+import typo.internal.codegen.{LangJava, LangKotlin, TypeSupportKotlin, addPackageAndImports}
 import typo.{Lang, RelPath}
 
 import java.nio.file.Path
@@ -27,7 +27,7 @@ object GenerateStripeTest {
     generateStripe(
       specPath = specPath,
       projectName = "openapi-test-stripe-kotlin",
-      lang = LangKotlin
+      lang = LangKotlin(TypeSupportKotlin)
     )
 
     println("Done!")

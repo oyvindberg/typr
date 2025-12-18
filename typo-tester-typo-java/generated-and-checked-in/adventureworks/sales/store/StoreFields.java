@@ -5,29 +5,30 @@
  */
 package adventureworks.sales.store;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityFields;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.businessentity.BusinessentityRow;
 import adventureworks.public_.Name;
 import adventureworks.sales.salesperson.SalespersonFields;
 import adventureworks.sales.salesperson.SalespersonRow;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface StoreFields extends FieldsExpr<StoreRow> {
-  record Impl(List<Path> _path) implements StoreFields, Relation<StoreFields, StoreRow> {
+  record Impl(List<Path> _path) implements StoreFields, RelationStructure<StoreFields, StoreRow> {
     @Override
     public IdField<BusinessentityId, StoreRow> businessentityid() {
       return new IdField<BusinessentityId, StoreRow>(_path, "businessentityid", StoreRow::businessentityid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
@@ -44,33 +45,33 @@ public interface StoreFields extends FieldsExpr<StoreRow> {
     };
 
     @Override
-    public OptField<TypoXml, StoreRow> demographics() {
-      return new OptField<TypoXml, StoreRow>(_path, "demographics", StoreRow::demographics, Optional.empty(), Optional.of("xml"), (row, value) -> row.withDemographics(value), TypoXml.pgType);
+    public OptField<Xml, StoreRow> demographics() {
+      return new OptField<Xml, StoreRow>(_path, "demographics", StoreRow::demographics, Optional.empty(), Optional.of("xml"), (row, value) -> row.withDemographics(value), PgTypes.xml);
     };
 
     @Override
-    public Field<TypoUUID, StoreRow> rowguid() {
-      return new Field<TypoUUID, StoreRow>(_path, "rowguid", StoreRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, StoreRow> rowguid() {
+      return new Field<UUID, StoreRow>(_path, "rowguid", StoreRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, StoreRow> modifieddate() {
-      return new Field<TypoLocalDateTime, StoreRow>(_path, "modifieddate", StoreRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, StoreRow> modifieddate() {
+      return new Field<LocalDateTime, StoreRow>(_path, "modifieddate", StoreRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, StoreRow>> columns() {
-      return List.of(this.businessentityid(), this.name(), this.salespersonid(), this.demographics(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.businessentityid(), this.name(), this.salespersonid(), this.demographics(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<StoreFields, StoreRow> copy(List<Path> _path) {
+    public RelationStructure<StoreFields, StoreRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BusinessentityId, StoreRow> businessentityid();
@@ -79,18 +80,18 @@ public interface StoreFields extends FieldsExpr<StoreRow> {
 
   OptField<BusinessentityId, StoreRow> salespersonid();
 
-  OptField<TypoXml, StoreRow> demographics();
+  OptField<Xml, StoreRow> demographics();
 
-  Field<TypoUUID, StoreRow> rowguid();
+  Field<UUID, StoreRow> rowguid();
 
-  Field<TypoLocalDateTime, StoreRow> modifieddate();
+  Field<LocalDateTime, StoreRow> modifieddate();
 
   default ForeignKey<BusinessentityFields, BusinessentityRow> fkPersonBusinessentity() {
-    return ForeignKey.<BusinessentityFields, BusinessentityRow>of("sales.FK_Store_BusinessEntity_BusinessEntityID").withColumnPair(businessentityid(), BusinessentityFields::businessentityid);
+    return ForeignKey.<BusinessentityFields, BusinessentityRow>of("sales.FK_Store_BusinessEntity_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), BusinessentityFields::businessentityid);
   };
 
   default ForeignKey<SalespersonFields, SalespersonRow> fkSalesperson() {
-    return ForeignKey.<SalespersonFields, SalespersonRow>of("sales.FK_Store_SalesPerson_SalesPersonID").withColumnPair(salespersonid(), SalespersonFields::businessentityid);
+    return ForeignKey.<SalespersonFields, SalespersonRow>of("sales.FK_Store_SalesPerson_SalesPersonID").<BusinessentityId>withColumnPair(salespersonid(), SalespersonFields::businessentityid);
   };
 
   @Override

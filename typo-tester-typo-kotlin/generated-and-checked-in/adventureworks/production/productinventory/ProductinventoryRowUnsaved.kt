@@ -7,11 +7,11 @@ package adventureworks.production.productinventory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.location.LocationId
 import adventureworks.production.product.ProductId
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -26,24 +26,24 @@ data class ProductinventoryRowUnsaved(
     */
   val locationid: LocationId,
   /** Storage compartment within an inventory location. */
-  val shelf: /* max 10 chars */ String,
+  val shelf: String,
   /** Storage container on a shelf in an inventory location.
     * Constraint CK_ProductInventory_Bin affecting columns bin:  (((bin >= 0) AND (bin <= 100)))
     */
-  val bin: TypoShort,
+  val bin: Short,
   /** Default: 0
     * Quantity of products in the inventory location.
     */
-  val quantity: Defaulted<TypoShort> = UseDefault(),
+  val quantity: Defaulted<Short> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
-    quantityDefault: () -> TypoShort,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    quantityDefault: () -> Short,
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): ProductinventoryRow = ProductinventoryRow(productid = productid, locationid = locationid, shelf = shelf, bin = bin, quantity = quantity.getOrElse(quantityDefault), rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -54,12 +54,12 @@ data class ProductinventoryRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.shelf, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.bin, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.bin, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.quantity, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int2.pgText()).unsafeEncode(row.quantity, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

@@ -6,10 +6,11 @@
 package adventureworks.production.productcategory;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -25,9 +26,9 @@ public record ProductcategoryRow(
   /** Category description. */
   Name name,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for ProductCategory records.
     * Default: nextval('production.productcategory_productcategoryid_seq'::regclass)
@@ -42,16 +43,16 @@ public record ProductcategoryRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public ProductcategoryRow withRowguid(TypoUUID rowguid) {
+  public ProductcategoryRow withRowguid(UUID rowguid) {
     return new ProductcategoryRow(productcategoryid, name, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ProductcategoryRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductcategoryRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductcategoryRow(productcategoryid, name, rowguid, modifieddate);
   };
 
-  static RowParser<ProductcategoryRow> _rowParser = RowParsers.of(ProductcategoryId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, ProductcategoryRow::new, row -> new Object[]{row.productcategoryid(), row.name(), row.rowguid(), row.modifieddate()});;
+  static RowParser<ProductcategoryRow> _rowParser = RowParsers.of(ProductcategoryId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, ProductcategoryRow::new, row -> new Object[]{row.productcategoryid(), row.name(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<ProductcategoryRow> pgText =
     PgText.from(_rowParser);
@@ -62,8 +63,8 @@ public record ProductcategoryRow(
 
   public ProductcategoryRowUnsaved toUnsavedRow(
     Defaulted<ProductcategoryId> productcategoryid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ProductcategoryRowUnsaved(name, productcategoryid, rowguid, modifieddate);
   };

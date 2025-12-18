@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.lang.Exception
 import java.lang.IllegalStateException
+import Int
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
-import java.util.Optional
 import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
@@ -76,11 +76,11 @@ data class PetsApiClient(
   @Throws(Exception::class)
   override fun listPets(
     /** Maximum number of pets to return */
-    limit: Optional<Integer>,
+    limit: Integer?,
     /** Filter by status */
-    status: Optional<String>
+    status: String?
   ): List<Pet> {
-    var request = HttpRequest.newBuilder(URI.create(baseUri.toString() + "/" + "pets" + (if (limit.isPresent()) "?limit=" + limit.get().toString() else "") + (if (status.isPresent()) "&status=" + status.get().toString() else ""))).method("GET", BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
+    var request = HttpRequest.newBuilder(URI.create(baseUri.toString() + "/" + "pets" + (if (limit != null) "?limit=" + limit!!.toString() else "") + (if (status != null) "&status=" + status!!.toString() else ""))).method("GET", BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
     var response = httpClient.send(request, BodyHandlers.ofString())
     return objectMapper.readValue(response.body(), object : TypeReference<List<Pet>>() {})
   }

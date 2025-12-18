@@ -90,16 +90,6 @@ object Structure {
     def castRow[R1]: SqlExpr.FieldLike[T, R1] = field.asInstanceOf[SqlExpr.FieldLike[T, R1]]
   }
 
-  trait Relation[Fields, Row] extends Structure[Fields, Row] { outer =>
-    def copy(path: List[Path]): Relation[Fields, Row]
-
-    override def withPath(newPath: Path): Relation[Fields, Row] =
-      copy(path = newPath :: _path)
-
-    override final def untypedGet[T](field: SqlExpr.FieldLike[T, ?], row: Row): Option[T] =
-      field.castRow[Row].get(row)
-  }
-
   private class Tupled[Fields1, Fields2, Row1, Row2](val _path: List[Path], val left: Structure[Fields1, Row1], val right: Structure[Fields2, Row2]) extends Structure[Fields1 ~ Fields2, Row1 ~ Row2] {
     override val fields: Fields1 ~ Fields2 =
       (left.fields, right.fields)

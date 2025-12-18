@@ -8,6 +8,7 @@ package adventureworks.person_dynamic;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
+import typo.runtime.Fragment;
 import typo.runtime.PgTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -17,18 +18,6 @@ public class PersonDynamicSqlRepoImpl implements PersonDynamicSqlRepo {
     Optional<String> firstName,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         SELECT p.title, p.firstname, p.middlename, p.lastname
-         FROM person.person p
-         WHERE """),
-      PgTypes.text.opt().encode(firstName),
-      typo.runtime.Fragment.lit("::text IS NULL OR p.firstname = "),
-      PgTypes.text.opt().encode(firstName),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(PersonDynamicSqlRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("SELECT p.title, p.firstname, p.middlename, p.lastname\nFROM person.person p\nWHERE "), Fragment.encode(PgTypes.text.opt(), firstName), Fragment.lit("::text IS NULL OR p.firstname = "), Fragment.encode(PgTypes.text.opt(), firstName), Fragment.lit("\n")).query(PersonDynamicSqlRow._rowParser.all()).runUnchecked(c);
   };
 }

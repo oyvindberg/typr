@@ -6,9 +6,10 @@
 package adventureworks.production.unitmeasure;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -22,7 +23,7 @@ public record UnitmeasureRow(
   /** Unit of measure description. */
   Name name,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key. */
   public UnitmeasureRow withUnitmeasurecode(UnitmeasureId unitmeasurecode) {
@@ -35,11 +36,11 @@ public record UnitmeasureRow(
   };
 
   /** Default: now() */
-  public UnitmeasureRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public UnitmeasureRow withModifieddate(LocalDateTime modifieddate) {
     return new UnitmeasureRow(unitmeasurecode, name, modifieddate);
   };
 
-  static RowParser<UnitmeasureRow> _rowParser = RowParsers.of(UnitmeasureId.pgType, Name.pgType, TypoLocalDateTime.pgType, UnitmeasureRow::new, row -> new Object[]{row.unitmeasurecode(), row.name(), row.modifieddate()});;
+  static RowParser<UnitmeasureRow> _rowParser = RowParsers.of(UnitmeasureId.pgType, Name.pgType, PgTypes.timestamp, UnitmeasureRow::new, row -> new Object[]{row.unitmeasurecode(), row.name(), row.modifieddate()});;
 
   static public PgText<UnitmeasureRow> pgText =
     PgText.from(_rowParser);
@@ -48,7 +49,7 @@ public record UnitmeasureRow(
     return unitmeasurecode;
   };
 
-  public UnitmeasureRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public UnitmeasureRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate);
   };
 }

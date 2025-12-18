@@ -5,9 +5,6 @@
  */
 package adventureworks.person.person;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import adventureworks.public_.NameStyle;
@@ -24,11 +21,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class PersonRepoImpl implements PersonRepo {
   @Override
@@ -41,13 +36,7 @@ public class PersonRepoImpl implements PersonRepo {
     BusinessentityId businessentityid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "person"."person" where "businessentityid" = 
-      """),
-      BusinessentityId.pgType.encode(businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"person\".\"person\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -55,14 +44,7 @@ public class PersonRepoImpl implements PersonRepo {
     BusinessentityId[] businessentityids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "person"."person"
-                  where "businessentityid" = ANY("""),
-               BusinessentityId.pgTypeArray.encode(businessentityids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"person\".\"person\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -72,40 +54,7 @@ public class PersonRepoImpl implements PersonRepo {
     PersonRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")
-         values ("""),
-      BusinessentityId.pgType.encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.encode(unsaved.persontype()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      NameStyle.pgType.encode(unsaved.namestyle()),
-      typo.runtime.Fragment.lit("::bool, "),
-      PgTypes.text.opt().encode(unsaved.title()),
-      typo.runtime.Fragment.lit(", "),
-      /* user-picked */ FirstName.pgType.encode(unsaved.firstname()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      Name.pgType.opt().encode(unsaved.middlename()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      Name.pgType.encode(unsaved.lastname()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      PgTypes.text.opt().encode(unsaved.suffix()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.int4.encode(unsaved.emailpromotion()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoXml.pgType.opt().encode(unsaved.additionalcontactinfo()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoXml.pgType.opt().encode(unsaved.demographics()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"person\"(\"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.bpchar, unsaved.persontype()), Fragment.lit("::bpchar, "), Fragment.encode(NameStyle.pgType, unsaved.namestyle()), Fragment.lit("::bool, "), Fragment.encode(PgTypes.text.opt(), unsaved.title()), Fragment.lit(", "), Fragment.encode(FirstName.pgType, unsaved.firstname()), Fragment.lit("::varchar, "), Fragment.encode(Name.pgType.opt(), unsaved.middlename()), Fragment.lit("::varchar, "), Fragment.encode(Name.pgType, unsaved.lastname()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.text.opt(), unsaved.suffix()), Fragment.lit(", "), Fragment.encode(PgTypes.int4, unsaved.emailpromotion()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.xml.opt(), unsaved.additionalcontactinfo()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.xml.opt(), unsaved.demographics()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(PersonRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -114,65 +63,33 @@ public class PersonRepoImpl implements PersonRepo {
     PersonRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"businessentityid\""));
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"persontype\""));
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.persontype()),
-      typo.runtime.Fragment.lit("::bpchar")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.bpchar, unsaved.persontype()), Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"title\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.title()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text.opt(), unsaved.title()), Fragment.lit("")));
     columns.add(Fragment.lit("\"firstname\""));
-    values.add(interpolate(
-      /* user-picked */ FirstName.pgType.encode(unsaved.firstname()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(FirstName.pgType, unsaved.firstname()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"middlename\""));
-    values.add(interpolate(
-      Name.pgType.opt().encode(unsaved.middlename()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType.opt(), unsaved.middlename()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"lastname\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.lastname()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.lastname()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"suffix\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.suffix()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text.opt(), unsaved.suffix()), Fragment.lit("")));
     columns.add(Fragment.lit("\"additionalcontactinfo\""));
-    values.add(interpolate(
-      TypoXml.pgType.opt().encode(unsaved.additionalcontactinfo()),
-      typo.runtime.Fragment.lit("::xml")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.xml.opt(), unsaved.additionalcontactinfo()), Fragment.lit("::xml")));
     columns.add(Fragment.lit("\"demographics\""));
-    values.add(interpolate(
-      TypoXml.pgType.opt().encode(unsaved.demographics()),
-      typo.runtime.Fragment.lit("::xml")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.xml.opt(), unsaved.demographics()), Fragment.lit("::xml")));
     unsaved.namestyle().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"namestyle\""));
-        values.add(interpolate(
-        NameStyle.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      ));
+        values.add(interpolate(Fragment.encode(NameStyle.pgType, value), Fragment.lit("::bool")));
       }
     );;
     unsaved.emailpromotion().visit(
@@ -181,10 +98,7 @@ public class PersonRepoImpl implements PersonRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"emailpromotion\""));
-        values.add(interpolate(
-        PgTypes.int4.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.int4, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.rowguid().visit(
@@ -193,10 +107,7 @@ public class PersonRepoImpl implements PersonRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -205,26 +116,10 @@ public class PersonRepoImpl implements PersonRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."person"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"person\".\"person\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(PersonRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -234,9 +129,7 @@ public class PersonRepoImpl implements PersonRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, PersonRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"person\"(\"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, PersonRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -246,9 +139,7 @@ public class PersonRepoImpl implements PersonRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."person"("businessentityid", "persontype", "title", "firstname", "middlename", "lastname", "suffix", "additionalcontactinfo", "demographics", "namestyle", "emailpromotion", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, PersonRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"person\"(\"businessentityid\", \"persontype\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"additionalcontactinfo\", \"demographics\", \"namestyle\", \"emailpromotion\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, PersonRowUnsaved.pgText);
   };
 
   @Override
@@ -258,10 +149,7 @@ public class PersonRepoImpl implements PersonRepo {
 
   @Override
   public List<PersonRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
-       from "person"."person"
-    """)).query(PersonRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"person\"\n")).query(PersonRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -269,14 +157,7 @@ public class PersonRepoImpl implements PersonRepo {
     BusinessentityId businessentityid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
-         from "person"."person"
-         where "businessentityid" = """),
-      BusinessentityId.pgType.encode(businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).query(PersonRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"person\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).query(PersonRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -284,14 +165,7 @@ public class PersonRepoImpl implements PersonRepo {
     BusinessentityId[] businessentityids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
-         from "person"."person"
-         where "businessentityid" = ANY("""),
-      BusinessentityId.pgTypeArray.encode(businessentityids),
-      typo.runtime.Fragment.lit(")")
-    ).query(PersonRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"person\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")")).query(PersonRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -306,7 +180,7 @@ public class PersonRepoImpl implements PersonRepo {
 
   @Override
   public UpdateBuilder<PersonFields, PersonRow> update() {
-    return UpdateBuilder.of("\"person\".\"person\"", PersonFields.structure(), PersonRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"person\".\"person\"", PersonFields.structure(), PersonRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -315,61 +189,7 @@ public class PersonRepoImpl implements PersonRepo {
     Connection c
   ) {
     BusinessentityId businessentityid = row.businessentityid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "person"."person"
-         set "persontype" = """),
-      PgTypes.text.encode(row.persontype()),
-      typo.runtime.Fragment.lit("""
-         ::bpchar,
-         "namestyle" = """),
-      NameStyle.pgType.encode(row.namestyle()),
-      typo.runtime.Fragment.lit("""
-         ::bool,
-         "title" = """),
-      PgTypes.text.opt().encode(row.title()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "firstname" = """),
-      /* user-picked */ FirstName.pgType.encode(row.firstname()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "middlename" = """),
-      Name.pgType.opt().encode(row.middlename()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "lastname" = """),
-      Name.pgType.encode(row.lastname()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "suffix" = """),
-      PgTypes.text.opt().encode(row.suffix()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "emailpromotion" = """),
-      PgTypes.int4.encode(row.emailpromotion()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "additionalcontactinfo" = """),
-      TypoXml.pgType.opt().encode(row.additionalcontactinfo()),
-      typo.runtime.Fragment.lit("""
-         ::xml,
-         "demographics" = """),
-      TypoXml.pgType.opt().encode(row.demographics()),
-      typo.runtime.Fragment.lit("""
-         ::xml,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "businessentityid" = """),
-      BusinessentityId.pgType.encode(businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"person\".\"person\"\nset \"persontype\" = "), Fragment.encode(PgTypes.bpchar, row.persontype()), Fragment.lit("::bpchar,\n\"namestyle\" = "), Fragment.encode(NameStyle.pgType, row.namestyle()), Fragment.lit("::bool,\n\"title\" = "), Fragment.encode(PgTypes.text.opt(), row.title()), Fragment.lit(",\n\"firstname\" = "), Fragment.encode(FirstName.pgType, row.firstname()), Fragment.lit("::varchar,\n\"middlename\" = "), Fragment.encode(Name.pgType.opt(), row.middlename()), Fragment.lit("::varchar,\n\"lastname\" = "), Fragment.encode(Name.pgType, row.lastname()), Fragment.lit("::varchar,\n\"suffix\" = "), Fragment.encode(PgTypes.text.opt(), row.suffix()), Fragment.lit(",\n\"emailpromotion\" = "), Fragment.encode(PgTypes.int4, row.emailpromotion()), Fragment.lit("::int4,\n\"additionalcontactinfo\" = "), Fragment.encode(PgTypes.xml.opt(), row.additionalcontactinfo()), Fragment.lit("::xml,\n\"demographics\" = "), Fragment.encode(PgTypes.xml.opt(), row.demographics()), Fragment.lit("::xml,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -377,53 +197,7 @@ public class PersonRepoImpl implements PersonRepo {
     PersonRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")
-         values ("""),
-      BusinessentityId.pgType.encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.encode(unsaved.persontype()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      NameStyle.pgType.encode(unsaved.namestyle()),
-      typo.runtime.Fragment.lit("::bool, "),
-      PgTypes.text.opt().encode(unsaved.title()),
-      typo.runtime.Fragment.lit(", "),
-      /* user-picked */ FirstName.pgType.encode(unsaved.firstname()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      Name.pgType.opt().encode(unsaved.middlename()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      Name.pgType.encode(unsaved.lastname()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      PgTypes.text.opt().encode(unsaved.suffix()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.int4.encode(unsaved.emailpromotion()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoXml.pgType.opt().encode(unsaved.additionalcontactinfo()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoXml.pgType.opt().encode(unsaved.demographics()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("businessentityid")
-         do update set
-           "persontype" = EXCLUDED."persontype",
-         "namestyle" = EXCLUDED."namestyle",
-         "title" = EXCLUDED."title",
-         "firstname" = EXCLUDED."firstname",
-         "middlename" = EXCLUDED."middlename",
-         "lastname" = EXCLUDED."lastname",
-         "suffix" = EXCLUDED."suffix",
-         "emailpromotion" = EXCLUDED."emailpromotion",
-         "additionalcontactinfo" = EXCLUDED."additionalcontactinfo",
-         "demographics" = EXCLUDED."demographics",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"person\"(\"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.bpchar, unsaved.persontype()), Fragment.lit("::bpchar, "), Fragment.encode(NameStyle.pgType, unsaved.namestyle()), Fragment.lit("::bool, "), Fragment.encode(PgTypes.text.opt(), unsaved.title()), Fragment.lit(", "), Fragment.encode(FirstName.pgType, unsaved.firstname()), Fragment.lit("::varchar, "), Fragment.encode(Name.pgType.opt(), unsaved.middlename()), Fragment.lit("::varchar, "), Fragment.encode(Name.pgType, unsaved.lastname()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.text.opt(), unsaved.suffix()), Fragment.lit(", "), Fragment.encode(PgTypes.int4, unsaved.emailpromotion()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.xml.opt(), unsaved.additionalcontactinfo()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.xml.opt(), unsaved.demographics()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"businessentityid\")\ndo update set\n  \"persontype\" = EXCLUDED.\"persontype\",\n\"namestyle\" = EXCLUDED.\"namestyle\",\n\"title\" = EXCLUDED.\"title\",\n\"firstname\" = EXCLUDED.\"firstname\",\n\"middlename\" = EXCLUDED.\"middlename\",\n\"lastname\" = EXCLUDED.\"lastname\",\n\"suffix\" = EXCLUDED.\"suffix\",\n\"emailpromotion\" = EXCLUDED.\"emailpromotion\",\n\"additionalcontactinfo\" = EXCLUDED.\"additionalcontactinfo\",\n\"demographics\" = EXCLUDED.\"demographics\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\""))
       .updateReturning(PersonRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -433,26 +207,9 @@ public class PersonRepoImpl implements PersonRepo {
     Iterator<PersonRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")
-                values (?::int4, ?::bpchar, ?::bool, ?, ?::varchar, ?::varchar, ?::varchar, ?, ?::int4, ?::xml, ?::xml, ?::uuid, ?::timestamp)
-                on conflict ("businessentityid")
-                do update set
-                  "persontype" = EXCLUDED."persontype",
-                "namestyle" = EXCLUDED."namestyle",
-                "title" = EXCLUDED."title",
-                "firstname" = EXCLUDED."firstname",
-                "middlename" = EXCLUDED."middlename",
-                "lastname" = EXCLUDED."lastname",
-                "suffix" = EXCLUDED."suffix",
-                "emailpromotion" = EXCLUDED."emailpromotion",
-                "additionalcontactinfo" = EXCLUDED."additionalcontactinfo",
-                "demographics" = EXCLUDED."demographics",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"person\".\"person\"(\"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::bpchar, ?::bool, ?, ?::varchar, ?::varchar, ?::varchar, ?, ?::int4, ?::xml, ?::xml, ?::uuid, ?::timestamp)\non conflict (\"businessentityid\")\ndo update set\n  \"persontype\" = EXCLUDED.\"persontype\",\n\"namestyle\" = EXCLUDED.\"namestyle\",\n\"title\" = EXCLUDED.\"title\",\n\"firstname\" = EXCLUDED.\"firstname\",\n\"middlename\" = EXCLUDED.\"middlename\",\n\"lastname\" = EXCLUDED.\"lastname\",\n\"suffix\" = EXCLUDED.\"suffix\",\n\"emailpromotion\" = EXCLUDED.\"emailpromotion\",\n\"additionalcontactinfo\" = EXCLUDED.\"additionalcontactinfo\",\n\"demographics\" = EXCLUDED.\"demographics\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(PersonRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -462,30 +219,8 @@ public class PersonRepoImpl implements PersonRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table person_TEMP (like "person"."person") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy person_TEMP("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, PersonRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "person"."person"("businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate")
-       select * from person_TEMP
-       on conflict ("businessentityid")
-       do update set
-         "persontype" = EXCLUDED."persontype",
-       "namestyle" = EXCLUDED."namestyle",
-       "title" = EXCLUDED."title",
-       "firstname" = EXCLUDED."firstname",
-       "middlename" = EXCLUDED."middlename",
-       "lastname" = EXCLUDED."lastname",
-       "suffix" = EXCLUDED."suffix",
-       "emailpromotion" = EXCLUDED."emailpromotion",
-       "additionalcontactinfo" = EXCLUDED."additionalcontactinfo",
-       "demographics" = EXCLUDED."demographics",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table person_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table person_TEMP (like \"person\".\"person\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy person_TEMP(\"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, PersonRow.pgText);
+    return interpolate(Fragment.lit("insert into \"person\".\"person\"(\"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\")\nselect * from person_TEMP\non conflict (\"businessentityid\")\ndo update set\n  \"persontype\" = EXCLUDED.\"persontype\",\n\"namestyle\" = EXCLUDED.\"namestyle\",\n\"title\" = EXCLUDED.\"title\",\n\"firstname\" = EXCLUDED.\"firstname\",\n\"middlename\" = EXCLUDED.\"middlename\",\n\"lastname\" = EXCLUDED.\"lastname\",\n\"suffix\" = EXCLUDED.\"suffix\",\n\"emailpromotion\" = EXCLUDED.\"emailpromotion\",\n\"additionalcontactinfo\" = EXCLUDED.\"additionalcontactinfo\",\n\"demographics\" = EXCLUDED.\"demographics\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table person_TEMP;")).update().runUnchecked(c);
   };
 }

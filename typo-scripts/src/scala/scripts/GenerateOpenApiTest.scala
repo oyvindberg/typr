@@ -1,9 +1,9 @@
 package scripts
 
-import typo.openapi.{OpenApiCodegen, OpenApiClientLib, OpenApiEffectType, OpenApiOptions, OpenApiServerLib}
+import typo.openapi.{OpenApiClientLib, OpenApiCodegen, OpenApiEffectType, OpenApiOptions, OpenApiServerLib}
 import typo.internal.FileSync
 import typo.jvm
-import typo.internal.codegen.{addPackageAndImports, LangJava, LangKotlin, LangScala}
+import typo.internal.codegen.{LangJava, LangKotlin, LangScala, TypeSupportKotlin, addPackageAndImports}
 import typo.{Dialect, Lang, RelPath, TypeSupportJava, TypeSupportScala}
 
 import java.nio.file.Path
@@ -46,9 +46,9 @@ object GenerateOpenApiTest {
       generateValidation = true
     )
 
-    val langScala = LangScala(Dialect.Scala3, TypeSupportScala)
+    val langScala = LangScala.javaDsl(Dialect.Scala3, TypeSupportScala)
     // For Spring, use Java types (Optional, List, etc.) since Spring understands Java types natively
-    val langScalaWithJavaTypes = LangScala(Dialect.Scala3, TypeSupportJava)
+    val langScalaWithJavaTypes = LangScala.javaDsl(Dialect.Scala3, TypeSupportJava)
 
     // Scala with HTTP4s server + client (uses Circe for JSON)
     generateCode(
@@ -79,7 +79,7 @@ object GenerateOpenApiTest {
       language = "kotlin",
       serverLib = Some(OpenApiServerLib.JaxRsSync),
       clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.Blocking)),
-      lang = LangKotlin,
+      lang = LangKotlin(TypeSupportKotlin),
       generateValidation = true
     )
 
@@ -89,7 +89,7 @@ object GenerateOpenApiTest {
       language = "kotlin",
       serverLib = Some(OpenApiServerLib.SpringMvc),
       clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.Blocking)),
-      lang = LangKotlin,
+      lang = LangKotlin(TypeSupportKotlin),
       generateValidation = true
     )
 
@@ -99,7 +99,7 @@ object GenerateOpenApiTest {
       language = "kotlin",
       serverLib = Some(OpenApiServerLib.QuarkusReactive),
       clientLib = Some(OpenApiClientLib.JdkHttpClient(OpenApiEffectType.MutinyUni)),
-      lang = LangKotlin,
+      lang = LangKotlin(TypeSupportKotlin),
       generateValidation = true
     )
 

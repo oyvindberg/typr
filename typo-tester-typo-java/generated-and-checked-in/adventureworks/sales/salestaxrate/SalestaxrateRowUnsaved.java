@@ -7,12 +7,11 @@ package adventureworks.sales.salestaxrate;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.stateprovince.StateprovinceId;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -25,7 +24,7 @@ public record SalestaxrateRowUnsaved(
   /** 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
     * Constraint CK_SalesTaxRate_TaxType affecting columns taxtype:  (((taxtype >= 1) AND (taxtype <= 3)))
     */
-  TypoShort taxtype,
+  Short taxtype,
   /** Tax rate description. */
   Name name,
   /** Default: nextval('sales.salestaxrate_salestaxrateid_seq'::regclass)
@@ -37,9 +36,9 @@ public record SalestaxrateRowUnsaved(
     */
   Defaulted<BigDecimal> taxrate,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SalestaxrateRowUnsaved(
     /** State, province, or country/region the sales tax applies to.
@@ -49,7 +48,7 @@ public record SalestaxrateRowUnsaved(
     /** 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
       * Constraint CK_SalesTaxRate_TaxType affecting columns taxtype:  (((taxtype >= 1) AND (taxtype <= 3)))
       */
-    TypoShort taxtype,
+    Short taxtype,
     /** Tax rate description. */
     Name name
   ) {
@@ -66,7 +65,7 @@ public record SalestaxrateRowUnsaved(
   /** 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
     * Constraint CK_SalesTaxRate_TaxType affecting columns taxtype:  (((taxtype >= 1) AND (taxtype <= 3)))
     */
-  public SalestaxrateRowUnsaved withTaxtype(TypoShort taxtype) {
+  public SalestaxrateRowUnsaved withTaxtype(Short taxtype) {
     return new SalestaxrateRowUnsaved(stateprovinceid, taxtype, name, salestaxrateid, taxrate, rowguid, modifieddate);
   };
 
@@ -90,12 +89,12 @@ public record SalestaxrateRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public SalestaxrateRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public SalestaxrateRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new SalestaxrateRowUnsaved(stateprovinceid, taxtype, name, salestaxrateid, taxrate, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalestaxrateRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SalestaxrateRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SalestaxrateRowUnsaved(stateprovinceid, taxtype, name, salestaxrateid, taxrate, rowguid, modifieddate);
   };
 
@@ -103,7 +102,7 @@ public record SalestaxrateRowUnsaved(
     PgText.instance((row, sb) -> {
       StateprovinceId.pgType.pgText().unsafeEncode(row.stateprovinceid, sb);
       sb.append(PgText.DELIMETER);
-      TypoShort.pgType.pgText().unsafeEncode(row.taxtype, sb);
+      PgTypes.int2.pgText().unsafeEncode(row.taxtype, sb);
       sb.append(PgText.DELIMETER);
       Name.pgType.pgText().unsafeEncode(row.name, sb);
       sb.append(PgText.DELIMETER);
@@ -111,16 +110,16 @@ public record SalestaxrateRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.taxrate, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public SalestaxrateRow toRow(
     java.util.function.Supplier<SalestaxrateId> salestaxrateidDefault,
     java.util.function.Supplier<BigDecimal> taxrateDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new SalestaxrateRow(salestaxrateid.getOrElse(salestaxrateidDefault), stateprovinceid, taxtype, taxrate.getOrElse(taxrateDefault), name, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

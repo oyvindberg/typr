@@ -6,11 +6,11 @@
 package adventureworks.sales.salesterritory;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -32,7 +32,7 @@ public record SalesterritoryRow(
     */
   CountryregionId countryregioncode,
   /** Geographic area to which the sales territory belong. */
-  /* max 50 chars */ String group,
+  String group,
   /** Sales in the territory year to date.
     * Default: 0.00
     * Constraint CK_SalesTerritory_SalesYTD affecting columns salesytd: ((salesytd >= 0.00))
@@ -54,9 +54,9 @@ public record SalesterritoryRow(
     */
   BigDecimal costlastyear,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for SalesTerritory records.
     * Default: nextval('sales.salesterritory_territoryid_seq'::regclass)
@@ -78,7 +78,7 @@ public record SalesterritoryRow(
   };
 
   /** Geographic area to which the sales territory belong. */
-  public SalesterritoryRow withGroup(/* max 50 chars */ String group) {
+  public SalesterritoryRow withGroup(String group) {
     return new SalesterritoryRow(territoryid, name, countryregioncode, group, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate);
   };
 
@@ -115,16 +115,16 @@ public record SalesterritoryRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public SalesterritoryRow withRowguid(TypoUUID rowguid) {
+  public SalesterritoryRow withRowguid(UUID rowguid) {
     return new SalesterritoryRow(territoryid, name, countryregioncode, group, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalesterritoryRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SalesterritoryRow withModifieddate(LocalDateTime modifieddate) {
     return new SalesterritoryRow(territoryid, name, countryregioncode, group, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate);
   };
 
-  static RowParser<SalesterritoryRow> _rowParser = RowParsers.of(SalesterritoryId.pgType, Name.pgType, CountryregionId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, SalesterritoryRow::new, row -> new Object[]{row.territoryid(), row.name(), row.countryregioncode(), row.group(), row.salesytd(), row.saleslastyear(), row.costytd(), row.costlastyear(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SalesterritoryRow> _rowParser = RowParsers.of(SalesterritoryId.pgType, Name.pgType, CountryregionId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, SalesterritoryRow::new, row -> new Object[]{row.territoryid(), row.name(), row.countryregioncode(), row.group(), row.salesytd(), row.saleslastyear(), row.costytd(), row.costlastyear(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<SalesterritoryRow> pgText =
     PgText.from(_rowParser);
@@ -139,8 +139,8 @@ public record SalesterritoryRow(
     Defaulted<BigDecimal> saleslastyear,
     Defaulted<BigDecimal> costytd,
     Defaulted<BigDecimal> costlastyear,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new SalesterritoryRowUnsaved(name, countryregioncode, group, territoryid, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate);
   };

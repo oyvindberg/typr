@@ -7,10 +7,10 @@ package adventureworks.public_.users;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoInstant;
-import adventureworks.customtypes.TypoUnknownCitext;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.Instant;
 import java.util.Optional;
+import typo.data.Unknown;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -19,16 +19,16 @@ public record UsersRowUnsaved(
   @JsonProperty("user_id") UsersId userId,
   String name,
   @JsonProperty("last_name") Optional<String> lastName,
-  TypoUnknownCitext email,
+  Unknown email,
   String password,
-  @JsonProperty("verified_on") Optional<TypoInstant> verifiedOn,
+  @JsonProperty("verified_on") Optional<Instant> verifiedOn,
   /** Default: now() */
-  @JsonProperty("created_at") Defaulted<TypoInstant> createdAt
+  @JsonProperty("created_at") Defaulted<Instant> createdAt
 ) {
   public UsersRowUnsaved(
     @JsonProperty("user_id") UsersId userId,
     String name,
-    TypoUnknownCitext email,
+    Unknown email,
     String password
   ) {
     this(userId, name, Optional.empty(), email, password, Optional.empty(), new UseDefault<>());
@@ -46,7 +46,7 @@ public record UsersRowUnsaved(
     return new UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt);
   };
 
-  public UsersRowUnsaved withEmail(TypoUnknownCitext email) {
+  public UsersRowUnsaved withEmail(Unknown email) {
     return new UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt);
   };
 
@@ -54,12 +54,12 @@ public record UsersRowUnsaved(
     return new UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt);
   };
 
-  public UsersRowUnsaved withVerifiedOn(Optional<TypoInstant> verifiedOn) {
+  public UsersRowUnsaved withVerifiedOn(Optional<Instant> verifiedOn) {
     return new UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt);
   };
 
   /** Default: now() */
-  public UsersRowUnsaved withCreatedAt(Defaulted<TypoInstant> createdAt) {
+  public UsersRowUnsaved withCreatedAt(Defaulted<Instant> createdAt) {
     return new UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt);
   };
 
@@ -71,16 +71,16 @@ public record UsersRowUnsaved(
       sb.append(PgText.DELIMETER);
       PgTypes.text.opt().pgText().unsafeEncode(row.lastName, sb);
       sb.append(PgText.DELIMETER);
-      TypoUnknownCitext.pgType.pgText().unsafeEncode(row.email, sb);
+      PgTypes.unknown.pgText().unsafeEncode(row.email, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.text.pgText().unsafeEncode(row.password, sb);
       sb.append(PgText.DELIMETER);
-      TypoInstant.pgType.opt().pgText().unsafeEncode(row.verifiedOn, sb);
+      PgTypes.timestamptz.opt().pgText().unsafeEncode(row.verifiedOn, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoInstant.pgType.pgText()).unsafeEncode(row.createdAt, sb);
+      Defaulted.pgText(PgTypes.timestamptz.pgText()).unsafeEncode(row.createdAt, sb);
     });
 
-  public UsersRow toRow(java.util.function.Supplier<TypoInstant> createdAtDefault) {
+  public UsersRow toRow(java.util.function.Supplier<Instant> createdAtDefault) {
     return new UsersRow(userId, name, lastName, email, password, createdAt.getOrElse(createdAtDefault), verifiedOn);
   };
 }

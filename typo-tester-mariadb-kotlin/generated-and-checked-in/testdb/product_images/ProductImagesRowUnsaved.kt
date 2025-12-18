@@ -6,10 +6,11 @@
 package testdb.product_images
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.products.ProductsId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -24,11 +25,11 @@ data class ProductImagesRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("thumbnail_url") val thumbnailUrl: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("thumbnail_url") val thumbnailUrl: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("alt_text") val altText: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("alt_text") val altText: Defaulted<String?> = UseDefault(),
   /** Default: 0
 
     */
@@ -40,14 +41,14 @@ data class ProductImagesRowUnsaved(
   /** Default: NULL
     * Optional embedded image data
     */
-  @JsonProperty("image_data") val imageData: Defaulted<Optional<ByteArray>> = UseDefault()
+  @JsonProperty("image_data") val imageData: Defaulted<ByteArray?> = UseDefault()
 ) {
   fun toRow(
-    thumbnailUrlDefault: () -> Optional<String>,
-    altTextDefault: () -> Optional<String>,
+    thumbnailUrlDefault: () -> String?,
+    altTextDefault: () -> String?,
     sortOrderDefault: () -> Short,
     isPrimaryDefault: () -> Boolean,
-    imageDataDefault: () -> Optional<ByteArray>,
+    imageDataDefault: () -> ByteArray?,
     imageIdDefault: () -> ProductImagesId
   ): ProductImagesRow = ProductImagesRow(imageId = imageIdDefault(), productId = productId, imageUrl = imageUrl, thumbnailUrl = thumbnailUrl.getOrElse(thumbnailUrlDefault), altText = altText.getOrElse(altTextDefault), sortOrder = sortOrder.getOrElse(sortOrderDefault), isPrimary = isPrimary.getOrElse(isPrimaryDefault), imageData = imageData.getOrElse(imageDataDefault))
 
@@ -57,14 +58,14 @@ data class ProductImagesRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.varchar.mariaText().unsafeEncode(row.imageUrl, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.thumbnailUrl, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.thumbnailUrl, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.altText, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.altText, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.tinyintUnsigned.mariaText()).unsafeEncode(row.sortOrder, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.tinyintUnsigned.mariaText()).unsafeEncode(row.sortOrder, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isPrimary, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isPrimary, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longblob.opt().mariaText()).unsafeEncode(row.imageData, sb) })
+      Defaulted.mariaText(MariaTypes.longblob.nullable().mariaText()).unsafeEncode(row.imageData, sb) })
   }
 }

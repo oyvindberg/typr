@@ -20,7 +20,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -35,11 +34,7 @@ public class OrdersRepoImpl implements OrdersRepo {
     OrdersId orderId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `orders` where `order_id` = "),
-      OrdersId.pgType.encode(orderId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `orders` where `order_id` = "), Fragment.encode(OrdersId.pgType, orderId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -47,8 +42,8 @@ public class OrdersRepoImpl implements OrdersRepo {
     OrdersId[] orderIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : orderIds) { fragments.add(OrdersId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : orderIds) { fragments.add(Fragment.encode(OrdersId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `orders` where `order_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -57,56 +52,7 @@ public class OrdersRepoImpl implements OrdersRepo {
     OrdersRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `orders`(`order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`)
-         values ("""),
-      MariaTypes.text.encode(unsaved.orderNumber()),
-      typo.runtime.Fragment.lit(", "),
-      CustomersId.pgType.encode(unsaved.customerId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.orderStatus()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.paymentStatus()),
-      typo.runtime.Fragment.lit(", "),
-      CustomerAddressesId.pgType.opt().encode(unsaved.shippingAddressId()),
-      typo.runtime.Fragment.lit(", "),
-      CustomerAddressesId.pgType.opt().encode(unsaved.billingAddressId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.subtotal()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.shippingCost()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.taxAmount()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.discountAmount()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.totalAmount()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.currencyCode()),
-      typo.runtime.Fragment.lit(", "),
-      PromotionsId.pgType.opt().encode(unsaved.promotionId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.notes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.internalNotes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.inet6.opt().encode(unsaved.ipAddress()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.userAgent()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.orderedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.confirmedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.shippedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.deliveredAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `orders`(`order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.orderNumber()), Fragment.lit(", "), Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.orderStatus()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.paymentStatus()), Fragment.lit(", "), Fragment.encode(CustomerAddressesId.pgType.opt(), unsaved.shippingAddressId()), Fragment.lit(", "), Fragment.encode(CustomerAddressesId.pgType.opt(), unsaved.billingAddressId()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.subtotal()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.shippingCost()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.taxAmount()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.discountAmount()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.totalAmount()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.currencyCode()), Fragment.lit(", "), Fragment.encode(PromotionsId.pgType.opt(), unsaved.promotionId()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.notes()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumtext.opt(), unsaved.internalNotes()), Fragment.lit(", "), Fragment.encode(MariaTypes.inet6.opt(), unsaved.ipAddress()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.userAgent()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.orderedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.confirmedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.shippedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.deliveredAt()), Fragment.lit(")\nreturning `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`\n"))
       .updateReturning(OrdersRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -115,43 +61,23 @@ public class OrdersRepoImpl implements OrdersRepo {
     OrdersRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`order_number`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.orderNumber()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.orderNumber()), Fragment.lit("")));
     columns.add(Fragment.lit("`customer_id`"));
-    values.add(interpolate(
-      CustomersId.pgType.encode(unsaved.customerId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit("")));
     columns.add(Fragment.lit("`subtotal`"));
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.subtotal()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.numeric, unsaved.subtotal()), Fragment.lit("")));
     columns.add(Fragment.lit("`total_amount`"));
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.totalAmount()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.numeric, unsaved.totalAmount()), Fragment.lit("")));
     unsaved.orderStatus().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`order_status`"));
-        values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text, value), Fragment.lit("")));
       }
     );;
     unsaved.paymentStatus().visit(
@@ -160,11 +86,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`payment_status`"));
-        values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text, value), Fragment.lit("")));
       }
     );;
     unsaved.shippingAddressId().visit(
@@ -173,11 +95,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`shipping_address_id`"));
-        values.add(interpolate(
-        CustomerAddressesId.pgType.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(CustomerAddressesId.pgType.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.billingAddressId().visit(
@@ -186,11 +104,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`billing_address_id`"));
-        values.add(interpolate(
-        CustomerAddressesId.pgType.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(CustomerAddressesId.pgType.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.shippingCost().visit(
@@ -199,11 +113,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`shipping_cost`"));
-        values.add(interpolate(
-        MariaTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.numeric, value), Fragment.lit("")));
       }
     );;
     unsaved.taxAmount().visit(
@@ -212,11 +122,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`tax_amount`"));
-        values.add(interpolate(
-        MariaTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.numeric, value), Fragment.lit("")));
       }
     );;
     unsaved.discountAmount().visit(
@@ -225,11 +131,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`discount_amount`"));
-        values.add(interpolate(
-        MariaTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.numeric, value), Fragment.lit("")));
       }
     );;
     unsaved.currencyCode().visit(
@@ -238,11 +140,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`currency_code`"));
-        values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.char_, value), Fragment.lit("")));
       }
     );;
     unsaved.promotionId().visit(
@@ -251,11 +149,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`promotion_id`"));
-        values.add(interpolate(
-        PromotionsId.pgType.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(PromotionsId.pgType.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.notes().visit(
@@ -264,11 +158,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`notes`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.internalNotes().visit(
@@ -277,11 +167,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`internal_notes`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.mediumtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.ipAddress().visit(
@@ -290,11 +176,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`ip_address`"));
-        values.add(interpolate(
-        MariaTypes.inet6.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.inet6.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.userAgent().visit(
@@ -303,11 +185,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`user_agent`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.orderedAt().visit(
@@ -316,11 +194,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`ordered_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
     unsaved.confirmedAt().visit(
@@ -329,11 +203,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`confirmed_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.shippedAt().visit(
@@ -342,11 +212,7 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`shipped_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.deliveredAt().visit(
@@ -355,25 +221,10 @@ public class OrdersRepoImpl implements OrdersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`delivered_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime.opt(), value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `orders`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `orders`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`\n"));;
     return q.updateReturning(OrdersRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -384,10 +235,7 @@ public class OrdersRepoImpl implements OrdersRepo {
 
   @Override
   public List<OrdersRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`
-       from `orders`
-    """)).query(OrdersRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`\nfrom `orders`\n")).query(OrdersRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -395,14 +243,7 @@ public class OrdersRepoImpl implements OrdersRepo {
     OrdersId orderId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`
-         from `orders`
-         where `order_id` = """),
-      OrdersId.pgType.encode(orderId),
-      typo.runtime.Fragment.lit("")
-    ).query(OrdersRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`\nfrom `orders`\nwhere `order_id` = "), Fragment.encode(OrdersId.pgType, orderId), Fragment.lit("")).query(OrdersRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -410,8 +251,8 @@ public class OrdersRepoImpl implements OrdersRepo {
     OrdersId[] orderIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : orderIds) { fragments.add(OrdersId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : orderIds) { fragments.add(Fragment.encode(OrdersId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at` from `orders` where `order_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(OrdersRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -430,22 +271,12 @@ public class OrdersRepoImpl implements OrdersRepo {
     String orderNumber,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`
-         from `orders`
-         where `order_number` = """),
-      MariaTypes.text.encode(orderNumber),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(OrdersRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`\nfrom `orders`\nwhere `order_number` = "), Fragment.encode(MariaTypes.varchar, orderNumber), Fragment.lit("\n")).query(OrdersRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<OrdersFields, OrdersRow> update() {
-    return UpdateBuilder.of("`orders`", OrdersFields.structure(), OrdersRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`orders`", OrdersFields.structure(), OrdersRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -454,97 +285,7 @@ public class OrdersRepoImpl implements OrdersRepo {
     Connection c
   ) {
     OrdersId orderId = row.orderId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `orders`
-         set `order_number` = """),
-      MariaTypes.text.encode(row.orderNumber()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `customer_id` = """),
-      CustomersId.pgType.encode(row.customerId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `order_status` = """),
-      MariaTypes.text.encode(row.orderStatus()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `payment_status` = """),
-      MariaTypes.text.encode(row.paymentStatus()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `shipping_address_id` = """),
-      CustomerAddressesId.pgType.opt().encode(row.shippingAddressId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `billing_address_id` = """),
-      CustomerAddressesId.pgType.opt().encode(row.billingAddressId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `subtotal` = """),
-      MariaTypes.numeric.encode(row.subtotal()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `shipping_cost` = """),
-      MariaTypes.numeric.encode(row.shippingCost()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `tax_amount` = """),
-      MariaTypes.numeric.encode(row.taxAmount()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `discount_amount` = """),
-      MariaTypes.numeric.encode(row.discountAmount()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `total_amount` = """),
-      MariaTypes.numeric.encode(row.totalAmount()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `currency_code` = """),
-      MariaTypes.text.encode(row.currencyCode()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `promotion_id` = """),
-      PromotionsId.pgType.opt().encode(row.promotionId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `notes` = """),
-      MariaTypes.text.opt().encode(row.notes()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `internal_notes` = """),
-      MariaTypes.text.opt().encode(row.internalNotes()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `ip_address` = """),
-      MariaTypes.inet6.opt().encode(row.ipAddress()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `user_agent` = """),
-      MariaTypes.text.opt().encode(row.userAgent()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `ordered_at` = """),
-      MariaTypes.datetime.encode(row.orderedAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `confirmed_at` = """),
-      MariaTypes.datetime.opt().encode(row.confirmedAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `shipped_at` = """),
-      MariaTypes.datetime.opt().encode(row.shippedAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `delivered_at` = """),
-      MariaTypes.datetime.opt().encode(row.deliveredAt()),
-      typo.runtime.Fragment.lit("""
-   
-         where `order_id` = """),
-      OrdersId.pgType.encode(orderId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `orders`\nset `order_number` = "), Fragment.encode(MariaTypes.varchar, row.orderNumber()), Fragment.lit(",\n`customer_id` = "), Fragment.encode(CustomersId.pgType, row.customerId()), Fragment.lit(",\n`order_status` = "), Fragment.encode(MariaTypes.text, row.orderStatus()), Fragment.lit(",\n`payment_status` = "), Fragment.encode(MariaTypes.text, row.paymentStatus()), Fragment.lit(",\n`shipping_address_id` = "), Fragment.encode(CustomerAddressesId.pgType.opt(), row.shippingAddressId()), Fragment.lit(",\n`billing_address_id` = "), Fragment.encode(CustomerAddressesId.pgType.opt(), row.billingAddressId()), Fragment.lit(",\n`subtotal` = "), Fragment.encode(MariaTypes.numeric, row.subtotal()), Fragment.lit(",\n`shipping_cost` = "), Fragment.encode(MariaTypes.numeric, row.shippingCost()), Fragment.lit(",\n`tax_amount` = "), Fragment.encode(MariaTypes.numeric, row.taxAmount()), Fragment.lit(",\n`discount_amount` = "), Fragment.encode(MariaTypes.numeric, row.discountAmount()), Fragment.lit(",\n`total_amount` = "), Fragment.encode(MariaTypes.numeric, row.totalAmount()), Fragment.lit(",\n`currency_code` = "), Fragment.encode(MariaTypes.char_, row.currencyCode()), Fragment.lit(",\n`promotion_id` = "), Fragment.encode(PromotionsId.pgType.opt(), row.promotionId()), Fragment.lit(",\n`notes` = "), Fragment.encode(MariaTypes.text.opt(), row.notes()), Fragment.lit(",\n`internal_notes` = "), Fragment.encode(MariaTypes.mediumtext.opt(), row.internalNotes()), Fragment.lit(",\n`ip_address` = "), Fragment.encode(MariaTypes.inet6.opt(), row.ipAddress()), Fragment.lit(",\n`user_agent` = "), Fragment.encode(MariaTypes.varchar.opt(), row.userAgent()), Fragment.lit(",\n`ordered_at` = "), Fragment.encode(MariaTypes.datetime, row.orderedAt()), Fragment.lit(",\n`confirmed_at` = "), Fragment.encode(MariaTypes.datetime.opt(), row.confirmedAt()), Fragment.lit(",\n`shipped_at` = "), Fragment.encode(MariaTypes.datetime.opt(), row.shippedAt()), Fragment.lit(",\n`delivered_at` = "), Fragment.encode(MariaTypes.datetime.opt(), row.deliveredAt()), Fragment.lit("\nwhere `order_id` = "), Fragment.encode(OrdersId.pgType, orderId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -552,76 +293,7 @@ public class OrdersRepoImpl implements OrdersRepo {
     OrdersRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `orders`(`order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`)
-         VALUES ("""),
-      MariaTypes.text.encode(unsaved.orderNumber()),
-      typo.runtime.Fragment.lit(", "),
-      CustomersId.pgType.encode(unsaved.customerId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.orderStatus()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.paymentStatus()),
-      typo.runtime.Fragment.lit(", "),
-      CustomerAddressesId.pgType.opt().encode(unsaved.shippingAddressId()),
-      typo.runtime.Fragment.lit(", "),
-      CustomerAddressesId.pgType.opt().encode(unsaved.billingAddressId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.subtotal()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.shippingCost()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.taxAmount()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.discountAmount()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.totalAmount()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.currencyCode()),
-      typo.runtime.Fragment.lit(", "),
-      PromotionsId.pgType.opt().encode(unsaved.promotionId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.notes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.internalNotes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.inet6.opt().encode(unsaved.ipAddress()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.userAgent()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.orderedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.confirmedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.shippedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.deliveredAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `order_number` = VALUES(`order_number`),
-         `customer_id` = VALUES(`customer_id`),
-         `order_status` = VALUES(`order_status`),
-         `payment_status` = VALUES(`payment_status`),
-         `shipping_address_id` = VALUES(`shipping_address_id`),
-         `billing_address_id` = VALUES(`billing_address_id`),
-         `subtotal` = VALUES(`subtotal`),
-         `shipping_cost` = VALUES(`shipping_cost`),
-         `tax_amount` = VALUES(`tax_amount`),
-         `discount_amount` = VALUES(`discount_amount`),
-         `total_amount` = VALUES(`total_amount`),
-         `currency_code` = VALUES(`currency_code`),
-         `promotion_id` = VALUES(`promotion_id`),
-         `notes` = VALUES(`notes`),
-         `internal_notes` = VALUES(`internal_notes`),
-         `ip_address` = VALUES(`ip_address`),
-         `user_agent` = VALUES(`user_agent`),
-         `ordered_at` = VALUES(`ordered_at`),
-         `confirmed_at` = VALUES(`confirmed_at`),
-         `shipped_at` = VALUES(`shipped_at`),
-         `delivered_at` = VALUES(`delivered_at`)
-         RETURNING `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `orders`(`order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.orderNumber()), Fragment.lit(", "), Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.orderStatus()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.paymentStatus()), Fragment.lit(", "), Fragment.encode(CustomerAddressesId.pgType.opt(), unsaved.shippingAddressId()), Fragment.lit(", "), Fragment.encode(CustomerAddressesId.pgType.opt(), unsaved.billingAddressId()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.subtotal()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.shippingCost()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.taxAmount()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.discountAmount()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.totalAmount()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.currencyCode()), Fragment.lit(", "), Fragment.encode(PromotionsId.pgType.opt(), unsaved.promotionId()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.notes()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumtext.opt(), unsaved.internalNotes()), Fragment.lit(", "), Fragment.encode(MariaTypes.inet6.opt(), unsaved.ipAddress()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.userAgent()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.orderedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.confirmedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.shippedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.deliveredAt()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `order_number` = VALUES(`order_number`),\n`customer_id` = VALUES(`customer_id`),\n`order_status` = VALUES(`order_status`),\n`payment_status` = VALUES(`payment_status`),\n`shipping_address_id` = VALUES(`shipping_address_id`),\n`billing_address_id` = VALUES(`billing_address_id`),\n`subtotal` = VALUES(`subtotal`),\n`shipping_cost` = VALUES(`shipping_cost`),\n`tax_amount` = VALUES(`tax_amount`),\n`discount_amount` = VALUES(`discount_amount`),\n`total_amount` = VALUES(`total_amount`),\n`currency_code` = VALUES(`currency_code`),\n`promotion_id` = VALUES(`promotion_id`),\n`notes` = VALUES(`notes`),\n`internal_notes` = VALUES(`internal_notes`),\n`ip_address` = VALUES(`ip_address`),\n`user_agent` = VALUES(`user_agent`),\n`ordered_at` = VALUES(`ordered_at`),\n`confirmed_at` = VALUES(`confirmed_at`),\n`shipped_at` = VALUES(`shipped_at`),\n`delivered_at` = VALUES(`delivered_at`)\nRETURNING `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`"))
       .updateReturning(OrdersRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -631,32 +303,8 @@ public class OrdersRepoImpl implements OrdersRepo {
     Iterator<OrdersRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `orders`(`order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `order_number` = VALUES(`order_number`),
-                `customer_id` = VALUES(`customer_id`),
-                `order_status` = VALUES(`order_status`),
-                `payment_status` = VALUES(`payment_status`),
-                `shipping_address_id` = VALUES(`shipping_address_id`),
-                `billing_address_id` = VALUES(`billing_address_id`),
-                `subtotal` = VALUES(`subtotal`),
-                `shipping_cost` = VALUES(`shipping_cost`),
-                `tax_amount` = VALUES(`tax_amount`),
-                `discount_amount` = VALUES(`discount_amount`),
-                `total_amount` = VALUES(`total_amount`),
-                `currency_code` = VALUES(`currency_code`),
-                `promotion_id` = VALUES(`promotion_id`),
-                `notes` = VALUES(`notes`),
-                `internal_notes` = VALUES(`internal_notes`),
-                `ip_address` = VALUES(`ip_address`),
-                `user_agent` = VALUES(`user_agent`),
-                `ordered_at` = VALUES(`ordered_at`),
-                `confirmed_at` = VALUES(`confirmed_at`),
-                `shipped_at` = VALUES(`shipped_at`),
-                `delivered_at` = VALUES(`delivered_at`)
-                RETURNING `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`"""))
+    return interpolate(Fragment.lit("INSERT INTO `orders`(`order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `order_number` = VALUES(`order_number`),\n`customer_id` = VALUES(`customer_id`),\n`order_status` = VALUES(`order_status`),\n`payment_status` = VALUES(`payment_status`),\n`shipping_address_id` = VALUES(`shipping_address_id`),\n`billing_address_id` = VALUES(`billing_address_id`),\n`subtotal` = VALUES(`subtotal`),\n`shipping_cost` = VALUES(`shipping_cost`),\n`tax_amount` = VALUES(`tax_amount`),\n`discount_amount` = VALUES(`discount_amount`),\n`total_amount` = VALUES(`total_amount`),\n`currency_code` = VALUES(`currency_code`),\n`promotion_id` = VALUES(`promotion_id`),\n`notes` = VALUES(`notes`),\n`internal_notes` = VALUES(`internal_notes`),\n`ip_address` = VALUES(`ip_address`),\n`user_agent` = VALUES(`user_agent`),\n`ordered_at` = VALUES(`ordered_at`),\n`confirmed_at` = VALUES(`confirmed_at`),\n`shipped_at` = VALUES(`shipped_at`),\n`delivered_at` = VALUES(`delivered_at`)\nRETURNING `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`"))
       .updateReturningEach(OrdersRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

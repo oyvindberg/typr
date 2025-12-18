@@ -6,7 +6,7 @@ import org.scalactic.TypeCheckedTripleEquals
 import org.scalatest.funsuite.AnyFunSuite
 
 class CodeFormattingTest extends AnyFunSuite with TypeCheckedTripleEquals {
-  val lang = LangScala(Dialect.Scala3, TypeSupportScala)
+  val lang = LangScala.javaDsl(Dialect.Scala3, TypeSupportScala)
   test("interpolation keeps indentation of interpolation point") {
     val actual = code"""|a${List("b1", "b2").mkString("\n")}
                         |a""".stripMargin.render(lang)

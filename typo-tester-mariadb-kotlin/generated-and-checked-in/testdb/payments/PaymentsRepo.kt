@@ -6,69 +6,68 @@
 package testdb.payments
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PaymentsRepo {
-  fun delete(): DeleteBuilder<PaymentsFields, PaymentsRow>
+  abstract fun delete(): DeleteBuilder<PaymentsFields, PaymentsRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     paymentId: PaymentsId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     paymentIds: Array<PaymentsId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: PaymentsRow,
     c: Connection
   ): PaymentsRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: PaymentsRowUnsaved,
     c: Connection
   ): PaymentsRow
 
-  fun select(): SelectBuilder<PaymentsFields, PaymentsRow>
+  abstract fun select(): SelectBuilder<PaymentsFields, PaymentsRow>
 
-  fun selectAll(c: Connection): List<PaymentsRow>
+  abstract fun selectAll(c: Connection): List<PaymentsRow>
 
-  fun selectById(
+  abstract fun selectById(
     paymentId: PaymentsId,
     c: Connection
-  ): Optional<PaymentsRow>
+  ): PaymentsRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     paymentIds: Array<PaymentsId>,
     c: Connection
   ): List<PaymentsRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     paymentIds: Array<PaymentsId>,
     c: Connection
   ): Map<PaymentsId, PaymentsRow>
 
-  fun update(): UpdateBuilder<PaymentsFields, PaymentsRow>
+  abstract fun update(): UpdateBuilder<PaymentsFields, PaymentsRow>
 
-  fun update(
+  abstract fun update(
     row: PaymentsRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: PaymentsRow,
     c: Connection
   ): PaymentsRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<PaymentsRow>,
     c: Connection
   ): List<PaymentsRow>

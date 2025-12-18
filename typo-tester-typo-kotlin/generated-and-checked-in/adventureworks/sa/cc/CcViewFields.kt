@@ -5,59 +5,60 @@
  */
 package adventureworks.sa.cc
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.userdefined.CustomCreditcardId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface CcViewFields : FieldsExpr<CcViewRow> {
-  fun cardnumber(): Field</* max 25 chars */ String, CcViewRow>
+  abstract fun cardnumber(): Field<String, CcViewRow>
 
-  fun cardtype(): Field</* max 50 chars */ String, CcViewRow>
+  abstract fun cardtype(): Field<String, CcViewRow>
 
-  override fun columns(): List<FieldLike<*, CcViewRow>>
+  abstract override fun columns(): List<FieldLike<*, CcViewRow>>
 
-  fun creditcardid(): Field</* user-picked */ CustomCreditcardId, CcViewRow>
+  abstract fun creditcardid(): Field</* user-picked */ CustomCreditcardId, CcViewRow>
 
-  fun expmonth(): Field<TypoShort, CcViewRow>
+  abstract fun expmonth(): Field<Short, CcViewRow>
 
-  fun expyear(): Field<TypoShort, CcViewRow>
+  abstract fun expyear(): Field<Short, CcViewRow>
 
-  fun id(): Field</* user-picked */ CustomCreditcardId, CcViewRow>
+  abstract fun id(): Field</* user-picked */ CustomCreditcardId, CcViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, CcViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, CcViewRow>
 
-  override fun rowParser(): RowParser<CcViewRow> = CcViewRow._rowParser
+  override fun rowParser(): RowParser<CcViewRow> = CcViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : CcViewFields, Relation<CcViewFields, CcViewRow> {
-      override fun id(): Field</* user-picked */ CustomCreditcardId, CcViewRow> = Field</* user-picked */ CustomCreditcardId, CcViewRow>(_path, "id", CcViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, CustomCreditcardId.pgType)
+    data class Impl(val _path: List<Path>) : CcViewFields, RelationStructure<CcViewFields, CcViewRow> {
+      override fun id(): Field</* user-picked */ CustomCreditcardId, CcViewRow> = Field</* user-picked */ CustomCreditcardId, CcViewRow>(_path, "id", CcViewRow::id, null, null, { row, value -> row.copy(id = value) }, CustomCreditcardId.pgType)
 
-      override fun creditcardid(): Field</* user-picked */ CustomCreditcardId, CcViewRow> = Field</* user-picked */ CustomCreditcardId, CcViewRow>(_path, "creditcardid", CcViewRow::creditcardid, Optional.empty(), Optional.empty(), { row, value -> row.copy(creditcardid = value) }, CustomCreditcardId.pgType)
+      override fun creditcardid(): Field</* user-picked */ CustomCreditcardId, CcViewRow> = Field</* user-picked */ CustomCreditcardId, CcViewRow>(_path, "creditcardid", CcViewRow::creditcardid, null, null, { row, value -> row.copy(creditcardid = value) }, CustomCreditcardId.pgType)
 
-      override fun cardtype(): Field</* max 50 chars */ String, CcViewRow> = Field</* max 50 chars */ String, CcViewRow>(_path, "cardtype", CcViewRow::cardtype, Optional.empty(), Optional.empty(), { row, value -> row.copy(cardtype = value) }, PgTypes.text)
+      override fun cardtype(): Field<String, CcViewRow> = Field<String, CcViewRow>(_path, "cardtype", CcViewRow::cardtype, null, null, { row, value -> row.copy(cardtype = value) }, PgTypes.text)
 
-      override fun cardnumber(): Field</* max 25 chars */ String, CcViewRow> = Field</* max 25 chars */ String, CcViewRow>(_path, "cardnumber", CcViewRow::cardnumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(cardnumber = value) }, PgTypes.text)
+      override fun cardnumber(): Field<String, CcViewRow> = Field<String, CcViewRow>(_path, "cardnumber", CcViewRow::cardnumber, null, null, { row, value -> row.copy(cardnumber = value) }, PgTypes.text)
 
-      override fun expmonth(): Field<TypoShort, CcViewRow> = Field<TypoShort, CcViewRow>(_path, "expmonth", CcViewRow::expmonth, Optional.empty(), Optional.empty(), { row, value -> row.copy(expmonth = value) }, TypoShort.pgType)
+      override fun expmonth(): Field<Short, CcViewRow> = Field<Short, CcViewRow>(_path, "expmonth", CcViewRow::expmonth, null, null, { row, value -> row.copy(expmonth = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun expyear(): Field<TypoShort, CcViewRow> = Field<TypoShort, CcViewRow>(_path, "expyear", CcViewRow::expyear, Optional.empty(), Optional.empty(), { row, value -> row.copy(expyear = value) }, TypoShort.pgType)
+      override fun expyear(): Field<Short, CcViewRow> = Field<Short, CcViewRow>(_path, "expyear", CcViewRow::expyear, null, null, { row, value -> row.copy(expyear = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, CcViewRow> = Field<TypoLocalDateTime, CcViewRow>(_path, "modifieddate", CcViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, CcViewRow> = Field<LocalDateTime, CcViewRow>(_path, "modifieddate", CcViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, CcViewRow>> = listOf(this.id(), this.creditcardid(), this.cardtype(), this.cardnumber(), this.expmonth(), this.expyear(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<CcViewFields, CcViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, CcViewRow>> = listOf(this.id().underlying, this.creditcardid().underlying, this.cardtype().underlying, this.cardnumber().underlying, this.expmonth().underlying, this.expyear().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<CcViewFields, CcViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

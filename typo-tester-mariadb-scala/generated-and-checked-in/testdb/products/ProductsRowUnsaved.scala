@@ -7,13 +7,14 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.brands.BrandsId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.MariaSet
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `products` which has not been persisted yet */
 case class ProductsRowUnsaved(
@@ -22,31 +23,31 @@ case class ProductsRowUnsaved(
   /**  */
   name: String,
   /**  */
-  @JsonProperty("base_price") basePrice: java.math.BigDecimal,
+  @JsonProperty("base_price") basePrice: BigDecimal,
   /** Default: NULL
    * Points to [[testdb.brands.BrandsRow.brandId]]
    */
-  @JsonProperty("brand_id") brandId: Defaulted[Optional[BrandsId]] = new UseDefault(),
+  @JsonProperty("brand_id") brandId: Defaulted[Option[BrandsId]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("short_description") shortDescription: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("short_description") shortDescription: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("full_description") fullDescription: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("full_description") fullDescription: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("cost_price") costPrice: Defaulted[Optional[java.math.BigDecimal]] = new UseDefault(),
+  @JsonProperty("cost_price") costPrice: Defaulted[Option[BigDecimal]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("weight_kg") weightKg: Defaulted[Optional[java.math.BigDecimal]] = new UseDefault(),
+  @JsonProperty("weight_kg") weightKg: Defaulted[Option[BigDecimal]] = new UseDefault(),
   /** Default: NULL
    * length, width, height in cm
    */
-  @JsonProperty("dimensions_json") dimensionsJson: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("dimensions_json") dimensionsJson: Defaulted[Option[String]] = new UseDefault(),
   /** Default: 'draft'
 
    */
@@ -58,15 +59,15 @@ case class ProductsRowUnsaved(
   /** Default: NULL
 
    */
-  tags: Defaulted[Optional[MariaSet]] = new UseDefault(),
+  tags: Defaulted[Option[MariaSet]] = new UseDefault(),
   /** Default: NULL
 
    */
-  attributes: Defaulted[Optional[String]] = new UseDefault(),
+  attributes: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("seo_metadata") seoMetadata: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("seo_metadata") seoMetadata: Defaulted[Option[String]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
@@ -78,23 +79,23 @@ case class ProductsRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("published_at") publishedAt: Defaulted[Optional[LocalDateTime]] = new UseDefault()
+  @JsonProperty("published_at") publishedAt: Defaulted[Option[LocalDateTime]] = new UseDefault()
 ) {
   def toRow(
-    brandIdDefault: => Optional[BrandsId],
-    shortDescriptionDefault: => Optional[String],
-    fullDescriptionDefault: => Optional[String],
-    costPriceDefault: => Optional[java.math.BigDecimal],
-    weightKgDefault: => Optional[java.math.BigDecimal],
-    dimensionsJsonDefault: => Optional[String],
+    brandIdDefault: => Option[BrandsId],
+    shortDescriptionDefault: => Option[String],
+    fullDescriptionDefault: => Option[String],
+    costPriceDefault: => Option[BigDecimal],
+    weightKgDefault: => Option[BigDecimal],
+    dimensionsJsonDefault: => Option[String],
     statusDefault: => String,
     taxClassDefault: => String,
-    tagsDefault: => Optional[MariaSet],
-    attributesDefault: => Optional[String],
-    seoMetadataDefault: => Optional[String],
+    tagsDefault: => Option[MariaSet],
+    attributesDefault: => Option[String],
+    seoMetadataDefault: => Option[String],
     createdAtDefault: => LocalDateTime,
     updatedAtDefault: => LocalDateTime,
-    publishedAtDefault: => Optional[LocalDateTime],
+    publishedAtDefault: => Option[LocalDateTime],
     productIdDefault: => ProductsId
   ): ProductsRow = {
     new ProductsRow(
@@ -121,5 +122,5 @@ case class ProductsRowUnsaved(
 }
 
 object ProductsRowUnsaved {
-  given mariaText: MariaText[ProductsRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.sku, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.basePrice, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using BrandsId.pgType.opt().mariaText).unsafeEncode(row.brandId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.shortDescription, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.fullDescription, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.opt().mariaText).unsafeEncode(row.costPrice, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.opt().mariaText).unsafeEncode(row.weightKg, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.dimensionsJson, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.status, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.taxClass, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.set.opt().mariaText).unsafeEncode(row.tags, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.attributes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.seoMetadata, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.updatedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.publishedAt, sb) })
+  given mariaText: MariaText[ProductsRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.sku, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.basePrice, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using BrandsId.pgType.nullable.mariaText).unsafeEncode(row.brandId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.shortDescription, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.fullDescription, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.nullable.mariaText).unsafeEncode(row.costPrice, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.nullable.mariaText).unsafeEncode(row.weightKg, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.dimensionsJson, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.status, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.taxClass, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.set.nullable.mariaText).unsafeEncode(row.tags, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.attributes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.seoMetadata, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.updatedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.publishedAt, sb) })
 }

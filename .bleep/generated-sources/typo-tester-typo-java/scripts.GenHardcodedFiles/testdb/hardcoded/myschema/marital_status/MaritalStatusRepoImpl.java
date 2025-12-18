@@ -15,9 +15,9 @@ import typo.dsl.DeleteBuilder;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class MaritalStatusRepoImpl implements MaritalStatusRepo {
   @Override
@@ -30,13 +30,7 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
     MaritalStatusId id,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "myschema"."marital_status" where "id" = 
-      """),
-      MaritalStatusId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"myschema\".\"marital_status\" where \"id\" = "), Fragment.encode(MaritalStatusId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,14 +38,7 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
     MaritalStatusId[] ids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "myschema"."marital_status"
-                  where "id" = ANY("""),
-               MaritalStatusId.pgTypeArray.encode(ids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"myschema\".\"marital_status\"\nwhere \"id\" = ANY("), Fragment.encode(MaritalStatusId.pgTypeArray, ids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -61,16 +48,7 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
     MaritalStatusRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "myschema"."marital_status"("id")
-         values ("""),
-      MaritalStatusId.pgType.encode(unsaved.id()),
-      typo.runtime.Fragment.lit("""
-         ::int8)
-         returning "id"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"myschema\".\"marital_status\"(\"id\")\nvalues ("), Fragment.encode(MaritalStatusId.pgType, unsaved.id()), Fragment.lit("::int8)\nreturning \"id\"\n"))
       .updateReturning(MaritalStatusRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -80,9 +58,7 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "myschema"."marital_status"("id") FROM STDIN
-    """), batchSize, unsaved, c, MaritalStatusRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"myschema\".\"marital_status\"(\"id\") FROM STDIN", batchSize, unsaved, c, MaritalStatusRow.pgText);
   };
 
   @Override
@@ -92,10 +68,7 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
 
   @Override
   public List<MaritalStatusRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id"
-       from "myschema"."marital_status"
-    """)).query(MaritalStatusRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\"\nfrom \"myschema\".\"marital_status\"\n")).query(MaritalStatusRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -103,14 +76,7 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
     MaritalStatusId id,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "id"
-         from "myschema"."marital_status"
-         where "id" = """),
-      MaritalStatusId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).query(MaritalStatusRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\"\nfrom \"myschema\".\"marital_status\"\nwhere \"id\" = "), Fragment.encode(MaritalStatusId.pgType, id), Fragment.lit("")).query(MaritalStatusRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -118,14 +84,7 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
     MaritalStatusId[] ids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "id"
-         from "myschema"."marital_status"
-         where "id" = ANY("""),
-      MaritalStatusId.pgTypeArray.encode(ids),
-      typo.runtime.Fragment.lit(")")
-    ).query(MaritalStatusRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\"\nfrom \"myschema\".\"marital_status\"\nwhere \"id\" = ANY("), Fragment.encode(MaritalStatusId.pgTypeArray, ids), Fragment.lit(")")).query(MaritalStatusRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -140,7 +99,7 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
 
   @Override
   public UpdateBuilder<MaritalStatusFields, MaritalStatusRow> update() {
-    return UpdateBuilder.of("\"myschema\".\"marital_status\"", MaritalStatusFields.structure(), MaritalStatusRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"myschema\".\"marital_status\"", MaritalStatusFields.structure(), MaritalStatusRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -148,17 +107,7 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
     MaritalStatusRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "myschema"."marital_status"("id")
-         values ("""),
-      MaritalStatusId.pgType.encode(unsaved.id()),
-      typo.runtime.Fragment.lit("""
-         ::int8)
-         on conflict ("id")
-         do update set "id" = EXCLUDED."id"
-         returning "id\"""")
-    )
+    return interpolate(Fragment.lit("insert into \"myschema\".\"marital_status\"(\"id\")\nvalues ("), Fragment.encode(MaritalStatusId.pgType, unsaved.id()), Fragment.lit("::int8)\non conflict (\"id\")\ndo update set \"id\" = EXCLUDED.\"id\"\nreturning \"id\""))
       .updateReturning(MaritalStatusRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -168,14 +117,9 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
     Iterator<MaritalStatusRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "myschema"."marital_status"("id")
-                values (?::int8)
-                on conflict ("id")
-                do update set "id" = EXCLUDED."id"
-                returning "id\""""))
+    return interpolate(Fragment.lit("insert into \"myschema\".\"marital_status\"(\"id\")\nvalues (?::int8)\non conflict (\"id\")\ndo update set \"id\" = EXCLUDED.\"id\"\nreturning \"id\""))
       .updateManyReturning(MaritalStatusRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -185,18 +129,8 @@ public class MaritalStatusRepoImpl implements MaritalStatusRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table marital_status_TEMP (like "myschema"."marital_status") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy marital_status_TEMP("id") from stdin
-    """), batchSize, unsaved, c, MaritalStatusRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "myschema"."marital_status"("id")
-       select * from marital_status_TEMP
-       on conflict ("id")
-       do nothing
-       ;
-       drop table marital_status_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table marital_status_TEMP (like \"myschema\".\"marital_status\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy marital_status_TEMP(\"id\") from stdin", batchSize, unsaved, c, MaritalStatusRow.pgText);
+    return interpolate(Fragment.lit("insert into \"myschema\".\"marital_status\"(\"id\")\nselect * from marital_status_TEMP\non conflict (\"id\")\ndo nothing\n;\ndrop table marital_status_TEMP;")).update().runUnchecked(c);
   };
 }

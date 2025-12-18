@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VproductmodelcatalogdescriptionViewRepoImpl implements VproductmodelcatalogdescriptionViewRepo {
@@ -19,9 +20,6 @@ public class VproductmodelcatalogdescriptionViewRepoImpl implements Vproductmode
 
   @Override
   public List<VproductmodelcatalogdescriptionViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "productmodelid", "name", "Summary", "manufacturer", "copyright", "producturl", "warrantyperiod", "warrantydescription", "noofyears", "maintenancedescription", "wheel", "saddle", "pedal", "bikeframe", "crankset", "pictureangle", "picturesize", "productphotoid", "material", "color", "productline", "style", "riderexperience", "rowguid", "modifieddate"::text
-       from "production"."vproductmodelcatalogdescription"
-    """)).query(VproductmodelcatalogdescriptionViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productmodelid\", \"name\", \"Summary\", \"manufacturer\", \"copyright\", \"producturl\", \"warrantyperiod\", \"warrantydescription\", \"noofyears\", \"maintenancedescription\", \"wheel\", \"saddle\", \"pedal\", \"bikeframe\", \"crankset\", \"pictureangle\", \"picturesize\", \"productphotoid\", \"material\", \"color\", \"productline\", \"style\", \"riderexperience\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"vproductmodelcatalogdescription\"\n")).query(VproductmodelcatalogdescriptionViewRow._rowParser.all()).runUnchecked(c);
   };
 }

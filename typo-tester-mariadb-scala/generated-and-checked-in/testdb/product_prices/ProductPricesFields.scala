@@ -6,32 +6,32 @@
 package testdb.product_prices
 
 import java.time.LocalDate
-import java.util.Optional
 import testdb.price_tiers.PriceTiersFields
 import testdb.price_tiers.PriceTiersId
 import testdb.price_tiers.PriceTiersRow
 import testdb.products.ProductsFields
 import testdb.products.ProductsId
 import testdb.products.ProductsRow
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.FieldsExpr0
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait ProductPricesFields extends FieldsExpr[ProductPricesRow] {
+trait ProductPricesFields extends FieldsExpr0[ProductPricesRow] {
   def priceId: IdField[ProductPricesId, ProductPricesRow]
 
   def productId: Field[ProductsId, ProductPricesRow]
 
   def tierId: OptField[PriceTiersId, ProductPricesRow]
 
-  def price: Field[java.math.BigDecimal, ProductPricesRow]
+  def price: Field[BigDecimal, ProductPricesRow]
 
   def currencyCode: Field[String, ProductPricesRow]
 
@@ -39,25 +39,25 @@ trait ProductPricesFields extends FieldsExpr[ProductPricesRow] {
 
   def validTo: OptField[LocalDate, ProductPricesRow]
 
-  def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_pp_product").withColumnPair(productId, _.productId)
+  def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_pp_product").withColumnPair[ProductsId](productId, _.productId)
 
-  def fkPriceTiers: ForeignKey[PriceTiersFields, PriceTiersRow] = ForeignKey.of[PriceTiersFields, PriceTiersRow]("fk_pp_tier").withColumnPair(tierId, _.tierId)
+  def fkPriceTiers: ForeignKey[PriceTiersFields, PriceTiersRow] = ForeignKey.of[PriceTiersFields, PriceTiersRow]("fk_pp_tier").withColumnPair[PriceTiersId](tierId, _.tierId)
 
   override def columns: java.util.List[FieldLike[?, ProductPricesRow]]
 
-  override def rowParser: RowParser[ProductPricesRow] = ProductPricesRow._rowParser
+  override def rowParser: RowParser[ProductPricesRow] = ProductPricesRow._rowParser.underlying
 }
 
 object ProductPricesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductPricesFields with Relation[ProductPricesFields, ProductPricesRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends ProductPricesFields with RelationStructure[ProductPricesFields, ProductPricesRow] {
 
     override def priceId: IdField[ProductPricesId, ProductPricesRow] = {
       new IdField[ProductPricesId, ProductPricesRow](
         _path,
         "price_id",
         _.priceId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(priceId = value),
         ProductPricesId.pgType
       )
@@ -68,8 +68,8 @@ object ProductPricesFields {
         _path,
         "product_id",
         _.productId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(productId = value),
         ProductsId.pgType
       )
@@ -80,22 +80,22 @@ object ProductPricesFields {
         _path,
         "tier_id",
         _.tierId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(tierId = value),
         PriceTiersId.pgType
       )
     }
 
-    override def price: Field[java.math.BigDecimal, ProductPricesRow] = {
-      new Field[java.math.BigDecimal, ProductPricesRow](
+    override def price: Field[BigDecimal, ProductPricesRow] = {
+      new Field[BigDecimal, ProductPricesRow](
         _path,
         "price",
         _.price,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(price = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
@@ -104,8 +104,8 @@ object ProductPricesFields {
         _path,
         "currency_code",
         _.currencyCode,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(currencyCode = value),
         MariaTypes.char_
       )
@@ -116,8 +116,8 @@ object ProductPricesFields {
         _path,
         "valid_from",
         _.validFrom,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(validFrom = value),
         MariaTypes.date
       )
@@ -128,17 +128,17 @@ object ProductPricesFields {
         _path,
         "valid_to",
         _.validTo,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(validTo = value),
         MariaTypes.date
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, ProductPricesRow]] = java.util.List.of(this.priceId, this.productId, this.tierId, this.price, this.currencyCode, this.validFrom, this.validTo)
+    override def columns: java.util.List[FieldLike[?, ProductPricesRow]] = java.util.List.of(this.priceId.underlying, this.productId.underlying, this.tierId.underlying, this.price.underlying, this.currencyCode.underlying, this.validFrom.underlying, this.validTo.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[ProductPricesFields, ProductPricesRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductPricesFields, ProductPricesRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

@@ -6,88 +6,87 @@
 package adventureworks.production.illustration
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface IllustrationRepo {
-  fun delete(): DeleteBuilder<IllustrationFields, IllustrationRow>
+  abstract fun delete(): DeleteBuilder<IllustrationFields, IllustrationRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     illustrationid: IllustrationId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     illustrationids: Array<IllustrationId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: IllustrationRow,
     c: Connection
   ): IllustrationRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: IllustrationRowUnsaved,
     c: Connection
   ): IllustrationRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<IllustrationRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<IllustrationRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<IllustrationFields, IllustrationRow>
+  abstract fun select(): SelectBuilder<IllustrationFields, IllustrationRow>
 
-  fun selectAll(c: Connection): List<IllustrationRow>
+  abstract fun selectAll(c: Connection): List<IllustrationRow>
 
-  fun selectById(
+  abstract fun selectById(
     illustrationid: IllustrationId,
     c: Connection
-  ): Optional<IllustrationRow>
+  ): IllustrationRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     illustrationids: Array<IllustrationId>,
     c: Connection
   ): List<IllustrationRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     illustrationids: Array<IllustrationId>,
     c: Connection
   ): Map<IllustrationId, IllustrationRow>
 
-  fun update(): UpdateBuilder<IllustrationFields, IllustrationRow>
+  abstract fun update(): UpdateBuilder<IllustrationFields, IllustrationRow>
 
-  fun update(
+  abstract fun update(
     row: IllustrationRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: IllustrationRow,
     c: Connection
   ): IllustrationRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<IllustrationRow>,
     c: Connection
   ): List<IllustrationRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<IllustrationRow>,
     batchSize: Int,
     c: Connection

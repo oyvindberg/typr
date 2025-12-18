@@ -20,18 +20,18 @@ case class VjobcandidateViewRow(
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.businessentityid]] */
-  businessentityid: Option[BusinessentityId],
-  namePrefix: Option[/* max 30 chars */ String],
-  nameFirst: Option[/* max 30 chars */ String],
-  nameMiddle: Option[/* max 30 chars */ String],
-  nameLast: Option[/* max 30 chars */ String],
-  nameSuffix: Option[/* max 30 chars */ String],
+  businessentityid: BusinessentityId,
+  namePrefix: String,
+  nameFirst: String,
+  nameMiddle: String,
+  nameLast: String,
+  nameSuffix: String,
   skills: String,
-  addrType: Option[/* max 30 chars */ String],
-  addrLocCountryRegion: Option[/* max 100 chars */ String],
-  addrLocState: Option[/* max 100 chars */ String],
-  addrLocCity: Option[/* max 100 chars */ String],
-  addrPostalCode: Option[/* max 20 chars */ String],
+  addrType: String,
+  addrLocCountryRegion: String,
+  addrLocState: String,
+  addrLocCity: String,
+  addrPostalCode: String,
   eMail: String,
   webSite: String,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.modifieddate]] */
@@ -45,18 +45,18 @@ object VjobcandidateViewRow {
         columIndex + 15 ->
           VjobcandidateViewRow(
             jobcandidateid = JobcandidateId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-            businessentityid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 1, rs)._2,
-            namePrefix = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 2, rs)._2,
-            nameFirst = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
-            nameMiddle = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 4, rs)._2,
-            nameLast = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
-            nameSuffix = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 6, rs)._2,
+            businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
+            namePrefix = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            nameFirst = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            nameMiddle = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 4, rs)._2,
+            nameLast = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 5, rs)._2,
+            nameSuffix = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 6, rs)._2,
             skills = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 7, rs)._2,
-            addrType = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 8, rs)._2,
-            addrLocCountryRegion = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 9, rs)._2,
-            addrLocState = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 10, rs)._2,
-            addrLocCity = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 11, rs)._2,
-            addrPostalCode = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 12, rs)._2,
+            addrType = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 8, rs)._2,
+            addrLocCountryRegion = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 9, rs)._2,
+            addrLocState = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 10, rs)._2,
+            addrLocCity = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 11, rs)._2,
+            addrPostalCode = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 12, rs)._2,
             eMail = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 13, rs)._2,
             webSite = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 14, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 15, rs)._2
@@ -67,18 +67,18 @@ object VjobcandidateViewRow {
   implicit lazy val jsonDecoder: JsonDecoder[VjobcandidateViewRow] = {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
       val jobcandidateid = jsonObj.get("jobcandidateid").toRight("Missing field 'jobcandidateid'").flatMap(_.as(JobcandidateId.jsonDecoder))
-      val businessentityid = jsonObj.get("businessentityid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
-      val namePrefix = jsonObj.get("Name.Prefix").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val nameFirst = jsonObj.get("Name.First").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val nameMiddle = jsonObj.get("Name.Middle").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val nameLast = jsonObj.get("Name.Last").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val nameSuffix = jsonObj.get("Name.Suffix").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val namePrefix = jsonObj.get("Name.Prefix").toRight("Missing field 'Name.Prefix'").flatMap(_.as(JsonDecoder.string))
+      val nameFirst = jsonObj.get("Name.First").toRight("Missing field 'Name.First'").flatMap(_.as(JsonDecoder.string))
+      val nameMiddle = jsonObj.get("Name.Middle").toRight("Missing field 'Name.Middle'").flatMap(_.as(JsonDecoder.string))
+      val nameLast = jsonObj.get("Name.Last").toRight("Missing field 'Name.Last'").flatMap(_.as(JsonDecoder.string))
+      val nameSuffix = jsonObj.get("Name.Suffix").toRight("Missing field 'Name.Suffix'").flatMap(_.as(JsonDecoder.string))
       val skills = jsonObj.get("Skills").toRight("Missing field 'Skills'").flatMap(_.as(JsonDecoder.string))
-      val addrType = jsonObj.get("Addr.Type").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val addrLocCountryRegion = jsonObj.get("Addr.Loc.CountryRegion").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val addrLocState = jsonObj.get("Addr.Loc.State").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val addrLocCity = jsonObj.get("Addr.Loc.City").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val addrPostalCode = jsonObj.get("Addr.PostalCode").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val addrType = jsonObj.get("Addr.Type").toRight("Missing field 'Addr.Type'").flatMap(_.as(JsonDecoder.string))
+      val addrLocCountryRegion = jsonObj.get("Addr.Loc.CountryRegion").toRight("Missing field 'Addr.Loc.CountryRegion'").flatMap(_.as(JsonDecoder.string))
+      val addrLocState = jsonObj.get("Addr.Loc.State").toRight("Missing field 'Addr.Loc.State'").flatMap(_.as(JsonDecoder.string))
+      val addrLocCity = jsonObj.get("Addr.Loc.City").toRight("Missing field 'Addr.Loc.City'").flatMap(_.as(JsonDecoder.string))
+      val addrPostalCode = jsonObj.get("Addr.PostalCode").toRight("Missing field 'Addr.PostalCode'").flatMap(_.as(JsonDecoder.string))
       val eMail = jsonObj.get("EMail").toRight("Missing field 'EMail'").flatMap(_.as(JsonDecoder.string))
       val webSite = jsonObj.get("WebSite").toRight("Missing field 'WebSite'").flatMap(_.as(JsonDecoder.string))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
@@ -96,40 +96,40 @@ object VjobcandidateViewRow {
         JobcandidateId.jsonEncoder.unsafeEncode(a.jobcandidateid, indent, out)
         out.write(",")
         out.write(""""businessentityid":""")
-        JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.businessentityid, indent, out)
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
         out.write(",")
         out.write(""""Name.Prefix":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.namePrefix, indent, out)
+        JsonEncoder.string.unsafeEncode(a.namePrefix, indent, out)
         out.write(",")
         out.write(""""Name.First":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.nameFirst, indent, out)
+        JsonEncoder.string.unsafeEncode(a.nameFirst, indent, out)
         out.write(",")
         out.write(""""Name.Middle":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.nameMiddle, indent, out)
+        JsonEncoder.string.unsafeEncode(a.nameMiddle, indent, out)
         out.write(",")
         out.write(""""Name.Last":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.nameLast, indent, out)
+        JsonEncoder.string.unsafeEncode(a.nameLast, indent, out)
         out.write(",")
         out.write(""""Name.Suffix":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.nameSuffix, indent, out)
+        JsonEncoder.string.unsafeEncode(a.nameSuffix, indent, out)
         out.write(",")
         out.write(""""Skills":""")
         JsonEncoder.string.unsafeEncode(a.skills, indent, out)
         out.write(",")
         out.write(""""Addr.Type":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.addrType, indent, out)
+        JsonEncoder.string.unsafeEncode(a.addrType, indent, out)
         out.write(",")
         out.write(""""Addr.Loc.CountryRegion":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.addrLocCountryRegion, indent, out)
+        JsonEncoder.string.unsafeEncode(a.addrLocCountryRegion, indent, out)
         out.write(",")
         out.write(""""Addr.Loc.State":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.addrLocState, indent, out)
+        JsonEncoder.string.unsafeEncode(a.addrLocState, indent, out)
         out.write(",")
         out.write(""""Addr.Loc.City":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.addrLocCity, indent, out)
+        JsonEncoder.string.unsafeEncode(a.addrLocCity, indent, out)
         out.write(",")
         out.write(""""Addr.PostalCode":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.addrPostalCode, indent, out)
+        JsonEncoder.string.unsafeEncode(a.addrPostalCode, indent, out)
         out.write(",")
         out.write(""""EMail":""")
         JsonEncoder.string.unsafeEncode(a.eMail, indent, out)

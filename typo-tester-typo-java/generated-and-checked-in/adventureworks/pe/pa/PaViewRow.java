@@ -5,9 +5,9 @@
  */
 package adventureworks.pe.pa;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -19,13 +19,13 @@ public record PaViewRow(
   /** Points to {@link adventureworks.person.password.PasswordRow#businessentityid()} */
   BusinessentityId businessentityid,
   /** Points to {@link adventureworks.person.password.PasswordRow#passwordhash()} */
-  /* max 128 chars */ String passwordhash,
+  String passwordhash,
   /** Points to {@link adventureworks.person.password.PasswordRow#passwordsalt()} */
-  /* max 10 chars */ String passwordsalt,
+  String passwordsalt,
   /** Points to {@link adventureworks.person.password.PasswordRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.person.password.PasswordRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.password.PasswordRow#businessentityid()} */
   public PaViewRow withId(BusinessentityId id) {
@@ -38,24 +38,24 @@ public record PaViewRow(
   };
 
   /** Points to {@link adventureworks.person.password.PasswordRow#passwordhash()} */
-  public PaViewRow withPasswordhash(/* max 128 chars */ String passwordhash) {
+  public PaViewRow withPasswordhash(String passwordhash) {
     return new PaViewRow(id, businessentityid, passwordhash, passwordsalt, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.password.PasswordRow#passwordsalt()} */
-  public PaViewRow withPasswordsalt(/* max 10 chars */ String passwordsalt) {
+  public PaViewRow withPasswordsalt(String passwordsalt) {
     return new PaViewRow(id, businessentityid, passwordhash, passwordsalt, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.password.PasswordRow#rowguid()} */
-  public PaViewRow withRowguid(TypoUUID rowguid) {
+  public PaViewRow withRowguid(UUID rowguid) {
     return new PaViewRow(id, businessentityid, passwordhash, passwordsalt, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.password.PasswordRow#modifieddate()} */
-  public PaViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PaViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PaViewRow(id, businessentityid, passwordhash, passwordsalt, rowguid, modifieddate);
   };
 
-  static RowParser<PaViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.text, PgTypes.text, TypoUUID.pgType, TypoLocalDateTime.pgType, PaViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.passwordhash(), row.passwordsalt(), row.rowguid(), row.modifieddate()});;
+  static RowParser<PaViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, PaViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.passwordhash(), row.passwordsalt(), row.rowguid(), row.modifieddate()});;
 }

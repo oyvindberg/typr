@@ -147,7 +147,7 @@ public record OrderItemsRow(
     return new OrderItemsRow(itemId, orderId, productId, sku, productName, quantity, unitPrice, discountAmount, taxAmount, lineTotal, fulfillmentStatus, warehouseId, notes);
   };
 
-  static RowParser<OrderItemsRow> _rowParser = RowParsers.of(OrderItemsId.pgType, OrdersId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.smallintUnsigned, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.text, WarehousesId.pgType.opt(), MariaTypes.tinytext.opt(), OrderItemsRow::new, row -> new Object[]{row.itemId(), row.orderId(), row.productId(), row.sku(), row.productName(), row.quantity(), row.unitPrice(), row.discountAmount(), row.taxAmount(), row.lineTotal(), row.fulfillmentStatus(), row.warehouseId(), row.notes()});;
+  static RowParser<OrderItemsRow> _rowParser = RowParsers.of(OrderItemsId.pgType, OrdersId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.smallintUnsigned, MariaTypes.numeric, MariaTypes.numeric, MariaTypes.numeric, MariaTypes.numeric, MariaTypes.text, WarehousesId.pgType.opt(), MariaTypes.tinytext.opt(), OrderItemsRow::new, row -> new Object[]{row.itemId(), row.orderId(), row.productId(), row.sku(), row.productName(), row.quantity(), row.unitPrice(), row.discountAmount(), row.taxAmount(), row.lineTotal(), row.fulfillmentStatus(), row.warehouseId(), row.notes()});;
 
   static public MariaText<OrderItemsRow> mariaText =
     MariaText.from(_rowParser);

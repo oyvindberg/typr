@@ -5,25 +5,23 @@
  */
 package adventureworks.pu.v;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.AccountNumber;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VViewFields extends FieldsExpr<VViewRow> {
-  record Impl(List<Path> _path) implements VViewFields, Relation<VViewFields, VViewRow> {
+  record Impl(List<Path> _path) implements VViewFields, RelationStructure<VViewFields, VViewRow> {
     @Override
     public Field<BusinessentityId, VViewRow> id() {
       return new Field<BusinessentityId, VViewRow>(_path, "id", VViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), BusinessentityId.pgType);
@@ -45,8 +43,8 @@ public interface VViewFields extends FieldsExpr<VViewRow> {
     };
 
     @Override
-    public Field<TypoShort, VViewRow> creditrating() {
-      return new Field<TypoShort, VViewRow>(_path, "creditrating", VViewRow::creditrating, Optional.empty(), Optional.empty(), (row, value) -> row.withCreditrating(value), TypoShort.pgType);
+    public Field<Short, VViewRow> creditrating() {
+      return new Field<Short, VViewRow>(_path, "creditrating", VViewRow::creditrating, Optional.empty(), Optional.empty(), (row, value) -> row.withCreditrating(value), PgTypes.int2);
     };
 
     @Override
@@ -60,28 +58,28 @@ public interface VViewFields extends FieldsExpr<VViewRow> {
     };
 
     @Override
-    public OptField</* max 1024 chars */ String, VViewRow> purchasingwebserviceurl() {
-      return new OptField</* max 1024 chars */ String, VViewRow>(_path, "purchasingwebserviceurl", VViewRow::purchasingwebserviceurl, Optional.empty(), Optional.empty(), (row, value) -> row.withPurchasingwebserviceurl(value), PgTypes.text);
+    public Field<String, VViewRow> purchasingwebserviceurl() {
+      return new Field<String, VViewRow>(_path, "purchasingwebserviceurl", VViewRow::purchasingwebserviceurl, Optional.empty(), Optional.empty(), (row, value) -> row.withPurchasingwebserviceurl(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoLocalDateTime, VViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, VViewRow>(_path, "modifieddate", VViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, VViewRow> modifieddate() {
+      return new Field<LocalDateTime, VViewRow>(_path, "modifieddate", VViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, VViewRow>> columns() {
-      return List.of(this.id(), this.businessentityid(), this.accountnumber(), this.name(), this.creditrating(), this.preferredvendorstatus(), this.activeflag(), this.purchasingwebserviceurl(), this.modifieddate());
+      return java.util.List.of(this.id(), this.businessentityid(), this.accountnumber(), this.name(), this.creditrating(), this.preferredvendorstatus(), this.activeflag(), this.purchasingwebserviceurl(), this.modifieddate());
     };
 
     @Override
-    public Relation<VViewFields, VViewRow> copy(List<Path> _path) {
+    public RelationStructure<VViewFields, VViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<BusinessentityId, VViewRow> id();
@@ -92,15 +90,15 @@ public interface VViewFields extends FieldsExpr<VViewRow> {
 
   Field<Name, VViewRow> name();
 
-  Field<TypoShort, VViewRow> creditrating();
+  Field<Short, VViewRow> creditrating();
 
   Field<Flag, VViewRow> preferredvendorstatus();
 
   Field<Flag, VViewRow> activeflag();
 
-  OptField</* max 1024 chars */ String, VViewRow> purchasingwebserviceurl();
+  Field<String, VViewRow> purchasingwebserviceurl();
 
-  Field<TypoLocalDateTime, VViewRow> modifieddate();
+  Field<LocalDateTime, VViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, VViewRow>> columns();

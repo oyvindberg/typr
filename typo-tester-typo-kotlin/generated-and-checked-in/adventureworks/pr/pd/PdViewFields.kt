@@ -5,51 +5,52 @@
  */
 package adventureworks.pr.pd
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productdescription.ProductdescriptionId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PdViewFields : FieldsExpr<PdViewRow> {
-  override fun columns(): List<FieldLike<*, PdViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PdViewRow>>
 
-  fun description(): Field</* max 400 chars */ String, PdViewRow>
+  abstract fun description(): Field<String, PdViewRow>
 
-  fun id(): Field<ProductdescriptionId, PdViewRow>
+  abstract fun id(): Field<ProductdescriptionId, PdViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PdViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PdViewRow>
 
-  fun productdescriptionid(): Field<ProductdescriptionId, PdViewRow>
+  abstract fun productdescriptionid(): Field<ProductdescriptionId, PdViewRow>
 
-  override fun rowParser(): RowParser<PdViewRow> = PdViewRow._rowParser
+  override fun rowParser(): RowParser<PdViewRow> = PdViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, PdViewRow>
+  abstract fun rowguid(): Field<UUID, PdViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PdViewFields, Relation<PdViewFields, PdViewRow> {
-      override fun id(): Field<ProductdescriptionId, PdViewRow> = Field<ProductdescriptionId, PdViewRow>(_path, "id", PdViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, ProductdescriptionId.pgType)
+    data class Impl(val _path: List<Path>) : PdViewFields, RelationStructure<PdViewFields, PdViewRow> {
+      override fun id(): Field<ProductdescriptionId, PdViewRow> = Field<ProductdescriptionId, PdViewRow>(_path, "id", PdViewRow::id, null, null, { row, value -> row.copy(id = value) }, ProductdescriptionId.pgType)
 
-      override fun productdescriptionid(): Field<ProductdescriptionId, PdViewRow> = Field<ProductdescriptionId, PdViewRow>(_path, "productdescriptionid", PdViewRow::productdescriptionid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productdescriptionid = value) }, ProductdescriptionId.pgType)
+      override fun productdescriptionid(): Field<ProductdescriptionId, PdViewRow> = Field<ProductdescriptionId, PdViewRow>(_path, "productdescriptionid", PdViewRow::productdescriptionid, null, null, { row, value -> row.copy(productdescriptionid = value) }, ProductdescriptionId.pgType)
 
-      override fun description(): Field</* max 400 chars */ String, PdViewRow> = Field</* max 400 chars */ String, PdViewRow>(_path, "description", PdViewRow::description, Optional.empty(), Optional.empty(), { row, value -> row.copy(description = value) }, PgTypes.text)
+      override fun description(): Field<String, PdViewRow> = Field<String, PdViewRow>(_path, "description", PdViewRow::description, null, null, { row, value -> row.copy(description = value) }, PgTypes.text)
 
-      override fun rowguid(): Field<TypoUUID, PdViewRow> = Field<TypoUUID, PdViewRow>(_path, "rowguid", PdViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, PdViewRow> = Field<UUID, PdViewRow>(_path, "rowguid", PdViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PdViewRow> = Field<TypoLocalDateTime, PdViewRow>(_path, "modifieddate", PdViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PdViewRow> = Field<LocalDateTime, PdViewRow>(_path, "modifieddate", PdViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PdViewRow>> = listOf(this.id(), this.productdescriptionid(), this.description(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PdViewFields, PdViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PdViewRow>> = listOf(this.id().underlying, this.productdescriptionid().underlying, this.description().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PdViewFields, PdViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

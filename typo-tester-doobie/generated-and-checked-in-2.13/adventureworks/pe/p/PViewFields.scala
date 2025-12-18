@@ -13,48 +13,47 @@ import adventureworks.public.Name
 import adventureworks.public.NameStyle
 import adventureworks.userdefined.FirstName
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PViewFields {
   def id: Field[BusinessentityId, PViewRow]
   def businessentityid: Field[BusinessentityId, PViewRow]
-  def persontype: Field[/* bpchar, max 2 chars */ String, PViewRow]
+  def persontype: Field[String, PViewRow]
   def namestyle: Field[NameStyle, PViewRow]
-  def title: OptField[/* max 8 chars */ String, PViewRow]
+  def title: Field[String, PViewRow]
   def firstname: Field[/* user-picked */ FirstName, PViewRow]
-  def middlename: OptField[Name, PViewRow]
+  def middlename: Field[Name, PViewRow]
   def lastname: Field[Name, PViewRow]
-  def suffix: OptField[/* max 10 chars */ String, PViewRow]
+  def suffix: Field[String, PViewRow]
   def emailpromotion: Field[Int, PViewRow]
-  def additionalcontactinfo: OptField[TypoXml, PViewRow]
-  def demographics: OptField[TypoXml, PViewRow]
+  def additionalcontactinfo: Field[TypoXml, PViewRow]
+  def demographics: Field[TypoXml, PViewRow]
   def rowguid: Field[TypoUUID, PViewRow]
   def modifieddate: Field[TypoLocalDateTime, PViewRow]
 }
 
 object PViewFields {
-  lazy val structure: Relation[PViewFields, PViewRow] =
+  lazy val structure: RelationStructure[PViewFields, PViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PViewFields, PViewRow] {
+    extends RelationStructure[PViewFields, PViewRow] {
 
     override lazy val fields: PViewFields = new PViewFields {
       override def id = Field[BusinessentityId, PViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, PViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
-      override def persontype = Field[/* bpchar, max 2 chars */ String, PViewRow](_path, "persontype", None, None, x => x.persontype, (row, value) => row.copy(persontype = value))
+      override def persontype = Field[String, PViewRow](_path, "persontype", None, None, x => x.persontype, (row, value) => row.copy(persontype = value))
       override def namestyle = Field[NameStyle, PViewRow](_path, "namestyle", None, None, x => x.namestyle, (row, value) => row.copy(namestyle = value))
-      override def title = OptField[/* max 8 chars */ String, PViewRow](_path, "title", None, None, x => x.title, (row, value) => row.copy(title = value))
+      override def title = Field[String, PViewRow](_path, "title", None, None, x => x.title, (row, value) => row.copy(title = value))
       override def firstname = Field[/* user-picked */ FirstName, PViewRow](_path, "firstname", None, None, x => x.firstname, (row, value) => row.copy(firstname = value))
-      override def middlename = OptField[Name, PViewRow](_path, "middlename", None, None, x => x.middlename, (row, value) => row.copy(middlename = value))
+      override def middlename = Field[Name, PViewRow](_path, "middlename", None, None, x => x.middlename, (row, value) => row.copy(middlename = value))
       override def lastname = Field[Name, PViewRow](_path, "lastname", None, None, x => x.lastname, (row, value) => row.copy(lastname = value))
-      override def suffix = OptField[/* max 10 chars */ String, PViewRow](_path, "suffix", None, None, x => x.suffix, (row, value) => row.copy(suffix = value))
+      override def suffix = Field[String, PViewRow](_path, "suffix", None, None, x => x.suffix, (row, value) => row.copy(suffix = value))
       override def emailpromotion = Field[Int, PViewRow](_path, "emailpromotion", None, None, x => x.emailpromotion, (row, value) => row.copy(emailpromotion = value))
-      override def additionalcontactinfo = OptField[TypoXml, PViewRow](_path, "additionalcontactinfo", None, None, x => x.additionalcontactinfo, (row, value) => row.copy(additionalcontactinfo = value))
-      override def demographics = OptField[TypoXml, PViewRow](_path, "demographics", None, None, x => x.demographics, (row, value) => row.copy(demographics = value))
+      override def additionalcontactinfo = Field[TypoXml, PViewRow](_path, "additionalcontactinfo", None, None, x => x.additionalcontactinfo, (row, value) => row.copy(additionalcontactinfo = value))
+      override def demographics = Field[TypoXml, PViewRow](_path, "demographics", None, None, x => x.demographics, (row, value) => row.copy(demographics = value))
       override def rowguid = Field[TypoUUID, PViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, PViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }

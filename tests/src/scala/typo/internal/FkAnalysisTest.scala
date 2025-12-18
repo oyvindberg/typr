@@ -9,7 +9,7 @@ import typo.internal.codegen.LangScala
 import scala.annotation.nowarn
 
 class FkAnalysisTest extends AnyFunSuite with Matchers {
-  val lang = LangScala(Dialect.Scala3, TypeSupportScala)
+  val lang = LangScala.javaDsl(Dialect.Scala3, TypeSupportScala)
 
   test("FK column mapping for issue #148 - different column names") {
     // Based on debug output: test_utdanningstilbud FK with different column names
@@ -185,11 +185,13 @@ class FkAnalysisTest extends AnyFunSuite with Matchers {
 
   // Helper methods for creating test objects
   private def createComputedColumn(name: String, dbName: String): ComputedColumn = {
+    val tpe = createQualifiedType("String")
+    val dbCol = createDbCol(dbName)
     ComputedColumn(
       pointsTo = List.empty,
       name = createIdent(name),
-      tpe = createQualifiedType("String"),
-      dbCol = createDbCol(dbName)
+      dbCol = dbCol,
+      typoType = TypoType.Standard(tpe, dbCol.tpe)
     )
   }
 

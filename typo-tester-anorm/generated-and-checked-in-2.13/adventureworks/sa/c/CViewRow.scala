@@ -10,7 +10,6 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.customer.CustomerId
 import adventureworks.sales.salesterritory.SalesterritoryId
-import anorm.Column
 import anorm.RowParser
 import anorm.Success
 import play.api.libs.json.JsObject
@@ -18,7 +17,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -29,11 +27,11 @@ case class CViewRow(
   /** Points to [[adventureworks.sales.customer.CustomerRow.customerid]] */
   customerid: CustomerId,
   /** Points to [[adventureworks.sales.customer.CustomerRow.personid]] */
-  personid: Option[BusinessentityId],
+  personid: BusinessentityId,
   /** Points to [[adventureworks.sales.customer.CustomerRow.storeid]] */
-  storeid: Option[BusinessentityId],
+  storeid: BusinessentityId,
   /** Points to [[adventureworks.sales.customer.CustomerRow.territoryid]] */
-  territoryid: Option[SalesterritoryId],
+  territoryid: SalesterritoryId,
   /** Points to [[adventureworks.sales.customer.CustomerRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.sales.customer.CustomerRow.modifieddate]] */
@@ -47,9 +45,9 @@ object CViewRow {
           CViewRow(
             id = json.\("id").as(CustomerId.reads),
             customerid = json.\("customerid").as(CustomerId.reads),
-            personid = json.\("personid").toOption.map(_.as(BusinessentityId.reads)),
-            storeid = json.\("storeid").toOption.map(_.as(BusinessentityId.reads)),
-            territoryid = json.\("territoryid").toOption.map(_.as(SalesterritoryId.reads)),
+            personid = json.\("personid").as(BusinessentityId.reads),
+            storeid = json.\("storeid").as(BusinessentityId.reads),
+            territoryid = json.\("territoryid").as(SalesterritoryId.reads),
             rowguid = json.\("rowguid").as(TypoUUID.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
@@ -64,9 +62,9 @@ object CViewRow {
         CViewRow(
           id = row(idx + 0)(CustomerId.column),
           customerid = row(idx + 1)(CustomerId.column),
-          personid = row(idx + 2)(Column.columnToOption(BusinessentityId.column)),
-          storeid = row(idx + 3)(Column.columnToOption(BusinessentityId.column)),
-          territoryid = row(idx + 4)(Column.columnToOption(SalesterritoryId.column)),
+          personid = row(idx + 2)(BusinessentityId.column),
+          storeid = row(idx + 3)(BusinessentityId.column),
+          territoryid = row(idx + 4)(SalesterritoryId.column),
           rowguid = row(idx + 5)(TypoUUID.column),
           modifieddate = row(idx + 6)(TypoLocalDateTime.column)
         )
@@ -79,9 +77,9 @@ object CViewRow {
       new JsObject(ListMap[String, JsValue](
         "id" -> CustomerId.writes.writes(o.id),
         "customerid" -> CustomerId.writes.writes(o.customerid),
-        "personid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.personid),
-        "storeid" -> Writes.OptionWrites(BusinessentityId.writes).writes(o.storeid),
-        "territoryid" -> Writes.OptionWrites(SalesterritoryId.writes).writes(o.territoryid),
+        "personid" -> BusinessentityId.writes.writes(o.personid),
+        "storeid" -> BusinessentityId.writes.writes(o.storeid),
+        "territoryid" -> SalesterritoryId.writes.writes(o.territoryid),
         "rowguid" -> TypoUUID.writes.writes(o.rowguid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))

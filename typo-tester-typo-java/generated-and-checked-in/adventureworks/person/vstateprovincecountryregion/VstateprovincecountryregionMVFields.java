@@ -14,22 +14,22 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VstateprovincecountryregionMVFields extends FieldsExpr<VstateprovincecountryregionMVRow> {
-  record Impl(List<Path> _path) implements VstateprovincecountryregionMVFields, Relation<VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow> {
+  record Impl(List<Path> _path) implements VstateprovincecountryregionMVFields, RelationStructure<VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow> {
     @Override
     public Field<StateprovinceId, VstateprovincecountryregionMVRow> stateprovinceid() {
       return new Field<StateprovinceId, VstateprovincecountryregionMVRow>(_path, "stateprovinceid", VstateprovincecountryregionMVRow::stateprovinceid, Optional.empty(), Optional.empty(), (row, value) -> row.withStateprovinceid(value), StateprovinceId.pgType);
     };
 
     @Override
-    public Field</* bpchar, max 3 chars */ String, VstateprovincecountryregionMVRow> stateprovincecode() {
-      return new Field</* bpchar, max 3 chars */ String, VstateprovincecountryregionMVRow>(_path, "stateprovincecode", VstateprovincecountryregionMVRow::stateprovincecode, Optional.empty(), Optional.empty(), (row, value) -> row.withStateprovincecode(value), PgTypes.bpchar);
+    public Field<String, VstateprovincecountryregionMVRow> stateprovincecode() {
+      return new Field<String, VstateprovincecountryregionMVRow>(_path, "stateprovincecode", VstateprovincecountryregionMVRow::stateprovincecode, Optional.empty(), Optional.empty(), (row, value) -> row.withStateprovincecode(value), PgTypes.bpchar);
     };
 
     @Override
@@ -59,22 +59,22 @@ public interface VstateprovincecountryregionMVFields extends FieldsExpr<Vstatepr
 
     @Override
     public List<FieldLike<?, VstateprovincecountryregionMVRow>> columns() {
-      return List.of(this.stateprovinceid(), this.stateprovincecode(), this.isonlystateprovinceflag(), this.stateprovincename(), this.territoryid(), this.countryregioncode(), this.countryregionname());
+      return java.util.List.of(this.stateprovinceid(), this.stateprovincecode(), this.isonlystateprovinceflag(), this.stateprovincename(), this.territoryid(), this.countryregioncode(), this.countryregionname());
     };
 
     @Override
-    public Relation<VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow> copy(List<Path> _path) {
+    public RelationStructure<VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<StateprovinceId, VstateprovincecountryregionMVRow> stateprovinceid();
 
-  Field</* bpchar, max 3 chars */ String, VstateprovincecountryregionMVRow> stateprovincecode();
+  Field<String, VstateprovincecountryregionMVRow> stateprovincecode();
 
   Field<Flag, VstateprovincecountryregionMVRow> isonlystateprovinceflag();
 

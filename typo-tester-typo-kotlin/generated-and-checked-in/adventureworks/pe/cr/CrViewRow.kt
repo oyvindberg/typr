@@ -5,11 +5,12 @@
  */
 package adventureworks.pe.cr
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Name
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pe.cr */
 data class CrViewRow(
@@ -18,9 +19,9 @@ data class CrViewRow(
   /** Points to [adventureworks.person.countryregion.CountryregionRow.name] */
   val name: Name,
   /** Points to [adventureworks.person.countryregion.CountryregionRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<CrViewRow> = RowParsers.of(CountryregionId.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> CrViewRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.countryregioncode, row.name, row.modifieddate) })
+    val _rowParser: RowParser<CrViewRow> = RowParsers.of(CountryregionId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2 -> CrViewRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.countryregioncode, row.name, row.modifieddate) })
   }
 }

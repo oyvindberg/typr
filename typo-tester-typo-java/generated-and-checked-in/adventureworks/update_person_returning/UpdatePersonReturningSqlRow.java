@@ -5,8 +5,9 @@
  */
 package adventureworks.update_person_returning;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.userdefined.FirstName;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -15,7 +16,7 @@ public record UpdatePersonReturningSqlRow(
   /** Points to {@link adventureworks.person.person.PersonRow#firstname()} */
   /* user-picked */ FirstName firstname,
   /** Points to {@link adventureworks.person.person.PersonRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.person.PersonRow#firstname()} */
   public UpdatePersonReturningSqlRow withFirstname(/* user-picked */ FirstName firstname) {
@@ -23,9 +24,9 @@ public record UpdatePersonReturningSqlRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#modifieddate()} */
-  public UpdatePersonReturningSqlRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public UpdatePersonReturningSqlRow withModifieddate(LocalDateTime modifieddate) {
     return new UpdatePersonReturningSqlRow(firstname, modifieddate);
   };
 
-  static RowParser<UpdatePersonReturningSqlRow> _rowParser = RowParsers.of(FirstName.pgType, TypoLocalDateTime.pgType, UpdatePersonReturningSqlRow::new, row -> new Object[]{row.firstname(), row.modifieddate()});;
+  static RowParser<UpdatePersonReturningSqlRow> _rowParser = RowParsers.of(FirstName.pgType, PgTypes.timestamp, UpdatePersonReturningSqlRow::new, row -> new Object[]{row.firstname(), row.modifieddate()});;
 }

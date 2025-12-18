@@ -7,10 +7,10 @@ package testdb.order_history
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.orders.OrdersId
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -25,29 +25,29 @@ data class OrderHistoryRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("previous_status") val previousStatus: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("previous_status") val previousStatus: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("changed_by") val changedBy: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("changed_by") val changedBy: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("change_reason") val changeReason: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("change_reason") val changeReason: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  val metadata: Defaulted<Optional<String>> = UseDefault(),
+  val metadata: Defaulted<String?> = UseDefault(),
   /** Default: current_timestamp(6)
 
     */
   @JsonProperty("created_at") val createdAt: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
-    previousStatusDefault: () -> Optional<String>,
-    changedByDefault: () -> Optional<String>,
-    changeReasonDefault: () -> Optional<String>,
-    metadataDefault: () -> Optional<String>,
+    previousStatusDefault: () -> String?,
+    changedByDefault: () -> String?,
+    changeReasonDefault: () -> String?,
+    metadataDefault: () -> String?,
     createdAtDefault: () -> LocalDateTime,
     historyIdDefault: () -> OrderHistoryId
   ): OrderHistoryRow = OrderHistoryRow(historyId = historyIdDefault(), orderId = orderId, previousStatus = previousStatus.getOrElse(previousStatusDefault), newStatus = newStatus, changedBy = changedBy.getOrElse(changedByDefault), changeReason = changeReason.getOrElse(changeReasonDefault), metadata = metadata.getOrElse(metadataDefault), createdAt = createdAt.getOrElse(createdAtDefault))
@@ -58,13 +58,13 @@ data class OrderHistoryRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.text.mariaText().unsafeEncode(row.newStatus, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.text.opt().mariaText()).unsafeEncode(row.previousStatus, sb)
+      Defaulted.mariaText(MariaTypes.text.nullable().mariaText()).unsafeEncode(row.previousStatus, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.changedBy, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.changedBy, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.changeReason, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.changeReason, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.metadata, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.metadata, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.createdAt, sb) })
   }

@@ -5,37 +5,37 @@
  */
 package adventureworks.sales.salespersonquotahistory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesperson.SalespersonFields;
 import adventureworks.sales.salesperson.SalespersonRow;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SalespersonquotahistoryFields extends FieldsExpr<SalespersonquotahistoryRow> {
-  record Impl(List<Path> _path) implements SalespersonquotahistoryFields, Relation<SalespersonquotahistoryFields, SalespersonquotahistoryRow> {
+  record Impl(List<Path> _path) implements SalespersonquotahistoryFields, RelationStructure<SalespersonquotahistoryFields, SalespersonquotahistoryRow> {
     @Override
     public IdField<BusinessentityId, SalespersonquotahistoryRow> businessentityid() {
       return new IdField<BusinessentityId, SalespersonquotahistoryRow>(_path, "businessentityid", SalespersonquotahistoryRow::businessentityid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
     };
 
     @Override
-    public IdField<TypoLocalDateTime, SalespersonquotahistoryRow> quotadate() {
-      return new IdField<TypoLocalDateTime, SalespersonquotahistoryRow>(_path, "quotadate", SalespersonquotahistoryRow::quotadate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withQuotadate(value), TypoLocalDateTime.pgType);
+    public IdField<LocalDateTime, SalespersonquotahistoryRow> quotadate() {
+      return new IdField<LocalDateTime, SalespersonquotahistoryRow>(_path, "quotadate", SalespersonquotahistoryRow::quotadate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withQuotadate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -44,42 +44,42 @@ public interface SalespersonquotahistoryFields extends FieldsExpr<Salespersonquo
     };
 
     @Override
-    public Field<TypoUUID, SalespersonquotahistoryRow> rowguid() {
-      return new Field<TypoUUID, SalespersonquotahistoryRow>(_path, "rowguid", SalespersonquotahistoryRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, SalespersonquotahistoryRow> rowguid() {
+      return new Field<UUID, SalespersonquotahistoryRow>(_path, "rowguid", SalespersonquotahistoryRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SalespersonquotahistoryRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SalespersonquotahistoryRow>(_path, "modifieddate", SalespersonquotahistoryRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SalespersonquotahistoryRow> modifieddate() {
+      return new Field<LocalDateTime, SalespersonquotahistoryRow>(_path, "modifieddate", SalespersonquotahistoryRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SalespersonquotahistoryRow>> columns() {
-      return List.of(this.businessentityid(), this.quotadate(), this.salesquota(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.businessentityid(), this.quotadate(), this.salesquota(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SalespersonquotahistoryFields, SalespersonquotahistoryRow> copy(List<Path> _path) {
+    public RelationStructure<SalespersonquotahistoryFields, SalespersonquotahistoryRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BusinessentityId, SalespersonquotahistoryRow> businessentityid();
 
-  IdField<TypoLocalDateTime, SalespersonquotahistoryRow> quotadate();
+  IdField<LocalDateTime, SalespersonquotahistoryRow> quotadate();
 
   Field<BigDecimal, SalespersonquotahistoryRow> salesquota();
 
-  Field<TypoUUID, SalespersonquotahistoryRow> rowguid();
+  Field<UUID, SalespersonquotahistoryRow> rowguid();
 
-  Field<TypoLocalDateTime, SalespersonquotahistoryRow> modifieddate();
+  Field<LocalDateTime, SalespersonquotahistoryRow> modifieddate();
 
   default ForeignKey<SalespersonFields, SalespersonRow> fkSalesperson() {
-    return ForeignKey.<SalespersonFields, SalespersonRow>of("sales.FK_SalesPersonQuotaHistory_SalesPerson_BusinessEntityID").withColumnPair(businessentityid(), SalespersonFields::businessentityid);
+    return ForeignKey.<SalespersonFields, SalespersonRow>of("sales.FK_SalesPersonQuotaHistory_SalesPerson_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), SalespersonFields::businessentityid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(SalespersonquotahistoryId compositeId) {
@@ -87,7 +87,7 @@ public interface SalespersonquotahistoryFields extends FieldsExpr<Salespersonquo
   };
 
   default SqlExpr<Boolean> compositeIdIn(List<SalespersonquotahistoryId> compositeIds) {
-    return new CompositeIn(List.of(new Part<BusinessentityId, SalespersonquotahistoryId, SalespersonquotahistoryRow>(businessentityid(), SalespersonquotahistoryId::businessentityid, BusinessentityId.pgType), new Part<TypoLocalDateTime, SalespersonquotahistoryId, SalespersonquotahistoryRow>(quotadate(), SalespersonquotahistoryId::quotadate, TypoLocalDateTime.pgType)), compositeIds);
+    return new CompositeIn(List.of(new Part<BusinessentityId, SalespersonquotahistoryId, SalespersonquotahistoryRow>(businessentityid(), SalespersonquotahistoryId::businessentityid, BusinessentityId.pgType), new Part<LocalDateTime, SalespersonquotahistoryId, SalespersonquotahistoryRow>(quotadate(), SalespersonquotahistoryId::quotadate, PgTypes.timestamp)), compositeIds);
   };
 
   @Override

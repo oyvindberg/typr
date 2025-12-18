@@ -7,10 +7,10 @@ package adventureworks.sales.salespersonquotahistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.UUID
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -21,31 +21,31 @@ data class SalespersonquotahistoryRowUnsaved(
     */
   val businessentityid: BusinessentityId,
   /** Sales quota date. */
-  val quotadate: TypoLocalDateTime,
+  val quotadate: LocalDateTime,
   /** Sales quota amount.
     * Constraint CK_SalesPersonQuotaHistory_SalesQuota affecting columns salesquota:  ((salesquota > 0.00))
     */
   val salesquota: BigDecimal,
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): SalespersonquotahistoryRow = SalespersonquotahistoryRow(businessentityid = businessentityid, quotadate = quotadate, salesquota = salesquota, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<SalespersonquotahistoryRowUnsaved> =
       PgText.instance({ row, sb -> BusinessentityId.pgType.pgText().unsafeEncode(row.businessentityid, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.quotadate, sb)
+      PgTypes.timestamp.pgText().unsafeEncode(row.quotadate, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.numeric.pgText().unsafeEncode(row.salesquota, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

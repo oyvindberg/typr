@@ -16,16 +16,16 @@ import typo.data.maria.MariaSet;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface ProductsFields extends FieldsExpr<ProductsRow> {
-  record Impl(List<Path> _path) implements ProductsFields, Relation<ProductsFields, ProductsRow> {
+  record Impl(List<Path> _path) implements ProductsFields, RelationStructure<ProductsFields, ProductsRow> {
     @Override
     public IdField<ProductsId, ProductsRow> productId() {
       return new IdField<ProductsId, ProductsRow>(_path, "product_id", ProductsRow::productId, Optional.empty(), Optional.empty(), (row, value) -> row.withProductId(value), ProductsId.pgType);
@@ -58,17 +58,17 @@ public interface ProductsFields extends FieldsExpr<ProductsRow> {
 
     @Override
     public Field<BigDecimal, ProductsRow> basePrice() {
-      return new Field<BigDecimal, ProductsRow>(_path, "base_price", ProductsRow::basePrice, Optional.empty(), Optional.empty(), (row, value) -> row.withBasePrice(value), MariaTypes.decimal);
+      return new Field<BigDecimal, ProductsRow>(_path, "base_price", ProductsRow::basePrice, Optional.empty(), Optional.empty(), (row, value) -> row.withBasePrice(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, ProductsRow> costPrice() {
-      return new OptField<BigDecimal, ProductsRow>(_path, "cost_price", ProductsRow::costPrice, Optional.empty(), Optional.empty(), (row, value) -> row.withCostPrice(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, ProductsRow>(_path, "cost_price", ProductsRow::costPrice, Optional.empty(), Optional.empty(), (row, value) -> row.withCostPrice(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, ProductsRow> weightKg() {
-      return new OptField<BigDecimal, ProductsRow>(_path, "weight_kg", ProductsRow::weightKg, Optional.empty(), Optional.empty(), (row, value) -> row.withWeightKg(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, ProductsRow>(_path, "weight_kg", ProductsRow::weightKg, Optional.empty(), Optional.empty(), (row, value) -> row.withWeightKg(value), MariaTypes.numeric);
     };
 
     @Override
@@ -118,17 +118,17 @@ public interface ProductsFields extends FieldsExpr<ProductsRow> {
 
     @Override
     public List<FieldLike<?, ProductsRow>> columns() {
-      return List.of(this.productId(), this.sku(), this.brandId(), this.name(), this.shortDescription(), this.fullDescription(), this.basePrice(), this.costPrice(), this.weightKg(), this.dimensionsJson(), this.status(), this.taxClass(), this.tags(), this.attributes(), this.seoMetadata(), this.createdAt(), this.updatedAt(), this.publishedAt());
+      return java.util.List.of(this.productId(), this.sku(), this.brandId(), this.name(), this.shortDescription(), this.fullDescription(), this.basePrice(), this.costPrice(), this.weightKg(), this.dimensionsJson(), this.status(), this.taxClass(), this.tags(), this.attributes(), this.seoMetadata(), this.createdAt(), this.updatedAt(), this.publishedAt());
     };
 
     @Override
-    public Relation<ProductsFields, ProductsRow> copy(List<Path> _path) {
+    public RelationStructure<ProductsFields, ProductsRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ProductsId, ProductsRow> productId();
@@ -168,7 +168,7 @@ public interface ProductsFields extends FieldsExpr<ProductsRow> {
   OptField<LocalDateTime, ProductsRow> publishedAt();
 
   default ForeignKey<BrandsFields, BrandsRow> fkBrands() {
-    return ForeignKey.<BrandsFields, BrandsRow>of("fk_product_brand").withColumnPair(brandId(), BrandsFields::brandId);
+    return ForeignKey.<BrandsFields, BrandsRow>of("fk_product_brand").<BrandsId>withColumnPair(brandId(), BrandsFields::brandId);
   };
 
   @Override

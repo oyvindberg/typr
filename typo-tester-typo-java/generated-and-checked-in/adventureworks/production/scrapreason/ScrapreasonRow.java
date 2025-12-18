@@ -6,9 +6,10 @@
 package adventureworks.production.scrapreason;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -24,7 +25,7 @@ public record ScrapreasonRow(
   /** Failure description. */
   Name name,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for ScrapReason records.
     * Default: nextval('production.scrapreason_scrapreasonid_seq'::regclass)
@@ -39,11 +40,11 @@ public record ScrapreasonRow(
   };
 
   /** Default: now() */
-  public ScrapreasonRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ScrapreasonRow withModifieddate(LocalDateTime modifieddate) {
     return new ScrapreasonRow(scrapreasonid, name, modifieddate);
   };
 
-  static RowParser<ScrapreasonRow> _rowParser = RowParsers.of(ScrapreasonId.pgType, Name.pgType, TypoLocalDateTime.pgType, ScrapreasonRow::new, row -> new Object[]{row.scrapreasonid(), row.name(), row.modifieddate()});;
+  static RowParser<ScrapreasonRow> _rowParser = RowParsers.of(ScrapreasonId.pgType, Name.pgType, PgTypes.timestamp, ScrapreasonRow::new, row -> new Object[]{row.scrapreasonid(), row.name(), row.modifieddate()});;
 
   static public PgText<ScrapreasonRow> pgText =
     PgText.from(_rowParser);
@@ -54,7 +55,7 @@ public record ScrapreasonRow(
 
   public ScrapreasonRowUnsaved toUnsavedRow(
     Defaulted<ScrapreasonId> scrapreasonid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ScrapreasonRowUnsaved(name, scrapreasonid, modifieddate);
   };

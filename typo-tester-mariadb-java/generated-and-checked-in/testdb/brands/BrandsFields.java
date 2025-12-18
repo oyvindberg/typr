@@ -9,16 +9,16 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface BrandsFields extends FieldsExpr<BrandsRow> {
-  record Impl(List<Path> _path) implements BrandsFields, Relation<BrandsFields, BrandsRow> {
+  record Impl(List<Path> _path) implements BrandsFields, RelationStructure<BrandsFields, BrandsRow> {
     @Override
     public IdField<BrandsId, BrandsRow> brandId() {
       return new IdField<BrandsId, BrandsRow>(_path, "brand_id", BrandsRow::brandId, Optional.empty(), Optional.empty(), (row, value) -> row.withBrandId(value), BrandsId.pgType);
@@ -56,17 +56,17 @@ public interface BrandsFields extends FieldsExpr<BrandsRow> {
 
     @Override
     public List<FieldLike<?, BrandsRow>> columns() {
-      return List.of(this.brandId(), this.name(), this.slug(), this.logoBlob(), this.websiteUrl(), this.countryOfOrigin(), this.isActive());
+      return java.util.List.of(this.brandId(), this.name(), this.slug(), this.logoBlob(), this.websiteUrl(), this.countryOfOrigin(), this.isActive());
     };
 
     @Override
-    public Relation<BrandsFields, BrandsRow> copy(List<Path> _path) {
+    public RelationStructure<BrandsFields, BrandsRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BrandsId, BrandsRow> brandId();

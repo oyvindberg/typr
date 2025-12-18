@@ -5,112 +5,111 @@
  */
 package adventureworks.humanresources.vjobcandidateemployment;
 
-import adventureworks.customtypes.TypoLocalDate;
 import adventureworks.humanresources.jobcandidate.JobcandidateId;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VjobcandidateemploymentViewFields extends FieldsExpr<VjobcandidateemploymentViewRow> {
-  record Impl(List<Path> _path) implements VjobcandidateemploymentViewFields, Relation<VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow> {
+  record Impl(List<Path> _path) implements VjobcandidateemploymentViewFields, RelationStructure<VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow> {
     @Override
     public Field<JobcandidateId, VjobcandidateemploymentViewRow> jobcandidateid() {
       return new Field<JobcandidateId, VjobcandidateemploymentViewRow>(_path, "jobcandidateid", VjobcandidateemploymentViewRow::jobcandidateid, Optional.empty(), Optional.empty(), (row, value) -> row.withJobcandidateid(value), JobcandidateId.pgType);
     };
 
     @Override
-    public OptField<TypoLocalDate, VjobcandidateemploymentViewRow> empStartDate() {
-      return new OptField<TypoLocalDate, VjobcandidateemploymentViewRow>(_path, "Emp.StartDate", VjobcandidateemploymentViewRow::empStartDate, Optional.of("text"), Optional.empty(), (row, value) -> row.withEmpStartDate(value), TypoLocalDate.pgType);
+    public Field<LocalDate, VjobcandidateemploymentViewRow> empStartDate() {
+      return new Field<LocalDate, VjobcandidateemploymentViewRow>(_path, "Emp.StartDate", VjobcandidateemploymentViewRow::empStartDate, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpStartDate(value), PgTypes.date);
     };
 
     @Override
-    public OptField<TypoLocalDate, VjobcandidateemploymentViewRow> empEndDate() {
-      return new OptField<TypoLocalDate, VjobcandidateemploymentViewRow>(_path, "Emp.EndDate", VjobcandidateemploymentViewRow::empEndDate, Optional.of("text"), Optional.empty(), (row, value) -> row.withEmpEndDate(value), TypoLocalDate.pgType);
+    public Field<LocalDate, VjobcandidateemploymentViewRow> empEndDate() {
+      return new Field<LocalDate, VjobcandidateemploymentViewRow>(_path, "Emp.EndDate", VjobcandidateemploymentViewRow::empEndDate, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpEndDate(value), PgTypes.date);
     };
 
     @Override
-    public OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow> empOrgName() {
-      return new OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow>(_path, "Emp.OrgName", VjobcandidateemploymentViewRow::empOrgName, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpOrgName(value), PgTypes.text);
+    public Field<String, VjobcandidateemploymentViewRow> empOrgName() {
+      return new Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.OrgName", VjobcandidateemploymentViewRow::empOrgName, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpOrgName(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow> empJobTitle() {
-      return new OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow>(_path, "Emp.JobTitle", VjobcandidateemploymentViewRow::empJobTitle, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpJobTitle(value), PgTypes.text);
+    public Field<String, VjobcandidateemploymentViewRow> empJobTitle() {
+      return new Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.JobTitle", VjobcandidateemploymentViewRow::empJobTitle, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpJobTitle(value), PgTypes.text);
     };
 
     @Override
-    public OptField<String, VjobcandidateemploymentViewRow> empResponsibility() {
-      return new OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.Responsibility", VjobcandidateemploymentViewRow::empResponsibility, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpResponsibility(value), PgTypes.text);
+    public Field<String, VjobcandidateemploymentViewRow> empResponsibility() {
+      return new Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.Responsibility", VjobcandidateemploymentViewRow::empResponsibility, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpResponsibility(value), PgTypes.text);
     };
 
     @Override
-    public OptField<String, VjobcandidateemploymentViewRow> empFunctionCategory() {
-      return new OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.FunctionCategory", VjobcandidateemploymentViewRow::empFunctionCategory, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpFunctionCategory(value), PgTypes.text);
+    public Field<String, VjobcandidateemploymentViewRow> empFunctionCategory() {
+      return new Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.FunctionCategory", VjobcandidateemploymentViewRow::empFunctionCategory, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpFunctionCategory(value), PgTypes.text);
     };
 
     @Override
-    public OptField<String, VjobcandidateemploymentViewRow> empIndustryCategory() {
-      return new OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.IndustryCategory", VjobcandidateemploymentViewRow::empIndustryCategory, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpIndustryCategory(value), PgTypes.text);
+    public Field<String, VjobcandidateemploymentViewRow> empIndustryCategory() {
+      return new Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.IndustryCategory", VjobcandidateemploymentViewRow::empIndustryCategory, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpIndustryCategory(value), PgTypes.text);
     };
 
     @Override
-    public OptField<String, VjobcandidateemploymentViewRow> empLocCountryRegion() {
-      return new OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.CountryRegion", VjobcandidateemploymentViewRow::empLocCountryRegion, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpLocCountryRegion(value), PgTypes.text);
+    public Field<String, VjobcandidateemploymentViewRow> empLocCountryRegion() {
+      return new Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.CountryRegion", VjobcandidateemploymentViewRow::empLocCountryRegion, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpLocCountryRegion(value), PgTypes.text);
     };
 
     @Override
-    public OptField<String, VjobcandidateemploymentViewRow> empLocState() {
-      return new OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.State", VjobcandidateemploymentViewRow::empLocState, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpLocState(value), PgTypes.text);
+    public Field<String, VjobcandidateemploymentViewRow> empLocState() {
+      return new Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.State", VjobcandidateemploymentViewRow::empLocState, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpLocState(value), PgTypes.text);
     };
 
     @Override
-    public OptField<String, VjobcandidateemploymentViewRow> empLocCity() {
-      return new OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.City", VjobcandidateemploymentViewRow::empLocCity, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpLocCity(value), PgTypes.text);
+    public Field<String, VjobcandidateemploymentViewRow> empLocCity() {
+      return new Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.City", VjobcandidateemploymentViewRow::empLocCity, Optional.empty(), Optional.empty(), (row, value) -> row.withEmpLocCity(value), PgTypes.text);
     };
 
     @Override
     public List<FieldLike<?, VjobcandidateemploymentViewRow>> columns() {
-      return List.of(this.jobcandidateid(), this.empStartDate(), this.empEndDate(), this.empOrgName(), this.empJobTitle(), this.empResponsibility(), this.empFunctionCategory(), this.empIndustryCategory(), this.empLocCountryRegion(), this.empLocState(), this.empLocCity());
+      return java.util.List.of(this.jobcandidateid(), this.empStartDate(), this.empEndDate(), this.empOrgName(), this.empJobTitle(), this.empResponsibility(), this.empFunctionCategory(), this.empIndustryCategory(), this.empLocCountryRegion(), this.empLocState(), this.empLocCity());
     };
 
     @Override
-    public Relation<VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow> copy(List<Path> _path) {
+    public RelationStructure<VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<JobcandidateId, VjobcandidateemploymentViewRow> jobcandidateid();
 
-  OptField<TypoLocalDate, VjobcandidateemploymentViewRow> empStartDate();
+  Field<LocalDate, VjobcandidateemploymentViewRow> empStartDate();
 
-  OptField<TypoLocalDate, VjobcandidateemploymentViewRow> empEndDate();
+  Field<LocalDate, VjobcandidateemploymentViewRow> empEndDate();
 
-  OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow> empOrgName();
+  Field<String, VjobcandidateemploymentViewRow> empOrgName();
 
-  OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow> empJobTitle();
+  Field<String, VjobcandidateemploymentViewRow> empJobTitle();
 
-  OptField<String, VjobcandidateemploymentViewRow> empResponsibility();
+  Field<String, VjobcandidateemploymentViewRow> empResponsibility();
 
-  OptField<String, VjobcandidateemploymentViewRow> empFunctionCategory();
+  Field<String, VjobcandidateemploymentViewRow> empFunctionCategory();
 
-  OptField<String, VjobcandidateemploymentViewRow> empIndustryCategory();
+  Field<String, VjobcandidateemploymentViewRow> empIndustryCategory();
 
-  OptField<String, VjobcandidateemploymentViewRow> empLocCountryRegion();
+  Field<String, VjobcandidateemploymentViewRow> empLocCountryRegion();
 
-  OptField<String, VjobcandidateemploymentViewRow> empLocState();
+  Field<String, VjobcandidateemploymentViewRow> empLocState();
 
-  OptField<String, VjobcandidateemploymentViewRow> empLocCity();
+  Field<String, VjobcandidateemploymentViewRow> empLocCity();
 
   @Override
   List<FieldLike<?, VjobcandidateemploymentViewRow>> columns();

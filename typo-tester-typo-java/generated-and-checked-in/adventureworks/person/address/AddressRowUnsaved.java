@@ -7,56 +7,55 @@ package adventureworks.person.address;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.stateprovince.StateprovinceId;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `person.address` which has not been persisted yet */
 public record AddressRowUnsaved(
   /** First street address line. */
-  /* max 60 chars */ String addressline1,
+  String addressline1,
   /** Second street address line. */
   Optional</* max 60 chars */ String> addressline2,
   /** Name of the city. */
-  /* max 30 chars */ String city,
+  String city,
   /** Unique identification number for the state or province. Foreign key to StateProvince table.
     * Points to {@link adventureworks.person.stateprovince.StateprovinceRow#stateprovinceid()}
     */
   StateprovinceId stateprovinceid,
   /** Postal code for the street address. */
-  /* max 15 chars */ String postalcode,
+  String postalcode,
   /** Latitude and longitude of this address. */
-  Optional<TypoBytea> spatiallocation,
+  Optional<byte[]> spatiallocation,
   /** Default: nextval('person.address_addressid_seq'::regclass)
     * Primary key for Address records.
     */
   Defaulted<AddressId> addressid,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public AddressRowUnsaved(
     /** First street address line. */
-    /* max 60 chars */ String addressline1,
+    String addressline1,
     /** Name of the city. */
-    /* max 30 chars */ String city,
+    String city,
     /** Unique identification number for the state or province. Foreign key to StateProvince table.
       * Points to {@link adventureworks.person.stateprovince.StateprovinceRow#stateprovinceid()}
       */
     StateprovinceId stateprovinceid,
     /** Postal code for the street address. */
-    /* max 15 chars */ String postalcode
+    String postalcode
   ) {
     this(addressline1, Optional.empty(), city, stateprovinceid, postalcode, Optional.empty(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
   };
 
   /** First street address line. */
-  public AddressRowUnsaved withAddressline1(/* max 60 chars */ String addressline1) {
+  public AddressRowUnsaved withAddressline1(String addressline1) {
     return new AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate);
   };
 
@@ -66,7 +65,7 @@ public record AddressRowUnsaved(
   };
 
   /** Name of the city. */
-  public AddressRowUnsaved withCity(/* max 30 chars */ String city) {
+  public AddressRowUnsaved withCity(String city) {
     return new AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate);
   };
 
@@ -78,12 +77,12 @@ public record AddressRowUnsaved(
   };
 
   /** Postal code for the street address. */
-  public AddressRowUnsaved withPostalcode(/* max 15 chars */ String postalcode) {
+  public AddressRowUnsaved withPostalcode(String postalcode) {
     return new AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate);
   };
 
   /** Latitude and longitude of this address. */
-  public AddressRowUnsaved withSpatiallocation(Optional<TypoBytea> spatiallocation) {
+  public AddressRowUnsaved withSpatiallocation(Optional<byte[]> spatiallocation) {
     return new AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate);
   };
 
@@ -95,12 +94,12 @@ public record AddressRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public AddressRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public AddressRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public AddressRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public AddressRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate);
   };
 
@@ -116,19 +115,19 @@ public record AddressRowUnsaved(
       sb.append(PgText.DELIMETER);
       PgTypes.text.pgText().unsafeEncode(row.postalcode, sb);
       sb.append(PgText.DELIMETER);
-      TypoBytea.pgType.opt().pgText().unsafeEncode(row.spatiallocation, sb);
+      PgTypes.bytea.opt().pgText().unsafeEncode(row.spatiallocation, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(AddressId.pgType.pgText()).unsafeEncode(row.addressid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public AddressRow toRow(
     java.util.function.Supplier<AddressId> addressidDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new AddressRow(addressid.getOrElse(addressidDefault), addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

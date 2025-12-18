@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VsalespersonsalesbyfiscalyearsdataViewRepoImpl implements VsalespersonsalesbyfiscalyearsdataViewRepo {
@@ -19,9 +20,6 @@ public class VsalespersonsalesbyfiscalyearsdataViewRepoImpl implements Vsalesper
 
   @Override
   public List<VsalespersonsalesbyfiscalyearsdataViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear"
-       from "sales"."vsalespersonsalesbyfiscalyearsdata"
-    """)).query(VsalespersonsalesbyfiscalyearsdataViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"salespersonid\", \"fullname\", \"jobtitle\", \"salesterritory\", \"salestotal\", \"fiscalyear\"\nfrom \"sales\".\"vsalespersonsalesbyfiscalyearsdata\"\n")).query(VsalespersonsalesbyfiscalyearsdataViewRow._rowParser.all()).runUnchecked(c);
   };
 }

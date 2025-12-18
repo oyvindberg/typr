@@ -23,7 +23,7 @@ case class PlphViewRow(
   /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.listprice]] */
   listprice: BigDecimal,
   /** Points to [[adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.modifieddate]] */
@@ -39,7 +39,7 @@ object PlphViewRow {
             id = ProductId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             productid = ProductId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             startdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-            enddate = JdbcDecoder.optionDecoder(using TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            enddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
             listprice = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 4, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2
           )
@@ -51,7 +51,7 @@ object PlphViewRow {
       val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using ProductId.jsonDecoder))
       val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using ProductId.jsonDecoder))
       val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-      val enddate = jsonObj.get("enddate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDateTime.jsonDecoder)))
+      val enddate = jsonObj.get("enddate").toRight("Missing field 'enddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       val listprice = jsonObj.get("listprice").toRight("Missing field 'listprice'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (id.isRight && productid.isRight && startdate.isRight && enddate.isRight && listprice.isRight && modifieddate.isRight)
@@ -74,7 +74,7 @@ object PlphViewRow {
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.startdate, indent, out)
         out.write(",")
         out.write(""""enddate":""")
-        JsonEncoder.option(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.enddate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.enddate, indent, out)
         out.write(",")
         out.write(""""listprice":""")
         JsonEncoder.scalaBigDecimal.unsafeEncode(a.listprice, indent, out)

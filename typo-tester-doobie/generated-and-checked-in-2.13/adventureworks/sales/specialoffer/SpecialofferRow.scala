@@ -25,16 +25,16 @@ case class SpecialofferRow(
    */
   specialofferid: SpecialofferId,
   /** Discount description. */
-  description: /* max 255 chars */ String,
+  description: String,
   /** Discount precentage.
    * Default: 0.00
    * Constraint CK_SpecialOffer_DiscountPct affecting columns discountpct: ((discountpct >= 0.00))
    */
   discountpct: BigDecimal,
   /** Discount type category. */
-  `type`: /* max 50 chars */ String,
+  `type`: String,
   /** Group the discount applies to such as Reseller or Customer. */
-  category: /* max 50 chars */ String,
+  category: String,
   /** Discount start date.
    * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate: ((enddate >= startdate))
    */
@@ -83,9 +83,9 @@ case class SpecialofferRow(
 }
 
 object SpecialofferRow {
-  implicit lazy val decoder: Decoder[SpecialofferRow] = Decoder.forProduct11[SpecialofferRow, SpecialofferId, /* max 255 chars */ String, BigDecimal, /* max 50 chars */ String, /* max 50 chars */ String, TypoLocalDateTime, TypoLocalDateTime, Int, Option[Int], TypoUUID, TypoLocalDateTime]("specialofferid", "description", "discountpct", "type", "category", "startdate", "enddate", "minqty", "maxqty", "rowguid", "modifieddate")(SpecialofferRow.apply)(SpecialofferId.decoder, Decoder.decodeString, Decoder.decodeBigDecimal, Decoder.decodeString, Decoder.decodeString, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder, Decoder.decodeInt, Decoder.decodeOption(Decoder.decodeInt), TypoUUID.decoder, TypoLocalDateTime.decoder)
+  implicit lazy val decoder: Decoder[SpecialofferRow] = Decoder.forProduct11[SpecialofferRow, SpecialofferId, String, BigDecimal, String, String, TypoLocalDateTime, TypoLocalDateTime, Int, Option[Int], TypoUUID, TypoLocalDateTime]("specialofferid", "description", "discountpct", "type", "category", "startdate", "enddate", "minqty", "maxqty", "rowguid", "modifieddate")(SpecialofferRow.apply)(SpecialofferId.decoder, Decoder.decodeString, Decoder.decodeBigDecimal, Decoder.decodeString, Decoder.decodeString, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder, Decoder.decodeInt, Decoder.decodeOption(Decoder.decodeInt), TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  implicit lazy val encoder: Encoder[SpecialofferRow] = Encoder.forProduct11[SpecialofferRow, SpecialofferId, /* max 255 chars */ String, BigDecimal, /* max 50 chars */ String, /* max 50 chars */ String, TypoLocalDateTime, TypoLocalDateTime, Int, Option[Int], TypoUUID, TypoLocalDateTime]("specialofferid", "description", "discountpct", "type", "category", "startdate", "enddate", "minqty", "maxqty", "rowguid", "modifieddate")(x => (x.specialofferid, x.description, x.discountpct, x.`type`, x.category, x.startdate, x.enddate, x.minqty, x.maxqty, x.rowguid, x.modifieddate))(SpecialofferId.encoder, Encoder.encodeString, Encoder.encodeBigDecimal, Encoder.encodeString, Encoder.encodeString, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder, Encoder.encodeInt, Encoder.encodeOption(Encoder.encodeInt), TypoUUID.encoder, TypoLocalDateTime.encoder)
+  implicit lazy val encoder: Encoder[SpecialofferRow] = Encoder.forProduct11[SpecialofferRow, SpecialofferId, String, BigDecimal, String, String, TypoLocalDateTime, TypoLocalDateTime, Int, Option[Int], TypoUUID, TypoLocalDateTime]("specialofferid", "description", "discountpct", "type", "category", "startdate", "enddate", "minqty", "maxqty", "rowguid", "modifieddate")(x => (x.specialofferid, x.description, x.discountpct, x.`type`, x.category, x.startdate, x.enddate, x.minqty, x.maxqty, x.rowguid, x.modifieddate))(SpecialofferId.encoder, Encoder.encodeString, Encoder.encodeBigDecimal, Encoder.encodeString, Encoder.encodeString, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder, Encoder.encodeInt, Encoder.encodeOption(Encoder.encodeInt), TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   implicit lazy val pgText: Text[SpecialofferRow] = {
     Text.instance[SpecialofferRow]{ (row, sb) =>
@@ -129,10 +129,10 @@ object SpecialofferRow {
     ))(scala.reflect.ClassTag.Any).map { arr =>
       SpecialofferRow(
         specialofferid = arr(0).asInstanceOf[SpecialofferId],
-            description = arr(1).asInstanceOf[/* max 255 chars */ String],
+            description = arr(1).asInstanceOf[String],
             discountpct = arr(2).asInstanceOf[BigDecimal],
-            `type` = arr(3).asInstanceOf[/* max 50 chars */ String],
-            category = arr(4).asInstanceOf[/* max 50 chars */ String],
+            `type` = arr(3).asInstanceOf[String],
+            category = arr(4).asInstanceOf[String],
             startdate = arr(5).asInstanceOf[TypoLocalDateTime],
             enddate = arr(6).asInstanceOf[TypoLocalDateTime],
             minqty = arr(7).asInstanceOf[Int],

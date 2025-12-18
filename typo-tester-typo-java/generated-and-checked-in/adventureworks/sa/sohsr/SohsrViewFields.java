@@ -5,20 +5,21 @@
  */
 package adventureworks.sa.sohsr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.sales.salesorderheader.SalesorderheaderId;
 import adventureworks.sales.salesreason.SalesreasonId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SohsrViewFields extends FieldsExpr<SohsrViewRow> {
-  record Impl(List<Path> _path) implements SohsrViewFields, Relation<SohsrViewFields, SohsrViewRow> {
+  record Impl(List<Path> _path) implements SohsrViewFields, RelationStructure<SohsrViewFields, SohsrViewRow> {
     @Override
     public Field<SalesorderheaderId, SohsrViewRow> salesorderid() {
       return new Field<SalesorderheaderId, SohsrViewRow>(_path, "salesorderid", SohsrViewRow::salesorderid, Optional.empty(), Optional.empty(), (row, value) -> row.withSalesorderid(value), SalesorderheaderId.pgType);
@@ -30,30 +31,30 @@ public interface SohsrViewFields extends FieldsExpr<SohsrViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, SohsrViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SohsrViewRow>(_path, "modifieddate", SohsrViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SohsrViewRow> modifieddate() {
+      return new Field<LocalDateTime, SohsrViewRow>(_path, "modifieddate", SohsrViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SohsrViewRow>> columns() {
-      return List.of(this.salesorderid(), this.salesreasonid(), this.modifieddate());
+      return java.util.List.of(this.salesorderid(), this.salesreasonid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SohsrViewFields, SohsrViewRow> copy(List<Path> _path) {
+    public RelationStructure<SohsrViewFields, SohsrViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<SalesorderheaderId, SohsrViewRow> salesorderid();
 
   Field<SalesreasonId, SohsrViewRow> salesreasonid();
 
-  Field<TypoLocalDateTime, SohsrViewRow> modifieddate();
+  Field<LocalDateTime, SohsrViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, SohsrViewRow>> columns();

@@ -5,10 +5,10 @@
  */
 package adventureworks.sa.cr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.sales.currency.CurrencyId;
 import adventureworks.sales.currencyrate.CurrencyrateId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -18,7 +18,7 @@ public record CrViewRow(
   /** Points to {@link adventureworks.sales.currencyrate.CurrencyrateRow#currencyrateid()} */
   CurrencyrateId currencyrateid,
   /** Points to {@link adventureworks.sales.currencyrate.CurrencyrateRow#currencyratedate()} */
-  TypoLocalDateTime currencyratedate,
+  LocalDateTime currencyratedate,
   /** Points to {@link adventureworks.sales.currencyrate.CurrencyrateRow#fromcurrencycode()} */
   CurrencyId fromcurrencycode,
   /** Points to {@link adventureworks.sales.currencyrate.CurrencyrateRow#tocurrencycode()} */
@@ -28,7 +28,7 @@ public record CrViewRow(
   /** Points to {@link adventureworks.sales.currencyrate.CurrencyrateRow#endofdayrate()} */
   BigDecimal endofdayrate,
   /** Points to {@link adventureworks.sales.currencyrate.CurrencyrateRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.currencyrate.CurrencyrateRow#currencyrateid()} */
   public CrViewRow withCurrencyrateid(CurrencyrateId currencyrateid) {
@@ -36,7 +36,7 @@ public record CrViewRow(
   };
 
   /** Points to {@link adventureworks.sales.currencyrate.CurrencyrateRow#currencyratedate()} */
-  public CrViewRow withCurrencyratedate(TypoLocalDateTime currencyratedate) {
+  public CrViewRow withCurrencyratedate(LocalDateTime currencyratedate) {
     return new CrViewRow(currencyrateid, currencyratedate, fromcurrencycode, tocurrencycode, averagerate, endofdayrate, modifieddate);
   };
 
@@ -61,9 +61,9 @@ public record CrViewRow(
   };
 
   /** Points to {@link adventureworks.sales.currencyrate.CurrencyrateRow#modifieddate()} */
-  public CrViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CrViewRow withModifieddate(LocalDateTime modifieddate) {
     return new CrViewRow(currencyrateid, currencyratedate, fromcurrencycode, tocurrencycode, averagerate, endofdayrate, modifieddate);
   };
 
-  static RowParser<CrViewRow> _rowParser = RowParsers.of(CurrencyrateId.pgType, TypoLocalDateTime.pgType, CurrencyId.pgType, CurrencyId.pgType, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, CrViewRow::new, row -> new Object[]{row.currencyrateid(), row.currencyratedate(), row.fromcurrencycode(), row.tocurrencycode(), row.averagerate(), row.endofdayrate(), row.modifieddate()});;
+  static RowParser<CrViewRow> _rowParser = RowParsers.of(CurrencyrateId.pgType, PgTypes.timestamp, CurrencyId.pgType, CurrencyId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, CrViewRow::new, row -> new Object[]{row.currencyrateid(), row.currencyratedate(), row.fromcurrencycode(), row.tocurrencycode(), row.averagerate(), row.endofdayrate(), row.modifieddate()});;
 }

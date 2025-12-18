@@ -6,71 +6,70 @@
 package adventureworks.public.test_utdanningstilbud
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface TestUtdanningstilbudRepo {
-  fun delete(): DeleteBuilder<TestUtdanningstilbudFields, TestUtdanningstilbudRow>
+  abstract fun delete(): DeleteBuilder<TestUtdanningstilbudFields, TestUtdanningstilbudRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: TestUtdanningstilbudId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<TestUtdanningstilbudId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: TestUtdanningstilbudRow,
     c: Connection
   ): TestUtdanningstilbudRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<TestUtdanningstilbudRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<TestUtdanningstilbudFields, TestUtdanningstilbudRow>
+  abstract fun select(): SelectBuilder<TestUtdanningstilbudFields, TestUtdanningstilbudRow>
 
-  fun selectAll(c: Connection): List<TestUtdanningstilbudRow>
+  abstract fun selectAll(c: Connection): List<TestUtdanningstilbudRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: TestUtdanningstilbudId,
     c: Connection
-  ): Optional<TestUtdanningstilbudRow>
+  ): TestUtdanningstilbudRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<TestUtdanningstilbudId>,
     c: Connection
   ): List<TestUtdanningstilbudRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<TestUtdanningstilbudId>,
     c: Connection
   ): Map<TestUtdanningstilbudId, TestUtdanningstilbudRow>
 
-  fun update(): UpdateBuilder<TestUtdanningstilbudFields, TestUtdanningstilbudRow>
+  abstract fun update(): UpdateBuilder<TestUtdanningstilbudFields, TestUtdanningstilbudRow>
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: TestUtdanningstilbudRow,
     c: Connection
   ): TestUtdanningstilbudRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<TestUtdanningstilbudRow>,
     c: Connection
   ): List<TestUtdanningstilbudRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<TestUtdanningstilbudRow>,
     batchSize: Int,
     c: Connection

@@ -7,12 +7,12 @@ package testdb.order_history
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.orders.OrdersId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
 
 /** This class corresponds to a row in table `order_history` which has not been persisted yet */
 case class OrderHistoryRowUnsaved(
@@ -25,29 +25,29 @@ case class OrderHistoryRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("previous_status") previousStatus: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("previous_status") previousStatus: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("changed_by") changedBy: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("changed_by") changedBy: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("change_reason") changeReason: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("change_reason") changeReason: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  metadata: Defaulted[Optional[String]] = new UseDefault(),
+  metadata: Defaulted[Option[String]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
   @JsonProperty("created_at") createdAt: Defaulted[LocalDateTime] = new UseDefault()
 ) {
   def toRow(
-    previousStatusDefault: => Optional[String],
-    changedByDefault: => Optional[String],
-    changeReasonDefault: => Optional[String],
-    metadataDefault: => Optional[String],
+    previousStatusDefault: => Option[String],
+    changedByDefault: => Option[String],
+    changeReasonDefault: => Option[String],
+    metadataDefault: => Option[String],
     createdAtDefault: => LocalDateTime,
     historyIdDefault: => OrderHistoryId
   ): OrderHistoryRow = {
@@ -65,5 +65,5 @@ case class OrderHistoryRowUnsaved(
 }
 
 object OrderHistoryRowUnsaved {
-  given mariaText: MariaText[OrderHistoryRowUnsaved] = MariaText.instance((row, sb) => { OrdersId.pgType.mariaText.unsafeEncode(row.orderId, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.newStatus, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.opt().mariaText).unsafeEncode(row.previousStatus, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.changedBy, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.changeReason, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.metadata, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb) })
+  given mariaText: MariaText[OrderHistoryRowUnsaved] = MariaText.instance((row, sb) => { OrdersId.pgType.mariaText.unsafeEncode(row.orderId, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.newStatus, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.nullable.mariaText).unsafeEncode(row.previousStatus, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.changedBy, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.changeReason, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.metadata, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb) })
 }

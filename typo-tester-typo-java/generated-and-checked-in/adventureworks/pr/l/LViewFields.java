@@ -5,22 +5,22 @@
  */
 package adventureworks.pr.l;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.location.LocationId;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface LViewFields extends FieldsExpr<LViewRow> {
-  record Impl(List<Path> _path) implements LViewFields, Relation<LViewFields, LViewRow> {
+  record Impl(List<Path> _path) implements LViewFields, RelationStructure<LViewFields, LViewRow> {
     @Override
     public Field<LocationId, LViewRow> id() {
       return new Field<LocationId, LViewRow>(_path, "id", LViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), LocationId.pgType);
@@ -47,23 +47,23 @@ public interface LViewFields extends FieldsExpr<LViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, LViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, LViewRow>(_path, "modifieddate", LViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, LViewRow> modifieddate() {
+      return new Field<LocalDateTime, LViewRow>(_path, "modifieddate", LViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, LViewRow>> columns() {
-      return List.of(this.id(), this.locationid(), this.name(), this.costrate(), this.availability(), this.modifieddate());
+      return java.util.List.of(this.id(), this.locationid(), this.name(), this.costrate(), this.availability(), this.modifieddate());
     };
 
     @Override
-    public Relation<LViewFields, LViewRow> copy(List<Path> _path) {
+    public RelationStructure<LViewFields, LViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<LocationId, LViewRow> id();
@@ -76,7 +76,7 @@ public interface LViewFields extends FieldsExpr<LViewRow> {
 
   Field<BigDecimal, LViewRow> availability();
 
-  Field<TypoLocalDateTime, LViewRow> modifieddate();
+  Field<LocalDateTime, LViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, LViewRow>> columns();

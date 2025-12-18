@@ -6,7 +6,8 @@
 package adventureworks.person.stateprovince
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class StateprovinceId(@JsonValue val value: Int) {
       Bijection.of(StateprovinceId::value, ::StateprovinceId)
 
     val pgType: PgType<StateprovinceId> =
-      PgTypes.int4.bimap(::StateprovinceId, StateprovinceId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::StateprovinceId, StateprovinceId::value)
 
     val pgTypeArray: PgType<Array<StateprovinceId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::StateprovinceId, StateprovinceId::class.java) }, { xs -> arrayMap.map(xs, StateprovinceId::value, Int::class.javaObjectType) })

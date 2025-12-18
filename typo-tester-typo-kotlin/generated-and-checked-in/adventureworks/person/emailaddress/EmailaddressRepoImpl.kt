@@ -5,27 +5,24 @@
  */
 package adventureworks.person.emailaddress
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class EmailaddressRepoImpl() : EmailaddressRepo {
   override fun delete(): DeleteBuilder<EmailaddressFields, EmailaddressRow> = DeleteBuilder.of("\"person\".\"emailaddress\"", EmailaddressFields.structure, Dialect.POSTGRESQL)
@@ -33,17 +30,7 @@ class EmailaddressRepoImpl() : EmailaddressRepo {
   override fun deleteById(
     compositeId: EmailaddressId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "person"."emailaddress" where "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("""
-     AND "emailaddressid" = 
-    """.trimMargin()),
-    PgTypes.int4.encode(compositeId.emailaddressid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"person\".\"emailaddress\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"emailaddressid\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, compositeId.emailaddressid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     compositeIds: Array<EmailaddressId>,
@@ -51,100 +38,41 @@ class EmailaddressRepoImpl() : EmailaddressRepo {
   ): Int {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, EmailaddressId::businessentityid, BusinessentityId::class.java)
     val emailaddressid: Array<Int> = arrayMap.map(compositeIds, EmailaddressId::emailaddressid, Int::class.javaObjectType)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        delete
-        from "person"."emailaddress"
-        where ("businessentityid", "emailaddressid")
-        in (select unnest(""".trimMargin()),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      PgTypes.int4Array.encode(emailaddressid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """.trimMargin())
-    ).update().runUnchecked(c)
+    return interpolate(Fragment.lit("delete\nfrom \"person\".\"emailaddress\"\nwhere (\"businessentityid\", \"emailaddressid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: EmailaddressRow,
     c: Connection
-  ): EmailaddressRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "person"."emailaddress"("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.int4.encode(unsaved.emailaddressid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.text.opt().encode(unsaved.emailaddress),
-    typo.runtime.Fragment.lit(", "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): EmailaddressRow = interpolate(Fragment.lit("insert into \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.emailaddressid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text.nullable(), unsaved.emailaddress), Fragment.lit(", "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\n"))
     .updateReturning(EmailaddressRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: EmailaddressRowUnsaved,
     c: Connection
   ): EmailaddressRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"businessentityid\""))
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"emailaddress\""))
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.emailaddress),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.text.nullable(), unsaved.emailaddress), Fragment.lit("")))
     unsaved.emailaddressid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"emailaddressid\""))
-      values.add(interpolate(
-        PgTypes.int4.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      )) }
+      values.add(interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int4, value), Fragment.lit("::int4"))) }
     );
     unsaved.rowguid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"rowguid\""))
-      values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."emailaddress"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"person\".\"emailaddress\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\n"))
     return q.updateReturning(EmailaddressRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -152,41 +80,23 @@ class EmailaddressRepoImpl() : EmailaddressRepo {
     unsaved: MutableIterator<EmailaddressRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "person"."emailaddress"("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, EmailaddressRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, EmailaddressRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<EmailaddressRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "person"."emailaddress"("businessentityid", "emailaddress", "emailaddressid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, EmailaddressRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddress\", \"emailaddressid\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, EmailaddressRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<EmailaddressFields, EmailaddressRow> = SelectBuilder.of("\"person\".\"emailaddress\"", EmailaddressFields.structure, EmailaddressRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<EmailaddressRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
-    from "person"."emailaddress"
-  """.trimMargin())).query(EmailaddressRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<EmailaddressRow> = interpolate(Fragment.lit("select \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"emailaddress\"\n")).query(EmailaddressRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     compositeId: EmailaddressId,
     c: Connection
-  ): Optional<EmailaddressRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
-      from "person"."emailaddress"
-      where "businessentityid" = """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("""
-     AND "emailaddressid" = 
-    """.trimMargin()),
-    PgTypes.int4.encode(compositeId.emailaddressid),
-    typo.runtime.Fragment.lit("")
-  ).query(EmailaddressRow._rowParser.first()).runUnchecked(c)
+  ): EmailaddressRow? = interpolate(Fragment.lit("select \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"emailaddress\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"emailaddressid\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, compositeId.emailaddressid), Fragment.lit("")).query(EmailaddressRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     compositeIds: Array<EmailaddressId>,
@@ -194,20 +104,7 @@ class EmailaddressRepoImpl() : EmailaddressRepo {
   ): List<EmailaddressRow> {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, EmailaddressId::businessentityid, BusinessentityId::class.java)
     val emailaddressid: Array<Int> = arrayMap.map(compositeIds, EmailaddressId::emailaddressid, Int::class.javaObjectType)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
-        from "person"."emailaddress"
-        where ("businessentityid", "emailaddressid")
-        in (select unnest(""".trimMargin()),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      PgTypes.int4Array.encode(emailaddressid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """.trimMargin())
-    ).query(EmailaddressRow._rowParser.all()).runUnchecked(c)
+    return interpolate(Fragment.lit("select \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"emailaddress\"\nwhere (\"businessentityid\", \"emailaddressid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("::int4[]))\n")).query(EmailaddressRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(
@@ -216,83 +113,32 @@ class EmailaddressRepoImpl() : EmailaddressRepo {
   ): Map<EmailaddressId, EmailaddressRow> {
     val ret: MutableMap<EmailaddressId, EmailaddressRow> = mutableMapOf<EmailaddressId, EmailaddressRow>()
     selectByIds(compositeIds, c).forEach({ row -> ret.put(row.compositeId(), row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<EmailaddressFields, EmailaddressRow> = UpdateBuilder.of("\"person\".\"emailaddress\"", EmailaddressFields.structure, EmailaddressRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<EmailaddressFields, EmailaddressRow> = UpdateBuilder.of("\"person\".\"emailaddress\"", EmailaddressFields.structure, EmailaddressRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: EmailaddressRow,
     c: Connection
   ): Boolean {
     val compositeId: EmailaddressId = row.compositeId()
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "person"."emailaddress"
-        set "emailaddress" = """.trimMargin()),
-      PgTypes.text.opt().encode(row.emailaddress),
-      typo.runtime.Fragment.lit("""
-        ,
-        "rowguid" = """.trimMargin()),
-      TypoUUID.pgType.encode(row.rowguid),
-      typo.runtime.Fragment.lit("""
-        ::uuid,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "businessentityid" = """.trimMargin()),
-      BusinessentityId.pgType.encode(compositeId.businessentityid),
-      typo.runtime.Fragment.lit("""
-       AND "emailaddressid" = 
-      """.trimMargin()),
-      PgTypes.int4.encode(compositeId.emailaddressid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"person\".\"emailaddress\"\nset \"emailaddress\" = "), Fragment.encode(PgTypes.text.nullable(), row.emailaddress), Fragment.lit(",\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"emailaddressid\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, compositeId.emailaddressid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: EmailaddressRow,
     c: Connection
-  ): EmailaddressRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "person"."emailaddress"("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.int4.encode(unsaved.emailaddressid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.text.opt().encode(unsaved.emailaddress),
-    typo.runtime.Fragment.lit(", "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("businessentityid", "emailaddressid")
-      do update set
-        "emailaddress" = EXCLUDED."emailaddress",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text""".trimMargin())
-  )
+  ): EmailaddressRow = interpolate(Fragment.lit("insert into \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.emailaddressid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text.nullable(), unsaved.emailaddress), Fragment.lit(", "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"businessentityid\", \"emailaddressid\")\ndo update set\n  \"emailaddress\" = EXCLUDED.\"emailaddress\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\""))
     .updateReturning(EmailaddressRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<EmailaddressRow>,
     c: Connection
-  ): List<EmailaddressRow> = interpolate(typo.runtime.Fragment.lit("""
-                               insert into "person"."emailaddress"("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")
-                               values (?::int4, ?::int4, ?, ?::uuid, ?::timestamp)
-                               on conflict ("businessentityid", "emailaddressid")
-                               do update set
-                                 "emailaddress" = EXCLUDED."emailaddress",
-                               "rowguid" = EXCLUDED."rowguid",
-                               "modifieddate" = EXCLUDED."modifieddate"
-                               returning "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text""".trimMargin()))
+  ): List<EmailaddressRow> = interpolate(Fragment.lit("insert into \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?, ?::uuid, ?::timestamp)\non conflict (\"businessentityid\", \"emailaddressid\")\ndo update set\n  \"emailaddress\" = EXCLUDED.\"emailaddress\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\""))
     .updateManyReturning(EmailaddressRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -300,21 +146,8 @@ class EmailaddressRepoImpl() : EmailaddressRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table emailaddress_TEMP (like "person"."emailaddress") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy emailaddress_TEMP("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, EmailaddressRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "person"."emailaddress"("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")
-      select * from emailaddress_TEMP
-      on conflict ("businessentityid", "emailaddressid")
-      do update set
-        "emailaddress" = EXCLUDED."emailaddress",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table emailaddress_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table emailaddress_TEMP (like \"person\".\"emailaddress\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy emailaddress_TEMP(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, EmailaddressRow.pgText)
+    return interpolate(Fragment.lit("insert into \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\")\nselect * from emailaddress_TEMP\non conflict (\"businessentityid\", \"emailaddressid\")\ndo update set\n  \"emailaddress\" = EXCLUDED.\"emailaddress\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table emailaddress_TEMP;")).update().runUnchecked(c)
   }
 }

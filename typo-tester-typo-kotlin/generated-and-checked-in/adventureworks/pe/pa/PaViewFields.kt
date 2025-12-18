@@ -5,55 +5,56 @@
  */
 package adventureworks.pe.pa
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PaViewFields : FieldsExpr<PaViewRow> {
-  fun businessentityid(): Field<BusinessentityId, PaViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, PaViewRow>
 
-  override fun columns(): List<FieldLike<*, PaViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PaViewRow>>
 
-  fun id(): Field<BusinessentityId, PaViewRow>
+  abstract fun id(): Field<BusinessentityId, PaViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PaViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PaViewRow>
 
-  fun passwordhash(): Field</* max 128 chars */ String, PaViewRow>
+  abstract fun passwordhash(): Field<String, PaViewRow>
 
-  fun passwordsalt(): Field</* max 10 chars */ String, PaViewRow>
+  abstract fun passwordsalt(): Field<String, PaViewRow>
 
-  override fun rowParser(): RowParser<PaViewRow> = PaViewRow._rowParser
+  override fun rowParser(): RowParser<PaViewRow> = PaViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, PaViewRow>
+  abstract fun rowguid(): Field<UUID, PaViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PaViewFields, Relation<PaViewFields, PaViewRow> {
-      override fun id(): Field<BusinessentityId, PaViewRow> = Field<BusinessentityId, PaViewRow>(_path, "id", PaViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : PaViewFields, RelationStructure<PaViewFields, PaViewRow> {
+      override fun id(): Field<BusinessentityId, PaViewRow> = Field<BusinessentityId, PaViewRow>(_path, "id", PaViewRow::id, null, null, { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
 
-      override fun businessentityid(): Field<BusinessentityId, PaViewRow> = Field<BusinessentityId, PaViewRow>(_path, "businessentityid", PaViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, PaViewRow> = Field<BusinessentityId, PaViewRow>(_path, "businessentityid", PaViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun passwordhash(): Field</* max 128 chars */ String, PaViewRow> = Field</* max 128 chars */ String, PaViewRow>(_path, "passwordhash", PaViewRow::passwordhash, Optional.empty(), Optional.empty(), { row, value -> row.copy(passwordhash = value) }, PgTypes.text)
+      override fun passwordhash(): Field<String, PaViewRow> = Field<String, PaViewRow>(_path, "passwordhash", PaViewRow::passwordhash, null, null, { row, value -> row.copy(passwordhash = value) }, PgTypes.text)
 
-      override fun passwordsalt(): Field</* max 10 chars */ String, PaViewRow> = Field</* max 10 chars */ String, PaViewRow>(_path, "passwordsalt", PaViewRow::passwordsalt, Optional.empty(), Optional.empty(), { row, value -> row.copy(passwordsalt = value) }, PgTypes.text)
+      override fun passwordsalt(): Field<String, PaViewRow> = Field<String, PaViewRow>(_path, "passwordsalt", PaViewRow::passwordsalt, null, null, { row, value -> row.copy(passwordsalt = value) }, PgTypes.text)
 
-      override fun rowguid(): Field<TypoUUID, PaViewRow> = Field<TypoUUID, PaViewRow>(_path, "rowguid", PaViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, PaViewRow> = Field<UUID, PaViewRow>(_path, "rowguid", PaViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PaViewRow> = Field<TypoLocalDateTime, PaViewRow>(_path, "modifieddate", PaViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PaViewRow> = Field<LocalDateTime, PaViewRow>(_path, "modifieddate", PaViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PaViewRow>> = listOf(this.id(), this.businessentityid(), this.passwordhash(), this.passwordsalt(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PaViewFields, PaViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PaViewRow>> = listOf(this.id().underlying, this.businessentityid().underlying, this.passwordhash().underlying, this.passwordsalt().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PaViewFields, PaViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

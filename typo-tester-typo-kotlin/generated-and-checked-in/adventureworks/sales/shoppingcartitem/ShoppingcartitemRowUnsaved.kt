@@ -7,15 +7,16 @@ package adventureworks.sales.shoppingcartitem
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `sales.shoppingcartitem` which has not been persisted yet */
 data class ShoppingcartitemRowUnsaved(
   /** Shopping cart identification number. */
-  val shoppingcartid: /* max 50 chars */ String,
+  val shoppingcartid: String,
   /** Product ordered. Foreign key to Product.ProductID.
     * Points to [adventureworks.production.product.ProductRow.productid]
     */
@@ -32,15 +33,15 @@ data class ShoppingcartitemRowUnsaved(
   /** Default: now()
     * Date the time the record was created.
     */
-  val datecreated: Defaulted<TypoLocalDateTime> = UseDefault(),
+  val datecreated: Defaulted<LocalDateTime> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     shoppingcartitemidDefault: () -> ShoppingcartitemId,
     quantityDefault: () -> Int,
-    datecreatedDefault: () -> TypoLocalDateTime,
-    modifieddateDefault: () -> TypoLocalDateTime
+    datecreatedDefault: () -> LocalDateTime,
+    modifieddateDefault: () -> LocalDateTime
   ): ShoppingcartitemRow = ShoppingcartitemRow(shoppingcartitemid = shoppingcartitemid.getOrElse(shoppingcartitemidDefault), shoppingcartid = shoppingcartid, quantity = quantity.getOrElse(quantityDefault), productid = productid, datecreated = datecreated.getOrElse(datecreatedDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -51,10 +52,10 @@ data class ShoppingcartitemRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(ShoppingcartitemId.pgType.pgText()).unsafeEncode(row.shoppingcartitemid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.quantity, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.quantity, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.datecreated, sb)
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.datecreated, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

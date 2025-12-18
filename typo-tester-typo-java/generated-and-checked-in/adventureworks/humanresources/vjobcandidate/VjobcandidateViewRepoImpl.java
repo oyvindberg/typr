@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VjobcandidateViewRepoImpl implements VjobcandidateViewRepo {
@@ -19,9 +20,6 @@ public class VjobcandidateViewRepoImpl implements VjobcandidateViewRepo {
 
   @Override
   public List<VjobcandidateViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "jobcandidateid", "businessentityid", "Name.Prefix", "Name.First", "Name.Middle", "Name.Last", "Name.Suffix", "Skills", "Addr.Type", "Addr.Loc.CountryRegion", "Addr.Loc.State", "Addr.Loc.City", "Addr.PostalCode", "EMail", "WebSite", "modifieddate"::text
-       from "humanresources"."vjobcandidate"
-    """)).query(VjobcandidateViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"jobcandidateid\", \"businessentityid\", \"Name.Prefix\", \"Name.First\", \"Name.Middle\", \"Name.Last\", \"Name.Suffix\", \"Skills\", \"Addr.Type\", \"Addr.Loc.CountryRegion\", \"Addr.Loc.State\", \"Addr.Loc.City\", \"Addr.PostalCode\", \"EMail\", \"WebSite\", \"modifieddate\"\nfrom \"humanresources\".\"vjobcandidate\"\n")).query(VjobcandidateViewRow._rowParser.all()).runUnchecked(c);
   };
 }

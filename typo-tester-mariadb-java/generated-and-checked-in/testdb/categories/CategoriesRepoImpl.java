@@ -17,7 +17,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -32,11 +31,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     CategoriesId categoryId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `categories` where `category_id` = "),
-      CategoriesId.pgType.encode(categoryId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `categories` where `category_id` = "), Fragment.encode(CategoriesId.pgType, categoryId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,8 +39,8 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     CategoriesId[] categoryIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : categoryIds) { fragments.add(CategoriesId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : categoryIds) { fragments.add(Fragment.encode(CategoriesId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `categories` where `category_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -54,30 +49,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     CategoriesRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `categories`(`parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)
-         values ("""),
-      CategoriesId.pgType.opt().encode(unsaved.parentId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.slug()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.description()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.imageUrl()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.sortOrder()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isVisible()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.metadata()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `categories`(`parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)\nvalues ("), Fragment.encode(CategoriesId.pgType.opt(), unsaved.parentId()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.slug()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumtext.opt(), unsaved.description()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.imageUrl()), Fragment.lit(", "), Fragment.encode(MariaTypes.smallint, unsaved.sortOrder()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isVisible()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.metadata()), Fragment.lit(")\nreturning `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`\n"))
       .updateReturning(CategoriesRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -86,31 +58,19 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     CategoriesRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`name`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit("")));
     columns.add(Fragment.lit("`slug`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.slug()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.slug()), Fragment.lit("")));
     unsaved.parentId().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`parent_id`"));
-        values.add(interpolate(
-        CategoriesId.pgType.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(CategoriesId.pgType.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.description().visit(
@@ -119,11 +79,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`description`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.mediumtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.imageUrl().visit(
@@ -132,11 +88,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`image_url`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.sortOrder().visit(
@@ -145,11 +97,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`sort_order`"));
-        values.add(interpolate(
-        MariaTypes.smallint.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.smallint, value), Fragment.lit("")));
       }
     );;
     unsaved.isVisible().visit(
@@ -158,11 +106,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`is_visible`"));
-        values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool, value), Fragment.lit("")));
       }
     );;
     unsaved.metadata().visit(
@@ -171,25 +115,10 @@ public class CategoriesRepoImpl implements CategoriesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`metadata`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `categories`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `categories`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`\n"));;
     return q.updateReturning(CategoriesRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -200,10 +129,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
 
   @Override
   public List<CategoriesRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
-       from `categories`
-    """)).query(CategoriesRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`\nfrom `categories`\n")).query(CategoriesRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -211,14 +137,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     CategoriesId categoryId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
-         from `categories`
-         where `category_id` = """),
-      CategoriesId.pgType.encode(categoryId),
-      typo.runtime.Fragment.lit("")
-    ).query(CategoriesRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`\nfrom `categories`\nwhere `category_id` = "), Fragment.encode(CategoriesId.pgType, categoryId), Fragment.lit("")).query(CategoriesRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -226,8 +145,8 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     CategoriesId[] categoryIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : categoryIds) { fragments.add(CategoriesId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : categoryIds) { fragments.add(Fragment.encode(CategoriesId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata` from `categories` where `category_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(CategoriesRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -246,22 +165,12 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     String slug,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
-         from `categories`
-         where `slug` = """),
-      MariaTypes.text.encode(slug),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(CategoriesRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`\nfrom `categories`\nwhere `slug` = "), Fragment.encode(MariaTypes.varchar, slug), Fragment.lit("\n")).query(CategoriesRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<CategoriesFields, CategoriesRow> update() {
-    return UpdateBuilder.of("`categories`", CategoriesFields.structure(), CategoriesRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`categories`", CategoriesFields.structure(), CategoriesRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -270,45 +179,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     Connection c
   ) {
     CategoriesId categoryId = row.categoryId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `categories`
-         set `parent_id` = """),
-      CategoriesId.pgType.opt().encode(row.parentId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `name` = """),
-      MariaTypes.text.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `slug` = """),
-      MariaTypes.text.encode(row.slug()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `description` = """),
-      MariaTypes.text.opt().encode(row.description()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `image_url` = """),
-      MariaTypes.text.opt().encode(row.imageUrl()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `sort_order` = """),
-      MariaTypes.smallint.encode(row.sortOrder()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `is_visible` = """),
-      MariaTypes.bool.encode(row.isVisible()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `metadata` = """),
-      MariaTypes.text.opt().encode(row.metadata()),
-      typo.runtime.Fragment.lit("""
-   
-         where `category_id` = """),
-      CategoriesId.pgType.encode(categoryId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `categories`\nset `parent_id` = "), Fragment.encode(CategoriesId.pgType.opt(), row.parentId()), Fragment.lit(",\n`name` = "), Fragment.encode(MariaTypes.varchar, row.name()), Fragment.lit(",\n`slug` = "), Fragment.encode(MariaTypes.varchar, row.slug()), Fragment.lit(",\n`description` = "), Fragment.encode(MariaTypes.mediumtext.opt(), row.description()), Fragment.lit(",\n`image_url` = "), Fragment.encode(MariaTypes.varchar.opt(), row.imageUrl()), Fragment.lit(",\n`sort_order` = "), Fragment.encode(MariaTypes.smallint, row.sortOrder()), Fragment.lit(",\n`is_visible` = "), Fragment.encode(MariaTypes.bool, row.isVisible()), Fragment.lit(",\n`metadata` = "), Fragment.encode(MariaTypes.longtext.opt(), row.metadata()), Fragment.lit("\nwhere `category_id` = "), Fragment.encode(CategoriesId.pgType, categoryId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -316,37 +187,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     CategoriesRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `categories`(`parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)
-         VALUES ("""),
-      CategoriesId.pgType.opt().encode(unsaved.parentId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.slug()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.description()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.imageUrl()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.sortOrder()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isVisible()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.metadata()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `parent_id` = VALUES(`parent_id`),
-         `name` = VALUES(`name`),
-         `slug` = VALUES(`slug`),
-         `description` = VALUES(`description`),
-         `image_url` = VALUES(`image_url`),
-         `sort_order` = VALUES(`sort_order`),
-         `is_visible` = VALUES(`is_visible`),
-         `metadata` = VALUES(`metadata`)
-         RETURNING `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `categories`(`parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)\nVALUES ("), Fragment.encode(CategoriesId.pgType.opt(), unsaved.parentId()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.slug()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumtext.opt(), unsaved.description()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.imageUrl()), Fragment.lit(", "), Fragment.encode(MariaTypes.smallint, unsaved.sortOrder()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isVisible()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.metadata()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `parent_id` = VALUES(`parent_id`),\n`name` = VALUES(`name`),\n`slug` = VALUES(`slug`),\n`description` = VALUES(`description`),\n`image_url` = VALUES(`image_url`),\n`sort_order` = VALUES(`sort_order`),\n`is_visible` = VALUES(`is_visible`),\n`metadata` = VALUES(`metadata`)\nRETURNING `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`"))
       .updateReturning(CategoriesRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -356,19 +197,8 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     Iterator<CategoriesRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `categories`(`category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `parent_id` = VALUES(`parent_id`),
-                `name` = VALUES(`name`),
-                `slug` = VALUES(`slug`),
-                `description` = VALUES(`description`),
-                `image_url` = VALUES(`image_url`),
-                `sort_order` = VALUES(`sort_order`),
-                `is_visible` = VALUES(`is_visible`),
-                `metadata` = VALUES(`metadata`)
-                RETURNING `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`"""))
+    return interpolate(Fragment.lit("INSERT INTO `categories`(`category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `parent_id` = VALUES(`parent_id`),\n`name` = VALUES(`name`),\n`slug` = VALUES(`slug`),\n`description` = VALUES(`description`),\n`image_url` = VALUES(`image_url`),\n`sort_order` = VALUES(`sort_order`),\n`is_visible` = VALUES(`is_visible`),\n`metadata` = VALUES(`metadata`)\nRETURNING `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`"))
       .updateReturningEach(CategoriesRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

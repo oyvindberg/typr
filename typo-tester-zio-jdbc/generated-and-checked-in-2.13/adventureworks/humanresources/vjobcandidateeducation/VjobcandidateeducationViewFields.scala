@@ -8,10 +8,10 @@ package adventureworks.humanresources.vjobcandidateeducation
 import adventureworks.customtypes.TypoLocalDate
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait VjobcandidateeducationViewFields {
   def jobcandidateid: Field[JobcandidateId, VjobcandidateeducationViewRow]
@@ -30,11 +30,11 @@ trait VjobcandidateeducationViewFields {
 }
 
 object VjobcandidateeducationViewFields {
-  lazy val structure: Relation[VjobcandidateeducationViewFields, VjobcandidateeducationViewRow] =
+  lazy val structure: RelationStructure[VjobcandidateeducationViewFields, VjobcandidateeducationViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[VjobcandidateeducationViewFields, VjobcandidateeducationViewRow] {
+    extends RelationStructure[VjobcandidateeducationViewFields, VjobcandidateeducationViewRow] {
 
     override lazy val fields: VjobcandidateeducationViewFields = new VjobcandidateeducationViewFields {
       override def jobcandidateid = Field[JobcandidateId, VjobcandidateeducationViewRow](_path, "jobcandidateid", None, None, x => x.jobcandidateid, (row, value) => row.copy(jobcandidateid = value))

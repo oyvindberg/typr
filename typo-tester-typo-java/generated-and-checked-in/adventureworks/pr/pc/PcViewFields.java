@@ -5,21 +5,22 @@
  */
 package adventureworks.pr.pc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productcategory.ProductcategoryId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PcViewFields extends FieldsExpr<PcViewRow> {
-  record Impl(List<Path> _path) implements PcViewFields, Relation<PcViewFields, PcViewRow> {
+  record Impl(List<Path> _path) implements PcViewFields, RelationStructure<PcViewFields, PcViewRow> {
     @Override
     public Field<ProductcategoryId, PcViewRow> id() {
       return new Field<ProductcategoryId, PcViewRow>(_path, "id", PcViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), ProductcategoryId.pgType);
@@ -36,28 +37,28 @@ public interface PcViewFields extends FieldsExpr<PcViewRow> {
     };
 
     @Override
-    public Field<TypoUUID, PcViewRow> rowguid() {
-      return new Field<TypoUUID, PcViewRow>(_path, "rowguid", PcViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, PcViewRow> rowguid() {
+      return new Field<UUID, PcViewRow>(_path, "rowguid", PcViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, PcViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PcViewRow>(_path, "modifieddate", PcViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PcViewRow> modifieddate() {
+      return new Field<LocalDateTime, PcViewRow>(_path, "modifieddate", PcViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PcViewRow>> columns() {
-      return List.of(this.id(), this.productcategoryid(), this.name(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.productcategoryid(), this.name(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<PcViewFields, PcViewRow> copy(List<Path> _path) {
+    public RelationStructure<PcViewFields, PcViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductcategoryId, PcViewRow> id();
@@ -66,9 +67,9 @@ public interface PcViewFields extends FieldsExpr<PcViewRow> {
 
   Field<Name, PcViewRow> name();
 
-  Field<TypoUUID, PcViewRow> rowguid();
+  Field<UUID, PcViewRow> rowguid();
 
-  Field<TypoLocalDateTime, PcViewRow> modifieddate();
+  Field<LocalDateTime, PcViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PcViewRow>> columns();

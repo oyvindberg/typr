@@ -14,14 +14,14 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.unitmeasure` */
-case class UnitmeasureId(value: /* bpchar, max 3 chars */ String) extends scala.AnyVal
+case class UnitmeasureId(value: String) extends scala.AnyVal
 
 object UnitmeasureId {
   implicit lazy val arrayColumn: Column[Array[UnitmeasureId]] = Column.columnToArray(column, implicitly)
 
   implicit lazy val arrayToStatement: ToStatement[Array[UnitmeasureId]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  implicit lazy val bijection: Bijection[UnitmeasureId, /* bpchar, max 3 chars */ String] = Bijection.apply[UnitmeasureId, /* bpchar, max 3 chars */ String](_.value)(UnitmeasureId.apply)
+  implicit lazy val bijection: Bijection[UnitmeasureId, String] = Bijection.apply[UnitmeasureId, String](_.value)(UnitmeasureId.apply)
 
   implicit lazy val column: Column[UnitmeasureId] = Column.columnToString.map(UnitmeasureId.apply)
 

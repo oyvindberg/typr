@@ -12,16 +12,16 @@ import java.util.Optional;
 import typo.data.maria.MariaSet;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface PromotionsFields extends FieldsExpr<PromotionsRow> {
-  record Impl(List<Path> _path) implements PromotionsFields, Relation<PromotionsFields, PromotionsRow> {
+  record Impl(List<Path> _path) implements PromotionsFields, RelationStructure<PromotionsFields, PromotionsRow> {
     @Override
     public IdField<PromotionsId, PromotionsRow> promotionId() {
       return new IdField<PromotionsId, PromotionsRow>(_path, "promotion_id", PromotionsRow::promotionId, Optional.empty(), Optional.empty(), (row, value) -> row.withPromotionId(value), PromotionsId.pgType);
@@ -49,12 +49,12 @@ public interface PromotionsFields extends FieldsExpr<PromotionsRow> {
 
     @Override
     public Field<BigDecimal, PromotionsRow> discountValue() {
-      return new Field<BigDecimal, PromotionsRow>(_path, "discount_value", PromotionsRow::discountValue, Optional.empty(), Optional.empty(), (row, value) -> row.withDiscountValue(value), MariaTypes.decimal);
+      return new Field<BigDecimal, PromotionsRow>(_path, "discount_value", PromotionsRow::discountValue, Optional.empty(), Optional.empty(), (row, value) -> row.withDiscountValue(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, PromotionsRow> minOrderAmount() {
-      return new OptField<BigDecimal, PromotionsRow>(_path, "min_order_amount", PromotionsRow::minOrderAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withMinOrderAmount(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, PromotionsRow>(_path, "min_order_amount", PromotionsRow::minOrderAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withMinOrderAmount(value), MariaTypes.numeric);
     };
 
     @Override
@@ -104,17 +104,17 @@ public interface PromotionsFields extends FieldsExpr<PromotionsRow> {
 
     @Override
     public List<FieldLike<?, PromotionsRow>> columns() {
-      return List.of(this.promotionId(), this.code(), this.name(), this.description(), this.discountType(), this.discountValue(), this.minOrderAmount(), this.maxUses(), this.usesCount(), this.maxUsesPerCustomer(), this.applicableTo(), this.rulesJson(), this.validFrom(), this.validTo(), this.isActive(), this.createdAt());
+      return java.util.List.of(this.promotionId(), this.code(), this.name(), this.description(), this.discountType(), this.discountValue(), this.minOrderAmount(), this.maxUses(), this.usesCount(), this.maxUsesPerCustomer(), this.applicableTo(), this.rulesJson(), this.validFrom(), this.validTo(), this.isActive(), this.createdAt());
     };
 
     @Override
-    public Relation<PromotionsFields, PromotionsRow> copy(List<Path> _path) {
+    public RelationStructure<PromotionsFields, PromotionsRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<PromotionsId, PromotionsRow> promotionId();

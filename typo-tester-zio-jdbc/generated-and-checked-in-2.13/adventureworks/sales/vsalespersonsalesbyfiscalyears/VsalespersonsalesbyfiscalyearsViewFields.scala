@@ -6,9 +6,9 @@
 package adventureworks.sales.vsalespersonsalesbyfiscalyears
 
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait VsalespersonsalesbyfiscalyearsViewFields {
   def salesPersonID: Field[Int, VsalespersonsalesbyfiscalyearsViewRow]
@@ -21,11 +21,11 @@ trait VsalespersonsalesbyfiscalyearsViewFields {
 }
 
 object VsalespersonsalesbyfiscalyearsViewFields {
-  lazy val structure: Relation[VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow] =
+  lazy val structure: RelationStructure[VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow] {
+    extends RelationStructure[VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow] {
 
     override lazy val fields: VsalespersonsalesbyfiscalyearsViewFields = new VsalespersonsalesbyfiscalyearsViewFields {
       override def salesPersonID = Field[Int, VsalespersonsalesbyfiscalyearsViewRow](_path, "SalesPersonID", None, None, x => x.salesPersonID, (row, value) => row.copy(salesPersonID = value))

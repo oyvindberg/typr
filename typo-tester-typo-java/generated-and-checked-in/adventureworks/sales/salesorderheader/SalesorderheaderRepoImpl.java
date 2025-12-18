@@ -5,9 +5,6 @@
  */
 package adventureworks.sales.salesorderheader;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.address.AddressId;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.AccountNumber;
@@ -30,11 +27,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
   @Override
@@ -47,13 +42,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     SalesorderheaderId salesorderid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "sales"."salesorderheader" where "salesorderid" = 
-      """),
-      SalesorderheaderId.pgType.encode(salesorderid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"sales\".\"salesorderheader\" where \"salesorderid\" = "), Fragment.encode(SalesorderheaderId.pgType, salesorderid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -61,14 +50,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     SalesorderheaderId[] salesorderids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "sales"."salesorderheader"
-                  where "salesorderid" = ANY("""),
-               SalesorderheaderId.pgTypeArray.encode(salesorderids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"sales\".\"salesorderheader\"\nwhere \"salesorderid\" = ANY("), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -78,64 +60,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     SalesorderheaderRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "sales"."salesorderheader"("salesorderid", "revisionnumber", "orderdate", "duedate", "shipdate", "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate")
-         values ("""),
-      SalesorderheaderId.pgType.encode(unsaved.salesorderid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoShort.pgType.encode(unsaved.revisionnumber()),
-      typo.runtime.Fragment.lit("::int2, "),
-      TypoLocalDateTime.pgType.encode(unsaved.orderdate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoLocalDateTime.pgType.encode(unsaved.duedate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoLocalDateTime.pgType.opt().encode(unsaved.shipdate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoShort.pgType.encode(unsaved.status()),
-      typo.runtime.Fragment.lit("::int2, "),
-      Flag.pgType.encode(unsaved.onlineorderflag()),
-      typo.runtime.Fragment.lit("::bool, "),
-      OrderNumber.pgType.opt().encode(unsaved.purchaseordernumber()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      AccountNumber.pgType.opt().encode(unsaved.accountnumber()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      CustomerId.pgType.encode(unsaved.customerid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      BusinessentityId.pgType.opt().encode(unsaved.salespersonid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      SalesterritoryId.pgType.opt().encode(unsaved.territoryid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      AddressId.pgType.encode(unsaved.billtoaddressid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      AddressId.pgType.encode(unsaved.shiptoaddressid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      ShipmethodId.pgType.encode(unsaved.shipmethodid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      CustomCreditcardId.pgType.opt().encode(unsaved.creditcardid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.opt().encode(unsaved.creditcardapprovalcode()),
-      typo.runtime.Fragment.lit(", "),
-      CurrencyrateId.pgType.opt().encode(unsaved.currencyrateid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.numeric.encode(unsaved.subtotal()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.encode(unsaved.taxamt()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.encode(unsaved.freight()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.opt().encode(unsaved.totaldue()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.text.opt().encode(unsaved.comment()),
-      typo.runtime.Fragment.lit(", "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"sales\".\"salesorderheader\"(\"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(SalesorderheaderId.pgType, unsaved.salesorderid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.int2, unsaved.revisionnumber()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.timestamp, unsaved.orderdate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp, unsaved.duedate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp.opt(), unsaved.shipdate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.int2, unsaved.status()), Fragment.lit("::int2, "), Fragment.encode(Flag.pgType, unsaved.onlineorderflag()), Fragment.lit("::bool, "), Fragment.encode(OrderNumber.pgType.opt(), unsaved.purchaseordernumber()), Fragment.lit("::varchar, "), Fragment.encode(AccountNumber.pgType.opt(), unsaved.accountnumber()), Fragment.lit("::varchar, "), Fragment.encode(CustomerId.pgType, unsaved.customerid()), Fragment.lit("::int4, "), Fragment.encode(BusinessentityId.pgType.opt(), unsaved.salespersonid()), Fragment.lit("::int4, "), Fragment.encode(SalesterritoryId.pgType.opt(), unsaved.territoryid()), Fragment.lit("::int4, "), Fragment.encode(AddressId.pgType, unsaved.billtoaddressid()), Fragment.lit("::int4, "), Fragment.encode(AddressId.pgType, unsaved.shiptoaddressid()), Fragment.lit("::int4, "), Fragment.encode(ShipmethodId.pgType, unsaved.shipmethodid()), Fragment.lit("::int4, "), Fragment.encode(CustomCreditcardId.pgType.opt(), unsaved.creditcardid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text.opt(), unsaved.creditcardapprovalcode()), Fragment.lit(", "), Fragment.encode(CurrencyrateId.pgType.opt(), unsaved.currencyrateid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.numeric, unsaved.subtotal()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.taxamt()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.freight()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric.opt(), unsaved.totaldue()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.text.opt(), unsaved.comment()), Fragment.lit(", "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(SalesorderheaderRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -144,95 +69,45 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     SalesorderheaderRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"duedate\""));
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.encode(unsaved.duedate()),
-      typo.runtime.Fragment.lit("::timestamp")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.timestamp, unsaved.duedate()), Fragment.lit("::timestamp")));
     columns.add(Fragment.lit("\"shipdate\""));
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.opt().encode(unsaved.shipdate()),
-      typo.runtime.Fragment.lit("::timestamp")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.timestamp.opt(), unsaved.shipdate()), Fragment.lit("::timestamp")));
     columns.add(Fragment.lit("\"purchaseordernumber\""));
-    values.add(interpolate(
-      OrderNumber.pgType.opt().encode(unsaved.purchaseordernumber()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(OrderNumber.pgType.opt(), unsaved.purchaseordernumber()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"accountnumber\""));
-    values.add(interpolate(
-      AccountNumber.pgType.opt().encode(unsaved.accountnumber()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(AccountNumber.pgType.opt(), unsaved.accountnumber()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"customerid\""));
-    values.add(interpolate(
-      CustomerId.pgType.encode(unsaved.customerid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(CustomerId.pgType, unsaved.customerid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"salespersonid\""));
-    values.add(interpolate(
-      BusinessentityId.pgType.opt().encode(unsaved.salespersonid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType.opt(), unsaved.salespersonid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"territoryid\""));
-    values.add(interpolate(
-      SalesterritoryId.pgType.opt().encode(unsaved.territoryid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(SalesterritoryId.pgType.opt(), unsaved.territoryid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"billtoaddressid\""));
-    values.add(interpolate(
-      AddressId.pgType.encode(unsaved.billtoaddressid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(AddressId.pgType, unsaved.billtoaddressid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"shiptoaddressid\""));
-    values.add(interpolate(
-      AddressId.pgType.encode(unsaved.shiptoaddressid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(AddressId.pgType, unsaved.shiptoaddressid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"shipmethodid\""));
-    values.add(interpolate(
-      ShipmethodId.pgType.encode(unsaved.shipmethodid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(ShipmethodId.pgType, unsaved.shipmethodid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"creditcardid\""));
-    values.add(interpolate(
-      CustomCreditcardId.pgType.opt().encode(unsaved.creditcardid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(CustomCreditcardId.pgType.opt(), unsaved.creditcardid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"creditcardapprovalcode\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.creditcardapprovalcode()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text.opt(), unsaved.creditcardapprovalcode()), Fragment.lit("")));
     columns.add(Fragment.lit("\"currencyrateid\""));
-    values.add(interpolate(
-      CurrencyrateId.pgType.opt().encode(unsaved.currencyrateid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(CurrencyrateId.pgType.opt(), unsaved.currencyrateid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"totaldue\""));
-    values.add(interpolate(
-      PgTypes.numeric.opt().encode(unsaved.totaldue()),
-      typo.runtime.Fragment.lit("::numeric")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.numeric.opt(), unsaved.totaldue()), Fragment.lit("::numeric")));
     columns.add(Fragment.lit("\"comment\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.comment()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text.opt(), unsaved.comment()), Fragment.lit("")));
     unsaved.salesorderid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"salesorderid\""));
-        values.add(interpolate(
-        SalesorderheaderId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(SalesorderheaderId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.revisionnumber().visit(
@@ -241,10 +116,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"revisionnumber\""));
-        values.add(interpolate(
-        TypoShort.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int2")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.int2, value), Fragment.lit("::int2")));
       }
     );;
     unsaved.orderdate().visit(
@@ -253,10 +125,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"orderdate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
     unsaved.status().visit(
@@ -265,10 +134,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"status\""));
-        values.add(interpolate(
-        TypoShort.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int2")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.int2, value), Fragment.lit("::int2")));
       }
     );;
     unsaved.onlineorderflag().visit(
@@ -277,10 +143,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"onlineorderflag\""));
-        values.add(interpolate(
-        Flag.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      ));
+        values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool")));
       }
     );;
     unsaved.subtotal().visit(
@@ -289,10 +152,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"subtotal\""));
-        values.add(interpolate(
-        PgTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("::numeric")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.numeric, value), Fragment.lit("::numeric")));
       }
     );;
     unsaved.taxamt().visit(
@@ -301,10 +161,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"taxamt\""));
-        values.add(interpolate(
-        PgTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("::numeric")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.numeric, value), Fragment.lit("::numeric")));
       }
     );;
     unsaved.freight().visit(
@@ -313,10 +170,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"freight\""));
-        values.add(interpolate(
-        PgTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("::numeric")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.numeric, value), Fragment.lit("::numeric")));
       }
     );;
     unsaved.rowguid().visit(
@@ -325,10 +179,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -337,26 +188,10 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "sales"."salesorderheader"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"sales\".\"salesorderheader\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(SalesorderheaderRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -366,9 +201,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "sales"."salesorderheader"("salesorderid", "revisionnumber", "orderdate", "duedate", "shipdate", "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, SalesorderheaderRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"sales\".\"salesorderheader\"(\"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, SalesorderheaderRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -378,9 +211,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "sales"."salesorderheader"("duedate", "shipdate", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "totaldue", "comment", "salesorderid", "revisionnumber", "orderdate", "status", "onlineorderflag", "subtotal", "taxamt", "freight", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, SalesorderheaderRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"sales\".\"salesorderheader\"(\"duedate\", \"shipdate\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"totaldue\", \"comment\", \"salesorderid\", \"revisionnumber\", \"orderdate\", \"status\", \"onlineorderflag\", \"subtotal\", \"taxamt\", \"freight\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, SalesorderheaderRowUnsaved.pgText);
   };
 
   @Override
@@ -390,10 +221,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
 
   @Override
   public List<SalesorderheaderRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text
-       from "sales"."salesorderheader"
-    """)).query(SalesorderheaderRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salesorderheader\"\n")).query(SalesorderheaderRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -401,14 +229,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     SalesorderheaderId salesorderid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text
-         from "sales"."salesorderheader"
-         where "salesorderid" = """),
-      SalesorderheaderId.pgType.encode(salesorderid),
-      typo.runtime.Fragment.lit("")
-    ).query(SalesorderheaderRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salesorderheader\"\nwhere \"salesorderid\" = "), Fragment.encode(SalesorderheaderId.pgType, salesorderid), Fragment.lit("")).query(SalesorderheaderRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -416,14 +237,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     SalesorderheaderId[] salesorderids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text
-         from "sales"."salesorderheader"
-         where "salesorderid" = ANY("""),
-      SalesorderheaderId.pgTypeArray.encode(salesorderids),
-      typo.runtime.Fragment.lit(")")
-    ).query(SalesorderheaderRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salesorderheader\"\nwhere \"salesorderid\" = ANY("), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderids), Fragment.lit(")")).query(SalesorderheaderRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -438,7 +252,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
 
   @Override
   public UpdateBuilder<SalesorderheaderFields, SalesorderheaderRow> update() {
-    return UpdateBuilder.of("\"sales\".\"salesorderheader\"", SalesorderheaderFields.structure(), SalesorderheaderRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"sales\".\"salesorderheader\"", SalesorderheaderFields.structure(), SalesorderheaderRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -447,109 +261,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     Connection c
   ) {
     SalesorderheaderId salesorderid = row.salesorderid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "sales"."salesorderheader"
-         set "revisionnumber" = """),
-      TypoShort.pgType.encode(row.revisionnumber()),
-      typo.runtime.Fragment.lit("""
-         ::int2,
-         "orderdate" = """),
-      TypoLocalDateTime.pgType.encode(row.orderdate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp,
-         "duedate" = """),
-      TypoLocalDateTime.pgType.encode(row.duedate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp,
-         "shipdate" = """),
-      TypoLocalDateTime.pgType.opt().encode(row.shipdate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp,
-         "status" = """),
-      TypoShort.pgType.encode(row.status()),
-      typo.runtime.Fragment.lit("""
-         ::int2,
-         "onlineorderflag" = """),
-      Flag.pgType.encode(row.onlineorderflag()),
-      typo.runtime.Fragment.lit("""
-         ::bool,
-         "purchaseordernumber" = """),
-      OrderNumber.pgType.opt().encode(row.purchaseordernumber()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "accountnumber" = """),
-      AccountNumber.pgType.opt().encode(row.accountnumber()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "customerid" = """),
-      CustomerId.pgType.encode(row.customerid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "salespersonid" = """),
-      BusinessentityId.pgType.opt().encode(row.salespersonid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "territoryid" = """),
-      SalesterritoryId.pgType.opt().encode(row.territoryid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "billtoaddressid" = """),
-      AddressId.pgType.encode(row.billtoaddressid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "shiptoaddressid" = """),
-      AddressId.pgType.encode(row.shiptoaddressid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "shipmethodid" = """),
-      ShipmethodId.pgType.encode(row.shipmethodid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "creditcardid" = """),
-      CustomCreditcardId.pgType.opt().encode(row.creditcardid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "creditcardapprovalcode" = """),
-      PgTypes.text.opt().encode(row.creditcardapprovalcode()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "currencyrateid" = """),
-      CurrencyrateId.pgType.opt().encode(row.currencyrateid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "subtotal" = """),
-      PgTypes.numeric.encode(row.subtotal()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "taxamt" = """),
-      PgTypes.numeric.encode(row.taxamt()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "freight" = """),
-      PgTypes.numeric.encode(row.freight()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "totaldue" = """),
-      PgTypes.numeric.opt().encode(row.totaldue()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "comment" = """),
-      PgTypes.text.opt().encode(row.comment()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "salesorderid" = """),
-      SalesorderheaderId.pgType.encode(salesorderid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"sales\".\"salesorderheader\"\nset \"revisionnumber\" = "), Fragment.encode(PgTypes.int2, row.revisionnumber()), Fragment.lit("::int2,\n\"orderdate\" = "), Fragment.encode(PgTypes.timestamp, row.orderdate()), Fragment.lit("::timestamp,\n\"duedate\" = "), Fragment.encode(PgTypes.timestamp, row.duedate()), Fragment.lit("::timestamp,\n\"shipdate\" = "), Fragment.encode(PgTypes.timestamp.opt(), row.shipdate()), Fragment.lit("::timestamp,\n\"status\" = "), Fragment.encode(PgTypes.int2, row.status()), Fragment.lit("::int2,\n\"onlineorderflag\" = "), Fragment.encode(Flag.pgType, row.onlineorderflag()), Fragment.lit("::bool,\n\"purchaseordernumber\" = "), Fragment.encode(OrderNumber.pgType.opt(), row.purchaseordernumber()), Fragment.lit("::varchar,\n\"accountnumber\" = "), Fragment.encode(AccountNumber.pgType.opt(), row.accountnumber()), Fragment.lit("::varchar,\n\"customerid\" = "), Fragment.encode(CustomerId.pgType, row.customerid()), Fragment.lit("::int4,\n\"salespersonid\" = "), Fragment.encode(BusinessentityId.pgType.opt(), row.salespersonid()), Fragment.lit("::int4,\n\"territoryid\" = "), Fragment.encode(SalesterritoryId.pgType.opt(), row.territoryid()), Fragment.lit("::int4,\n\"billtoaddressid\" = "), Fragment.encode(AddressId.pgType, row.billtoaddressid()), Fragment.lit("::int4,\n\"shiptoaddressid\" = "), Fragment.encode(AddressId.pgType, row.shiptoaddressid()), Fragment.lit("::int4,\n\"shipmethodid\" = "), Fragment.encode(ShipmethodId.pgType, row.shipmethodid()), Fragment.lit("::int4,\n\"creditcardid\" = "), Fragment.encode(CustomCreditcardId.pgType.opt(), row.creditcardid()), Fragment.lit("::int4,\n\"creditcardapprovalcode\" = "), Fragment.encode(PgTypes.text.opt(), row.creditcardapprovalcode()), Fragment.lit(",\n\"currencyrateid\" = "), Fragment.encode(CurrencyrateId.pgType.opt(), row.currencyrateid()), Fragment.lit("::int4,\n\"subtotal\" = "), Fragment.encode(PgTypes.numeric, row.subtotal()), Fragment.lit("::numeric,\n\"taxamt\" = "), Fragment.encode(PgTypes.numeric, row.taxamt()), Fragment.lit("::numeric,\n\"freight\" = "), Fragment.encode(PgTypes.numeric, row.freight()), Fragment.lit("::numeric,\n\"totaldue\" = "), Fragment.encode(PgTypes.numeric.opt(), row.totaldue()), Fragment.lit("::numeric,\n\"comment\" = "), Fragment.encode(PgTypes.text.opt(), row.comment()), Fragment.lit(",\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"salesorderid\" = "), Fragment.encode(SalesorderheaderId.pgType, salesorderid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -557,89 +269,7 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     SalesorderheaderRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "sales"."salesorderheader"("salesorderid", "revisionnumber", "orderdate", "duedate", "shipdate", "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate")
-         values ("""),
-      SalesorderheaderId.pgType.encode(unsaved.salesorderid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoShort.pgType.encode(unsaved.revisionnumber()),
-      typo.runtime.Fragment.lit("::int2, "),
-      TypoLocalDateTime.pgType.encode(unsaved.orderdate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoLocalDateTime.pgType.encode(unsaved.duedate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoLocalDateTime.pgType.opt().encode(unsaved.shipdate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoShort.pgType.encode(unsaved.status()),
-      typo.runtime.Fragment.lit("::int2, "),
-      Flag.pgType.encode(unsaved.onlineorderflag()),
-      typo.runtime.Fragment.lit("::bool, "),
-      OrderNumber.pgType.opt().encode(unsaved.purchaseordernumber()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      AccountNumber.pgType.opt().encode(unsaved.accountnumber()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      CustomerId.pgType.encode(unsaved.customerid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      BusinessentityId.pgType.opt().encode(unsaved.salespersonid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      SalesterritoryId.pgType.opt().encode(unsaved.territoryid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      AddressId.pgType.encode(unsaved.billtoaddressid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      AddressId.pgType.encode(unsaved.shiptoaddressid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      ShipmethodId.pgType.encode(unsaved.shipmethodid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      CustomCreditcardId.pgType.opt().encode(unsaved.creditcardid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.opt().encode(unsaved.creditcardapprovalcode()),
-      typo.runtime.Fragment.lit(", "),
-      CurrencyrateId.pgType.opt().encode(unsaved.currencyrateid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.numeric.encode(unsaved.subtotal()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.encode(unsaved.taxamt()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.encode(unsaved.freight()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.opt().encode(unsaved.totaldue()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.text.opt().encode(unsaved.comment()),
-      typo.runtime.Fragment.lit(", "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("salesorderid")
-         do update set
-           "revisionnumber" = EXCLUDED."revisionnumber",
-         "orderdate" = EXCLUDED."orderdate",
-         "duedate" = EXCLUDED."duedate",
-         "shipdate" = EXCLUDED."shipdate",
-         "status" = EXCLUDED."status",
-         "onlineorderflag" = EXCLUDED."onlineorderflag",
-         "purchaseordernumber" = EXCLUDED."purchaseordernumber",
-         "accountnumber" = EXCLUDED."accountnumber",
-         "customerid" = EXCLUDED."customerid",
-         "salespersonid" = EXCLUDED."salespersonid",
-         "territoryid" = EXCLUDED."territoryid",
-         "billtoaddressid" = EXCLUDED."billtoaddressid",
-         "shiptoaddressid" = EXCLUDED."shiptoaddressid",
-         "shipmethodid" = EXCLUDED."shipmethodid",
-         "creditcardid" = EXCLUDED."creditcardid",
-         "creditcardapprovalcode" = EXCLUDED."creditcardapprovalcode",
-         "currencyrateid" = EXCLUDED."currencyrateid",
-         "subtotal" = EXCLUDED."subtotal",
-         "taxamt" = EXCLUDED."taxamt",
-         "freight" = EXCLUDED."freight",
-         "totaldue" = EXCLUDED."totaldue",
-         "comment" = EXCLUDED."comment",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"sales\".\"salesorderheader\"(\"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(SalesorderheaderId.pgType, unsaved.salesorderid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.int2, unsaved.revisionnumber()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.timestamp, unsaved.orderdate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp, unsaved.duedate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp.opt(), unsaved.shipdate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.int2, unsaved.status()), Fragment.lit("::int2, "), Fragment.encode(Flag.pgType, unsaved.onlineorderflag()), Fragment.lit("::bool, "), Fragment.encode(OrderNumber.pgType.opt(), unsaved.purchaseordernumber()), Fragment.lit("::varchar, "), Fragment.encode(AccountNumber.pgType.opt(), unsaved.accountnumber()), Fragment.lit("::varchar, "), Fragment.encode(CustomerId.pgType, unsaved.customerid()), Fragment.lit("::int4, "), Fragment.encode(BusinessentityId.pgType.opt(), unsaved.salespersonid()), Fragment.lit("::int4, "), Fragment.encode(SalesterritoryId.pgType.opt(), unsaved.territoryid()), Fragment.lit("::int4, "), Fragment.encode(AddressId.pgType, unsaved.billtoaddressid()), Fragment.lit("::int4, "), Fragment.encode(AddressId.pgType, unsaved.shiptoaddressid()), Fragment.lit("::int4, "), Fragment.encode(ShipmethodId.pgType, unsaved.shipmethodid()), Fragment.lit("::int4, "), Fragment.encode(CustomCreditcardId.pgType.opt(), unsaved.creditcardid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text.opt(), unsaved.creditcardapprovalcode()), Fragment.lit(", "), Fragment.encode(CurrencyrateId.pgType.opt(), unsaved.currencyrateid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.numeric, unsaved.subtotal()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.taxamt()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.freight()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric.opt(), unsaved.totaldue()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.text.opt(), unsaved.comment()), Fragment.lit(", "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"salesorderid\")\ndo update set\n  \"revisionnumber\" = EXCLUDED.\"revisionnumber\",\n\"orderdate\" = EXCLUDED.\"orderdate\",\n\"duedate\" = EXCLUDED.\"duedate\",\n\"shipdate\" = EXCLUDED.\"shipdate\",\n\"status\" = EXCLUDED.\"status\",\n\"onlineorderflag\" = EXCLUDED.\"onlineorderflag\",\n\"purchaseordernumber\" = EXCLUDED.\"purchaseordernumber\",\n\"accountnumber\" = EXCLUDED.\"accountnumber\",\n\"customerid\" = EXCLUDED.\"customerid\",\n\"salespersonid\" = EXCLUDED.\"salespersonid\",\n\"territoryid\" = EXCLUDED.\"territoryid\",\n\"billtoaddressid\" = EXCLUDED.\"billtoaddressid\",\n\"shiptoaddressid\" = EXCLUDED.\"shiptoaddressid\",\n\"shipmethodid\" = EXCLUDED.\"shipmethodid\",\n\"creditcardid\" = EXCLUDED.\"creditcardid\",\n\"creditcardapprovalcode\" = EXCLUDED.\"creditcardapprovalcode\",\n\"currencyrateid\" = EXCLUDED.\"currencyrateid\",\n\"subtotal\" = EXCLUDED.\"subtotal\",\n\"taxamt\" = EXCLUDED.\"taxamt\",\n\"freight\" = EXCLUDED.\"freight\",\n\"totaldue\" = EXCLUDED.\"totaldue\",\n\"comment\" = EXCLUDED.\"comment\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\""))
       .updateReturning(SalesorderheaderRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -649,38 +279,9 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     Iterator<SalesorderheaderRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "sales"."salesorderheader"("salesorderid", "revisionnumber", "orderdate", "duedate", "shipdate", "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate")
-                values (?::int4, ?::int2, ?::timestamp, ?::timestamp, ?::timestamp, ?::int2, ?::bool, ?::varchar, ?::varchar, ?::int4, ?::int4, ?::int4, ?::int4, ?::int4, ?::int4, ?::int4, ?, ?::int4, ?::numeric, ?::numeric, ?::numeric, ?::numeric, ?, ?::uuid, ?::timestamp)
-                on conflict ("salesorderid")
-                do update set
-                  "revisionnumber" = EXCLUDED."revisionnumber",
-                "orderdate" = EXCLUDED."orderdate",
-                "duedate" = EXCLUDED."duedate",
-                "shipdate" = EXCLUDED."shipdate",
-                "status" = EXCLUDED."status",
-                "onlineorderflag" = EXCLUDED."onlineorderflag",
-                "purchaseordernumber" = EXCLUDED."purchaseordernumber",
-                "accountnumber" = EXCLUDED."accountnumber",
-                "customerid" = EXCLUDED."customerid",
-                "salespersonid" = EXCLUDED."salespersonid",
-                "territoryid" = EXCLUDED."territoryid",
-                "billtoaddressid" = EXCLUDED."billtoaddressid",
-                "shiptoaddressid" = EXCLUDED."shiptoaddressid",
-                "shipmethodid" = EXCLUDED."shipmethodid",
-                "creditcardid" = EXCLUDED."creditcardid",
-                "creditcardapprovalcode" = EXCLUDED."creditcardapprovalcode",
-                "currencyrateid" = EXCLUDED."currencyrateid",
-                "subtotal" = EXCLUDED."subtotal",
-                "taxamt" = EXCLUDED."taxamt",
-                "freight" = EXCLUDED."freight",
-                "totaldue" = EXCLUDED."totaldue",
-                "comment" = EXCLUDED."comment",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "salesorderid", "revisionnumber", "orderdate"::text, "duedate"::text, "shipdate"::text, "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"sales\".\"salesorderheader\"(\"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::int2, ?::timestamp, ?::timestamp, ?::timestamp, ?::int2, ?::bool, ?::varchar, ?::varchar, ?::int4, ?::int4, ?::int4, ?::int4, ?::int4, ?::int4, ?::int4, ?, ?::int4, ?::numeric, ?::numeric, ?::numeric, ?::numeric, ?, ?::uuid, ?::timestamp)\non conflict (\"salesorderid\")\ndo update set\n  \"revisionnumber\" = EXCLUDED.\"revisionnumber\",\n\"orderdate\" = EXCLUDED.\"orderdate\",\n\"duedate\" = EXCLUDED.\"duedate\",\n\"shipdate\" = EXCLUDED.\"shipdate\",\n\"status\" = EXCLUDED.\"status\",\n\"onlineorderflag\" = EXCLUDED.\"onlineorderflag\",\n\"purchaseordernumber\" = EXCLUDED.\"purchaseordernumber\",\n\"accountnumber\" = EXCLUDED.\"accountnumber\",\n\"customerid\" = EXCLUDED.\"customerid\",\n\"salespersonid\" = EXCLUDED.\"salespersonid\",\n\"territoryid\" = EXCLUDED.\"territoryid\",\n\"billtoaddressid\" = EXCLUDED.\"billtoaddressid\",\n\"shiptoaddressid\" = EXCLUDED.\"shiptoaddressid\",\n\"shipmethodid\" = EXCLUDED.\"shipmethodid\",\n\"creditcardid\" = EXCLUDED.\"creditcardid\",\n\"creditcardapprovalcode\" = EXCLUDED.\"creditcardapprovalcode\",\n\"currencyrateid\" = EXCLUDED.\"currencyrateid\",\n\"subtotal\" = EXCLUDED.\"subtotal\",\n\"taxamt\" = EXCLUDED.\"taxamt\",\n\"freight\" = EXCLUDED.\"freight\",\n\"totaldue\" = EXCLUDED.\"totaldue\",\n\"comment\" = EXCLUDED.\"comment\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(SalesorderheaderRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -690,42 +291,8 @@ public class SalesorderheaderRepoImpl implements SalesorderheaderRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table salesorderheader_TEMP (like "sales"."salesorderheader") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy salesorderheader_TEMP("salesorderid", "revisionnumber", "orderdate", "duedate", "shipdate", "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, SalesorderheaderRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "sales"."salesorderheader"("salesorderid", "revisionnumber", "orderdate", "duedate", "shipdate", "status", "onlineorderflag", "purchaseordernumber", "accountnumber", "customerid", "salespersonid", "territoryid", "billtoaddressid", "shiptoaddressid", "shipmethodid", "creditcardid", "creditcardapprovalcode", "currencyrateid", "subtotal", "taxamt", "freight", "totaldue", "comment", "rowguid", "modifieddate")
-       select * from salesorderheader_TEMP
-       on conflict ("salesorderid")
-       do update set
-         "revisionnumber" = EXCLUDED."revisionnumber",
-       "orderdate" = EXCLUDED."orderdate",
-       "duedate" = EXCLUDED."duedate",
-       "shipdate" = EXCLUDED."shipdate",
-       "status" = EXCLUDED."status",
-       "onlineorderflag" = EXCLUDED."onlineorderflag",
-       "purchaseordernumber" = EXCLUDED."purchaseordernumber",
-       "accountnumber" = EXCLUDED."accountnumber",
-       "customerid" = EXCLUDED."customerid",
-       "salespersonid" = EXCLUDED."salespersonid",
-       "territoryid" = EXCLUDED."territoryid",
-       "billtoaddressid" = EXCLUDED."billtoaddressid",
-       "shiptoaddressid" = EXCLUDED."shiptoaddressid",
-       "shipmethodid" = EXCLUDED."shipmethodid",
-       "creditcardid" = EXCLUDED."creditcardid",
-       "creditcardapprovalcode" = EXCLUDED."creditcardapprovalcode",
-       "currencyrateid" = EXCLUDED."currencyrateid",
-       "subtotal" = EXCLUDED."subtotal",
-       "taxamt" = EXCLUDED."taxamt",
-       "freight" = EXCLUDED."freight",
-       "totaldue" = EXCLUDED."totaldue",
-       "comment" = EXCLUDED."comment",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table salesorderheader_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table salesorderheader_TEMP (like \"sales\".\"salesorderheader\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy salesorderheader_TEMP(\"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, SalesorderheaderRow.pgText);
+    return interpolate(Fragment.lit("insert into \"sales\".\"salesorderheader\"(\"salesorderid\", \"revisionnumber\", \"orderdate\", \"duedate\", \"shipdate\", \"status\", \"onlineorderflag\", \"purchaseordernumber\", \"accountnumber\", \"customerid\", \"salespersonid\", \"territoryid\", \"billtoaddressid\", \"shiptoaddressid\", \"shipmethodid\", \"creditcardid\", \"creditcardapprovalcode\", \"currencyrateid\", \"subtotal\", \"taxamt\", \"freight\", \"totaldue\", \"comment\", \"rowguid\", \"modifieddate\")\nselect * from salesorderheader_TEMP\non conflict (\"salesorderid\")\ndo update set\n  \"revisionnumber\" = EXCLUDED.\"revisionnumber\",\n\"orderdate\" = EXCLUDED.\"orderdate\",\n\"duedate\" = EXCLUDED.\"duedate\",\n\"shipdate\" = EXCLUDED.\"shipdate\",\n\"status\" = EXCLUDED.\"status\",\n\"onlineorderflag\" = EXCLUDED.\"onlineorderflag\",\n\"purchaseordernumber\" = EXCLUDED.\"purchaseordernumber\",\n\"accountnumber\" = EXCLUDED.\"accountnumber\",\n\"customerid\" = EXCLUDED.\"customerid\",\n\"salespersonid\" = EXCLUDED.\"salespersonid\",\n\"territoryid\" = EXCLUDED.\"territoryid\",\n\"billtoaddressid\" = EXCLUDED.\"billtoaddressid\",\n\"shiptoaddressid\" = EXCLUDED.\"shiptoaddressid\",\n\"shipmethodid\" = EXCLUDED.\"shipmethodid\",\n\"creditcardid\" = EXCLUDED.\"creditcardid\",\n\"creditcardapprovalcode\" = EXCLUDED.\"creditcardapprovalcode\",\n\"currencyrateid\" = EXCLUDED.\"currencyrateid\",\n\"subtotal\" = EXCLUDED.\"subtotal\",\n\"taxamt\" = EXCLUDED.\"taxamt\",\n\"freight\" = EXCLUDED.\"freight\",\n\"totaldue\" = EXCLUDED.\"totaldue\",\n\"comment\" = EXCLUDED.\"comment\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table salesorderheader_TEMP;")).update().runUnchecked(c);
   };
 }

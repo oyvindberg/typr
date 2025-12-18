@@ -6,88 +6,87 @@
 package adventureworks.production.scrapreason
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ScrapreasonRepo {
-  fun delete(): DeleteBuilder<ScrapreasonFields, ScrapreasonRow>
+  abstract fun delete(): DeleteBuilder<ScrapreasonFields, ScrapreasonRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     scrapreasonid: ScrapreasonId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     scrapreasonids: Array<ScrapreasonId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ScrapreasonRow,
     c: Connection
   ): ScrapreasonRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ScrapreasonRowUnsaved,
     c: Connection
   ): ScrapreasonRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<ScrapreasonRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<ScrapreasonRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<ScrapreasonFields, ScrapreasonRow>
+  abstract fun select(): SelectBuilder<ScrapreasonFields, ScrapreasonRow>
 
-  fun selectAll(c: Connection): List<ScrapreasonRow>
+  abstract fun selectAll(c: Connection): List<ScrapreasonRow>
 
-  fun selectById(
+  abstract fun selectById(
     scrapreasonid: ScrapreasonId,
     c: Connection
-  ): Optional<ScrapreasonRow>
+  ): ScrapreasonRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     scrapreasonids: Array<ScrapreasonId>,
     c: Connection
   ): List<ScrapreasonRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     scrapreasonids: Array<ScrapreasonId>,
     c: Connection
   ): Map<ScrapreasonId, ScrapreasonRow>
 
-  fun update(): UpdateBuilder<ScrapreasonFields, ScrapreasonRow>
+  abstract fun update(): UpdateBuilder<ScrapreasonFields, ScrapreasonRow>
 
-  fun update(
+  abstract fun update(
     row: ScrapreasonRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ScrapreasonRow,
     c: Connection
   ): ScrapreasonRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<ScrapreasonRow>,
     c: Connection
   ): List<ScrapreasonRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<ScrapreasonRow>,
     batchSize: Int,
     c: Connection

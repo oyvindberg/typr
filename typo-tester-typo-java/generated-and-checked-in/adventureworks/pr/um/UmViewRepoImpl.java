@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class UmViewRepoImpl implements UmViewRepo {
@@ -19,9 +20,6 @@ public class UmViewRepoImpl implements UmViewRepo {
 
   @Override
   public List<UmViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "unitmeasurecode", "name", "modifieddate"::text
-       from "pr"."um"
-    """)).query(UmViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"unitmeasurecode\", \"name\", \"modifieddate\"\nfrom \"pr\".\"um\"\n")).query(UmViewRow._rowParser.all()).runUnchecked(c);
   };
 }

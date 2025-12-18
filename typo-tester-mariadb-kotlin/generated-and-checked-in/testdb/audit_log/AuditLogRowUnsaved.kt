@@ -7,10 +7,10 @@ package testdb.audit_log
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.Inet6
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -25,15 +25,15 @@ data class AuditLogRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("old_values") val oldValues: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("old_values") val oldValues: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("new_values") val newValues: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("new_values") val newValues: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("changed_by") val changedBy: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("changed_by") val changedBy: Defaulted<String?> = UseDefault(),
   /** Default: current_timestamp(6)
 
     */
@@ -41,19 +41,19 @@ data class AuditLogRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("client_ip") val clientIp: Defaulted<Optional<Inet6>> = UseDefault(),
+  @JsonProperty("client_ip") val clientIp: Defaulted<Inet6?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("session_id") val sessionId: Defaulted<Optional<ByteArray>> = UseDefault()
+  @JsonProperty("session_id") val sessionId: Defaulted<ByteArray?> = UseDefault()
 ) {
   fun toRow(
-    oldValuesDefault: () -> Optional<String>,
-    newValuesDefault: () -> Optional<String>,
-    changedByDefault: () -> Optional<String>,
+    oldValuesDefault: () -> String?,
+    newValuesDefault: () -> String?,
+    changedByDefault: () -> String?,
     changedAtDefault: () -> LocalDateTime,
-    clientIpDefault: () -> Optional<Inet6>,
-    sessionIdDefault: () -> Optional<ByteArray>,
+    clientIpDefault: () -> Inet6?,
+    sessionIdDefault: () -> ByteArray?,
     logIdDefault: () -> AuditLogId
   ): AuditLogRow = AuditLogRow(logId = logIdDefault(), tableName = tableName, recordId = recordId, action = action, oldValues = oldValues.getOrElse(oldValuesDefault), newValues = newValues.getOrElse(newValuesDefault), changedBy = changedBy.getOrElse(changedByDefault), changedAt = changedAt.getOrElse(changedAtDefault), clientIp = clientIp.getOrElse(clientIpDefault), sessionId = sessionId.getOrElse(sessionIdDefault))
 
@@ -65,16 +65,16 @@ data class AuditLogRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.text.mariaText().unsafeEncode(row.action, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.oldValues, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.oldValues, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.newValues, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.newValues, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.changedBy, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.changedBy, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.changedAt, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.inet6.opt().mariaText()).unsafeEncode(row.clientIp, sb)
+      Defaulted.mariaText(MariaTypes.inet6.nullable().mariaText()).unsafeEncode(row.clientIp, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varbinary.opt().mariaText()).unsafeEncode(row.sessionId, sb) })
+      Defaulted.mariaText(MariaTypes.varbinary.nullable().mariaText()).unsafeEncode(row.sessionId, sb) })
   }
 }

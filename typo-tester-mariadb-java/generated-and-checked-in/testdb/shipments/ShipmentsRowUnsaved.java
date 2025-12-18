@@ -214,11 +214,11 @@ public record ShipmentsRowUnsaved(
       sb.append(MariaText.DELIMETER);
       MariaTypes.varchar.mariaText().unsafeEncode(row.shippingMethod, sb);
       sb.append(MariaText.DELIMETER);
-      MariaTypes.decimal.mariaText().unsafeEncode(row.shippingCost, sb);
+      MariaTypes.numeric.mariaText().unsafeEncode(row.shippingCost, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.trackingNumber, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.weightKg, sb);
+      Defaulted.mariaText(MariaTypes.numeric.opt().mariaText()).unsafeEncode(row.weightKg, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.dimensionsJson, sb);
       sb.append(MariaText.DELIMETER);
@@ -230,7 +230,7 @@ public record ShipmentsRowUnsaved(
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.actualDeliveryAt, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.insuranceAmount, sb);
+      Defaulted.mariaText(MariaTypes.numeric.opt().mariaText()).unsafeEncode(row.insuranceAmount, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(WarehousesId.pgType.opt().mariaText()).unsafeEncode(row.originWarehouseId, sb);
       sb.append(MariaText.DELIMETER);

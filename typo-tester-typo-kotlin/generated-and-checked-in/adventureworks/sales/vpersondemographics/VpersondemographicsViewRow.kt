@@ -5,32 +5,32 @@
  */
 package adventureworks.sales.vpersondemographics
 
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoMoney
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDate
+import typo.data.Money
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sales.vpersondemographics */
 data class VpersondemographicsViewRow(
   /** Points to [adventureworks.person.person.PersonRow.businessentityid] */
   val businessentityid: BusinessentityId,
-  val totalpurchaseytd: Optional<TypoMoney>,
-  val datefirstpurchase: Optional<TypoLocalDate>,
-  val birthdate: Optional<TypoLocalDate>,
-  val maritalstatus: Optional</* max 1 chars */ String>,
-  val yearlyincome: Optional</* max 30 chars */ String>,
-  val gender: Optional</* max 1 chars */ String>,
-  val totalchildren: Optional<Int>,
-  val numberchildrenathome: Optional<Int>,
-  val education: Optional</* max 30 chars */ String>,
-  val occupation: Optional</* max 30 chars */ String>,
-  val homeownerflag: Optional<Boolean>,
-  val numbercarsowned: Optional<Int>
+  val totalpurchaseytd: Money,
+  val datefirstpurchase: LocalDate,
+  val birthdate: LocalDate,
+  val maritalstatus: String,
+  val yearlyincome: String,
+  val gender: String,
+  val totalchildren: Int,
+  val numberchildrenathome: Int,
+  val education: String,
+  val occupation: String,
+  val homeownerflag: Boolean,
+  val numbercarsowned: Int
 ) {
   companion object {
-    val _rowParser: RowParser<VpersondemographicsViewRow> = RowParsers.of(BusinessentityId.pgType, TypoMoney.pgType.opt(), TypoLocalDate.pgType.opt(), TypoLocalDate.pgType.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.int4.opt(), PgTypes.int4.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.bool.opt(), PgTypes.int4.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> VpersondemographicsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.totalpurchaseytd, row.datefirstpurchase, row.birthdate, row.maritalstatus, row.yearlyincome, row.gender, row.totalchildren, row.numberchildrenathome, row.education, row.occupation, row.homeownerflag, row.numbercarsowned) })
+    val _rowParser: RowParser<VpersondemographicsViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.money, PgTypes.date, PgTypes.date, PgTypes.text, PgTypes.text, PgTypes.text, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, PgTypes.text, PgTypes.text, KotlinDbTypes.PgTypes.bool, KotlinDbTypes.PgTypes.int4, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> VpersondemographicsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.totalpurchaseytd, row.datefirstpurchase, row.birthdate, row.maritalstatus, row.yearlyincome, row.gender, row.totalchildren, row.numberchildrenathome, row.education, row.occupation, row.homeownerflag, row.numbercarsowned) })
   }
 }

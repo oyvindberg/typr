@@ -30,7 +30,7 @@ case class ExternalTools(
 object ExternalTools {
 
   /** Initialize external tools, downloading Python and sqlglot if needed */
-  def init(logger: TypoLogger, config: ExternalToolsConfig): ExternalTools = {
+  def init(logger: TypoLogger, config: ExternalToolsConfig): ExternalTools = synchronized {
     logger.info("Initializing external tools for SQL analysis...")
 
     // Ensure downloads directory exists

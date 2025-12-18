@@ -7,15 +7,13 @@ package adventureworks.hr.eph
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class EphViewRepoImpl() : EphViewRepo {
   override fun select(): SelectBuilder<EphViewFields, EphViewRow> = SelectBuilder.of("\"hr\".\"eph\"", EphViewFields.structure, EphViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<EphViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text
-    from "hr"."eph"
-  """.trimMargin())).query(EphViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<EphViewRow> = interpolate(Fragment.lit("select \"id\", \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\"\nfrom \"hr\".\"eph\"\n")).query(EphViewRow._rowParser.all()).runUnchecked(c)
 }

@@ -5,7 +5,6 @@
  */
 package adventureworks.production.document;
 
-import adventureworks.customtypes.TypoUUID;
 import java.lang.RuntimeException;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -14,18 +13,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import typo.dsl.DeleteBuilder;
-import typo.dsl.DeleteBuilder.DeleteBuilderMock;
+import typo.dsl.DeleteBuilderMock;
 import typo.dsl.DeleteParams;
 import typo.dsl.SelectBuilder;
 import typo.dsl.SelectBuilderMock;
 import typo.dsl.SelectParams;
 import typo.dsl.UpdateBuilder;
-import typo.dsl.UpdateBuilder.UpdateBuilderMock;
+import typo.dsl.UpdateBuilderMock;
 import typo.dsl.UpdateParams;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public record DocumentRepoMock(
   java.util.function.Function<DocumentRowUnsaved, DocumentRow> toRow,
@@ -76,7 +75,7 @@ public record DocumentRepoMock(
     Connection c
   ) {
     if (map.containsKey(unsaved.documentnode())) {
-      throw new RuntimeException(str("id $unsaved.documentnode() already exists"));
+      throw new RuntimeException("id " + unsaved.documentnode() + " already exists");
     };
     map.put(unsaved.documentnode(), unsaved);
     return unsaved;
@@ -165,7 +164,7 @@ public record DocumentRepoMock(
 
   @Override
   public Optional<DocumentRow> selectByUniqueRowguid(
-    TypoUUID rowguid,
+    UUID rowguid,
     Connection c
   ) {
     return new ArrayList<>(map.values()).stream().filter(v -> rowguid.equals(v.rowguid())).findFirst();

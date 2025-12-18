@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VstateprovincecountryregionMVRepoImpl implements VstateprovincecountryregionMVRepo {
@@ -19,9 +20,6 @@ public class VstateprovincecountryregionMVRepoImpl implements Vstateprovincecoun
 
   @Override
   public List<VstateprovincecountryregionMVRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname"
-       from "person"."vstateprovincecountryregion"
-    """)).query(VstateprovincecountryregionMVRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"stateprovinceid\", \"stateprovincecode\", \"isonlystateprovinceflag\", \"stateprovincename\", \"territoryid\", \"countryregioncode\", \"countryregionname\"\nfrom \"person\".\"vstateprovincecountryregion\"\n")).query(VstateprovincecountryregionMVRow._rowParser.all()).runUnchecked(c);
   };
 }

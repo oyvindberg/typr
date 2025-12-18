@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VWarehouseCoverageViewRepoImpl implements VWarehouseCoverageViewRepo {
@@ -19,9 +20,6 @@ public class VWarehouseCoverageViewRepoImpl implements VWarehouseCoverageViewRep
 
   @Override
   public List<VWarehouseCoverageViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `warehouse_id`, `code`, `name`, `address`, `location_wkt`, `service_area_wkt`, `timezone`, `is_active`, `products_stocked`, `total_inventory`
-       from `v_warehouse_coverage`
-    """)).query(VWarehouseCoverageViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `warehouse_id`, `code`, `name`, `address`, `location_wkt`, `service_area_wkt`, `timezone`, `is_active`, `products_stocked`, `total_inventory`\nfrom `v_warehouse_coverage`\n")).query(VWarehouseCoverageViewRow._rowParser.all()).runUnchecked(c);
   };
 }

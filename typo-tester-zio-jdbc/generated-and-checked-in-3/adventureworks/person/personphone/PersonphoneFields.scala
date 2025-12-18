@@ -16,6 +16,7 @@ import adventureworks.public.Phone
 import typo.dsl.ForeignKey
 import typo.dsl.PGType
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -23,7 +24,6 @@ import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait PersonphoneFields {
   def businessentityid: IdField[BusinessentityId, PersonphoneRow]
@@ -44,11 +44,11 @@ trait PersonphoneFields {
 }
 
 object PersonphoneFields {
-  lazy val structure: Relation[PersonphoneFields, PersonphoneRow] =
+  lazy val structure: RelationStructure[PersonphoneFields, PersonphoneRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PersonphoneFields, PersonphoneRow] {
+    extends RelationStructure[PersonphoneFields, PersonphoneRow] {
 
     override lazy val fields: PersonphoneFields = new PersonphoneFields {
       override def businessentityid = IdField[BusinessentityId, PersonphoneRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))

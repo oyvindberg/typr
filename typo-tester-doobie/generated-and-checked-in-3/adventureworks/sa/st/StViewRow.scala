@@ -26,7 +26,7 @@ case class StViewRow(
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.countryregioncode]] */
   countryregioncode: CountryregionId,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.group]] */
-  group: /* max 50 chars */ String,
+  group: String,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.salesytd]] */
   salesytd: BigDecimal,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.saleslastyear]] */
@@ -42,9 +42,9 @@ case class StViewRow(
 )
 
 object StViewRow {
-  given decoder: Decoder[StViewRow] = Decoder.forProduct11[StViewRow, SalesterritoryId, SalesterritoryId, Name, CountryregionId, /* max 50 chars */ String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")(StViewRow.apply)(using SalesterritoryId.decoder, SalesterritoryId.decoder, Name.decoder, CountryregionId.decoder, Decoder.decodeString, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[StViewRow] = Decoder.forProduct11[StViewRow, SalesterritoryId, SalesterritoryId, Name, CountryregionId, String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")(StViewRow.apply)(using SalesterritoryId.decoder, SalesterritoryId.decoder, Name.decoder, CountryregionId.decoder, Decoder.decodeString, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[StViewRow] = Encoder.forProduct11[StViewRow, SalesterritoryId, SalesterritoryId, Name, CountryregionId, /* max 50 chars */ String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")(x => (x.id, x.territoryid, x.name, x.countryregioncode, x.group, x.salesytd, x.saleslastyear, x.costytd, x.costlastyear, x.rowguid, x.modifieddate))(using SalesterritoryId.encoder, SalesterritoryId.encoder, Name.encoder, CountryregionId.encoder, Encoder.encodeString, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[StViewRow] = Encoder.forProduct11[StViewRow, SalesterritoryId, SalesterritoryId, Name, CountryregionId, String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")(x => (x.id, x.territoryid, x.name, x.countryregioncode, x.group, x.salesytd, x.saleslastyear, x.costytd, x.costlastyear, x.rowguid, x.modifieddate))(using SalesterritoryId.encoder, SalesterritoryId.encoder, Name.encoder, CountryregionId.encoder, Encoder.encodeString, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given read: Read[StViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -65,7 +65,7 @@ object StViewRow {
             territoryid = arr(1).asInstanceOf[SalesterritoryId],
             name = arr(2).asInstanceOf[Name],
             countryregioncode = arr(3).asInstanceOf[CountryregionId],
-            group = arr(4).asInstanceOf[/* max 50 chars */ String],
+            group = arr(4).asInstanceOf[String],
             salesytd = arr(5).asInstanceOf[BigDecimal],
             saleslastyear = arr(6).asInstanceOf[BigDecimal],
             costytd = arr(7).asInstanceOf[BigDecimal],

@@ -20,16 +20,16 @@ import testdb.warehouses.WarehousesRow;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface OrderItemsFields extends FieldsExpr<OrderItemsRow> {
-  record Impl(List<Path> _path) implements OrderItemsFields, Relation<OrderItemsFields, OrderItemsRow> {
+  record Impl(List<Path> _path) implements OrderItemsFields, RelationStructure<OrderItemsFields, OrderItemsRow> {
     @Override
     public IdField<OrderItemsId, OrderItemsRow> itemId() {
       return new IdField<OrderItemsId, OrderItemsRow>(_path, "item_id", OrderItemsRow::itemId, Optional.empty(), Optional.empty(), (row, value) -> row.withItemId(value), OrderItemsId.pgType);
@@ -62,22 +62,22 @@ public interface OrderItemsFields extends FieldsExpr<OrderItemsRow> {
 
     @Override
     public Field<BigDecimal, OrderItemsRow> unitPrice() {
-      return new Field<BigDecimal, OrderItemsRow>(_path, "unit_price", OrderItemsRow::unitPrice, Optional.empty(), Optional.empty(), (row, value) -> row.withUnitPrice(value), MariaTypes.decimal);
+      return new Field<BigDecimal, OrderItemsRow>(_path, "unit_price", OrderItemsRow::unitPrice, Optional.empty(), Optional.empty(), (row, value) -> row.withUnitPrice(value), MariaTypes.numeric);
     };
 
     @Override
     public Field<BigDecimal, OrderItemsRow> discountAmount() {
-      return new Field<BigDecimal, OrderItemsRow>(_path, "discount_amount", OrderItemsRow::discountAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withDiscountAmount(value), MariaTypes.decimal);
+      return new Field<BigDecimal, OrderItemsRow>(_path, "discount_amount", OrderItemsRow::discountAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withDiscountAmount(value), MariaTypes.numeric);
     };
 
     @Override
     public Field<BigDecimal, OrderItemsRow> taxAmount() {
-      return new Field<BigDecimal, OrderItemsRow>(_path, "tax_amount", OrderItemsRow::taxAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withTaxAmount(value), MariaTypes.decimal);
+      return new Field<BigDecimal, OrderItemsRow>(_path, "tax_amount", OrderItemsRow::taxAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withTaxAmount(value), MariaTypes.numeric);
     };
 
     @Override
     public Field<BigDecimal, OrderItemsRow> lineTotal() {
-      return new Field<BigDecimal, OrderItemsRow>(_path, "line_total", OrderItemsRow::lineTotal, Optional.empty(), Optional.empty(), (row, value) -> row.withLineTotal(value), MariaTypes.decimal);
+      return new Field<BigDecimal, OrderItemsRow>(_path, "line_total", OrderItemsRow::lineTotal, Optional.empty(), Optional.empty(), (row, value) -> row.withLineTotal(value), MariaTypes.numeric);
     };
 
     @Override
@@ -97,17 +97,17 @@ public interface OrderItemsFields extends FieldsExpr<OrderItemsRow> {
 
     @Override
     public List<FieldLike<?, OrderItemsRow>> columns() {
-      return List.of(this.itemId(), this.orderId(), this.productId(), this.sku(), this.productName(), this.quantity(), this.unitPrice(), this.discountAmount(), this.taxAmount(), this.lineTotal(), this.fulfillmentStatus(), this.warehouseId(), this.notes());
+      return java.util.List.of(this.itemId(), this.orderId(), this.productId(), this.sku(), this.productName(), this.quantity(), this.unitPrice(), this.discountAmount(), this.taxAmount(), this.lineTotal(), this.fulfillmentStatus(), this.warehouseId(), this.notes());
     };
 
     @Override
-    public Relation<OrderItemsFields, OrderItemsRow> copy(List<Path> _path) {
+    public RelationStructure<OrderItemsFields, OrderItemsRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<OrderItemsId, OrderItemsRow> itemId();
@@ -137,15 +137,15 @@ public interface OrderItemsFields extends FieldsExpr<OrderItemsRow> {
   OptField<String, OrderItemsRow> notes();
 
   default ForeignKey<OrdersFields, OrdersRow> fkOrders() {
-    return ForeignKey.<OrdersFields, OrdersRow>of("fk_oi_order").withColumnPair(orderId(), OrdersFields::orderId);
+    return ForeignKey.<OrdersFields, OrdersRow>of("fk_oi_order").<OrdersId>withColumnPair(orderId(), OrdersFields::orderId);
   };
 
   default ForeignKey<ProductsFields, ProductsRow> fkProducts() {
-    return ForeignKey.<ProductsFields, ProductsRow>of("fk_oi_product").withColumnPair(productId(), ProductsFields::productId);
+    return ForeignKey.<ProductsFields, ProductsRow>of("fk_oi_product").<ProductsId>withColumnPair(productId(), ProductsFields::productId);
   };
 
   default ForeignKey<WarehousesFields, WarehousesRow> fkWarehouses() {
-    return ForeignKey.<WarehousesFields, WarehousesRow>of("fk_oi_warehouse").withColumnPair(warehouseId(), WarehousesFields::warehouseId);
+    return ForeignKey.<WarehousesFields, WarehousesRow>of("fk_oi_warehouse").<WarehousesId>withColumnPair(warehouseId(), WarehousesFields::warehouseId);
   };
 
   @Override

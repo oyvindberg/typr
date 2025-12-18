@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
 import testdb.customer_status.CustomerStatusId
 import testdb.customers.CustomersId
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** SQL file: simple_customer_lookup.sql */
 data class SimpleCustomerLookupSqlRow(

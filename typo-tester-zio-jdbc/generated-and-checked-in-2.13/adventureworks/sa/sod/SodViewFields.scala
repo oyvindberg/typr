@@ -12,16 +12,15 @@ import adventureworks.production.product.ProductId
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.specialoffer.SpecialofferId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait SodViewFields {
   def id: Field[Int, SodViewRow]
   def salesorderid: Field[SalesorderheaderId, SodViewRow]
   def salesorderdetailid: Field[Int, SodViewRow]
-  def carriertrackingnumber: OptField[/* max 25 chars */ String, SodViewRow]
+  def carriertrackingnumber: Field[String, SodViewRow]
   def orderqty: Field[TypoShort, SodViewRow]
   def productid: Field[ProductId, SodViewRow]
   def specialofferid: Field[SpecialofferId, SodViewRow]
@@ -32,17 +31,17 @@ trait SodViewFields {
 }
 
 object SodViewFields {
-  lazy val structure: Relation[SodViewFields, SodViewRow] =
+  lazy val structure: RelationStructure[SodViewFields, SodViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SodViewFields, SodViewRow] {
+    extends RelationStructure[SodViewFields, SodViewRow] {
 
     override lazy val fields: SodViewFields = new SodViewFields {
       override def id = Field[Int, SodViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def salesorderid = Field[SalesorderheaderId, SodViewRow](_path, "salesorderid", None, None, x => x.salesorderid, (row, value) => row.copy(salesorderid = value))
       override def salesorderdetailid = Field[Int, SodViewRow](_path, "salesorderdetailid", None, None, x => x.salesorderdetailid, (row, value) => row.copy(salesorderdetailid = value))
-      override def carriertrackingnumber = OptField[/* max 25 chars */ String, SodViewRow](_path, "carriertrackingnumber", None, None, x => x.carriertrackingnumber, (row, value) => row.copy(carriertrackingnumber = value))
+      override def carriertrackingnumber = Field[String, SodViewRow](_path, "carriertrackingnumber", None, None, x => x.carriertrackingnumber, (row, value) => row.copy(carriertrackingnumber = value))
       override def orderqty = Field[TypoShort, SodViewRow](_path, "orderqty", None, None, x => x.orderqty, (row, value) => row.copy(orderqty = value))
       override def productid = Field[ProductId, SodViewRow](_path, "productid", None, None, x => x.productid, (row, value) => row.copy(productid = value))
       override def specialofferid = Field[SpecialofferId, SodViewRow](_path, "specialofferid", None, None, x => x.specialofferid, (row, value) => row.copy(specialofferid = value))

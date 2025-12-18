@@ -5,23 +5,23 @@
  */
 package adventureworks.hr.edh;
 
-import adventureworks.customtypes.TypoLocalDate;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.humanresources.department.DepartmentId;
 import adventureworks.humanresources.shift.ShiftId;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface EdhViewFields extends FieldsExpr<EdhViewRow> {
-  record Impl(List<Path> _path) implements EdhViewFields, Relation<EdhViewFields, EdhViewRow> {
+  record Impl(List<Path> _path) implements EdhViewFields, RelationStructure<EdhViewFields, EdhViewRow> {
     @Override
     public Field<BusinessentityId, EdhViewRow> id() {
       return new Field<BusinessentityId, EdhViewRow>(_path, "id", EdhViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), BusinessentityId.pgType);
@@ -43,33 +43,33 @@ public interface EdhViewFields extends FieldsExpr<EdhViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDate, EdhViewRow> startdate() {
-      return new Field<TypoLocalDate, EdhViewRow>(_path, "startdate", EdhViewRow::startdate, Optional.of("text"), Optional.empty(), (row, value) -> row.withStartdate(value), TypoLocalDate.pgType);
+    public Field<LocalDate, EdhViewRow> startdate() {
+      return new Field<LocalDate, EdhViewRow>(_path, "startdate", EdhViewRow::startdate, Optional.empty(), Optional.empty(), (row, value) -> row.withStartdate(value), PgTypes.date);
     };
 
     @Override
-    public OptField<TypoLocalDate, EdhViewRow> enddate() {
-      return new OptField<TypoLocalDate, EdhViewRow>(_path, "enddate", EdhViewRow::enddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withEnddate(value), TypoLocalDate.pgType);
+    public Field<LocalDate, EdhViewRow> enddate() {
+      return new Field<LocalDate, EdhViewRow>(_path, "enddate", EdhViewRow::enddate, Optional.empty(), Optional.empty(), (row, value) -> row.withEnddate(value), PgTypes.date);
     };
 
     @Override
-    public Field<TypoLocalDateTime, EdhViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, EdhViewRow>(_path, "modifieddate", EdhViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, EdhViewRow> modifieddate() {
+      return new Field<LocalDateTime, EdhViewRow>(_path, "modifieddate", EdhViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, EdhViewRow>> columns() {
-      return List.of(this.id(), this.businessentityid(), this.departmentid(), this.shiftid(), this.startdate(), this.enddate(), this.modifieddate());
+      return java.util.List.of(this.id(), this.businessentityid(), this.departmentid(), this.shiftid(), this.startdate(), this.enddate(), this.modifieddate());
     };
 
     @Override
-    public Relation<EdhViewFields, EdhViewRow> copy(List<Path> _path) {
+    public RelationStructure<EdhViewFields, EdhViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<BusinessentityId, EdhViewRow> id();
@@ -80,11 +80,11 @@ public interface EdhViewFields extends FieldsExpr<EdhViewRow> {
 
   Field<ShiftId, EdhViewRow> shiftid();
 
-  Field<TypoLocalDate, EdhViewRow> startdate();
+  Field<LocalDate, EdhViewRow> startdate();
 
-  OptField<TypoLocalDate, EdhViewRow> enddate();
+  Field<LocalDate, EdhViewRow> enddate();
 
-  Field<TypoLocalDateTime, EdhViewRow> modifieddate();
+  Field<LocalDateTime, EdhViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, EdhViewRow>> columns();

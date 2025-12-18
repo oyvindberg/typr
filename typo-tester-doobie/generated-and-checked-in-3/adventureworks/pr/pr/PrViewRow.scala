@@ -27,19 +27,19 @@ case class PrViewRow(
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.reviewdate]] */
   reviewdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.emailaddress]] */
-  emailaddress: /* max 50 chars */ String,
+  emailaddress: String,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.rating]] */
   rating: Int,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.comments]] */
-  comments: Option[/* max 3850 chars */ String],
+  comments: String,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 
 object PrViewRow {
-  given decoder: Decoder[PrViewRow] = Decoder.forProduct9[PrViewRow, ProductreviewId, ProductreviewId, ProductId, Name, TypoLocalDateTime, /* max 50 chars */ String, Int, Option[/* max 3850 chars */ String], TypoLocalDateTime]("id", "productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")(PrViewRow.apply)(using ProductreviewId.decoder, ProductreviewId.decoder, ProductId.decoder, Name.decoder, TypoLocalDateTime.decoder, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeOption(using Decoder.decodeString), TypoLocalDateTime.decoder)
+  given decoder: Decoder[PrViewRow] = Decoder.forProduct9[PrViewRow, ProductreviewId, ProductreviewId, ProductId, Name, TypoLocalDateTime, String, Int, String, TypoLocalDateTime]("id", "productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")(PrViewRow.apply)(using ProductreviewId.decoder, ProductreviewId.decoder, ProductId.decoder, Name.decoder, TypoLocalDateTime.decoder, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeString, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[PrViewRow] = Encoder.forProduct9[PrViewRow, ProductreviewId, ProductreviewId, ProductId, Name, TypoLocalDateTime, /* max 50 chars */ String, Int, Option[/* max 3850 chars */ String], TypoLocalDateTime]("id", "productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")(x => (x.id, x.productreviewid, x.productid, x.reviewername, x.reviewdate, x.emailaddress, x.rating, x.comments, x.modifieddate))(using ProductreviewId.encoder, ProductreviewId.encoder, ProductId.encoder, Name.encoder, TypoLocalDateTime.encoder, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeOption(using Encoder.encodeString), TypoLocalDateTime.encoder)
+  given encoder: Encoder[PrViewRow] = Encoder.forProduct9[PrViewRow, ProductreviewId, ProductreviewId, ProductId, Name, TypoLocalDateTime, String, Int, String, TypoLocalDateTime]("id", "productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")(x => (x.id, x.productreviewid, x.productid, x.reviewername, x.reviewdate, x.emailaddress, x.rating, x.comments, x.modifieddate))(using ProductreviewId.encoder, ProductreviewId.encoder, ProductId.encoder, Name.encoder, TypoLocalDateTime.encoder, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeString, TypoLocalDateTime.encoder)
 
   given read: Read[PrViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -50,7 +50,7 @@ object PrViewRow {
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       PrViewRow(
@@ -59,9 +59,9 @@ object PrViewRow {
             productid = arr(2).asInstanceOf[ProductId],
             reviewername = arr(3).asInstanceOf[Name],
             reviewdate = arr(4).asInstanceOf[TypoLocalDateTime],
-            emailaddress = arr(5).asInstanceOf[/* max 50 chars */ String],
+            emailaddress = arr(5).asInstanceOf[String],
             rating = arr(6).asInstanceOf[Int],
-            comments = arr(7).asInstanceOf[Option[/* max 3850 chars */ String]],
+            comments = arr(7).asInstanceOf[String],
             modifieddate = arr(8).asInstanceOf[TypoLocalDateTime]
       )
     }

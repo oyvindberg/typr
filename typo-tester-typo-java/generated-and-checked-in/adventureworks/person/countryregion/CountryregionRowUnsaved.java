@@ -7,9 +7,10 @@ package adventureworks.person.countryregion;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `person.countryregion` which has not been persisted yet */
 public record CountryregionRowUnsaved(
@@ -18,7 +19,7 @@ public record CountryregionRowUnsaved(
   /** Country or region name. */
   Name name,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public CountryregionRowUnsaved(
     /** ISO standard code for countries and regions. */
@@ -40,7 +41,7 @@ public record CountryregionRowUnsaved(
   };
 
   /** Default: now() */
-  public CountryregionRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public CountryregionRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new CountryregionRowUnsaved(countryregioncode, name, modifieddate);
   };
 
@@ -50,10 +51,10 @@ public record CountryregionRowUnsaved(
       sb.append(PgText.DELIMETER);
       Name.pgType.pgText().unsafeEncode(row.name, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public CountryregionRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public CountryregionRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new CountryregionRow(countryregioncode, name, modifieddate.getOrElse(modifieddateDefault));
   };
 }

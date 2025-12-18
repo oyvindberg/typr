@@ -5,12 +5,12 @@
  */
 package adventureworks.public_.users;
 
-import adventureworks.customtypes.TypoUnknownCitext;
 import java.sql.Connection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import typo.data.Unknown;
 import typo.dsl.DeleteBuilder;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
@@ -71,7 +71,7 @@ public interface UsersRepo {
   );
 
   Optional<UsersRow> selectByUniqueEmail(
-    TypoUnknownCitext email,
+    Unknown email,
     Connection c
   );
 

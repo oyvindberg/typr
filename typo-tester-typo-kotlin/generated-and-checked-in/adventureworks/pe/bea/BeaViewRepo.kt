@@ -7,10 +7,10 @@ package adventureworks.pe.bea
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface BeaViewRepo {
-  fun select(): SelectBuilder<BeaViewFields, BeaViewRow>
+  abstract fun select(): SelectBuilder<BeaViewFields, BeaViewRow>
 
-  fun selectAll(c: Connection): List<BeaViewRow>
+  abstract fun selectAll(c: Connection): List<BeaViewRow>
 }

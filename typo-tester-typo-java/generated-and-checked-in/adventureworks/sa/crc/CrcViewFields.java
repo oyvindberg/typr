@@ -5,20 +5,21 @@
  */
 package adventureworks.sa.crc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.sales.currency.CurrencyId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface CrcViewFields extends FieldsExpr<CrcViewRow> {
-  record Impl(List<Path> _path) implements CrcViewFields, Relation<CrcViewFields, CrcViewRow> {
+  record Impl(List<Path> _path) implements CrcViewFields, RelationStructure<CrcViewFields, CrcViewRow> {
     @Override
     public Field<CountryregionId, CrcViewRow> countryregioncode() {
       return new Field<CountryregionId, CrcViewRow>(_path, "countryregioncode", CrcViewRow::countryregioncode, Optional.empty(), Optional.empty(), (row, value) -> row.withCountryregioncode(value), CountryregionId.pgType);
@@ -30,30 +31,30 @@ public interface CrcViewFields extends FieldsExpr<CrcViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, CrcViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, CrcViewRow>(_path, "modifieddate", CrcViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CrcViewRow> modifieddate() {
+      return new Field<LocalDateTime, CrcViewRow>(_path, "modifieddate", CrcViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, CrcViewRow>> columns() {
-      return List.of(this.countryregioncode(), this.currencycode(), this.modifieddate());
+      return java.util.List.of(this.countryregioncode(), this.currencycode(), this.modifieddate());
     };
 
     @Override
-    public Relation<CrcViewFields, CrcViewRow> copy(List<Path> _path) {
+    public RelationStructure<CrcViewFields, CrcViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<CountryregionId, CrcViewRow> countryregioncode();
 
   Field<CurrencyId, CrcViewRow> currencycode();
 
-  Field<TypoLocalDateTime, CrcViewRow> modifieddate();
+  Field<LocalDateTime, CrcViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, CrcViewRow>> columns();

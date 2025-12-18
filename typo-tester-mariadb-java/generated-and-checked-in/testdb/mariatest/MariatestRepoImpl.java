@@ -17,7 +17,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -32,11 +31,7 @@ public class MariatestRepoImpl implements MariatestRepo {
     MariatestId intCol,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `mariatest` where `int_col` = "),
-      MariatestId.pgType.encode(intCol),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `mariatest` where `int_col` = "), Fragment.encode(MariatestId.pgType, intCol), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,8 +39,8 @@ public class MariatestRepoImpl implements MariatestRepo {
     MariatestId[] intCols,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : intCols) { fragments.add(MariatestId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : intCols) { fragments.add(Fragment.encode(MariatestId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `mariatest` where `int_col` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -54,98 +49,7 @@ public class MariatestRepoImpl implements MariatestRepo {
     MariatestRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `mariatest`(`tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)
-         values ("""),
-      MariaTypes.tinyint.encode(unsaved.tinyintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.smallintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.mediumintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariatestId.pgType.encode(unsaved.intCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.encode(unsaved.bigintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.tinyintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.smallintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.mediumintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.encode(unsaved.intUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigintUnsigned.encode(unsaved.bigintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.decimalCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.numericCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.float_.encode(unsaved.floatCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.double_.encode(unsaved.doubleCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.boolCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.bitCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.bit1Col()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.charCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.varcharCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.tinytextCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.textCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.mediumtextCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.longtextCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.binaryCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.varbinaryCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.tinyblobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.blobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.mediumblobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.longblobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.date.encode(unsaved.dateCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.time.encode(unsaved.timeCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.time.encode(unsaved.timeFspCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.datetimeCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.datetimeFspCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.timestampCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.timestampFspCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.year.encode(unsaved.yearCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.enumCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.set.encode(unsaved.setCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.jsonCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.inet4.encode(unsaved.inet4Col()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.inet6.encode(unsaved.inet6Col()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `mariatest`(`tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)\nvalues ("), Fragment.encode(MariaTypes.tinyint, unsaved.tinyintCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.smallint, unsaved.smallintCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumint, unsaved.mediumintCol()), Fragment.lit(", "), Fragment.encode(MariatestId.pgType, unsaved.intCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bigint, unsaved.bigintCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.tinyintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.smallintUnsigned, unsaved.smallintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumintUnsigned, unsaved.mediumintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.intUnsigned, unsaved.intUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bigintUnsigned, unsaved.bigintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.decimalCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.numericCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.float_, unsaved.floatCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.double_, unsaved.doubleCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.boolCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bit, unsaved.bitCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bit, unsaved.bit1Col()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.charCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.varcharCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinytext, unsaved.tinytextCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.textCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumtext, unsaved.mediumtextCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext, unsaved.longtextCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.binary, unsaved.binaryCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.varbinary, unsaved.varbinaryCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyblob, unsaved.tinyblobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.blob, unsaved.blobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumblob, unsaved.mediumblobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.longblob, unsaved.longblobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.date, unsaved.dateCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.time, unsaved.timeCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.time, unsaved.timeFspCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.datetimeCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.datetimeFspCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.timestamp, unsaved.timestampCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.timestamp, unsaved.timestampFspCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.year, unsaved.yearCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.enumCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.set, unsaved.setCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext, unsaved.jsonCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.inet4, unsaved.inet4Col()), Fragment.lit(", "), Fragment.encode(MariaTypes.inet6, unsaved.inet6Col()), Fragment.lit(")\nreturning `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"))
       .updateReturning(MariatestRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -154,259 +58,95 @@ public class MariatestRepoImpl implements MariatestRepo {
     MariatestRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`tinyint_col`"));
-    values.add(interpolate(
-      MariaTypes.tinyint.encode(unsaved.tinyintCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.tinyint, unsaved.tinyintCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`smallint_col`"));
-    values.add(interpolate(
-      MariaTypes.smallint.encode(unsaved.smallintCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.smallint, unsaved.smallintCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`mediumint_col`"));
-    values.add(interpolate(
-      MariaTypes.int_.encode(unsaved.mediumintCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.mediumint, unsaved.mediumintCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`int_col`"));
-    values.add(interpolate(
-      MariatestId.pgType.encode(unsaved.intCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariatestId.pgType, unsaved.intCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`bigint_col`"));
-    values.add(interpolate(
-      MariaTypes.bigint.encode(unsaved.bigintCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.bigint, unsaved.bigintCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`tinyint_u_col`"));
-    values.add(interpolate(
-      MariaTypes.smallint.encode(unsaved.tinyintUCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.tinyintUCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`smallint_u_col`"));
-    values.add(interpolate(
-      MariaTypes.int_.encode(unsaved.smallintUCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.smallintUnsigned, unsaved.smallintUCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`mediumint_u_col`"));
-    values.add(interpolate(
-      MariaTypes.int_.encode(unsaved.mediumintUCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.mediumintUnsigned, unsaved.mediumintUCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`int_u_col`"));
-    values.add(interpolate(
-      MariaTypes.bigint.encode(unsaved.intUCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.intUnsigned, unsaved.intUCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`bigint_u_col`"));
-    values.add(interpolate(
-      MariaTypes.bigintUnsigned.encode(unsaved.bigintUCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.bigintUnsigned, unsaved.bigintUCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`decimal_col`"));
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.decimalCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.numeric, unsaved.decimalCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`numeric_col`"));
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.numericCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.numeric, unsaved.numericCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`float_col`"));
-    values.add(interpolate(
-      MariaTypes.float_.encode(unsaved.floatCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.float_, unsaved.floatCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`double_col`"));
-    values.add(interpolate(
-      MariaTypes.double_.encode(unsaved.doubleCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.double_, unsaved.doubleCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`bool_col`"));
-    values.add(interpolate(
-      MariaTypes.bool.encode(unsaved.boolCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.bool, unsaved.boolCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`bit_col`"));
-    values.add(interpolate(
-      MariaTypes.blob.encode(unsaved.bitCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.bit, unsaved.bitCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`bit1_col`"));
-    values.add(interpolate(
-      MariaTypes.blob.encode(unsaved.bit1Col()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.bit, unsaved.bit1Col()), Fragment.lit("")));
     columns.add(Fragment.lit("`char_col`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.charCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.char_, unsaved.charCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`varchar_col`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.varcharCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.varcharCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`tinytext_col`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.tinytextCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.tinytext, unsaved.tinytextCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`text_col`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.textCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.text, unsaved.textCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`mediumtext_col`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.mediumtextCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.mediumtext, unsaved.mediumtextCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`longtext_col`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.longtextCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.longtext, unsaved.longtextCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`binary_col`"));
-    values.add(interpolate(
-      MariaTypes.blob.encode(unsaved.binaryCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.binary, unsaved.binaryCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`varbinary_col`"));
-    values.add(interpolate(
-      MariaTypes.blob.encode(unsaved.varbinaryCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varbinary, unsaved.varbinaryCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`tinyblob_col`"));
-    values.add(interpolate(
-      MariaTypes.blob.encode(unsaved.tinyblobCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.tinyblob, unsaved.tinyblobCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`blob_col`"));
-    values.add(interpolate(
-      MariaTypes.blob.encode(unsaved.blobCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.blob, unsaved.blobCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`mediumblob_col`"));
-    values.add(interpolate(
-      MariaTypes.blob.encode(unsaved.mediumblobCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.mediumblob, unsaved.mediumblobCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`longblob_col`"));
-    values.add(interpolate(
-      MariaTypes.blob.encode(unsaved.longblobCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.longblob, unsaved.longblobCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`date_col`"));
-    values.add(interpolate(
-      MariaTypes.date.encode(unsaved.dateCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.date, unsaved.dateCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`time_col`"));
-    values.add(interpolate(
-      MariaTypes.time.encode(unsaved.timeCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.time, unsaved.timeCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`time_fsp_col`"));
-    values.add(interpolate(
-      MariaTypes.time.encode(unsaved.timeFspCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.time, unsaved.timeFspCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`datetime_col`"));
-    values.add(interpolate(
-      MariaTypes.datetime.encode(unsaved.datetimeCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.datetime, unsaved.datetimeCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`datetime_fsp_col`"));
-    values.add(interpolate(
-      MariaTypes.datetime.encode(unsaved.datetimeFspCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.datetime, unsaved.datetimeFspCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`year_col`"));
-    values.add(interpolate(
-      MariaTypes.year.encode(unsaved.yearCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.year, unsaved.yearCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`enum_col`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.enumCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.text, unsaved.enumCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`set_col`"));
-    values.add(interpolate(
-      MariaTypes.set.encode(unsaved.setCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.set, unsaved.setCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`json_col`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.jsonCol()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.longtext, unsaved.jsonCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`inet4_col`"));
-    values.add(interpolate(
-      MariaTypes.inet4.encode(unsaved.inet4Col()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.inet4, unsaved.inet4Col()), Fragment.lit("")));
     columns.add(Fragment.lit("`inet6_col`"));
-    values.add(interpolate(
-      MariaTypes.inet6.encode(unsaved.inet6Col()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.inet6, unsaved.inet6Col()), Fragment.lit("")));
     unsaved.timestampCol().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`timestamp_col`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.timestamp, value), Fragment.lit("")));
       }
     );;
     unsaved.timestampFspCol().visit(
@@ -415,25 +155,10 @@ public class MariatestRepoImpl implements MariatestRepo {
       },
       value -> {
         columns.add(Fragment.lit("`timestamp_fsp_col`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.timestamp, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `mariatest`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `mariatest`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"));;
     return q.updateReturning(MariatestRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -444,10 +169,7 @@ public class MariatestRepoImpl implements MariatestRepo {
 
   @Override
   public List<MariatestRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`
-       from `mariatest`
-    """)).query(MariatestRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\nfrom `mariatest`\n")).query(MariatestRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -455,14 +177,7 @@ public class MariatestRepoImpl implements MariatestRepo {
     MariatestId intCol,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`
-         from `mariatest`
-         where `int_col` = """),
-      MariatestId.pgType.encode(intCol),
-      typo.runtime.Fragment.lit("")
-    ).query(MariatestRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\nfrom `mariatest`\nwhere `int_col` = "), Fragment.encode(MariatestId.pgType, intCol), Fragment.lit("")).query(MariatestRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -470,8 +185,8 @@ public class MariatestRepoImpl implements MariatestRepo {
     MariatestId[] intCols,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : intCols) { fragments.add(MariatestId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : intCols) { fragments.add(Fragment.encode(MariatestId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col` from `mariatest` where `int_col` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(MariatestRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -487,7 +202,7 @@ public class MariatestRepoImpl implements MariatestRepo {
 
   @Override
   public UpdateBuilder<MariatestFields, MariatestRow> update() {
-    return UpdateBuilder.of("`mariatest`", MariatestFields.structure(), MariatestRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`mariatest`", MariatestFields.structure(), MariatestRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -496,177 +211,7 @@ public class MariatestRepoImpl implements MariatestRepo {
     Connection c
   ) {
     MariatestId intCol = row.intCol();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `mariatest`
-         set `tinyint_col` = """),
-      MariaTypes.tinyint.encode(row.tinyintCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `smallint_col` = """),
-      MariaTypes.smallint.encode(row.smallintCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `mediumint_col` = """),
-      MariaTypes.int_.encode(row.mediumintCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `bigint_col` = """),
-      MariaTypes.bigint.encode(row.bigintCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `tinyint_u_col` = """),
-      MariaTypes.smallint.encode(row.tinyintUCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `smallint_u_col` = """),
-      MariaTypes.int_.encode(row.smallintUCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `mediumint_u_col` = """),
-      MariaTypes.int_.encode(row.mediumintUCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `int_u_col` = """),
-      MariaTypes.bigint.encode(row.intUCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `bigint_u_col` = """),
-      MariaTypes.bigintUnsigned.encode(row.bigintUCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `decimal_col` = """),
-      MariaTypes.numeric.encode(row.decimalCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `numeric_col` = """),
-      MariaTypes.numeric.encode(row.numericCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `float_col` = """),
-      MariaTypes.float_.encode(row.floatCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `double_col` = """),
-      MariaTypes.double_.encode(row.doubleCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `bool_col` = """),
-      MariaTypes.bool.encode(row.boolCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `bit_col` = """),
-      MariaTypes.blob.encode(row.bitCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `bit1_col` = """),
-      MariaTypes.blob.encode(row.bit1Col()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `char_col` = """),
-      MariaTypes.text.encode(row.charCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `varchar_col` = """),
-      MariaTypes.text.encode(row.varcharCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `tinytext_col` = """),
-      MariaTypes.text.encode(row.tinytextCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `text_col` = """),
-      MariaTypes.text.encode(row.textCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `mediumtext_col` = """),
-      MariaTypes.text.encode(row.mediumtextCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `longtext_col` = """),
-      MariaTypes.text.encode(row.longtextCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `binary_col` = """),
-      MariaTypes.blob.encode(row.binaryCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `varbinary_col` = """),
-      MariaTypes.blob.encode(row.varbinaryCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `tinyblob_col` = """),
-      MariaTypes.blob.encode(row.tinyblobCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `blob_col` = """),
-      MariaTypes.blob.encode(row.blobCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `mediumblob_col` = """),
-      MariaTypes.blob.encode(row.mediumblobCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `longblob_col` = """),
-      MariaTypes.blob.encode(row.longblobCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `date_col` = """),
-      MariaTypes.date.encode(row.dateCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `time_col` = """),
-      MariaTypes.time.encode(row.timeCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `time_fsp_col` = """),
-      MariaTypes.time.encode(row.timeFspCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `datetime_col` = """),
-      MariaTypes.datetime.encode(row.datetimeCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `datetime_fsp_col` = """),
-      MariaTypes.datetime.encode(row.datetimeFspCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `timestamp_col` = """),
-      MariaTypes.datetime.encode(row.timestampCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `timestamp_fsp_col` = """),
-      MariaTypes.datetime.encode(row.timestampFspCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `year_col` = """),
-      MariaTypes.year.encode(row.yearCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `enum_col` = """),
-      MariaTypes.text.encode(row.enumCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `set_col` = """),
-      MariaTypes.set.encode(row.setCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `json_col` = """),
-      MariaTypes.text.encode(row.jsonCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `inet4_col` = """),
-      MariaTypes.inet4.encode(row.inet4Col()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `inet6_col` = """),
-      MariaTypes.inet6.encode(row.inet6Col()),
-      typo.runtime.Fragment.lit("""
-   
-         where `int_col` = """),
-      MariatestId.pgType.encode(intCol),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `mariatest`\nset `tinyint_col` = "), Fragment.encode(MariaTypes.tinyint, row.tinyintCol()), Fragment.lit(",\n`smallint_col` = "), Fragment.encode(MariaTypes.smallint, row.smallintCol()), Fragment.lit(",\n`mediumint_col` = "), Fragment.encode(MariaTypes.mediumint, row.mediumintCol()), Fragment.lit(",\n`bigint_col` = "), Fragment.encode(MariaTypes.bigint, row.bigintCol()), Fragment.lit(",\n`tinyint_u_col` = "), Fragment.encode(MariaTypes.tinyintUnsigned, row.tinyintUCol()), Fragment.lit(",\n`smallint_u_col` = "), Fragment.encode(MariaTypes.smallintUnsigned, row.smallintUCol()), Fragment.lit(",\n`mediumint_u_col` = "), Fragment.encode(MariaTypes.mediumintUnsigned, row.mediumintUCol()), Fragment.lit(",\n`int_u_col` = "), Fragment.encode(MariaTypes.intUnsigned, row.intUCol()), Fragment.lit(",\n`bigint_u_col` = "), Fragment.encode(MariaTypes.bigintUnsigned, row.bigintUCol()), Fragment.lit(",\n`decimal_col` = "), Fragment.encode(MariaTypes.numeric, row.decimalCol()), Fragment.lit(",\n`numeric_col` = "), Fragment.encode(MariaTypes.numeric, row.numericCol()), Fragment.lit(",\n`float_col` = "), Fragment.encode(MariaTypes.float_, row.floatCol()), Fragment.lit(",\n`double_col` = "), Fragment.encode(MariaTypes.double_, row.doubleCol()), Fragment.lit(",\n`bool_col` = "), Fragment.encode(MariaTypes.bool, row.boolCol()), Fragment.lit(",\n`bit_col` = "), Fragment.encode(MariaTypes.bit, row.bitCol()), Fragment.lit(",\n`bit1_col` = "), Fragment.encode(MariaTypes.bit, row.bit1Col()), Fragment.lit(",\n`char_col` = "), Fragment.encode(MariaTypes.char_, row.charCol()), Fragment.lit(",\n`varchar_col` = "), Fragment.encode(MariaTypes.varchar, row.varcharCol()), Fragment.lit(",\n`tinytext_col` = "), Fragment.encode(MariaTypes.tinytext, row.tinytextCol()), Fragment.lit(",\n`text_col` = "), Fragment.encode(MariaTypes.text, row.textCol()), Fragment.lit(",\n`mediumtext_col` = "), Fragment.encode(MariaTypes.mediumtext, row.mediumtextCol()), Fragment.lit(",\n`longtext_col` = "), Fragment.encode(MariaTypes.longtext, row.longtextCol()), Fragment.lit(",\n`binary_col` = "), Fragment.encode(MariaTypes.binary, row.binaryCol()), Fragment.lit(",\n`varbinary_col` = "), Fragment.encode(MariaTypes.varbinary, row.varbinaryCol()), Fragment.lit(",\n`tinyblob_col` = "), Fragment.encode(MariaTypes.tinyblob, row.tinyblobCol()), Fragment.lit(",\n`blob_col` = "), Fragment.encode(MariaTypes.blob, row.blobCol()), Fragment.lit(",\n`mediumblob_col` = "), Fragment.encode(MariaTypes.mediumblob, row.mediumblobCol()), Fragment.lit(",\n`longblob_col` = "), Fragment.encode(MariaTypes.longblob, row.longblobCol()), Fragment.lit(",\n`date_col` = "), Fragment.encode(MariaTypes.date, row.dateCol()), Fragment.lit(",\n`time_col` = "), Fragment.encode(MariaTypes.time, row.timeCol()), Fragment.lit(",\n`time_fsp_col` = "), Fragment.encode(MariaTypes.time, row.timeFspCol()), Fragment.lit(",\n`datetime_col` = "), Fragment.encode(MariaTypes.datetime, row.datetimeCol()), Fragment.lit(",\n`datetime_fsp_col` = "), Fragment.encode(MariaTypes.datetime, row.datetimeFspCol()), Fragment.lit(",\n`timestamp_col` = "), Fragment.encode(MariaTypes.timestamp, row.timestampCol()), Fragment.lit(",\n`timestamp_fsp_col` = "), Fragment.encode(MariaTypes.timestamp, row.timestampFspCol()), Fragment.lit(",\n`year_col` = "), Fragment.encode(MariaTypes.year, row.yearCol()), Fragment.lit(",\n`enum_col` = "), Fragment.encode(MariaTypes.text, row.enumCol()), Fragment.lit(",\n`set_col` = "), Fragment.encode(MariaTypes.set, row.setCol()), Fragment.lit(",\n`json_col` = "), Fragment.encode(MariaTypes.longtext, row.jsonCol()), Fragment.lit(",\n`inet4_col` = "), Fragment.encode(MariaTypes.inet4, row.inet4Col()), Fragment.lit(",\n`inet6_col` = "), Fragment.encode(MariaTypes.inet6, row.inet6Col()), Fragment.lit("\nwhere `int_col` = "), Fragment.encode(MariatestId.pgType, intCol), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -674,138 +219,7 @@ public class MariatestRepoImpl implements MariatestRepo {
     MariatestRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `mariatest`(`tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)
-         VALUES ("""),
-      MariaTypes.tinyint.encode(unsaved.tinyintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.smallintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.mediumintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariatestId.pgType.encode(unsaved.intCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.encode(unsaved.bigintCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.tinyintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.smallintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.int_.encode(unsaved.mediumintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.encode(unsaved.intUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigintUnsigned.encode(unsaved.bigintUCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.decimalCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.numericCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.float_.encode(unsaved.floatCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.double_.encode(unsaved.doubleCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.boolCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.bitCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.bit1Col()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.charCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.varcharCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.tinytextCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.textCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.mediumtextCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.longtextCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.binaryCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.varbinaryCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.tinyblobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.blobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.mediumblobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.longblobCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.date.encode(unsaved.dateCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.time.encode(unsaved.timeCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.time.encode(unsaved.timeFspCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.datetimeCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.datetimeFspCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.timestampCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.timestampFspCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.year.encode(unsaved.yearCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.enumCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.set.encode(unsaved.setCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.jsonCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.inet4.encode(unsaved.inet4Col()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.inet6.encode(unsaved.inet6Col()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `tinyint_col` = VALUES(`tinyint_col`),
-         `smallint_col` = VALUES(`smallint_col`),
-         `mediumint_col` = VALUES(`mediumint_col`),
-         `bigint_col` = VALUES(`bigint_col`),
-         `tinyint_u_col` = VALUES(`tinyint_u_col`),
-         `smallint_u_col` = VALUES(`smallint_u_col`),
-         `mediumint_u_col` = VALUES(`mediumint_u_col`),
-         `int_u_col` = VALUES(`int_u_col`),
-         `bigint_u_col` = VALUES(`bigint_u_col`),
-         `decimal_col` = VALUES(`decimal_col`),
-         `numeric_col` = VALUES(`numeric_col`),
-         `float_col` = VALUES(`float_col`),
-         `double_col` = VALUES(`double_col`),
-         `bool_col` = VALUES(`bool_col`),
-         `bit_col` = VALUES(`bit_col`),
-         `bit1_col` = VALUES(`bit1_col`),
-         `char_col` = VALUES(`char_col`),
-         `varchar_col` = VALUES(`varchar_col`),
-         `tinytext_col` = VALUES(`tinytext_col`),
-         `text_col` = VALUES(`text_col`),
-         `mediumtext_col` = VALUES(`mediumtext_col`),
-         `longtext_col` = VALUES(`longtext_col`),
-         `binary_col` = VALUES(`binary_col`),
-         `varbinary_col` = VALUES(`varbinary_col`),
-         `tinyblob_col` = VALUES(`tinyblob_col`),
-         `blob_col` = VALUES(`blob_col`),
-         `mediumblob_col` = VALUES(`mediumblob_col`),
-         `longblob_col` = VALUES(`longblob_col`),
-         `date_col` = VALUES(`date_col`),
-         `time_col` = VALUES(`time_col`),
-         `time_fsp_col` = VALUES(`time_fsp_col`),
-         `datetime_col` = VALUES(`datetime_col`),
-         `datetime_fsp_col` = VALUES(`datetime_fsp_col`),
-         `timestamp_col` = VALUES(`timestamp_col`),
-         `timestamp_fsp_col` = VALUES(`timestamp_fsp_col`),
-         `year_col` = VALUES(`year_col`),
-         `enum_col` = VALUES(`enum_col`),
-         `set_col` = VALUES(`set_col`),
-         `json_col` = VALUES(`json_col`),
-         `inet4_col` = VALUES(`inet4_col`),
-         `inet6_col` = VALUES(`inet6_col`)
-         RETURNING `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `mariatest`(`tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)\nVALUES ("), Fragment.encode(MariaTypes.tinyint, unsaved.tinyintCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.smallint, unsaved.smallintCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumint, unsaved.mediumintCol()), Fragment.lit(", "), Fragment.encode(MariatestId.pgType, unsaved.intCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bigint, unsaved.bigintCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.tinyintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.smallintUnsigned, unsaved.smallintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumintUnsigned, unsaved.mediumintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.intUnsigned, unsaved.intUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bigintUnsigned, unsaved.bigintUCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.decimalCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.numericCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.float_, unsaved.floatCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.double_, unsaved.doubleCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.boolCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bit, unsaved.bitCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.bit, unsaved.bit1Col()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.charCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.varcharCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinytext, unsaved.tinytextCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.textCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumtext, unsaved.mediumtextCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext, unsaved.longtextCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.binary, unsaved.binaryCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.varbinary, unsaved.varbinaryCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyblob, unsaved.tinyblobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.blob, unsaved.blobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumblob, unsaved.mediumblobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.longblob, unsaved.longblobCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.date, unsaved.dateCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.time, unsaved.timeCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.time, unsaved.timeFspCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.datetimeCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.datetimeFspCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.timestamp, unsaved.timestampCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.timestamp, unsaved.timestampFspCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.year, unsaved.yearCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.enumCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.set, unsaved.setCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext, unsaved.jsonCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.inet4, unsaved.inet4Col()), Fragment.lit(", "), Fragment.encode(MariaTypes.inet6, unsaved.inet6Col()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `tinyint_col` = VALUES(`tinyint_col`),\n`smallint_col` = VALUES(`smallint_col`),\n`mediumint_col` = VALUES(`mediumint_col`),\n`bigint_col` = VALUES(`bigint_col`),\n`tinyint_u_col` = VALUES(`tinyint_u_col`),\n`smallint_u_col` = VALUES(`smallint_u_col`),\n`mediumint_u_col` = VALUES(`mediumint_u_col`),\n`int_u_col` = VALUES(`int_u_col`),\n`bigint_u_col` = VALUES(`bigint_u_col`),\n`decimal_col` = VALUES(`decimal_col`),\n`numeric_col` = VALUES(`numeric_col`),\n`float_col` = VALUES(`float_col`),\n`double_col` = VALUES(`double_col`),\n`bool_col` = VALUES(`bool_col`),\n`bit_col` = VALUES(`bit_col`),\n`bit1_col` = VALUES(`bit1_col`),\n`char_col` = VALUES(`char_col`),\n`varchar_col` = VALUES(`varchar_col`),\n`tinytext_col` = VALUES(`tinytext_col`),\n`text_col` = VALUES(`text_col`),\n`mediumtext_col` = VALUES(`mediumtext_col`),\n`longtext_col` = VALUES(`longtext_col`),\n`binary_col` = VALUES(`binary_col`),\n`varbinary_col` = VALUES(`varbinary_col`),\n`tinyblob_col` = VALUES(`tinyblob_col`),\n`blob_col` = VALUES(`blob_col`),\n`mediumblob_col` = VALUES(`mediumblob_col`),\n`longblob_col` = VALUES(`longblob_col`),\n`date_col` = VALUES(`date_col`),\n`time_col` = VALUES(`time_col`),\n`time_fsp_col` = VALUES(`time_fsp_col`),\n`datetime_col` = VALUES(`datetime_col`),\n`datetime_fsp_col` = VALUES(`datetime_fsp_col`),\n`timestamp_col` = VALUES(`timestamp_col`),\n`timestamp_fsp_col` = VALUES(`timestamp_fsp_col`),\n`year_col` = VALUES(`year_col`),\n`enum_col` = VALUES(`enum_col`),\n`set_col` = VALUES(`set_col`),\n`json_col` = VALUES(`json_col`),\n`inet4_col` = VALUES(`inet4_col`),\n`inet6_col` = VALUES(`inet6_col`)\nRETURNING `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`"))
       .updateReturning(MariatestRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -815,52 +229,8 @@ public class MariatestRepoImpl implements MariatestRepo {
     Iterator<MariatestRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `mariatest`(`tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `tinyint_col` = VALUES(`tinyint_col`),
-                `smallint_col` = VALUES(`smallint_col`),
-                `mediumint_col` = VALUES(`mediumint_col`),
-                `bigint_col` = VALUES(`bigint_col`),
-                `tinyint_u_col` = VALUES(`tinyint_u_col`),
-                `smallint_u_col` = VALUES(`smallint_u_col`),
-                `mediumint_u_col` = VALUES(`mediumint_u_col`),
-                `int_u_col` = VALUES(`int_u_col`),
-                `bigint_u_col` = VALUES(`bigint_u_col`),
-                `decimal_col` = VALUES(`decimal_col`),
-                `numeric_col` = VALUES(`numeric_col`),
-                `float_col` = VALUES(`float_col`),
-                `double_col` = VALUES(`double_col`),
-                `bool_col` = VALUES(`bool_col`),
-                `bit_col` = VALUES(`bit_col`),
-                `bit1_col` = VALUES(`bit1_col`),
-                `char_col` = VALUES(`char_col`),
-                `varchar_col` = VALUES(`varchar_col`),
-                `tinytext_col` = VALUES(`tinytext_col`),
-                `text_col` = VALUES(`text_col`),
-                `mediumtext_col` = VALUES(`mediumtext_col`),
-                `longtext_col` = VALUES(`longtext_col`),
-                `binary_col` = VALUES(`binary_col`),
-                `varbinary_col` = VALUES(`varbinary_col`),
-                `tinyblob_col` = VALUES(`tinyblob_col`),
-                `blob_col` = VALUES(`blob_col`),
-                `mediumblob_col` = VALUES(`mediumblob_col`),
-                `longblob_col` = VALUES(`longblob_col`),
-                `date_col` = VALUES(`date_col`),
-                `time_col` = VALUES(`time_col`),
-                `time_fsp_col` = VALUES(`time_fsp_col`),
-                `datetime_col` = VALUES(`datetime_col`),
-                `datetime_fsp_col` = VALUES(`datetime_fsp_col`),
-                `timestamp_col` = VALUES(`timestamp_col`),
-                `timestamp_fsp_col` = VALUES(`timestamp_fsp_col`),
-                `year_col` = VALUES(`year_col`),
-                `enum_col` = VALUES(`enum_col`),
-                `set_col` = VALUES(`set_col`),
-                `json_col` = VALUES(`json_col`),
-                `inet4_col` = VALUES(`inet4_col`),
-                `inet6_col` = VALUES(`inet6_col`)
-                RETURNING `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`"""))
+    return interpolate(Fragment.lit("INSERT INTO `mariatest`(`tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `tinyint_col` = VALUES(`tinyint_col`),\n`smallint_col` = VALUES(`smallint_col`),\n`mediumint_col` = VALUES(`mediumint_col`),\n`bigint_col` = VALUES(`bigint_col`),\n`tinyint_u_col` = VALUES(`tinyint_u_col`),\n`smallint_u_col` = VALUES(`smallint_u_col`),\n`mediumint_u_col` = VALUES(`mediumint_u_col`),\n`int_u_col` = VALUES(`int_u_col`),\n`bigint_u_col` = VALUES(`bigint_u_col`),\n`decimal_col` = VALUES(`decimal_col`),\n`numeric_col` = VALUES(`numeric_col`),\n`float_col` = VALUES(`float_col`),\n`double_col` = VALUES(`double_col`),\n`bool_col` = VALUES(`bool_col`),\n`bit_col` = VALUES(`bit_col`),\n`bit1_col` = VALUES(`bit1_col`),\n`char_col` = VALUES(`char_col`),\n`varchar_col` = VALUES(`varchar_col`),\n`tinytext_col` = VALUES(`tinytext_col`),\n`text_col` = VALUES(`text_col`),\n`mediumtext_col` = VALUES(`mediumtext_col`),\n`longtext_col` = VALUES(`longtext_col`),\n`binary_col` = VALUES(`binary_col`),\n`varbinary_col` = VALUES(`varbinary_col`),\n`tinyblob_col` = VALUES(`tinyblob_col`),\n`blob_col` = VALUES(`blob_col`),\n`mediumblob_col` = VALUES(`mediumblob_col`),\n`longblob_col` = VALUES(`longblob_col`),\n`date_col` = VALUES(`date_col`),\n`time_col` = VALUES(`time_col`),\n`time_fsp_col` = VALUES(`time_fsp_col`),\n`datetime_col` = VALUES(`datetime_col`),\n`datetime_fsp_col` = VALUES(`datetime_fsp_col`),\n`timestamp_col` = VALUES(`timestamp_col`),\n`timestamp_fsp_col` = VALUES(`timestamp_fsp_col`),\n`year_col` = VALUES(`year_col`),\n`enum_col` = VALUES(`enum_col`),\n`set_col` = VALUES(`set_col`),\n`json_col` = VALUES(`json_col`),\n`inet4_col` = VALUES(`inet4_col`),\n`inet6_col` = VALUES(`inet6_col`)\nRETURNING `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`"))
       .updateReturningEach(MariatestRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

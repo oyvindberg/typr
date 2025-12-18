@@ -7,11 +7,12 @@ package adventureworks.production.productsubcategory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.public.Name
+import java.time.LocalDateTime
+import java.util.UUID
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `production.productsubcategory` which has not been persisted yet */
 data class ProductsubcategoryRowUnsaved(
@@ -26,14 +27,14 @@ data class ProductsubcategoryRowUnsaved(
     */
   val productsubcategoryid: Defaulted<ProductsubcategoryId> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     productsubcategoryidDefault: () -> ProductsubcategoryId,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): ProductsubcategoryRow = ProductsubcategoryRow(productsubcategoryid = productsubcategoryid.getOrElse(productsubcategoryidDefault), productcategoryid = productcategoryid, name = name, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -44,8 +45,8 @@ data class ProductsubcategoryRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(ProductsubcategoryId.pgType.pgText()).unsafeEncode(row.productsubcategoryid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

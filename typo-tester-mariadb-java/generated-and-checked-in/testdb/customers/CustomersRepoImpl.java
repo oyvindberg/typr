@@ -18,7 +18,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -33,11 +32,7 @@ public class CustomersRepoImpl implements CustomersRepo {
     CustomersId customerId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `customers` where `customer_id` = "),
-      CustomersId.pgType.encode(customerId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `customers` where `customer_id` = "), Fragment.encode(CustomersId.pgType, customerId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -45,8 +40,8 @@ public class CustomersRepoImpl implements CustomersRepo {
     CustomersId[] customerIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : customerIds) { fragments.add(CustomersId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : customerIds) { fragments.add(Fragment.encode(CustomersId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `customers` where `customer_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -55,40 +50,7 @@ public class CustomersRepoImpl implements CustomersRepo {
     CustomersRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `customers`(`email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
-         values ("""),
-      MariaTypes.text.encode(unsaved.email()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.passwordHash()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.firstName()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.lastName()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.phone()),
-      typo.runtime.Fragment.lit(", "),
-      CustomerStatusId.pgType.encode(unsaved.status()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.tier()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.preferences()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.set.opt().encode(unsaved.marketingFlags()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.notes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.updatedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.lastLoginAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `customers`(`email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.email()), Fragment.lit(", "), Fragment.encode(MariaTypes.binary, unsaved.passwordHash()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.firstName()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.lastName()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.phone()), Fragment.lit(", "), Fragment.encode(CustomerStatusId.pgType, unsaved.status()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.tier()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.preferences()), Fragment.lit(", "), Fragment.encode(MariaTypes.set.opt(), unsaved.marketingFlags()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.notes()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.lastLoginAt()), Fragment.lit(")\nreturning `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`\n"))
       .updateReturning(CustomersRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -97,43 +59,23 @@ public class CustomersRepoImpl implements CustomersRepo {
     CustomersRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`email`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.email()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.email()), Fragment.lit("")));
     columns.add(Fragment.lit("`password_hash`"));
-    values.add(interpolate(
-      MariaTypes.blob.encode(unsaved.passwordHash()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.binary, unsaved.passwordHash()), Fragment.lit("")));
     columns.add(Fragment.lit("`first_name`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.firstName()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.firstName()), Fragment.lit("")));
     columns.add(Fragment.lit("`last_name`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.lastName()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.lastName()), Fragment.lit("")));
     unsaved.phone().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`phone`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.status().visit(
@@ -142,11 +84,7 @@ public class CustomersRepoImpl implements CustomersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`status`"));
-        values.add(interpolate(
-        CustomerStatusId.pgType.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(CustomerStatusId.pgType, value), Fragment.lit("")));
       }
     );;
     unsaved.tier().visit(
@@ -155,11 +93,7 @@ public class CustomersRepoImpl implements CustomersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`tier`"));
-        values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text, value), Fragment.lit("")));
       }
     );;
     unsaved.preferences().visit(
@@ -168,11 +102,7 @@ public class CustomersRepoImpl implements CustomersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`preferences`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.marketingFlags().visit(
@@ -181,11 +111,7 @@ public class CustomersRepoImpl implements CustomersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`marketing_flags`"));
-        values.add(interpolate(
-        MariaTypes.set.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.set.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.notes().visit(
@@ -194,11 +120,7 @@ public class CustomersRepoImpl implements CustomersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`notes`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.createdAt().visit(
@@ -207,11 +129,7 @@ public class CustomersRepoImpl implements CustomersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`created_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
     unsaved.updatedAt().visit(
@@ -220,11 +138,7 @@ public class CustomersRepoImpl implements CustomersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`updated_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
     unsaved.lastLoginAt().visit(
@@ -233,25 +147,10 @@ public class CustomersRepoImpl implements CustomersRepo {
       },
       value -> {
         columns.add(Fragment.lit("`last_login_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime.opt(), value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `customers`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `customers`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`\n"));;
     return q.updateReturning(CustomersRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -262,10 +161,7 @@ public class CustomersRepoImpl implements CustomersRepo {
 
   @Override
   public List<CustomersRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
-       from `customers`
-    """)).query(CustomersRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`\nfrom `customers`\n")).query(CustomersRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -273,14 +169,7 @@ public class CustomersRepoImpl implements CustomersRepo {
     CustomersId customerId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
-         from `customers`
-         where `customer_id` = """),
-      CustomersId.pgType.encode(customerId),
-      typo.runtime.Fragment.lit("")
-    ).query(CustomersRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`\nfrom `customers`\nwhere `customer_id` = "), Fragment.encode(CustomersId.pgType, customerId), Fragment.lit("")).query(CustomersRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -288,8 +177,8 @@ public class CustomersRepoImpl implements CustomersRepo {
     CustomersId[] customerIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : customerIds) { fragments.add(CustomersId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : customerIds) { fragments.add(Fragment.encode(CustomersId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at` from `customers` where `customer_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(CustomersRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -308,22 +197,12 @@ public class CustomersRepoImpl implements CustomersRepo {
     String email,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
-         from `customers`
-         where `email` = """),
-      MariaTypes.text.encode(email),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(CustomersRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`\nfrom `customers`\nwhere `email` = "), Fragment.encode(MariaTypes.varchar, email), Fragment.lit("\n")).query(CustomersRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<CustomersFields, CustomersRow> update() {
-    return UpdateBuilder.of("`customers`", CustomersFields.structure(), CustomersRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`customers`", CustomersFields.structure(), CustomersRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -332,65 +211,7 @@ public class CustomersRepoImpl implements CustomersRepo {
     Connection c
   ) {
     CustomersId customerId = row.customerId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `customers`
-         set `email` = """),
-      MariaTypes.text.encode(row.email()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `password_hash` = """),
-      MariaTypes.blob.encode(row.passwordHash()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `first_name` = """),
-      MariaTypes.text.encode(row.firstName()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `last_name` = """),
-      MariaTypes.text.encode(row.lastName()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `phone` = """),
-      MariaTypes.text.opt().encode(row.phone()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `status` = """),
-      CustomerStatusId.pgType.encode(row.status()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `tier` = """),
-      MariaTypes.text.encode(row.tier()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `preferences` = """),
-      MariaTypes.text.opt().encode(row.preferences()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `marketing_flags` = """),
-      MariaTypes.set.opt().encode(row.marketingFlags()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `notes` = """),
-      MariaTypes.text.opt().encode(row.notes()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `created_at` = """),
-      MariaTypes.datetime.encode(row.createdAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `updated_at` = """),
-      MariaTypes.datetime.encode(row.updatedAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `last_login_at` = """),
-      MariaTypes.datetime.opt().encode(row.lastLoginAt()),
-      typo.runtime.Fragment.lit("""
-   
-         where `customer_id` = """),
-      CustomersId.pgType.encode(customerId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `customers`\nset `email` = "), Fragment.encode(MariaTypes.varchar, row.email()), Fragment.lit(",\n`password_hash` = "), Fragment.encode(MariaTypes.binary, row.passwordHash()), Fragment.lit(",\n`first_name` = "), Fragment.encode(MariaTypes.varchar, row.firstName()), Fragment.lit(",\n`last_name` = "), Fragment.encode(MariaTypes.varchar, row.lastName()), Fragment.lit(",\n`phone` = "), Fragment.encode(MariaTypes.varchar.opt(), row.phone()), Fragment.lit(",\n`status` = "), Fragment.encode(CustomerStatusId.pgType, row.status()), Fragment.lit(",\n`tier` = "), Fragment.encode(MariaTypes.text, row.tier()), Fragment.lit(",\n`preferences` = "), Fragment.encode(MariaTypes.longtext.opt(), row.preferences()), Fragment.lit(",\n`marketing_flags` = "), Fragment.encode(MariaTypes.set.opt(), row.marketingFlags()), Fragment.lit(",\n`notes` = "), Fragment.encode(MariaTypes.text.opt(), row.notes()), Fragment.lit(",\n`created_at` = "), Fragment.encode(MariaTypes.datetime, row.createdAt()), Fragment.lit(",\n`updated_at` = "), Fragment.encode(MariaTypes.datetime, row.updatedAt()), Fragment.lit(",\n`last_login_at` = "), Fragment.encode(MariaTypes.datetime.opt(), row.lastLoginAt()), Fragment.lit("\nwhere `customer_id` = "), Fragment.encode(CustomersId.pgType, customerId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -398,52 +219,7 @@ public class CustomersRepoImpl implements CustomersRepo {
     CustomersRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `customers`(`email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
-         VALUES ("""),
-      MariaTypes.text.encode(unsaved.email()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.encode(unsaved.passwordHash()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.firstName()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.lastName()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.phone()),
-      typo.runtime.Fragment.lit(", "),
-      CustomerStatusId.pgType.encode(unsaved.status()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.tier()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.preferences()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.set.opt().encode(unsaved.marketingFlags()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.notes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.updatedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.lastLoginAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `email` = VALUES(`email`),
-         `password_hash` = VALUES(`password_hash`),
-         `first_name` = VALUES(`first_name`),
-         `last_name` = VALUES(`last_name`),
-         `phone` = VALUES(`phone`),
-         `status` = VALUES(`status`),
-         `tier` = VALUES(`tier`),
-         `preferences` = VALUES(`preferences`),
-         `marketing_flags` = VALUES(`marketing_flags`),
-         `notes` = VALUES(`notes`),
-         `created_at` = VALUES(`created_at`),
-         `updated_at` = VALUES(`updated_at`),
-         `last_login_at` = VALUES(`last_login_at`)
-         RETURNING `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `customers`(`email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.email()), Fragment.lit(", "), Fragment.encode(MariaTypes.binary, unsaved.passwordHash()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.firstName()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.lastName()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.phone()), Fragment.lit(", "), Fragment.encode(CustomerStatusId.pgType, unsaved.status()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.tier()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.preferences()), Fragment.lit(", "), Fragment.encode(MariaTypes.set.opt(), unsaved.marketingFlags()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.notes()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.lastLoginAt()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `email` = VALUES(`email`),\n`password_hash` = VALUES(`password_hash`),\n`first_name` = VALUES(`first_name`),\n`last_name` = VALUES(`last_name`),\n`phone` = VALUES(`phone`),\n`status` = VALUES(`status`),\n`tier` = VALUES(`tier`),\n`preferences` = VALUES(`preferences`),\n`marketing_flags` = VALUES(`marketing_flags`),\n`notes` = VALUES(`notes`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`),\n`last_login_at` = VALUES(`last_login_at`)\nRETURNING `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`"))
       .updateReturning(CustomersRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -453,24 +229,8 @@ public class CustomersRepoImpl implements CustomersRepo {
     Iterator<CustomersRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `customers`(`customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `email` = VALUES(`email`),
-                `password_hash` = VALUES(`password_hash`),
-                `first_name` = VALUES(`first_name`),
-                `last_name` = VALUES(`last_name`),
-                `phone` = VALUES(`phone`),
-                `status` = VALUES(`status`),
-                `tier` = VALUES(`tier`),
-                `preferences` = VALUES(`preferences`),
-                `marketing_flags` = VALUES(`marketing_flags`),
-                `notes` = VALUES(`notes`),
-                `created_at` = VALUES(`created_at`),
-                `updated_at` = VALUES(`updated_at`),
-                `last_login_at` = VALUES(`last_login_at`)
-                RETURNING `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`"""))
+    return interpolate(Fragment.lit("INSERT INTO `customers`(`customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `email` = VALUES(`email`),\n`password_hash` = VALUES(`password_hash`),\n`first_name` = VALUES(`first_name`),\n`last_name` = VALUES(`last_name`),\n`phone` = VALUES(`phone`),\n`status` = VALUES(`status`),\n`tier` = VALUES(`tier`),\n`preferences` = VALUES(`preferences`),\n`marketing_flags` = VALUES(`marketing_flags`),\n`notes` = VALUES(`notes`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`),\n`last_login_at` = VALUES(`last_login_at`)\nRETURNING `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`"))
       .updateReturningEach(CustomersRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

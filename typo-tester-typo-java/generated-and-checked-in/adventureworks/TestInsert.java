@@ -6,31 +6,6 @@
 package adventureworks;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoBox;
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoCircle;
-import adventureworks.customtypes.TypoHStore;
-import adventureworks.customtypes.TypoInet;
-import adventureworks.customtypes.TypoInstant;
-import adventureworks.customtypes.TypoInt2Vector;
-import adventureworks.customtypes.TypoInterval;
-import adventureworks.customtypes.TypoJson;
-import adventureworks.customtypes.TypoJsonb;
-import adventureworks.customtypes.TypoLine;
-import adventureworks.customtypes.TypoLineSegment;
-import adventureworks.customtypes.TypoLocalDate;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoLocalTime;
-import adventureworks.customtypes.TypoMoney;
-import adventureworks.customtypes.TypoOffsetTime;
-import adventureworks.customtypes.TypoPath;
-import adventureworks.customtypes.TypoPoint;
-import adventureworks.customtypes.TypoPolygon;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoUnknownCitext;
-import adventureworks.customtypes.TypoVector;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.humanresources.department.DepartmentId;
 import adventureworks.humanresources.department.DepartmentRepoImpl;
 import adventureworks.humanresources.department.DepartmentRow;
@@ -328,10 +303,28 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.OffsetTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Stream;
+import org.postgresql.geometric.PGbox;
+import org.postgresql.geometric.PGcircle;
+import org.postgresql.geometric.PGline;
+import org.postgresql.geometric.PGlseg;
+import org.postgresql.geometric.PGpath;
+import org.postgresql.geometric.PGpoint;
+import org.postgresql.geometric.PGpolygon;
+import org.postgresql.util.PGInterval;
+import typo.data.Inet;
+import typo.data.Int2Vector;
+import typo.data.Json;
+import typo.data.Jsonb;
+import typo.data.Money;
+import typo.data.Unknown;
+import typo.data.Vector;
+import typo.data.Xml;
 import typo.runtime.internal.RandomHelper;
 
 /** Methods to generate random data for `Ident(TestInsert)` */
@@ -351,7 +344,7 @@ public record TestInsert(
     Name name,
     Name groupname,
     Defaulted<DepartmentId> departmentid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new DepartmentRepoImpl()).insert(new DepartmentRowUnsaved(name, groupname, departmentid, modifieddate), c);
@@ -359,19 +352,19 @@ public record TestInsert(
 
   public EmployeeRow humanresourcesEmployee(
     BusinessentityId businessentityid,
-    TypoLocalDate birthdate,
-    /* bpchar, max 1 chars */ String maritalstatus,
-    /* bpchar, max 1 chars */ String gender,
-    TypoLocalDate hiredate,
-    /* max 15 chars */ String nationalidnumber,
-    /* max 256 chars */ String loginid,
-    /* max 50 chars */ String jobtitle,
+    LocalDate birthdate,
+    String maritalstatus,
+    String gender,
+    LocalDate hiredate,
+    String nationalidnumber,
+    String loginid,
+    String jobtitle,
     Defaulted<Flag> salariedflag,
-    Defaulted<TypoShort> vacationhours,
-    Defaulted<TypoShort> sickleavehours,
+    Defaulted<Short> vacationhours,
+    Defaulted<Short> sickleavehours,
     Defaulted<Flag> currentflag,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Defaulted<Optional<String>> organizationnode,
     Connection c
   ) {
@@ -382,9 +375,9 @@ public record TestInsert(
     BusinessentityId businessentityid,
     DepartmentId departmentid,
     ShiftId shiftid,
-    TypoLocalDate startdate,
-    Optional<TypoLocalDate> enddate,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    LocalDate startdate,
+    Optional<LocalDate> enddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new EmployeedepartmenthistoryRepoImpl()).insert(new EmployeedepartmenthistoryRowUnsaved(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate), c);
@@ -392,10 +385,10 @@ public record TestInsert(
 
   public EmployeepayhistoryRow humanresourcesEmployeepayhistory(
     BusinessentityId businessentityid,
+    LocalDateTime ratechangedate,
     BigDecimal rate,
-    TypoShort payfrequency,
-    TypoLocalDateTime ratechangedate,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Short payfrequency,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new EmployeepayhistoryRepoImpl()).insert(new EmployeepayhistoryRowUnsaved(businessentityid, ratechangedate, rate, payfrequency, modifieddate), c);
@@ -403,20 +396,20 @@ public record TestInsert(
 
   public JobcandidateRow humanresourcesJobcandidate(
     Optional<BusinessentityId> businessentityid,
-    Optional<TypoXml> resume,
+    Optional<Xml> resume,
     Defaulted<JobcandidateId> jobcandidateid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new JobcandidateRepoImpl()).insert(new JobcandidateRowUnsaved(businessentityid, resume, jobcandidateid, modifieddate), c);
   };
 
   public ShiftRow humanresourcesShift(
+    LocalTime starttime,
+    LocalTime endtime,
     Name name,
-    TypoLocalTime starttime,
-    TypoLocalTime endtime,
     Defaulted<ShiftId> shiftid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ShiftRepoImpl()).insert(new ShiftRowUnsaved(name, starttime, endtime, shiftid, modifieddate), c);
@@ -424,14 +417,14 @@ public record TestInsert(
 
   public AddressRow personAddress(
     StateprovinceId stateprovinceid,
-    /* max 60 chars */ String addressline1,
+    String addressline1,
     Optional</* max 60 chars */ String> addressline2,
-    /* max 30 chars */ String city,
-    /* max 15 chars */ String postalcode,
-    Optional<TypoBytea> spatiallocation,
+    String city,
+    String postalcode,
+    Optional<byte[]> spatiallocation,
     Defaulted<AddressId> addressid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new AddressRepoImpl()).insert(new AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate), c);
@@ -440,8 +433,8 @@ public record TestInsert(
   public AddresstypeRow personAddresstype(
     Name name,
     Defaulted<AddresstypeId> addresstypeid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new AddresstypeRepoImpl()).insert(new AddresstypeRowUnsaved(name, addresstypeid, rowguid, modifieddate), c);
@@ -449,8 +442,8 @@ public record TestInsert(
 
   public BusinessentityRow personBusinessentity(
     Defaulted<BusinessentityId> businessentityid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new BusinessentityRepoImpl()).insert(new BusinessentityRowUnsaved(businessentityid, rowguid, modifieddate), c);
@@ -460,8 +453,8 @@ public record TestInsert(
     BusinessentityId businessentityid,
     AddressId addressid,
     AddresstypeId addresstypeid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new BusinessentityaddressRepoImpl()).insert(new BusinessentityaddressRowUnsaved(businessentityid, addressid, addresstypeid, rowguid, modifieddate), c);
@@ -471,8 +464,8 @@ public record TestInsert(
     BusinessentityId businessentityid,
     BusinessentityId personid,
     ContacttypeId contacttypeid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new BusinessentitycontactRepoImpl()).insert(new BusinessentitycontactRowUnsaved(businessentityid, personid, contacttypeid, rowguid, modifieddate), c);
@@ -481,7 +474,7 @@ public record TestInsert(
   public ContacttypeRow personContacttype(
     Name name,
     Defaulted<ContacttypeId> contacttypeid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ContacttypeRepoImpl()).insert(new ContacttypeRowUnsaved(name, contacttypeid, modifieddate), c);
@@ -490,7 +483,7 @@ public record TestInsert(
   public CountryregionRow personCountryregion(
     CountryregionId countryregioncode,
     Name name,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new CountryregionRepoImpl()).insert(new CountryregionRowUnsaved(countryregioncode, name, modifieddate), c);
@@ -500,8 +493,8 @@ public record TestInsert(
     BusinessentityId businessentityid,
     Optional</* max 50 chars */ String> emailaddress,
     Defaulted<Integer> emailaddressid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new EmailaddressRepoImpl()).insert(new EmailaddressRowUnsaved(businessentityid, emailaddress, emailaddressid, rowguid, modifieddate), c);
@@ -509,10 +502,10 @@ public record TestInsert(
 
   public PasswordRow personPassword(
     BusinessentityId businessentityid,
-    /* max 128 chars */ String passwordhash,
-    /* max 10 chars */ String passwordsalt,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    String passwordhash,
+    String passwordsalt,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new PasswordRepoImpl()).insert(new PasswordRowUnsaved(businessentityid, passwordhash, passwordsalt, rowguid, modifieddate), c);
@@ -520,18 +513,18 @@ public record TestInsert(
 
   public PersonRow personPerson(
     BusinessentityId businessentityid,
-    /* bpchar, max 2 chars */ String persontype,
+    String persontype,
     /* user-picked */ FirstName firstname,
     Optional</* max 8 chars */ String> title,
     Optional<Name> middlename,
     Name lastname,
     Optional</* max 10 chars */ String> suffix,
-    Optional<TypoXml> additionalcontactinfo,
-    Optional<TypoXml> demographics,
+    Optional<Xml> additionalcontactinfo,
+    Optional<Xml> demographics,
     Defaulted<NameStyle> namestyle,
     Defaulted<Integer> emailpromotion,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new PersonRepoImpl()).insert(new PersonRowUnsaved(businessentityid, persontype, title, firstname, middlename, lastname, suffix, additionalcontactinfo, demographics, namestyle, emailpromotion, rowguid, modifieddate), c);
@@ -541,7 +534,7 @@ public record TestInsert(
     BusinessentityId businessentityid,
     PhonenumbertypeId phonenumbertypeid,
     Phone phonenumber,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new PersonphoneRepoImpl()).insert(new PersonphoneRowUnsaved(businessentityid, phonenumber, phonenumbertypeid, modifieddate), c);
@@ -550,7 +543,7 @@ public record TestInsert(
   public PhonenumbertypeRow personPhonenumbertype(
     Name name,
     Defaulted<PhonenumbertypeId> phonenumbertypeid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new PhonenumbertypeRepoImpl()).insert(new PhonenumbertypeRowUnsaved(name, phonenumbertypeid, modifieddate), c);
@@ -559,12 +552,12 @@ public record TestInsert(
   public StateprovinceRow personStateprovince(
     CountryregionId countryregioncode,
     SalesterritoryId territoryid,
-    /* bpchar, max 3 chars */ String stateprovincecode,
+    String stateprovincecode,
     Name name,
     Defaulted<StateprovinceId> stateprovinceid,
     Defaulted<Flag> isonlystateprovinceflag,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new StateprovinceRepoImpl()).insert(new StateprovinceRowUnsaved(stateprovincecode, countryregioncode, name, territoryid, stateprovinceid, isonlystateprovinceflag, rowguid, modifieddate), c);
@@ -573,13 +566,13 @@ public record TestInsert(
   public BillofmaterialsRow productionBillofmaterials(
     ProductId componentid,
     UnitmeasureId unitmeasurecode,
-    TypoShort bomlevel,
+    Short bomlevel,
     Optional<ProductId> productassemblyid,
-    Optional<TypoLocalDateTime> enddate,
+    Optional<LocalDateTime> enddate,
     Defaulted<Integer> billofmaterialsid,
-    Defaulted<TypoLocalDateTime> startdate,
+    Defaulted<LocalDateTime> startdate,
     Defaulted<BigDecimal> perassemblyqty,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new BillofmaterialsRepoImpl()).insert(new BillofmaterialsRowUnsaved(productassemblyid, componentid, enddate, unitmeasurecode, bomlevel, billofmaterialsid, startdate, perassemblyqty, modifieddate), c);
@@ -588,7 +581,7 @@ public record TestInsert(
   public CultureRow productionCulture(
     CultureId cultureid,
     Name name,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new CultureRepoImpl()).insert(new CultureRowUnsaved(cultureid, name, modifieddate), c);
@@ -596,17 +589,17 @@ public record TestInsert(
 
   public DocumentRow productionDocument(
     BusinessentityId owner,
-    TypoShort status,
-    /* max 50 chars */ String title,
-    /* max 400 chars */ String filename,
+    Short status,
+    String title,
+    String filename,
     Optional</* max 8 chars */ String> fileextension,
-    /* bpchar, max 5 chars */ String revision,
+    String revision,
     Optional<String> documentsummary,
-    Optional<TypoBytea> document,
+    Optional<byte[]> document,
     Defaulted<Flag> folderflag,
     Defaulted<Integer> changenumber,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Defaulted<DocumentId> documentnode,
     Connection c
   ) {
@@ -614,9 +607,9 @@ public record TestInsert(
   };
 
   public IllustrationRow productionIllustration(
-    Optional<TypoXml> diagram,
+    Optional<Xml> diagram,
     Defaulted<IllustrationId> illustrationid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new IllustrationRepoImpl()).insert(new IllustrationRowUnsaved(diagram, illustrationid, modifieddate), c);
@@ -627,21 +620,21 @@ public record TestInsert(
     Defaulted<LocationId> locationid,
     Defaulted<BigDecimal> costrate,
     Defaulted<BigDecimal> availability,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new LocationRepoImpl()).insert(new LocationRowUnsaved(name, locationid, costrate, availability, modifieddate), c);
   };
 
   public ProductRow productionProduct(
-    TypoShort safetystocklevel,
-    TypoShort reorderpoint,
+    Short safetystocklevel,
+    Short reorderpoint,
     BigDecimal standardcost,
     BigDecimal listprice,
     Integer daystomanufacture,
-    TypoLocalDateTime sellstartdate,
+    LocalDateTime sellstartdate,
     Name name,
-    /* max 25 chars */ String productnumber,
+    String productnumber,
     Optional</* max 15 chars */ String> color,
     Optional</* max 5 chars */ String> size,
     Optional<UnitmeasureId> sizeunitmeasurecode,
@@ -652,13 +645,13 @@ public record TestInsert(
     Optional</* bpchar, max 2 chars */ String> style,
     Optional<ProductsubcategoryId> productsubcategoryid,
     Optional<ProductmodelId> productmodelid,
-    Optional<TypoLocalDateTime> sellenddate,
-    Optional<TypoLocalDateTime> discontinueddate,
+    Optional<LocalDateTime> sellenddate,
+    Optional<LocalDateTime> discontinueddate,
     Defaulted<ProductId> productid,
     Defaulted<Flag> makeflag,
     Defaulted<Flag> finishedgoodsflag,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductRepoImpl()).insert(new ProductRowUnsaved(name, productnumber, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, productid, makeflag, finishedgoodsflag, rowguid, modifieddate), c);
@@ -667,8 +660,8 @@ public record TestInsert(
   public ProductcategoryRow productionProductcategory(
     Name name,
     Defaulted<ProductcategoryId> productcategoryid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductcategoryRepoImpl()).insert(new ProductcategoryRowUnsaved(name, productcategoryid, rowguid, modifieddate), c);
@@ -676,20 +669,20 @@ public record TestInsert(
 
   public ProductcosthistoryRow productionProductcosthistory(
     ProductId productid,
-    TypoLocalDateTime startdate,
+    LocalDateTime startdate,
     BigDecimal standardcost,
-    Optional<TypoLocalDateTime> enddate,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Optional<LocalDateTime> enddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductcosthistoryRepoImpl()).insert(new ProductcosthistoryRowUnsaved(productid, startdate, enddate, standardcost, modifieddate), c);
   };
 
   public ProductdescriptionRow productionProductdescription(
-    /* max 400 chars */ String description,
+    String description,
     Defaulted<ProductdescriptionId> productdescriptionid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductdescriptionRepoImpl()).insert(new ProductdescriptionRowUnsaved(description, productdescriptionid, rowguid, modifieddate), c);
@@ -697,7 +690,7 @@ public record TestInsert(
 
   public ProductdocumentRow productionProductdocument(
     ProductId productid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Defaulted<DocumentId> documentnode,
     Connection c
   ) {
@@ -707,11 +700,11 @@ public record TestInsert(
   public ProductinventoryRow productionProductinventory(
     ProductId productid,
     LocationId locationid,
-    TypoShort bin,
-    /* max 10 chars */ String shelf,
-    Defaulted<TypoShort> quantity,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Short bin,
+    String shelf,
+    Defaulted<Short> quantity,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductinventoryRepoImpl()).insert(new ProductinventoryRowUnsaved(productid, locationid, shelf, bin, quantity, rowguid, modifieddate), c);
@@ -719,10 +712,10 @@ public record TestInsert(
 
   public ProductlistpricehistoryRow productionProductlistpricehistory(
     ProductId productid,
-    TypoLocalDateTime startdate,
+    LocalDateTime startdate,
     BigDecimal listprice,
-    Optional<TypoLocalDateTime> enddate,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Optional<LocalDateTime> enddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductlistpricehistoryRepoImpl()).insert(new ProductlistpricehistoryRowUnsaved(productid, startdate, enddate, listprice, modifieddate), c);
@@ -730,11 +723,11 @@ public record TestInsert(
 
   public ProductmodelRow productionProductmodel(
     Name name,
-    Optional<TypoXml> catalogdescription,
-    Optional<TypoXml> instructions,
+    Optional<Xml> catalogdescription,
+    Optional<Xml> instructions,
     Defaulted<ProductmodelId> productmodelid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductmodelRepoImpl()).insert(new ProductmodelRowUnsaved(name, catalogdescription, instructions, productmodelid, rowguid, modifieddate), c);
@@ -743,7 +736,7 @@ public record TestInsert(
   public ProductmodelillustrationRow productionProductmodelillustration(
     ProductmodelId productmodelid,
     IllustrationId illustrationid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductmodelillustrationRepoImpl()).insert(new ProductmodelillustrationRowUnsaved(productmodelid, illustrationid, modifieddate), c);
@@ -753,19 +746,19 @@ public record TestInsert(
     ProductmodelId productmodelid,
     ProductdescriptionId productdescriptionid,
     CultureId cultureid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductmodelproductdescriptioncultureRepoImpl()).insert(new ProductmodelproductdescriptioncultureRowUnsaved(productmodelid, productdescriptionid, cultureid, modifieddate), c);
   };
 
   public ProductphotoRow productionProductphoto(
-    Optional<TypoBytea> thumbnailphoto,
+    Optional<byte[]> thumbnailphoto,
     Optional</* max 50 chars */ String> thumbnailphotofilename,
-    Optional<TypoBytea> largephoto,
+    Optional<byte[]> largephoto,
     Optional</* max 50 chars */ String> largephotofilename,
     Defaulted<ProductphotoId> productphotoid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductphotoRepoImpl()).insert(new ProductphotoRowUnsaved(thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, productphotoid, modifieddate), c);
@@ -775,7 +768,7 @@ public record TestInsert(
     ProductId productid,
     ProductphotoId productphotoid,
     Defaulted<Flag> primary,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductproductphotoRepoImpl()).insert(new ProductproductphotoRowUnsaved(productid, productphotoid, primary, modifieddate), c);
@@ -785,11 +778,11 @@ public record TestInsert(
     ProductId productid,
     Integer rating,
     Name reviewername,
-    /* max 50 chars */ String emailaddress,
+    String emailaddress,
     Optional</* max 3850 chars */ String> comments,
     Defaulted<ProductreviewId> productreviewid,
-    Defaulted<TypoLocalDateTime> reviewdate,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> reviewdate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductreviewRepoImpl()).insert(new ProductreviewRowUnsaved(productid, reviewername, emailaddress, rating, comments, productreviewid, reviewdate, modifieddate), c);
@@ -799,8 +792,8 @@ public record TestInsert(
     ProductcategoryId productcategoryid,
     Name name,
     Defaulted<ProductsubcategoryId> productsubcategoryid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductsubcategoryRepoImpl()).insert(new ProductsubcategoryRowUnsaved(productcategoryid, name, productsubcategoryid, rowguid, modifieddate), c);
@@ -809,7 +802,7 @@ public record TestInsert(
   public ScrapreasonRow productionScrapreason(
     Name name,
     Defaulted<ScrapreasonId> scrapreasonid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ScrapreasonRepoImpl()).insert(new ScrapreasonRowUnsaved(name, scrapreasonid, modifieddate), c);
@@ -817,29 +810,29 @@ public record TestInsert(
 
   public TransactionhistoryRow productionTransactionhistory(
     ProductId productid,
-    /* bpchar, max 1 chars */ String transactiontype,
+    String transactiontype,
     Integer referenceorderid,
     Integer quantity,
     BigDecimal actualcost,
     Defaulted<TransactionhistoryId> transactionid,
     Defaulted<Integer> referenceorderlineid,
-    Defaulted<TypoLocalDateTime> transactiondate,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> transactiondate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new TransactionhistoryRepoImpl()).insert(new TransactionhistoryRowUnsaved(productid, referenceorderid, transactiontype, quantity, actualcost, transactionid, referenceorderlineid, transactiondate, modifieddate), c);
   };
 
   public TransactionhistoryarchiveRow productionTransactionhistoryarchive(
-    /* bpchar, max 1 chars */ String transactiontype,
+    String transactiontype,
     TransactionhistoryarchiveId transactionid,
     Integer productid,
     Integer referenceorderid,
     Integer quantity,
     BigDecimal actualcost,
     Defaulted<Integer> referenceorderlineid,
-    Defaulted<TypoLocalDateTime> transactiondate,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> transactiondate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new TransactionhistoryarchiveRepoImpl()).insert(new TransactionhistoryarchiveRowUnsaved(transactionid, productid, referenceorderid, transactiontype, quantity, actualcost, referenceorderlineid, transactiondate, modifieddate), c);
@@ -848,7 +841,7 @@ public record TestInsert(
   public UnitmeasureRow productionUnitmeasure(
     UnitmeasureId unitmeasurecode,
     Name name,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new UnitmeasureRepoImpl()).insert(new UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate), c);
@@ -857,13 +850,13 @@ public record TestInsert(
   public WorkorderRow productionWorkorder(
     ProductId productid,
     Integer orderqty,
-    TypoShort scrappedqty,
-    TypoLocalDateTime startdate,
-    Optional<TypoLocalDateTime> enddate,
-    TypoLocalDateTime duedate,
+    Short scrappedqty,
+    LocalDateTime startdate,
+    LocalDateTime duedate,
+    Optional<LocalDateTime> enddate,
     Optional<ScrapreasonId> scrapreasonid,
     Defaulted<WorkorderId> workorderid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new WorkorderRepoImpl()).insert(new WorkorderRowUnsaved(productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, workorderid, modifieddate), c);
@@ -872,16 +865,16 @@ public record TestInsert(
   public WorkorderroutingRow productionWorkorderrouting(
     WorkorderId workorderid,
     LocationId locationid,
-    TypoLocalDateTime scheduledstartdate,
-    TypoLocalDateTime scheduledenddate,
+    LocalDateTime scheduledstartdate,
+    LocalDateTime scheduledenddate,
     BigDecimal plannedcost,
     Integer productid,
-    TypoShort operationsequence,
-    Optional<TypoLocalDateTime> actualstartdate,
-    Optional<TypoLocalDateTime> actualenddate,
+    Short operationsequence,
+    Optional<LocalDateTime> actualstartdate,
+    Optional<LocalDateTime> actualenddate,
     Optional<BigDecimal> actualresourcehrs,
     Optional<BigDecimal> actualcost,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new WorkorderroutingRepoImpl()).insert(new WorkorderroutingRowUnsaved(workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate), c);
@@ -889,7 +882,7 @@ public record TestInsert(
 
   public FlaffRow publicFlaff(
     ShortText code,
-    /* max 20 chars */ String anotherCode,
+    String anotherCode,
     Integer someNumber,
     ShortText specifier,
     Optional<ShortText> parentspecifier,
@@ -929,44 +922,53 @@ public record TestInsert(
   };
 
   public PgtestRow publicPgtest(
-    TypoBox box,
-    TypoBytea bytea,
-    TypoCircle circle,
-    TypoHStore hstore,
-    TypoInet inet,
-    TypoInt2Vector int2vector,
-    TypoInterval interval,
-    TypoJson json,
-    TypoJsonb jsonb,
-    TypoLine line,
-    TypoLineSegment lseg,
-    TypoMoney money,
-    TypoPath path,
-    TypoPoint point,
-    TypoPolygon polygon,
-    TypoVector vector,
-    TypoXml xml,
-    TypoBox[] boxes,
-    TypoCircle[] circlees,
-    TypoInet[] inetes,
-    TypoInt2Vector[] int2vectores,
-    TypoInterval[] intervales,
-    TypoJson[] jsones,
-    TypoJsonb[] jsonbes,
-    TypoLine[] linees,
-    TypoLineSegment[] lseges,
-    TypoMoney[] moneyes,
-    TypoPath[] pathes,
-    TypoPoint[] pointes,
-    TypoPolygon[] polygones,
-    TypoXml[] xmles,
+    PGbox box,
+    byte[] bytea,
+    PGcircle circle,
+    LocalDate date,
+    Map<String, String> hstore,
+    Inet inet,
+    Int2Vector int2vector,
+    PGInterval interval,
+    Json json,
+    Jsonb jsonb,
+    PGline line,
+    PGlseg lseg,
+    Money money,
+    PGpath path,
+    PGpoint point,
+    PGpolygon polygon,
+    LocalTime time,
+    LocalDateTime timestamp,
+    Instant timestampz,
+    OffsetTime timez,
+    Vector vector,
+    Xml xml,
+    PGbox[] boxes,
+    PGcircle[] circlees,
+    LocalDate[] datees,
+    Inet[] inetes,
+    Int2Vector[] int2vectores,
+    PGInterval[] intervales,
+    Json[] jsones,
+    Jsonb[] jsonbes,
+    PGline[] linees,
+    PGlseg[] lseges,
+    Money[] moneyes,
+    PGpath[] pathes,
+    PGpoint[] pointes,
+    PGpolygon[] polygones,
+    LocalTime[] timees,
+    LocalDateTime[] timestampes,
+    Instant[] timestampzes,
+    OffsetTime[] timezes,
+    Xml[] xmles,
     Boolean bool,
-    /* bpchar, max 3 chars */ String bpchar,
-    /* bpchar, max 1 chars */ String char_,
-    TypoLocalDate date,
+    String bpchar,
+    String char_,
     Float float4,
     Double float8,
-    TypoShort int2,
+    Short int2,
     Integer int4,
     Long int8,
     Mydomain mydomain,
@@ -974,18 +976,13 @@ public record TestInsert(
     String name,
     BigDecimal numeric,
     String text,
-    TypoLocalTime time,
-    TypoLocalDateTime timestamp,
-    TypoInstant timestampz,
-    TypoOffsetTime timez,
-    TypoUUID uuid,
+    UUID uuid,
     String varchar,
     /* bpchar */ String[] bpchares,
     /* bpchar */ String[] chares,
-    TypoLocalDate[] datees,
     Float[] float4es,
     Double[] float8es,
-    TypoShort[] int2es,
+    Short[] int2es,
     Integer[] int4es,
     Long[] int8es,
     Mydomain[] mydomaines,
@@ -993,11 +990,7 @@ public record TestInsert(
     String[] namees,
     BigDecimal[] numerices,
     String[] textes,
-    TypoLocalTime[] timees,
-    TypoLocalDateTime[] timestampes,
-    TypoInstant[] timestampzes,
-    TypoOffsetTime[] timezes,
-    TypoUUID[] uuides,
+    UUID[] uuides,
     String[] varchares,
     Connection c
   ) {
@@ -1006,75 +999,75 @@ public record TestInsert(
 
   public PgtestnullRow publicPgtestnull(
     Optional<Boolean> bool,
-    Optional<TypoBox> box,
+    Optional<PGbox> box,
     Optional</* bpchar, max 3 chars */ String> bpchar,
-    Optional<TypoBytea> bytea,
+    Optional<byte[]> bytea,
     Optional</* bpchar, max 1 chars */ String> char_,
-    Optional<TypoCircle> circle,
-    Optional<TypoLocalDate> date,
+    Optional<PGcircle> circle,
+    Optional<LocalDate> date,
     Optional<Float> float4,
     Optional<Double> float8,
-    Optional<TypoHStore> hstore,
-    Optional<TypoInet> inet,
-    Optional<TypoShort> int2,
-    Optional<TypoInt2Vector> int2vector,
+    Optional<Map<String, String>> hstore,
+    Optional<Inet> inet,
+    Optional<Short> int2,
+    Optional<Int2Vector> int2vector,
     Optional<Integer> int4,
     Optional<Long> int8,
-    Optional<TypoInterval> interval,
-    Optional<TypoJson> json,
-    Optional<TypoJsonb> jsonb,
-    Optional<TypoLine> line,
-    Optional<TypoLineSegment> lseg,
-    Optional<TypoMoney> money,
+    Optional<PGInterval> interval,
+    Optional<Json> json,
+    Optional<Jsonb> jsonb,
+    Optional<PGline> line,
+    Optional<PGlseg> lseg,
+    Optional<Money> money,
     Optional<Mydomain> mydomain,
     Optional<Myenum> myenum,
     Optional<String> name,
     Optional<BigDecimal> numeric,
-    Optional<TypoPath> path,
-    Optional<TypoPoint> point,
-    Optional<TypoPolygon> polygon,
+    Optional<PGpath> path,
+    Optional<PGpoint> point,
+    Optional<PGpolygon> polygon,
     Optional<String> text,
-    Optional<TypoLocalTime> time,
-    Optional<TypoLocalDateTime> timestamp,
-    Optional<TypoInstant> timestampz,
-    Optional<TypoOffsetTime> timez,
-    Optional<TypoUUID> uuid,
+    Optional<LocalTime> time,
+    Optional<LocalDateTime> timestamp,
+    Optional<Instant> timestampz,
+    Optional<OffsetTime> timez,
+    Optional<UUID> uuid,
     Optional<String> varchar,
-    Optional<TypoVector> vector,
-    Optional<TypoXml> xml,
-    Optional<TypoBox[]> boxes,
+    Optional<Vector> vector,
+    Optional<Xml> xml,
+    Optional<PGbox[]> boxes,
     Optional</* bpchar */ String[]> bpchares,
     Optional</* bpchar */ String[]> chares,
-    Optional<TypoCircle[]> circlees,
-    Optional<TypoLocalDate[]> datees,
+    Optional<PGcircle[]> circlees,
+    Optional<LocalDate[]> datees,
     Optional<Float[]> float4es,
     Optional<Double[]> float8es,
-    Optional<TypoInet[]> inetes,
-    Optional<TypoShort[]> int2es,
-    Optional<TypoInt2Vector[]> int2vectores,
+    Optional<Inet[]> inetes,
+    Optional<Short[]> int2es,
+    Optional<Int2Vector[]> int2vectores,
     Optional<Integer[]> int4es,
     Optional<Long[]> int8es,
-    Optional<TypoInterval[]> intervales,
-    Optional<TypoJson[]> jsones,
-    Optional<TypoJsonb[]> jsonbes,
-    Optional<TypoLine[]> linees,
-    Optional<TypoLineSegment[]> lseges,
-    Optional<TypoMoney[]> moneyes,
+    Optional<PGInterval[]> intervales,
+    Optional<Json[]> jsones,
+    Optional<Jsonb[]> jsonbes,
+    Optional<PGline[]> linees,
+    Optional<PGlseg[]> lseges,
+    Optional<Money[]> moneyes,
     Optional<Mydomain[]> mydomaines,
     Optional<Myenum[]> myenumes,
     Optional<String[]> namees,
     Optional<BigDecimal[]> numerices,
-    Optional<TypoPath[]> pathes,
-    Optional<TypoPoint[]> pointes,
-    Optional<TypoPolygon[]> polygones,
+    Optional<PGpath[]> pathes,
+    Optional<PGpoint[]> pointes,
+    Optional<PGpolygon[]> polygones,
     Optional<String[]> textes,
-    Optional<TypoLocalTime[]> timees,
-    Optional<TypoLocalDateTime[]> timestampes,
-    Optional<TypoInstant[]> timestampzes,
-    Optional<TypoOffsetTime[]> timezes,
-    Optional<TypoUUID[]> uuides,
+    Optional<LocalTime[]> timees,
+    Optional<LocalDateTime[]> timestampes,
+    Optional<Instant[]> timestampzes,
+    Optional<OffsetTime[]> timezes,
+    Optional<UUID[]> uuides,
     Optional<String[]> varchares,
-    Optional<TypoXml[]> xmles,
+    Optional<Xml[]> xmles,
     Connection c
   ) {
     return (new PgtestnullRepoImpl()).insert(new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles), c);
@@ -1134,13 +1127,13 @@ public record TestInsert(
   };
 
   public UsersRow publicUsers(
-    TypoUnknownCitext email,
+    Unknown email,
     UsersId userId,
     String name,
     Optional<String> lastName,
     String password,
-    Optional<TypoInstant> verifiedOn,
-    Defaulted<TypoInstant> createdAt,
+    Optional<Instant> verifiedOn,
+    Defaulted<Instant> createdAt,
     Connection c
   ) {
     return (new UsersRepoImpl()).insert(new UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt), c);
@@ -1155,9 +1148,9 @@ public record TestInsert(
     Integer maxorderqty,
     UnitmeasureId unitmeasurecode,
     Optional<BigDecimal> lastreceiptcost,
-    Optional<TypoLocalDateTime> lastreceiptdate,
+    Optional<LocalDateTime> lastreceiptdate,
     Optional<Integer> onorderqty,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ProductvendorRepoImpl()).insert(new ProductvendorRowUnsaved(productid, businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate), c);
@@ -1167,15 +1160,15 @@ public record TestInsert(
     BusinessentityId employeeid,
     BusinessentityId vendorid,
     ShipmethodId shipmethodid,
-    Optional<TypoLocalDateTime> shipdate,
+    Optional<LocalDateTime> shipdate,
     Defaulted<PurchaseorderheaderId> purchaseorderid,
-    Defaulted<TypoShort> revisionnumber,
-    Defaulted<TypoShort> status,
-    Defaulted<TypoLocalDateTime> orderdate,
+    Defaulted<Short> revisionnumber,
+    Defaulted<Short> status,
+    Defaulted<LocalDateTime> orderdate,
     Defaulted<BigDecimal> subtotal,
     Defaulted<BigDecimal> taxamt,
     Defaulted<BigDecimal> freight,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new PurchaseorderheaderRepoImpl()).insert(new PurchaseorderheaderRowUnsaved(employeeid, vendorid, shipmethodid, shipdate, purchaseorderid, revisionnumber, status, orderdate, subtotal, taxamt, freight, modifieddate), c);
@@ -1186,8 +1179,8 @@ public record TestInsert(
     Defaulted<ShipmethodId> shipmethodid,
     Defaulted<BigDecimal> shipbase,
     Defaulted<BigDecimal> shiprate,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ShipmethodRepoImpl()).insert(new ShipmethodRowUnsaved(name, shipmethodid, shipbase, shiprate, rowguid, modifieddate), c);
@@ -1195,13 +1188,13 @@ public record TestInsert(
 
   public VendorRow purchasingVendor(
     BusinessentityId businessentityid,
-    TypoShort creditrating,
+    Short creditrating,
     AccountNumber accountnumber,
     Name name,
     Optional</* max 1024 chars */ String> purchasingwebserviceurl,
     Defaulted<Flag> preferredvendorstatus,
     Defaulted<Flag> activeflag,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new VendorRepoImpl()).insert(new VendorRowUnsaved(businessentityid, accountnumber, name, creditrating, purchasingwebserviceurl, preferredvendorstatus, activeflag, modifieddate), c);
@@ -1210,19 +1203,19 @@ public record TestInsert(
   public CountryregioncurrencyRow salesCountryregioncurrency(
     CountryregionId countryregioncode,
     CurrencyId currencycode,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new CountryregioncurrencyRepoImpl()).insert(new CountryregioncurrencyRowUnsaved(countryregioncode, currencycode, modifieddate), c);
   };
 
   public CreditcardRow salesCreditcard(
-    /* max 50 chars */ String cardtype,
-    /* max 25 chars */ String cardnumber,
-    TypoShort expmonth,
-    TypoShort expyear,
+    String cardtype,
+    String cardnumber,
+    Short expmonth,
+    Short expyear,
     Defaulted</* user-picked */ CustomCreditcardId> creditcardid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new CreditcardRepoImpl()).insert(new CreditcardRowUnsaved(cardtype, cardnumber, expmonth, expyear, creditcardid, modifieddate), c);
@@ -1231,20 +1224,20 @@ public record TestInsert(
   public CurrencyRow salesCurrency(
     CurrencyId currencycode,
     Name name,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new CurrencyRepoImpl()).insert(new CurrencyRowUnsaved(currencycode, name, modifieddate), c);
   };
 
   public CurrencyrateRow salesCurrencyrate(
+    LocalDateTime currencyratedate,
     CurrencyId fromcurrencycode,
     CurrencyId tocurrencycode,
-    TypoLocalDateTime currencyratedate,
     BigDecimal averagerate,
     BigDecimal endofdayrate,
     Defaulted<CurrencyrateId> currencyrateid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new CurrencyrateRepoImpl()).insert(new CurrencyrateRowUnsaved(currencyratedate, fromcurrencycode, tocurrencycode, averagerate, endofdayrate, currencyrateid, modifieddate), c);
@@ -1255,8 +1248,8 @@ public record TestInsert(
     Optional<BusinessentityId> storeid,
     Optional<SalesterritoryId> territoryid,
     Defaulted<CustomerId> customerid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new CustomerRepoImpl()).insert(new CustomerRowUnsaved(personid, storeid, territoryid, customerid, rowguid, modifieddate), c);
@@ -1265,7 +1258,7 @@ public record TestInsert(
   public PersoncreditcardRow salesPersoncreditcard(
     BusinessentityId businessentityid,
     /* user-picked */ CustomCreditcardId creditcardid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new PersoncreditcardRepoImpl()).insert(new PersoncreditcardRowUnsaved(businessentityid, creditcardid, modifieddate), c);
@@ -1274,25 +1267,25 @@ public record TestInsert(
   public SalesorderdetailRow salesSalesorderdetail(
     SpecialofferproductId SpecialofferproductId,
     SalesorderheaderId salesorderid,
-    TypoShort orderqty,
+    Short orderqty,
     BigDecimal unitprice,
     Optional</* max 25 chars */ String> carriertrackingnumber,
     Defaulted<Integer> salesorderdetailid,
     Defaulted<BigDecimal> unitpricediscount,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SalesorderdetailRepoImpl()).insert(new SalesorderdetailRowUnsaved(salesorderid, carriertrackingnumber, orderqty, SpecialofferproductId.productid(), SpecialofferproductId.specialofferid(), unitprice, salesorderdetailid, unitpricediscount, rowguid, modifieddate), c);
   };
 
   public SalesorderheaderRow salesSalesorderheader(
-    TypoLocalDateTime duedate,
+    LocalDateTime duedate,
     CustomerId customerid,
     AddressId billtoaddressid,
     AddressId shiptoaddressid,
     ShipmethodId shipmethodid,
-    Optional<TypoLocalDateTime> shipdate,
+    Optional<LocalDateTime> shipdate,
     Optional<OrderNumber> purchaseordernumber,
     Optional<AccountNumber> accountnumber,
     Optional<BusinessentityId> salespersonid,
@@ -1303,15 +1296,15 @@ public record TestInsert(
     Optional<BigDecimal> totaldue,
     Optional</* max 128 chars */ String> comment,
     Defaulted<SalesorderheaderId> salesorderid,
-    Defaulted<TypoShort> revisionnumber,
-    Defaulted<TypoLocalDateTime> orderdate,
-    Defaulted<TypoShort> status,
+    Defaulted<Short> revisionnumber,
+    Defaulted<LocalDateTime> orderdate,
+    Defaulted<Short> status,
     Defaulted<Flag> onlineorderflag,
     Defaulted<BigDecimal> subtotal,
     Defaulted<BigDecimal> taxamt,
     Defaulted<BigDecimal> freight,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SalesorderheaderRepoImpl()).insert(new SalesorderheaderRowUnsaved(duedate, shipdate, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, totaldue, comment, salesorderid, revisionnumber, orderdate, status, onlineorderflag, subtotal, taxamt, freight, rowguid, modifieddate), c);
@@ -1320,7 +1313,7 @@ public record TestInsert(
   public SalesorderheadersalesreasonRow salesSalesorderheadersalesreason(
     SalesorderheaderId salesorderid,
     SalesreasonId salesreasonid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SalesorderheadersalesreasonRepoImpl()).insert(new SalesorderheadersalesreasonRowUnsaved(salesorderid, salesreasonid, modifieddate), c);
@@ -1334,8 +1327,8 @@ public record TestInsert(
     Defaulted<BigDecimal> commissionpct,
     Defaulted<BigDecimal> salesytd,
     Defaulted<BigDecimal> saleslastyear,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SalespersonRepoImpl()).insert(new SalespersonRowUnsaved(businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate), c);
@@ -1343,10 +1336,10 @@ public record TestInsert(
 
   public SalespersonquotahistoryRow salesSalespersonquotahistory(
     BusinessentityId businessentityid,
+    LocalDateTime quotadate,
     BigDecimal salesquota,
-    TypoLocalDateTime quotadate,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SalespersonquotahistoryRepoImpl()).insert(new SalespersonquotahistoryRowUnsaved(businessentityid, quotadate, salesquota, rowguid, modifieddate), c);
@@ -1356,7 +1349,7 @@ public record TestInsert(
     Name name,
     Name reasontype,
     Defaulted<SalesreasonId> salesreasonid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SalesreasonRepoImpl()).insert(new SalesreasonRowUnsaved(name, reasontype, salesreasonid, modifieddate), c);
@@ -1364,12 +1357,12 @@ public record TestInsert(
 
   public SalestaxrateRow salesSalestaxrate(
     StateprovinceId stateprovinceid,
-    TypoShort taxtype,
+    Short taxtype,
     Name name,
     Defaulted<SalestaxrateId> salestaxrateid,
     Defaulted<BigDecimal> taxrate,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SalestaxrateRepoImpl()).insert(new SalestaxrateRowUnsaved(stateprovinceid, taxtype, name, salestaxrateid, taxrate, rowguid, modifieddate), c);
@@ -1378,14 +1371,14 @@ public record TestInsert(
   public SalesterritoryRow salesSalesterritory(
     CountryregionId countryregioncode,
     Name name,
-    /* max 50 chars */ String group,
+    String group,
     Defaulted<SalesterritoryId> territoryid,
     Defaulted<BigDecimal> salesytd,
     Defaulted<BigDecimal> saleslastyear,
     Defaulted<BigDecimal> costytd,
     Defaulted<BigDecimal> costlastyear,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SalesterritoryRepoImpl()).insert(new SalesterritoryRowUnsaved(name, countryregioncode, group, territoryid, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate), c);
@@ -1394,10 +1387,10 @@ public record TestInsert(
   public SalesterritoryhistoryRow salesSalesterritoryhistory(
     BusinessentityId businessentityid,
     SalesterritoryId territoryid,
-    TypoLocalDateTime startdate,
-    Optional<TypoLocalDateTime> enddate,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    LocalDateTime startdate,
+    Optional<LocalDateTime> enddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SalesterritoryhistoryRepoImpl()).insert(new SalesterritoryhistoryRowUnsaved(businessentityid, territoryid, startdate, enddate, rowguid, modifieddate), c);
@@ -1405,28 +1398,28 @@ public record TestInsert(
 
   public ShoppingcartitemRow salesShoppingcartitem(
     ProductId productid,
-    /* max 50 chars */ String shoppingcartid,
+    String shoppingcartid,
     Defaulted<ShoppingcartitemId> shoppingcartitemid,
     Defaulted<Integer> quantity,
-    Defaulted<TypoLocalDateTime> datecreated,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<LocalDateTime> datecreated,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new ShoppingcartitemRepoImpl()).insert(new ShoppingcartitemRowUnsaved(shoppingcartid, productid, shoppingcartitemid, quantity, datecreated, modifieddate), c);
   };
 
   public SpecialofferRow salesSpecialoffer(
-    TypoLocalDateTime startdate,
-    TypoLocalDateTime enddate,
-    /* max 255 chars */ String description,
-    /* max 50 chars */ String type,
-    /* max 50 chars */ String category,
+    LocalDateTime startdate,
+    LocalDateTime enddate,
+    String description,
+    String type,
+    String category,
     Optional<Integer> maxqty,
     Defaulted<SpecialofferId> specialofferid,
     Defaulted<BigDecimal> discountpct,
     Defaulted<Integer> minqty,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SpecialofferRepoImpl()).insert(new SpecialofferRowUnsaved(description, type, category, startdate, enddate, maxqty, specialofferid, discountpct, minqty, rowguid, modifieddate), c);
@@ -1435,8 +1428,8 @@ public record TestInsert(
   public SpecialofferproductRow salesSpecialofferproduct(
     SpecialofferId specialofferid,
     ProductId productid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new SpecialofferproductRepoImpl()).insert(new SpecialofferproductRowUnsaved(specialofferid, productid, rowguid, modifieddate), c);
@@ -1446,9 +1439,9 @@ public record TestInsert(
     BusinessentityId businessentityid,
     Name name,
     Optional<BusinessentityId> salespersonid,
-    Optional<TypoXml> demographics,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate,
+    Optional<Xml> demographics,
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate,
     Connection c
   ) {
     return (new StoreRepoImpl()).insert(new StoreRowUnsaved(businessentityid, name, salespersonid, demographics, rowguid, modifieddate), c);

@@ -6,88 +6,87 @@
 package adventureworks.production.productlistpricehistory
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ProductlistpricehistoryRepo {
-  fun delete(): DeleteBuilder<ProductlistpricehistoryFields, ProductlistpricehistoryRow>
+  abstract fun delete(): DeleteBuilder<ProductlistpricehistoryFields, ProductlistpricehistoryRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: ProductlistpricehistoryId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<ProductlistpricehistoryId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ProductlistpricehistoryRow,
     c: Connection
   ): ProductlistpricehistoryRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ProductlistpricehistoryRowUnsaved,
     c: Connection
   ): ProductlistpricehistoryRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<ProductlistpricehistoryRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<ProductlistpricehistoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<ProductlistpricehistoryFields, ProductlistpricehistoryRow>
+  abstract fun select(): SelectBuilder<ProductlistpricehistoryFields, ProductlistpricehistoryRow>
 
-  fun selectAll(c: Connection): List<ProductlistpricehistoryRow>
+  abstract fun selectAll(c: Connection): List<ProductlistpricehistoryRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: ProductlistpricehistoryId,
     c: Connection
-  ): Optional<ProductlistpricehistoryRow>
+  ): ProductlistpricehistoryRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<ProductlistpricehistoryId>,
     c: Connection
   ): List<ProductlistpricehistoryRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<ProductlistpricehistoryId>,
     c: Connection
   ): Map<ProductlistpricehistoryId, ProductlistpricehistoryRow>
 
-  fun update(): UpdateBuilder<ProductlistpricehistoryFields, ProductlistpricehistoryRow>
+  abstract fun update(): UpdateBuilder<ProductlistpricehistoryFields, ProductlistpricehistoryRow>
 
-  fun update(
+  abstract fun update(
     row: ProductlistpricehistoryRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ProductlistpricehistoryRow,
     c: Connection
   ): ProductlistpricehistoryRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<ProductlistpricehistoryRow>,
     c: Connection
   ): List<ProductlistpricehistoryRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<ProductlistpricehistoryRow>,
     batchSize: Int,
     c: Connection

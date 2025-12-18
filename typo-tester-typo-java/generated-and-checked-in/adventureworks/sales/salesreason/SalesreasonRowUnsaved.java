@@ -7,9 +7,10 @@ package adventureworks.sales.salesreason;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.salesreason` which has not been persisted yet */
 public record SalesreasonRowUnsaved(
@@ -22,7 +23,7 @@ public record SalesreasonRowUnsaved(
     */
   Defaulted<SalesreasonId> salesreasonid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SalesreasonRowUnsaved(
     /** Sales reason description. */
@@ -51,7 +52,7 @@ public record SalesreasonRowUnsaved(
   };
 
   /** Default: now() */
-  public SalesreasonRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SalesreasonRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SalesreasonRowUnsaved(name, reasontype, salesreasonid, modifieddate);
   };
 
@@ -63,12 +64,12 @@ public record SalesreasonRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(SalesreasonId.pgType.pgText()).unsafeEncode(row.salesreasonid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public SalesreasonRow toRow(
     java.util.function.Supplier<SalesreasonId> salesreasonidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new SalesreasonRow(salesreasonid.getOrElse(salesreasonidDefault), name, reasontype, modifieddate.getOrElse(modifieddateDefault));
   };

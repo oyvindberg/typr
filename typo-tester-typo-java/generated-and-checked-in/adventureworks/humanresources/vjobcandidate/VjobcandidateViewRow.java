@@ -5,11 +5,10 @@
  */
 package adventureworks.humanresources.vjobcandidate;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.humanresources.jobcandidate.JobcandidateId;
 import adventureworks.person.businessentity.BusinessentityId;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -19,22 +18,22 @@ public record VjobcandidateViewRow(
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#jobcandidateid()} */
   JobcandidateId jobcandidateid,
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#businessentityid()} */
-  Optional<BusinessentityId> businessentityid,
-  @JsonProperty("Name.Prefix") Optional</* max 30 chars */ String> namePrefix,
-  @JsonProperty("Name.First") Optional</* max 30 chars */ String> nameFirst,
-  @JsonProperty("Name.Middle") Optional</* max 30 chars */ String> nameMiddle,
-  @JsonProperty("Name.Last") Optional</* max 30 chars */ String> nameLast,
-  @JsonProperty("Name.Suffix") Optional</* max 30 chars */ String> nameSuffix,
+  BusinessentityId businessentityid,
+  @JsonProperty("Name.Prefix") String namePrefix,
+  @JsonProperty("Name.First") String nameFirst,
+  @JsonProperty("Name.Middle") String nameMiddle,
+  @JsonProperty("Name.Last") String nameLast,
+  @JsonProperty("Name.Suffix") String nameSuffix,
   @JsonProperty("Skills") String skills,
-  @JsonProperty("Addr.Type") Optional</* max 30 chars */ String> addrType,
-  @JsonProperty("Addr.Loc.CountryRegion") Optional</* max 100 chars */ String> addrLocCountryRegion,
-  @JsonProperty("Addr.Loc.State") Optional</* max 100 chars */ String> addrLocState,
-  @JsonProperty("Addr.Loc.City") Optional</* max 100 chars */ String> addrLocCity,
-  @JsonProperty("Addr.PostalCode") Optional</* max 20 chars */ String> addrPostalCode,
+  @JsonProperty("Addr.Type") String addrType,
+  @JsonProperty("Addr.Loc.CountryRegion") String addrLocCountryRegion,
+  @JsonProperty("Addr.Loc.State") String addrLocState,
+  @JsonProperty("Addr.Loc.City") String addrLocCity,
+  @JsonProperty("Addr.PostalCode") String addrPostalCode,
   @JsonProperty("EMail") String eMail,
   @JsonProperty("WebSite") String webSite,
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#jobcandidateid()} */
   public VjobcandidateViewRow withJobcandidateid(JobcandidateId jobcandidateid) {
@@ -42,27 +41,27 @@ public record VjobcandidateViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#businessentityid()} */
-  public VjobcandidateViewRow withBusinessentityid(Optional<BusinessentityId> businessentityid) {
+  public VjobcandidateViewRow withBusinessentityid(BusinessentityId businessentityid) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  public VjobcandidateViewRow withNamePrefix(Optional</* max 30 chars */ String> namePrefix) {
+  public VjobcandidateViewRow withNamePrefix(String namePrefix) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  public VjobcandidateViewRow withNameFirst(Optional</* max 30 chars */ String> nameFirst) {
+  public VjobcandidateViewRow withNameFirst(String nameFirst) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  public VjobcandidateViewRow withNameMiddle(Optional</* max 30 chars */ String> nameMiddle) {
+  public VjobcandidateViewRow withNameMiddle(String nameMiddle) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  public VjobcandidateViewRow withNameLast(Optional</* max 30 chars */ String> nameLast) {
+  public VjobcandidateViewRow withNameLast(String nameLast) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  public VjobcandidateViewRow withNameSuffix(Optional</* max 30 chars */ String> nameSuffix) {
+  public VjobcandidateViewRow withNameSuffix(String nameSuffix) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
@@ -70,23 +69,23 @@ public record VjobcandidateViewRow(
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  public VjobcandidateViewRow withAddrType(Optional</* max 30 chars */ String> addrType) {
+  public VjobcandidateViewRow withAddrType(String addrType) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  public VjobcandidateViewRow withAddrLocCountryRegion(Optional</* max 100 chars */ String> addrLocCountryRegion) {
+  public VjobcandidateViewRow withAddrLocCountryRegion(String addrLocCountryRegion) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  public VjobcandidateViewRow withAddrLocState(Optional</* max 100 chars */ String> addrLocState) {
+  public VjobcandidateViewRow withAddrLocState(String addrLocState) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  public VjobcandidateViewRow withAddrLocCity(Optional</* max 100 chars */ String> addrLocCity) {
+  public VjobcandidateViewRow withAddrLocCity(String addrLocCity) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  public VjobcandidateViewRow withAddrPostalCode(Optional</* max 20 chars */ String> addrPostalCode) {
+  public VjobcandidateViewRow withAddrPostalCode(String addrPostalCode) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
@@ -99,9 +98,9 @@ public record VjobcandidateViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#modifieddate()} */
-  public VjobcandidateViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public VjobcandidateViewRow withModifieddate(LocalDateTime modifieddate) {
     return new VjobcandidateViewRow(jobcandidateid, businessentityid, namePrefix, nameFirst, nameMiddle, nameLast, nameSuffix, skills, addrType, addrLocCountryRegion, addrLocState, addrLocCity, addrPostalCode, eMail, webSite, modifieddate);
   };
 
-  static RowParser<VjobcandidateViewRow> _rowParser = RowParsers.of(JobcandidateId.pgType, BusinessentityId.pgType.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text, PgTypes.text, TypoLocalDateTime.pgType, VjobcandidateViewRow::new, row -> new Object[]{row.jobcandidateid(), row.businessentityid(), row.namePrefix(), row.nameFirst(), row.nameMiddle(), row.nameLast(), row.nameSuffix(), row.skills(), row.addrType(), row.addrLocCountryRegion(), row.addrLocState(), row.addrLocCity(), row.addrPostalCode(), row.eMail(), row.webSite(), row.modifieddate()});;
+  static RowParser<VjobcandidateViewRow> _rowParser = RowParsers.of(JobcandidateId.pgType, BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.timestamp, VjobcandidateViewRow::new, row -> new Object[]{row.jobcandidateid(), row.businessentityid(), row.namePrefix(), row.nameFirst(), row.nameMiddle(), row.nameLast(), row.nameSuffix(), row.skills(), row.addrType(), row.addrLocCountryRegion(), row.addrLocState(), row.addrLocCity(), row.addrPostalCode(), row.eMail(), row.webSite(), row.modifieddate()});;
 }

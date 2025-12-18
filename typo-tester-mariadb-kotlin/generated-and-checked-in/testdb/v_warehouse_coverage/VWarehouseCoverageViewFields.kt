@@ -6,70 +6,72 @@
 package testdb.v_warehouse_coverage
 
 import java.math.BigDecimal
-import java.util.Optional
 import kotlin.collections.List
 import testdb.warehouses.WarehousesId
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
 
 interface VWarehouseCoverageViewFields : FieldsExpr<VWarehouseCoverageViewRow> {
-  fun address(): Field<String, VWarehouseCoverageViewRow>
+  abstract fun address(): Field<String, VWarehouseCoverageViewRow>
 
-  fun code(): Field<String, VWarehouseCoverageViewRow>
+  abstract fun code(): Field<String, VWarehouseCoverageViewRow>
 
-  override fun columns(): List<FieldLike<*, VWarehouseCoverageViewRow>>
+  abstract override fun columns(): List<FieldLike<*, VWarehouseCoverageViewRow>>
 
-  fun isActive(): Field<Boolean, VWarehouseCoverageViewRow>
+  abstract fun isActive(): Field<Boolean, VWarehouseCoverageViewRow>
 
-  fun locationWkt(): OptField<String, VWarehouseCoverageViewRow>
+  abstract fun locationWkt(): OptField<String, VWarehouseCoverageViewRow>
 
-  fun name(): Field<String, VWarehouseCoverageViewRow>
+  abstract fun name(): Field<String, VWarehouseCoverageViewRow>
 
-  fun productsStocked(): Field<Long, VWarehouseCoverageViewRow>
+  abstract fun productsStocked(): Field<Long, VWarehouseCoverageViewRow>
 
-  override fun rowParser(): RowParser<VWarehouseCoverageViewRow> = VWarehouseCoverageViewRow._rowParser
+  override fun rowParser(): RowParser<VWarehouseCoverageViewRow> = VWarehouseCoverageViewRow._rowParser.underlying
 
-  fun serviceAreaWkt(): OptField<String, VWarehouseCoverageViewRow>
+  abstract fun serviceAreaWkt(): OptField<String, VWarehouseCoverageViewRow>
 
-  fun timezone(): Field<String, VWarehouseCoverageViewRow>
+  abstract fun timezone(): Field<String, VWarehouseCoverageViewRow>
 
-  fun totalInventory(): OptField<BigDecimal, VWarehouseCoverageViewRow>
+  abstract fun totalInventory(): OptField<BigDecimal, VWarehouseCoverageViewRow>
 
-  fun warehouseId(): Field<WarehousesId, VWarehouseCoverageViewRow>
+  abstract fun warehouseId(): Field<WarehousesId, VWarehouseCoverageViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : VWarehouseCoverageViewFields, Relation<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> {
-      override fun warehouseId(): Field<WarehousesId, VWarehouseCoverageViewRow> = Field<WarehousesId, VWarehouseCoverageViewRow>(_path, "warehouse_id", VWarehouseCoverageViewRow::warehouseId, Optional.empty(), Optional.empty(), { row, value -> row.copy(warehouseId = value) }, WarehousesId.pgType)
+    data class Impl(val _path: List<Path>) : VWarehouseCoverageViewFields, RelationStructure<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> {
+      override fun warehouseId(): Field<WarehousesId, VWarehouseCoverageViewRow> = Field<WarehousesId, VWarehouseCoverageViewRow>(_path, "warehouse_id", VWarehouseCoverageViewRow::warehouseId, null, null, { row, value -> row.copy(warehouseId = value) }, WarehousesId.pgType)
 
-      override fun code(): Field<String, VWarehouseCoverageViewRow> = Field<String, VWarehouseCoverageViewRow>(_path, "code", VWarehouseCoverageViewRow::code, Optional.empty(), Optional.empty(), { row, value -> row.copy(code = value) }, MariaTypes.char_)
+      override fun code(): Field<String, VWarehouseCoverageViewRow> = Field<String, VWarehouseCoverageViewRow>(_path, "code", VWarehouseCoverageViewRow::code, null, null, { row, value -> row.copy(code = value) }, MariaTypes.char_)
 
-      override fun name(): Field<String, VWarehouseCoverageViewRow> = Field<String, VWarehouseCoverageViewRow>(_path, "name", VWarehouseCoverageViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, MariaTypes.varchar)
+      override fun name(): Field<String, VWarehouseCoverageViewRow> = Field<String, VWarehouseCoverageViewRow>(_path, "name", VWarehouseCoverageViewRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
 
-      override fun address(): Field<String, VWarehouseCoverageViewRow> = Field<String, VWarehouseCoverageViewRow>(_path, "address", VWarehouseCoverageViewRow::address, Optional.empty(), Optional.empty(), { row, value -> row.copy(address = value) }, MariaTypes.varchar)
+      override fun address(): Field<String, VWarehouseCoverageViewRow> = Field<String, VWarehouseCoverageViewRow>(_path, "address", VWarehouseCoverageViewRow::address, null, null, { row, value -> row.copy(address = value) }, MariaTypes.varchar)
 
-      override fun locationWkt(): OptField<String, VWarehouseCoverageViewRow> = OptField<String, VWarehouseCoverageViewRow>(_path, "location_wkt", VWarehouseCoverageViewRow::locationWkt, Optional.empty(), Optional.empty(), { row, value -> row.copy(locationWkt = value) }, MariaTypes.longtext)
+      override fun locationWkt(): OptField<String, VWarehouseCoverageViewRow> = OptField<String, VWarehouseCoverageViewRow>(_path, "location_wkt", VWarehouseCoverageViewRow::locationWkt, null, null, { row, value -> row.copy(locationWkt = value) }, MariaTypes.longtext)
 
-      override fun serviceAreaWkt(): OptField<String, VWarehouseCoverageViewRow> = OptField<String, VWarehouseCoverageViewRow>(_path, "service_area_wkt", VWarehouseCoverageViewRow::serviceAreaWkt, Optional.empty(), Optional.empty(), { row, value -> row.copy(serviceAreaWkt = value) }, MariaTypes.longtext)
+      override fun serviceAreaWkt(): OptField<String, VWarehouseCoverageViewRow> = OptField<String, VWarehouseCoverageViewRow>(_path, "service_area_wkt", VWarehouseCoverageViewRow::serviceAreaWkt, null, null, { row, value -> row.copy(serviceAreaWkt = value) }, MariaTypes.longtext)
 
-      override fun timezone(): Field<String, VWarehouseCoverageViewRow> = Field<String, VWarehouseCoverageViewRow>(_path, "timezone", VWarehouseCoverageViewRow::timezone, Optional.empty(), Optional.empty(), { row, value -> row.copy(timezone = value) }, MariaTypes.varchar)
+      override fun timezone(): Field<String, VWarehouseCoverageViewRow> = Field<String, VWarehouseCoverageViewRow>(_path, "timezone", VWarehouseCoverageViewRow::timezone, null, null, { row, value -> row.copy(timezone = value) }, MariaTypes.varchar)
 
-      override fun isActive(): Field<Boolean, VWarehouseCoverageViewRow> = Field<Boolean, VWarehouseCoverageViewRow>(_path, "is_active", VWarehouseCoverageViewRow::isActive, Optional.empty(), Optional.empty(), { row, value -> row.copy(isActive = value) }, MariaTypes.bool)
+      override fun isActive(): Field<Boolean, VWarehouseCoverageViewRow> = Field<Boolean, VWarehouseCoverageViewRow>(_path, "is_active", VWarehouseCoverageViewRow::isActive, null, null, { row, value -> row.copy(isActive = value) }, KotlinDbTypes.MariaTypes.bool)
 
-      override fun productsStocked(): Field<Long, VWarehouseCoverageViewRow> = Field<Long, VWarehouseCoverageViewRow>(_path, "products_stocked", VWarehouseCoverageViewRow::productsStocked, Optional.empty(), Optional.empty(), { row, value -> row.copy(productsStocked = value) }, MariaTypes.bigint)
+      override fun productsStocked(): Field<Long, VWarehouseCoverageViewRow> = Field<Long, VWarehouseCoverageViewRow>(_path, "products_stocked", VWarehouseCoverageViewRow::productsStocked, null, null, { row, value -> row.copy(productsStocked = value) }, KotlinDbTypes.MariaTypes.bigint)
 
-      override fun totalInventory(): OptField<BigDecimal, VWarehouseCoverageViewRow> = OptField<BigDecimal, VWarehouseCoverageViewRow>(_path, "total_inventory", VWarehouseCoverageViewRow::totalInventory, Optional.empty(), Optional.empty(), { row, value -> row.copy(totalInventory = value) }, MariaTypes.decimal)
+      override fun totalInventory(): OptField<BigDecimal, VWarehouseCoverageViewRow> = OptField<BigDecimal, VWarehouseCoverageViewRow>(_path, "total_inventory", VWarehouseCoverageViewRow::totalInventory, null, null, { row, value -> row.copy(totalInventory = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-      override fun columns(): List<FieldLike<*, VWarehouseCoverageViewRow>> = listOf(this.warehouseId(), this.code(), this.name(), this.address(), this.locationWkt(), this.serviceAreaWkt(), this.timezone(), this.isActive(), this.productsStocked(), this.totalInventory())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, VWarehouseCoverageViewRow>> = listOf(this.warehouseId().underlying, this.code().underlying, this.name().underlying, this.address().underlying, this.locationWkt().underlying, this.serviceAreaWkt().underlying, this.timezone().underlying, this.isActive().underlying, this.productsStocked().underlying, this.totalInventory().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

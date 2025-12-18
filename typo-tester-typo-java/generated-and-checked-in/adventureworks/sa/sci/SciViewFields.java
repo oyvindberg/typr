@@ -5,21 +5,21 @@
  */
 package adventureworks.sa.sci;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.sales.shoppingcartitem.ShoppingcartitemId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SciViewFields extends FieldsExpr<SciViewRow> {
-  record Impl(List<Path> _path) implements SciViewFields, Relation<SciViewFields, SciViewRow> {
+  record Impl(List<Path> _path) implements SciViewFields, RelationStructure<SciViewFields, SciViewRow> {
     @Override
     public Field<ShoppingcartitemId, SciViewRow> id() {
       return new Field<ShoppingcartitemId, SciViewRow>(_path, "id", SciViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), ShoppingcartitemId.pgType);
@@ -31,8 +31,8 @@ public interface SciViewFields extends FieldsExpr<SciViewRow> {
     };
 
     @Override
-    public Field</* max 50 chars */ String, SciViewRow> shoppingcartid() {
-      return new Field</* max 50 chars */ String, SciViewRow>(_path, "shoppingcartid", SciViewRow::shoppingcartid, Optional.empty(), Optional.empty(), (row, value) -> row.withShoppingcartid(value), PgTypes.text);
+    public Field<String, SciViewRow> shoppingcartid() {
+      return new Field<String, SciViewRow>(_path, "shoppingcartid", SciViewRow::shoppingcartid, Optional.empty(), Optional.empty(), (row, value) -> row.withShoppingcartid(value), PgTypes.text);
     };
 
     @Override
@@ -46,43 +46,43 @@ public interface SciViewFields extends FieldsExpr<SciViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, SciViewRow> datecreated() {
-      return new Field<TypoLocalDateTime, SciViewRow>(_path, "datecreated", SciViewRow::datecreated, Optional.of("text"), Optional.empty(), (row, value) -> row.withDatecreated(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SciViewRow> datecreated() {
+      return new Field<LocalDateTime, SciViewRow>(_path, "datecreated", SciViewRow::datecreated, Optional.empty(), Optional.empty(), (row, value) -> row.withDatecreated(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SciViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SciViewRow>(_path, "modifieddate", SciViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SciViewRow> modifieddate() {
+      return new Field<LocalDateTime, SciViewRow>(_path, "modifieddate", SciViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SciViewRow>> columns() {
-      return List.of(this.id(), this.shoppingcartitemid(), this.shoppingcartid(), this.quantity(), this.productid(), this.datecreated(), this.modifieddate());
+      return java.util.List.of(this.id(), this.shoppingcartitemid(), this.shoppingcartid(), this.quantity(), this.productid(), this.datecreated(), this.modifieddate());
     };
 
     @Override
-    public Relation<SciViewFields, SciViewRow> copy(List<Path> _path) {
+    public RelationStructure<SciViewFields, SciViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ShoppingcartitemId, SciViewRow> id();
 
   Field<ShoppingcartitemId, SciViewRow> shoppingcartitemid();
 
-  Field</* max 50 chars */ String, SciViewRow> shoppingcartid();
+  Field<String, SciViewRow> shoppingcartid();
 
   Field<Integer, SciViewRow> quantity();
 
   Field<ProductId, SciViewRow> productid();
 
-  Field<TypoLocalDateTime, SciViewRow> datecreated();
+  Field<LocalDateTime, SciViewRow> datecreated();
 
-  Field<TypoLocalDateTime, SciViewRow> modifieddate();
+  Field<LocalDateTime, SciViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, SciViewRow>> columns();

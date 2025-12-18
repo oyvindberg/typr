@@ -5,24 +5,23 @@
  */
 package adventureworks.pu.pv;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.unitmeasure.UnitmeasureId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PvViewFields extends FieldsExpr<PvViewRow> {
-  record Impl(List<Path> _path) implements PvViewFields, Relation<PvViewFields, PvViewRow> {
+  record Impl(List<Path> _path) implements PvViewFields, RelationStructure<PvViewFields, PvViewRow> {
     @Override
     public Field<ProductId, PvViewRow> id() {
       return new Field<ProductId, PvViewRow>(_path, "id", PvViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), ProductId.pgType);
@@ -49,13 +48,13 @@ public interface PvViewFields extends FieldsExpr<PvViewRow> {
     };
 
     @Override
-    public OptField<BigDecimal, PvViewRow> lastreceiptcost() {
-      return new OptField<BigDecimal, PvViewRow>(_path, "lastreceiptcost", PvViewRow::lastreceiptcost, Optional.empty(), Optional.empty(), (row, value) -> row.withLastreceiptcost(value), PgTypes.numeric);
+    public Field<BigDecimal, PvViewRow> lastreceiptcost() {
+      return new Field<BigDecimal, PvViewRow>(_path, "lastreceiptcost", PvViewRow::lastreceiptcost, Optional.empty(), Optional.empty(), (row, value) -> row.withLastreceiptcost(value), PgTypes.numeric);
     };
 
     @Override
-    public OptField<TypoLocalDateTime, PvViewRow> lastreceiptdate() {
-      return new OptField<TypoLocalDateTime, PvViewRow>(_path, "lastreceiptdate", PvViewRow::lastreceiptdate, Optional.of("text"), Optional.empty(), (row, value) -> row.withLastreceiptdate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PvViewRow> lastreceiptdate() {
+      return new Field<LocalDateTime, PvViewRow>(_path, "lastreceiptdate", PvViewRow::lastreceiptdate, Optional.empty(), Optional.empty(), (row, value) -> row.withLastreceiptdate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -69,8 +68,8 @@ public interface PvViewFields extends FieldsExpr<PvViewRow> {
     };
 
     @Override
-    public OptField<Integer, PvViewRow> onorderqty() {
-      return new OptField<Integer, PvViewRow>(_path, "onorderqty", PvViewRow::onorderqty, Optional.empty(), Optional.empty(), (row, value) -> row.withOnorderqty(value), PgTypes.int4);
+    public Field<Integer, PvViewRow> onorderqty() {
+      return new Field<Integer, PvViewRow>(_path, "onorderqty", PvViewRow::onorderqty, Optional.empty(), Optional.empty(), (row, value) -> row.withOnorderqty(value), PgTypes.int4);
     };
 
     @Override
@@ -79,23 +78,23 @@ public interface PvViewFields extends FieldsExpr<PvViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PvViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PvViewRow>(_path, "modifieddate", PvViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PvViewRow> modifieddate() {
+      return new Field<LocalDateTime, PvViewRow>(_path, "modifieddate", PvViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PvViewRow>> columns() {
-      return List.of(this.id(), this.productid(), this.businessentityid(), this.averageleadtime(), this.standardprice(), this.lastreceiptcost(), this.lastreceiptdate(), this.minorderqty(), this.maxorderqty(), this.onorderqty(), this.unitmeasurecode(), this.modifieddate());
+      return java.util.List.of(this.id(), this.productid(), this.businessentityid(), this.averageleadtime(), this.standardprice(), this.lastreceiptcost(), this.lastreceiptdate(), this.minorderqty(), this.maxorderqty(), this.onorderqty(), this.unitmeasurecode(), this.modifieddate());
     };
 
     @Override
-    public Relation<PvViewFields, PvViewRow> copy(List<Path> _path) {
+    public RelationStructure<PvViewFields, PvViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductId, PvViewRow> id();
@@ -108,19 +107,19 @@ public interface PvViewFields extends FieldsExpr<PvViewRow> {
 
   Field<BigDecimal, PvViewRow> standardprice();
 
-  OptField<BigDecimal, PvViewRow> lastreceiptcost();
+  Field<BigDecimal, PvViewRow> lastreceiptcost();
 
-  OptField<TypoLocalDateTime, PvViewRow> lastreceiptdate();
+  Field<LocalDateTime, PvViewRow> lastreceiptdate();
 
   Field<Integer, PvViewRow> minorderqty();
 
   Field<Integer, PvViewRow> maxorderqty();
 
-  OptField<Integer, PvViewRow> onorderqty();
+  Field<Integer, PvViewRow> onorderqty();
 
   Field<UnitmeasureId, PvViewRow> unitmeasurecode();
 
-  Field<TypoLocalDateTime, PvViewRow> modifieddate();
+  Field<LocalDateTime, PvViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PvViewRow>> columns();

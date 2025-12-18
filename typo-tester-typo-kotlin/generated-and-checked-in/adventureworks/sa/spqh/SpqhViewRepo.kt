@@ -7,10 +7,10 @@ package adventureworks.sa.spqh
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface SpqhViewRepo {
-  fun select(): SelectBuilder<SpqhViewFields, SpqhViewRow>
+  abstract fun select(): SelectBuilder<SpqhViewFields, SpqhViewRow>
 
-  fun selectAll(c: Connection): List<SpqhViewRow>
+  abstract fun selectAll(c: Connection): List<SpqhViewRow>
 }

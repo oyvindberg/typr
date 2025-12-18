@@ -5,10 +5,11 @@
  */
 package adventureworks.pe.bec;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.contacttype.ContacttypeId;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -23,9 +24,9 @@ public record BecViewRow(
   /** Points to {@link adventureworks.person.businessentitycontact.BusinessentitycontactRow#contacttypeid()} */
   ContacttypeId contacttypeid,
   /** Points to {@link adventureworks.person.businessentitycontact.BusinessentitycontactRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.person.businessentitycontact.BusinessentitycontactRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.businessentitycontact.BusinessentitycontactRow#businessentityid()} */
   public BecViewRow withId(BusinessentityId id) {
@@ -48,14 +49,14 @@ public record BecViewRow(
   };
 
   /** Points to {@link adventureworks.person.businessentitycontact.BusinessentitycontactRow#rowguid()} */
-  public BecViewRow withRowguid(TypoUUID rowguid) {
+  public BecViewRow withRowguid(UUID rowguid) {
     return new BecViewRow(id, businessentityid, personid, contacttypeid, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.businessentitycontact.BusinessentitycontactRow#modifieddate()} */
-  public BecViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public BecViewRow withModifieddate(LocalDateTime modifieddate) {
     return new BecViewRow(id, businessentityid, personid, contacttypeid, rowguid, modifieddate);
   };
 
-  static RowParser<BecViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, BusinessentityId.pgType, ContacttypeId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, BecViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.personid(), row.contacttypeid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<BecViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, BusinessentityId.pgType, ContacttypeId.pgType, PgTypes.uuid, PgTypes.timestamp, BecViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.personid(), row.contacttypeid(), row.rowguid(), row.modifieddate()});;
 }

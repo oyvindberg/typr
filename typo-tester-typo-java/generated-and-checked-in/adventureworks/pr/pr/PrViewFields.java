@@ -5,23 +5,22 @@
  */
 package adventureworks.pr.pr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.productreview.ProductreviewId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PrViewFields extends FieldsExpr<PrViewRow> {
-  record Impl(List<Path> _path) implements PrViewFields, Relation<PrViewFields, PrViewRow> {
+  record Impl(List<Path> _path) implements PrViewFields, RelationStructure<PrViewFields, PrViewRow> {
     @Override
     public Field<ProductreviewId, PrViewRow> id() {
       return new Field<ProductreviewId, PrViewRow>(_path, "id", PrViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), ProductreviewId.pgType);
@@ -43,13 +42,13 @@ public interface PrViewFields extends FieldsExpr<PrViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PrViewRow> reviewdate() {
-      return new Field<TypoLocalDateTime, PrViewRow>(_path, "reviewdate", PrViewRow::reviewdate, Optional.of("text"), Optional.empty(), (row, value) -> row.withReviewdate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PrViewRow> reviewdate() {
+      return new Field<LocalDateTime, PrViewRow>(_path, "reviewdate", PrViewRow::reviewdate, Optional.empty(), Optional.empty(), (row, value) -> row.withReviewdate(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field</* max 50 chars */ String, PrViewRow> emailaddress() {
-      return new Field</* max 50 chars */ String, PrViewRow>(_path, "emailaddress", PrViewRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
+    public Field<String, PrViewRow> emailaddress() {
+      return new Field<String, PrViewRow>(_path, "emailaddress", PrViewRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
     };
 
     @Override
@@ -58,28 +57,28 @@ public interface PrViewFields extends FieldsExpr<PrViewRow> {
     };
 
     @Override
-    public OptField</* max 3850 chars */ String, PrViewRow> comments() {
-      return new OptField</* max 3850 chars */ String, PrViewRow>(_path, "comments", PrViewRow::comments, Optional.empty(), Optional.empty(), (row, value) -> row.withComments(value), PgTypes.text);
+    public Field<String, PrViewRow> comments() {
+      return new Field<String, PrViewRow>(_path, "comments", PrViewRow::comments, Optional.empty(), Optional.empty(), (row, value) -> row.withComments(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoLocalDateTime, PrViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PrViewRow>(_path, "modifieddate", PrViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PrViewRow> modifieddate() {
+      return new Field<LocalDateTime, PrViewRow>(_path, "modifieddate", PrViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PrViewRow>> columns() {
-      return List.of(this.id(), this.productreviewid(), this.productid(), this.reviewername(), this.reviewdate(), this.emailaddress(), this.rating(), this.comments(), this.modifieddate());
+      return java.util.List.of(this.id(), this.productreviewid(), this.productid(), this.reviewername(), this.reviewdate(), this.emailaddress(), this.rating(), this.comments(), this.modifieddate());
     };
 
     @Override
-    public Relation<PrViewFields, PrViewRow> copy(List<Path> _path) {
+    public RelationStructure<PrViewFields, PrViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductreviewId, PrViewRow> id();
@@ -90,15 +89,15 @@ public interface PrViewFields extends FieldsExpr<PrViewRow> {
 
   Field<Name, PrViewRow> reviewername();
 
-  Field<TypoLocalDateTime, PrViewRow> reviewdate();
+  Field<LocalDateTime, PrViewRow> reviewdate();
 
-  Field</* max 50 chars */ String, PrViewRow> emailaddress();
+  Field<String, PrViewRow> emailaddress();
 
   Field<Integer, PrViewRow> rating();
 
-  OptField</* max 3850 chars */ String, PrViewRow> comments();
+  Field<String, PrViewRow> comments();
 
-  Field<TypoLocalDateTime, PrViewRow> modifieddate();
+  Field<LocalDateTime, PrViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PrViewRow>> columns();

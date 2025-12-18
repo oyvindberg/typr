@@ -17,7 +17,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -32,11 +31,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     MariatestSpatialNullId id,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `mariatest_spatial_null` where `id` = "),
-      MariatestSpatialNullId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `mariatest_spatial_null` where `id` = "), Fragment.encode(MariatestSpatialNullId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,8 +39,8 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     MariatestSpatialNullId[] ids,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : ids) { fragments.add(MariatestSpatialNullId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : ids) { fragments.add(Fragment.encode(MariatestSpatialNullId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `mariatest_spatial_null` where `id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -54,30 +49,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     MariatestSpatialNullRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `mariatest_spatial_null`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
-         values ("""),
-      MariaTypes.geometry.opt().encode(unsaved.geometryCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.point.opt().encode(unsaved.pointCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.linestring.opt().encode(unsaved.linestringCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.polygon.opt().encode(unsaved.polygonCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.multipoint.opt().encode(unsaved.multipointCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.multilinestring.opt().encode(unsaved.multilinestringCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.multipolygon.opt().encode(unsaved.multipolygonCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.geometrycollection.opt().encode(unsaved.geometrycollectionCol()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `mariatest_spatial_null`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)\nvalues ("), Fragment.encode(MariaTypes.geometry.opt(), unsaved.geometryCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.point.opt(), unsaved.pointCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.linestring.opt(), unsaved.linestringCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.polygon.opt(), unsaved.polygonCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.multipoint.opt(), unsaved.multipointCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.multilinestring.opt(), unsaved.multilinestringCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.multipolygon.opt(), unsaved.multipolygonCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.geometrycollection.opt(), unsaved.geometrycollectionCol()), Fragment.lit(")\nreturning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`\n"))
       .updateReturning(MariatestSpatialNullRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -86,19 +58,15 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     MariatestSpatialNullRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     unsaved.geometryCol().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`geometry_col`"));
-        values.add(interpolate(
-        MariaTypes.geometry.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.geometry.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.pointCol().visit(
@@ -107,11 +75,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`point_col`"));
-        values.add(interpolate(
-        MariaTypes.point.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.point.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.linestringCol().visit(
@@ -120,11 +84,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`linestring_col`"));
-        values.add(interpolate(
-        MariaTypes.linestring.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.linestring.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.polygonCol().visit(
@@ -133,11 +93,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`polygon_col`"));
-        values.add(interpolate(
-        MariaTypes.polygon.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.polygon.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.multipointCol().visit(
@@ -146,11 +102,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`multipoint_col`"));
-        values.add(interpolate(
-        MariaTypes.multipoint.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.multipoint.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.multilinestringCol().visit(
@@ -159,11 +111,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`multilinestring_col`"));
-        values.add(interpolate(
-        MariaTypes.multilinestring.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.multilinestring.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.multipolygonCol().visit(
@@ -172,11 +120,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`multipolygon_col`"));
-        values.add(interpolate(
-        MariaTypes.multipolygon.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.multipolygon.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.geometrycollectionCol().visit(
@@ -185,30 +129,12 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
       },
       value -> {
         columns.add(Fragment.lit("`geometrycollection_col`"));
-        values.add(interpolate(
-        MariaTypes.geometrycollection.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.geometrycollection.opt(), value), Fragment.lit("")));
       }
     );;
-    Fragment q = columns.isEmpty()
-      ? interpolate(typo.runtime.Fragment.lit("""
-           insert into `mariatest_spatial_null` default values
-           returning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
-        """))
-      : interpolate(
-          typo.runtime.Fragment.lit("insert into `mariatest_spatial_null`("),
-          Fragment.comma(columns),
-          typo.runtime.Fragment.lit("""
-             )
-             values ("""),
-          Fragment.comma(values),
-          typo.runtime.Fragment.lit("""
-             )
-             returning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
-          """)
-        );;
+    Fragment q = (columns.isEmpty()
+      ? interpolate(Fragment.lit("insert into `mariatest_spatial_null` default values\nreturning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`\n"))
+      : interpolate(Fragment.lit("insert into `mariatest_spatial_null`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`\n")));;
     return q.updateReturning(MariatestSpatialNullRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -219,10 +145,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
 
   @Override
   public List<MariatestSpatialNullRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
-       from `mariatest_spatial_null`
-    """)).query(MariatestSpatialNullRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`\nfrom `mariatest_spatial_null`\n")).query(MariatestSpatialNullRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -230,14 +153,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     MariatestSpatialNullId id,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
-         from `mariatest_spatial_null`
-         where `id` = """),
-      MariatestSpatialNullId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).query(MariatestSpatialNullRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`\nfrom `mariatest_spatial_null`\nwhere `id` = "), Fragment.encode(MariatestSpatialNullId.pgType, id), Fragment.lit("")).query(MariatestSpatialNullRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -245,8 +161,8 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     MariatestSpatialNullId[] ids,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : ids) { fragments.add(MariatestSpatialNullId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : ids) { fragments.add(Fragment.encode(MariatestSpatialNullId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col` from `mariatest_spatial_null` where `id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(MariatestSpatialNullRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -262,7 +178,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
 
   @Override
   public UpdateBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow> update() {
-    return UpdateBuilder.of("`mariatest_spatial_null`", MariatestSpatialNullFields.structure(), MariatestSpatialNullRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`mariatest_spatial_null`", MariatestSpatialNullFields.structure(), MariatestSpatialNullRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -271,45 +187,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     Connection c
   ) {
     MariatestSpatialNullId id = row.id();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `mariatest_spatial_null`
-         set `geometry_col` = """),
-      MariaTypes.geometry.opt().encode(row.geometryCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `point_col` = """),
-      MariaTypes.point.opt().encode(row.pointCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `linestring_col` = """),
-      MariaTypes.linestring.opt().encode(row.linestringCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `polygon_col` = """),
-      MariaTypes.polygon.opt().encode(row.polygonCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `multipoint_col` = """),
-      MariaTypes.multipoint.opt().encode(row.multipointCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `multilinestring_col` = """),
-      MariaTypes.multilinestring.opt().encode(row.multilinestringCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `multipolygon_col` = """),
-      MariaTypes.multipolygon.opt().encode(row.multipolygonCol()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `geometrycollection_col` = """),
-      MariaTypes.geometrycollection.opt().encode(row.geometrycollectionCol()),
-      typo.runtime.Fragment.lit("""
-   
-         where `id` = """),
-      MariatestSpatialNullId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `mariatest_spatial_null`\nset `geometry_col` = "), Fragment.encode(MariaTypes.geometry.opt(), row.geometryCol()), Fragment.lit(",\n`point_col` = "), Fragment.encode(MariaTypes.point.opt(), row.pointCol()), Fragment.lit(",\n`linestring_col` = "), Fragment.encode(MariaTypes.linestring.opt(), row.linestringCol()), Fragment.lit(",\n`polygon_col` = "), Fragment.encode(MariaTypes.polygon.opt(), row.polygonCol()), Fragment.lit(",\n`multipoint_col` = "), Fragment.encode(MariaTypes.multipoint.opt(), row.multipointCol()), Fragment.lit(",\n`multilinestring_col` = "), Fragment.encode(MariaTypes.multilinestring.opt(), row.multilinestringCol()), Fragment.lit(",\n`multipolygon_col` = "), Fragment.encode(MariaTypes.multipolygon.opt(), row.multipolygonCol()), Fragment.lit(",\n`geometrycollection_col` = "), Fragment.encode(MariaTypes.geometrycollection.opt(), row.geometrycollectionCol()), Fragment.lit("\nwhere `id` = "), Fragment.encode(MariatestSpatialNullId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -317,37 +195,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     MariatestSpatialNullRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `mariatest_spatial_null`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
-         VALUES ("""),
-      MariaTypes.geometry.opt().encode(unsaved.geometryCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.point.opt().encode(unsaved.pointCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.linestring.opt().encode(unsaved.linestringCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.polygon.opt().encode(unsaved.polygonCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.multipoint.opt().encode(unsaved.multipointCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.multilinestring.opt().encode(unsaved.multilinestringCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.multipolygon.opt().encode(unsaved.multipolygonCol()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.geometrycollection.opt().encode(unsaved.geometrycollectionCol()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),
-         `point_col` = VALUES(`point_col`),
-         `linestring_col` = VALUES(`linestring_col`),
-         `polygon_col` = VALUES(`polygon_col`),
-         `multipoint_col` = VALUES(`multipoint_col`),
-         `multilinestring_col` = VALUES(`multilinestring_col`),
-         `multipolygon_col` = VALUES(`multipolygon_col`),
-         `geometrycollection_col` = VALUES(`geometrycollection_col`)
-         RETURNING `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `mariatest_spatial_null`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)\nVALUES ("), Fragment.encode(MariaTypes.geometry.opt(), unsaved.geometryCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.point.opt(), unsaved.pointCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.linestring.opt(), unsaved.linestringCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.polygon.opt(), unsaved.polygonCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.multipoint.opt(), unsaved.multipointCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.multilinestring.opt(), unsaved.multilinestringCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.multipolygon.opt(), unsaved.multipolygonCol()), Fragment.lit(", "), Fragment.encode(MariaTypes.geometrycollection.opt(), unsaved.geometrycollectionCol()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),\n`point_col` = VALUES(`point_col`),\n`linestring_col` = VALUES(`linestring_col`),\n`polygon_col` = VALUES(`polygon_col`),\n`multipoint_col` = VALUES(`multipoint_col`),\n`multilinestring_col` = VALUES(`multilinestring_col`),\n`multipolygon_col` = VALUES(`multipolygon_col`),\n`geometrycollection_col` = VALUES(`geometrycollection_col`)\nRETURNING `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`"))
       .updateReturning(MariatestSpatialNullRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -357,19 +205,8 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     Iterator<MariatestSpatialNullRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `mariatest_spatial_null`(`id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),
-                `point_col` = VALUES(`point_col`),
-                `linestring_col` = VALUES(`linestring_col`),
-                `polygon_col` = VALUES(`polygon_col`),
-                `multipoint_col` = VALUES(`multipoint_col`),
-                `multilinestring_col` = VALUES(`multilinestring_col`),
-                `multipolygon_col` = VALUES(`multipolygon_col`),
-                `geometrycollection_col` = VALUES(`geometrycollection_col`)
-                RETURNING `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`"""))
+    return interpolate(Fragment.lit("INSERT INTO `mariatest_spatial_null`(`id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),\n`point_col` = VALUES(`point_col`),\n`linestring_col` = VALUES(`linestring_col`),\n`polygon_col` = VALUES(`polygon_col`),\n`multipoint_col` = VALUES(`multipoint_col`),\n`multilinestring_col` = VALUES(`multilinestring_col`),\n`multipolygon_col` = VALUES(`multipolygon_col`),\n`geometrycollection_col` = VALUES(`geometrycollection_col`)\nRETURNING `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`"))
       .updateReturningEach(MariatestSpatialNullRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

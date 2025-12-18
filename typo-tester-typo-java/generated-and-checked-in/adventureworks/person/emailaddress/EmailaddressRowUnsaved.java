@@ -7,10 +7,10 @@ package adventureworks.person.emailaddress;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -27,9 +27,9 @@ public record EmailaddressRowUnsaved(
     */
   Defaulted<Integer> emailaddressid,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public EmailaddressRowUnsaved(
   
@@ -61,12 +61,12 @@ public record EmailaddressRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public EmailaddressRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public EmailaddressRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new EmailaddressRowUnsaved(businessentityid, emailaddress, emailaddressid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public EmailaddressRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public EmailaddressRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new EmailaddressRowUnsaved(businessentityid, emailaddress, emailaddressid, rowguid, modifieddate);
   };
 
@@ -78,15 +78,15 @@ public record EmailaddressRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.emailaddressid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public EmailaddressRow toRow(
     java.util.function.Supplier<Integer> emailaddressidDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new EmailaddressRow(businessentityid, emailaddressid.getOrElse(emailaddressidDefault), emailaddress, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

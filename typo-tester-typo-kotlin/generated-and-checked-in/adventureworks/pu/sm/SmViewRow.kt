@@ -5,14 +5,14 @@
  */
 package adventureworks.pu.sm
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
 import adventureworks.purchasing.shipmethod.ShipmethodId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pu.sm */
 data class SmViewRow(
@@ -27,11 +27,11 @@ data class SmViewRow(
   /** Points to [adventureworks.purchasing.shipmethod.ShipmethodRow.shiprate] */
   val shiprate: BigDecimal,
   /** Points to [adventureworks.purchasing.shipmethod.ShipmethodRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.purchasing.shipmethod.ShipmethodRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SmViewRow> = RowParsers.of(ShipmethodId.pgType, ShipmethodId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> SmViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.shipmethodid, row.name, row.shipbase, row.shiprate, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SmViewRow> = RowParsers.of(ShipmethodId.pgType, ShipmethodId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> SmViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.shipmethodid, row.name, row.shipbase, row.shiprate, row.rowguid, row.modifieddate) })
   }
 }

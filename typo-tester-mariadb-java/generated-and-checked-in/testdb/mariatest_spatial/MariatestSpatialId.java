@@ -16,6 +16,11 @@ public record MariatestSpatialId(@JsonValue Integer value) {
     return new MariatestSpatialId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<MariatestSpatialId, Integer> bijection =
     Bijection.of(MariatestSpatialId::value, MariatestSpatialId::new);
 

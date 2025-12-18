@@ -6,12 +6,13 @@
 package adventureworks.production.productcategory
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: production.productcategory
   * High-level product categorization.
@@ -25,22 +26,22 @@ data class ProductcategoryRow(
   /** Category description. */
   val name: Name,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): ProductcategoryId = productcategoryid
 
   fun toUnsavedRow(
     productcategoryid: Defaulted<ProductcategoryId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): ProductcategoryRowUnsaved = ProductcategoryRowUnsaved(name, productcategoryid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductcategoryRow> = RowParsers.of(ProductcategoryId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> ProductcategoryRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productcategoryid, row.name, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<ProductcategoryRow> = RowParsers.of(ProductcategoryId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3 -> ProductcategoryRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productcategoryid, row.name, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<ProductcategoryRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

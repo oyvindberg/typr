@@ -7,10 +7,10 @@ package adventureworks.hr.edh
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface EdhViewRepo {
-  fun select(): SelectBuilder<EdhViewFields, EdhViewRow>
+  abstract fun select(): SelectBuilder<EdhViewFields, EdhViewRow>
 
-  fun selectAll(c: Connection): List<EdhViewRow>
+  abstract fun selectAll(c: Connection): List<EdhViewRow>
 }

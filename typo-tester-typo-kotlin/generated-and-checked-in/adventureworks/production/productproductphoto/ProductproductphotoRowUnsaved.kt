@@ -7,11 +7,12 @@ package adventureworks.production.productproductphoto
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.production.productphoto.ProductphotoId
 import adventureworks.public.Flag
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `production.productproductphoto` which has not been persisted yet */
 data class ProductproductphotoRowUnsaved(
@@ -28,11 +29,11 @@ data class ProductproductphotoRowUnsaved(
     */
   val primary: Defaulted<Flag> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     primaryDefault: () -> Flag,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): ProductproductphotoRow = ProductproductphotoRow(productid = productid, productphotoid = productphotoid, primary = primary.getOrElse(primaryDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -43,6 +44,6 @@ data class ProductproductphotoRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.primary, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

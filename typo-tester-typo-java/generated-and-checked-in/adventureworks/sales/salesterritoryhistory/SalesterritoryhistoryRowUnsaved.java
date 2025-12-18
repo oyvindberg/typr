@@ -7,12 +7,13 @@ package adventureworks.sales.salesterritoryhistory;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.salesterritoryhistory` which has not been persisted yet */
 public record SalesterritoryhistoryRowUnsaved(
@@ -27,15 +28,15 @@ public record SalesterritoryhistoryRowUnsaved(
   /** Primary key. Date the sales representive started work in the territory.
     * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Date the sales representative left work in the territory.
     * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  Optional<TypoLocalDateTime> enddate,
+  Optional<LocalDateTime> enddate,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SalesterritoryhistoryRowUnsaved(
     /** Primary key. The sales rep.  Foreign key to SalesPerson.BusinessEntityID.
@@ -49,7 +50,7 @@ public record SalesterritoryhistoryRowUnsaved(
     /** Primary key. Date the sales representive started work in the territory.
       * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
       */
-    TypoLocalDateTime startdate
+    LocalDateTime startdate
   ) {
     this(businessentityid, territoryid, startdate, Optional.empty(), new UseDefault<>(), new UseDefault<>());
   };
@@ -71,24 +72,24 @@ public record SalesterritoryhistoryRowUnsaved(
   /** Primary key. Date the sales representive started work in the territory.
     * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public SalesterritoryhistoryRowUnsaved withStartdate(TypoLocalDateTime startdate) {
+  public SalesterritoryhistoryRowUnsaved withStartdate(LocalDateTime startdate) {
     return new SalesterritoryhistoryRowUnsaved(businessentityid, territoryid, startdate, enddate, rowguid, modifieddate);
   };
 
   /** Date the sales representative left work in the territory.
     * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public SalesterritoryhistoryRowUnsaved withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public SalesterritoryhistoryRowUnsaved withEnddate(Optional<LocalDateTime> enddate) {
     return new SalesterritoryhistoryRowUnsaved(businessentityid, territoryid, startdate, enddate, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public SalesterritoryhistoryRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public SalesterritoryhistoryRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new SalesterritoryhistoryRowUnsaved(businessentityid, territoryid, startdate, enddate, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalesterritoryhistoryRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SalesterritoryhistoryRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SalesterritoryhistoryRowUnsaved(businessentityid, territoryid, startdate, enddate, rowguid, modifieddate);
   };
 
@@ -98,18 +99,18 @@ public record SalesterritoryhistoryRowUnsaved(
       sb.append(PgText.DELIMETER);
       SalesterritoryId.pgType.pgText().unsafeEncode(row.territoryid, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.startdate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.startdate, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.enddate, sb);
+      PgTypes.timestamp.opt().pgText().unsafeEncode(row.enddate, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public SalesterritoryhistoryRow toRow(
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new SalesterritoryhistoryRow(businessentityid, territoryid, startdate, enddate, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

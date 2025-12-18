@@ -7,9 +7,10 @@ package adventureworks.person.phonenumbertype;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `person.phonenumbertype` which has not been persisted yet */
 public record PhonenumbertypeRowUnsaved(
@@ -20,7 +21,7 @@ public record PhonenumbertypeRowUnsaved(
     */
   Defaulted<PhonenumbertypeId> phonenumbertypeid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public PhonenumbertypeRowUnsaved(
   
@@ -43,7 +44,7 @@ public record PhonenumbertypeRowUnsaved(
   };
 
   /** Default: now() */
-  public PhonenumbertypeRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public PhonenumbertypeRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new PhonenumbertypeRowUnsaved(name, phonenumbertypeid, modifieddate);
   };
 
@@ -53,12 +54,12 @@ public record PhonenumbertypeRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PhonenumbertypeId.pgType.pgText()).unsafeEncode(row.phonenumbertypeid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public PhonenumbertypeRow toRow(
     java.util.function.Supplier<PhonenumbertypeId> phonenumbertypeidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new PhonenumbertypeRow(phonenumbertypeid.getOrElse(phonenumbertypeidDefault), name, modifieddate.getOrElse(modifieddateDefault));
   };

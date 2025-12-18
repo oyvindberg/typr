@@ -7,14 +7,14 @@ package adventureworks.person.person;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import adventureworks.public_.NameStyle;
 import adventureworks.userdefined.FirstName;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -27,7 +27,7 @@ public record PersonRowUnsaved(
   /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
     * Constraint CK_Person_PersonType affecting columns persontype:  (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
     */
-  /* bpchar, max 2 chars */ String persontype,
+  String persontype,
   /** A courtesy title. For example, Mr. or Ms. */
   Optional</* max 8 chars */ String> title,
   /** First name of the person. */
@@ -39,9 +39,9 @@ public record PersonRowUnsaved(
   /** Surname suffix. For example, Sr. or Jr. */
   Optional</* max 10 chars */ String> suffix,
   /** Additional contact information about the person stored in xml format. */
-  Optional<TypoXml> additionalcontactinfo,
+  Optional<Xml> additionalcontactinfo,
   /** Personal information such as hobbies, and income collected from online shoppers. Used for sales analysis. */
-  Optional<TypoXml> demographics,
+  Optional<Xml> demographics,
   /** Default: false
     * 0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order.
     */
@@ -52,9 +52,9 @@ public record PersonRowUnsaved(
     */
   Defaulted<Integer> emailpromotion,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public PersonRowUnsaved(
     /** Primary key for Person records.
@@ -64,7 +64,7 @@ public record PersonRowUnsaved(
     /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
       * Constraint CK_Person_PersonType affecting columns persontype:  (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
       */
-    /* bpchar, max 2 chars */ String persontype,
+    String persontype,
     /** First name of the person. */
     /* user-picked */ FirstName firstname,
     /** Last name of the person. */
@@ -83,7 +83,7 @@ public record PersonRowUnsaved(
   /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
     * Constraint CK_Person_PersonType affecting columns persontype:  (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
     */
-  public PersonRowUnsaved withPersontype(/* bpchar, max 2 chars */ String persontype) {
+  public PersonRowUnsaved withPersontype(String persontype) {
     return new PersonRowUnsaved(businessentityid, persontype, title, firstname, middlename, lastname, suffix, additionalcontactinfo, demographics, namestyle, emailpromotion, rowguid, modifieddate);
   };
 
@@ -113,12 +113,12 @@ public record PersonRowUnsaved(
   };
 
   /** Additional contact information about the person stored in xml format. */
-  public PersonRowUnsaved withAdditionalcontactinfo(Optional<TypoXml> additionalcontactinfo) {
+  public PersonRowUnsaved withAdditionalcontactinfo(Optional<Xml> additionalcontactinfo) {
     return new PersonRowUnsaved(businessentityid, persontype, title, firstname, middlename, lastname, suffix, additionalcontactinfo, demographics, namestyle, emailpromotion, rowguid, modifieddate);
   };
 
   /** Personal information such as hobbies, and income collected from online shoppers. Used for sales analysis. */
-  public PersonRowUnsaved withDemographics(Optional<TypoXml> demographics) {
+  public PersonRowUnsaved withDemographics(Optional<Xml> demographics) {
     return new PersonRowUnsaved(businessentityid, persontype, title, firstname, middlename, lastname, suffix, additionalcontactinfo, demographics, namestyle, emailpromotion, rowguid, modifieddate);
   };
 
@@ -138,12 +138,12 @@ public record PersonRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public PersonRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public PersonRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new PersonRowUnsaved(businessentityid, persontype, title, firstname, middlename, lastname, suffix, additionalcontactinfo, demographics, namestyle, emailpromotion, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public PersonRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public PersonRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new PersonRowUnsaved(businessentityid, persontype, title, firstname, middlename, lastname, suffix, additionalcontactinfo, demographics, namestyle, emailpromotion, rowguid, modifieddate);
   };
 
@@ -163,24 +163,24 @@ public record PersonRowUnsaved(
       sb.append(PgText.DELIMETER);
       PgTypes.text.opt().pgText().unsafeEncode(row.suffix, sb);
       sb.append(PgText.DELIMETER);
-      TypoXml.pgType.opt().pgText().unsafeEncode(row.additionalcontactinfo, sb);
+      PgTypes.xml.opt().pgText().unsafeEncode(row.additionalcontactinfo, sb);
       sb.append(PgText.DELIMETER);
-      TypoXml.pgType.opt().pgText().unsafeEncode(row.demographics, sb);
+      PgTypes.xml.opt().pgText().unsafeEncode(row.demographics, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(NameStyle.pgType.pgText()).unsafeEncode(row.namestyle, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.emailpromotion, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public PersonRow toRow(
     java.util.function.Supplier<NameStyle> namestyleDefault,
     java.util.function.Supplier<Integer> emailpromotionDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new PersonRow(businessentityid, persontype, namestyle.getOrElse(namestyleDefault), title, firstname, middlename, lastname, suffix, emailpromotion.getOrElse(emailpromotionDefault), additionalcontactinfo, demographics, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

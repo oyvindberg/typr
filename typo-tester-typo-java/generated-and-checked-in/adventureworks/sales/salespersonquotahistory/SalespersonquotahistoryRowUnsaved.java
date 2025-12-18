@@ -7,10 +7,10 @@ package adventureworks.sales.salespersonquotahistory;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -21,15 +21,15 @@ public record SalespersonquotahistoryRowUnsaved(
     */
   BusinessentityId businessentityid,
   /** Sales quota date. */
-  TypoLocalDateTime quotadate,
+  LocalDateTime quotadate,
   /** Sales quota amount.
     * Constraint CK_SalesPersonQuotaHistory_SalesQuota affecting columns salesquota:  ((salesquota > 0.00))
     */
   BigDecimal salesquota,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SalespersonquotahistoryRowUnsaved(
     /** Sales person identification number. Foreign key to SalesPerson.BusinessEntityID.
@@ -37,7 +37,7 @@ public record SalespersonquotahistoryRowUnsaved(
       */
     BusinessentityId businessentityid,
     /** Sales quota date. */
-    TypoLocalDateTime quotadate,
+    LocalDateTime quotadate,
     /** Sales quota amount.
       * Constraint CK_SalesPersonQuotaHistory_SalesQuota affecting columns salesquota:  ((salesquota > 0.00))
       */
@@ -54,7 +54,7 @@ public record SalespersonquotahistoryRowUnsaved(
   };
 
   /** Sales quota date. */
-  public SalespersonquotahistoryRowUnsaved withQuotadate(TypoLocalDateTime quotadate) {
+  public SalespersonquotahistoryRowUnsaved withQuotadate(LocalDateTime quotadate) {
     return new SalespersonquotahistoryRowUnsaved(businessentityid, quotadate, salesquota, rowguid, modifieddate);
   };
 
@@ -66,12 +66,12 @@ public record SalespersonquotahistoryRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public SalespersonquotahistoryRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public SalespersonquotahistoryRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new SalespersonquotahistoryRowUnsaved(businessentityid, quotadate, salesquota, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalespersonquotahistoryRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SalespersonquotahistoryRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SalespersonquotahistoryRowUnsaved(businessentityid, quotadate, salesquota, rowguid, modifieddate);
   };
 
@@ -79,18 +79,18 @@ public record SalespersonquotahistoryRowUnsaved(
     PgText.instance((row, sb) -> {
       BusinessentityId.pgType.pgText().unsafeEncode(row.businessentityid, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.quotadate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.quotadate, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.numeric.pgText().unsafeEncode(row.salesquota, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public SalespersonquotahistoryRow toRow(
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new SalespersonquotahistoryRow(businessentityid, quotadate, salesquota, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

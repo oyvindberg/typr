@@ -14,7 +14,7 @@ object SqlFileReader {
     ds.dbType match {
       case DbType.PostgreSQL =>
         readSqlFileDirectories(logger, scriptsPath, ds)
-      case DbType.MariaDB | DbType.MySQL =>
+      case DbType.MariaDB =>
         MariaSqlFileMetadata(logger, scriptsPath, ds, externalTools)
     }
   }

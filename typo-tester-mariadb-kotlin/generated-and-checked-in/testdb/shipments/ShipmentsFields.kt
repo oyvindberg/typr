@@ -8,7 +8,6 @@ package testdb.shipments
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Optional
 import kotlin.collections.List
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
@@ -19,103 +18,106 @@ import testdb.shipping_carriers.ShippingCarriersRow
 import testdb.warehouses.WarehousesFields
 import testdb.warehouses.WarehousesId
 import testdb.warehouses.WarehousesRow
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
 
 interface ShipmentsFields : FieldsExpr<ShipmentsRow> {
-  fun actualDeliveryAt(): OptField<LocalDateTime, ShipmentsRow>
+  abstract fun actualDeliveryAt(): OptField<LocalDateTime, ShipmentsRow>
 
-  fun carrierId(): Field<ShippingCarriersId, ShipmentsRow>
+  abstract fun carrierId(): Field<ShippingCarriersId, ShipmentsRow>
 
-  override fun columns(): List<FieldLike<*, ShipmentsRow>>
+  abstract override fun columns(): List<FieldLike<*, ShipmentsRow>>
 
-  fun createdAt(): Field<LocalDateTime, ShipmentsRow>
+  abstract fun createdAt(): Field<LocalDateTime, ShipmentsRow>
 
-  fun dimensionsJson(): OptField<String, ShipmentsRow>
+  abstract fun dimensionsJson(): OptField<String, ShipmentsRow>
 
-  fun estimatedDeliveryDate(): OptField<LocalDate, ShipmentsRow>
+  abstract fun estimatedDeliveryDate(): OptField<LocalDate, ShipmentsRow>
 
-  fun fkOrders(): ForeignKey<OrdersFields, OrdersRow> = ForeignKey.of<OrdersFields, OrdersRow>("fk_ship_order").withColumnPair(orderId(), OrdersFields::orderId)
+  fun fkOrders(): ForeignKey<OrdersFields, OrdersRow> = ForeignKey.of<OrdersFields, OrdersRow>("fk_ship_order").withColumnPair<OrdersId>(orderId(), OrdersFields::orderId)
 
-  fun fkShippingCarriers(): ForeignKey<ShippingCarriersFields, ShippingCarriersRow> = ForeignKey.of<ShippingCarriersFields, ShippingCarriersRow>("fk_ship_carrier").withColumnPair(carrierId(), ShippingCarriersFields::carrierId)
+  fun fkShippingCarriers(): ForeignKey<ShippingCarriersFields, ShippingCarriersRow> = ForeignKey.of<ShippingCarriersFields, ShippingCarriersRow>("fk_ship_carrier").withColumnPair<ShippingCarriersId>(carrierId(), ShippingCarriersFields::carrierId)
 
-  fun fkWarehouses(): ForeignKey<WarehousesFields, WarehousesRow> = ForeignKey.of<WarehousesFields, WarehousesRow>("fk_ship_warehouse").withColumnPair(originWarehouseId(), WarehousesFields::warehouseId)
+  fun fkWarehouses(): ForeignKey<WarehousesFields, WarehousesRow> = ForeignKey.of<WarehousesFields, WarehousesRow>("fk_ship_warehouse").withColumnPair<WarehousesId>(originWarehouseId(), WarehousesFields::warehouseId)
 
-  fun insuranceAmount(): OptField<BigDecimal, ShipmentsRow>
+  abstract fun insuranceAmount(): OptField<BigDecimal, ShipmentsRow>
 
-  fun labelData(): OptField<ByteArray, ShipmentsRow>
+  abstract fun labelData(): OptField<ByteArray, ShipmentsRow>
 
-  fun orderId(): Field<OrdersId, ShipmentsRow>
+  abstract fun orderId(): Field<OrdersId, ShipmentsRow>
 
-  fun originWarehouseId(): OptField<WarehousesId, ShipmentsRow>
+  abstract fun originWarehouseId(): OptField<WarehousesId, ShipmentsRow>
 
-  override fun rowParser(): RowParser<ShipmentsRow> = ShipmentsRow._rowParser
+  override fun rowParser(): RowParser<ShipmentsRow> = ShipmentsRow._rowParser.underlying
 
-  fun shipmentId(): IdField<ShipmentsId, ShipmentsRow>
+  abstract fun shipmentId(): IdField<ShipmentsId, ShipmentsRow>
 
-  fun shippedAt(): OptField<LocalDateTime, ShipmentsRow>
+  abstract fun shippedAt(): OptField<LocalDateTime, ShipmentsRow>
 
-  fun shippingCost(): Field<BigDecimal, ShipmentsRow>
+  abstract fun shippingCost(): Field<BigDecimal, ShipmentsRow>
 
-  fun shippingMethod(): Field<String, ShipmentsRow>
+  abstract fun shippingMethod(): Field<String, ShipmentsRow>
 
-  fun status(): Field<String, ShipmentsRow>
+  abstract fun status(): Field<String, ShipmentsRow>
 
-  fun trackingNumber(): OptField<String, ShipmentsRow>
+  abstract fun trackingNumber(): OptField<String, ShipmentsRow>
 
-  fun updatedAt(): Field<LocalDateTime, ShipmentsRow>
+  abstract fun updatedAt(): Field<LocalDateTime, ShipmentsRow>
 
-  fun weightKg(): OptField<BigDecimal, ShipmentsRow>
+  abstract fun weightKg(): OptField<BigDecimal, ShipmentsRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : ShipmentsFields, Relation<ShipmentsFields, ShipmentsRow> {
-      override fun shipmentId(): IdField<ShipmentsId, ShipmentsRow> = IdField<ShipmentsId, ShipmentsRow>(_path, "shipment_id", ShipmentsRow::shipmentId, Optional.empty(), Optional.empty(), { row, value -> row.copy(shipmentId = value) }, ShipmentsId.pgType)
+    data class Impl(val _path: List<Path>) : ShipmentsFields, RelationStructure<ShipmentsFields, ShipmentsRow> {
+      override fun shipmentId(): IdField<ShipmentsId, ShipmentsRow> = IdField<ShipmentsId, ShipmentsRow>(_path, "shipment_id", ShipmentsRow::shipmentId, null, null, { row, value -> row.copy(shipmentId = value) }, ShipmentsId.pgType)
 
-      override fun orderId(): Field<OrdersId, ShipmentsRow> = Field<OrdersId, ShipmentsRow>(_path, "order_id", ShipmentsRow::orderId, Optional.empty(), Optional.empty(), { row, value -> row.copy(orderId = value) }, OrdersId.pgType)
+      override fun orderId(): Field<OrdersId, ShipmentsRow> = Field<OrdersId, ShipmentsRow>(_path, "order_id", ShipmentsRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, OrdersId.pgType)
 
-      override fun carrierId(): Field<ShippingCarriersId, ShipmentsRow> = Field<ShippingCarriersId, ShipmentsRow>(_path, "carrier_id", ShipmentsRow::carrierId, Optional.empty(), Optional.empty(), { row, value -> row.copy(carrierId = value) }, ShippingCarriersId.pgType)
+      override fun carrierId(): Field<ShippingCarriersId, ShipmentsRow> = Field<ShippingCarriersId, ShipmentsRow>(_path, "carrier_id", ShipmentsRow::carrierId, null, null, { row, value -> row.copy(carrierId = value) }, ShippingCarriersId.pgType)
 
-      override fun trackingNumber(): OptField<String, ShipmentsRow> = OptField<String, ShipmentsRow>(_path, "tracking_number", ShipmentsRow::trackingNumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(trackingNumber = value) }, MariaTypes.varchar)
+      override fun trackingNumber(): OptField<String, ShipmentsRow> = OptField<String, ShipmentsRow>(_path, "tracking_number", ShipmentsRow::trackingNumber, null, null, { row, value -> row.copy(trackingNumber = value) }, MariaTypes.varchar)
 
-      override fun shippingMethod(): Field<String, ShipmentsRow> = Field<String, ShipmentsRow>(_path, "shipping_method", ShipmentsRow::shippingMethod, Optional.empty(), Optional.empty(), { row, value -> row.copy(shippingMethod = value) }, MariaTypes.varchar)
+      override fun shippingMethod(): Field<String, ShipmentsRow> = Field<String, ShipmentsRow>(_path, "shipping_method", ShipmentsRow::shippingMethod, null, null, { row, value -> row.copy(shippingMethod = value) }, MariaTypes.varchar)
 
-      override fun weightKg(): OptField<BigDecimal, ShipmentsRow> = OptField<BigDecimal, ShipmentsRow>(_path, "weight_kg", ShipmentsRow::weightKg, Optional.empty(), Optional.empty(), { row, value -> row.copy(weightKg = value) }, MariaTypes.decimal)
+      override fun weightKg(): OptField<BigDecimal, ShipmentsRow> = OptField<BigDecimal, ShipmentsRow>(_path, "weight_kg", ShipmentsRow::weightKg, null, null, { row, value -> row.copy(weightKg = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-      override fun dimensionsJson(): OptField<String, ShipmentsRow> = OptField<String, ShipmentsRow>(_path, "dimensions_json", ShipmentsRow::dimensionsJson, Optional.empty(), Optional.empty(), { row, value -> row.copy(dimensionsJson = value) }, MariaTypes.longtext)
+      override fun dimensionsJson(): OptField<String, ShipmentsRow> = OptField<String, ShipmentsRow>(_path, "dimensions_json", ShipmentsRow::dimensionsJson, null, null, { row, value -> row.copy(dimensionsJson = value) }, MariaTypes.longtext)
 
-      override fun labelData(): OptField<ByteArray, ShipmentsRow> = OptField<ByteArray, ShipmentsRow>(_path, "label_data", ShipmentsRow::labelData, Optional.empty(), Optional.empty(), { row, value -> row.copy(labelData = value) }, MariaTypes.longblob)
+      override fun labelData(): OptField<ByteArray, ShipmentsRow> = OptField<ByteArray, ShipmentsRow>(_path, "label_data", ShipmentsRow::labelData, null, null, { row, value -> row.copy(labelData = value) }, MariaTypes.longblob)
 
-      override fun status(): Field<String, ShipmentsRow> = Field<String, ShipmentsRow>(_path, "status", ShipmentsRow::status, Optional.empty(), Optional.empty(), { row, value -> row.copy(status = value) }, MariaTypes.text)
+      override fun status(): Field<String, ShipmentsRow> = Field<String, ShipmentsRow>(_path, "status", ShipmentsRow::status, null, null, { row, value -> row.copy(status = value) }, MariaTypes.text)
 
-      override fun estimatedDeliveryDate(): OptField<LocalDate, ShipmentsRow> = OptField<LocalDate, ShipmentsRow>(_path, "estimated_delivery_date", ShipmentsRow::estimatedDeliveryDate, Optional.empty(), Optional.empty(), { row, value -> row.copy(estimatedDeliveryDate = value) }, MariaTypes.date)
+      override fun estimatedDeliveryDate(): OptField<LocalDate, ShipmentsRow> = OptField<LocalDate, ShipmentsRow>(_path, "estimated_delivery_date", ShipmentsRow::estimatedDeliveryDate, null, null, { row, value -> row.copy(estimatedDeliveryDate = value) }, MariaTypes.date)
 
-      override fun actualDeliveryAt(): OptField<LocalDateTime, ShipmentsRow> = OptField<LocalDateTime, ShipmentsRow>(_path, "actual_delivery_at", ShipmentsRow::actualDeliveryAt, Optional.empty(), Optional.empty(), { row, value -> row.copy(actualDeliveryAt = value) }, MariaTypes.datetime)
+      override fun actualDeliveryAt(): OptField<LocalDateTime, ShipmentsRow> = OptField<LocalDateTime, ShipmentsRow>(_path, "actual_delivery_at", ShipmentsRow::actualDeliveryAt, null, null, { row, value -> row.copy(actualDeliveryAt = value) }, MariaTypes.datetime)
 
-      override fun shippingCost(): Field<BigDecimal, ShipmentsRow> = Field<BigDecimal, ShipmentsRow>(_path, "shipping_cost", ShipmentsRow::shippingCost, Optional.empty(), Optional.empty(), { row, value -> row.copy(shippingCost = value) }, MariaTypes.decimal)
+      override fun shippingCost(): Field<BigDecimal, ShipmentsRow> = Field<BigDecimal, ShipmentsRow>(_path, "shipping_cost", ShipmentsRow::shippingCost, null, null, { row, value -> row.copy(shippingCost = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-      override fun insuranceAmount(): OptField<BigDecimal, ShipmentsRow> = OptField<BigDecimal, ShipmentsRow>(_path, "insurance_amount", ShipmentsRow::insuranceAmount, Optional.empty(), Optional.empty(), { row, value -> row.copy(insuranceAmount = value) }, MariaTypes.decimal)
+      override fun insuranceAmount(): OptField<BigDecimal, ShipmentsRow> = OptField<BigDecimal, ShipmentsRow>(_path, "insurance_amount", ShipmentsRow::insuranceAmount, null, null, { row, value -> row.copy(insuranceAmount = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-      override fun originWarehouseId(): OptField<WarehousesId, ShipmentsRow> = OptField<WarehousesId, ShipmentsRow>(_path, "origin_warehouse_id", ShipmentsRow::originWarehouseId, Optional.empty(), Optional.empty(), { row, value -> row.copy(originWarehouseId = value) }, WarehousesId.pgType)
+      override fun originWarehouseId(): OptField<WarehousesId, ShipmentsRow> = OptField<WarehousesId, ShipmentsRow>(_path, "origin_warehouse_id", ShipmentsRow::originWarehouseId, null, null, { row, value -> row.copy(originWarehouseId = value) }, WarehousesId.pgType)
 
-      override fun shippedAt(): OptField<LocalDateTime, ShipmentsRow> = OptField<LocalDateTime, ShipmentsRow>(_path, "shipped_at", ShipmentsRow::shippedAt, Optional.empty(), Optional.empty(), { row, value -> row.copy(shippedAt = value) }, MariaTypes.datetime)
+      override fun shippedAt(): OptField<LocalDateTime, ShipmentsRow> = OptField<LocalDateTime, ShipmentsRow>(_path, "shipped_at", ShipmentsRow::shippedAt, null, null, { row, value -> row.copy(shippedAt = value) }, MariaTypes.datetime)
 
-      override fun createdAt(): Field<LocalDateTime, ShipmentsRow> = Field<LocalDateTime, ShipmentsRow>(_path, "created_at", ShipmentsRow::createdAt, Optional.empty(), Optional.empty(), { row, value -> row.copy(createdAt = value) }, MariaTypes.datetime)
+      override fun createdAt(): Field<LocalDateTime, ShipmentsRow> = Field<LocalDateTime, ShipmentsRow>(_path, "created_at", ShipmentsRow::createdAt, null, null, { row, value -> row.copy(createdAt = value) }, MariaTypes.datetime)
 
-      override fun updatedAt(): Field<LocalDateTime, ShipmentsRow> = Field<LocalDateTime, ShipmentsRow>(_path, "updated_at", ShipmentsRow::updatedAt, Optional.empty(), Optional.empty(), { row, value -> row.copy(updatedAt = value) }, MariaTypes.datetime)
+      override fun updatedAt(): Field<LocalDateTime, ShipmentsRow> = Field<LocalDateTime, ShipmentsRow>(_path, "updated_at", ShipmentsRow::updatedAt, null, null, { row, value -> row.copy(updatedAt = value) }, MariaTypes.datetime)
 
-      override fun columns(): List<FieldLike<*, ShipmentsRow>> = listOf(this.shipmentId(), this.orderId(), this.carrierId(), this.trackingNumber(), this.shippingMethod(), this.weightKg(), this.dimensionsJson(), this.labelData(), this.status(), this.estimatedDeliveryDate(), this.actualDeliveryAt(), this.shippingCost(), this.insuranceAmount(), this.originWarehouseId(), this.shippedAt(), this.createdAt(), this.updatedAt())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ShipmentsFields, ShipmentsRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ShipmentsRow>> = listOf(this.shipmentId().underlying, this.orderId().underlying, this.carrierId().underlying, this.trackingNumber().underlying, this.shippingMethod().underlying, this.weightKg().underlying, this.dimensionsJson().underlying, this.labelData().underlying, this.status().underlying, this.estimatedDeliveryDate().underlying, this.actualDeliveryAt().underlying, this.shippingCost().underlying, this.insuranceAmount().underlying, this.originWarehouseId().underlying, this.shippedAt().underlying, this.createdAt().underlying, this.updatedAt().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ShipmentsFields, ShipmentsRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

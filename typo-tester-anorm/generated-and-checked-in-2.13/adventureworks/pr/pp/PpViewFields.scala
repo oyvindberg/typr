@@ -9,35 +9,34 @@ import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.productphoto.ProductphotoId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PpViewFields {
   def id: Field[ProductphotoId, PpViewRow]
   def productphotoid: Field[ProductphotoId, PpViewRow]
-  def thumbnailphoto: OptField[TypoBytea, PpViewRow]
-  def thumbnailphotofilename: OptField[/* max 50 chars */ String, PpViewRow]
-  def largephoto: OptField[TypoBytea, PpViewRow]
-  def largephotofilename: OptField[/* max 50 chars */ String, PpViewRow]
+  def thumbnailphoto: Field[TypoBytea, PpViewRow]
+  def thumbnailphotofilename: Field[String, PpViewRow]
+  def largephoto: Field[TypoBytea, PpViewRow]
+  def largephotofilename: Field[String, PpViewRow]
   def modifieddate: Field[TypoLocalDateTime, PpViewRow]
 }
 
 object PpViewFields {
-  lazy val structure: Relation[PpViewFields, PpViewRow] =
+  lazy val structure: RelationStructure[PpViewFields, PpViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PpViewFields, PpViewRow] {
+    extends RelationStructure[PpViewFields, PpViewRow] {
 
     override lazy val fields: PpViewFields = new PpViewFields {
       override def id = Field[ProductphotoId, PpViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def productphotoid = Field[ProductphotoId, PpViewRow](_path, "productphotoid", None, None, x => x.productphotoid, (row, value) => row.copy(productphotoid = value))
-      override def thumbnailphoto = OptField[TypoBytea, PpViewRow](_path, "thumbnailphoto", None, None, x => x.thumbnailphoto, (row, value) => row.copy(thumbnailphoto = value))
-      override def thumbnailphotofilename = OptField[/* max 50 chars */ String, PpViewRow](_path, "thumbnailphotofilename", None, None, x => x.thumbnailphotofilename, (row, value) => row.copy(thumbnailphotofilename = value))
-      override def largephoto = OptField[TypoBytea, PpViewRow](_path, "largephoto", None, None, x => x.largephoto, (row, value) => row.copy(largephoto = value))
-      override def largephotofilename = OptField[/* max 50 chars */ String, PpViewRow](_path, "largephotofilename", None, None, x => x.largephotofilename, (row, value) => row.copy(largephotofilename = value))
+      override def thumbnailphoto = Field[TypoBytea, PpViewRow](_path, "thumbnailphoto", None, None, x => x.thumbnailphoto, (row, value) => row.copy(thumbnailphoto = value))
+      override def thumbnailphotofilename = Field[String, PpViewRow](_path, "thumbnailphotofilename", None, None, x => x.thumbnailphotofilename, (row, value) => row.copy(thumbnailphotofilename = value))
+      override def largephoto = Field[TypoBytea, PpViewRow](_path, "largephoto", None, None, x => x.largephoto, (row, value) => row.copy(largephoto = value))
+      override def largephotofilename = Field[String, PpViewRow](_path, "largephotofilename", None, None, x => x.largephotofilename, (row, value) => row.copy(largephotofilename = value))
       override def modifieddate = Field[TypoLocalDateTime, PpViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
 

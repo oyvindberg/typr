@@ -17,15 +17,15 @@ import org.mariadb.jdbc.type.Point;
 import org.mariadb.jdbc.type.Polygon;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface MariatestSpatialFields extends FieldsExpr<MariatestSpatialRow> {
-  record Impl(List<Path> _path) implements MariatestSpatialFields, Relation<MariatestSpatialFields, MariatestSpatialRow> {
+  record Impl(List<Path> _path) implements MariatestSpatialFields, RelationStructure<MariatestSpatialFields, MariatestSpatialRow> {
     @Override
     public IdField<MariatestSpatialId, MariatestSpatialRow> id() {
       return new IdField<MariatestSpatialId, MariatestSpatialRow>(_path, "id", MariatestSpatialRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), MariatestSpatialId.pgType);
@@ -73,17 +73,17 @@ public interface MariatestSpatialFields extends FieldsExpr<MariatestSpatialRow> 
 
     @Override
     public List<FieldLike<?, MariatestSpatialRow>> columns() {
-      return List.of(this.id(), this.geometryCol(), this.pointCol(), this.linestringCol(), this.polygonCol(), this.multipointCol(), this.multilinestringCol(), this.multipolygonCol(), this.geometrycollectionCol());
+      return java.util.List.of(this.id(), this.geometryCol(), this.pointCol(), this.linestringCol(), this.polygonCol(), this.multipointCol(), this.multilinestringCol(), this.multipolygonCol(), this.geometrycollectionCol());
     };
 
     @Override
-    public Relation<MariatestSpatialFields, MariatestSpatialRow> copy(List<Path> _path) {
+    public RelationStructure<MariatestSpatialFields, MariatestSpatialRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<MariatestSpatialId, MariatestSpatialRow> id();

@@ -7,15 +7,13 @@ package adventureworks.pe.p
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class PViewRepoImpl() : PViewRepo {
   override fun select(): SelectBuilder<PViewFields, PViewRow> = SelectBuilder.of("\"pe\".\"p\"", PViewFields.structure, PViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<PViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "businessentityid", "persontype", "namestyle", "title", "firstname", "middlename", "lastname", "suffix", "emailpromotion", "additionalcontactinfo", "demographics", "rowguid", "modifieddate"::text
-    from "pe"."p"
-  """.trimMargin())).query(PViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<PViewRow> = interpolate(Fragment.lit("select \"id\", \"businessentityid\", \"persontype\", \"namestyle\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"emailpromotion\", \"additionalcontactinfo\", \"demographics\", \"rowguid\", \"modifieddate\"\nfrom \"pe\".\"p\"\n")).query(PViewRow._rowParser.all()).runUnchecked(c)
 }

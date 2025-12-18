@@ -7,10 +7,10 @@ package testdb.v_order_details
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VOrderDetailsViewRepo {
-  fun select(): SelectBuilder<VOrderDetailsViewFields, VOrderDetailsViewRow>
+  abstract fun select(): SelectBuilder<VOrderDetailsViewFields, VOrderDetailsViewRow>
 
-  fun selectAll(c: Connection): List<VOrderDetailsViewRow>
+  abstract fun selectAll(c: Connection): List<VOrderDetailsViewRow>
 }

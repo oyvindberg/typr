@@ -7,38 +7,36 @@ package adventureworks.production.document;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Flag;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.document` which has not been persisted yet */
 public record DocumentRowUnsaved(
   /** Title of the document. */
-  /* max 50 chars */ String title,
+  String title,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
     * Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()}
     */
   BusinessentityId owner,
   /** File name of the document */
-  /* max 400 chars */ String filename,
+  String filename,
   /** File extension indicating the document type. For example, .doc or .txt. */
   Optional</* max 8 chars */ String> fileextension,
   /** Revision number of the document. */
-  /* bpchar, max 5 chars */ String revision,
+  String revision,
   /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
     * Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3)))
     */
-  TypoShort status,
+  Short status,
   /** Document abstract. */
   Optional<String> documentsummary,
   /** Complete document. */
-  Optional<TypoBytea> document,
+  Optional<byte[]> document,
   /** Default: false
     * 0 = This is a folder, 1 = This is a document.
     */
@@ -50,9 +48,9 @@ public record DocumentRowUnsaved(
   /** Default: uuid_generate_v1()
     * ROWGUIDCOL number uniquely identifying the record. Required for FileStream.
     */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate,
+  Defaulted<LocalDateTime> modifieddate,
   /** Default: '/'::character varying
     * Primary key for Document records.
     */
@@ -60,25 +58,25 @@ public record DocumentRowUnsaved(
 ) {
   public DocumentRowUnsaved(
     /** Title of the document. */
-    /* max 50 chars */ String title,
+    String title,
     /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
       * Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()}
       */
     BusinessentityId owner,
     /** File name of the document */
-    /* max 400 chars */ String filename,
+    String filename,
     /** Revision number of the document. */
-    /* bpchar, max 5 chars */ String revision,
+    String revision,
     /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
       * Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3)))
       */
-    TypoShort status
+    Short status
   ) {
     this(title, owner, filename, Optional.empty(), revision, status, Optional.empty(), Optional.empty(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
   };
 
   /** Title of the document. */
-  public DocumentRowUnsaved withTitle(/* max 50 chars */ String title) {
+  public DocumentRowUnsaved withTitle(String title) {
     return new DocumentRowUnsaved(title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode);
   };
 
@@ -90,7 +88,7 @@ public record DocumentRowUnsaved(
   };
 
   /** File name of the document */
-  public DocumentRowUnsaved withFilename(/* max 400 chars */ String filename) {
+  public DocumentRowUnsaved withFilename(String filename) {
     return new DocumentRowUnsaved(title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode);
   };
 
@@ -100,14 +98,14 @@ public record DocumentRowUnsaved(
   };
 
   /** Revision number of the document. */
-  public DocumentRowUnsaved withRevision(/* bpchar, max 5 chars */ String revision) {
+  public DocumentRowUnsaved withRevision(String revision) {
     return new DocumentRowUnsaved(title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode);
   };
 
   /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
     * Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3)))
     */
-  public DocumentRowUnsaved withStatus(TypoShort status) {
+  public DocumentRowUnsaved withStatus(Short status) {
     return new DocumentRowUnsaved(title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode);
   };
 
@@ -117,7 +115,7 @@ public record DocumentRowUnsaved(
   };
 
   /** Complete document. */
-  public DocumentRowUnsaved withDocument(Optional<TypoBytea> document) {
+  public DocumentRowUnsaved withDocument(Optional<byte[]> document) {
     return new DocumentRowUnsaved(title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode);
   };
 
@@ -138,12 +136,12 @@ public record DocumentRowUnsaved(
   /** Default: uuid_generate_v1()
     * ROWGUIDCOL number uniquely identifying the record. Required for FileStream.
     */
-  public DocumentRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public DocumentRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new DocumentRowUnsaved(title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode);
   };
 
   /** Default: now() */
-  public DocumentRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public DocumentRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new DocumentRowUnsaved(title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode);
   };
 
@@ -166,19 +164,19 @@ public record DocumentRowUnsaved(
       sb.append(PgText.DELIMETER);
       PgTypes.bpchar.pgText().unsafeEncode(row.revision, sb);
       sb.append(PgText.DELIMETER);
-      TypoShort.pgType.pgText().unsafeEncode(row.status, sb);
+      PgTypes.int2.pgText().unsafeEncode(row.status, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.text.opt().pgText().unsafeEncode(row.documentsummary, sb);
       sb.append(PgText.DELIMETER);
-      TypoBytea.pgType.opt().pgText().unsafeEncode(row.document, sb);
+      PgTypes.bytea.opt().pgText().unsafeEncode(row.document, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.folderflag, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.changenumber, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(DocumentId.pgType.pgText()).unsafeEncode(row.documentnode, sb);
     });
@@ -186,8 +184,8 @@ public record DocumentRowUnsaved(
   public DocumentRow toRow(
     java.util.function.Supplier<Flag> folderflagDefault,
     java.util.function.Supplier<Integer> changenumberDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault,
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault,
     java.util.function.Supplier<DocumentId> documentnodeDefault
   ) {
     return new DocumentRow(title, owner, folderflag.getOrElse(folderflagDefault), filename, fileextension, revision, changenumber.getOrElse(changenumberDefault), status, documentsummary, document, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault), documentnode.getOrElse(documentnodeDefault));

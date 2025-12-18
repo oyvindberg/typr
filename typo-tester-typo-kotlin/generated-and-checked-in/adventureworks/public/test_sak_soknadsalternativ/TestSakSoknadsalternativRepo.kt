@@ -6,76 +6,75 @@
 package adventureworks.public.test_sak_soknadsalternativ
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface TestSakSoknadsalternativRepo {
-  fun delete(): DeleteBuilder<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow>
+  abstract fun delete(): DeleteBuilder<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: TestSakSoknadsalternativId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<TestSakSoknadsalternativId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: TestSakSoknadsalternativRow,
     c: Connection
   ): TestSakSoknadsalternativRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<TestSakSoknadsalternativRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow>
+  abstract fun select(): SelectBuilder<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow>
 
-  fun selectAll(c: Connection): List<TestSakSoknadsalternativRow>
+  abstract fun selectAll(c: Connection): List<TestSakSoknadsalternativRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: TestSakSoknadsalternativId,
     c: Connection
-  ): Optional<TestSakSoknadsalternativRow>
+  ): TestSakSoknadsalternativRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<TestSakSoknadsalternativId>,
     c: Connection
   ): List<TestSakSoknadsalternativRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<TestSakSoknadsalternativId>,
     c: Connection
   ): Map<TestSakSoknadsalternativId, TestSakSoknadsalternativRow>
 
-  fun update(): UpdateBuilder<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow>
+  abstract fun update(): UpdateBuilder<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow>
 
-  fun update(
+  abstract fun update(
     row: TestSakSoknadsalternativRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: TestSakSoknadsalternativRow,
     c: Connection
   ): TestSakSoknadsalternativRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<TestSakSoknadsalternativRow>,
     c: Connection
   ): List<TestSakSoknadsalternativRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<TestSakSoknadsalternativRow>,
     batchSize: Int,
     c: Connection

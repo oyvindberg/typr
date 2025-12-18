@@ -5,29 +5,30 @@
  */
 package adventureworks.sales.salesorderheadersalesreason;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.sales.salesorderheader.SalesorderheaderFields;
 import adventureworks.sales.salesorderheader.SalesorderheaderId;
 import adventureworks.sales.salesorderheader.SalesorderheaderRow;
 import adventureworks.sales.salesreason.SalesreasonFields;
 import adventureworks.sales.salesreason.SalesreasonId;
 import adventureworks.sales.salesreason.SalesreasonRow;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SalesorderheadersalesreasonFields extends FieldsExpr<SalesorderheadersalesreasonRow> {
-  record Impl(List<Path> _path) implements SalesorderheadersalesreasonFields, Relation<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow> {
+  record Impl(List<Path> _path) implements SalesorderheadersalesreasonFields, RelationStructure<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow> {
     @Override
     public IdField<SalesorderheaderId, SalesorderheadersalesreasonRow> salesorderid() {
       return new IdField<SalesorderheaderId, SalesorderheadersalesreasonRow>(_path, "salesorderid", SalesorderheadersalesreasonRow::salesorderid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withSalesorderid(value), SalesorderheaderId.pgType);
@@ -39,37 +40,37 @@ public interface SalesorderheadersalesreasonFields extends FieldsExpr<Salesorder
     };
 
     @Override
-    public Field<TypoLocalDateTime, SalesorderheadersalesreasonRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SalesorderheadersalesreasonRow>(_path, "modifieddate", SalesorderheadersalesreasonRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SalesorderheadersalesreasonRow> modifieddate() {
+      return new Field<LocalDateTime, SalesorderheadersalesreasonRow>(_path, "modifieddate", SalesorderheadersalesreasonRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SalesorderheadersalesreasonRow>> columns() {
-      return List.of(this.salesorderid(), this.salesreasonid(), this.modifieddate());
+      return java.util.List.of(this.salesorderid(), this.salesreasonid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow> copy(List<Path> _path) {
+    public RelationStructure<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<SalesorderheaderId, SalesorderheadersalesreasonRow> salesorderid();
 
   IdField<SalesreasonId, SalesorderheadersalesreasonRow> salesreasonid();
 
-  Field<TypoLocalDateTime, SalesorderheadersalesreasonRow> modifieddate();
+  Field<LocalDateTime, SalesorderheadersalesreasonRow> modifieddate();
 
   default ForeignKey<SalesorderheaderFields, SalesorderheaderRow> fkSalesorderheader() {
-    return ForeignKey.<SalesorderheaderFields, SalesorderheaderRow>of("sales.FK_SalesOrderHeaderSalesReason_SalesOrderHeader_SalesOrderID").withColumnPair(salesorderid(), SalesorderheaderFields::salesorderid);
+    return ForeignKey.<SalesorderheaderFields, SalesorderheaderRow>of("sales.FK_SalesOrderHeaderSalesReason_SalesOrderHeader_SalesOrderID").<SalesorderheaderId>withColumnPair(salesorderid(), SalesorderheaderFields::salesorderid);
   };
 
   default ForeignKey<SalesreasonFields, SalesreasonRow> fkSalesreason() {
-    return ForeignKey.<SalesreasonFields, SalesreasonRow>of("sales.FK_SalesOrderHeaderSalesReason_SalesReason_SalesReasonID").withColumnPair(salesreasonid(), SalesreasonFields::salesreasonid);
+    return ForeignKey.<SalesreasonFields, SalesreasonRow>of("sales.FK_SalesOrderHeaderSalesReason_SalesReason_SalesReasonID").<SalesreasonId>withColumnPair(salesreasonid(), SalesreasonFields::salesreasonid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(SalesorderheadersalesreasonId compositeId) {

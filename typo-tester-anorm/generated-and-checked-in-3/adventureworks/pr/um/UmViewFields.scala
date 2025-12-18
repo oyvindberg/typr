@@ -9,9 +9,9 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.unitmeasure.UnitmeasureId
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait UmViewFields {
   def id: Field[UnitmeasureId, UmViewRow]
@@ -21,11 +21,11 @@ trait UmViewFields {
 }
 
 object UmViewFields {
-  lazy val structure: Relation[UmViewFields, UmViewRow] =
+  lazy val structure: RelationStructure[UmViewFields, UmViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[UmViewFields, UmViewRow] {
+    extends RelationStructure[UmViewFields, UmViewRow] {
 
     override lazy val fields: UmViewFields = new UmViewFields {
       override def id = Field[UnitmeasureId, UmViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))

@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VemployeeViewRepoImpl implements VemployeeViewRepo {
@@ -19,9 +20,6 @@ public class VemployeeViewRepoImpl implements VemployeeViewRepo {
 
   @Override
   public List<VemployeeViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "additionalcontactinfo"
-       from "humanresources"."vemployee"
-    """)).query(VemployeeViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"jobtitle\", \"phonenumber\", \"phonenumbertype\", \"emailaddress\", \"emailpromotion\", \"addressline1\", \"addressline2\", \"city\", \"stateprovincename\", \"postalcode\", \"countryregionname\", \"additionalcontactinfo\"\nfrom \"humanresources\".\"vemployee\"\n")).query(VemployeeViewRow._rowParser.all()).runUnchecked(c);
   };
 }

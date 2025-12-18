@@ -26,25 +26,25 @@ case class PViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.person.person.PersonRow.persontype]] */
-  persontype: /* bpchar, max 2 chars */ String,
+  persontype: String,
   /** Points to [[adventureworks.person.person.PersonRow.namestyle]] */
   namestyle: NameStyle,
   /** Points to [[adventureworks.person.person.PersonRow.title]] */
-  title: Option[/* max 8 chars */ String],
+  title: String,
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: String,
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
   emailpromotion: Int,
   /** Points to [[adventureworks.person.person.PersonRow.additionalcontactinfo]] */
-  additionalcontactinfo: Option[TypoXml],
+  additionalcontactinfo: TypoXml,
   /** Points to [[adventureworks.person.person.PersonRow.demographics]] */
-  demographics: Option[TypoXml],
+  demographics: TypoXml,
   /** Points to [[adventureworks.person.person.PersonRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.person.person.PersonRow.modifieddate]] */
@@ -61,14 +61,14 @@ object PViewRow {
             businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             persontype = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 2, rs)._2,
             namestyle = NameStyle.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
-            title = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 4, rs)._2,
+            title = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 4, rs)._2,
             firstname = FirstName.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
-            middlename = JdbcDecoder.optionDecoder(Name.jdbcDecoder).unsafeDecode(columIndex + 6, rs)._2,
+            middlename = Name.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
             lastname = Name.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
-            suffix = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 8, rs)._2,
+            suffix = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 8, rs)._2,
             emailpromotion = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 9, rs)._2,
-            additionalcontactinfo = JdbcDecoder.optionDecoder(TypoXml.jdbcDecoder).unsafeDecode(columIndex + 10, rs)._2,
-            demographics = JdbcDecoder.optionDecoder(TypoXml.jdbcDecoder).unsafeDecode(columIndex + 11, rs)._2,
+            additionalcontactinfo = TypoXml.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2,
+            demographics = TypoXml.jdbcDecoder.unsafeDecode(columIndex + 11, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 12, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 13, rs)._2
           )
@@ -81,14 +81,14 @@ object PViewRow {
       val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
       val persontype = jsonObj.get("persontype").toRight("Missing field 'persontype'").flatMap(_.as(JsonDecoder.string))
       val namestyle = jsonObj.get("namestyle").toRight("Missing field 'namestyle'").flatMap(_.as(NameStyle.jsonDecoder))
-      val title = jsonObj.get("title").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val title = jsonObj.get("title").toRight("Missing field 'title'").flatMap(_.as(JsonDecoder.string))
       val firstname = jsonObj.get("firstname").toRight("Missing field 'firstname'").flatMap(_.as(FirstName.jsonDecoder))
-      val middlename = jsonObj.get("middlename").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
+      val middlename = jsonObj.get("middlename").toRight("Missing field 'middlename'").flatMap(_.as(Name.jsonDecoder))
       val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(Name.jsonDecoder))
-      val suffix = jsonObj.get("suffix").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val suffix = jsonObj.get("suffix").toRight("Missing field 'suffix'").flatMap(_.as(JsonDecoder.string))
       val emailpromotion = jsonObj.get("emailpromotion").toRight("Missing field 'emailpromotion'").flatMap(_.as(JsonDecoder.int))
-      val additionalcontactinfo = jsonObj.get("additionalcontactinfo").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
-      val demographics = jsonObj.get("demographics").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
+      val additionalcontactinfo = jsonObj.get("additionalcontactinfo").toRight("Missing field 'additionalcontactinfo'").flatMap(_.as(TypoXml.jsonDecoder))
+      val demographics = jsonObj.get("demographics").toRight("Missing field 'demographics'").flatMap(_.as(TypoXml.jsonDecoder))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       if (id.isRight && businessentityid.isRight && persontype.isRight && namestyle.isRight && title.isRight && firstname.isRight && middlename.isRight && lastname.isRight && suffix.isRight && emailpromotion.isRight && additionalcontactinfo.isRight && demographics.isRight && rowguid.isRight && modifieddate.isRight)
@@ -114,28 +114,28 @@ object PViewRow {
         NameStyle.jsonEncoder.unsafeEncode(a.namestyle, indent, out)
         out.write(",")
         out.write(""""title":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.title, indent, out)
+        JsonEncoder.string.unsafeEncode(a.title, indent, out)
         out.write(",")
         out.write(""""firstname":""")
         FirstName.jsonEncoder.unsafeEncode(a.firstname, indent, out)
         out.write(",")
         out.write(""""middlename":""")
-        JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.middlename, indent, out)
+        Name.jsonEncoder.unsafeEncode(a.middlename, indent, out)
         out.write(",")
         out.write(""""lastname":""")
         Name.jsonEncoder.unsafeEncode(a.lastname, indent, out)
         out.write(",")
         out.write(""""suffix":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.suffix, indent, out)
+        JsonEncoder.string.unsafeEncode(a.suffix, indent, out)
         out.write(",")
         out.write(""""emailpromotion":""")
         JsonEncoder.int.unsafeEncode(a.emailpromotion, indent, out)
         out.write(",")
         out.write(""""additionalcontactinfo":""")
-        JsonEncoder.option(TypoXml.jsonEncoder).unsafeEncode(a.additionalcontactinfo, indent, out)
+        TypoXml.jsonEncoder.unsafeEncode(a.additionalcontactinfo, indent, out)
         out.write(",")
         out.write(""""demographics":""")
-        JsonEncoder.option(TypoXml.jsonEncoder).unsafeEncode(a.demographics, indent, out)
+        TypoXml.jsonEncoder.unsafeEncode(a.demographics, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

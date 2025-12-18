@@ -5,27 +5,24 @@
  */
 package adventureworks.humanresources.employeepayhistory
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import java.sql.Connection
+import java.time.LocalDateTime
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class EmployeepayhistoryRepoImpl() : EmployeepayhistoryRepo {
   override fun delete(): DeleteBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow> = DeleteBuilder.of("\"humanresources\".\"employeepayhistory\"", EmployeepayhistoryFields.structure, Dialect.POSTGRESQL)
@@ -33,111 +30,43 @@ class EmployeepayhistoryRepoImpl() : EmployeepayhistoryRepo {
   override fun deleteById(
     compositeId: EmployeepayhistoryId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "humanresources"."employeepayhistory" where "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("""
-     AND "ratechangedate" = 
-    """.trimMargin()),
-    TypoLocalDateTime.pgType.encode(compositeId.ratechangedate),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"humanresources\".\"employeepayhistory\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"ratechangedate\" = "), Fragment.encode(PgTypes.timestamp, compositeId.ratechangedate), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     compositeIds: Array<EmployeepayhistoryId>,
     c: Connection
   ): Int {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, EmployeepayhistoryId::businessentityid, BusinessentityId::class.java)
-    val ratechangedate: Array<TypoLocalDateTime> = arrayMap.map(compositeIds, EmployeepayhistoryId::ratechangedate, TypoLocalDateTime::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        delete
-        from "humanresources"."employeepayhistory"
-        where ("businessentityid", "ratechangedate")
-        in (select unnest(""".trimMargin()),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      TypoLocalDateTime.pgTypeArray.encode(ratechangedate),
-      typo.runtime.Fragment.lit("""
-      ::timestamp[]))
-
-      """.trimMargin())
-    ).update().runUnchecked(c)
+    val ratechangedate: Array<LocalDateTime> = arrayMap.map(compositeIds, EmployeepayhistoryId::ratechangedate, LocalDateTime::class.java)
+    return interpolate(Fragment.lit("delete\nfrom \"humanresources\".\"employeepayhistory\"\nwhere (\"businessentityid\", \"ratechangedate\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, ratechangedate), Fragment.lit("::timestamp[]))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: EmployeepayhistoryRow,
     c: Connection
-  ): EmployeepayhistoryRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employeepayhistory"("businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.ratechangedate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    PgTypes.numeric.encode(unsaved.rate),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoShort.pgType.encode(unsaved.payfrequency),
-    typo.runtime.Fragment.lit("::int2, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): EmployeepayhistoryRow = interpolate(Fragment.lit("insert into \"humanresources\".\"employeepayhistory\"(\"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.ratechangedate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.numeric, unsaved.rate), Fragment.lit("::numeric, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.payfrequency), Fragment.lit("::int2, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\"\n"))
     .updateReturning(EmployeepayhistoryRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: EmployeepayhistoryRowUnsaved,
     c: Connection
   ): EmployeepayhistoryRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"businessentityid\""))
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"ratechangedate\""))
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.encode(unsaved.ratechangedate),
-      typo.runtime.Fragment.lit("::timestamp")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.timestamp, unsaved.ratechangedate), Fragment.lit("::timestamp")))
     columns.add(Fragment.lit("\"rate\""))
-    values.add(interpolate(
-      PgTypes.numeric.encode(unsaved.rate),
-      typo.runtime.Fragment.lit("::numeric")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.numeric, unsaved.rate), Fragment.lit("::numeric")))
     columns.add(Fragment.lit("\"payfrequency\""))
-    values.add(interpolate(
-      TypoShort.pgType.encode(unsaved.payfrequency),
-      typo.runtime.Fragment.lit("::int2")
-    ))
+    values.add(interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.payfrequency), Fragment.lit("::int2")))
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employeepayhistory"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"humanresources\".\"employeepayhistory\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\"\n"))
     return q.updateReturning(EmployeepayhistoryRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -145,62 +74,31 @@ class EmployeepayhistoryRepoImpl() : EmployeepayhistoryRepo {
     unsaved: MutableIterator<EmployeepayhistoryRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "humanresources"."employeepayhistory"("businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, EmployeepayhistoryRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"humanresources\".\"employeepayhistory\"(\"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, EmployeepayhistoryRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<EmployeepayhistoryRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "humanresources"."employeepayhistory"("businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, EmployeepayhistoryRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"humanresources\".\"employeepayhistory\"(\"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, EmployeepayhistoryRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow> = SelectBuilder.of("\"humanresources\".\"employeepayhistory\"", EmployeepayhistoryFields.structure, EmployeepayhistoryRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<EmployeepayhistoryRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text
-    from "humanresources"."employeepayhistory"
-  """.trimMargin())).query(EmployeepayhistoryRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<EmployeepayhistoryRow> = interpolate(Fragment.lit("select \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\"\nfrom \"humanresources\".\"employeepayhistory\"\n")).query(EmployeepayhistoryRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     compositeId: EmployeepayhistoryId,
     c: Connection
-  ): Optional<EmployeepayhistoryRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text
-      from "humanresources"."employeepayhistory"
-      where "businessentityid" = """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("""
-     AND "ratechangedate" = 
-    """.trimMargin()),
-    TypoLocalDateTime.pgType.encode(compositeId.ratechangedate),
-    typo.runtime.Fragment.lit("")
-  ).query(EmployeepayhistoryRow._rowParser.first()).runUnchecked(c)
+  ): EmployeepayhistoryRow? = interpolate(Fragment.lit("select \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\"\nfrom \"humanresources\".\"employeepayhistory\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"ratechangedate\" = "), Fragment.encode(PgTypes.timestamp, compositeId.ratechangedate), Fragment.lit("")).query(EmployeepayhistoryRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     compositeIds: Array<EmployeepayhistoryId>,
     c: Connection
   ): List<EmployeepayhistoryRow> {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, EmployeepayhistoryId::businessentityid, BusinessentityId::class.java)
-    val ratechangedate: Array<TypoLocalDateTime> = arrayMap.map(compositeIds, EmployeepayhistoryId::ratechangedate, TypoLocalDateTime::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        select "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text
-        from "humanresources"."employeepayhistory"
-        where ("businessentityid", "ratechangedate")
-        in (select unnest(""".trimMargin()),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      TypoLocalDateTime.pgTypeArray.encode(ratechangedate),
-      typo.runtime.Fragment.lit("""
-      ::timestamp[]))
-
-      """.trimMargin())
-    ).query(EmployeepayhistoryRow._rowParser.all()).runUnchecked(c)
+    val ratechangedate: Array<LocalDateTime> = arrayMap.map(compositeIds, EmployeepayhistoryId::ratechangedate, LocalDateTime::class.java)
+    return interpolate(Fragment.lit("select \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\"\nfrom \"humanresources\".\"employeepayhistory\"\nwhere (\"businessentityid\", \"ratechangedate\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, ratechangedate), Fragment.lit("::timestamp[]))\n")).query(EmployeepayhistoryRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(
@@ -209,83 +107,32 @@ class EmployeepayhistoryRepoImpl() : EmployeepayhistoryRepo {
   ): Map<EmployeepayhistoryId, EmployeepayhistoryRow> {
     val ret: MutableMap<EmployeepayhistoryId, EmployeepayhistoryRow> = mutableMapOf<EmployeepayhistoryId, EmployeepayhistoryRow>()
     selectByIds(compositeIds, c).forEach({ row -> ret.put(row.compositeId(), row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow> = UpdateBuilder.of("\"humanresources\".\"employeepayhistory\"", EmployeepayhistoryFields.structure, EmployeepayhistoryRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow> = UpdateBuilder.of("\"humanresources\".\"employeepayhistory\"", EmployeepayhistoryFields.structure, EmployeepayhistoryRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: EmployeepayhistoryRow,
     c: Connection
   ): Boolean {
     val compositeId: EmployeepayhistoryId = row.compositeId()
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "humanresources"."employeepayhistory"
-        set "rate" = """.trimMargin()),
-      PgTypes.numeric.encode(row.rate),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "payfrequency" = """.trimMargin()),
-      TypoShort.pgType.encode(row.payfrequency),
-      typo.runtime.Fragment.lit("""
-        ::int2,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "businessentityid" = """.trimMargin()),
-      BusinessentityId.pgType.encode(compositeId.businessentityid),
-      typo.runtime.Fragment.lit("""
-       AND "ratechangedate" = 
-      """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(compositeId.ratechangedate),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"humanresources\".\"employeepayhistory\"\nset \"rate\" = "), Fragment.encode(PgTypes.numeric, row.rate), Fragment.lit("::numeric,\n\"payfrequency\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int2, row.payfrequency), Fragment.lit("::int2,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"ratechangedate\" = "), Fragment.encode(PgTypes.timestamp, compositeId.ratechangedate), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: EmployeepayhistoryRow,
     c: Connection
-  ): EmployeepayhistoryRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employeepayhistory"("businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.ratechangedate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    PgTypes.numeric.encode(unsaved.rate),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoShort.pgType.encode(unsaved.payfrequency),
-    typo.runtime.Fragment.lit("::int2, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("businessentityid", "ratechangedate")
-      do update set
-        "rate" = EXCLUDED."rate",
-      "payfrequency" = EXCLUDED."payfrequency",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text""".trimMargin())
-  )
+  ): EmployeepayhistoryRow = interpolate(Fragment.lit("insert into \"humanresources\".\"employeepayhistory\"(\"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.ratechangedate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.numeric, unsaved.rate), Fragment.lit("::numeric, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.payfrequency), Fragment.lit("::int2, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"businessentityid\", \"ratechangedate\")\ndo update set\n  \"rate\" = EXCLUDED.\"rate\",\n\"payfrequency\" = EXCLUDED.\"payfrequency\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\""))
     .updateReturning(EmployeepayhistoryRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<EmployeepayhistoryRow>,
     c: Connection
-  ): List<EmployeepayhistoryRow> = interpolate(typo.runtime.Fragment.lit("""
-                                     insert into "humanresources"."employeepayhistory"("businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate")
-                                     values (?::int4, ?::timestamp, ?::numeric, ?::int2, ?::timestamp)
-                                     on conflict ("businessentityid", "ratechangedate")
-                                     do update set
-                                       "rate" = EXCLUDED."rate",
-                                     "payfrequency" = EXCLUDED."payfrequency",
-                                     "modifieddate" = EXCLUDED."modifieddate"
-                                     returning "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text""".trimMargin()))
+  ): List<EmployeepayhistoryRow> = interpolate(Fragment.lit("insert into \"humanresources\".\"employeepayhistory\"(\"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\")\nvalues (?::int4, ?::timestamp, ?::numeric, ?::int2, ?::timestamp)\non conflict (\"businessentityid\", \"ratechangedate\")\ndo update set\n  \"rate\" = EXCLUDED.\"rate\",\n\"payfrequency\" = EXCLUDED.\"payfrequency\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\""))
     .updateManyReturning(EmployeepayhistoryRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -293,21 +140,8 @@ class EmployeepayhistoryRepoImpl() : EmployeepayhistoryRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table employeepayhistory_TEMP (like "humanresources"."employeepayhistory") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy employeepayhistory_TEMP("businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, EmployeepayhistoryRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "humanresources"."employeepayhistory"("businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate")
-      select * from employeepayhistory_TEMP
-      on conflict ("businessentityid", "ratechangedate")
-      do update set
-        "rate" = EXCLUDED."rate",
-      "payfrequency" = EXCLUDED."payfrequency",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table employeepayhistory_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table employeepayhistory_TEMP (like \"humanresources\".\"employeepayhistory\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy employeepayhistory_TEMP(\"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\") from stdin", batchSize, unsaved, c, EmployeepayhistoryRow.pgText)
+    return interpolate(Fragment.lit("insert into \"humanresources\".\"employeepayhistory\"(\"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\")\nselect * from employeepayhistory_TEMP\non conflict (\"businessentityid\", \"ratechangedate\")\ndo update set\n  \"rate\" = EXCLUDED.\"rate\",\n\"payfrequency\" = EXCLUDED.\"payfrequency\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table employeepayhistory_TEMP;")).update().runUnchecked(c)
   }
 }

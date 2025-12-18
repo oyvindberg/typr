@@ -24,13 +24,13 @@ case class VproductanddescriptionMVRow(
   /** Points to [[adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.cultureid]] */
   cultureid: CultureId,
   /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.description]] */
-  description: /* max 400 chars */ String
+  description: String
 )
 
 object VproductanddescriptionMVRow {
-  implicit lazy val decoder: Decoder[VproductanddescriptionMVRow] = Decoder.forProduct5[VproductanddescriptionMVRow, ProductId, Name, Name, CultureId, /* max 400 chars */ String]("productid", "name", "productmodel", "cultureid", "description")(VproductanddescriptionMVRow.apply)(ProductId.decoder, Name.decoder, Name.decoder, CultureId.decoder, Decoder.decodeString)
+  implicit lazy val decoder: Decoder[VproductanddescriptionMVRow] = Decoder.forProduct5[VproductanddescriptionMVRow, ProductId, Name, Name, CultureId, String]("productid", "name", "productmodel", "cultureid", "description")(VproductanddescriptionMVRow.apply)(ProductId.decoder, Name.decoder, Name.decoder, CultureId.decoder, Decoder.decodeString)
 
-  implicit lazy val encoder: Encoder[VproductanddescriptionMVRow] = Encoder.forProduct5[VproductanddescriptionMVRow, ProductId, Name, Name, CultureId, /* max 400 chars */ String]("productid", "name", "productmodel", "cultureid", "description")(x => (x.productid, x.name, x.productmodel, x.cultureid, x.description))(ProductId.encoder, Name.encoder, Name.encoder, CultureId.encoder, Encoder.encodeString)
+  implicit lazy val encoder: Encoder[VproductanddescriptionMVRow] = Encoder.forProduct5[VproductanddescriptionMVRow, ProductId, Name, Name, CultureId, String]("productid", "name", "productmodel", "cultureid", "description")(x => (x.productid, x.name, x.productmodel, x.cultureid, x.description))(ProductId.encoder, Name.encoder, Name.encoder, CultureId.encoder, Encoder.encodeString)
 
   implicit lazy val read: Read[VproductanddescriptionMVRow] = {
     new Read.CompositeOfInstances(Array(
@@ -45,7 +45,7 @@ object VproductanddescriptionMVRow {
             name = arr(1).asInstanceOf[Name],
             productmodel = arr(2).asInstanceOf[Name],
             cultureid = arr(3).asInstanceOf[CultureId],
-            description = arr(4).asInstanceOf[/* max 400 chars */ String]
+            description = arr(4).asInstanceOf[String]
       )
     }
   }

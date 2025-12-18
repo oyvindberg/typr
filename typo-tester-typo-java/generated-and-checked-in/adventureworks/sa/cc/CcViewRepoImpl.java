@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class CcViewRepoImpl implements CcViewRepo {
@@ -19,9 +20,6 @@ public class CcViewRepoImpl implements CcViewRepo {
 
   @Override
   public List<CcViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "creditcardid", "cardtype", "cardnumber", "expmonth", "expyear", "modifieddate"::text
-       from "sa"."cc"
-    """)).query(CcViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"creditcardid\", \"cardtype\", \"cardnumber\", \"expmonth\", \"expyear\", \"modifieddate\"\nfrom \"sa\".\"cc\"\n")).query(CcViewRow._rowParser.all()).runUnchecked(c);
   };
 }

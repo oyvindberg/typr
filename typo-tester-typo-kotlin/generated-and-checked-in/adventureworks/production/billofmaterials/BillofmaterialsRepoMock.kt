@@ -8,21 +8,19 @@ package adventureworks.production.billofmaterials
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class BillofmaterialsRepoMock(
   val toRow: (BillofmaterialsRowUnsaved) -> BillofmaterialsRow,
@@ -33,7 +31,7 @@ data class BillofmaterialsRepoMock(
   override fun deleteById(
     billofmaterialsid: Int,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(billofmaterialsid)).isPresent()
+  ): Boolean = map.remove(billofmaterialsid) != null
 
   override fun deleteByIds(
     billofmaterialsids: Array<Int>,
@@ -41,7 +39,7 @@ data class BillofmaterialsRepoMock(
   ): Int {
     var count = 0
     for (id in billofmaterialsids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class BillofmaterialsRepoMock(
     c: Connection
   ): BillofmaterialsRow {
     if (map.containsKey(unsaved.billofmaterialsid)) {
-      throw RuntimeException(str("id $unsaved.billofmaterialsid already exists"))
+      throw RuntimeException("id " + unsaved.billofmaterialsid + " already exists")
     }
     map[unsaved.billofmaterialsid] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class BillofmaterialsRepoMock(
   override fun selectById(
     billofmaterialsid: Int,
     c: Connection
-  ): Optional<BillofmaterialsRow> = Optional.ofNullable(map[billofmaterialsid])
+  ): BillofmaterialsRow? = map[billofmaterialsid]
 
   override fun selectByIds(
     billofmaterialsids: Array<Int>,
@@ -109,9 +107,9 @@ data class BillofmaterialsRepoMock(
   ): List<BillofmaterialsRow> {
     val result = ArrayList<BillofmaterialsRow>()
     for (id in billofmaterialsids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class BillofmaterialsRepoMock(
     row: BillofmaterialsRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.billofmaterialsid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.billofmaterialsid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.billofmaterialsid] = row
     }

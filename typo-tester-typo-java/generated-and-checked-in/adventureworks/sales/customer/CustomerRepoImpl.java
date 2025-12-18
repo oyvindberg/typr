@@ -5,8 +5,6 @@
  */
 package adventureworks.sales.customer;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import java.sql.Connection;
@@ -21,10 +19,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class CustomerRepoImpl implements CustomerRepo {
   @Override
@@ -37,13 +34,7 @@ public class CustomerRepoImpl implements CustomerRepo {
     CustomerId customerid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "sales"."customer" where "customerid" = 
-      """),
-      CustomerId.pgType.encode(customerid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"sales\".\"customer\" where \"customerid\" = "), Fragment.encode(CustomerId.pgType, customerid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -51,14 +42,7 @@ public class CustomerRepoImpl implements CustomerRepo {
     CustomerId[] customerids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "sales"."customer"
-                  where "customerid" = ANY("""),
-               CustomerId.pgTypeArray.encode(customerids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"sales\".\"customer\"\nwhere \"customerid\" = ANY("), Fragment.encode(CustomerId.pgTypeArray, customerids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -68,26 +52,7 @@ public class CustomerRepoImpl implements CustomerRepo {
     CustomerRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "sales"."customer"("customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate")
-         values ("""),
-      CustomerId.pgType.encode(unsaved.customerid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      BusinessentityId.pgType.opt().encode(unsaved.personid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      BusinessentityId.pgType.opt().encode(unsaved.storeid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      SalesterritoryId.pgType.opt().encode(unsaved.territoryid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"sales\".\"customer\"(\"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(CustomerId.pgType, unsaved.customerid()), Fragment.lit("::int4, "), Fragment.encode(BusinessentityId.pgType.opt(), unsaved.personid()), Fragment.lit("::int4, "), Fragment.encode(BusinessentityId.pgType.opt(), unsaved.storeid()), Fragment.lit("::int4, "), Fragment.encode(SalesterritoryId.pgType.opt(), unsaved.territoryid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(CustomerRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -96,33 +61,21 @@ public class CustomerRepoImpl implements CustomerRepo {
     CustomerRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"personid\""));
-    values.add(interpolate(
-      BusinessentityId.pgType.opt().encode(unsaved.personid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType.opt(), unsaved.personid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"storeid\""));
-    values.add(interpolate(
-      BusinessentityId.pgType.opt().encode(unsaved.storeid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType.opt(), unsaved.storeid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"territoryid\""));
-    values.add(interpolate(
-      SalesterritoryId.pgType.opt().encode(unsaved.territoryid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(SalesterritoryId.pgType.opt(), unsaved.territoryid()), Fragment.lit("::int4")));
     unsaved.customerid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"customerid\""));
-        values.add(interpolate(
-        CustomerId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(CustomerId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.rowguid().visit(
@@ -131,10 +84,7 @@ public class CustomerRepoImpl implements CustomerRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -143,26 +93,10 @@ public class CustomerRepoImpl implements CustomerRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "sales"."customer"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"sales\".\"customer\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(CustomerRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -172,9 +106,7 @@ public class CustomerRepoImpl implements CustomerRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "sales"."customer"("customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, CustomerRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"sales\".\"customer\"(\"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, CustomerRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -184,9 +116,7 @@ public class CustomerRepoImpl implements CustomerRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "sales"."customer"("personid", "storeid", "territoryid", "customerid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, CustomerRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"sales\".\"customer\"(\"personid\", \"storeid\", \"territoryid\", \"customerid\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, CustomerRowUnsaved.pgText);
   };
 
   @Override
@@ -196,10 +126,7 @@ public class CustomerRepoImpl implements CustomerRepo {
 
   @Override
   public List<CustomerRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text
-       from "sales"."customer"
-    """)).query(CustomerRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"customer\"\n")).query(CustomerRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -207,14 +134,7 @@ public class CustomerRepoImpl implements CustomerRepo {
     CustomerId customerid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text
-         from "sales"."customer"
-         where "customerid" = """),
-      CustomerId.pgType.encode(customerid),
-      typo.runtime.Fragment.lit("")
-    ).query(CustomerRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"customer\"\nwhere \"customerid\" = "), Fragment.encode(CustomerId.pgType, customerid), Fragment.lit("")).query(CustomerRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -222,14 +142,7 @@ public class CustomerRepoImpl implements CustomerRepo {
     CustomerId[] customerids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text
-         from "sales"."customer"
-         where "customerid" = ANY("""),
-      CustomerId.pgTypeArray.encode(customerids),
-      typo.runtime.Fragment.lit(")")
-    ).query(CustomerRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"customer\"\nwhere \"customerid\" = ANY("), Fragment.encode(CustomerId.pgTypeArray, customerids), Fragment.lit(")")).query(CustomerRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -244,7 +157,7 @@ public class CustomerRepoImpl implements CustomerRepo {
 
   @Override
   public UpdateBuilder<CustomerFields, CustomerRow> update() {
-    return UpdateBuilder.of("\"sales\".\"customer\"", CustomerFields.structure(), CustomerRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"sales\".\"customer\"", CustomerFields.structure(), CustomerRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -253,33 +166,7 @@ public class CustomerRepoImpl implements CustomerRepo {
     Connection c
   ) {
     CustomerId customerid = row.customerid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "sales"."customer"
-         set "personid" = """),
-      BusinessentityId.pgType.opt().encode(row.personid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "storeid" = """),
-      BusinessentityId.pgType.opt().encode(row.storeid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "territoryid" = """),
-      SalesterritoryId.pgType.opt().encode(row.territoryid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "customerid" = """),
-      CustomerId.pgType.encode(customerid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"sales\".\"customer\"\nset \"personid\" = "), Fragment.encode(BusinessentityId.pgType.opt(), row.personid()), Fragment.lit("::int4,\n\"storeid\" = "), Fragment.encode(BusinessentityId.pgType.opt(), row.storeid()), Fragment.lit("::int4,\n\"territoryid\" = "), Fragment.encode(SalesterritoryId.pgType.opt(), row.territoryid()), Fragment.lit("::int4,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"customerid\" = "), Fragment.encode(CustomerId.pgType, customerid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -287,32 +174,7 @@ public class CustomerRepoImpl implements CustomerRepo {
     CustomerRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "sales"."customer"("customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate")
-         values ("""),
-      CustomerId.pgType.encode(unsaved.customerid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      BusinessentityId.pgType.opt().encode(unsaved.personid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      BusinessentityId.pgType.opt().encode(unsaved.storeid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      SalesterritoryId.pgType.opt().encode(unsaved.territoryid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("customerid")
-         do update set
-           "personid" = EXCLUDED."personid",
-         "storeid" = EXCLUDED."storeid",
-         "territoryid" = EXCLUDED."territoryid",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"sales\".\"customer\"(\"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(CustomerId.pgType, unsaved.customerid()), Fragment.lit("::int4, "), Fragment.encode(BusinessentityId.pgType.opt(), unsaved.personid()), Fragment.lit("::int4, "), Fragment.encode(BusinessentityId.pgType.opt(), unsaved.storeid()), Fragment.lit("::int4, "), Fragment.encode(SalesterritoryId.pgType.opt(), unsaved.territoryid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"customerid\")\ndo update set\n  \"personid\" = EXCLUDED.\"personid\",\n\"storeid\" = EXCLUDED.\"storeid\",\n\"territoryid\" = EXCLUDED.\"territoryid\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\""))
       .updateReturning(CustomerRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -322,19 +184,9 @@ public class CustomerRepoImpl implements CustomerRepo {
     Iterator<CustomerRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "sales"."customer"("customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate")
-                values (?::int4, ?::int4, ?::int4, ?::int4, ?::uuid, ?::timestamp)
-                on conflict ("customerid")
-                do update set
-                  "personid" = EXCLUDED."personid",
-                "storeid" = EXCLUDED."storeid",
-                "territoryid" = EXCLUDED."territoryid",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"sales\".\"customer\"(\"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?::int4, ?::int4, ?::uuid, ?::timestamp)\non conflict (\"customerid\")\ndo update set\n  \"personid\" = EXCLUDED.\"personid\",\n\"storeid\" = EXCLUDED.\"storeid\",\n\"territoryid\" = EXCLUDED.\"territoryid\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(CustomerRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -344,23 +196,8 @@ public class CustomerRepoImpl implements CustomerRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table customer_TEMP (like "sales"."customer") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy customer_TEMP("customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, CustomerRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "sales"."customer"("customerid", "personid", "storeid", "territoryid", "rowguid", "modifieddate")
-       select * from customer_TEMP
-       on conflict ("customerid")
-       do update set
-         "personid" = EXCLUDED."personid",
-       "storeid" = EXCLUDED."storeid",
-       "territoryid" = EXCLUDED."territoryid",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table customer_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table customer_TEMP (like \"sales\".\"customer\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy customer_TEMP(\"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, CustomerRow.pgText);
+    return interpolate(Fragment.lit("insert into \"sales\".\"customer\"(\"customerid\", \"personid\", \"storeid\", \"territoryid\", \"rowguid\", \"modifieddate\")\nselect * from customer_TEMP\non conflict (\"customerid\")\ndo update set\n  \"personid\" = EXCLUDED.\"personid\",\n\"storeid\" = EXCLUDED.\"storeid\",\n\"territoryid\" = EXCLUDED.\"territoryid\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table customer_TEMP;")).update().runUnchecked(c);
   };
 }

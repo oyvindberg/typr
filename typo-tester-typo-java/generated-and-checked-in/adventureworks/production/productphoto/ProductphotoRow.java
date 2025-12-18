@@ -6,8 +6,7 @@
 package adventureworks.production.productphoto;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -24,15 +23,15 @@ public record ProductphotoRow(
     */
   ProductphotoId productphotoid,
   /** Small image of the product. */
-  Optional<TypoBytea> thumbnailphoto,
+  Optional<byte[]> thumbnailphoto,
   /** Small image file name. */
   Optional</* max 50 chars */ String> thumbnailphotofilename,
   /** Large image of the product. */
-  Optional<TypoBytea> largephoto,
+  Optional<byte[]> largephoto,
   /** Large image file name. */
   Optional</* max 50 chars */ String> largephotofilename,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for ProductPhoto records.
     * Default: nextval('production.productphoto_productphotoid_seq'::regclass)
@@ -42,7 +41,7 @@ public record ProductphotoRow(
   };
 
   /** Small image of the product. */
-  public ProductphotoRow withThumbnailphoto(Optional<TypoBytea> thumbnailphoto) {
+  public ProductphotoRow withThumbnailphoto(Optional<byte[]> thumbnailphoto) {
     return new ProductphotoRow(productphotoid, thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate);
   };
 
@@ -52,7 +51,7 @@ public record ProductphotoRow(
   };
 
   /** Large image of the product. */
-  public ProductphotoRow withLargephoto(Optional<TypoBytea> largephoto) {
+  public ProductphotoRow withLargephoto(Optional<byte[]> largephoto) {
     return new ProductphotoRow(productphotoid, thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate);
   };
 
@@ -62,11 +61,11 @@ public record ProductphotoRow(
   };
 
   /** Default: now() */
-  public ProductphotoRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductphotoRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductphotoRow(productphotoid, thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate);
   };
 
-  static RowParser<ProductphotoRow> _rowParser = RowParsers.of(ProductphotoId.pgType, TypoBytea.pgType.opt(), PgTypes.text.opt(), TypoBytea.pgType.opt(), PgTypes.text.opt(), TypoLocalDateTime.pgType, ProductphotoRow::new, row -> new Object[]{row.productphotoid(), row.thumbnailphoto(), row.thumbnailphotofilename(), row.largephoto(), row.largephotofilename(), row.modifieddate()});;
+  static RowParser<ProductphotoRow> _rowParser = RowParsers.of(ProductphotoId.pgType, PgTypes.bytea.opt(), PgTypes.text.opt(), PgTypes.bytea.opt(), PgTypes.text.opt(), PgTypes.timestamp, ProductphotoRow::new, row -> new Object[]{row.productphotoid(), row.thumbnailphoto(), row.thumbnailphotofilename(), row.largephoto(), row.largephotofilename(), row.modifieddate()});;
 
   static public PgText<ProductphotoRow> pgText =
     PgText.from(_rowParser);
@@ -77,7 +76,7 @@ public record ProductphotoRow(
 
   public ProductphotoRowUnsaved toUnsavedRow(
     Defaulted<ProductphotoId> productphotoid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ProductphotoRowUnsaved(thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, productphotoid, modifieddate);
   };

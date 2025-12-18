@@ -6,88 +6,87 @@
 package adventureworks.production.culture
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface CultureRepo {
-  fun delete(): DeleteBuilder<CultureFields, CultureRow>
+  abstract fun delete(): DeleteBuilder<CultureFields, CultureRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     cultureid: CultureId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     cultureids: Array<CultureId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: CultureRow,
     c: Connection
   ): CultureRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: CultureRowUnsaved,
     c: Connection
   ): CultureRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<CultureRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<CultureRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<CultureFields, CultureRow>
+  abstract fun select(): SelectBuilder<CultureFields, CultureRow>
 
-  fun selectAll(c: Connection): List<CultureRow>
+  abstract fun selectAll(c: Connection): List<CultureRow>
 
-  fun selectById(
+  abstract fun selectById(
     cultureid: CultureId,
     c: Connection
-  ): Optional<CultureRow>
+  ): CultureRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     cultureids: Array<CultureId>,
     c: Connection
   ): List<CultureRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     cultureids: Array<CultureId>,
     c: Connection
   ): Map<CultureId, CultureRow>
 
-  fun update(): UpdateBuilder<CultureFields, CultureRow>
+  abstract fun update(): UpdateBuilder<CultureFields, CultureRow>
 
-  fun update(
+  abstract fun update(
     row: CultureRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: CultureRow,
     c: Connection
   ): CultureRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<CultureRow>,
     c: Connection
   ): List<CultureRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<CultureRow>,
     batchSize: Int,
     c: Connection

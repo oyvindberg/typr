@@ -5,25 +5,26 @@
  */
 package adventureworks.humanresources.jobcandidate;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.humanresources.employee.EmployeeFields;
 import adventureworks.humanresources.employee.EmployeeRow;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import typo.data.Xml;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface JobcandidateFields extends FieldsExpr<JobcandidateRow> {
-  record Impl(List<Path> _path) implements JobcandidateFields, Relation<JobcandidateFields, JobcandidateRow> {
+  record Impl(List<Path> _path) implements JobcandidateFields, RelationStructure<JobcandidateFields, JobcandidateRow> {
     @Override
     public IdField<JobcandidateId, JobcandidateRow> jobcandidateid() {
       return new IdField<JobcandidateId, JobcandidateRow>(_path, "jobcandidateid", JobcandidateRow::jobcandidateid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withJobcandidateid(value), JobcandidateId.pgType);
@@ -35,40 +36,40 @@ public interface JobcandidateFields extends FieldsExpr<JobcandidateRow> {
     };
 
     @Override
-    public OptField<TypoXml, JobcandidateRow> resume() {
-      return new OptField<TypoXml, JobcandidateRow>(_path, "resume", JobcandidateRow::resume, Optional.empty(), Optional.of("xml"), (row, value) -> row.withResume(value), TypoXml.pgType);
+    public OptField<Xml, JobcandidateRow> resume() {
+      return new OptField<Xml, JobcandidateRow>(_path, "resume", JobcandidateRow::resume, Optional.empty(), Optional.of("xml"), (row, value) -> row.withResume(value), PgTypes.xml);
     };
 
     @Override
-    public Field<TypoLocalDateTime, JobcandidateRow> modifieddate() {
-      return new Field<TypoLocalDateTime, JobcandidateRow>(_path, "modifieddate", JobcandidateRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, JobcandidateRow> modifieddate() {
+      return new Field<LocalDateTime, JobcandidateRow>(_path, "modifieddate", JobcandidateRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, JobcandidateRow>> columns() {
-      return List.of(this.jobcandidateid(), this.businessentityid(), this.resume(), this.modifieddate());
+      return java.util.List.of(this.jobcandidateid(), this.businessentityid(), this.resume(), this.modifieddate());
     };
 
     @Override
-    public Relation<JobcandidateFields, JobcandidateRow> copy(List<Path> _path) {
+    public RelationStructure<JobcandidateFields, JobcandidateRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<JobcandidateId, JobcandidateRow> jobcandidateid();
 
   OptField<BusinessentityId, JobcandidateRow> businessentityid();
 
-  OptField<TypoXml, JobcandidateRow> resume();
+  OptField<Xml, JobcandidateRow> resume();
 
-  Field<TypoLocalDateTime, JobcandidateRow> modifieddate();
+  Field<LocalDateTime, JobcandidateRow> modifieddate();
 
   default ForeignKey<EmployeeFields, EmployeeRow> fkEmployee() {
-    return ForeignKey.<EmployeeFields, EmployeeRow>of("humanresources.FK_JobCandidate_Employee_BusinessEntityID").withColumnPair(businessentityid(), EmployeeFields::businessentityid);
+    return ForeignKey.<EmployeeFields, EmployeeRow>of("humanresources.FK_JobCandidate_Employee_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), EmployeeFields::businessentityid);
   };
 
   @Override

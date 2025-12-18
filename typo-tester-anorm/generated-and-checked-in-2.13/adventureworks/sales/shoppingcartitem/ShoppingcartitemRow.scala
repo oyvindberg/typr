@@ -31,7 +31,7 @@ case class ShoppingcartitemRow(
    */
   shoppingcartitemid: ShoppingcartitemId,
   /** Shopping cart identification number. */
-  shoppingcartid: /* max 50 chars */ String,
+  shoppingcartid: String,
   /** Product quantity ordered.
    * Default: 1
    * Constraint CK_ShoppingCartItem_Quantity affecting columns quantity: ((quantity >= 1))

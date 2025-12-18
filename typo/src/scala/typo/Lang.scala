@@ -2,11 +2,42 @@ package typo
 
 import typo.jvm.Code.TreeOps
 
-trait Lang extends TypeSupport {
+trait Lang {
+  val typeSupport: TypeSupport
+  val dsl: DslQualifiedNames
   val `;`: jvm.Code
 
-  // `s"..." interpolator
-  def s(content: jvm.Code): jvm.StringInterpolate
+  // Delegate type support to the provided TypeSupport
+  final lazy val BigDecimal: jvm.Type.Qualified = typeSupport.BigDecimal
+  final lazy val Boolean: jvm.Type.Qualified = typeSupport.Boolean
+  final lazy val Byte: jvm.Type.Qualified = typeSupport.Byte
+  final lazy val Double: jvm.Type.Qualified = typeSupport.Double
+  final lazy val Float: jvm.Type.Qualified = typeSupport.Float
+  final lazy val Int: jvm.Type.Qualified = typeSupport.Int
+  final lazy val IteratorType: jvm.Type.Qualified = typeSupport.IteratorType
+  final lazy val Long: jvm.Type.Qualified = typeSupport.Long
+  final lazy val Short: jvm.Type.Qualified = typeSupport.Short
+  final lazy val String: jvm.Type.Qualified = typeSupport.String
+  final lazy val ByteArray: jvm.Type = typeSupport.ByteArray
+  final lazy val FloatArray: jvm.Type = typeSupport.FloatArray
+  final lazy val Optional: OptionalSupport = typeSupport.Optional
+  final lazy val ListType: ListSupport = typeSupport.ListType
+  final lazy val Random: RandomSupport = typeSupport.Random
+  final lazy val MapOps: MapSupport = typeSupport.MapOps
+  final def bigDecimalFromDouble(d: jvm.Code): jvm.Code = typeSupport.bigDecimalFromDouble(d)
+
+  // Type system types - these are language-level concepts, not library concepts
+  /** The "Nothing" type for this language - represents an impossible value in type parameters */
+  val nothingType: jvm.Type
+
+  /** The "Void" type for this language - represents no return value */
+  val voidType: jvm.Type
+
+  /** The "Any" / "Object" type for this language - the top type */
+  val topType: jvm.Type
+
+  // `s"..." interpolator - returns Code instead of StringInterpolate for Java/Kotlin
+  def s(content: jvm.Code): jvm.Code
 
   def escapedIdent(value: String): String
   def docLink(cls: jvm.QIdent, value: jvm.Ident): String
@@ -118,7 +149,7 @@ trait ListSupport {
 }
 
 trait OptionalSupport {
-  val tpe: jvm.Type
+  def tpe(underlying: jvm.Type): jvm.Type
   val none: jvm.Code
 
   def some(value: jvm.Code): jvm.Code
@@ -139,10 +170,13 @@ trait OptionalSupport {
 
   def unapply(t: jvm.Type): Option[jvm.Type] =
     t match {
-      case jvm.Type.Void                     => None
-      case jvm.Type.ArrayOf(_)               => None
-      case jvm.Type.Wildcard                 => None
-      case jvm.Type.TApply(`tpe`, List(one)) => Some(one)
+      case jvm.Type.Void                          => None
+      case jvm.Type.ArrayOf(_)                    => None
+      case jvm.Type.Wildcard                      => None
+      case jvm.Type.KotlinNullable(underlying)    => Some(underlying) // Kotlin T?
+      case jvm.Type.TApply(underlying, List(one)) =>
+        // Check if this is an Optional/Option by seeing if wrapped type matches tpe(one)
+        if (tpe(one) == t) Some(one) else unapply(underlying)
       case jvm.Type.TApply(underlying, _)    => unapply(underlying)
       case jvm.Type.Qualified(_)             => None
       case jvm.Type.Abstract(_, _)           => None

@@ -7,7 +7,6 @@ package testdb.orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_addresses.CustomerAddressesId
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
@@ -16,6 +15,8 @@ import testdb.promotions.PromotionsId
 import typo.data.maria.Inet6
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `orders` which has not been persisted yet */
 case class OrdersRowUnsaved(
@@ -26,9 +27,9 @@ case class OrdersRowUnsaved(
    */
   @JsonProperty("customer_id") customerId: CustomersId,
   /**  */
-  subtotal: java.math.BigDecimal,
+  subtotal: BigDecimal,
   /**  */
-  @JsonProperty("total_amount") totalAmount: java.math.BigDecimal,
+  @JsonProperty("total_amount") totalAmount: BigDecimal,
   /** Default: 'pending'
 
    */
@@ -40,23 +41,23 @@ case class OrdersRowUnsaved(
   /** Default: NULL
    * Points to [[testdb.customer_addresses.CustomerAddressesRow.addressId]]
    */
-  @JsonProperty("shipping_address_id") shippingAddressId: Defaulted[Optional[CustomerAddressesId]] = new UseDefault(),
+  @JsonProperty("shipping_address_id") shippingAddressId: Defaulted[Option[CustomerAddressesId]] = new UseDefault(),
   /** Default: NULL
    * Points to [[testdb.customer_addresses.CustomerAddressesRow.addressId]]
    */
-  @JsonProperty("billing_address_id") billingAddressId: Defaulted[Optional[CustomerAddressesId]] = new UseDefault(),
+  @JsonProperty("billing_address_id") billingAddressId: Defaulted[Option[CustomerAddressesId]] = new UseDefault(),
   /** Default: 0.0000
 
    */
-  @JsonProperty("shipping_cost") shippingCost: Defaulted[java.math.BigDecimal] = new UseDefault(),
+  @JsonProperty("shipping_cost") shippingCost: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0.0000
 
    */
-  @JsonProperty("tax_amount") taxAmount: Defaulted[java.math.BigDecimal] = new UseDefault(),
+  @JsonProperty("tax_amount") taxAmount: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0.0000
 
    */
-  @JsonProperty("discount_amount") discountAmount: Defaulted[java.math.BigDecimal] = new UseDefault(),
+  @JsonProperty("discount_amount") discountAmount: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 'USD'
 
    */
@@ -64,23 +65,23 @@ case class OrdersRowUnsaved(
   /** Default: NULL
    * Points to [[testdb.promotions.PromotionsRow.promotionId]]
    */
-  @JsonProperty("promotion_id") promotionId: Defaulted[Optional[PromotionsId]] = new UseDefault(),
+  @JsonProperty("promotion_id") promotionId: Defaulted[Option[PromotionsId]] = new UseDefault(),
   /** Default: NULL
 
    */
-  notes: Defaulted[Optional[String]] = new UseDefault(),
+  notes: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("internal_notes") internalNotes: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("internal_notes") internalNotes: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("ip_address") ipAddress: Defaulted[Optional[Inet6]] = new UseDefault(),
+  @JsonProperty("ip_address") ipAddress: Defaulted[Option[Inet6]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("user_agent") userAgent: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("user_agent") userAgent: Defaulted[Option[String]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
@@ -88,34 +89,34 @@ case class OrdersRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("confirmed_at") confirmedAt: Defaulted[Optional[LocalDateTime]] = new UseDefault(),
+  @JsonProperty("confirmed_at") confirmedAt: Defaulted[Option[LocalDateTime]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("shipped_at") shippedAt: Defaulted[Optional[LocalDateTime]] = new UseDefault(),
+  @JsonProperty("shipped_at") shippedAt: Defaulted[Option[LocalDateTime]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("delivered_at") deliveredAt: Defaulted[Optional[LocalDateTime]] = new UseDefault()
+  @JsonProperty("delivered_at") deliveredAt: Defaulted[Option[LocalDateTime]] = new UseDefault()
 ) {
   def toRow(
     orderStatusDefault: => String,
     paymentStatusDefault: => String,
-    shippingAddressIdDefault: => Optional[CustomerAddressesId],
-    billingAddressIdDefault: => Optional[CustomerAddressesId],
-    shippingCostDefault: => java.math.BigDecimal,
-    taxAmountDefault: => java.math.BigDecimal,
-    discountAmountDefault: => java.math.BigDecimal,
+    shippingAddressIdDefault: => Option[CustomerAddressesId],
+    billingAddressIdDefault: => Option[CustomerAddressesId],
+    shippingCostDefault: => BigDecimal,
+    taxAmountDefault: => BigDecimal,
+    discountAmountDefault: => BigDecimal,
     currencyCodeDefault: => String,
-    promotionIdDefault: => Optional[PromotionsId],
-    notesDefault: => Optional[String],
-    internalNotesDefault: => Optional[String],
-    ipAddressDefault: => Optional[Inet6],
-    userAgentDefault: => Optional[String],
+    promotionIdDefault: => Option[PromotionsId],
+    notesDefault: => Option[String],
+    internalNotesDefault: => Option[String],
+    ipAddressDefault: => Option[Inet6],
+    userAgentDefault: => Option[String],
     orderedAtDefault: => LocalDateTime,
-    confirmedAtDefault: => Optional[LocalDateTime],
-    shippedAtDefault: => Optional[LocalDateTime],
-    deliveredAtDefault: => Optional[LocalDateTime],
+    confirmedAtDefault: => Option[LocalDateTime],
+    shippedAtDefault: => Option[LocalDateTime],
+    deliveredAtDefault: => Option[LocalDateTime],
     orderIdDefault: => OrdersId
   ): OrdersRow = {
     new OrdersRow(
@@ -146,5 +147,5 @@ case class OrdersRowUnsaved(
 }
 
 object OrdersRowUnsaved {
-  given mariaText: MariaText[OrdersRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.orderNumber, sb); sb.append(MariaText.DELIMETER); CustomersId.pgType.mariaText.unsafeEncode(row.customerId, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.subtotal, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.totalAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.orderStatus, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.paymentStatus, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using CustomerAddressesId.pgType.opt().mariaText).unsafeEncode(row.shippingAddressId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using CustomerAddressesId.pgType.opt().mariaText).unsafeEncode(row.billingAddressId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.mariaText).unsafeEncode(row.shippingCost, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.mariaText).unsafeEncode(row.taxAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.mariaText).unsafeEncode(row.discountAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.char_.mariaText).unsafeEncode(row.currencyCode, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using PromotionsId.pgType.opt().mariaText).unsafeEncode(row.promotionId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.opt().mariaText).unsafeEncode(row.notes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumtext.opt().mariaText).unsafeEncode(row.internalNotes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.inet6.opt().mariaText).unsafeEncode(row.ipAddress, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.userAgent, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.orderedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.confirmedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.shippedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.deliveredAt, sb) })
+  given mariaText: MariaText[OrdersRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.orderNumber, sb); sb.append(MariaText.DELIMETER); CustomersId.pgType.mariaText.unsafeEncode(row.customerId, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.subtotal, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.totalAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.orderStatus, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.paymentStatus, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using CustomerAddressesId.pgType.nullable.mariaText).unsafeEncode(row.shippingAddressId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using CustomerAddressesId.pgType.nullable.mariaText).unsafeEncode(row.billingAddressId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.mariaText).unsafeEncode(row.shippingCost, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.mariaText).unsafeEncode(row.taxAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.mariaText).unsafeEncode(row.discountAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.char_.mariaText).unsafeEncode(row.currencyCode, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using PromotionsId.pgType.nullable.mariaText).unsafeEncode(row.promotionId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.nullable.mariaText).unsafeEncode(row.notes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumtext.nullable.mariaText).unsafeEncode(row.internalNotes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.inet6.nullable.mariaText).unsafeEncode(row.ipAddress, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.userAgent, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.orderedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.confirmedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.shippedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.deliveredAt, sb) })
 }

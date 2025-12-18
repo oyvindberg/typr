@@ -5,30 +5,29 @@
  */
 package adventureworks.humanresources.vjobcandidateemployment
 
-import adventureworks.customtypes.TypoLocalDate
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
+import java.time.LocalDate
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: humanresources.vjobcandidateemployment */
 data class VjobcandidateemploymentViewRow(
   /** Points to [adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid] */
   val jobcandidateid: JobcandidateId,
-  @JsonProperty("Emp.StartDate") val empStartDate: Optional<TypoLocalDate>,
-  @JsonProperty("Emp.EndDate") val empEndDate: Optional<TypoLocalDate>,
-  @JsonProperty("Emp.OrgName") val empOrgName: Optional</* max 100 chars */ String>,
-  @JsonProperty("Emp.JobTitle") val empJobTitle: Optional</* max 100 chars */ String>,
-  @JsonProperty("Emp.Responsibility") val empResponsibility: Optional<String>,
-  @JsonProperty("Emp.FunctionCategory") val empFunctionCategory: Optional<String>,
-  @JsonProperty("Emp.IndustryCategory") val empIndustryCategory: Optional<String>,
-  @JsonProperty("Emp.Loc.CountryRegion") val empLocCountryRegion: Optional<String>,
-  @JsonProperty("Emp.Loc.State") val empLocState: Optional<String>,
-  @JsonProperty("Emp.Loc.City") val empLocCity: Optional<String>
+  @JsonProperty("Emp.StartDate") val empStartDate: LocalDate,
+  @JsonProperty("Emp.EndDate") val empEndDate: LocalDate,
+  @JsonProperty("Emp.OrgName") val empOrgName: String,
+  @JsonProperty("Emp.JobTitle") val empJobTitle: String,
+  @JsonProperty("Emp.Responsibility") val empResponsibility: String,
+  @JsonProperty("Emp.FunctionCategory") val empFunctionCategory: String,
+  @JsonProperty("Emp.IndustryCategory") val empIndustryCategory: String,
+  @JsonProperty("Emp.Loc.CountryRegion") val empLocCountryRegion: String,
+  @JsonProperty("Emp.Loc.State") val empLocState: String,
+  @JsonProperty("Emp.Loc.City") val empLocCity: String
 ) {
   companion object {
-    val _rowParser: RowParser<VjobcandidateemploymentViewRow> = RowParsers.of(JobcandidateId.pgType, TypoLocalDate.pgType.opt(), TypoLocalDate.pgType.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> VjobcandidateemploymentViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.jobcandidateid, row.empStartDate, row.empEndDate, row.empOrgName, row.empJobTitle, row.empResponsibility, row.empFunctionCategory, row.empIndustryCategory, row.empLocCountryRegion, row.empLocState, row.empLocCity) })
+    val _rowParser: RowParser<VjobcandidateemploymentViewRow> = RowParsers.of(JobcandidateId.pgType, PgTypes.date, PgTypes.date, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.text, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> VjobcandidateemploymentViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.jobcandidateid, row.empStartDate, row.empEndDate, row.empOrgName, row.empJobTitle, row.empResponsibility, row.empFunctionCategory, row.empIndustryCategory, row.empLocCountryRegion, row.empLocState, row.empLocCity) })
   }
 }

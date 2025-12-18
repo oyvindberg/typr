@@ -6,70 +6,69 @@
 package testdb.categories
 
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import scala.collection.mutable.ListBuffer
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.Dialect
+import typo.scaladsl.Fragment
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.Fragment.sql
 
 class CategoriesRepoImpl extends CategoriesRepo {
   override def delete: DeleteBuilder[CategoriesFields, CategoriesRow] = DeleteBuilder.of("`categories`", CategoriesFields.structure, Dialect.MARIADB)
 
-  override def deleteById(categoryId: CategoriesId)(using c: Connection): java.lang.Boolean = interpolate"delete from `categories` where `category_id` = ${CategoriesId.pgType.encode(categoryId)}".update().runUnchecked(c) > 0
+  override def deleteById(categoryId: CategoriesId)(using c: Connection): Boolean = sql"delete from `categories` where `category_id` = ${Fragment.encode(CategoriesId.pgType, categoryId)}".update().runUnchecked(c) > 0
 
-  override def deleteByIds(categoryIds: Array[CategoriesId])(using c: Connection): Integer = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    categoryIds.foreach { id => fragments.add(CategoriesId.pgType.encode(id)) }
+  override def deleteByIds(categoryIds: Array[CategoriesId])(using c: Connection): Int = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    categoryIds.foreach { id => fragments.addOne(Fragment.encode(CategoriesId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `categories` where `category_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: CategoriesRow)(using c: Connection): CategoriesRow = {
-  interpolate"""insert into `categories`(`parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)
-    values (${CategoriesId.pgType.opt().encode(unsaved.parentId)}, ${MariaTypes.text.encode(unsaved.name)}, ${MariaTypes.text.encode(unsaved.slug)}, ${MariaTypes.text.opt().encode(unsaved.description)}, ${MariaTypes.text.opt().encode(unsaved.imageUrl)}, ${MariaTypes.smallint.encode(unsaved.sortOrder)}, ${MariaTypes.bool.encode(unsaved.isVisible)}, ${MariaTypes.text.opt().encode(unsaved.metadata)})
+  sql"""insert into `categories`(`parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)
+    values (${Fragment.encode(CategoriesId.pgType.nullable, unsaved.parentId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.varchar, unsaved.slug)}, ${Fragment.encode(MariaTypes.mediumtext.nullable, unsaved.description)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.imageUrl)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.smallint, unsaved.sortOrder)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isVisible)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.metadata)})
     returning `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
     """
     .updateReturning(CategoriesRow.`_rowParser`.exactlyOne()).runUnchecked(c)
   }
 
   override def insert(unsaved: CategoriesRowUnsaved)(using c: Connection): CategoriesRow = {
-    val columns: ArrayList[Literal] = new ArrayList[Literal]()
-    val values: ArrayList[Fragment] = new ArrayList[Fragment]()
-    columns.add(Fragment.lit("`name`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.name)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`slug`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.slug)}"): @scala.annotation.nowarn
+    val columns: ListBuffer[Fragment] = ListBuffer()
+    val values: ListBuffer[Fragment] = ListBuffer()
+    columns.addOne(Fragment.lit("`name`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.name)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`slug`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.slug)}"): @scala.annotation.nowarn
     unsaved.parentId.visit(
       {  },
-      value => { columns.add(Fragment.lit("`parent_id`")): @scala.annotation.nowarn; values.add(interpolate"${CategoriesId.pgType.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`parent_id`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(CategoriesId.pgType.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.description.visit(
       {  },
-      value => { columns.add(Fragment.lit("`description`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`description`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.mediumtext.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.imageUrl.visit(
       {  },
-      value => { columns.add(Fragment.lit("`image_url`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`image_url`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.varchar.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.sortOrder.visit(
       {  },
-      value => { columns.add(Fragment.lit("`sort_order`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.smallint.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`sort_order`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.smallint, value)}"): @scala.annotation.nowarn }
     );
     unsaved.isVisible.visit(
       {  },
-      value => { columns.add(Fragment.lit("`is_visible`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.bool.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`is_visible`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.bool, value)}"): @scala.annotation.nowarn }
     );
     unsaved.metadata.visit(
       {  },
-      value => { columns.add(Fragment.lit("`metadata`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`metadata`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longtext.nullable, value)}"): @scala.annotation.nowarn }
     );
     val q: Fragment = {
-      interpolate"""insert into `categories`(${Fragment.comma(columns)})
+      sql"""insert into `categories`(${Fragment.comma(columns)})
       values (${Fragment.comma(values)})
       returning `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
       """
@@ -79,56 +78,56 @@ class CategoriesRepoImpl extends CategoriesRepo {
 
   override def select: SelectBuilder[CategoriesFields, CategoriesRow] = SelectBuilder.of("`categories`", CategoriesFields.structure, CategoriesRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[CategoriesRow] = {
-    interpolate"""select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
+  override def selectAll(using c: Connection): List[CategoriesRow] = {
+    sql"""select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
     from `categories`
     """.query(CategoriesRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectById(categoryId: CategoriesId)(using c: Connection): Optional[CategoriesRow] = {
-    interpolate"""select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
+  override def selectById(categoryId: CategoriesId)(using c: Connection): Option[CategoriesRow] = {
+    sql"""select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
     from `categories`
-    where `category_id` = ${CategoriesId.pgType.encode(categoryId)}""".query(CategoriesRow.`_rowParser`.first()).runUnchecked(c)
+    where `category_id` = ${Fragment.encode(CategoriesId.pgType, categoryId)}""".query(CategoriesRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def selectByIds(categoryIds: Array[CategoriesId])(using c: Connection): java.util.List[CategoriesRow] = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    categoryIds.foreach { id => fragments.add(CategoriesId.pgType.encode(id)) }
+  override def selectByIds(categoryIds: Array[CategoriesId])(using c: Connection): List[CategoriesRow] = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    categoryIds.foreach { id => fragments.addOne(Fragment.encode(CategoriesId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata` from `categories` where `category_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(CategoriesRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectByIdsTracked(categoryIds: Array[CategoriesId])(using c: Connection): java.util.Map[CategoriesId, CategoriesRow] = {
-    val ret: HashMap[CategoriesId, CategoriesRow] = new HashMap[CategoriesId, CategoriesRow]()
-    selectByIds(categoryIds)(using c).forEach(row => ret.put(row.categoryId, row): @scala.annotation.nowarn)
-    return ret
+  override def selectByIdsTracked(categoryIds: Array[CategoriesId])(using c: Connection): Map[CategoriesId, CategoriesRow] = {
+    val ret: scala.collection.mutable.Map[CategoriesId, CategoriesRow] = scala.collection.mutable.Map.empty[CategoriesId, CategoriesRow]
+    selectByIds(categoryIds)(using c).foreach(row => ret.put(row.categoryId, row): @scala.annotation.nowarn)
+    return ret.toMap
   }
 
-  override def selectByUniqueSlug(slug: String)(using c: Connection): Optional[CategoriesRow] = {
-    interpolate"""select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
+  override def selectByUniqueSlug(slug: String)(using c: Connection): Option[CategoriesRow] = {
+    sql"""select `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`
     from `categories`
-    where `slug` = ${MariaTypes.text.encode(slug)}
+    where `slug` = ${Fragment.encode(MariaTypes.varchar, slug)}
     """.query(CategoriesRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def update: UpdateBuilder[CategoriesFields, CategoriesRow] = UpdateBuilder.of("`categories`", CategoriesFields.structure, CategoriesRow.`_rowParser`.all(), Dialect.MARIADB)
+  override def update: UpdateBuilder[CategoriesFields, CategoriesRow] = UpdateBuilder.of("`categories`", CategoriesFields.structure, CategoriesRow.`_rowParser`, Dialect.MARIADB)
 
-  override def update(row: CategoriesRow)(using c: Connection): java.lang.Boolean = {
+  override def update(row: CategoriesRow)(using c: Connection): Boolean = {
     val categoryId: CategoriesId = row.categoryId
-    return interpolate"""update `categories`
-    set `parent_id` = ${CategoriesId.pgType.opt().encode(row.parentId)},
-    `name` = ${MariaTypes.text.encode(row.name)},
-    `slug` = ${MariaTypes.text.encode(row.slug)},
-    `description` = ${MariaTypes.text.opt().encode(row.description)},
-    `image_url` = ${MariaTypes.text.opt().encode(row.imageUrl)},
-    `sort_order` = ${MariaTypes.smallint.encode(row.sortOrder)},
-    `is_visible` = ${MariaTypes.bool.encode(row.isVisible)},
-    `metadata` = ${MariaTypes.text.opt().encode(row.metadata)}
-    where `category_id` = ${CategoriesId.pgType.encode(categoryId)}""".update().runUnchecked(c) > 0
+    return sql"""update `categories`
+    set `parent_id` = ${Fragment.encode(CategoriesId.pgType.nullable, row.parentId)},
+    `name` = ${Fragment.encode(MariaTypes.varchar, row.name)},
+    `slug` = ${Fragment.encode(MariaTypes.varchar, row.slug)},
+    `description` = ${Fragment.encode(MariaTypes.mediumtext.nullable, row.description)},
+    `image_url` = ${Fragment.encode(MariaTypes.varchar.nullable, row.imageUrl)},
+    `sort_order` = ${Fragment.encode(ScalaDbTypes.MariaTypes.smallint, row.sortOrder)},
+    `is_visible` = ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, row.isVisible)},
+    `metadata` = ${Fragment.encode(MariaTypes.longtext.nullable, row.metadata)}
+    where `category_id` = ${Fragment.encode(CategoriesId.pgType, categoryId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: CategoriesRow)(using c: Connection): CategoriesRow = {
-  interpolate"""INSERT INTO `categories`(`parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)
-    VALUES (${CategoriesId.pgType.opt().encode(unsaved.parentId)}, ${MariaTypes.text.encode(unsaved.name)}, ${MariaTypes.text.encode(unsaved.slug)}, ${MariaTypes.text.opt().encode(unsaved.description)}, ${MariaTypes.text.opt().encode(unsaved.imageUrl)}, ${MariaTypes.smallint.encode(unsaved.sortOrder)}, ${MariaTypes.bool.encode(unsaved.isVisible)}, ${MariaTypes.text.opt().encode(unsaved.metadata)})
+  sql"""INSERT INTO `categories`(`parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)
+    VALUES (${Fragment.encode(CategoriesId.pgType.nullable, unsaved.parentId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.varchar, unsaved.slug)}, ${Fragment.encode(MariaTypes.mediumtext.nullable, unsaved.description)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.imageUrl)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.smallint, unsaved.sortOrder)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isVisible)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.metadata)})
     ON DUPLICATE KEY UPDATE `parent_id` = VALUES(`parent_id`),
     `name` = VALUES(`name`),
     `slug` = VALUES(`slug`),
@@ -142,8 +141,8 @@ class CategoriesRepoImpl extends CategoriesRepo {
     .runUnchecked(c)
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[CategoriesRow])(using c: Connection): java.util.List[CategoriesRow] = {
-    interpolate"""INSERT INTO `categories`(`category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)
+  override def upsertBatch(unsaved: Iterator[CategoriesRow])(using c: Connection): List[CategoriesRow] = {
+    sql"""INSERT INTO `categories`(`category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE `parent_id` = VALUES(`parent_id`),
     `name` = VALUES(`name`),
@@ -155,6 +154,6 @@ class CategoriesRepoImpl extends CategoriesRepo {
     `metadata` = VALUES(`metadata`)
     RETURNING `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`"""
       .updateReturningEach(CategoriesRow.`_rowParser`, unsaved)
-      .runUnchecked(c)
+    .runUnchecked(c)
   }
 }

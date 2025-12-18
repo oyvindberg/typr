@@ -5,9 +5,10 @@
  */
 package adventureworks.pr.sr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.scrapreason.ScrapreasonId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -20,7 +21,7 @@ public record SrViewRow(
   /** Points to {@link adventureworks.production.scrapreason.ScrapreasonRow#name()} */
   Name name,
   /** Points to {@link adventureworks.production.scrapreason.ScrapreasonRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.scrapreason.ScrapreasonRow#scrapreasonid()} */
   public SrViewRow withId(ScrapreasonId id) {
@@ -38,9 +39,9 @@ public record SrViewRow(
   };
 
   /** Points to {@link adventureworks.production.scrapreason.ScrapreasonRow#modifieddate()} */
-  public SrViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SrViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SrViewRow(id, scrapreasonid, name, modifieddate);
   };
 
-  static RowParser<SrViewRow> _rowParser = RowParsers.of(ScrapreasonId.pgType, ScrapreasonId.pgType, Name.pgType, TypoLocalDateTime.pgType, SrViewRow::new, row -> new Object[]{row.id(), row.scrapreasonid(), row.name(), row.modifieddate()});;
+  static RowParser<SrViewRow> _rowParser = RowParsers.of(ScrapreasonId.pgType, ScrapreasonId.pgType, Name.pgType, PgTypes.timestamp, SrViewRow::new, row -> new Object[]{row.id(), row.scrapreasonid(), row.name(), row.modifieddate()});;
 }

@@ -7,10 +7,9 @@ package adventureworks.humanresources.employeepayhistory;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -21,7 +20,7 @@ public record EmployeepayhistoryRowUnsaved(
     */
   BusinessentityId businessentityid,
   /** Date the change in pay is effective */
-  TypoLocalDateTime ratechangedate,
+  LocalDateTime ratechangedate,
   /** Salary hourly rate.
     * Constraint CK_EmployeePayHistory_Rate affecting columns rate:  (((rate >= 6.50) AND (rate <= 200.00)))
     */
@@ -29,9 +28,9 @@ public record EmployeepayhistoryRowUnsaved(
   /** 1 = Salary received monthly, 2 = Salary received biweekly
     * Constraint CK_EmployeePayHistory_PayFrequency affecting columns payfrequency:  ((payfrequency = ANY (ARRAY[1, 2])))
     */
-  TypoShort payfrequency,
+  Short payfrequency,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public EmployeepayhistoryRowUnsaved(
     /** Employee identification number. Foreign key to Employee.BusinessEntityID.
@@ -39,7 +38,7 @@ public record EmployeepayhistoryRowUnsaved(
       */
     BusinessentityId businessentityid,
     /** Date the change in pay is effective */
-    TypoLocalDateTime ratechangedate,
+    LocalDateTime ratechangedate,
     /** Salary hourly rate.
       * Constraint CK_EmployeePayHistory_Rate affecting columns rate:  (((rate >= 6.50) AND (rate <= 200.00)))
       */
@@ -47,7 +46,7 @@ public record EmployeepayhistoryRowUnsaved(
     /** 1 = Salary received monthly, 2 = Salary received biweekly
       * Constraint CK_EmployeePayHistory_PayFrequency affecting columns payfrequency:  ((payfrequency = ANY (ARRAY[1, 2])))
       */
-    TypoShort payfrequency
+    Short payfrequency
   ) {
     this(businessentityid, ratechangedate, rate, payfrequency, new UseDefault<>());
   };
@@ -60,7 +59,7 @@ public record EmployeepayhistoryRowUnsaved(
   };
 
   /** Date the change in pay is effective */
-  public EmployeepayhistoryRowUnsaved withRatechangedate(TypoLocalDateTime ratechangedate) {
+  public EmployeepayhistoryRowUnsaved withRatechangedate(LocalDateTime ratechangedate) {
     return new EmployeepayhistoryRowUnsaved(businessentityid, ratechangedate, rate, payfrequency, modifieddate);
   };
 
@@ -74,12 +73,12 @@ public record EmployeepayhistoryRowUnsaved(
   /** 1 = Salary received monthly, 2 = Salary received biweekly
     * Constraint CK_EmployeePayHistory_PayFrequency affecting columns payfrequency:  ((payfrequency = ANY (ARRAY[1, 2])))
     */
-  public EmployeepayhistoryRowUnsaved withPayfrequency(TypoShort payfrequency) {
+  public EmployeepayhistoryRowUnsaved withPayfrequency(Short payfrequency) {
     return new EmployeepayhistoryRowUnsaved(businessentityid, ratechangedate, rate, payfrequency, modifieddate);
   };
 
   /** Default: now() */
-  public EmployeepayhistoryRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public EmployeepayhistoryRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new EmployeepayhistoryRowUnsaved(businessentityid, ratechangedate, rate, payfrequency, modifieddate);
   };
 
@@ -87,16 +86,16 @@ public record EmployeepayhistoryRowUnsaved(
     PgText.instance((row, sb) -> {
       BusinessentityId.pgType.pgText().unsafeEncode(row.businessentityid, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.ratechangedate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.ratechangedate, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.numeric.pgText().unsafeEncode(row.rate, sb);
       sb.append(PgText.DELIMETER);
-      TypoShort.pgType.pgText().unsafeEncode(row.payfrequency, sb);
+      PgTypes.int2.pgText().unsafeEncode(row.payfrequency, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public EmployeepayhistoryRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public EmployeepayhistoryRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new EmployeepayhistoryRow(businessentityid, ratechangedate, rate, payfrequency, modifieddate.getOrElse(modifieddateDefault));
   };
 }

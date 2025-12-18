@@ -10,14 +10,14 @@ import adventureworks.public.title_domain.TitleDomainId
 import java.sql.Connection
 import kotlin.collections.List
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class TitledpersonRepoImpl() : TitledpersonRepo {
   override fun delete(): DeleteBuilder<TitledpersonFields, TitledpersonRow> = DeleteBuilder.of("\"public\".\"titledperson\"", TitledpersonFields.structure, Dialect.POSTGRESQL)
@@ -25,36 +25,18 @@ class TitledpersonRepoImpl() : TitledpersonRepo {
   override fun insert(
     unsaved: TitledpersonRow,
     c: Connection
-  ): TitledpersonRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "public"."titledperson"("title_short", "title", "name")
-      values (""".trimMargin()),
-    TitleDomainId.pgType.encode(unsaved.titleShort),
-    typo.runtime.Fragment.lit("::text, "),
-    TitleId.pgType.encode(unsaved.title),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit("""
-      )
-      returning "title_short", "title", "name"
-    """.trimMargin())
-  )
+  ): TitledpersonRow = interpolate(Fragment.lit("insert into \"public\".\"titledperson\"(\"title_short\", \"title\", \"name\")\nvalues ("), Fragment.encode(TitleDomainId.pgType, unsaved.titleShort), Fragment.lit("::text, "), Fragment.encode(TitleId.pgType, unsaved.title), Fragment.lit(", "), Fragment.encode(PgTypes.text, unsaved.name), Fragment.lit(")\nreturning \"title_short\", \"title\", \"name\"\n"))
     .updateReturning(TitledpersonRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insertStreaming(
     unsaved: MutableIterator<TitledpersonRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "public"."titledperson"("title_short", "title", "name") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, TitledpersonRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"public\".\"titledperson\"(\"title_short\", \"title\", \"name\") FROM STDIN", batchSize, unsaved, c, TitledpersonRow.pgText)
 
   override fun select(): SelectBuilder<TitledpersonFields, TitledpersonRow> = SelectBuilder.of("\"public\".\"titledperson\"", TitledpersonFields.structure, TitledpersonRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<TitledpersonRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "title_short", "title", "name"
-    from "public"."titledperson"
-  """.trimMargin())).query(TitledpersonRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<TitledpersonRow> = interpolate(Fragment.lit("select \"title_short\", \"title\", \"name\"\nfrom \"public\".\"titledperson\"\n")).query(TitledpersonRow._rowParser.all()).runUnchecked(c)
 
-  override fun update(): UpdateBuilder<TitledpersonFields, TitledpersonRow> = UpdateBuilder.of("\"public\".\"titledperson\"", TitledpersonFields.structure, TitledpersonRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<TitledpersonFields, TitledpersonRow> = UpdateBuilder.of("\"public\".\"titledperson\"", TitledpersonFields.structure, TitledpersonRow._rowParser, Dialect.POSTGRESQL)
 }

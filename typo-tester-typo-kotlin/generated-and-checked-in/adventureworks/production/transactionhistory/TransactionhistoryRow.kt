@@ -6,13 +6,14 @@
 package adventureworks.production.transactionhistory
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.transactionhistory
   * Record of each purchase order, sales order, or work order transaction year to date.
@@ -36,31 +37,31 @@ data class TransactionhistoryRow(
   /** Date and time of the transaction.
     * Default: now()
     */
-  val transactiondate: TypoLocalDateTime,
+  val transactiondate: LocalDateTime,
   /** W = WorkOrder, S = SalesOrder, P = PurchaseOrder
     * Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype: ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
     */
-  val transactiontype: /* bpchar, max 1 chars */ String,
+  val transactiontype: String,
   /** Product quantity. */
   val quantity: Int,
   /** Product cost. */
   val actualcost: BigDecimal,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): TransactionhistoryId = transactionid
 
   fun toUnsavedRow(
     transactionid: Defaulted<TransactionhistoryId>,
     referenceorderlineid: Defaulted<Int>,
-    transactiondate: Defaulted<TypoLocalDateTime>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    transactiondate: Defaulted<LocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>
   ): TransactionhistoryRowUnsaved = TransactionhistoryRowUnsaved(productid, referenceorderid, transactiontype, quantity, actualcost, transactionid, referenceorderlineid, transactiondate, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<TransactionhistoryRow> = RowParsers.of(TransactionhistoryId.pgType, ProductId.pgType, PgTypes.int4, PgTypes.int4, TypoLocalDateTime.pgType, PgTypes.bpchar, PgTypes.int4, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> TransactionhistoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.transactionid, row.productid, row.referenceorderid, row.referenceorderlineid, row.transactiondate, row.transactiontype, row.quantity, row.actualcost, row.modifieddate) })
+    val _rowParser: RowParser<TransactionhistoryRow> = RowParsers.of(TransactionhistoryId.pgType, ProductId.pgType, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, PgTypes.timestamp, PgTypes.bpchar, KotlinDbTypes.PgTypes.int4, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> TransactionhistoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.transactionid, row.productid, row.referenceorderid, row.referenceorderlineid, row.transactiondate, row.transactiontype, row.quantity, row.actualcost, row.modifieddate) })
 
     val pgText: PgText<TransactionhistoryRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

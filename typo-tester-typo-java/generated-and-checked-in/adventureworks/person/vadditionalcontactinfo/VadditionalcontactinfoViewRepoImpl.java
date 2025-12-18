@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VadditionalcontactinfoViewRepoImpl implements VadditionalcontactinfoViewRepo {
@@ -19,9 +20,6 @@ public class VadditionalcontactinfoViewRepoImpl implements Vadditionalcontactinf
 
   @Override
   public List<VadditionalcontactinfoViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "businessentityid", "firstname", "middlename", "lastname", "telephonenumber", "telephonespecialinstructions", "street", "city", "stateprovince", "postalcode", "countryregion", "homeaddressspecialinstructions", "emailaddress", "emailspecialinstructions", "emailtelephonenumber", "rowguid", "modifieddate"::text
-       from "person"."vadditionalcontactinfo"
-    """)).query(VadditionalcontactinfoViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"firstname\", \"middlename\", \"lastname\", \"telephonenumber\", \"telephonespecialinstructions\", \"street\", \"city\", \"stateprovince\", \"postalcode\", \"countryregion\", \"homeaddressspecialinstructions\", \"emailaddress\", \"emailspecialinstructions\", \"emailtelephonenumber\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"vadditionalcontactinfo\"\n")).query(VadditionalcontactinfoViewRow._rowParser.all()).runUnchecked(c);
   };
 }

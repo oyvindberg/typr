@@ -6,11 +6,12 @@
 package testdb.v_warehouse_coverage
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.warehouses.WarehousesId
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** View: v_warehouse_coverage
  * VIEW
@@ -36,11 +37,11 @@ case class VWarehouseCoverageViewRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("location_wkt") locationWkt: Optional[String],
+  @JsonProperty("location_wkt") locationWkt: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("service_area_wkt") serviceAreaWkt: Optional[String],
+  @JsonProperty("service_area_wkt") serviceAreaWkt: Option[String],
   /** 
    * Default: 'UTC'
    * Points to [[testdb.warehouses.WarehousesRow.timezone]]
@@ -50,17 +51,17 @@ case class VWarehouseCoverageViewRow(
    * Default: 1
    * Points to [[testdb.warehouses.WarehousesRow.isActive]]
    */
-  @JsonProperty("is_active") isActive: java.lang.Boolean,
+  @JsonProperty("is_active") isActive: Boolean,
   /** 
    * Default: 0
    */
-  @JsonProperty("products_stocked") productsStocked: java.lang.Long,
+  @JsonProperty("products_stocked") productsStocked: Long,
   /** 
    * Default: NULL
    */
-  @JsonProperty("total_inventory") totalInventory: Optional[java.math.BigDecimal]
+  @JsonProperty("total_inventory") totalInventory: Option[BigDecimal]
 )
 
 object VWarehouseCoverageViewRow {
-  val `_rowParser`: RowParser[VWarehouseCoverageViewRow] = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.varchar, MariaTypes.bool, MariaTypes.bigint, MariaTypes.decimal.opt(), VWarehouseCoverageViewRow.apply, row => Array[Object](row.warehouseId.asInstanceOf[Object], row.code.asInstanceOf[Object], row.name.asInstanceOf[Object], row.address.asInstanceOf[Object], row.locationWkt.asInstanceOf[Object], row.serviceAreaWkt.asInstanceOf[Object], row.timezone.asInstanceOf[Object], row.isActive.asInstanceOf[Object], row.productsStocked.asInstanceOf[Object], row.totalInventory.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VWarehouseCoverageViewRow] = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric.nullable)(VWarehouseCoverageViewRow.apply)(row => Array[Any](row.warehouseId, row.code, row.name, row.address, row.locationWkt, row.serviceAreaWkt, row.timezone, row.isActive, row.productsStocked, row.totalInventory))
 }

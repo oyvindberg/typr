@@ -40,8 +40,8 @@ object GeneratedMariaDb {
 
         val variants: Seq[(Lang, DbLibName, JsonLibName, String, String)] = List(
           (LangJava, DbLibName.Typo, JsonLibName.Jackson, "typo-tester-mariadb-java", ""),
-          (LangScala(Dialect.Scala3, TypeSupportJava), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-mariadb-scala", ""),
-          (LangKotlin, DbLibName.Typo, JsonLibName.Jackson, "typo-tester-mariadb-kotlin", "")
+          (LangScala.scalaDsl(Dialect.Scala3, TypeSupportScala), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-mariadb-scala", ""),
+          (LangKotlin(TypeSupportKotlin), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-mariadb-kotlin", "")
         )
 
         def go(): Unit = {

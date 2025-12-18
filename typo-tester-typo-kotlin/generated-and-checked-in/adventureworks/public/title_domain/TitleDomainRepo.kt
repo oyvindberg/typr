@@ -6,71 +6,70 @@
 package adventureworks.public.title_domain
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface TitleDomainRepo {
-  fun delete(): DeleteBuilder<TitleDomainFields, TitleDomainRow>
+  abstract fun delete(): DeleteBuilder<TitleDomainFields, TitleDomainRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     code: TitleDomainId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     codes: Array<TitleDomainId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: TitleDomainRow,
     c: Connection
   ): TitleDomainRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<TitleDomainRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<TitleDomainFields, TitleDomainRow>
+  abstract fun select(): SelectBuilder<TitleDomainFields, TitleDomainRow>
 
-  fun selectAll(c: Connection): List<TitleDomainRow>
+  abstract fun selectAll(c: Connection): List<TitleDomainRow>
 
-  fun selectById(
+  abstract fun selectById(
     code: TitleDomainId,
     c: Connection
-  ): Optional<TitleDomainRow>
+  ): TitleDomainRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     codes: Array<TitleDomainId>,
     c: Connection
   ): List<TitleDomainRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     codes: Array<TitleDomainId>,
     c: Connection
   ): Map<TitleDomainId, TitleDomainRow>
 
-  fun update(): UpdateBuilder<TitleDomainFields, TitleDomainRow>
+  abstract fun update(): UpdateBuilder<TitleDomainFields, TitleDomainRow>
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: TitleDomainRow,
     c: Connection
   ): TitleDomainRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<TitleDomainRow>,
     c: Connection
   ): List<TitleDomainRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<TitleDomainRow>,
     batchSize: Int,
     c: Connection

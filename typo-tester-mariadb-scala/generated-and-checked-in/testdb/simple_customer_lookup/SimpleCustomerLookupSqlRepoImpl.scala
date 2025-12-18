@@ -7,11 +7,12 @@ package testdb.simple_customer_lookup
 
 import java.sql.Connection
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Fragment
+import typo.scaladsl.Fragment.sql
 
 class SimpleCustomerLookupSqlRepoImpl extends SimpleCustomerLookupSqlRepo {
-  override def apply(email: String)(using c: Connection): java.util.List[SimpleCustomerLookupSqlRow] = {
-    interpolate"""-- Simple customer lookup by email
+  override def apply(email: String)(using c: Connection): List[SimpleCustomerLookupSqlRow] = {
+    sql"""-- Simple customer lookup by email
     SELECT customer_id,
            email,
            first_name,
@@ -20,7 +21,7 @@ class SimpleCustomerLookupSqlRepoImpl extends SimpleCustomerLookupSqlRepo {
            status,
            created_at
     FROM customers
-    WHERE email = ${MariaTypes.text.encode(email)}
+    WHERE email = ${Fragment.encode(MariaTypes.varchar, email)}
     """.query(SimpleCustomerLookupSqlRow.`_rowParser`.all()).runUnchecked(c)
   }
 }

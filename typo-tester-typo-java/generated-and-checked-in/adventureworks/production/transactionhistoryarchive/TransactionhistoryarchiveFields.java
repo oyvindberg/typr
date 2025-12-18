@@ -5,21 +5,21 @@
  */
 package adventureworks.production.transactionhistoryarchive;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface TransactionhistoryarchiveFields extends FieldsExpr<TransactionhistoryarchiveRow> {
-  record Impl(List<Path> _path) implements TransactionhistoryarchiveFields, Relation<TransactionhistoryarchiveFields, TransactionhistoryarchiveRow> {
+  record Impl(List<Path> _path) implements TransactionhistoryarchiveFields, RelationStructure<TransactionhistoryarchiveFields, TransactionhistoryarchiveRow> {
     @Override
     public IdField<TransactionhistoryarchiveId, TransactionhistoryarchiveRow> transactionid() {
       return new IdField<TransactionhistoryarchiveId, TransactionhistoryarchiveRow>(_path, "transactionid", TransactionhistoryarchiveRow::transactionid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withTransactionid(value), TransactionhistoryarchiveId.pgType);
@@ -41,13 +41,13 @@ public interface TransactionhistoryarchiveFields extends FieldsExpr<Transactionh
     };
 
     @Override
-    public Field<TypoLocalDateTime, TransactionhistoryarchiveRow> transactiondate() {
-      return new Field<TypoLocalDateTime, TransactionhistoryarchiveRow>(_path, "transactiondate", TransactionhistoryarchiveRow::transactiondate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withTransactiondate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, TransactionhistoryarchiveRow> transactiondate() {
+      return new Field<LocalDateTime, TransactionhistoryarchiveRow>(_path, "transactiondate", TransactionhistoryarchiveRow::transactiondate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withTransactiondate(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field</* bpchar, max 1 chars */ String, TransactionhistoryarchiveRow> transactiontype() {
-      return new Field</* bpchar, max 1 chars */ String, TransactionhistoryarchiveRow>(_path, "transactiontype", TransactionhistoryarchiveRow::transactiontype, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withTransactiontype(value), PgTypes.bpchar);
+    public Field<String, TransactionhistoryarchiveRow> transactiontype() {
+      return new Field<String, TransactionhistoryarchiveRow>(_path, "transactiontype", TransactionhistoryarchiveRow::transactiontype, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withTransactiontype(value), PgTypes.bpchar);
     };
 
     @Override
@@ -61,23 +61,23 @@ public interface TransactionhistoryarchiveFields extends FieldsExpr<Transactionh
     };
 
     @Override
-    public Field<TypoLocalDateTime, TransactionhistoryarchiveRow> modifieddate() {
-      return new Field<TypoLocalDateTime, TransactionhistoryarchiveRow>(_path, "modifieddate", TransactionhistoryarchiveRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, TransactionhistoryarchiveRow> modifieddate() {
+      return new Field<LocalDateTime, TransactionhistoryarchiveRow>(_path, "modifieddate", TransactionhistoryarchiveRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, TransactionhistoryarchiveRow>> columns() {
-      return List.of(this.transactionid(), this.productid(), this.referenceorderid(), this.referenceorderlineid(), this.transactiondate(), this.transactiontype(), this.quantity(), this.actualcost(), this.modifieddate());
+      return java.util.List.of(this.transactionid(), this.productid(), this.referenceorderid(), this.referenceorderlineid(), this.transactiondate(), this.transactiontype(), this.quantity(), this.actualcost(), this.modifieddate());
     };
 
     @Override
-    public Relation<TransactionhistoryarchiveFields, TransactionhistoryarchiveRow> copy(List<Path> _path) {
+    public RelationStructure<TransactionhistoryarchiveFields, TransactionhistoryarchiveRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<TransactionhistoryarchiveId, TransactionhistoryarchiveRow> transactionid();
@@ -88,15 +88,15 @@ public interface TransactionhistoryarchiveFields extends FieldsExpr<Transactionh
 
   Field<Integer, TransactionhistoryarchiveRow> referenceorderlineid();
 
-  Field<TypoLocalDateTime, TransactionhistoryarchiveRow> transactiondate();
+  Field<LocalDateTime, TransactionhistoryarchiveRow> transactiondate();
 
-  Field</* bpchar, max 1 chars */ String, TransactionhistoryarchiveRow> transactiontype();
+  Field<String, TransactionhistoryarchiveRow> transactiontype();
 
   Field<Integer, TransactionhistoryarchiveRow> quantity();
 
   Field<BigDecimal, TransactionhistoryarchiveRow> actualcost();
 
-  Field<TypoLocalDateTime, TransactionhistoryarchiveRow> modifieddate();
+  Field<LocalDateTime, TransactionhistoryarchiveRow> modifieddate();
 
   @Override
   List<FieldLike<?, TransactionhistoryarchiveRow>> columns();

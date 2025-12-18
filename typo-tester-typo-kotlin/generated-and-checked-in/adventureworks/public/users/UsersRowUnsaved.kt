@@ -7,10 +7,10 @@ package adventureworks.public.users
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoInstant
-import adventureworks.customtypes.TypoUnknownCitext
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
+import java.time.Instant
+import typo.data.Unknown
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -18,14 +18,14 @@ import typo.runtime.PgTypes
 data class UsersRowUnsaved(
   @JsonProperty("user_id") val userId: UsersId,
   val name: String,
-  @JsonProperty("last_name") val lastName: Optional<String> = Optional.empty(),
-  val email: TypoUnknownCitext,
+  @JsonProperty("last_name") val lastName: String? = null,
+  val email: Unknown,
   val password: String,
-  @JsonProperty("verified_on") val verifiedOn: Optional<TypoInstant> = Optional.empty(),
+  @JsonProperty("verified_on") val verifiedOn: Instant? = null,
   /** Default: now() */
-  @JsonProperty("created_at") val createdAt: Defaulted<TypoInstant> = UseDefault()
+  @JsonProperty("created_at") val createdAt: Defaulted<Instant> = UseDefault()
 ) {
-  fun toRow(createdAtDefault: () -> TypoInstant): UsersRow = UsersRow(userId = userId, name = name, lastName = lastName, email = email, password = password, createdAt = createdAt.getOrElse(createdAtDefault), verifiedOn = verifiedOn)
+  fun toRow(createdAtDefault: () -> Instant): UsersRow = UsersRow(userId = userId, name = name, lastName = lastName, email = email, password = password, createdAt = createdAt.getOrElse(createdAtDefault), verifiedOn = verifiedOn)
 
   companion object {
     val pgText: PgText<UsersRowUnsaved> =
@@ -33,14 +33,14 @@ data class UsersRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.name, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.lastName, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.lastName, sb)
       sb.append(PgText.DELIMETER)
-      TypoUnknownCitext.pgType.pgText().unsafeEncode(row.email, sb)
+      PgTypes.unknown.pgText().unsafeEncode(row.email, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.password, sb)
       sb.append(PgText.DELIMETER)
-      TypoInstant.pgType.opt().pgText().unsafeEncode(row.verifiedOn, sb)
+      PgTypes.timestamptz.nullable().pgText().unsafeEncode(row.verifiedOn, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoInstant.pgType.pgText()).unsafeEncode(row.createdAt, sb) })
+      Defaulted.pgText(PgTypes.timestamptz.pgText()).unsafeEncode(row.createdAt, sb) })
   }
 }

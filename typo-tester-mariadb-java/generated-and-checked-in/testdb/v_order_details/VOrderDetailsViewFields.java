@@ -12,15 +12,15 @@ import java.util.Optional;
 import testdb.orders.OrdersId;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface VOrderDetailsViewFields extends FieldsExpr<VOrderDetailsViewRow> {
-  record Impl(List<Path> _path) implements VOrderDetailsViewFields, Relation<VOrderDetailsViewFields, VOrderDetailsViewRow> {
+  record Impl(List<Path> _path) implements VOrderDetailsViewFields, RelationStructure<VOrderDetailsViewFields, VOrderDetailsViewRow> {
     @Override
     public Field<OrdersId, VOrderDetailsViewRow> orderId() {
       return new Field<OrdersId, VOrderDetailsViewRow>(_path, "order_id", VOrderDetailsViewRow::orderId, Optional.empty(), Optional.empty(), (row, value) -> row.withOrderId(value), OrdersId.pgType);
@@ -43,7 +43,7 @@ public interface VOrderDetailsViewFields extends FieldsExpr<VOrderDetailsViewRow
 
     @Override
     public Field<BigDecimal, VOrderDetailsViewRow> totalAmount() {
-      return new Field<BigDecimal, VOrderDetailsViewRow>(_path, "total_amount", VOrderDetailsViewRow::totalAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalAmount(value), MariaTypes.decimal);
+      return new Field<BigDecimal, VOrderDetailsViewRow>(_path, "total_amount", VOrderDetailsViewRow::totalAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalAmount(value), MariaTypes.numeric);
     };
 
     @Override
@@ -73,7 +73,7 @@ public interface VOrderDetailsViewFields extends FieldsExpr<VOrderDetailsViewRow
 
     @Override
     public OptField<BigDecimal, VOrderDetailsViewRow> totalQuantity() {
-      return new OptField<BigDecimal, VOrderDetailsViewRow>(_path, "total_quantity", VOrderDetailsViewRow::totalQuantity, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalQuantity(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, VOrderDetailsViewRow>(_path, "total_quantity", VOrderDetailsViewRow::totalQuantity, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalQuantity(value), MariaTypes.numeric);
     };
 
     @Override
@@ -93,17 +93,17 @@ public interface VOrderDetailsViewFields extends FieldsExpr<VOrderDetailsViewRow
 
     @Override
     public List<FieldLike<?, VOrderDetailsViewRow>> columns() {
-      return List.of(this.orderId(), this.orderNumber(), this.orderStatus(), this.paymentStatus(), this.totalAmount(), this.currencyCode(), this.orderedAt(), this.customerEmail(), this.customerName(), this.itemCount(), this.totalQuantity(), this.trackingNumber(), this.shippingStatus(), this.carrierName());
+      return java.util.List.of(this.orderId(), this.orderNumber(), this.orderStatus(), this.paymentStatus(), this.totalAmount(), this.currencyCode(), this.orderedAt(), this.customerEmail(), this.customerName(), this.itemCount(), this.totalQuantity(), this.trackingNumber(), this.shippingStatus(), this.carrierName());
     };
 
     @Override
-    public Relation<VOrderDetailsViewFields, VOrderDetailsViewRow> copy(List<Path> _path) {
+    public RelationStructure<VOrderDetailsViewFields, VOrderDetailsViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<OrdersId, VOrderDetailsViewRow> orderId();

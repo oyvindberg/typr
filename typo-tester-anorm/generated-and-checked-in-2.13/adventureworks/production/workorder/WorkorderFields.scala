@@ -15,11 +15,11 @@ import adventureworks.production.scrapreason.ScrapreasonId
 import adventureworks.production.scrapreason.ScrapreasonRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait WorkorderFields {
   def workorderid: IdField[WorkorderId, WorkorderRow]
@@ -40,11 +40,11 @@ trait WorkorderFields {
 }
 
 object WorkorderFields {
-  lazy val structure: Relation[WorkorderFields, WorkorderRow] =
+  lazy val structure: RelationStructure[WorkorderFields, WorkorderRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[WorkorderFields, WorkorderRow] {
+    extends RelationStructure[WorkorderFields, WorkorderRow] {
 
     override lazy val fields: WorkorderFields = new WorkorderFields {
       override def workorderid = IdField[WorkorderId, WorkorderRow](_path, "workorderid", None, Some("int4"), x => x.workorderid, (row, value) => row.copy(workorderid = value))

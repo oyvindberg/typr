@@ -5,25 +5,23 @@
  */
 package adventureworks.public.users
 
-import adventureworks.customtypes.TypoUnknownCitext
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.data.Unknown
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class UsersRepoMock(
   val toRow: (UsersRowUnsaved) -> UsersRow,
@@ -34,7 +32,7 @@ data class UsersRepoMock(
   override fun deleteById(
     userId: UsersId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(userId)).isPresent()
+  ): Boolean = map.remove(userId) != null
 
   override fun deleteByIds(
     userIds: Array<UsersId>,
@@ -42,7 +40,7 @@ data class UsersRepoMock(
   ): Int {
     var count = 0
     for (id in userIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -54,7 +52,7 @@ data class UsersRepoMock(
     c: Connection
   ): UsersRow {
     if (map.containsKey(unsaved.userId)) {
-      throw RuntimeException(str("id $unsaved.userId already exists"))
+      throw RuntimeException("id " + unsaved.userId + " already exists")
     }
     map[unsaved.userId] = unsaved
     return unsaved
@@ -102,7 +100,7 @@ data class UsersRepoMock(
   override fun selectById(
     userId: UsersId,
     c: Connection
-  ): Optional<UsersRow> = Optional.ofNullable(map[userId])
+  ): UsersRow? = map[userId]
 
   override fun selectByIds(
     userIds: Array<UsersId>,
@@ -110,9 +108,9 @@ data class UsersRepoMock(
   ): List<UsersRow> {
     val result = ArrayList<UsersRow>()
     for (id in userIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -124,9 +122,9 @@ data class UsersRepoMock(
   ): Map<UsersId, UsersRow> = selectByIds(userIds, c).associateBy({ row: UsersRow -> row.userId })
 
   override fun selectByUniqueEmail(
-    email: TypoUnknownCitext,
+    email: Unknown,
     c: Connection
-  ): Optional<UsersRow> = Optional.ofNullable(map.values.toList().find({ v -> (email == v.email) }))
+  ): UsersRow? = map.values.toList().find({ v -> (email == v.email) })
 
   override fun update(): UpdateBuilder<UsersFields, UsersRow> = UpdateBuilderMock(UsersFields.structure, { map.values.toList() }, UpdateParams.empty(), { row -> row })
 
@@ -134,7 +132,7 @@ data class UsersRepoMock(
     row: UsersRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.userId]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.userId]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.userId] = row
     }

@@ -5,38 +5,38 @@
  */
 package adventureworks.person.person;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityFields;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.businessentity.BusinessentityRow;
 import adventureworks.public_.Name;
 import adventureworks.public_.NameStyle;
 import adventureworks.userdefined.FirstName;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PersonFields extends FieldsExpr<PersonRow> {
-  record Impl(List<Path> _path) implements PersonFields, Relation<PersonFields, PersonRow> {
+  record Impl(List<Path> _path) implements PersonFields, RelationStructure<PersonFields, PersonRow> {
     @Override
     public IdField<BusinessentityId, PersonRow> businessentityid() {
       return new IdField<BusinessentityId, PersonRow>(_path, "businessentityid", PersonRow::businessentityid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
     };
 
     @Override
-    public Field</* bpchar, max 2 chars */ String, PersonRow> persontype() {
-      return new Field</* bpchar, max 2 chars */ String, PersonRow>(_path, "persontype", PersonRow::persontype, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withPersontype(value), PgTypes.bpchar);
+    public Field<String, PersonRow> persontype() {
+      return new Field<String, PersonRow>(_path, "persontype", PersonRow::persontype, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withPersontype(value), PgTypes.bpchar);
     };
 
     @Override
@@ -45,8 +45,8 @@ public interface PersonFields extends FieldsExpr<PersonRow> {
     };
 
     @Override
-    public OptField</* max 8 chars */ String, PersonRow> title() {
-      return new OptField</* max 8 chars */ String, PersonRow>(_path, "title", PersonRow::title, Optional.empty(), Optional.empty(), (row, value) -> row.withTitle(value), PgTypes.text);
+    public OptField<String, PersonRow> title() {
+      return new OptField<String, PersonRow>(_path, "title", PersonRow::title, Optional.empty(), Optional.empty(), (row, value) -> row.withTitle(value), PgTypes.text);
     };
 
     @Override
@@ -65,8 +65,8 @@ public interface PersonFields extends FieldsExpr<PersonRow> {
     };
 
     @Override
-    public OptField</* max 10 chars */ String, PersonRow> suffix() {
-      return new OptField</* max 10 chars */ String, PersonRow>(_path, "suffix", PersonRow::suffix, Optional.empty(), Optional.empty(), (row, value) -> row.withSuffix(value), PgTypes.text);
+    public OptField<String, PersonRow> suffix() {
+      return new OptField<String, PersonRow>(_path, "suffix", PersonRow::suffix, Optional.empty(), Optional.empty(), (row, value) -> row.withSuffix(value), PgTypes.text);
     };
 
     @Override
@@ -75,43 +75,43 @@ public interface PersonFields extends FieldsExpr<PersonRow> {
     };
 
     @Override
-    public OptField<TypoXml, PersonRow> additionalcontactinfo() {
-      return new OptField<TypoXml, PersonRow>(_path, "additionalcontactinfo", PersonRow::additionalcontactinfo, Optional.empty(), Optional.of("xml"), (row, value) -> row.withAdditionalcontactinfo(value), TypoXml.pgType);
+    public OptField<Xml, PersonRow> additionalcontactinfo() {
+      return new OptField<Xml, PersonRow>(_path, "additionalcontactinfo", PersonRow::additionalcontactinfo, Optional.empty(), Optional.of("xml"), (row, value) -> row.withAdditionalcontactinfo(value), PgTypes.xml);
     };
 
     @Override
-    public OptField<TypoXml, PersonRow> demographics() {
-      return new OptField<TypoXml, PersonRow>(_path, "demographics", PersonRow::demographics, Optional.empty(), Optional.of("xml"), (row, value) -> row.withDemographics(value), TypoXml.pgType);
+    public OptField<Xml, PersonRow> demographics() {
+      return new OptField<Xml, PersonRow>(_path, "demographics", PersonRow::demographics, Optional.empty(), Optional.of("xml"), (row, value) -> row.withDemographics(value), PgTypes.xml);
     };
 
     @Override
-    public Field<TypoUUID, PersonRow> rowguid() {
-      return new Field<TypoUUID, PersonRow>(_path, "rowguid", PersonRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, PersonRow> rowguid() {
+      return new Field<UUID, PersonRow>(_path, "rowguid", PersonRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, PersonRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PersonRow>(_path, "modifieddate", PersonRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PersonRow> modifieddate() {
+      return new Field<LocalDateTime, PersonRow>(_path, "modifieddate", PersonRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PersonRow>> columns() {
-      return List.of(this.businessentityid(), this.persontype(), this.namestyle(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.emailpromotion(), this.additionalcontactinfo(), this.demographics(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.businessentityid(), this.persontype(), this.namestyle(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.emailpromotion(), this.additionalcontactinfo(), this.demographics(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<PersonFields, PersonRow> copy(List<Path> _path) {
+    public RelationStructure<PersonFields, PersonRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BusinessentityId, PersonRow> businessentityid();
 
-  Field</* bpchar, max 2 chars */ String, PersonRow> persontype();
+  Field<String, PersonRow> persontype();
 
   Field<NameStyle, PersonRow> namestyle();
 
@@ -127,16 +127,16 @@ public interface PersonFields extends FieldsExpr<PersonRow> {
 
   Field<Integer, PersonRow> emailpromotion();
 
-  OptField<TypoXml, PersonRow> additionalcontactinfo();
+  OptField<Xml, PersonRow> additionalcontactinfo();
 
-  OptField<TypoXml, PersonRow> demographics();
+  OptField<Xml, PersonRow> demographics();
 
-  Field<TypoUUID, PersonRow> rowguid();
+  Field<UUID, PersonRow> rowguid();
 
-  Field<TypoLocalDateTime, PersonRow> modifieddate();
+  Field<LocalDateTime, PersonRow> modifieddate();
 
   default ForeignKey<BusinessentityFields, BusinessentityRow> fkBusinessentity() {
-    return ForeignKey.<BusinessentityFields, BusinessentityRow>of("person.FK_Person_BusinessEntity_BusinessEntityID").withColumnPair(businessentityid(), BusinessentityFields::businessentityid);
+    return ForeignKey.<BusinessentityFields, BusinessentityRow>of("person.FK_Person_BusinessEntity_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), BusinessentityFields::businessentityid);
   };
 
   @Override

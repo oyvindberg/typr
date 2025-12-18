@@ -5,7 +5,6 @@
  */
 package adventureworks.sales.currencyrate;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.sales.currency.CurrencyId;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -19,11 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class CurrencyrateRepoImpl implements CurrencyrateRepo {
   @Override
@@ -36,13 +33,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     CurrencyrateId currencyrateid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "sales"."currencyrate" where "currencyrateid" = 
-      """),
-      CurrencyrateId.pgType.encode(currencyrateid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"sales\".\"currencyrate\" where \"currencyrateid\" = "), Fragment.encode(CurrencyrateId.pgType, currencyrateid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -50,14 +41,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     CurrencyrateId[] currencyrateids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "sales"."currencyrate"
-                  where "currencyrateid" = ANY("""),
-               CurrencyrateId.pgTypeArray.encode(currencyrateids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"sales\".\"currencyrate\"\nwhere \"currencyrateid\" = ANY("), Fragment.encode(CurrencyrateId.pgTypeArray, currencyrateids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -67,28 +51,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     CurrencyrateRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")
-         values ("""),
-      CurrencyrateId.pgType.encode(unsaved.currencyrateid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoLocalDateTime.pgType.encode(unsaved.currencyratedate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      CurrencyId.pgType.encode(unsaved.fromcurrencycode()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      CurrencyId.pgType.encode(unsaved.tocurrencycode()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      PgTypes.numeric.encode(unsaved.averagerate()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.encode(unsaved.endofdayrate()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"sales\".\"currencyrate\"(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\")\nvalues ("), Fragment.encode(CurrencyrateId.pgType, unsaved.currencyrateid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.currencyratedate()), Fragment.lit("::timestamp, "), Fragment.encode(CurrencyId.pgType, unsaved.fromcurrencycode()), Fragment.lit("::bpchar, "), Fragment.encode(CurrencyId.pgType, unsaved.tocurrencycode()), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.numeric, unsaved.averagerate()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.endofdayrate()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\n"))
       .updateReturning(CurrencyrateRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -97,43 +60,25 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     CurrencyrateRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"currencyratedate\""));
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.encode(unsaved.currencyratedate()),
-      typo.runtime.Fragment.lit("::timestamp")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.timestamp, unsaved.currencyratedate()), Fragment.lit("::timestamp")));
     columns.add(Fragment.lit("\"fromcurrencycode\""));
-    values.add(interpolate(
-      CurrencyId.pgType.encode(unsaved.fromcurrencycode()),
-      typo.runtime.Fragment.lit("::bpchar")
-    ));
+    values.add(interpolate(Fragment.encode(CurrencyId.pgType, unsaved.fromcurrencycode()), Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"tocurrencycode\""));
-    values.add(interpolate(
-      CurrencyId.pgType.encode(unsaved.tocurrencycode()),
-      typo.runtime.Fragment.lit("::bpchar")
-    ));
+    values.add(interpolate(Fragment.encode(CurrencyId.pgType, unsaved.tocurrencycode()), Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"averagerate\""));
-    values.add(interpolate(
-      PgTypes.numeric.encode(unsaved.averagerate()),
-      typo.runtime.Fragment.lit("::numeric")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.numeric, unsaved.averagerate()), Fragment.lit("::numeric")));
     columns.add(Fragment.lit("\"endofdayrate\""));
-    values.add(interpolate(
-      PgTypes.numeric.encode(unsaved.endofdayrate()),
-      typo.runtime.Fragment.lit("::numeric")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.numeric, unsaved.endofdayrate()), Fragment.lit("::numeric")));
     unsaved.currencyrateid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"currencyrateid\""));
-        values.add(interpolate(
-        CurrencyrateId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(CurrencyrateId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -142,26 +87,10 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "sales"."currencyrate"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"sales\".\"currencyrate\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\n"));;
     return q.updateReturning(CurrencyrateRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -171,9 +100,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, CurrencyrateRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"sales\".\"currencyrate\"(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, CurrencyrateRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -183,9 +110,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "sales"."currencyrate"("currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "currencyrateid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, CurrencyrateRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"sales\".\"currencyrate\"(\"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"currencyrateid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, CurrencyrateRowUnsaved.pgText);
   };
 
   @Override
@@ -195,10 +120,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
 
   @Override
   public List<CurrencyrateRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-       from "sales"."currencyrate"
-    """)).query(CurrencyrateRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\nfrom \"sales\".\"currencyrate\"\n")).query(CurrencyrateRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -206,14 +128,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     CurrencyrateId currencyrateid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-         from "sales"."currencyrate"
-         where "currencyrateid" = """),
-      CurrencyrateId.pgType.encode(currencyrateid),
-      typo.runtime.Fragment.lit("")
-    ).query(CurrencyrateRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\nfrom \"sales\".\"currencyrate\"\nwhere \"currencyrateid\" = "), Fragment.encode(CurrencyrateId.pgType, currencyrateid), Fragment.lit("")).query(CurrencyrateRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -221,14 +136,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     CurrencyrateId[] currencyrateids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-         from "sales"."currencyrate"
-         where "currencyrateid" = ANY("""),
-      CurrencyrateId.pgTypeArray.encode(currencyrateids),
-      typo.runtime.Fragment.lit(")")
-    ).query(CurrencyrateRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\nfrom \"sales\".\"currencyrate\"\nwhere \"currencyrateid\" = ANY("), Fragment.encode(CurrencyrateId.pgTypeArray, currencyrateids), Fragment.lit(")")).query(CurrencyrateRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -243,7 +151,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
 
   @Override
   public UpdateBuilder<CurrencyrateFields, CurrencyrateRow> update() {
-    return UpdateBuilder.of("\"sales\".\"currencyrate\"", CurrencyrateFields.structure(), CurrencyrateRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"sales\".\"currencyrate\"", CurrencyrateFields.structure(), CurrencyrateRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -252,37 +160,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     Connection c
   ) {
     CurrencyrateId currencyrateid = row.currencyrateid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "sales"."currencyrate"
-         set "currencyratedate" = """),
-      TypoLocalDateTime.pgType.encode(row.currencyratedate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp,
-         "fromcurrencycode" = """),
-      CurrencyId.pgType.encode(row.fromcurrencycode()),
-      typo.runtime.Fragment.lit("""
-         ::bpchar,
-         "tocurrencycode" = """),
-      CurrencyId.pgType.encode(row.tocurrencycode()),
-      typo.runtime.Fragment.lit("""
-         ::bpchar,
-         "averagerate" = """),
-      PgTypes.numeric.encode(row.averagerate()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "endofdayrate" = """),
-      PgTypes.numeric.encode(row.endofdayrate()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "currencyrateid" = """),
-      CurrencyrateId.pgType.encode(currencyrateid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"sales\".\"currencyrate\"\nset \"currencyratedate\" = "), Fragment.encode(PgTypes.timestamp, row.currencyratedate()), Fragment.lit("::timestamp,\n\"fromcurrencycode\" = "), Fragment.encode(CurrencyId.pgType, row.fromcurrencycode()), Fragment.lit("::bpchar,\n\"tocurrencycode\" = "), Fragment.encode(CurrencyId.pgType, row.tocurrencycode()), Fragment.lit("::bpchar,\n\"averagerate\" = "), Fragment.encode(PgTypes.numeric, row.averagerate()), Fragment.lit("::numeric,\n\"endofdayrate\" = "), Fragment.encode(PgTypes.numeric, row.endofdayrate()), Fragment.lit("::numeric,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"currencyrateid\" = "), Fragment.encode(CurrencyrateId.pgType, currencyrateid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -290,35 +168,7 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     CurrencyrateRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")
-         values ("""),
-      CurrencyrateId.pgType.encode(unsaved.currencyrateid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoLocalDateTime.pgType.encode(unsaved.currencyratedate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      CurrencyId.pgType.encode(unsaved.fromcurrencycode()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      CurrencyId.pgType.encode(unsaved.tocurrencycode()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      PgTypes.numeric.encode(unsaved.averagerate()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.encode(unsaved.endofdayrate()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("currencyrateid")
-         do update set
-           "currencyratedate" = EXCLUDED."currencyratedate",
-         "fromcurrencycode" = EXCLUDED."fromcurrencycode",
-         "tocurrencycode" = EXCLUDED."tocurrencycode",
-         "averagerate" = EXCLUDED."averagerate",
-         "endofdayrate" = EXCLUDED."endofdayrate",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"sales\".\"currencyrate\"(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\")\nvalues ("), Fragment.encode(CurrencyrateId.pgType, unsaved.currencyrateid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.currencyratedate()), Fragment.lit("::timestamp, "), Fragment.encode(CurrencyId.pgType, unsaved.fromcurrencycode()), Fragment.lit("::bpchar, "), Fragment.encode(CurrencyId.pgType, unsaved.tocurrencycode()), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.numeric, unsaved.averagerate()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.endofdayrate()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"currencyrateid\")\ndo update set\n  \"currencyratedate\" = EXCLUDED.\"currencyratedate\",\n\"fromcurrencycode\" = EXCLUDED.\"fromcurrencycode\",\n\"tocurrencycode\" = EXCLUDED.\"tocurrencycode\",\n\"averagerate\" = EXCLUDED.\"averagerate\",\n\"endofdayrate\" = EXCLUDED.\"endofdayrate\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\""))
       .updateReturning(CurrencyrateRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -328,20 +178,9 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     Iterator<CurrencyrateRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")
-                values (?::int4, ?::timestamp, ?::bpchar, ?::bpchar, ?::numeric, ?::numeric, ?::timestamp)
-                on conflict ("currencyrateid")
-                do update set
-                  "currencyratedate" = EXCLUDED."currencyratedate",
-                "fromcurrencycode" = EXCLUDED."fromcurrencycode",
-                "tocurrencycode" = EXCLUDED."tocurrencycode",
-                "averagerate" = EXCLUDED."averagerate",
-                "endofdayrate" = EXCLUDED."endofdayrate",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"sales\".\"currencyrate\"(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\")\nvalues (?::int4, ?::timestamp, ?::bpchar, ?::bpchar, ?::numeric, ?::numeric, ?::timestamp)\non conflict (\"currencyrateid\")\ndo update set\n  \"currencyratedate\" = EXCLUDED.\"currencyratedate\",\n\"fromcurrencycode\" = EXCLUDED.\"fromcurrencycode\",\n\"tocurrencycode\" = EXCLUDED.\"tocurrencycode\",\n\"averagerate\" = EXCLUDED.\"averagerate\",\n\"endofdayrate\" = EXCLUDED.\"endofdayrate\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\""))
       .updateManyReturning(CurrencyrateRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -351,24 +190,8 @@ public class CurrencyrateRepoImpl implements CurrencyrateRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table currencyrate_TEMP (like "sales"."currencyrate") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy currencyrate_TEMP("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate") from stdin
-    """), batchSize, unsaved, c, CurrencyrateRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")
-       select * from currencyrate_TEMP
-       on conflict ("currencyrateid")
-       do update set
-         "currencyratedate" = EXCLUDED."currencyratedate",
-       "fromcurrencycode" = EXCLUDED."fromcurrencycode",
-       "tocurrencycode" = EXCLUDED."tocurrencycode",
-       "averagerate" = EXCLUDED."averagerate",
-       "endofdayrate" = EXCLUDED."endofdayrate",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table currencyrate_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table currencyrate_TEMP (like \"sales\".\"currencyrate\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy currencyrate_TEMP(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\") from stdin", batchSize, unsaved, c, CurrencyrateRow.pgText);
+    return interpolate(Fragment.lit("insert into \"sales\".\"currencyrate\"(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\")\nselect * from currencyrate_TEMP\non conflict (\"currencyrateid\")\ndo update set\n  \"currencyratedate\" = EXCLUDED.\"currencyratedate\",\n\"fromcurrencycode\" = EXCLUDED.\"fromcurrencycode\",\n\"tocurrencycode\" = EXCLUDED.\"tocurrencycode\",\n\"averagerate\" = EXCLUDED.\"averagerate\",\n\"endofdayrate\" = EXCLUDED.\"endofdayrate\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table currencyrate_TEMP;")).update().runUnchecked(c);
   };
 }

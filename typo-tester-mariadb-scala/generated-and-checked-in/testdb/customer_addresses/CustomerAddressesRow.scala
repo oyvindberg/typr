@@ -7,14 +7,15 @@ package testdb.customer_addresses
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import org.mariadb.jdbc.`type`.Point
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: customer_addresses
  * Primary key: address_id
@@ -33,7 +34,7 @@ case class CustomerAddressesRow(
   /** 
    * Default: 0
    */
-  @JsonProperty("is_default") isDefault: java.lang.Boolean,
+  @JsonProperty("is_default") isDefault: Boolean,
   /**  */
   @JsonProperty("recipient_name") recipientName: String,
   /**  */
@@ -41,13 +42,13 @@ case class CustomerAddressesRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("street_line2") streetLine2: Optional[String],
+  @JsonProperty("street_line2") streetLine2: Option[String],
   /**  */
   city: String,
   /** 
    * Default: NULL
    */
-  @JsonProperty("state_province") stateProvince: Optional[String],
+  @JsonProperty("state_province") stateProvince: Option[String],
   /**  */
   @JsonProperty("postal_code") postalCode: String,
   /**  */
@@ -55,11 +56,11 @@ case class CustomerAddressesRow(
   /** 
    * Default: NULL
    */
-  location: Optional[Point],
+  location: Option[Point],
   /** 
    * Default: NULL
    */
-  @JsonProperty("delivery_notes") deliveryNotes: Optional[String],
+  @JsonProperty("delivery_notes") deliveryNotes: Option[String],
   /** 
    * Default: current_timestamp()
    */
@@ -68,11 +69,11 @@ case class CustomerAddressesRow(
   def id: CustomerAddressesId = addressId
 
   def toUnsavedRow(
-    isDefault: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isDefault),
-    streetLine2: Defaulted[Optional[String]] = Defaulted.Provided(this.streetLine2),
-    stateProvince: Defaulted[Optional[String]] = Defaulted.Provided(this.stateProvince),
-    location: Defaulted[Optional[Point]] = Defaulted.Provided(this.location),
-    deliveryNotes: Defaulted[Optional[String]] = Defaulted.Provided(this.deliveryNotes),
+    isDefault: Defaulted[Boolean] = Defaulted.Provided(this.isDefault),
+    streetLine2: Defaulted[Option[String]] = Defaulted.Provided(this.streetLine2),
+    stateProvince: Defaulted[Option[String]] = Defaulted.Provided(this.stateProvince),
+    location: Defaulted[Option[Point]] = Defaulted.Provided(this.location),
+    deliveryNotes: Defaulted[Option[String]] = Defaulted.Provided(this.deliveryNotes),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt)
   ): CustomerAddressesRowUnsaved = {
     new CustomerAddressesRowUnsaved(
@@ -94,7 +95,7 @@ case class CustomerAddressesRow(
 }
 
 object CustomerAddressesRow {
-  val `_rowParser`: RowParser[CustomerAddressesRow] = RowParsers.of(CustomerAddressesId.pgType, CustomersId.pgType, MariaTypes.text, MariaTypes.bool, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.varchar, MariaTypes.char_, MariaTypes.point.opt(), MariaTypes.tinytext.opt(), MariaTypes.datetime, CustomerAddressesRow.apply, row => Array[Object](row.addressId.asInstanceOf[Object], row.customerId.asInstanceOf[Object], row.addressType.asInstanceOf[Object], row.isDefault.asInstanceOf[Object], row.recipientName.asInstanceOf[Object], row.streetLine1.asInstanceOf[Object], row.streetLine2.asInstanceOf[Object], row.city.asInstanceOf[Object], row.stateProvince.asInstanceOf[Object], row.postalCode.asInstanceOf[Object], row.countryCode.asInstanceOf[Object], row.location.asInstanceOf[Object], row.deliveryNotes.asInstanceOf[Object], row.createdAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[CustomerAddressesRow] = RowParsers.of(CustomerAddressesId.pgType, CustomersId.pgType, MariaTypes.text, ScalaDbTypes.MariaTypes.bool, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.varchar, MariaTypes.char_, MariaTypes.point.nullable, MariaTypes.tinytext.nullable, MariaTypes.datetime)(CustomerAddressesRow.apply)(row => Array[Any](row.addressId, row.customerId, row.addressType, row.isDefault, row.recipientName, row.streetLine1, row.streetLine2, row.city, row.stateProvince, row.postalCode, row.countryCode, row.location, row.deliveryNotes, row.createdAt))
 
-  given mariaText: MariaText[CustomerAddressesRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[CustomerAddressesRow] = MariaText.from(`_rowParser`.underlying)
 }

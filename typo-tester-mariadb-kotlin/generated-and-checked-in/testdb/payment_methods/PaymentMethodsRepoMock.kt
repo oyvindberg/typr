@@ -8,21 +8,19 @@ package testdb.payment_methods
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class PaymentMethodsRepoMock(
   val toRow: (PaymentMethodsRowUnsaved) -> PaymentMethodsRow,
@@ -33,7 +31,7 @@ data class PaymentMethodsRepoMock(
   override fun deleteById(
     methodId: PaymentMethodsId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(methodId)).isPresent()
+  ): Boolean = map.remove(methodId) != null
 
   override fun deleteByIds(
     methodIds: Array<PaymentMethodsId>,
@@ -41,7 +39,7 @@ data class PaymentMethodsRepoMock(
   ): Int {
     var count = 0
     for (id in methodIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class PaymentMethodsRepoMock(
     c: Connection
   ): PaymentMethodsRow {
     if (map.containsKey(unsaved.methodId)) {
-      throw RuntimeException(str("id $unsaved.methodId already exists"))
+      throw RuntimeException("id " + unsaved.methodId + " already exists")
     }
     map[unsaved.methodId] = unsaved
     return unsaved
@@ -71,7 +69,7 @@ data class PaymentMethodsRepoMock(
   override fun selectById(
     methodId: PaymentMethodsId,
     c: Connection
-  ): Optional<PaymentMethodsRow> = Optional.ofNullable(map[methodId])
+  ): PaymentMethodsRow? = map[methodId]
 
   override fun selectByIds(
     methodIds: Array<PaymentMethodsId>,
@@ -79,9 +77,9 @@ data class PaymentMethodsRepoMock(
   ): List<PaymentMethodsRow> {
     val result = ArrayList<PaymentMethodsRow>()
     for (id in methodIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -95,7 +93,7 @@ data class PaymentMethodsRepoMock(
   override fun selectByUniqueCode(
     code: String,
     c: Connection
-  ): Optional<PaymentMethodsRow> = Optional.ofNullable(map.values.toList().find({ v -> (code == v.code) }))
+  ): PaymentMethodsRow? = map.values.toList().find({ v -> (code == v.code) })
 
   override fun update(): UpdateBuilder<PaymentMethodsFields, PaymentMethodsRow> = UpdateBuilderMock(PaymentMethodsFields.structure, { map.values.toList() }, UpdateParams.empty(), { row -> row })
 
@@ -103,7 +101,7 @@ data class PaymentMethodsRepoMock(
     row: PaymentMethodsRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.methodId]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.methodId]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.methodId] = row
     }

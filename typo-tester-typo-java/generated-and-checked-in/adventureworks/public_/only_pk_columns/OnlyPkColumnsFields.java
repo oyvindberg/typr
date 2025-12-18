@@ -9,17 +9,17 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface OnlyPkColumnsFields extends FieldsExpr<OnlyPkColumnsRow> {
-  record Impl(List<Path> _path) implements OnlyPkColumnsFields, Relation<OnlyPkColumnsFields, OnlyPkColumnsRow> {
+  record Impl(List<Path> _path) implements OnlyPkColumnsFields, RelationStructure<OnlyPkColumnsFields, OnlyPkColumnsRow> {
     @Override
     public IdField<String, OnlyPkColumnsRow> keyColumn1() {
       return new IdField<String, OnlyPkColumnsRow>(_path, "key_column_1", OnlyPkColumnsRow::keyColumn1, Optional.empty(), Optional.empty(), (row, value) -> row.withKeyColumn1(value), PgTypes.text);
@@ -32,17 +32,17 @@ public interface OnlyPkColumnsFields extends FieldsExpr<OnlyPkColumnsRow> {
 
     @Override
     public List<FieldLike<?, OnlyPkColumnsRow>> columns() {
-      return List.of(this.keyColumn1(), this.keyColumn2());
+      return java.util.List.of(this.keyColumn1(), this.keyColumn2());
     };
 
     @Override
-    public Relation<OnlyPkColumnsFields, OnlyPkColumnsRow> copy(List<Path> _path) {
+    public RelationStructure<OnlyPkColumnsFields, OnlyPkColumnsRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<String, OnlyPkColumnsRow> keyColumn1();

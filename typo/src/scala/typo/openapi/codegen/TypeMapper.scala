@@ -19,7 +19,7 @@ class TypeMapper(
       lang.ListType.tpe.of(map(itemType))
 
     case TypeInfo.Optional(underlying) =>
-      lang.Optional.tpe.of(map(underlying))
+      lang.Optional.tpe(map(underlying))
 
     case TypeInfo.MapOf(keyType, valueType) =>
       lang.MapOps.tpe.of(map(keyType), map(valueType))
@@ -291,7 +291,7 @@ class ScalaTypeMapper(
       lang.ListType.tpe.of(map(itemType))
 
     case TypeInfo.Optional(underlying) =>
-      lang.Optional.tpe.of(map(underlying))
+      lang.Optional.tpe(map(underlying))
 
     case TypeInfo.MapOf(keyType, valueType) =>
       lang.MapOps.tpe.of(map(keyType), map(valueType))

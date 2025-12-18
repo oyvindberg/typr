@@ -7,9 +7,10 @@ package adventureworks.sales.salesreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `sales.salesreason` which has not been persisted yet */
 data class SalesreasonRowUnsaved(
@@ -22,11 +23,11 @@ data class SalesreasonRowUnsaved(
     */
   val salesreasonid: Defaulted<SalesreasonId> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     salesreasonidDefault: () -> SalesreasonId,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): SalesreasonRow = SalesreasonRow(salesreasonid = salesreasonid.getOrElse(salesreasonidDefault), name = name, reasontype = reasontype, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -37,6 +38,6 @@ data class SalesreasonRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(SalesreasonId.pgType.pgText()).unsafeEncode(row.salesreasonid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

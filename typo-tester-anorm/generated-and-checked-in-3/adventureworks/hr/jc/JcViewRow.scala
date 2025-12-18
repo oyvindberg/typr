@@ -9,7 +9,6 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import adventureworks.person.businessentity.BusinessentityId
-import anorm.Column
 import anorm.RowParser
 import anorm.Success
 import play.api.libs.json.JsObject
@@ -17,7 +16,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -28,9 +26,9 @@ case class JcViewRow(
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.businessentityid]] */
-  businessentityid: Option[BusinessentityId],
+  businessentityid: BusinessentityId,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.resume]] */
-  resume: Option[TypoXml],
+  resume: TypoXml,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -42,8 +40,8 @@ object JcViewRow {
           JcViewRow(
             id = json.\("id").as(JobcandidateId.reads),
             jobcandidateid = json.\("jobcandidateid").as(JobcandidateId.reads),
-            businessentityid = json.\("businessentityid").toOption.map(_.as(BusinessentityId.reads)),
-            resume = json.\("resume").toOption.map(_.as(TypoXml.reads)),
+            businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
+            resume = json.\("resume").as(TypoXml.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
         )
@@ -57,8 +55,8 @@ object JcViewRow {
         JcViewRow(
           id = row(idx + 0)(using JobcandidateId.column),
           jobcandidateid = row(idx + 1)(using JobcandidateId.column),
-          businessentityid = row(idx + 2)(using Column.columnToOption(using BusinessentityId.column)),
-          resume = row(idx + 3)(using Column.columnToOption(using TypoXml.column)),
+          businessentityid = row(idx + 2)(using BusinessentityId.column),
+          resume = row(idx + 3)(using TypoXml.column),
           modifieddate = row(idx + 4)(using TypoLocalDateTime.column)
         )
       )
@@ -70,8 +68,8 @@ object JcViewRow {
       new JsObject(ListMap[String, JsValue](
         "id" -> JobcandidateId.writes.writes(o.id),
         "jobcandidateid" -> JobcandidateId.writes.writes(o.jobcandidateid),
-        "businessentityid" -> Writes.OptionWrites(using BusinessentityId.writes).writes(o.businessentityid),
-        "resume" -> Writes.OptionWrites(using TypoXml.writes).writes(o.resume),
+        "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
+        "resume" -> TypoXml.writes.writes(o.resume),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))
     )

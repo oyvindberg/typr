@@ -88,5 +88,5 @@ public record CustomerOrdersSqlRow(
     return new CustomerOrdersSqlRow(customerId, email, firstName, lastName, tier, orderId, orderNumber, orderStatus, totalAmount, orderedAt);
   };
 
-  static RowParser<CustomerOrdersSqlRow> _rowParser = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, OrdersId.pgType.opt(), MariaTypes.varchar.opt(), MariaTypes.text.opt(), MariaTypes.decimal.opt(), MariaTypes.datetime.opt(), CustomerOrdersSqlRow::new, row -> new Object[]{row.customerId(), row.email(), row.firstName(), row.lastName(), row.tier(), row.orderId(), row.orderNumber(), row.orderStatus(), row.totalAmount(), row.orderedAt()});;
+  static RowParser<CustomerOrdersSqlRow> _rowParser = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, OrdersId.pgType.opt(), MariaTypes.varchar.opt(), MariaTypes.text.opt(), MariaTypes.numeric.opt(), MariaTypes.datetime.opt(), CustomerOrdersSqlRow::new, row -> new Object[]{row.customerId(), row.email(), row.firstName(), row.lastName(), row.tier(), row.orderId(), row.orderNumber(), row.orderStatus(), row.totalAmount(), row.orderedAt()});;
 }

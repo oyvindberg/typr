@@ -7,11 +7,12 @@ package adventureworks.person.personphone;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.phonenumbertype.PhonenumbertypeId;
 import adventureworks.public_.Phone;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `person.personphone` which has not been persisted yet */
 public record PersonphoneRowUnsaved(
@@ -26,7 +27,7 @@ public record PersonphoneRowUnsaved(
     */
   PhonenumbertypeId phonenumbertypeid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public PersonphoneRowUnsaved(
     /** Business entity identification number. Foreign key to Person.BusinessEntityID.
@@ -63,7 +64,7 @@ public record PersonphoneRowUnsaved(
   };
 
   /** Default: now() */
-  public PersonphoneRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public PersonphoneRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new PersonphoneRowUnsaved(businessentityid, phonenumber, phonenumbertypeid, modifieddate);
   };
 
@@ -75,10 +76,10 @@ public record PersonphoneRowUnsaved(
       sb.append(PgText.DELIMETER);
       PhonenumbertypeId.pgType.pgText().unsafeEncode(row.phonenumbertypeid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public PersonphoneRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public PersonphoneRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new PersonphoneRow(businessentityid, phonenumber, phonenumbertypeid, modifieddate.getOrElse(modifieddateDefault));
   };
 }

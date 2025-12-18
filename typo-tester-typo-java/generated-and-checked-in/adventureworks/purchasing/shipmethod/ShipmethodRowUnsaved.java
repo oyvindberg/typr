@@ -7,10 +7,10 @@ package adventureworks.purchasing.shipmethod;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -33,9 +33,9 @@ public record ShipmethodRowUnsaved(
     */
   Defaulted<BigDecimal> shiprate,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ShipmethodRowUnsaved(
   
@@ -74,12 +74,12 @@ public record ShipmethodRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public ShipmethodRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public ShipmethodRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new ShipmethodRowUnsaved(name, shipmethodid, shipbase, shiprate, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ShipmethodRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ShipmethodRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ShipmethodRowUnsaved(name, shipmethodid, shipbase, shiprate, rowguid, modifieddate);
   };
 
@@ -93,17 +93,17 @@ public record ShipmethodRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.shiprate, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ShipmethodRow toRow(
     java.util.function.Supplier<ShipmethodId> shipmethodidDefault,
     java.util.function.Supplier<BigDecimal> shipbaseDefault,
     java.util.function.Supplier<BigDecimal> shiprateDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ShipmethodRow(shipmethodid.getOrElse(shipmethodidDefault), name, shipbase.getOrElse(shipbaseDefault), shiprate.getOrElse(shiprateDefault), rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

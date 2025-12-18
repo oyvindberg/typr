@@ -8,21 +8,19 @@ package testdb.categories
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class CategoriesRepoMock(
   val toRow: (CategoriesRowUnsaved) -> CategoriesRow,
@@ -33,7 +31,7 @@ data class CategoriesRepoMock(
   override fun deleteById(
     categoryId: CategoriesId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(categoryId)).isPresent()
+  ): Boolean = map.remove(categoryId) != null
 
   override fun deleteByIds(
     categoryIds: Array<CategoriesId>,
@@ -41,7 +39,7 @@ data class CategoriesRepoMock(
   ): Int {
     var count = 0
     for (id in categoryIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class CategoriesRepoMock(
     c: Connection
   ): CategoriesRow {
     if (map.containsKey(unsaved.categoryId)) {
-      throw RuntimeException(str("id $unsaved.categoryId already exists"))
+      throw RuntimeException("id " + unsaved.categoryId + " already exists")
     }
     map[unsaved.categoryId] = unsaved
     return unsaved
@@ -71,7 +69,7 @@ data class CategoriesRepoMock(
   override fun selectById(
     categoryId: CategoriesId,
     c: Connection
-  ): Optional<CategoriesRow> = Optional.ofNullable(map[categoryId])
+  ): CategoriesRow? = map[categoryId]
 
   override fun selectByIds(
     categoryIds: Array<CategoriesId>,
@@ -79,9 +77,9 @@ data class CategoriesRepoMock(
   ): List<CategoriesRow> {
     val result = ArrayList<CategoriesRow>()
     for (id in categoryIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -95,7 +93,7 @@ data class CategoriesRepoMock(
   override fun selectByUniqueSlug(
     slug: String,
     c: Connection
-  ): Optional<CategoriesRow> = Optional.ofNullable(map.values.toList().find({ v -> (slug == v.slug) }))
+  ): CategoriesRow? = map.values.toList().find({ v -> (slug == v.slug) })
 
   override fun update(): UpdateBuilder<CategoriesFields, CategoriesRow> = UpdateBuilderMock(CategoriesFields.structure, { map.values.toList() }, UpdateParams.empty(), { row -> row })
 
@@ -103,7 +101,7 @@ data class CategoriesRepoMock(
     row: CategoriesRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.categoryId]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.categoryId]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.categoryId] = row
     }

@@ -5,29 +5,25 @@
  */
 package adventureworks.production.document
 
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import java.util.UUID
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class DocumentRepoImpl() : DocumentRepo {
   override fun delete(): DeleteBuilder<DocumentFields, DocumentRow> = DeleteBuilder.of("\"production\".\"document\"", DocumentFields.structure, Dialect.POSTGRESQL)
@@ -35,172 +31,69 @@ class DocumentRepoImpl() : DocumentRepo {
   override fun deleteById(
     documentnode: DocumentId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "production"."document" where "documentnode" = 
-    """.trimMargin()),
-    DocumentId.pgType.encode(documentnode),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"production\".\"document\" where \"documentnode\" = "), Fragment.encode(DocumentId.pgType, documentnode), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     documentnodes: Array<DocumentId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "production"."document"
-               where "documentnode" = ANY(""".trimMargin()),
-             DocumentId.pgTypeArray.encode(documentnodes),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = interpolate(Fragment.lit("delete\nfrom \"production\".\"document\"\nwhere \"documentnode\" = ANY("), Fragment.encode(DocumentId.pgTypeArray, documentnodes), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: DocumentRow,
     c: Connection
-  ): DocumentRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "production"."document"("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")
-      values (""".trimMargin()),
-    PgTypes.text.encode(unsaved.title),
-    typo.runtime.Fragment.lit(", "),
-    BusinessentityId.pgType.encode(unsaved.owner),
-    typo.runtime.Fragment.lit("::int4, "),
-    Flag.pgType.encode(unsaved.folderflag),
-    typo.runtime.Fragment.lit("::bool, "),
-    PgTypes.text.encode(unsaved.filename),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.text.opt().encode(unsaved.fileextension),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.text.encode(unsaved.revision),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    PgTypes.int4.encode(unsaved.changenumber),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoShort.pgType.encode(unsaved.status),
-    typo.runtime.Fragment.lit("::int2, "),
-    PgTypes.text.opt().encode(unsaved.documentsummary),
-    typo.runtime.Fragment.lit(", "),
-    TypoBytea.pgType.opt().encode(unsaved.document),
-    typo.runtime.Fragment.lit("::bytea, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    DocumentId.pgType.encode(unsaved.documentnode),
-    typo.runtime.Fragment.lit("""
-      )
-      returning "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"
-    """.trimMargin())
-  )
+  ): DocumentRow = interpolate(Fragment.lit("insert into \"production\".\"document\"(\"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\")\nvalues ("), Fragment.encode(PgTypes.text, unsaved.title), Fragment.lit(", "), Fragment.encode(BusinessentityId.pgType, unsaved.owner), Fragment.lit("::int4, "), Fragment.encode(Flag.pgType, unsaved.folderflag), Fragment.lit("::bool, "), Fragment.encode(PgTypes.text, unsaved.filename), Fragment.lit(", "), Fragment.encode(PgTypes.text.nullable(), unsaved.fileextension), Fragment.lit(", "), Fragment.encode(PgTypes.bpchar, unsaved.revision), Fragment.lit("::bpchar, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.changenumber), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.status), Fragment.lit("::int2, "), Fragment.encode(PgTypes.text.nullable(), unsaved.documentsummary), Fragment.lit(", "), Fragment.encode(PgTypes.bytea.nullable(), unsaved.document), Fragment.lit("::bytea, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp, "), Fragment.encode(DocumentId.pgType, unsaved.documentnode), Fragment.lit(")\nreturning \"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\"\n"))
     .updateReturning(DocumentRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: DocumentRowUnsaved,
     c: Connection
   ): DocumentRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"title\""))
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.title),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.title), Fragment.lit("")))
     columns.add(Fragment.lit("\"owner\""))
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.owner),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.owner), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"filename\""))
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.filename),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.filename), Fragment.lit("")))
     columns.add(Fragment.lit("\"fileextension\""))
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.fileextension),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.text.nullable(), unsaved.fileextension), Fragment.lit("")))
     columns.add(Fragment.lit("\"revision\""))
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.revision),
-      typo.runtime.Fragment.lit("::bpchar")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.bpchar, unsaved.revision), Fragment.lit("::bpchar")))
     columns.add(Fragment.lit("\"status\""))
-    values.add(interpolate(
-      TypoShort.pgType.encode(unsaved.status),
-      typo.runtime.Fragment.lit("::int2")
-    ))
+    values.add(interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.status), Fragment.lit("::int2")))
     columns.add(Fragment.lit("\"documentsummary\""))
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.documentsummary),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.text.nullable(), unsaved.documentsummary), Fragment.lit("")))
     columns.add(Fragment.lit("\"document\""))
-    values.add(interpolate(
-      TypoBytea.pgType.opt().encode(unsaved.document),
-      typo.runtime.Fragment.lit("::bytea")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.bytea.nullable(), unsaved.document), Fragment.lit("::bytea")))
     unsaved.folderflag.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"folderflag\""))
-      values.add(interpolate(
-        Flag.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      )) }
+      values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool"))) }
     );
     unsaved.changenumber.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"changenumber\""))
-      values.add(interpolate(
-        PgTypes.int4.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      )) }
+      values.add(interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int4, value), Fragment.lit("::int4"))) }
     );
     unsaved.rowguid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"rowguid\""))
-      values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
     unsaved.documentnode.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"documentnode\""))
-      values.add(interpolate(
-        DocumentId.pgType.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(interpolate(Fragment.encode(DocumentId.pgType, value), Fragment.lit(""))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."document"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"production\".\"document\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\"\n"))
     return q.updateReturning(DocumentRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -208,49 +101,28 @@ class DocumentRepoImpl() : DocumentRepo {
     unsaved: MutableIterator<DocumentRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "production"."document"("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, DocumentRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"production\".\"document\"(\"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\") FROM STDIN", batchSize, unsaved, c, DocumentRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<DocumentRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "production"."document"("title", "owner", "filename", "fileextension", "revision", "status", "documentsummary", "document", "folderflag", "changenumber", "rowguid", "modifieddate", "documentnode") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, DocumentRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"production\".\"document\"(\"title\", \"owner\", \"filename\", \"fileextension\", \"revision\", \"status\", \"documentsummary\", \"document\", \"folderflag\", \"changenumber\", \"rowguid\", \"modifieddate\", \"documentnode\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, DocumentRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<DocumentFields, DocumentRow> = SelectBuilder.of("\"production\".\"document\"", DocumentFields.structure, DocumentRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<DocumentRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"
-    from "production"."document"
-  """.trimMargin())).query(DocumentRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<DocumentRow> = interpolate(Fragment.lit("select \"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\"\nfrom \"production\".\"document\"\n")).query(DocumentRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     documentnode: DocumentId,
     c: Connection
-  ): Optional<DocumentRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"
-      from "production"."document"
-      where "documentnode" = """.trimMargin()),
-    DocumentId.pgType.encode(documentnode),
-    typo.runtime.Fragment.lit("")
-  ).query(DocumentRow._rowParser.first()).runUnchecked(c)
+  ): DocumentRow? = interpolate(Fragment.lit("select \"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\"\nfrom \"production\".\"document\"\nwhere \"documentnode\" = "), Fragment.encode(DocumentId.pgType, documentnode), Fragment.lit("")).query(DocumentRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     documentnodes: Array<DocumentId>,
     c: Connection
-  ): List<DocumentRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"
-      from "production"."document"
-      where "documentnode" = ANY(""".trimMargin()),
-    DocumentId.pgTypeArray.encode(documentnodes),
-    typo.runtime.Fragment.lit(")")
-  ).query(DocumentRow._rowParser.all()).runUnchecked(c)
+  ): List<DocumentRow> = interpolate(Fragment.lit("select \"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\"\nfrom \"production\".\"document\"\nwhere \"documentnode\" = ANY("), Fragment.encode(DocumentId.pgTypeArray, documentnodes), Fragment.lit(")")).query(DocumentRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     documentnodes: Array<DocumentId>,
@@ -258,164 +130,37 @@ class DocumentRepoImpl() : DocumentRepo {
   ): Map<DocumentId, DocumentRow> {
     val ret: MutableMap<DocumentId, DocumentRow> = mutableMapOf<DocumentId, DocumentRow>()
     selectByIds(documentnodes, c).forEach({ row -> ret.put(row.documentnode, row) })
-    return ret
+    return ret.toMap()
   }
 
   override fun selectByUniqueRowguid(
-    rowguid: TypoUUID,
+    rowguid: UUID,
     c: Connection
-  ): Optional<DocumentRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"
-      from "production"."document"
-      where "rowguid" = """.trimMargin()),
-    TypoUUID.pgType.encode(rowguid),
-    typo.runtime.Fragment.lit("""
+  ): DocumentRow? = interpolate(Fragment.lit("select \"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\"\nfrom \"production\".\"document\"\nwhere \"rowguid\" = "), Fragment.encode(PgTypes.uuid, rowguid), Fragment.lit("\n")).query(DocumentRow._rowParser.first()).runUnchecked(c)
 
-
-    """.trimMargin())
-  ).query(DocumentRow._rowParser.first()).runUnchecked(c)
-
-  override fun update(): UpdateBuilder<DocumentFields, DocumentRow> = UpdateBuilder.of("\"production\".\"document\"", DocumentFields.structure, DocumentRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<DocumentFields, DocumentRow> = UpdateBuilder.of("\"production\".\"document\"", DocumentFields.structure, DocumentRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: DocumentRow,
     c: Connection
   ): Boolean {
     val documentnode: DocumentId = row.documentnode
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "production"."document"
-        set "title" = """.trimMargin()),
-      PgTypes.text.encode(row.title),
-      typo.runtime.Fragment.lit("""
-        ,
-        "owner" = """.trimMargin()),
-      BusinessentityId.pgType.encode(row.owner),
-      typo.runtime.Fragment.lit("""
-        ::int4,
-        "folderflag" = """.trimMargin()),
-      Flag.pgType.encode(row.folderflag),
-      typo.runtime.Fragment.lit("""
-        ::bool,
-        "filename" = """.trimMargin()),
-      PgTypes.text.encode(row.filename),
-      typo.runtime.Fragment.lit("""
-        ,
-        "fileextension" = """.trimMargin()),
-      PgTypes.text.opt().encode(row.fileextension),
-      typo.runtime.Fragment.lit("""
-        ,
-        "revision" = """.trimMargin()),
-      PgTypes.text.encode(row.revision),
-      typo.runtime.Fragment.lit("""
-        ::bpchar,
-        "changenumber" = """.trimMargin()),
-      PgTypes.int4.encode(row.changenumber),
-      typo.runtime.Fragment.lit("""
-        ::int4,
-        "status" = """.trimMargin()),
-      TypoShort.pgType.encode(row.status),
-      typo.runtime.Fragment.lit("""
-        ::int2,
-        "documentsummary" = """.trimMargin()),
-      PgTypes.text.opt().encode(row.documentsummary),
-      typo.runtime.Fragment.lit("""
-        ,
-        "document" = """.trimMargin()),
-      TypoBytea.pgType.opt().encode(row.document),
-      typo.runtime.Fragment.lit("""
-        ::bytea,
-        "rowguid" = """.trimMargin()),
-      TypoUUID.pgType.encode(row.rowguid),
-      typo.runtime.Fragment.lit("""
-        ::uuid,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "documentnode" = """.trimMargin()),
-      DocumentId.pgType.encode(documentnode),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"production\".\"document\"\nset \"title\" = "), Fragment.encode(PgTypes.text, row.title), Fragment.lit(",\n\"owner\" = "), Fragment.encode(BusinessentityId.pgType, row.owner), Fragment.lit("::int4,\n\"folderflag\" = "), Fragment.encode(Flag.pgType, row.folderflag), Fragment.lit("::bool,\n\"filename\" = "), Fragment.encode(PgTypes.text, row.filename), Fragment.lit(",\n\"fileextension\" = "), Fragment.encode(PgTypes.text.nullable(), row.fileextension), Fragment.lit(",\n\"revision\" = "), Fragment.encode(PgTypes.bpchar, row.revision), Fragment.lit("::bpchar,\n\"changenumber\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, row.changenumber), Fragment.lit("::int4,\n\"status\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int2, row.status), Fragment.lit("::int2,\n\"documentsummary\" = "), Fragment.encode(PgTypes.text.nullable(), row.documentsummary), Fragment.lit(",\n\"document\" = "), Fragment.encode(PgTypes.bytea.nullable(), row.document), Fragment.lit("::bytea,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"documentnode\" = "), Fragment.encode(DocumentId.pgType, documentnode), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: DocumentRow,
     c: Connection
-  ): DocumentRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "production"."document"("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")
-      values (""".trimMargin()),
-    PgTypes.text.encode(unsaved.title),
-    typo.runtime.Fragment.lit(", "),
-    BusinessentityId.pgType.encode(unsaved.owner),
-    typo.runtime.Fragment.lit("::int4, "),
-    Flag.pgType.encode(unsaved.folderflag),
-    typo.runtime.Fragment.lit("::bool, "),
-    PgTypes.text.encode(unsaved.filename),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.text.opt().encode(unsaved.fileextension),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.text.encode(unsaved.revision),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    PgTypes.int4.encode(unsaved.changenumber),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoShort.pgType.encode(unsaved.status),
-    typo.runtime.Fragment.lit("::int2, "),
-    PgTypes.text.opt().encode(unsaved.documentsummary),
-    typo.runtime.Fragment.lit(", "),
-    TypoBytea.pgType.opt().encode(unsaved.document),
-    typo.runtime.Fragment.lit("::bytea, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    DocumentId.pgType.encode(unsaved.documentnode),
-    typo.runtime.Fragment.lit("""
-      )
-      on conflict ("documentnode")
-      do update set
-        "title" = EXCLUDED."title",
-      "owner" = EXCLUDED."owner",
-      "folderflag" = EXCLUDED."folderflag",
-      "filename" = EXCLUDED."filename",
-      "fileextension" = EXCLUDED."fileextension",
-      "revision" = EXCLUDED."revision",
-      "changenumber" = EXCLUDED."changenumber",
-      "status" = EXCLUDED."status",
-      "documentsummary" = EXCLUDED."documentsummary",
-      "document" = EXCLUDED."document",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"""".trimMargin())
-  )
+  ): DocumentRow = interpolate(Fragment.lit("insert into \"production\".\"document\"(\"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\")\nvalues ("), Fragment.encode(PgTypes.text, unsaved.title), Fragment.lit(", "), Fragment.encode(BusinessentityId.pgType, unsaved.owner), Fragment.lit("::int4, "), Fragment.encode(Flag.pgType, unsaved.folderflag), Fragment.lit("::bool, "), Fragment.encode(PgTypes.text, unsaved.filename), Fragment.lit(", "), Fragment.encode(PgTypes.text.nullable(), unsaved.fileextension), Fragment.lit(", "), Fragment.encode(PgTypes.bpchar, unsaved.revision), Fragment.lit("::bpchar, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.changenumber), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.status), Fragment.lit("::int2, "), Fragment.encode(PgTypes.text.nullable(), unsaved.documentsummary), Fragment.lit(", "), Fragment.encode(PgTypes.bytea.nullable(), unsaved.document), Fragment.lit("::bytea, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp, "), Fragment.encode(DocumentId.pgType, unsaved.documentnode), Fragment.lit(")\non conflict (\"documentnode\")\ndo update set\n  \"title\" = EXCLUDED.\"title\",\n\"owner\" = EXCLUDED.\"owner\",\n\"folderflag\" = EXCLUDED.\"folderflag\",\n\"filename\" = EXCLUDED.\"filename\",\n\"fileextension\" = EXCLUDED.\"fileextension\",\n\"revision\" = EXCLUDED.\"revision\",\n\"changenumber\" = EXCLUDED.\"changenumber\",\n\"status\" = EXCLUDED.\"status\",\n\"documentsummary\" = EXCLUDED.\"documentsummary\",\n\"document\" = EXCLUDED.\"document\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\""))
     .updateReturning(DocumentRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<DocumentRow>,
     c: Connection
-  ): List<DocumentRow> = interpolate(typo.runtime.Fragment.lit("""
-                           insert into "production"."document"("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")
-                           values (?, ?::int4, ?::bool, ?, ?, ?::bpchar, ?::int4, ?::int2, ?, ?::bytea, ?::uuid, ?::timestamp, ?)
-                           on conflict ("documentnode")
-                           do update set
-                             "title" = EXCLUDED."title",
-                           "owner" = EXCLUDED."owner",
-                           "folderflag" = EXCLUDED."folderflag",
-                           "filename" = EXCLUDED."filename",
-                           "fileextension" = EXCLUDED."fileextension",
-                           "revision" = EXCLUDED."revision",
-                           "changenumber" = EXCLUDED."changenumber",
-                           "status" = EXCLUDED."status",
-                           "documentsummary" = EXCLUDED."documentsummary",
-                           "document" = EXCLUDED."document",
-                           "rowguid" = EXCLUDED."rowguid",
-                           "modifieddate" = EXCLUDED."modifieddate"
-                           returning "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"""".trimMargin()))
+  ): List<DocumentRow> = interpolate(Fragment.lit("insert into \"production\".\"document\"(\"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\")\nvalues (?, ?::int4, ?::bool, ?, ?, ?::bpchar, ?::int4, ?::int2, ?, ?::bytea, ?::uuid, ?::timestamp, ?)\non conflict (\"documentnode\")\ndo update set\n  \"title\" = EXCLUDED.\"title\",\n\"owner\" = EXCLUDED.\"owner\",\n\"folderflag\" = EXCLUDED.\"folderflag\",\n\"filename\" = EXCLUDED.\"filename\",\n\"fileextension\" = EXCLUDED.\"fileextension\",\n\"revision\" = EXCLUDED.\"revision\",\n\"changenumber\" = EXCLUDED.\"changenumber\",\n\"status\" = EXCLUDED.\"status\",\n\"documentsummary\" = EXCLUDED.\"documentsummary\",\n\"document\" = EXCLUDED.\"document\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\""))
     .updateManyReturning(DocumentRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -423,30 +168,8 @@ class DocumentRepoImpl() : DocumentRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table document_TEMP (like "production"."document") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy document_TEMP("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode") from stdin
-    """.trimMargin()), batchSize, unsaved, c, DocumentRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "production"."document"("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")
-      select * from document_TEMP
-      on conflict ("documentnode")
-      do update set
-        "title" = EXCLUDED."title",
-      "owner" = EXCLUDED."owner",
-      "folderflag" = EXCLUDED."folderflag",
-      "filename" = EXCLUDED."filename",
-      "fileextension" = EXCLUDED."fileextension",
-      "revision" = EXCLUDED."revision",
-      "changenumber" = EXCLUDED."changenumber",
-      "status" = EXCLUDED."status",
-      "documentsummary" = EXCLUDED."documentsummary",
-      "document" = EXCLUDED."document",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table document_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table document_TEMP (like \"production\".\"document\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy document_TEMP(\"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\") from stdin", batchSize, unsaved, c, DocumentRow.pgText)
+    return interpolate(Fragment.lit("insert into \"production\".\"document\"(\"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\")\nselect * from document_TEMP\non conflict (\"documentnode\")\ndo update set\n  \"title\" = EXCLUDED.\"title\",\n\"owner\" = EXCLUDED.\"owner\",\n\"folderflag\" = EXCLUDED.\"folderflag\",\n\"filename\" = EXCLUDED.\"filename\",\n\"fileextension\" = EXCLUDED.\"fileextension\",\n\"revision\" = EXCLUDED.\"revision\",\n\"changenumber\" = EXCLUDED.\"changenumber\",\n\"status\" = EXCLUDED.\"status\",\n\"documentsummary\" = EXCLUDED.\"documentsummary\",\n\"document\" = EXCLUDED.\"document\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table document_TEMP;")).update().runUnchecked(c)
   }
 }

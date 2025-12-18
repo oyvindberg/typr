@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class CuViewRepoImpl implements CuViewRepo {
@@ -19,9 +20,6 @@ public class CuViewRepoImpl implements CuViewRepo {
 
   @Override
   public List<CuViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "currencycode", "name", "modifieddate"::text
-       from "sa"."cu"
-    """)).query(CuViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"currencycode\", \"name\", \"modifieddate\"\nfrom \"sa\".\"cu\"\n")).query(CuViewRow._rowParser.all()).runUnchecked(c);
   };
 }

@@ -6,13 +6,14 @@
 package testdb.warehouses
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import org.mariadb.jdbc.`type`.Point
 import org.mariadb.jdbc.`type`.Polygon
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `warehouses` which has not been persisted yet */
 case class WarehousesRowUnsaved(
@@ -27,7 +28,7 @@ case class WarehousesRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("service_area") serviceArea: Defaulted[Optional[Polygon]] = new UseDefault(),
+  @JsonProperty("service_area") serviceArea: Defaulted[Option[Polygon]] = new UseDefault(),
   /** Default: 'UTC'
 
    */
@@ -35,22 +36,22 @@ case class WarehousesRowUnsaved(
   /** Default: 1
 
    */
-  @JsonProperty("is_active") isActive: Defaulted[java.lang.Boolean] = new UseDefault(),
+  @JsonProperty("is_active") isActive: Defaulted[Boolean] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("contact_email") contactEmail: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("contact_email") contactEmail: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("contact_phone") contactPhone: Defaulted[Optional[String]] = new UseDefault()
+  @JsonProperty("contact_phone") contactPhone: Defaulted[Option[String]] = new UseDefault()
 ) {
   def toRow(
-    serviceAreaDefault: => Optional[Polygon],
+    serviceAreaDefault: => Option[Polygon],
     timezoneDefault: => String,
-    isActiveDefault: => java.lang.Boolean,
-    contactEmailDefault: => Optional[String],
-    contactPhoneDefault: => Optional[String],
+    isActiveDefault: => Boolean,
+    contactEmailDefault: => Option[String],
+    contactPhoneDefault: => Option[String],
     warehouseIdDefault: => WarehousesId
   ): WarehousesRow = {
     new WarehousesRow(
@@ -69,5 +70,5 @@ case class WarehousesRowUnsaved(
 }
 
 object WarehousesRowUnsaved {
-  given mariaText: MariaText[WarehousesRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.char_.mariaText.unsafeEncode(row.code, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.address, sb); sb.append(MariaText.DELIMETER); MariaTypes.point.mariaText.unsafeEncode(row.location, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.polygon.opt().mariaText).unsafeEncode(row.serviceArea, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.mariaText).unsafeEncode(row.timezone, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isActive, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.contactEmail, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.contactPhone, sb) })
+  given mariaText: MariaText[WarehousesRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.char_.mariaText.unsafeEncode(row.code, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.address, sb); sb.append(MariaText.DELIMETER); MariaTypes.point.mariaText.unsafeEncode(row.location, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.polygon.nullable.mariaText).unsafeEncode(row.serviceArea, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.mariaText).unsafeEncode(row.timezone, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isActive, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.contactEmail, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.contactPhone, sb) })
 }

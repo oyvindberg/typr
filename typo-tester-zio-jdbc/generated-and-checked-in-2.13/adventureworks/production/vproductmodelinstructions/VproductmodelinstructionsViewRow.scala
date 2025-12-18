@@ -22,13 +22,13 @@ case class VproductmodelinstructionsViewRow(
   productmodelid: ProductmodelId,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
-  instructions: /* nullability unknown */ Option[String],
+  instructions: Option[String],
   locationID: Int,
   setupHours: BigDecimal,
   machineHours: BigDecimal,
   laborHours: BigDecimal,
   lotSize: Int,
-  step: /* max 1024 chars */ String,
+  step: String,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */

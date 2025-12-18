@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VProductCatalogViewRepoImpl implements VProductCatalogViewRepo {
@@ -19,9 +20,6 @@ public class VProductCatalogViewRepoImpl implements VProductCatalogViewRepo {
 
   @Override
   public List<VProductCatalogViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `product_id`, `sku`, `name`, `short_description`, `base_price`, `status`, `tags`, `brand_name`, `available_quantity`, `avg_rating`, `review_count`
-       from `v_product_catalog`
-    """)).query(VProductCatalogViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `product_id`, `sku`, `name`, `short_description`, `base_price`, `status`, `tags`, `brand_name`, `available_quantity`, `avg_rating`, `review_count`\nfrom `v_product_catalog`\n")).query(VProductCatalogViewRow._rowParser.all()).runUnchecked(c);
   };
 }

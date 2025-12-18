@@ -61,7 +61,7 @@ public record PriceTiersRow(
     return new PriceTiersRow(tierId, name, minQuantity, discountType, discountValue);
   };
 
-  static RowParser<PriceTiersRow> _rowParser = RowParsers.of(PriceTiersId.pgType, MariaTypes.varchar, MariaTypes.intUnsigned, MariaTypes.text, MariaTypes.decimal, PriceTiersRow::new, row -> new Object[]{row.tierId(), row.name(), row.minQuantity(), row.discountType(), row.discountValue()});;
+  static RowParser<PriceTiersRow> _rowParser = RowParsers.of(PriceTiersId.pgType, MariaTypes.varchar, MariaTypes.intUnsigned, MariaTypes.text, MariaTypes.numeric, PriceTiersRow::new, row -> new Object[]{row.tierId(), row.name(), row.minQuantity(), row.discountType(), row.discountValue()});;
 
   static public MariaText<PriceTiersRow> mariaText =
     MariaText.from(_rowParser);

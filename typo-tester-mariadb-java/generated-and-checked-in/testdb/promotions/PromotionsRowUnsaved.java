@@ -184,7 +184,7 @@ public record PromotionsRowUnsaved(
       sb.append(MariaText.DELIMETER);
       MariaTypes.text.mariaText().unsafeEncode(row.discountType, sb);
       sb.append(MariaText.DELIMETER);
-      MariaTypes.decimal.mariaText().unsafeEncode(row.discountValue, sb);
+      MariaTypes.numeric.mariaText().unsafeEncode(row.discountValue, sb);
       sb.append(MariaText.DELIMETER);
       MariaTypes.datetime.mariaText().unsafeEncode(row.validFrom, sb);
       sb.append(MariaText.DELIMETER);
@@ -192,7 +192,7 @@ public record PromotionsRowUnsaved(
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.text.opt().mariaText()).unsafeEncode(row.description, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.minOrderAmount, sb);
+      Defaulted.mariaText(MariaTypes.numeric.opt().mariaText()).unsafeEncode(row.minOrderAmount, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.intUnsigned.opt().mariaText()).unsafeEncode(row.maxUses, sb);
       sb.append(MariaText.DELIMETER);

@@ -5,14 +5,14 @@
  */
 package adventureworks.pr.pm
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.public.Name
-import java.util.Optional
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.data.Xml
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pr.pm */
 data class PmViewRow(
@@ -23,15 +23,15 @@ data class PmViewRow(
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.name] */
   val name: Name,
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.catalogdescription] */
-  val catalogdescription: Optional<TypoXml>,
+  val catalogdescription: Xml,
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.instructions] */
-  val instructions: Optional<TypoXml>,
+  val instructions: Xml,
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.production.productmodel.ProductmodelRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PmViewRow> = RowParsers.of(ProductmodelId.pgType, ProductmodelId.pgType, Name.pgType, TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> PmViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.productmodelid, row.name, row.catalogdescription, row.instructions, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<PmViewRow> = RowParsers.of(ProductmodelId.pgType, ProductmodelId.pgType, Name.pgType, PgTypes.xml, PgTypes.xml, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> PmViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.productmodelid, row.name, row.catalogdescription, row.instructions, row.rowguid, row.modifieddate) })
   }
 }

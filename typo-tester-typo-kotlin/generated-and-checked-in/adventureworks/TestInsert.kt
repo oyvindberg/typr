@@ -6,31 +6,6 @@
 package adventureworks
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoBox
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoCircle
-import adventureworks.customtypes.TypoHStore
-import adventureworks.customtypes.TypoInet
-import adventureworks.customtypes.TypoInstant
-import adventureworks.customtypes.TypoInt2Vector
-import adventureworks.customtypes.TypoInterval
-import adventureworks.customtypes.TypoJson
-import adventureworks.customtypes.TypoJsonb
-import adventureworks.customtypes.TypoLine
-import adventureworks.customtypes.TypoLineSegment
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoLocalTime
-import adventureworks.customtypes.TypoMoney
-import adventureworks.customtypes.TypoOffsetTime
-import adventureworks.customtypes.TypoPath
-import adventureworks.customtypes.TypoPoint
-import adventureworks.customtypes.TypoPolygon
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoUnknownCitext
-import adventureworks.customtypes.TypoVector
-import adventureworks.customtypes.TypoXml
 import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.department.DepartmentRepoImpl
 import adventureworks.humanresources.department.DepartmentRow
@@ -328,9 +303,26 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.ZoneOffset
-import java.util.Optional
+import java.time.OffsetTime
 import java.util.Random
+import java.util.UUID
+import kotlin.collections.Map
+import org.postgresql.geometric.PGbox
+import org.postgresql.geometric.PGcircle
+import org.postgresql.geometric.PGline
+import org.postgresql.geometric.PGlseg
+import org.postgresql.geometric.PGpath
+import org.postgresql.geometric.PGpoint
+import org.postgresql.geometric.PGpolygon
+import org.postgresql.util.PGInterval
+import typo.data.Inet
+import typo.data.Int2Vector
+import typo.data.Json
+import typo.data.Jsonb
+import typo.data.Money
+import typo.data.Unknown
+import typo.data.Vector
+import typo.data.Xml
 
 /** Methods to generate random data for `Ident(TestInsert)` */
 data class TestInsert(
@@ -341,26 +333,26 @@ data class TestInsert(
     name: Name,
     groupname: Name,
     departmentid: Defaulted<DepartmentId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): DepartmentRow = (DepartmentRepoImpl()).insert(DepartmentRowUnsaved(name = name, groupname = groupname, departmentid = departmentid, modifieddate = modifieddate), c)
 
   fun humanresourcesEmployee(
     businessentityid: BusinessentityId,
-    nationalidnumber: /* max 15 chars */ String,
-    loginid: /* max 256 chars */ String,
-    jobtitle: /* max 50 chars */ String,
-    birthdate: TypoLocalDate,
-    maritalstatus: /* bpchar, max 1 chars */ String,
-    gender: /* bpchar, max 1 chars */ String,
-    hiredate: TypoLocalDate,
+    nationalidnumber: String,
+    loginid: String,
+    jobtitle: String,
+    birthdate: LocalDate,
+    maritalstatus: String,
+    gender: String,
+    hiredate: LocalDate,
     salariedflag: Defaulted<Flag>,
-    vacationhours: Defaulted<TypoShort>,
-    sickleavehours: Defaulted<TypoShort>,
+    vacationhours: Defaulted<Short>,
+    sickleavehours: Defaulted<Short>,
     currentflag: Defaulted<Flag>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
-    organizationnode: Defaulted<Optional<String>>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
+    organizationnode: Defaulted<String?>,
     c: Connection
   ): EmployeeRow = (EmployeeRepoImpl()).insert(EmployeeRowUnsaved(businessentityid = businessentityid, nationalidnumber = nationalidnumber, loginid = loginid, jobtitle = jobtitle, birthdate = birthdate, maritalstatus = maritalstatus, gender = gender, hiredate = hiredate, salariedflag = salariedflag, vacationhours = vacationhours, sickleavehours = sickleavehours, currentflag = currentflag, rowguid = rowguid, modifieddate = modifieddate, organizationnode = organizationnode), c)
 
@@ -368,63 +360,63 @@ data class TestInsert(
     businessentityid: BusinessentityId,
     departmentid: DepartmentId,
     shiftid: ShiftId,
-    startdate: TypoLocalDate,
-    enddate: Optional<TypoLocalDate>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    startdate: LocalDate,
+    enddate: LocalDate?,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): EmployeedepartmenthistoryRow = (EmployeedepartmenthistoryRepoImpl()).insert(EmployeedepartmenthistoryRowUnsaved(businessentityid = businessentityid, departmentid = departmentid, shiftid = shiftid, startdate = startdate, enddate = enddate, modifieddate = modifieddate), c)
 
   fun humanresourcesEmployeepayhistory(
     businessentityid: BusinessentityId,
+    ratechangedate: LocalDateTime,
     rate: BigDecimal,
-    payfrequency: TypoShort,
-    ratechangedate: TypoLocalDateTime,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    payfrequency: Short,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): EmployeepayhistoryRow = (EmployeepayhistoryRepoImpl()).insert(EmployeepayhistoryRowUnsaved(businessentityid = businessentityid, ratechangedate = ratechangedate, rate = rate, payfrequency = payfrequency, modifieddate = modifieddate), c)
 
   fun humanresourcesJobcandidate(
-    businessentityid: Optional<BusinessentityId>,
-    resume: Optional<TypoXml>,
+    businessentityid: BusinessentityId?,
+    resume: Xml?,
     jobcandidateid: Defaulted<JobcandidateId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): JobcandidateRow = (JobcandidateRepoImpl()).insert(JobcandidateRowUnsaved(businessentityid = businessentityid, resume = resume, jobcandidateid = jobcandidateid, modifieddate = modifieddate), c)
 
   fun humanresourcesShift(
+    starttime: LocalTime,
+    endtime: LocalTime,
     name: Name,
-    starttime: TypoLocalTime,
-    endtime: TypoLocalTime,
     shiftid: Defaulted<ShiftId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ShiftRow = (ShiftRepoImpl()).insert(ShiftRowUnsaved(name = name, starttime = starttime, endtime = endtime, shiftid = shiftid, modifieddate = modifieddate), c)
 
   fun personAddress(
-    addressline1: /* max 60 chars */ String,
-    city: /* max 30 chars */ String,
+    addressline1: String,
+    city: String,
     stateprovinceid: StateprovinceId,
-    postalcode: /* max 15 chars */ String,
-    addressline2: Optional</* max 60 chars */ String>,
-    spatiallocation: Optional<TypoBytea>,
+    postalcode: String,
+    addressline2: /* max 60 chars */ String?,
+    spatiallocation: ByteArray?,
     addressid: Defaulted<AddressId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): AddressRow = (AddressRepoImpl()).insert(AddressRowUnsaved(addressline1 = addressline1, addressline2 = addressline2, city = city, stateprovinceid = stateprovinceid, postalcode = postalcode, spatiallocation = spatiallocation, addressid = addressid, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun personAddresstype(
     name: Name,
     addresstypeid: Defaulted<AddresstypeId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): AddresstypeRow = (AddresstypeRepoImpl()).insert(AddresstypeRowUnsaved(name = name, addresstypeid = addresstypeid, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun personBusinessentity(
     businessentityid: Defaulted<BusinessentityId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): BusinessentityRow = (BusinessentityRepoImpl()).insert(BusinessentityRowUnsaved(businessentityid = businessentityid, rowguid = rowguid, modifieddate = modifieddate), c)
 
@@ -432,8 +424,8 @@ data class TestInsert(
     businessentityid: BusinessentityId,
     addressid: AddressId,
     addresstypeid: AddresstypeId,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): BusinessentityaddressRow = (BusinessentityaddressRepoImpl()).insert(BusinessentityaddressRowUnsaved(businessentityid = businessentityid, addressid = addressid, addresstypeid = addresstypeid, rowguid = rowguid, modifieddate = modifieddate), c)
 
@@ -441,57 +433,57 @@ data class TestInsert(
     businessentityid: BusinessentityId,
     personid: BusinessentityId,
     contacttypeid: ContacttypeId,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): BusinessentitycontactRow = (BusinessentitycontactRepoImpl()).insert(BusinessentitycontactRowUnsaved(businessentityid = businessentityid, personid = personid, contacttypeid = contacttypeid, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun personContacttype(
     name: Name,
     contacttypeid: Defaulted<ContacttypeId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ContacttypeRow = (ContacttypeRepoImpl()).insert(ContacttypeRowUnsaved(name = name, contacttypeid = contacttypeid, modifieddate = modifieddate), c)
 
   fun personCountryregion(
     countryregioncode: CountryregionId,
     name: Name,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): CountryregionRow = (CountryregionRepoImpl()).insert(CountryregionRowUnsaved(countryregioncode = countryregioncode, name = name, modifieddate = modifieddate), c)
 
   fun personEmailaddress(
     businessentityid: BusinessentityId,
-    emailaddress: Optional</* max 50 chars */ String>,
+    emailaddress: /* max 50 chars */ String?,
     emailaddressid: Defaulted<Int>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): EmailaddressRow = (EmailaddressRepoImpl()).insert(EmailaddressRowUnsaved(businessentityid = businessentityid, emailaddress = emailaddress, emailaddressid = emailaddressid, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun personPassword(
     businessentityid: BusinessentityId,
-    passwordhash: /* max 128 chars */ String,
-    passwordsalt: /* max 10 chars */ String,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    passwordhash: String,
+    passwordsalt: String,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): PasswordRow = (PasswordRepoImpl()).insert(PasswordRowUnsaved(businessentityid = businessentityid, passwordhash = passwordhash, passwordsalt = passwordsalt, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun personPerson(
     businessentityid: BusinessentityId,
-    persontype: /* bpchar, max 2 chars */ String,
+    persontype: String,
     firstname: /* user-picked */ FirstName,
-    title: Optional</* max 8 chars */ String>,
-    middlename: Optional<Name>,
+    title: /* max 8 chars */ String?,
+    middlename: Name?,
     lastname: Name,
-    suffix: Optional</* max 10 chars */ String>,
-    additionalcontactinfo: Optional<TypoXml>,
-    demographics: Optional<TypoXml>,
+    suffix: /* max 10 chars */ String?,
+    additionalcontactinfo: Xml?,
+    demographics: Xml?,
     namestyle: Defaulted<NameStyle>,
     emailpromotion: Defaulted<Int>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): PersonRow = (PersonRepoImpl()).insert(PersonRowUnsaved(businessentityid = businessentityid, persontype = persontype, title = title, firstname = firstname, middlename = middlename, lastname = lastname, suffix = suffix, additionalcontactinfo = additionalcontactinfo, demographics = demographics, namestyle = namestyle, emailpromotion = emailpromotion, rowguid = rowguid, modifieddate = modifieddate), c)
 
@@ -499,70 +491,70 @@ data class TestInsert(
     businessentityid: BusinessentityId,
     phonenumbertypeid: PhonenumbertypeId,
     phonenumber: Phone,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): PersonphoneRow = (PersonphoneRepoImpl()).insert(PersonphoneRowUnsaved(businessentityid = businessentityid, phonenumber = phonenumber, phonenumbertypeid = phonenumbertypeid, modifieddate = modifieddate), c)
 
   fun personPhonenumbertype(
     name: Name,
     phonenumbertypeid: Defaulted<PhonenumbertypeId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): PhonenumbertypeRow = (PhonenumbertypeRepoImpl()).insert(PhonenumbertypeRowUnsaved(name = name, phonenumbertypeid = phonenumbertypeid, modifieddate = modifieddate), c)
 
   fun personStateprovince(
-    stateprovincecode: /* bpchar, max 3 chars */ String,
+    stateprovincecode: String,
     countryregioncode: CountryregionId,
     territoryid: SalesterritoryId,
     name: Name,
     stateprovinceid: Defaulted<StateprovinceId>,
     isonlystateprovinceflag: Defaulted<Flag>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): StateprovinceRow = (StateprovinceRepoImpl()).insert(StateprovinceRowUnsaved(stateprovincecode = stateprovincecode, countryregioncode = countryregioncode, name = name, territoryid = territoryid, stateprovinceid = stateprovinceid, isonlystateprovinceflag = isonlystateprovinceflag, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun productionBillofmaterials(
     componentid: ProductId,
     unitmeasurecode: UnitmeasureId,
-    bomlevel: TypoShort,
-    productassemblyid: Optional<ProductId>,
-    enddate: Optional<TypoLocalDateTime>,
+    bomlevel: Short,
+    productassemblyid: ProductId?,
+    enddate: LocalDateTime?,
     billofmaterialsid: Defaulted<Int>,
-    startdate: Defaulted<TypoLocalDateTime>,
+    startdate: Defaulted<LocalDateTime>,
     perassemblyqty: Defaulted<BigDecimal>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): BillofmaterialsRow = (BillofmaterialsRepoImpl()).insert(BillofmaterialsRowUnsaved(productassemblyid = productassemblyid, componentid = componentid, enddate = enddate, unitmeasurecode = unitmeasurecode, bomlevel = bomlevel, billofmaterialsid = billofmaterialsid, startdate = startdate, perassemblyqty = perassemblyqty, modifieddate = modifieddate), c)
 
   fun productionCulture(
     cultureid: CultureId,
     name: Name,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): CultureRow = (CultureRepoImpl()).insert(CultureRowUnsaved(cultureid = cultureid, name = name, modifieddate = modifieddate), c)
 
   fun productionDocument(
-    title: /* max 50 chars */ String,
+    title: String,
     owner: BusinessentityId,
-    filename: /* max 400 chars */ String,
-    revision: /* bpchar, max 5 chars */ String,
-    status: TypoShort,
-    fileextension: Optional</* max 8 chars */ String>,
-    documentsummary: Optional<String>,
-    document: Optional<TypoBytea>,
+    filename: String,
+    revision: String,
+    status: Short,
+    fileextension: /* max 8 chars */ String?,
+    documentsummary: String?,
+    document: ByteArray?,
     folderflag: Defaulted<Flag>,
     changenumber: Defaulted<Int>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     documentnode: Defaulted<DocumentId>,
     c: Connection
   ): DocumentRow = (DocumentRepoImpl()).insert(DocumentRowUnsaved(title = title, owner = owner, filename = filename, fileextension = fileextension, revision = revision, status = status, documentsummary = documentsummary, document = document, folderflag = folderflag, changenumber = changenumber, rowguid = rowguid, modifieddate = modifieddate, documentnode = documentnode), c)
 
   fun productionIllustration(
-    diagram: Optional<TypoXml>,
+    diagram: Xml?,
     illustrationid: Defaulted<IllustrationId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): IllustrationRow = (IllustrationRepoImpl()).insert(IllustrationRowUnsaved(diagram = diagram, illustrationid = illustrationid, modifieddate = modifieddate), c)
 
@@ -571,67 +563,67 @@ data class TestInsert(
     locationid: Defaulted<LocationId>,
     costrate: Defaulted<BigDecimal>,
     availability: Defaulted<BigDecimal>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): LocationRow = (LocationRepoImpl()).insert(LocationRowUnsaved(name = name, locationid = locationid, costrate = costrate, availability = availability, modifieddate = modifieddate), c)
 
   fun productionProduct(
-    productnumber: /* max 25 chars */ String,
-    safetystocklevel: TypoShort,
-    reorderpoint: TypoShort,
+    productnumber: String,
+    safetystocklevel: Short,
+    reorderpoint: Short,
     standardcost: BigDecimal,
     listprice: BigDecimal,
     daystomanufacture: Int,
-    sellstartdate: TypoLocalDateTime,
+    sellstartdate: LocalDateTime,
     name: Name,
-    color: Optional</* max 15 chars */ String>,
-    size: Optional</* max 5 chars */ String>,
-    sizeunitmeasurecode: Optional<UnitmeasureId>,
-    weightunitmeasurecode: Optional<UnitmeasureId>,
-    weight: Optional<BigDecimal>,
-    productline: Optional</* bpchar, max 2 chars */ String>,
-    `class`: Optional</* bpchar, max 2 chars */ String>,
-    style: Optional</* bpchar, max 2 chars */ String>,
-    productsubcategoryid: Optional<ProductsubcategoryId>,
-    productmodelid: Optional<ProductmodelId>,
-    sellenddate: Optional<TypoLocalDateTime>,
-    discontinueddate: Optional<TypoLocalDateTime>,
+    color: /* max 15 chars */ String?,
+    size: /* max 5 chars */ String?,
+    sizeunitmeasurecode: UnitmeasureId?,
+    weightunitmeasurecode: UnitmeasureId?,
+    weight: BigDecimal?,
+    productline: /* bpchar, max 2 chars */ String?,
+    `class`: /* bpchar, max 2 chars */ String?,
+    style: /* bpchar, max 2 chars */ String?,
+    productsubcategoryid: ProductsubcategoryId?,
+    productmodelid: ProductmodelId?,
+    sellenddate: LocalDateTime?,
+    discontinueddate: LocalDateTime?,
     productid: Defaulted<ProductId>,
     makeflag: Defaulted<Flag>,
     finishedgoodsflag: Defaulted<Flag>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductRow = (ProductRepoImpl()).insert(ProductRowUnsaved(name = name, productnumber = productnumber, color = color, safetystocklevel = safetystocklevel, reorderpoint = reorderpoint, standardcost = standardcost, listprice = listprice, size = size, sizeunitmeasurecode = sizeunitmeasurecode, weightunitmeasurecode = weightunitmeasurecode, weight = weight, daystomanufacture = daystomanufacture, productline = productline, `class` = `class`, style = style, productsubcategoryid = productsubcategoryid, productmodelid = productmodelid, sellstartdate = sellstartdate, sellenddate = sellenddate, discontinueddate = discontinueddate, productid = productid, makeflag = makeflag, finishedgoodsflag = finishedgoodsflag, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun productionProductcategory(
     name: Name,
     productcategoryid: Defaulted<ProductcategoryId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductcategoryRow = (ProductcategoryRepoImpl()).insert(ProductcategoryRowUnsaved(name = name, productcategoryid = productcategoryid, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun productionProductcosthistory(
     productid: ProductId,
-    startdate: TypoLocalDateTime,
+    startdate: LocalDateTime,
     standardcost: BigDecimal,
-    enddate: Optional<TypoLocalDateTime>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    enddate: LocalDateTime?,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductcosthistoryRow = (ProductcosthistoryRepoImpl()).insert(ProductcosthistoryRowUnsaved(productid = productid, startdate = startdate, enddate = enddate, standardcost = standardcost, modifieddate = modifieddate), c)
 
   fun productionProductdescription(
-    description: /* max 400 chars */ String,
+    description: String,
     productdescriptionid: Defaulted<ProductdescriptionId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductdescriptionRow = (ProductdescriptionRepoImpl()).insert(ProductdescriptionRowUnsaved(description = description, productdescriptionid = productdescriptionid, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun productionProductdocument(
     productid: ProductId,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     documentnode: Defaulted<DocumentId>,
     c: Connection
   ): ProductdocumentRow = (ProductdocumentRepoImpl()).insert(ProductdocumentRowUnsaved(productid = productid, modifieddate = modifieddate, documentnode = documentnode), c)
@@ -639,37 +631,37 @@ data class TestInsert(
   fun productionProductinventory(
     productid: ProductId,
     locationid: LocationId,
-    shelf: /* max 10 chars */ String,
-    bin: TypoShort,
-    quantity: Defaulted<TypoShort>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    shelf: String,
+    bin: Short,
+    quantity: Defaulted<Short>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductinventoryRow = (ProductinventoryRepoImpl()).insert(ProductinventoryRowUnsaved(productid = productid, locationid = locationid, shelf = shelf, bin = bin, quantity = quantity, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun productionProductlistpricehistory(
     productid: ProductId,
-    startdate: TypoLocalDateTime,
+    startdate: LocalDateTime,
     listprice: BigDecimal,
-    enddate: Optional<TypoLocalDateTime>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    enddate: LocalDateTime?,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductlistpricehistoryRow = (ProductlistpricehistoryRepoImpl()).insert(ProductlistpricehistoryRowUnsaved(productid = productid, startdate = startdate, enddate = enddate, listprice = listprice, modifieddate = modifieddate), c)
 
   fun productionProductmodel(
     name: Name,
-    catalogdescription: Optional<TypoXml>,
-    instructions: Optional<TypoXml>,
+    catalogdescription: Xml?,
+    instructions: Xml?,
     productmodelid: Defaulted<ProductmodelId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductmodelRow = (ProductmodelRepoImpl()).insert(ProductmodelRowUnsaved(name = name, catalogdescription = catalogdescription, instructions = instructions, productmodelid = productmodelid, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun productionProductmodelillustration(
     productmodelid: ProductmodelId,
     illustrationid: IllustrationId,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductmodelillustrationRow = (ProductmodelillustrationRepoImpl()).insert(ProductmodelillustrationRowUnsaved(productmodelid = productmodelid, illustrationid = illustrationid, modifieddate = modifieddate), c)
 
@@ -677,17 +669,17 @@ data class TestInsert(
     productmodelid: ProductmodelId,
     productdescriptionid: ProductdescriptionId,
     cultureid: CultureId,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductmodelproductdescriptioncultureRow = (ProductmodelproductdescriptioncultureRepoImpl()).insert(ProductmodelproductdescriptioncultureRowUnsaved(productmodelid = productmodelid, productdescriptionid = productdescriptionid, cultureid = cultureid, modifieddate = modifieddate), c)
 
   fun productionProductphoto(
-    thumbnailphoto: Optional<TypoBytea>,
-    thumbnailphotofilename: Optional</* max 50 chars */ String>,
-    largephoto: Optional<TypoBytea>,
-    largephotofilename: Optional</* max 50 chars */ String>,
+    thumbnailphoto: ByteArray?,
+    thumbnailphotofilename: /* max 50 chars */ String?,
+    largephoto: ByteArray?,
+    largephotofilename: /* max 50 chars */ String?,
     productphotoid: Defaulted<ProductphotoId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductphotoRow = (ProductphotoRepoImpl()).insert(ProductphotoRowUnsaved(thumbnailphoto = thumbnailphoto, thumbnailphotofilename = thumbnailphotofilename, largephoto = largephoto, largephotofilename = largephotofilename, productphotoid = productphotoid, modifieddate = modifieddate), c)
 
@@ -695,19 +687,19 @@ data class TestInsert(
     productid: ProductId,
     productphotoid: ProductphotoId,
     primary: Defaulted<Flag>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductproductphotoRow = (ProductproductphotoRepoImpl()).insert(ProductproductphotoRowUnsaved(productid = productid, productphotoid = productphotoid, primary = primary, modifieddate = modifieddate), c)
 
   fun productionProductreview(
     productid: ProductId,
-    emailaddress: /* max 50 chars */ String,
+    emailaddress: String,
     rating: Int,
     reviewername: Name,
-    comments: Optional</* max 3850 chars */ String>,
+    comments: /* max 3850 chars */ String?,
     productreviewid: Defaulted<ProductreviewId>,
-    reviewdate: Defaulted<TypoLocalDateTime>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    reviewdate: Defaulted<LocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductreviewRow = (ProductreviewRepoImpl()).insert(ProductreviewRowUnsaved(productid = productid, reviewername = reviewername, emailaddress = emailaddress, rating = rating, comments = comments, productreviewid = productreviewid, reviewdate = reviewdate, modifieddate = modifieddate), c)
 
@@ -715,86 +707,86 @@ data class TestInsert(
     productcategoryid: ProductcategoryId,
     name: Name,
     productsubcategoryid: Defaulted<ProductsubcategoryId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductsubcategoryRow = (ProductsubcategoryRepoImpl()).insert(ProductsubcategoryRowUnsaved(productcategoryid = productcategoryid, name = name, productsubcategoryid = productsubcategoryid, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun productionScrapreason(
     name: Name,
     scrapreasonid: Defaulted<ScrapreasonId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ScrapreasonRow = (ScrapreasonRepoImpl()).insert(ScrapreasonRowUnsaved(name = name, scrapreasonid = scrapreasonid, modifieddate = modifieddate), c)
 
   fun productionTransactionhistory(
     productid: ProductId,
-    transactiontype: /* bpchar, max 1 chars */ String,
+    transactiontype: String,
     referenceorderid: Int,
     quantity: Int,
     actualcost: BigDecimal,
     transactionid: Defaulted<TransactionhistoryId>,
     referenceorderlineid: Defaulted<Int>,
-    transactiondate: Defaulted<TypoLocalDateTime>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    transactiondate: Defaulted<LocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): TransactionhistoryRow = (TransactionhistoryRepoImpl()).insert(TransactionhistoryRowUnsaved(productid = productid, referenceorderid = referenceorderid, transactiontype = transactiontype, quantity = quantity, actualcost = actualcost, transactionid = transactionid, referenceorderlineid = referenceorderlineid, transactiondate = transactiondate, modifieddate = modifieddate), c)
 
   fun productionTransactionhistoryarchive(
-    transactiontype: /* bpchar, max 1 chars */ String,
+    transactiontype: String,
     transactionid: TransactionhistoryarchiveId,
     productid: Int,
     referenceorderid: Int,
     quantity: Int,
     actualcost: BigDecimal,
     referenceorderlineid: Defaulted<Int>,
-    transactiondate: Defaulted<TypoLocalDateTime>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    transactiondate: Defaulted<LocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): TransactionhistoryarchiveRow = (TransactionhistoryarchiveRepoImpl()).insert(TransactionhistoryarchiveRowUnsaved(transactionid = transactionid, productid = productid, referenceorderid = referenceorderid, transactiontype = transactiontype, quantity = quantity, actualcost = actualcost, referenceorderlineid = referenceorderlineid, transactiondate = transactiondate, modifieddate = modifieddate), c)
 
   fun productionUnitmeasure(
     unitmeasurecode: UnitmeasureId,
     name: Name,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): UnitmeasureRow = (UnitmeasureRepoImpl()).insert(UnitmeasureRowUnsaved(unitmeasurecode = unitmeasurecode, name = name, modifieddate = modifieddate), c)
 
   fun productionWorkorder(
     productid: ProductId,
     orderqty: Int,
-    scrappedqty: TypoShort,
-    startdate: TypoLocalDateTime,
-    enddate: Optional<TypoLocalDateTime>,
-    duedate: TypoLocalDateTime,
-    scrapreasonid: Optional<ScrapreasonId>,
+    scrappedqty: Short,
+    startdate: LocalDateTime,
+    duedate: LocalDateTime,
+    enddate: LocalDateTime?,
+    scrapreasonid: ScrapreasonId?,
     workorderid: Defaulted<WorkorderId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): WorkorderRow = (WorkorderRepoImpl()).insert(WorkorderRowUnsaved(productid = productid, orderqty = orderqty, scrappedqty = scrappedqty, startdate = startdate, enddate = enddate, duedate = duedate, scrapreasonid = scrapreasonid, workorderid = workorderid, modifieddate = modifieddate), c)
 
   fun productionWorkorderrouting(
     workorderid: WorkorderId,
     locationid: LocationId,
-    scheduledstartdate: TypoLocalDateTime,
-    scheduledenddate: TypoLocalDateTime,
+    scheduledstartdate: LocalDateTime,
+    scheduledenddate: LocalDateTime,
     plannedcost: BigDecimal,
     productid: Int,
-    operationsequence: TypoShort,
-    actualstartdate: Optional<TypoLocalDateTime>,
-    actualenddate: Optional<TypoLocalDateTime>,
-    actualresourcehrs: Optional<BigDecimal>,
-    actualcost: Optional<BigDecimal>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    operationsequence: Short,
+    actualstartdate: LocalDateTime?,
+    actualenddate: LocalDateTime?,
+    actualresourcehrs: BigDecimal?,
+    actualcost: BigDecimal?,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): WorkorderroutingRow = (WorkorderroutingRepoImpl()).insert(WorkorderroutingRowUnsaved(workorderid = workorderid, productid = productid, operationsequence = operationsequence, locationid = locationid, scheduledstartdate = scheduledstartdate, scheduledenddate = scheduledenddate, actualstartdate = actualstartdate, actualenddate = actualenddate, actualresourcehrs = actualresourcehrs, plannedcost = plannedcost, actualcost = actualcost, modifieddate = modifieddate), c)
 
   fun publicFlaff(
-    anotherCode: /* max 20 chars */ String,
+    anotherCode: String,
     code: ShortText,
     someNumber: Int,
     specifier: ShortText,
-    parentspecifier: Optional<ShortText>,
+    parentspecifier: ShortText?,
     c: Connection
   ): FlaffRow = (FlaffRepoImpl()).insert(FlaffRow(code = code, anotherCode = anotherCode, someNumber = someNumber, specifier = specifier, parentspecifier = parentspecifier), c)
 
@@ -821,150 +813,150 @@ data class TestInsert(
   ): OnlyPkColumnsRow = (OnlyPkColumnsRepoImpl()).insert(OnlyPkColumnsRow(keyColumn1 = keyColumn1, keyColumn2 = keyColumn2), c)
 
   fun publicPgtest(
-    box: TypoBox,
-    bpchar: /* bpchar, max 3 chars */ String,
-    bytea: TypoBytea,
-    char: /* bpchar, max 1 chars */ String,
-    circle: TypoCircle,
-    hstore: TypoHStore,
-    inet: TypoInet,
-    int2vector: TypoInt2Vector,
-    interval: TypoInterval,
-    json: TypoJson,
-    jsonb: TypoJsonb,
-    line: TypoLine,
-    lseg: TypoLineSegment,
-    money: TypoMoney,
+    box: PGbox,
+    bpchar: String,
+    bytea: ByteArray,
+    char: String,
+    circle: PGcircle,
+    date: LocalDate,
+    hstore: Map<String, String>,
+    inet: Inet,
+    int2vector: Int2Vector,
+    interval: PGInterval,
+    json: Json,
+    jsonb: Jsonb,
+    line: PGline,
+    lseg: PGlseg,
+    money: Money,
     name: String,
-    path: TypoPath,
-    point: TypoPoint,
-    polygon: TypoPolygon,
+    path: PGpath,
+    point: PGpoint,
+    polygon: PGpolygon,
     text: String,
+    time: LocalTime,
+    timestamp: LocalDateTime,
+    timestampz: Instant,
+    timez: OffsetTime,
     varchar: String,
-    vector: TypoVector,
-    xml: TypoXml,
-    boxes: Array<TypoBox>,
+    vector: Vector,
+    xml: Xml,
+    boxes: Array<PGbox>,
     bpchares: Array</* bpchar */ String>,
     chares: Array</* bpchar */ String>,
-    circlees: Array<TypoCircle>,
-    inetes: Array<TypoInet>,
-    int2vectores: Array<TypoInt2Vector>,
-    intervales: Array<TypoInterval>,
-    jsones: Array<TypoJson>,
-    jsonbes: Array<TypoJsonb>,
-    linees: Array<TypoLine>,
-    lseges: Array<TypoLineSegment>,
-    moneyes: Array<TypoMoney>,
+    circlees: Array<PGcircle>,
+    datees: Array<LocalDate>,
+    inetes: Array<Inet>,
+    int2vectores: Array<Int2Vector>,
+    intervales: Array<PGInterval>,
+    jsones: Array<Json>,
+    jsonbes: Array<Jsonb>,
+    linees: Array<PGline>,
+    lseges: Array<PGlseg>,
+    moneyes: Array<Money>,
     namees: Array<String>,
-    pathes: Array<TypoPath>,
-    pointes: Array<TypoPoint>,
-    polygones: Array<TypoPolygon>,
+    pathes: Array<PGpath>,
+    pointes: Array<PGpoint>,
+    polygones: Array<PGpolygon>,
     textes: Array<String>,
+    timees: Array<LocalTime>,
+    timestampes: Array<LocalDateTime>,
+    timestampzes: Array<Instant>,
+    timezes: Array<OffsetTime>,
     varchares: Array<String>,
-    xmles: Array<TypoXml>,
+    xmles: Array<Xml>,
     bool: Boolean,
-    date: TypoLocalDate,
     float4: Float,
     float8: Double,
-    int2: TypoShort,
+    int2: Short,
     int4: Int,
     int8: Long,
     mydomain: Mydomain,
     myenum: Myenum,
     numeric: BigDecimal,
-    time: TypoLocalTime,
-    timestamp: TypoLocalDateTime,
-    timestampz: TypoInstant,
-    timez: TypoOffsetTime,
-    uuid: TypoUUID,
-    datees: Array<TypoLocalDate>,
+    uuid: UUID,
     float4es: Array<Float>,
     float8es: Array<Double>,
-    int2es: Array<TypoShort>,
+    int2es: Array<Short>,
     int4es: Array<Int>,
     int8es: Array<Long>,
     mydomaines: Array<Mydomain>,
     myenumes: Array<Myenum>,
     numerices: Array<BigDecimal>,
-    timees: Array<TypoLocalTime>,
-    timestampes: Array<TypoLocalDateTime>,
-    timestampzes: Array<TypoInstant>,
-    timezes: Array<TypoOffsetTime>,
-    uuides: Array<TypoUUID>,
+    uuides: Array<UUID>,
     c: Connection
   ): PgtestRow = (PgtestRepoImpl()).insert(PgtestRow(bool = bool, box = box, bpchar = bpchar, bytea = bytea, char = char, circle = circle, date = date, float4 = float4, float8 = float8, hstore = hstore, inet = inet, int2 = int2, int2vector = int2vector, int4 = int4, int8 = int8, interval = interval, json = json, jsonb = jsonb, line = line, lseg = lseg, money = money, mydomain = mydomain, myenum = myenum, name = name, numeric = numeric, path = path, point = point, polygon = polygon, text = text, time = time, timestamp = timestamp, timestampz = timestampz, timez = timez, uuid = uuid, varchar = varchar, vector = vector, xml = xml, boxes = boxes, bpchares = bpchares, chares = chares, circlees = circlees, datees = datees, float4es = float4es, float8es = float8es, inetes = inetes, int2es = int2es, int2vectores = int2vectores, int4es = int4es, int8es = int8es, intervales = intervales, jsones = jsones, jsonbes = jsonbes, linees = linees, lseges = lseges, moneyes = moneyes, mydomaines = mydomaines, myenumes = myenumes, namees = namees, numerices = numerices, pathes = pathes, pointes = pointes, polygones = polygones, textes = textes, timees = timees, timestampes = timestampes, timestampzes = timestampzes, timezes = timezes, uuides = uuides, varchares = varchares, xmles = xmles), c)
 
   fun publicPgtestnull(
-    bool: Optional<Boolean>,
-    box: Optional<TypoBox>,
-    bpchar: Optional</* bpchar, max 3 chars */ String>,
-    bytea: Optional<TypoBytea>,
-    char: Optional</* bpchar, max 1 chars */ String>,
-    circle: Optional<TypoCircle>,
-    date: Optional<TypoLocalDate>,
-    float4: Optional<Float>,
-    float8: Optional<Double>,
-    hstore: Optional<TypoHStore>,
-    inet: Optional<TypoInet>,
-    int2: Optional<TypoShort>,
-    int2vector: Optional<TypoInt2Vector>,
-    int4: Optional<Int>,
-    int8: Optional<Long>,
-    interval: Optional<TypoInterval>,
-    json: Optional<TypoJson>,
-    jsonb: Optional<TypoJsonb>,
-    line: Optional<TypoLine>,
-    lseg: Optional<TypoLineSegment>,
-    money: Optional<TypoMoney>,
-    mydomain: Optional<Mydomain>,
-    myenum: Optional<Myenum>,
-    name: Optional<String>,
-    numeric: Optional<BigDecimal>,
-    path: Optional<TypoPath>,
-    point: Optional<TypoPoint>,
-    polygon: Optional<TypoPolygon>,
-    text: Optional<String>,
-    time: Optional<TypoLocalTime>,
-    timestamp: Optional<TypoLocalDateTime>,
-    timestampz: Optional<TypoInstant>,
-    timez: Optional<TypoOffsetTime>,
-    uuid: Optional<TypoUUID>,
-    varchar: Optional<String>,
-    vector: Optional<TypoVector>,
-    xml: Optional<TypoXml>,
-    boxes: Optional<Array<TypoBox>>,
-    bpchares: Optional<Array</* bpchar */ String>>,
-    chares: Optional<Array</* bpchar */ String>>,
-    circlees: Optional<Array<TypoCircle>>,
-    datees: Optional<Array<TypoLocalDate>>,
-    float4es: Optional<Array<Float>>,
-    float8es: Optional<Array<Double>>,
-    inetes: Optional<Array<TypoInet>>,
-    int2es: Optional<Array<TypoShort>>,
-    int2vectores: Optional<Array<TypoInt2Vector>>,
-    int4es: Optional<Array<Int>>,
-    int8es: Optional<Array<Long>>,
-    intervales: Optional<Array<TypoInterval>>,
-    jsones: Optional<Array<TypoJson>>,
-    jsonbes: Optional<Array<TypoJsonb>>,
-    linees: Optional<Array<TypoLine>>,
-    lseges: Optional<Array<TypoLineSegment>>,
-    moneyes: Optional<Array<TypoMoney>>,
-    mydomaines: Optional<Array<Mydomain>>,
-    myenumes: Optional<Array<Myenum>>,
-    namees: Optional<Array<String>>,
-    numerices: Optional<Array<BigDecimal>>,
-    pathes: Optional<Array<TypoPath>>,
-    pointes: Optional<Array<TypoPoint>>,
-    polygones: Optional<Array<TypoPolygon>>,
-    textes: Optional<Array<String>>,
-    timees: Optional<Array<TypoLocalTime>>,
-    timestampes: Optional<Array<TypoLocalDateTime>>,
-    timestampzes: Optional<Array<TypoInstant>>,
-    timezes: Optional<Array<TypoOffsetTime>>,
-    uuides: Optional<Array<TypoUUID>>,
-    varchares: Optional<Array<String>>,
-    xmles: Optional<Array<TypoXml>>,
+    bool: Boolean?,
+    box: PGbox?,
+    bpchar: /* bpchar, max 3 chars */ String?,
+    bytea: ByteArray?,
+    char: /* bpchar, max 1 chars */ String?,
+    circle: PGcircle?,
+    date: LocalDate?,
+    float4: Float?,
+    float8: Double?,
+    hstore: Map<String, String>?,
+    inet: Inet?,
+    int2: Short?,
+    int2vector: Int2Vector?,
+    int4: Int?,
+    int8: Long?,
+    interval: PGInterval?,
+    json: Json?,
+    jsonb: Jsonb?,
+    line: PGline?,
+    lseg: PGlseg?,
+    money: Money?,
+    mydomain: Mydomain?,
+    myenum: Myenum?,
+    name: String?,
+    numeric: BigDecimal?,
+    path: PGpath?,
+    point: PGpoint?,
+    polygon: PGpolygon?,
+    text: String?,
+    time: LocalTime?,
+    timestamp: LocalDateTime?,
+    timestampz: Instant?,
+    timez: OffsetTime?,
+    uuid: UUID?,
+    varchar: String?,
+    vector: Vector?,
+    xml: Xml?,
+    boxes: Array<PGbox>?,
+    bpchares: Array</* bpchar */ String>?,
+    chares: Array</* bpchar */ String>?,
+    circlees: Array<PGcircle>?,
+    datees: Array<LocalDate>?,
+    float4es: Array<Float>?,
+    float8es: Array<Double>?,
+    inetes: Array<Inet>?,
+    int2es: Array<Short>?,
+    int2vectores: Array<Int2Vector>?,
+    int4es: Array<Int>?,
+    int8es: Array<Long>?,
+    intervales: Array<PGInterval>?,
+    jsones: Array<Json>?,
+    jsonbes: Array<Jsonb>?,
+    linees: Array<PGline>?,
+    lseges: Array<PGlseg>?,
+    moneyes: Array<Money>?,
+    mydomaines: Array<Mydomain>?,
+    myenumes: Array<Myenum>?,
+    namees: Array<String>?,
+    numerices: Array<BigDecimal>?,
+    pathes: Array<PGpath>?,
+    pointes: Array<PGpoint>?,
+    polygones: Array<PGpolygon>?,
+    textes: Array<String>?,
+    timees: Array<LocalTime>?,
+    timestampes: Array<LocalDateTime>?,
+    timestampzes: Array<Instant>?,
+    timezes: Array<OffsetTime>?,
+    uuides: Array<UUID>?,
+    varchares: Array<String>?,
+    xmles: Array<Xml>?,
     c: Connection
   ): PgtestnullRow = (PgtestnullRepoImpl()).insert(PgtestnullRow(bool = bool, box = box, bpchar = bpchar, bytea = bytea, char = char, circle = circle, date = date, float4 = float4, float8 = float8, hstore = hstore, inet = inet, int2 = int2, int2vector = int2vector, int4 = int4, int8 = int8, interval = interval, json = json, jsonb = jsonb, line = line, lseg = lseg, money = money, mydomain = mydomain, myenum = myenum, name = name, numeric = numeric, path = path, point = point, polygon = polygon, text = text, time = time, timestamp = timestamp, timestampz = timestampz, timez = timez, uuid = uuid, varchar = varchar, vector = vector, xml = xml, boxes = boxes, bpchares = bpchares, chares = chares, circlees = circlees, datees = datees, float4es = float4es, float8es = float8es, inetes = inetes, int2es = int2es, int2vectores = int2vectores, int4es = int4es, int8es = int8es, intervales = intervales, jsones = jsones, jsonbes = jsonbes, linees = linees, lseges = lseges, moneyes = moneyes, mydomaines = mydomaines, myenumes = myenumes, namees = namees, numerices = numerices, pathes = pathes, pointes = pointes, polygones = polygones, textes = textes, timees = timees, timestampes = timestampes, timestampzes = timestampzes, timezes = timezes, uuides = uuides, varchares = varchares, xmles = xmles), c)
 
@@ -1009,12 +1001,12 @@ data class TestInsert(
 
   fun publicUsers(
     name: String,
-    email: TypoUnknownCitext,
+    email: Unknown,
     password: String,
     userId: UsersId,
-    lastName: Optional<String>,
-    verifiedOn: Optional<TypoInstant>,
-    createdAt: Defaulted<TypoInstant>,
+    lastName: String?,
+    verifiedOn: Instant?,
+    createdAt: Defaulted<Instant>,
     c: Connection
   ): UsersRow = (UsersRepoImpl()).insert(UsersRowUnsaved(userId = userId, name = name, lastName = lastName, email = email, password = password, verifiedOn = verifiedOn, createdAt = createdAt), c)
 
@@ -1026,10 +1018,10 @@ data class TestInsert(
     minorderqty: Int,
     maxorderqty: Int,
     unitmeasurecode: UnitmeasureId,
-    lastreceiptcost: Optional<BigDecimal>,
-    lastreceiptdate: Optional<TypoLocalDateTime>,
-    onorderqty: Optional<Int>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    lastreceiptcost: BigDecimal?,
+    lastreceiptdate: LocalDateTime?,
+    onorderqty: Int?,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ProductvendorRow = (ProductvendorRepoImpl()).insert(ProductvendorRowUnsaved(productid = productid, businessentityid = businessentityid, averageleadtime = averageleadtime, standardprice = standardprice, lastreceiptcost = lastreceiptcost, lastreceiptdate = lastreceiptdate, minorderqty = minorderqty, maxorderqty = maxorderqty, onorderqty = onorderqty, unitmeasurecode = unitmeasurecode, modifieddate = modifieddate), c)
 
@@ -1037,15 +1029,15 @@ data class TestInsert(
     employeeid: BusinessentityId,
     vendorid: BusinessentityId,
     shipmethodid: ShipmethodId,
-    shipdate: Optional<TypoLocalDateTime>,
+    shipdate: LocalDateTime?,
     purchaseorderid: Defaulted<PurchaseorderheaderId>,
-    revisionnumber: Defaulted<TypoShort>,
-    status: Defaulted<TypoShort>,
-    orderdate: Defaulted<TypoLocalDateTime>,
+    revisionnumber: Defaulted<Short>,
+    status: Defaulted<Short>,
+    orderdate: Defaulted<LocalDateTime>,
     subtotal: Defaulted<BigDecimal>,
     taxamt: Defaulted<BigDecimal>,
     freight: Defaulted<BigDecimal>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): PurchaseorderheaderRow = (PurchaseorderheaderRepoImpl()).insert(PurchaseorderheaderRowUnsaved(employeeid = employeeid, vendorid = vendorid, shipmethodid = shipmethodid, shipdate = shipdate, purchaseorderid = purchaseorderid, revisionnumber = revisionnumber, status = status, orderdate = orderdate, subtotal = subtotal, taxamt = taxamt, freight = freight, modifieddate = modifieddate), c)
 
@@ -1054,143 +1046,143 @@ data class TestInsert(
     shipmethodid: Defaulted<ShipmethodId>,
     shipbase: Defaulted<BigDecimal>,
     shiprate: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ShipmethodRow = (ShipmethodRepoImpl()).insert(ShipmethodRowUnsaved(name = name, shipmethodid = shipmethodid, shipbase = shipbase, shiprate = shiprate, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun purchasingVendor(
     businessentityid: BusinessentityId,
-    creditrating: TypoShort,
+    creditrating: Short,
     accountnumber: AccountNumber,
     name: Name,
-    purchasingwebserviceurl: Optional</* max 1024 chars */ String>,
+    purchasingwebserviceurl: /* max 1024 chars */ String?,
     preferredvendorstatus: Defaulted<Flag>,
     activeflag: Defaulted<Flag>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): VendorRow = (VendorRepoImpl()).insert(VendorRowUnsaved(businessentityid = businessentityid, accountnumber = accountnumber, name = name, creditrating = creditrating, purchasingwebserviceurl = purchasingwebserviceurl, preferredvendorstatus = preferredvendorstatus, activeflag = activeflag, modifieddate = modifieddate), c)
 
   fun salesCountryregioncurrency(
     countryregioncode: CountryregionId,
     currencycode: CurrencyId,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): CountryregioncurrencyRow = (CountryregioncurrencyRepoImpl()).insert(CountryregioncurrencyRowUnsaved(countryregioncode = countryregioncode, currencycode = currencycode, modifieddate = modifieddate), c)
 
   fun salesCreditcard(
-    cardtype: /* max 50 chars */ String,
-    cardnumber: /* max 25 chars */ String,
-    expmonth: TypoShort,
-    expyear: TypoShort,
+    cardtype: String,
+    cardnumber: String,
+    expmonth: Short,
+    expyear: Short,
     creditcardid: Defaulted</* user-picked */ CustomCreditcardId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): CreditcardRow = (CreditcardRepoImpl()).insert(CreditcardRowUnsaved(cardtype = cardtype, cardnumber = cardnumber, expmonth = expmonth, expyear = expyear, creditcardid = creditcardid, modifieddate = modifieddate), c)
 
   fun salesCurrency(
     currencycode: CurrencyId,
     name: Name,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): CurrencyRow = (CurrencyRepoImpl()).insert(CurrencyRowUnsaved(currencycode = currencycode, name = name, modifieddate = modifieddate), c)
 
   fun salesCurrencyrate(
+    currencyratedate: LocalDateTime,
     fromcurrencycode: CurrencyId,
     tocurrencycode: CurrencyId,
-    currencyratedate: TypoLocalDateTime,
     averagerate: BigDecimal,
     endofdayrate: BigDecimal,
     currencyrateid: Defaulted<CurrencyrateId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): CurrencyrateRow = (CurrencyrateRepoImpl()).insert(CurrencyrateRowUnsaved(currencyratedate = currencyratedate, fromcurrencycode = fromcurrencycode, tocurrencycode = tocurrencycode, averagerate = averagerate, endofdayrate = endofdayrate, currencyrateid = currencyrateid, modifieddate = modifieddate), c)
 
   fun salesCustomer(
-    personid: Optional<BusinessentityId>,
-    storeid: Optional<BusinessentityId>,
-    territoryid: Optional<SalesterritoryId>,
+    personid: BusinessentityId?,
+    storeid: BusinessentityId?,
+    territoryid: SalesterritoryId?,
     customerid: Defaulted<CustomerId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): CustomerRow = (CustomerRepoImpl()).insert(CustomerRowUnsaved(personid = personid, storeid = storeid, territoryid = territoryid, customerid = customerid, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun salesPersoncreditcard(
     businessentityid: BusinessentityId,
     creditcardid: /* user-picked */ CustomCreditcardId,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): PersoncreditcardRow = (PersoncreditcardRepoImpl()).insert(PersoncreditcardRowUnsaved(businessentityid = businessentityid, creditcardid = creditcardid, modifieddate = modifieddate), c)
 
   fun salesSalesorderdetail(
     SpecialofferproductId: SpecialofferproductId,
     salesorderid: SalesorderheaderId,
-    orderqty: TypoShort,
+    orderqty: Short,
     unitprice: BigDecimal,
-    carriertrackingnumber: Optional</* max 25 chars */ String>,
+    carriertrackingnumber: /* max 25 chars */ String?,
     salesorderdetailid: Defaulted<Int>,
     unitpricediscount: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SalesorderdetailRow = (SalesorderdetailRepoImpl()).insert(SalesorderdetailRowUnsaved(salesorderid = salesorderid, carriertrackingnumber = carriertrackingnumber, orderqty = orderqty, productid = SpecialofferproductId.productid, specialofferid = SpecialofferproductId.specialofferid, unitprice = unitprice, salesorderdetailid = salesorderdetailid, unitpricediscount = unitpricediscount, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun salesSalesorderheader(
-    duedate: TypoLocalDateTime,
+    duedate: LocalDateTime,
     customerid: CustomerId,
     billtoaddressid: AddressId,
     shiptoaddressid: AddressId,
     shipmethodid: ShipmethodId,
-    shipdate: Optional<TypoLocalDateTime>,
-    purchaseordernumber: Optional<OrderNumber>,
-    accountnumber: Optional<AccountNumber>,
-    salespersonid: Optional<BusinessentityId>,
-    territoryid: Optional<SalesterritoryId>,
-    creditcardid: Optional</* user-picked */ CustomCreditcardId>,
-    creditcardapprovalcode: Optional</* max 15 chars */ String>,
-    currencyrateid: Optional<CurrencyrateId>,
-    totaldue: Optional<BigDecimal>,
-    comment: Optional</* max 128 chars */ String>,
+    shipdate: LocalDateTime?,
+    purchaseordernumber: OrderNumber?,
+    accountnumber: AccountNumber?,
+    salespersonid: BusinessentityId?,
+    territoryid: SalesterritoryId?,
+    creditcardid: /* user-picked */ CustomCreditcardId?,
+    creditcardapprovalcode: /* max 15 chars */ String?,
+    currencyrateid: CurrencyrateId?,
+    totaldue: BigDecimal?,
+    comment: /* max 128 chars */ String?,
     salesorderid: Defaulted<SalesorderheaderId>,
-    revisionnumber: Defaulted<TypoShort>,
-    orderdate: Defaulted<TypoLocalDateTime>,
-    status: Defaulted<TypoShort>,
+    revisionnumber: Defaulted<Short>,
+    orderdate: Defaulted<LocalDateTime>,
+    status: Defaulted<Short>,
     onlineorderflag: Defaulted<Flag>,
     subtotal: Defaulted<BigDecimal>,
     taxamt: Defaulted<BigDecimal>,
     freight: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SalesorderheaderRow = (SalesorderheaderRepoImpl()).insert(SalesorderheaderRowUnsaved(duedate = duedate, shipdate = shipdate, purchaseordernumber = purchaseordernumber, accountnumber = accountnumber, customerid = customerid, salespersonid = salespersonid, territoryid = territoryid, billtoaddressid = billtoaddressid, shiptoaddressid = shiptoaddressid, shipmethodid = shipmethodid, creditcardid = creditcardid, creditcardapprovalcode = creditcardapprovalcode, currencyrateid = currencyrateid, totaldue = totaldue, comment = comment, salesorderid = salesorderid, revisionnumber = revisionnumber, orderdate = orderdate, status = status, onlineorderflag = onlineorderflag, subtotal = subtotal, taxamt = taxamt, freight = freight, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun salesSalesorderheadersalesreason(
     salesorderid: SalesorderheaderId,
     salesreasonid: SalesreasonId,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SalesorderheadersalesreasonRow = (SalesorderheadersalesreasonRepoImpl()).insert(SalesorderheadersalesreasonRowUnsaved(salesorderid = salesorderid, salesreasonid = salesreasonid, modifieddate = modifieddate), c)
 
   fun salesSalesperson(
     businessentityid: BusinessentityId,
-    territoryid: Optional<SalesterritoryId>,
-    salesquota: Optional<BigDecimal>,
+    territoryid: SalesterritoryId?,
+    salesquota: BigDecimal?,
     bonus: Defaulted<BigDecimal>,
     commissionpct: Defaulted<BigDecimal>,
     salesytd: Defaulted<BigDecimal>,
     saleslastyear: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SalespersonRow = (SalespersonRepoImpl()).insert(SalespersonRowUnsaved(businessentityid = businessentityid, territoryid = territoryid, salesquota = salesquota, bonus = bonus, commissionpct = commissionpct, salesytd = salesytd, saleslastyear = saleslastyear, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun salesSalespersonquotahistory(
     businessentityid: BusinessentityId,
+    quotadate: LocalDateTime,
     salesquota: BigDecimal,
-    quotadate: TypoLocalDateTime,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SalespersonquotahistoryRow = (SalespersonquotahistoryRepoImpl()).insert(SalespersonquotahistoryRowUnsaved(businessentityid = businessentityid, quotadate = quotadate, salesquota = salesquota, rowguid = rowguid, modifieddate = modifieddate), c)
 
@@ -1198,85 +1190,85 @@ data class TestInsert(
     name: Name,
     reasontype: Name,
     salesreasonid: Defaulted<SalesreasonId>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SalesreasonRow = (SalesreasonRepoImpl()).insert(SalesreasonRowUnsaved(name = name, reasontype = reasontype, salesreasonid = salesreasonid, modifieddate = modifieddate), c)
 
   fun salesSalestaxrate(
     stateprovinceid: StateprovinceId,
-    taxtype: TypoShort,
+    taxtype: Short,
     name: Name,
     salestaxrateid: Defaulted<SalestaxrateId>,
     taxrate: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SalestaxrateRow = (SalestaxrateRepoImpl()).insert(SalestaxrateRowUnsaved(stateprovinceid = stateprovinceid, taxtype = taxtype, name = name, salestaxrateid = salestaxrateid, taxrate = taxrate, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun salesSalesterritory(
     countryregioncode: CountryregionId,
-    group: /* max 50 chars */ String,
+    group: String,
     name: Name,
     territoryid: Defaulted<SalesterritoryId>,
     salesytd: Defaulted<BigDecimal>,
     saleslastyear: Defaulted<BigDecimal>,
     costytd: Defaulted<BigDecimal>,
     costlastyear: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SalesterritoryRow = (SalesterritoryRepoImpl()).insert(SalesterritoryRowUnsaved(name = name, countryregioncode = countryregioncode, group = group, territoryid = territoryid, salesytd = salesytd, saleslastyear = saleslastyear, costytd = costytd, costlastyear = costlastyear, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun salesSalesterritoryhistory(
     businessentityid: BusinessentityId,
     territoryid: SalesterritoryId,
-    startdate: TypoLocalDateTime,
-    enddate: Optional<TypoLocalDateTime>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    startdate: LocalDateTime,
+    enddate: LocalDateTime?,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SalesterritoryhistoryRow = (SalesterritoryhistoryRepoImpl()).insert(SalesterritoryhistoryRowUnsaved(businessentityid = businessentityid, territoryid = territoryid, startdate = startdate, enddate = enddate, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun salesShoppingcartitem(
-    shoppingcartid: /* max 50 chars */ String,
+    shoppingcartid: String,
     productid: ProductId,
     shoppingcartitemid: Defaulted<ShoppingcartitemId>,
     quantity: Defaulted<Int>,
-    datecreated: Defaulted<TypoLocalDateTime>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    datecreated: Defaulted<LocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): ShoppingcartitemRow = (ShoppingcartitemRepoImpl()).insert(ShoppingcartitemRowUnsaved(shoppingcartid = shoppingcartid, productid = productid, shoppingcartitemid = shoppingcartitemid, quantity = quantity, datecreated = datecreated, modifieddate = modifieddate), c)
 
   fun salesSpecialoffer(
-    description: /* max 255 chars */ String,
-    type: /* max 50 chars */ String,
-    category: /* max 50 chars */ String,
-    startdate: TypoLocalDateTime,
-    enddate: TypoLocalDateTime,
-    maxqty: Optional<Int>,
+    description: String,
+    type: String,
+    category: String,
+    startdate: LocalDateTime,
+    enddate: LocalDateTime,
+    maxqty: Int?,
     specialofferid: Defaulted<SpecialofferId>,
     discountpct: Defaulted<BigDecimal>,
     minqty: Defaulted<Int>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SpecialofferRow = (SpecialofferRepoImpl()).insert(SpecialofferRowUnsaved(description = description, type = type, category = category, startdate = startdate, enddate = enddate, maxqty = maxqty, specialofferid = specialofferid, discountpct = discountpct, minqty = minqty, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun salesSpecialofferproduct(
     specialofferid: SpecialofferId,
     productid: ProductId,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): SpecialofferproductRow = (SpecialofferproductRepoImpl()).insert(SpecialofferproductRowUnsaved(specialofferid = specialofferid, productid = productid, rowguid = rowguid, modifieddate = modifieddate), c)
 
   fun salesStore(
     businessentityid: BusinessentityId,
     name: Name,
-    salespersonid: Optional<BusinessentityId>,
-    demographics: Optional<TypoXml>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
+    salespersonid: BusinessentityId?,
+    demographics: Xml?,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
     c: Connection
   ): StoreRow = (StoreRepoImpl()).insert(StoreRowUnsaved(businessentityid = businessentityid, name = name, salespersonid = salespersonid, demographics = demographics, rowguid = rowguid, modifieddate = modifieddate), c)
 }

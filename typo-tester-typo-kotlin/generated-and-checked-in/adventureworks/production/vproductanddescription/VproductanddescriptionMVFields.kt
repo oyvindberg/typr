@@ -8,48 +8,49 @@ package adventureworks.production.vproductanddescription
 import adventureworks.production.culture.CultureId
 import adventureworks.production.product.ProductId
 import adventureworks.public.Name
-import java.util.Optional
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface VproductanddescriptionMVFields : FieldsExpr<VproductanddescriptionMVRow> {
-  override fun columns(): List<FieldLike<*, VproductanddescriptionMVRow>>
+  abstract override fun columns(): List<FieldLike<*, VproductanddescriptionMVRow>>
 
-  fun cultureid(): Field<CultureId, VproductanddescriptionMVRow>
+  abstract fun cultureid(): Field<CultureId, VproductanddescriptionMVRow>
 
-  fun description(): Field</* max 400 chars */ String, VproductanddescriptionMVRow>
+  abstract fun description(): Field<String, VproductanddescriptionMVRow>
 
-  fun name(): Field<Name, VproductanddescriptionMVRow>
+  abstract fun name(): Field<Name, VproductanddescriptionMVRow>
 
-  fun productid(): Field<ProductId, VproductanddescriptionMVRow>
+  abstract fun productid(): Field<ProductId, VproductanddescriptionMVRow>
 
-  fun productmodel(): Field<Name, VproductanddescriptionMVRow>
+  abstract fun productmodel(): Field<Name, VproductanddescriptionMVRow>
 
-  override fun rowParser(): RowParser<VproductanddescriptionMVRow> = VproductanddescriptionMVRow._rowParser
+  override fun rowParser(): RowParser<VproductanddescriptionMVRow> = VproductanddescriptionMVRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : VproductanddescriptionMVFields, Relation<VproductanddescriptionMVFields, VproductanddescriptionMVRow> {
-      override fun productid(): Field<ProductId, VproductanddescriptionMVRow> = Field<ProductId, VproductanddescriptionMVRow>(_path, "productid", VproductanddescriptionMVRow::productid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+    data class Impl(val _path: List<Path>) : VproductanddescriptionMVFields, RelationStructure<VproductanddescriptionMVFields, VproductanddescriptionMVRow> {
+      override fun productid(): Field<ProductId, VproductanddescriptionMVRow> = Field<ProductId, VproductanddescriptionMVRow>(_path, "productid", VproductanddescriptionMVRow::productid, null, null, { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun name(): Field<Name, VproductanddescriptionMVRow> = Field<Name, VproductanddescriptionMVRow>(_path, "name", VproductanddescriptionMVRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, VproductanddescriptionMVRow> = Field<Name, VproductanddescriptionMVRow>(_path, "name", VproductanddescriptionMVRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun productmodel(): Field<Name, VproductanddescriptionMVRow> = Field<Name, VproductanddescriptionMVRow>(_path, "productmodel", VproductanddescriptionMVRow::productmodel, Optional.empty(), Optional.empty(), { row, value -> row.copy(productmodel = value) }, Name.pgType)
+      override fun productmodel(): Field<Name, VproductanddescriptionMVRow> = Field<Name, VproductanddescriptionMVRow>(_path, "productmodel", VproductanddescriptionMVRow::productmodel, null, null, { row, value -> row.copy(productmodel = value) }, Name.pgType)
 
-      override fun cultureid(): Field<CultureId, VproductanddescriptionMVRow> = Field<CultureId, VproductanddescriptionMVRow>(_path, "cultureid", VproductanddescriptionMVRow::cultureid, Optional.empty(), Optional.empty(), { row, value -> row.copy(cultureid = value) }, CultureId.pgType)
+      override fun cultureid(): Field<CultureId, VproductanddescriptionMVRow> = Field<CultureId, VproductanddescriptionMVRow>(_path, "cultureid", VproductanddescriptionMVRow::cultureid, null, null, { row, value -> row.copy(cultureid = value) }, CultureId.pgType)
 
-      override fun description(): Field</* max 400 chars */ String, VproductanddescriptionMVRow> = Field</* max 400 chars */ String, VproductanddescriptionMVRow>(_path, "description", VproductanddescriptionMVRow::description, Optional.empty(), Optional.empty(), { row, value -> row.copy(description = value) }, PgTypes.text)
+      override fun description(): Field<String, VproductanddescriptionMVRow> = Field<String, VproductanddescriptionMVRow>(_path, "description", VproductanddescriptionMVRow::description, null, null, { row, value -> row.copy(description = value) }, PgTypes.text)
 
-      override fun columns(): List<FieldLike<*, VproductanddescriptionMVRow>> = listOf(this.productid(), this.name(), this.productmodel(), this.cultureid(), this.description())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<VproductanddescriptionMVFields, VproductanddescriptionMVRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, VproductanddescriptionMVRow>> = listOf(this.productid().underlying, this.name().underlying, this.productmodel().underlying, this.cultureid().underlying, this.description().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<VproductanddescriptionMVFields, VproductanddescriptionMVRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

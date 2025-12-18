@@ -6,11 +6,12 @@
 package adventureworks.humanresources.jobcandidate;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import typo.data.Xml;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -28,9 +29,9 @@ public record JobcandidateRow(
     */
   Optional<BusinessentityId> businessentityid,
   /** RÃ©sumÃ© in XML format. */
-  Optional<TypoXml> resume,
+  Optional<Xml> resume,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for JobCandidate records.
     * Default: nextval('humanresources.jobcandidate_jobcandidateid_seq'::regclass)
@@ -47,16 +48,16 @@ public record JobcandidateRow(
   };
 
   /** RÃ©sumÃ© in XML format. */
-  public JobcandidateRow withResume(Optional<TypoXml> resume) {
+  public JobcandidateRow withResume(Optional<Xml> resume) {
     return new JobcandidateRow(jobcandidateid, businessentityid, resume, modifieddate);
   };
 
   /** Default: now() */
-  public JobcandidateRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public JobcandidateRow withModifieddate(LocalDateTime modifieddate) {
     return new JobcandidateRow(jobcandidateid, businessentityid, resume, modifieddate);
   };
 
-  static RowParser<JobcandidateRow> _rowParser = RowParsers.of(JobcandidateId.pgType, BusinessentityId.pgType.opt(), TypoXml.pgType.opt(), TypoLocalDateTime.pgType, JobcandidateRow::new, row -> new Object[]{row.jobcandidateid(), row.businessentityid(), row.resume(), row.modifieddate()});;
+  static RowParser<JobcandidateRow> _rowParser = RowParsers.of(JobcandidateId.pgType, BusinessentityId.pgType.opt(), PgTypes.xml.opt(), PgTypes.timestamp, JobcandidateRow::new, row -> new Object[]{row.jobcandidateid(), row.businessentityid(), row.resume(), row.modifieddate()});;
 
   static public PgText<JobcandidateRow> pgText =
     PgText.from(_rowParser);
@@ -67,7 +68,7 @@ public record JobcandidateRow(
 
   public JobcandidateRowUnsaved toUnsavedRow(
     Defaulted<JobcandidateId> jobcandidateid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new JobcandidateRowUnsaved(businessentityid, resume, jobcandidateid, modifieddate);
   };

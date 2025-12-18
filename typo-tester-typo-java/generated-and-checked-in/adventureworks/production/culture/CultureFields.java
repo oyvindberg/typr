@@ -5,20 +5,21 @@
  */
 package adventureworks.production.culture;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface CultureFields extends FieldsExpr<CultureRow> {
-  record Impl(List<Path> _path) implements CultureFields, Relation<CultureFields, CultureRow> {
+  record Impl(List<Path> _path) implements CultureFields, RelationStructure<CultureFields, CultureRow> {
     @Override
     public IdField<CultureId, CultureRow> cultureid() {
       return new IdField<CultureId, CultureRow>(_path, "cultureid", CultureRow::cultureid, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withCultureid(value), CultureId.pgType);
@@ -30,30 +31,30 @@ public interface CultureFields extends FieldsExpr<CultureRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, CultureRow> modifieddate() {
-      return new Field<TypoLocalDateTime, CultureRow>(_path, "modifieddate", CultureRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CultureRow> modifieddate() {
+      return new Field<LocalDateTime, CultureRow>(_path, "modifieddate", CultureRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, CultureRow>> columns() {
-      return List.of(this.cultureid(), this.name(), this.modifieddate());
+      return java.util.List.of(this.cultureid(), this.name(), this.modifieddate());
     };
 
     @Override
-    public Relation<CultureFields, CultureRow> copy(List<Path> _path) {
+    public RelationStructure<CultureFields, CultureRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<CultureId, CultureRow> cultureid();
 
   Field<Name, CultureRow> name();
 
-  Field<TypoLocalDateTime, CultureRow> modifieddate();
+  Field<LocalDateTime, CultureRow> modifieddate();
 
   @Override
   List<FieldLike<?, CultureRow>> columns();

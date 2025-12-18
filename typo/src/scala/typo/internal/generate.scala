@@ -29,21 +29,22 @@ object generate {
     val naming = publicOptions.naming(pkg, publicOptions.lang)
     val language = publicOptions.lang
 
-    def requireScala(lib: String): LangScala = language match {
-      case s: LangScala => s
+    /** Old DbLibs (Anorm, Doobie, ZioJdbc) use typo.dsl (Java DSL) */
+    def requireScalaWithJavaDsl(lib: String): LangScala = language match {
+      case s: LangScala => s.copy(dsl = DslQualifiedNames.Java)
       case _            => sys.error(s"You have chosen to generate code for ${lib}, which is a scala library. You need to pick scala as language")
     }
 
     val options = InternalOptions(
       dbLib = publicOptions.dbLib.map {
         case DbLibName.Anorm =>
-          new DbLibAnorm(pkg, publicOptions.inlineImplicits, default, publicOptions.enableStreamingInserts, requireScala("anorm"))
+          new DbLibAnorm(pkg, publicOptions.inlineImplicits, default, publicOptions.enableStreamingInserts, requireScalaWithJavaDsl("anorm"))
         case DbLibName.Doobie =>
-          new DbLibDoobie(pkg, publicOptions.inlineImplicits, default, publicOptions.enableStreamingInserts, publicOptions.fixVerySlowImplicit, requireScala("doobie"))
+          new DbLibDoobie(pkg, publicOptions.inlineImplicits, default, publicOptions.enableStreamingInserts, publicOptions.fixVerySlowImplicit, requireScalaWithJavaDsl("doobie"))
         case DbLibName.Typo =>
-          new DbLibTypo(pkg, language, default, publicOptions.enableStreamingInserts, metaDb.dbType.adapter, naming)
+          new DbLibTypo(language, default, publicOptions.enableStreamingInserts, metaDb.dbType.adapter(needsTimestampCasts = false), naming)
         case DbLibName.ZioJdbc =>
-          new DbLibZioJdbc(pkg, publicOptions.inlineImplicits, dslEnabled = publicOptions.enableDsl, default, publicOptions.enableStreamingInserts, requireScala("zio-jdbc"))
+          new DbLibZioJdbc(pkg, publicOptions.inlineImplicits, dslEnabled = publicOptions.enableDsl, default, publicOptions.enableStreamingInserts, requireScalaWithJavaDsl("zio-jdbc"))
       },
       lang = language,
       debugTypes = publicOptions.debugTypes,
@@ -55,9 +56,9 @@ object generate {
       generateMockRepos = publicOptions.generateMockRepos,
       enablePrimaryKeyType = publicOptions.enablePrimaryKeyType,
       jsonLibs = publicOptions.jsonLibs.map {
-        case JsonLibName.Circe    => JsonLibCirce(pkg, default, publicOptions.inlineImplicits, requireScala("circe"))
-        case JsonLibName.PlayJson => JsonLibPlay(pkg, default, publicOptions.inlineImplicits, requireScala("play-json"))
-        case JsonLibName.ZioJson  => JsonLibZioJson(pkg, default, publicOptions.inlineImplicits, requireScala("zio-json"))
+        case JsonLibName.Circe    => JsonLibCirce(pkg, default, publicOptions.inlineImplicits, requireScalaWithJavaDsl("circe"))
+        case JsonLibName.PlayJson => JsonLibPlay(pkg, default, publicOptions.inlineImplicits, requireScalaWithJavaDsl("play-json"))
+        case JsonLibName.ZioJson  => JsonLibZioJson(pkg, default, publicOptions.inlineImplicits, requireScalaWithJavaDsl("zio-json"))
         case JsonLibName.Jackson  => JsonLibJackson(pkg, default, language)
       },
       keepDependencies = publicOptions.keepDependencies,
@@ -68,7 +69,10 @@ object generate {
       typeOverride = publicOptions.typeOverride
     )
     val customTypes = new CustomTypes(customTypesPackage, language)
-    val scalaTypeMapper = TypeMapperJvmOld(language, options.typeOverride, publicOptions.nullabilityOverride, naming, customTypes)
+    val scalaTypeMapper = publicOptions.dbLib match {
+      case Some(DbLibName.Typo) => TypeMapperJvmNew(language, options.typeOverride, publicOptions.nullabilityOverride, naming)
+      case _                    => TypeMapperJvmOld(language, options.typeOverride, publicOptions.nullabilityOverride, naming, customTypes)
+    }
     val enums = metaDb.enums.map(ComputedStringEnum(naming))
     val domains = metaDb.domains.map(ComputedDomain(naming, scalaTypeMapper))
     val domainsByName = domains.map(d => (d.underlying.name, d)).toMap

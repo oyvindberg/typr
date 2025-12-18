@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class PmpdcViewRepoImpl implements PmpdcViewRepo {
@@ -19,9 +20,6 @@ public class PmpdcViewRepoImpl implements PmpdcViewRepo {
 
   @Override
   public List<PmpdcViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "productmodelid", "productdescriptionid", "cultureid", "modifieddate"::text
-       from "pr"."pmpdc"
-    """)).query(PmpdcViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productmodelid\", \"productdescriptionid\", \"cultureid\", \"modifieddate\"\nfrom \"pr\".\"pmpdc\"\n")).query(PmpdcViewRow._rowParser.all()).runUnchecked(c);
   };
 }

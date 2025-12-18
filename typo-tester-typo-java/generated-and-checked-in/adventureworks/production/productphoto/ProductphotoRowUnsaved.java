@@ -7,8 +7,7 @@ package adventureworks.production.productphoto;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -16,11 +15,11 @@ import typo.runtime.PgTypes;
 /** This class corresponds to a row in table `production.productphoto` which has not been persisted yet */
 public record ProductphotoRowUnsaved(
   /** Small image of the product. */
-  Optional<TypoBytea> thumbnailphoto,
+  Optional<byte[]> thumbnailphoto,
   /** Small image file name. */
   Optional</* max 50 chars */ String> thumbnailphotofilename,
   /** Large image of the product. */
-  Optional<TypoBytea> largephoto,
+  Optional<byte[]> largephoto,
   /** Large image file name. */
   Optional</* max 50 chars */ String> largephotofilename,
   /** Default: nextval('production.productphoto_productphotoid_seq'::regclass)
@@ -28,14 +27,14 @@ public record ProductphotoRowUnsaved(
     */
   Defaulted<ProductphotoId> productphotoid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductphotoRowUnsaved() {
     this(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), new UseDefault<>(), new UseDefault<>());
   };
 
   /** Small image of the product. */
-  public ProductphotoRowUnsaved withThumbnailphoto(Optional<TypoBytea> thumbnailphoto) {
+  public ProductphotoRowUnsaved withThumbnailphoto(Optional<byte[]> thumbnailphoto) {
     return new ProductphotoRowUnsaved(thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, productphotoid, modifieddate);
   };
 
@@ -45,7 +44,7 @@ public record ProductphotoRowUnsaved(
   };
 
   /** Large image of the product. */
-  public ProductphotoRowUnsaved withLargephoto(Optional<TypoBytea> largephoto) {
+  public ProductphotoRowUnsaved withLargephoto(Optional<byte[]> largephoto) {
     return new ProductphotoRowUnsaved(thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, productphotoid, modifieddate);
   };
 
@@ -62,28 +61,28 @@ public record ProductphotoRowUnsaved(
   };
 
   /** Default: now() */
-  public ProductphotoRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductphotoRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductphotoRowUnsaved(thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, productphotoid, modifieddate);
   };
 
   static public PgText<ProductphotoRowUnsaved> pgText =
     PgText.instance((row, sb) -> {
-      TypoBytea.pgType.opt().pgText().unsafeEncode(row.thumbnailphoto, sb);
+      PgTypes.bytea.opt().pgText().unsafeEncode(row.thumbnailphoto, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.text.opt().pgText().unsafeEncode(row.thumbnailphotofilename, sb);
       sb.append(PgText.DELIMETER);
-      TypoBytea.pgType.opt().pgText().unsafeEncode(row.largephoto, sb);
+      PgTypes.bytea.opt().pgText().unsafeEncode(row.largephoto, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.text.opt().pgText().unsafeEncode(row.largephotofilename, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(ProductphotoId.pgType.pgText()).unsafeEncode(row.productphotoid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ProductphotoRow toRow(
     java.util.function.Supplier<ProductphotoId> productphotoidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ProductphotoRow(productphotoid.getOrElse(productphotoidDefault), thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, modifieddate.getOrElse(modifieddateDefault));
   };

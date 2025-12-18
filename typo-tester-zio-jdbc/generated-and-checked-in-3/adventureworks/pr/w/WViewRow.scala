@@ -32,11 +32,11 @@ case class WViewRow(
   /** Points to [[adventureworks.production.workorder.WorkorderRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorder.WorkorderRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorder.WorkorderRow.duedate]] */
   duedate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorder.WorkorderRow.scrapreasonid]] */
-  scrapreasonid: Option[ScrapreasonId],
+  scrapreasonid: ScrapreasonId,
   /** Points to [[adventureworks.production.workorder.WorkorderRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -53,9 +53,9 @@ object WViewRow {
             orderqty = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 3, rs)._2,
             scrappedqty = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             startdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
-            enddate = JdbcDecoder.optionDecoder(using TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 6, rs)._2,
+            enddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
             duedate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
-            scrapreasonid = JdbcDecoder.optionDecoder(using ScrapreasonId.jdbcDecoder).unsafeDecode(columIndex + 8, rs)._2,
+            scrapreasonid = ScrapreasonId.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 9, rs)._2
           )
     }
@@ -69,9 +69,9 @@ object WViewRow {
       val orderqty = jsonObj.get("orderqty").toRight("Missing field 'orderqty'").flatMap(_.as(using JsonDecoder.int))
       val scrappedqty = jsonObj.get("scrappedqty").toRight("Missing field 'scrappedqty'").flatMap(_.as(using TypoShort.jsonDecoder))
       val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-      val enddate = jsonObj.get("enddate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDateTime.jsonDecoder)))
+      val enddate = jsonObj.get("enddate").toRight("Missing field 'enddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       val duedate = jsonObj.get("duedate").toRight("Missing field 'duedate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-      val scrapreasonid = jsonObj.get("scrapreasonid").fold[Either[String, Option[ScrapreasonId]]](Right(None))(_.as(using JsonDecoder.option(using ScrapreasonId.jsonDecoder)))
+      val scrapreasonid = jsonObj.get("scrapreasonid").toRight("Missing field 'scrapreasonid'").flatMap(_.as(using ScrapreasonId.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (id.isRight && workorderid.isRight && productid.isRight && orderqty.isRight && scrappedqty.isRight && startdate.isRight && enddate.isRight && duedate.isRight && scrapreasonid.isRight && modifieddate.isRight)
         Right(WViewRow(id = id.toOption.get, workorderid = workorderid.toOption.get, productid = productid.toOption.get, orderqty = orderqty.toOption.get, scrappedqty = scrappedqty.toOption.get, startdate = startdate.toOption.get, enddate = enddate.toOption.get, duedate = duedate.toOption.get, scrapreasonid = scrapreasonid.toOption.get, modifieddate = modifieddate.toOption.get))
@@ -102,13 +102,13 @@ object WViewRow {
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.startdate, indent, out)
         out.write(",")
         out.write(""""enddate":""")
-        JsonEncoder.option(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.enddate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.enddate, indent, out)
         out.write(",")
         out.write(""""duedate":""")
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.duedate, indent, out)
         out.write(",")
         out.write(""""scrapreasonid":""")
-        JsonEncoder.option(using ScrapreasonId.jsonEncoder).unsafeEncode(a.scrapreasonid, indent, out)
+        ScrapreasonId.jsonEncoder.unsafeEncode(a.scrapreasonid, indent, out)
         out.write(",")
         out.write(""""modifieddate":""")
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)

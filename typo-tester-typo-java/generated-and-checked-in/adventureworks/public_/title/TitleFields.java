@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.RowParser;
 
 public interface TitleFields extends FieldsExpr<TitleRow> {
-  record Impl(List<Path> _path) implements TitleFields, Relation<TitleFields, TitleRow> {
+  record Impl(List<Path> _path) implements TitleFields, RelationStructure<TitleFields, TitleRow> {
     @Override
     public IdField<TitleId, TitleRow> code() {
       return new IdField<TitleId, TitleRow>(_path, "code", TitleRow::code, Optional.empty(), Optional.empty(), (row, value) -> row.withCode(value), TitleId.pgType);
@@ -23,17 +23,17 @@ public interface TitleFields extends FieldsExpr<TitleRow> {
 
     @Override
     public List<FieldLike<?, TitleRow>> columns() {
-      return List.of(this.code());
+      return java.util.List.of(this.code());
     };
 
     @Override
-    public Relation<TitleFields, TitleRow> copy(List<Path> _path) {
+    public RelationStructure<TitleFields, TitleRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<TitleId, TitleRow> code();

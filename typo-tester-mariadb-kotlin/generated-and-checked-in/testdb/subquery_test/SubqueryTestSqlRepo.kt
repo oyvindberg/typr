@@ -9,5 +9,5 @@ import java.sql.Connection
 import kotlin.collections.List
 
 interface SubqueryTestSqlRepo {
-  fun apply(c: Connection): List<SubqueryTestSqlRow>
+  abstract fun apply(c: Connection): List<SubqueryTestSqlRow>
 }

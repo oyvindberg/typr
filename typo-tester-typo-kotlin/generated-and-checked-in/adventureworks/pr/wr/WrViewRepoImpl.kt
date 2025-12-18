@@ -7,15 +7,13 @@ package adventureworks.pr.wr
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class WrViewRepoImpl() : WrViewRepo {
   override fun select(): SelectBuilder<WrViewFields, WrViewRow> = SelectBuilder.of("\"pr\".\"wr\"", WrViewFields.structure, WrViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<WrViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text
-    from "pr"."wr"
-  """.trimMargin())).query(WrViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<WrViewRow> = interpolate(Fragment.lit("select \"id\", \"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\"\nfrom \"pr\".\"wr\"\n")).query(WrViewRow._rowParser.all()).runUnchecked(c)
 }

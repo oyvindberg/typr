@@ -5,9 +5,6 @@
  */
 package adventureworks.production.productmodel;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.public_.Name;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -21,10 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class ProductmodelRepoImpl implements ProductmodelRepo {
   @Override
@@ -37,13 +33,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     ProductmodelId productmodelid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "production"."productmodel" where "productmodelid" = 
-      """),
-      ProductmodelId.pgType.encode(productmodelid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"production\".\"productmodel\" where \"productmodelid\" = "), Fragment.encode(ProductmodelId.pgType, productmodelid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -51,14 +41,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     ProductmodelId[] productmodelids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "production"."productmodel"
-                  where "productmodelid" = ANY("""),
-               ProductmodelId.pgTypeArray.encode(productmodelids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"production\".\"productmodel\"\nwhere \"productmodelid\" = ANY("), Fragment.encode(ProductmodelId.pgTypeArray, productmodelids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -68,26 +51,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     ProductmodelRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."productmodel"("productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate")
-         values ("""),
-      ProductmodelId.pgType.encode(unsaved.productmodelid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoXml.pgType.opt().encode(unsaved.catalogdescription()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoXml.pgType.opt().encode(unsaved.instructions()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"productmodel\"(\"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductmodelId.pgType, unsaved.productmodelid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.xml.opt(), unsaved.catalogdescription()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.xml.opt(), unsaved.instructions()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(ProductmodelRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -96,33 +60,21 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     ProductmodelRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"catalogdescription\""));
-    values.add(interpolate(
-      TypoXml.pgType.opt().encode(unsaved.catalogdescription()),
-      typo.runtime.Fragment.lit("::xml")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.xml.opt(), unsaved.catalogdescription()), Fragment.lit("::xml")));
     columns.add(Fragment.lit("\"instructions\""));
-    values.add(interpolate(
-      TypoXml.pgType.opt().encode(unsaved.instructions()),
-      typo.runtime.Fragment.lit("::xml")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.xml.opt(), unsaved.instructions()), Fragment.lit("::xml")));
     unsaved.productmodelid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"productmodelid\""));
-        values.add(interpolate(
-        ProductmodelId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(ProductmodelId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.rowguid().visit(
@@ -131,10 +83,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -143,26 +92,10 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."productmodel"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"production\".\"productmodel\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(ProductmodelRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -172,9 +105,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."productmodel"("productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, ProductmodelRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"productmodel\"(\"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, ProductmodelRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -184,9 +115,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."productmodel"("name", "catalogdescription", "instructions", "productmodelid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, ProductmodelRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"productmodel\"(\"name\", \"catalogdescription\", \"instructions\", \"productmodelid\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ProductmodelRowUnsaved.pgText);
   };
 
   @Override
@@ -196,10 +125,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
 
   @Override
   public List<ProductmodelRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate"::text
-       from "production"."productmodel"
-    """)).query(ProductmodelRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productmodel\"\n")).query(ProductmodelRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -207,14 +133,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     ProductmodelId productmodelid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate"::text
-         from "production"."productmodel"
-         where "productmodelid" = """),
-      ProductmodelId.pgType.encode(productmodelid),
-      typo.runtime.Fragment.lit("")
-    ).query(ProductmodelRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productmodel\"\nwhere \"productmodelid\" = "), Fragment.encode(ProductmodelId.pgType, productmodelid), Fragment.lit("")).query(ProductmodelRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -222,14 +141,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     ProductmodelId[] productmodelids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate"::text
-         from "production"."productmodel"
-         where "productmodelid" = ANY("""),
-      ProductmodelId.pgTypeArray.encode(productmodelids),
-      typo.runtime.Fragment.lit(")")
-    ).query(ProductmodelRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productmodel\"\nwhere \"productmodelid\" = ANY("), Fragment.encode(ProductmodelId.pgTypeArray, productmodelids), Fragment.lit(")")).query(ProductmodelRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -244,7 +156,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
 
   @Override
   public UpdateBuilder<ProductmodelFields, ProductmodelRow> update() {
-    return UpdateBuilder.of("\"production\".\"productmodel\"", ProductmodelFields.structure(), ProductmodelRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"production\".\"productmodel\"", ProductmodelFields.structure(), ProductmodelRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -253,33 +165,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     Connection c
   ) {
     ProductmodelId productmodelid = row.productmodelid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "production"."productmodel"
-         set "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "catalogdescription" = """),
-      TypoXml.pgType.opt().encode(row.catalogdescription()),
-      typo.runtime.Fragment.lit("""
-         ::xml,
-         "instructions" = """),
-      TypoXml.pgType.opt().encode(row.instructions()),
-      typo.runtime.Fragment.lit("""
-         ::xml,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "productmodelid" = """),
-      ProductmodelId.pgType.encode(productmodelid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"production\".\"productmodel\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"catalogdescription\" = "), Fragment.encode(PgTypes.xml.opt(), row.catalogdescription()), Fragment.lit("::xml,\n\"instructions\" = "), Fragment.encode(PgTypes.xml.opt(), row.instructions()), Fragment.lit("::xml,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"productmodelid\" = "), Fragment.encode(ProductmodelId.pgType, productmodelid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -287,32 +173,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     ProductmodelRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."productmodel"("productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate")
-         values ("""),
-      ProductmodelId.pgType.encode(unsaved.productmodelid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoXml.pgType.opt().encode(unsaved.catalogdescription()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoXml.pgType.opt().encode(unsaved.instructions()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("productmodelid")
-         do update set
-           "name" = EXCLUDED."name",
-         "catalogdescription" = EXCLUDED."catalogdescription",
-         "instructions" = EXCLUDED."instructions",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"productmodel\"(\"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductmodelId.pgType, unsaved.productmodelid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.xml.opt(), unsaved.catalogdescription()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.xml.opt(), unsaved.instructions()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"productmodelid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"catalogdescription\" = EXCLUDED.\"catalogdescription\",\n\"instructions\" = EXCLUDED.\"instructions\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\""))
       .updateReturning(ProductmodelRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -322,19 +183,9 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     Iterator<ProductmodelRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "production"."productmodel"("productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate")
-                values (?::int4, ?::varchar, ?::xml, ?::xml, ?::uuid, ?::timestamp)
-                on conflict ("productmodelid")
-                do update set
-                  "name" = EXCLUDED."name",
-                "catalogdescription" = EXCLUDED."catalogdescription",
-                "instructions" = EXCLUDED."instructions",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"production\".\"productmodel\"(\"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::xml, ?::xml, ?::uuid, ?::timestamp)\non conflict (\"productmodelid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"catalogdescription\" = EXCLUDED.\"catalogdescription\",\n\"instructions\" = EXCLUDED.\"instructions\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(ProductmodelRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -344,23 +195,8 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table productmodel_TEMP (like "production"."productmodel") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy productmodel_TEMP("productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, ProductmodelRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "production"."productmodel"("productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate")
-       select * from productmodel_TEMP
-       on conflict ("productmodelid")
-       do update set
-         "name" = EXCLUDED."name",
-       "catalogdescription" = EXCLUDED."catalogdescription",
-       "instructions" = EXCLUDED."instructions",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table productmodel_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table productmodel_TEMP (like \"production\".\"productmodel\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy productmodel_TEMP(\"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, ProductmodelRow.pgText);
+    return interpolate(Fragment.lit("insert into \"production\".\"productmodel\"(\"productmodelid\", \"name\", \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\")\nselect * from productmodel_TEMP\non conflict (\"productmodelid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"catalogdescription\" = EXCLUDED.\"catalogdescription\",\n\"instructions\" = EXCLUDED.\"instructions\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table productmodel_TEMP;")).update().runUnchecked(c);
   };
 }

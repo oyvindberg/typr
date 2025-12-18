@@ -6,17 +6,16 @@
 package testdb.mariatest
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait MariatestRepo {
   def delete: DeleteBuilder[MariatestFields, MariatestRow]
 
-  def deleteById(intCol: MariatestId)(using c: Connection): java.lang.Boolean
+  def deleteById(intCol: MariatestId)(using c: Connection): Boolean
 
-  def deleteByIds(intCols: Array[MariatestId])(using c: Connection): Integer
+  def deleteByIds(intCols: Array[MariatestId])(using c: Connection): Int
 
   def insert(unsaved: MariatestRow)(using c: Connection): MariatestRow
 
@@ -24,19 +23,19 @@ trait MariatestRepo {
 
   def select: SelectBuilder[MariatestFields, MariatestRow]
 
-  def selectAll(using c: Connection): java.util.List[MariatestRow]
+  def selectAll(using c: Connection): List[MariatestRow]
 
-  def selectById(intCol: MariatestId)(using c: Connection): Optional[MariatestRow]
+  def selectById(intCol: MariatestId)(using c: Connection): Option[MariatestRow]
 
-  def selectByIds(intCols: Array[MariatestId])(using c: Connection): java.util.List[MariatestRow]
+  def selectByIds(intCols: Array[MariatestId])(using c: Connection): List[MariatestRow]
 
-  def selectByIdsTracked(intCols: Array[MariatestId])(using c: Connection): java.util.Map[MariatestId, MariatestRow]
+  def selectByIdsTracked(intCols: Array[MariatestId])(using c: Connection): Map[MariatestId, MariatestRow]
 
   def update: UpdateBuilder[MariatestFields, MariatestRow]
 
-  def update(row: MariatestRow)(using c: Connection): java.lang.Boolean
+  def update(row: MariatestRow)(using c: Connection): Boolean
 
   def upsert(unsaved: MariatestRow)(using c: Connection): MariatestRow
 
-  def upsertBatch(unsaved: java.util.Iterator[MariatestRow])(using c: Connection): java.util.List[MariatestRow]
+  def upsertBatch(unsaved: Iterator[MariatestRow])(using c: Connection): List[MariatestRow]
 }

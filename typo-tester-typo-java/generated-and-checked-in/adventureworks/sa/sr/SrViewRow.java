@@ -5,9 +5,10 @@
  */
 package adventureworks.sa.sr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import adventureworks.sales.salesreason.SalesreasonId;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -22,7 +23,7 @@ public record SrViewRow(
   /** Points to {@link adventureworks.sales.salesreason.SalesreasonRow#reasontype()} */
   Name reasontype,
   /** Points to {@link adventureworks.sales.salesreason.SalesreasonRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.salesreason.SalesreasonRow#salesreasonid()} */
   public SrViewRow withId(SalesreasonId id) {
@@ -45,9 +46,9 @@ public record SrViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesreason.SalesreasonRow#modifieddate()} */
-  public SrViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SrViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SrViewRow(id, salesreasonid, name, reasontype, modifieddate);
   };
 
-  static RowParser<SrViewRow> _rowParser = RowParsers.of(SalesreasonId.pgType, SalesreasonId.pgType, Name.pgType, Name.pgType, TypoLocalDateTime.pgType, SrViewRow::new, row -> new Object[]{row.id(), row.salesreasonid(), row.name(), row.reasontype(), row.modifieddate()});;
+  static RowParser<SrViewRow> _rowParser = RowParsers.of(SalesreasonId.pgType, SalesreasonId.pgType, Name.pgType, Name.pgType, PgTypes.timestamp, SrViewRow::new, row -> new Object[]{row.id(), row.salesreasonid(), row.name(), row.reasontype(), row.modifieddate()});;
 }

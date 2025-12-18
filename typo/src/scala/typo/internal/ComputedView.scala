@@ -25,21 +25,30 @@ case class ComputedView(
   val colsByName: Map[db.ColName, (db.Col, ParsedName)] =
     view.cols.map { case t @ (col, _) => col.name -> t }.toMap
 
-  val cols: NonEmptyList[ComputedColumn] =
-    view.cols.map { case (col, _) =>
-      ComputedColumn(
-        pointsTo = pointsToByColName(col.name),
-        name = naming.field(col.name),
-        tpe = inferType(col.name),
-        dbCol = col
-      )
+  val cols: NonEmptyList[ComputedColumn] = {
+    def mkComputedColumn(pointsTo: List[(Source.Relation, db.ColName)], name: jvm.Ident, tpe: jvm.Type, dbCol: db.Col, parsedName: ParsedName): ComputedColumn = {
+      // If user specified an override, create UserDefined with the proper Either; otherwise use standard inference
+      val typoType = parsedName.overriddenType match {
+        case Some(overridden) =>
+          val innerTpe = lang.Optional.unapply(tpe).getOrElse(tpe)
+          val base = TypoType.UserDefined(innerTpe, dbCol.tpe, overridden.toEither)
+          if (dbCol.nullability == Nullability.Nullable) TypoType.Nullable(tpe, base) else base
+        case None =>
+          TypoType.fromJvmAndDb(tpe, dbCol.tpe, naming.pkg, lang)
+      }
+      ComputedColumn(pointsTo = pointsTo, name = name, dbCol = dbCol, typoType = typoType)
     }
+
+    view.cols.map { case (col, parsedName) =>
+      mkComputedColumn(pointsToByColName(col.name), naming.field(col.name), inferType(col.name), col, parsedName)
+    }
+  }
 
   def inferType(colName: db.ColName): jvm.Type = {
     val (col, parsedName) = colsByName(colName)
     val typeFromFk: Option[jvm.Type] =
       findTypeFromFk(logger, source, col.name, pointsToByColName(col.name), eval.asMaybe, lang)(otherColName => Some(inferType(otherColName)))
-    scalaTypeMapper.sqlFile(parsedName.overriddenType.orElse(typeFromFk), col.tpe, col.nullability)
+    scalaTypeMapper.sqlFile(parsedName.overriddenJvmType(lang).orElse(typeFromFk), col.tpe, col.nullability)
   }
 
   val names = ComputedNames(naming, source, maybeId = None, enableFieldValue, enableDsl = enableDsl)

@@ -5,11 +5,12 @@
  */
 package adventureworks.pr.um
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.unitmeasure.UnitmeasureId
 import adventureworks.public.Name
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pr.um */
 data class UmViewRow(
@@ -20,9 +21,9 @@ data class UmViewRow(
   /** Points to [adventureworks.production.unitmeasure.UnitmeasureRow.name] */
   val name: Name,
   /** Points to [adventureworks.production.unitmeasure.UnitmeasureRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<UmViewRow> = RowParsers.of(UnitmeasureId.pgType, UnitmeasureId.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> UmViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.unitmeasurecode, row.name, row.modifieddate) })
+    val _rowParser: RowParser<UmViewRow> = RowParsers.of(UnitmeasureId.pgType, UnitmeasureId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> UmViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.unitmeasurecode, row.name, row.modifieddate) })
   }
 }

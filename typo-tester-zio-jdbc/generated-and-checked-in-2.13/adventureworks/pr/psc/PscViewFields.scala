@@ -11,9 +11,9 @@ import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.production.productsubcategory.ProductsubcategoryId
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait PscViewFields {
   def id: Field[ProductsubcategoryId, PscViewRow]
@@ -25,11 +25,11 @@ trait PscViewFields {
 }
 
 object PscViewFields {
-  lazy val structure: Relation[PscViewFields, PscViewRow] =
+  lazy val structure: RelationStructure[PscViewFields, PscViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PscViewFields, PscViewRow] {
+    extends RelationStructure[PscViewFields, PscViewRow] {
 
     override lazy val fields: PscViewFields = new PscViewFields {
       override def id = Field[ProductsubcategoryId, PscViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))

@@ -7,23 +7,23 @@ package adventureworks.person_dynamic
 
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
-import java.util.Optional
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** SQL file: person_dynamic.sql */
 data class PersonDynamicSqlRow(
   /** Points to [adventureworks.person.person.PersonRow.title] */
-  val title: Optional</* max 8 chars */ String>,
+  val title: /* max 8 chars */ String?,
   /** Points to [adventureworks.person.person.PersonRow.firstname] */
   val firstname: /* user-picked */ FirstName,
   /** Points to [adventureworks.person.person.PersonRow.middlename] */
-  val middlename: Optional<Name>,
+  val middlename: Name?,
   /** Points to [adventureworks.person.person.PersonRow.lastname] */
   val lastname: Name
 ) {
   companion object {
-    val _rowParser: RowParser<PersonDynamicSqlRow> = RowParsers.of(PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, { t0, t1, t2, t3 -> PersonDynamicSqlRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.title, row.firstname, row.middlename, row.lastname) })
+    val _rowParser: RowParser<PersonDynamicSqlRow> = RowParsers.of(PgTypes.text.nullable(), FirstName.pgType, Name.pgType.nullable(), Name.pgType, { t0, t1, t2, t3 -> PersonDynamicSqlRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.title, row.firstname, row.middlename, row.lastname) })
   }
 }

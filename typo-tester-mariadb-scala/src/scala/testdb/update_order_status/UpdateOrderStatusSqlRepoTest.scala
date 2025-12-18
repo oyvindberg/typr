@@ -26,9 +26,9 @@ class UpdateOrderStatusSqlRepoTest extends AnyFunSuite {
       assert(rowsAffected == 1): @annotation.nowarn
 
       val updatedOrder = ordersRepo.selectById(order.orderId)
-      assert(updatedOrder.isPresent): @annotation.nowarn
-      assert(updatedOrder.get().orderStatus == "confirmed"): @annotation.nowarn
-      assert(updatedOrder.get().confirmedAt.isPresent)
+      assert(updatedOrder.isDefined): @annotation.nowarn
+      assert(updatedOrder.get.orderStatus == "confirmed"): @annotation.nowarn
+      assert(updatedOrder.get.confirmedAt.isDefined)
     }
   }
 
@@ -43,9 +43,9 @@ class UpdateOrderStatusSqlRepoTest extends AnyFunSuite {
       assert(rowsAffected == 1): @annotation.nowarn
 
       val updatedOrder = ordersRepo.selectById(order.orderId)
-      assert(updatedOrder.isPresent): @annotation.nowarn
-      assert(updatedOrder.get().orderStatus == "shipped"): @annotation.nowarn
-      assert(updatedOrder.get().shippedAt.isPresent)
+      assert(updatedOrder.isDefined): @annotation.nowarn
+      assert(updatedOrder.get.orderStatus == "shipped"): @annotation.nowarn
+      assert(updatedOrder.get.shippedAt.isDefined)
     }
   }
 

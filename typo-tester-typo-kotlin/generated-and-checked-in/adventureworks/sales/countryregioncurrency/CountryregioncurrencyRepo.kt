@@ -6,88 +6,87 @@
 package adventureworks.sales.countryregioncurrency
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface CountryregioncurrencyRepo {
-  fun delete(): DeleteBuilder<CountryregioncurrencyFields, CountryregioncurrencyRow>
+  abstract fun delete(): DeleteBuilder<CountryregioncurrencyFields, CountryregioncurrencyRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: CountryregioncurrencyId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<CountryregioncurrencyId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: CountryregioncurrencyRow,
     c: Connection
   ): CountryregioncurrencyRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: CountryregioncurrencyRowUnsaved,
     c: Connection
   ): CountryregioncurrencyRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<CountryregioncurrencyRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<CountryregioncurrencyRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<CountryregioncurrencyFields, CountryregioncurrencyRow>
+  abstract fun select(): SelectBuilder<CountryregioncurrencyFields, CountryregioncurrencyRow>
 
-  fun selectAll(c: Connection): List<CountryregioncurrencyRow>
+  abstract fun selectAll(c: Connection): List<CountryregioncurrencyRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: CountryregioncurrencyId,
     c: Connection
-  ): Optional<CountryregioncurrencyRow>
+  ): CountryregioncurrencyRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<CountryregioncurrencyId>,
     c: Connection
   ): List<CountryregioncurrencyRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<CountryregioncurrencyId>,
     c: Connection
   ): Map<CountryregioncurrencyId, CountryregioncurrencyRow>
 
-  fun update(): UpdateBuilder<CountryregioncurrencyFields, CountryregioncurrencyRow>
+  abstract fun update(): UpdateBuilder<CountryregioncurrencyFields, CountryregioncurrencyRow>
 
-  fun update(
+  abstract fun update(
     row: CountryregioncurrencyRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: CountryregioncurrencyRow,
     c: Connection
   ): CountryregioncurrencyRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<CountryregioncurrencyRow>,
     c: Connection
   ): List<CountryregioncurrencyRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<CountryregioncurrencyRow>,
     batchSize: Int,
     c: Connection

@@ -5,24 +5,24 @@
  */
 package adventureworks.production.vproductmodelinstructions;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productmodel.ProductmodelId;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VproductmodelinstructionsViewFields extends FieldsExpr<VproductmodelinstructionsViewRow> {
-  record Impl(List<Path> _path) implements VproductmodelinstructionsViewFields, Relation<VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow> {
+  record Impl(List<Path> _path) implements VproductmodelinstructionsViewFields, RelationStructure<VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow> {
     @Override
     public Field<ProductmodelId, VproductmodelinstructionsViewRow> productmodelid() {
       return new Field<ProductmodelId, VproductmodelinstructionsViewRow>(_path, "productmodelid", VproductmodelinstructionsViewRow::productmodelid, Optional.empty(), Optional.empty(), (row, value) -> row.withProductmodelid(value), ProductmodelId.pgType);
@@ -64,33 +64,33 @@ public interface VproductmodelinstructionsViewFields extends FieldsExpr<Vproduct
     };
 
     @Override
-    public Field</* max 1024 chars */ String, VproductmodelinstructionsViewRow> step() {
-      return new Field</* max 1024 chars */ String, VproductmodelinstructionsViewRow>(_path, "Step", VproductmodelinstructionsViewRow::step, Optional.empty(), Optional.empty(), (row, value) -> row.withStep(value), PgTypes.text);
+    public Field<String, VproductmodelinstructionsViewRow> step() {
+      return new Field<String, VproductmodelinstructionsViewRow>(_path, "Step", VproductmodelinstructionsViewRow::step, Optional.empty(), Optional.empty(), (row, value) -> row.withStep(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoUUID, VproductmodelinstructionsViewRow> rowguid() {
-      return new Field<TypoUUID, VproductmodelinstructionsViewRow>(_path, "rowguid", VproductmodelinstructionsViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, VproductmodelinstructionsViewRow> rowguid() {
+      return new Field<UUID, VproductmodelinstructionsViewRow>(_path, "rowguid", VproductmodelinstructionsViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, VproductmodelinstructionsViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, VproductmodelinstructionsViewRow>(_path, "modifieddate", VproductmodelinstructionsViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, VproductmodelinstructionsViewRow> modifieddate() {
+      return new Field<LocalDateTime, VproductmodelinstructionsViewRow>(_path, "modifieddate", VproductmodelinstructionsViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, VproductmodelinstructionsViewRow>> columns() {
-      return List.of(this.productmodelid(), this.name(), this.instructions(), this.locationID(), this.setupHours(), this.machineHours(), this.laborHours(), this.lotSize(), this.step(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.productmodelid(), this.name(), this.instructions(), this.locationID(), this.setupHours(), this.machineHours(), this.laborHours(), this.lotSize(), this.step(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow> copy(List<Path> _path) {
+    public RelationStructure<VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductmodelId, VproductmodelinstructionsViewRow> productmodelid();
@@ -109,11 +109,11 @@ public interface VproductmodelinstructionsViewFields extends FieldsExpr<Vproduct
 
   Field<Integer, VproductmodelinstructionsViewRow> lotSize();
 
-  Field</* max 1024 chars */ String, VproductmodelinstructionsViewRow> step();
+  Field<String, VproductmodelinstructionsViewRow> step();
 
-  Field<TypoUUID, VproductmodelinstructionsViewRow> rowguid();
+  Field<UUID, VproductmodelinstructionsViewRow> rowguid();
 
-  Field<TypoLocalDateTime, VproductmodelinstructionsViewRow> modifieddate();
+  Field<LocalDateTime, VproductmodelinstructionsViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, VproductmodelinstructionsViewRow>> columns();

@@ -5,33 +5,33 @@
  */
 package adventureworks.sales.currencyrate;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.sales.currency.CurrencyFields;
 import adventureworks.sales.currency.CurrencyId;
 import adventureworks.sales.currency.CurrencyRow;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface CurrencyrateFields extends FieldsExpr<CurrencyrateRow> {
-  record Impl(List<Path> _path) implements CurrencyrateFields, Relation<CurrencyrateFields, CurrencyrateRow> {
+  record Impl(List<Path> _path) implements CurrencyrateFields, RelationStructure<CurrencyrateFields, CurrencyrateRow> {
     @Override
     public IdField<CurrencyrateId, CurrencyrateRow> currencyrateid() {
       return new IdField<CurrencyrateId, CurrencyrateRow>(_path, "currencyrateid", CurrencyrateRow::currencyrateid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withCurrencyrateid(value), CurrencyrateId.pgType);
     };
 
     @Override
-    public Field<TypoLocalDateTime, CurrencyrateRow> currencyratedate() {
-      return new Field<TypoLocalDateTime, CurrencyrateRow>(_path, "currencyratedate", CurrencyrateRow::currencyratedate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withCurrencyratedate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CurrencyrateRow> currencyratedate() {
+      return new Field<LocalDateTime, CurrencyrateRow>(_path, "currencyratedate", CurrencyrateRow::currencyratedate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withCurrencyratedate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -55,28 +55,28 @@ public interface CurrencyrateFields extends FieldsExpr<CurrencyrateRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, CurrencyrateRow> modifieddate() {
-      return new Field<TypoLocalDateTime, CurrencyrateRow>(_path, "modifieddate", CurrencyrateRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CurrencyrateRow> modifieddate() {
+      return new Field<LocalDateTime, CurrencyrateRow>(_path, "modifieddate", CurrencyrateRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, CurrencyrateRow>> columns() {
-      return List.of(this.currencyrateid(), this.currencyratedate(), this.fromcurrencycode(), this.tocurrencycode(), this.averagerate(), this.endofdayrate(), this.modifieddate());
+      return java.util.List.of(this.currencyrateid(), this.currencyratedate(), this.fromcurrencycode(), this.tocurrencycode(), this.averagerate(), this.endofdayrate(), this.modifieddate());
     };
 
     @Override
-    public Relation<CurrencyrateFields, CurrencyrateRow> copy(List<Path> _path) {
+    public RelationStructure<CurrencyrateFields, CurrencyrateRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<CurrencyrateId, CurrencyrateRow> currencyrateid();
 
-  Field<TypoLocalDateTime, CurrencyrateRow> currencyratedate();
+  Field<LocalDateTime, CurrencyrateRow> currencyratedate();
 
   Field<CurrencyId, CurrencyrateRow> fromcurrencycode();
 
@@ -86,14 +86,14 @@ public interface CurrencyrateFields extends FieldsExpr<CurrencyrateRow> {
 
   Field<BigDecimal, CurrencyrateRow> endofdayrate();
 
-  Field<TypoLocalDateTime, CurrencyrateRow> modifieddate();
+  Field<LocalDateTime, CurrencyrateRow> modifieddate();
 
   default ForeignKey<CurrencyFields, CurrencyRow> fkCurrencyFromcurrencycode() {
-    return ForeignKey.<CurrencyFields, CurrencyRow>of("sales.FK_CurrencyRate_Currency_FromCurrencyCode").withColumnPair(fromcurrencycode(), CurrencyFields::currencycode);
+    return ForeignKey.<CurrencyFields, CurrencyRow>of("sales.FK_CurrencyRate_Currency_FromCurrencyCode").<CurrencyId>withColumnPair(fromcurrencycode(), CurrencyFields::currencycode);
   };
 
   default ForeignKey<CurrencyFields, CurrencyRow> fkCurrencyTocurrencycode() {
-    return ForeignKey.<CurrencyFields, CurrencyRow>of("sales.FK_CurrencyRate_Currency_ToCurrencyCode").withColumnPair(tocurrencycode(), CurrencyFields::currencycode);
+    return ForeignKey.<CurrencyFields, CurrencyRow>of("sales.FK_CurrencyRate_Currency_ToCurrencyCode").<CurrencyId>withColumnPair(tocurrencycode(), CurrencyFields::currencycode);
   };
 
   @Override

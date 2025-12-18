@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface MariatestIdentityFields extends FieldsExpr<MariatestIdentityRow> {
-  record Impl(List<Path> _path) implements MariatestIdentityFields, Relation<MariatestIdentityFields, MariatestIdentityRow> {
+  record Impl(List<Path> _path) implements MariatestIdentityFields, RelationStructure<MariatestIdentityFields, MariatestIdentityRow> {
     @Override
     public IdField<MariatestIdentityId, MariatestIdentityRow> id() {
       return new IdField<MariatestIdentityId, MariatestIdentityRow>(_path, "id", MariatestIdentityRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), MariatestIdentityId.pgType);
@@ -30,17 +30,17 @@ public interface MariatestIdentityFields extends FieldsExpr<MariatestIdentityRow
 
     @Override
     public List<FieldLike<?, MariatestIdentityRow>> columns() {
-      return List.of(this.id(), this.name());
+      return java.util.List.of(this.id(), this.name());
     };
 
     @Override
-    public Relation<MariatestIdentityFields, MariatestIdentityRow> copy(List<Path> _path) {
+    public RelationStructure<MariatestIdentityFields, MariatestIdentityRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<MariatestIdentityId, MariatestIdentityRow> id();

@@ -7,21 +7,18 @@ package adventureworks.public.identity_test
 
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
-import typo.runtime.PgTypes
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class IdentityTestRepoImpl() : IdentityTestRepo {
   override fun delete(): DeleteBuilder<IdentityTestFields, IdentityTestRow> = DeleteBuilder.of("\"public\".\"identity-test\"", IdentityTestFields.structure, Dialect.POSTGRESQL)
@@ -29,79 +26,35 @@ class IdentityTestRepoImpl() : IdentityTestRepo {
   override fun deleteById(
     name: IdentityTestId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "public"."identity-test" where "name" = 
-    """.trimMargin()),
-    IdentityTestId.pgType.encode(name),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"public\".\"identity-test\" where \"name\" = "), Fragment.encode(IdentityTestId.pgType, name), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     names: Array<IdentityTestId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "public"."identity-test"
-               where "name" = ANY(""".trimMargin()),
-             IdentityTestId.pgTypeArray.encode(names),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = interpolate(Fragment.lit("delete\nfrom \"public\".\"identity-test\"\nwhere \"name\" = ANY("), Fragment.encode(IdentityTestId.pgTypeArray, names), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: IdentityTestRow,
     c: Connection
-  ): IdentityTestRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "public"."identity-test"("default_generated", "name")
-      values (""".trimMargin()),
-    PgTypes.int4.encode(unsaved.defaultGenerated),
-    typo.runtime.Fragment.lit("::int4, "),
-    IdentityTestId.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("""
-      )
-      returning "always_generated", "default_generated", "name"
-    """.trimMargin())
-  )
+  ): IdentityTestRow = interpolate(Fragment.lit("insert into \"public\".\"identity-test\"(\"default_generated\", \"name\")\nvalues ("), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.defaultGenerated), Fragment.lit("::int4, "), Fragment.encode(IdentityTestId.pgType, unsaved.name), Fragment.lit(")\nreturning \"always_generated\", \"default_generated\", \"name\"\n"))
     .updateReturning(IdentityTestRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: IdentityTestRowUnsaved,
     c: Connection
   ): IdentityTestRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"name\""))
-    values.add(interpolate(
-      IdentityTestId.pgType.encode(unsaved.name),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(interpolate(Fragment.encode(IdentityTestId.pgType, unsaved.name), Fragment.lit("")))
     unsaved.defaultGenerated.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"default_generated\""))
-      values.add(interpolate(
-        PgTypes.int4.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      )) }
+      values.add(interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int4, value), Fragment.lit("::int4"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "public"."identity-test"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "always_generated", "default_generated", "name"
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"public\".\"identity-test\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"always_generated\", \"default_generated\", \"name\"\n"))
     return q.updateReturning(IdentityTestRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -109,49 +62,28 @@ class IdentityTestRepoImpl() : IdentityTestRepo {
     unsaved: MutableIterator<IdentityTestRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "public"."identity-test"("default_generated", "name") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, IdentityTestRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"public\".\"identity-test\"(\"default_generated\", \"name\") FROM STDIN", batchSize, unsaved, c, IdentityTestRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<IdentityTestRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "public"."identity-test"("name", "default_generated") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, IdentityTestRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"public\".\"identity-test\"(\"name\", \"default_generated\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, IdentityTestRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<IdentityTestFields, IdentityTestRow> = SelectBuilder.of("\"public\".\"identity-test\"", IdentityTestFields.structure, IdentityTestRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<IdentityTestRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "always_generated", "default_generated", "name"
-    from "public"."identity-test"
-  """.trimMargin())).query(IdentityTestRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<IdentityTestRow> = interpolate(Fragment.lit("select \"always_generated\", \"default_generated\", \"name\"\nfrom \"public\".\"identity-test\"\n")).query(IdentityTestRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     name: IdentityTestId,
     c: Connection
-  ): Optional<IdentityTestRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "always_generated", "default_generated", "name"
-      from "public"."identity-test"
-      where "name" = """.trimMargin()),
-    IdentityTestId.pgType.encode(name),
-    typo.runtime.Fragment.lit("")
-  ).query(IdentityTestRow._rowParser.first()).runUnchecked(c)
+  ): IdentityTestRow? = interpolate(Fragment.lit("select \"always_generated\", \"default_generated\", \"name\"\nfrom \"public\".\"identity-test\"\nwhere \"name\" = "), Fragment.encode(IdentityTestId.pgType, name), Fragment.lit("")).query(IdentityTestRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     names: Array<IdentityTestId>,
     c: Connection
-  ): List<IdentityTestRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "always_generated", "default_generated", "name"
-      from "public"."identity-test"
-      where "name" = ANY(""".trimMargin()),
-    IdentityTestId.pgTypeArray.encode(names),
-    typo.runtime.Fragment.lit(")")
-  ).query(IdentityTestRow._rowParser.all()).runUnchecked(c)
+  ): List<IdentityTestRow> = interpolate(Fragment.lit("select \"always_generated\", \"default_generated\", \"name\"\nfrom \"public\".\"identity-test\"\nwhere \"name\" = ANY("), Fragment.encode(IdentityTestId.pgTypeArray, names), Fragment.lit(")")).query(IdentityTestRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     names: Array<IdentityTestId>,
@@ -159,61 +91,32 @@ class IdentityTestRepoImpl() : IdentityTestRepo {
   ): Map<IdentityTestId, IdentityTestRow> {
     val ret: MutableMap<IdentityTestId, IdentityTestRow> = mutableMapOf<IdentityTestId, IdentityTestRow>()
     selectByIds(names, c).forEach({ row -> ret.put(row.name, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<IdentityTestFields, IdentityTestRow> = UpdateBuilder.of("\"public\".\"identity-test\"", IdentityTestFields.structure, IdentityTestRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<IdentityTestFields, IdentityTestRow> = UpdateBuilder.of("\"public\".\"identity-test\"", IdentityTestFields.structure, IdentityTestRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: IdentityTestRow,
     c: Connection
   ): Boolean {
     val name: IdentityTestId = row.name
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "public"."identity-test"
-        set "default_generated" = """.trimMargin()),
-      PgTypes.int4.encode(row.defaultGenerated),
-      typo.runtime.Fragment.lit("""
-        ::int4
-        where "name" = """.trimMargin()),
-      IdentityTestId.pgType.encode(name),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"public\".\"identity-test\"\nset \"default_generated\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, row.defaultGenerated), Fragment.lit("::int4\nwhere \"name\" = "), Fragment.encode(IdentityTestId.pgType, name), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: IdentityTestRow,
     c: Connection
-  ): IdentityTestRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "public"."identity-test"("default_generated", "name")
-      values (""".trimMargin()),
-    PgTypes.int4.encode(unsaved.defaultGenerated),
-    typo.runtime.Fragment.lit("::int4, "),
-    IdentityTestId.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("""
-      )
-      on conflict ("name")
-      do update set
-        "default_generated" = EXCLUDED."default_generated"
-      returning "always_generated", "default_generated", "name"""".trimMargin())
-  )
+  ): IdentityTestRow = interpolate(Fragment.lit("insert into \"public\".\"identity-test\"(\"default_generated\", \"name\")\nvalues ("), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.defaultGenerated), Fragment.lit("::int4, "), Fragment.encode(IdentityTestId.pgType, unsaved.name), Fragment.lit(")\non conflict (\"name\")\ndo update set\n  \"default_generated\" = EXCLUDED.\"default_generated\"\nreturning \"always_generated\", \"default_generated\", \"name\""))
     .updateReturning(IdentityTestRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<IdentityTestRow>,
     c: Connection
-  ): List<IdentityTestRow> = interpolate(typo.runtime.Fragment.lit("""
-                               insert into "public"."identity-test"("default_generated", "name")
-                               values (?::int4, ?)
-                               on conflict ("name")
-                               do update set
-                                 "default_generated" = EXCLUDED."default_generated"
-                               returning "always_generated", "default_generated", "name"""".trimMargin()))
+  ): List<IdentityTestRow> = interpolate(Fragment.lit("insert into \"public\".\"identity-test\"(\"default_generated\", \"name\")\nvalues (?::int4, ?)\non conflict (\"name\")\ndo update set\n  \"default_generated\" = EXCLUDED.\"default_generated\"\nreturning \"always_generated\", \"default_generated\", \"name\""))
     .updateManyReturning(IdentityTestRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -221,19 +124,8 @@ class IdentityTestRepoImpl() : IdentityTestRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table identity-test_TEMP (like "public"."identity-test") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy identity-test_TEMP("default_generated", "name") from stdin
-    """.trimMargin()), batchSize, unsaved, c, IdentityTestRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "public"."identity-test"("default_generated", "name")
-      select * from identity-test_TEMP
-      on conflict ("name")
-      do update set
-        "default_generated" = EXCLUDED."default_generated"
-      ;
-      drop table identity-test_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table identity-test_TEMP (like \"public\".\"identity-test\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy identity-test_TEMP(\"default_generated\", \"name\") from stdin", batchSize, unsaved, c, IdentityTestRow.pgText)
+    return interpolate(Fragment.lit("insert into \"public\".\"identity-test\"(\"default_generated\", \"name\")\nselect * from identity-test_TEMP\non conflict (\"name\")\ndo update set\n  \"default_generated\" = EXCLUDED.\"default_generated\"\n;\ndrop table identity-test_TEMP;")).update().runUnchecked(c)
   }
 }

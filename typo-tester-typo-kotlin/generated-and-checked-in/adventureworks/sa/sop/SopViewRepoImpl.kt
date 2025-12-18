@@ -7,15 +7,13 @@ package adventureworks.sa.sop
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class SopViewRepoImpl() : SopViewRepo {
   override fun select(): SelectBuilder<SopViewFields, SopViewRow> = SelectBuilder.of("\"sa\".\"sop\"", SopViewFields.structure, SopViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<SopViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "specialofferid", "productid", "rowguid", "modifieddate"::text
-    from "sa"."sop"
-  """.trimMargin())).query(SopViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<SopViewRow> = interpolate(Fragment.lit("select \"id\", \"specialofferid\", \"productid\", \"rowguid\", \"modifieddate\"\nfrom \"sa\".\"sop\"\n")).query(SopViewRow._rowParser.all()).runUnchecked(c)
 }

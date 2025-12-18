@@ -6,74 +6,73 @@
 package testdb.payment_methods
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PaymentMethodsRepo {
-  fun delete(): DeleteBuilder<PaymentMethodsFields, PaymentMethodsRow>
+  abstract fun delete(): DeleteBuilder<PaymentMethodsFields, PaymentMethodsRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     methodId: PaymentMethodsId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     methodIds: Array<PaymentMethodsId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: PaymentMethodsRow,
     c: Connection
   ): PaymentMethodsRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: PaymentMethodsRowUnsaved,
     c: Connection
   ): PaymentMethodsRow
 
-  fun select(): SelectBuilder<PaymentMethodsFields, PaymentMethodsRow>
+  abstract fun select(): SelectBuilder<PaymentMethodsFields, PaymentMethodsRow>
 
-  fun selectAll(c: Connection): List<PaymentMethodsRow>
+  abstract fun selectAll(c: Connection): List<PaymentMethodsRow>
 
-  fun selectById(
+  abstract fun selectById(
     methodId: PaymentMethodsId,
     c: Connection
-  ): Optional<PaymentMethodsRow>
+  ): PaymentMethodsRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     methodIds: Array<PaymentMethodsId>,
     c: Connection
   ): List<PaymentMethodsRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     methodIds: Array<PaymentMethodsId>,
     c: Connection
   ): Map<PaymentMethodsId, PaymentMethodsRow>
 
-  fun selectByUniqueCode(
+  abstract fun selectByUniqueCode(
     code: String,
     c: Connection
-  ): Optional<PaymentMethodsRow>
+  ): PaymentMethodsRow?
 
-  fun update(): UpdateBuilder<PaymentMethodsFields, PaymentMethodsRow>
+  abstract fun update(): UpdateBuilder<PaymentMethodsFields, PaymentMethodsRow>
 
-  fun update(
+  abstract fun update(
     row: PaymentMethodsRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: PaymentMethodsRow,
     c: Connection
   ): PaymentMethodsRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<PaymentMethodsRow>,
     c: Connection
   ): List<PaymentMethodsRow>

@@ -5,7 +5,6 @@
  */
 package adventureworks.production.location;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -19,11 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class LocationRepoImpl implements LocationRepo {
   @Override
@@ -36,13 +33,7 @@ public class LocationRepoImpl implements LocationRepo {
     LocationId locationid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "production"."location" where "locationid" = 
-      """),
-      LocationId.pgType.encode(locationid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"production\".\"location\" where \"locationid\" = "), Fragment.encode(LocationId.pgType, locationid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -50,14 +41,7 @@ public class LocationRepoImpl implements LocationRepo {
     LocationId[] locationids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "production"."location"
-                  where "locationid" = ANY("""),
-               LocationId.pgTypeArray.encode(locationids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"production\".\"location\"\nwhere \"locationid\" = ANY("), Fragment.encode(LocationId.pgTypeArray, locationids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -67,24 +51,7 @@ public class LocationRepoImpl implements LocationRepo {
     LocationRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."location"("locationid", "name", "costrate", "availability", "modifieddate")
-         values ("""),
-      LocationId.pgType.encode(unsaved.locationid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      PgTypes.numeric.encode(unsaved.costrate()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.encode(unsaved.availability()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "locationid", "name", "costrate", "availability", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"location\"(\"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\")\nvalues ("), Fragment.encode(LocationId.pgType, unsaved.locationid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.numeric, unsaved.costrate()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.availability()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\"\n"))
       .updateReturning(LocationRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -93,23 +60,17 @@ public class LocationRepoImpl implements LocationRepo {
     LocationRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved.locationid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"locationid\""));
-        values.add(interpolate(
-        LocationId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(LocationId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.costrate().visit(
@@ -118,10 +79,7 @@ public class LocationRepoImpl implements LocationRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"costrate\""));
-        values.add(interpolate(
-        PgTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("::numeric")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.numeric, value), Fragment.lit("::numeric")));
       }
     );;
     unsaved.availability().visit(
@@ -130,10 +88,7 @@ public class LocationRepoImpl implements LocationRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"availability\""));
-        values.add(interpolate(
-        PgTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("::numeric")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.numeric, value), Fragment.lit("::numeric")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -142,26 +97,10 @@ public class LocationRepoImpl implements LocationRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."location"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "locationid", "name", "costrate", "availability", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"production\".\"location\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\"\n"));;
     return q.updateReturning(LocationRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -171,9 +110,7 @@ public class LocationRepoImpl implements LocationRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."location"("locationid", "name", "costrate", "availability", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, LocationRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"location\"(\"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, LocationRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -183,9 +120,7 @@ public class LocationRepoImpl implements LocationRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."location"("name", "locationid", "costrate", "availability", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, LocationRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"location\"(\"name\", \"locationid\", \"costrate\", \"availability\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, LocationRowUnsaved.pgText);
   };
 
   @Override
@@ -195,10 +130,7 @@ public class LocationRepoImpl implements LocationRepo {
 
   @Override
   public List<LocationRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "locationid", "name", "costrate", "availability", "modifieddate"::text
-       from "production"."location"
-    """)).query(LocationRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\"\nfrom \"production\".\"location\"\n")).query(LocationRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -206,14 +138,7 @@ public class LocationRepoImpl implements LocationRepo {
     LocationId locationid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "locationid", "name", "costrate", "availability", "modifieddate"::text
-         from "production"."location"
-         where "locationid" = """),
-      LocationId.pgType.encode(locationid),
-      typo.runtime.Fragment.lit("")
-    ).query(LocationRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\"\nfrom \"production\".\"location\"\nwhere \"locationid\" = "), Fragment.encode(LocationId.pgType, locationid), Fragment.lit("")).query(LocationRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -221,14 +146,7 @@ public class LocationRepoImpl implements LocationRepo {
     LocationId[] locationids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "locationid", "name", "costrate", "availability", "modifieddate"::text
-         from "production"."location"
-         where "locationid" = ANY("""),
-      LocationId.pgTypeArray.encode(locationids),
-      typo.runtime.Fragment.lit(")")
-    ).query(LocationRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\"\nfrom \"production\".\"location\"\nwhere \"locationid\" = ANY("), Fragment.encode(LocationId.pgTypeArray, locationids), Fragment.lit(")")).query(LocationRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -243,7 +161,7 @@ public class LocationRepoImpl implements LocationRepo {
 
   @Override
   public UpdateBuilder<LocationFields, LocationRow> update() {
-    return UpdateBuilder.of("\"production\".\"location\"", LocationFields.structure(), LocationRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"production\".\"location\"", LocationFields.structure(), LocationRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -252,29 +170,7 @@ public class LocationRepoImpl implements LocationRepo {
     Connection c
   ) {
     LocationId locationid = row.locationid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "production"."location"
-         set "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "costrate" = """),
-      PgTypes.numeric.encode(row.costrate()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "availability" = """),
-      PgTypes.numeric.encode(row.availability()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "locationid" = """),
-      LocationId.pgType.encode(locationid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"production\".\"location\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"costrate\" = "), Fragment.encode(PgTypes.numeric, row.costrate()), Fragment.lit("::numeric,\n\"availability\" = "), Fragment.encode(PgTypes.numeric, row.availability()), Fragment.lit("::numeric,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"locationid\" = "), Fragment.encode(LocationId.pgType, locationid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -282,29 +178,7 @@ public class LocationRepoImpl implements LocationRepo {
     LocationRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."location"("locationid", "name", "costrate", "availability", "modifieddate")
-         values ("""),
-      LocationId.pgType.encode(unsaved.locationid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      PgTypes.numeric.encode(unsaved.costrate()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      PgTypes.numeric.encode(unsaved.availability()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("locationid")
-         do update set
-           "name" = EXCLUDED."name",
-         "costrate" = EXCLUDED."costrate",
-         "availability" = EXCLUDED."availability",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "locationid", "name", "costrate", "availability", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"location\"(\"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\")\nvalues ("), Fragment.encode(LocationId.pgType, unsaved.locationid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.numeric, unsaved.costrate()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.availability()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"locationid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"costrate\" = EXCLUDED.\"costrate\",\n\"availability\" = EXCLUDED.\"availability\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\""))
       .updateReturning(LocationRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -314,18 +188,9 @@ public class LocationRepoImpl implements LocationRepo {
     Iterator<LocationRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "production"."location"("locationid", "name", "costrate", "availability", "modifieddate")
-                values (?::int4, ?::varchar, ?::numeric, ?::numeric, ?::timestamp)
-                on conflict ("locationid")
-                do update set
-                  "name" = EXCLUDED."name",
-                "costrate" = EXCLUDED."costrate",
-                "availability" = EXCLUDED."availability",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "locationid", "name", "costrate", "availability", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"production\".\"location\"(\"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::numeric, ?::numeric, ?::timestamp)\non conflict (\"locationid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"costrate\" = EXCLUDED.\"costrate\",\n\"availability\" = EXCLUDED.\"availability\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\""))
       .updateManyReturning(LocationRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -335,22 +200,8 @@ public class LocationRepoImpl implements LocationRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table location_TEMP (like "production"."location") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy location_TEMP("locationid", "name", "costrate", "availability", "modifieddate") from stdin
-    """), batchSize, unsaved, c, LocationRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "production"."location"("locationid", "name", "costrate", "availability", "modifieddate")
-       select * from location_TEMP
-       on conflict ("locationid")
-       do update set
-         "name" = EXCLUDED."name",
-       "costrate" = EXCLUDED."costrate",
-       "availability" = EXCLUDED."availability",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table location_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table location_TEMP (like \"production\".\"location\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy location_TEMP(\"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\") from stdin", batchSize, unsaved, c, LocationRow.pgText);
+    return interpolate(Fragment.lit("insert into \"production\".\"location\"(\"locationid\", \"name\", \"costrate\", \"availability\", \"modifieddate\")\nselect * from location_TEMP\non conflict (\"locationid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"costrate\" = EXCLUDED.\"costrate\",\n\"availability\" = EXCLUDED.\"availability\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table location_TEMP;")).update().runUnchecked(c);
   };
 }

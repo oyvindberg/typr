@@ -5,24 +5,24 @@
  */
 package adventureworks.sa.st;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.public_.Name;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface StViewFields extends FieldsExpr<StViewRow> {
-  record Impl(List<Path> _path) implements StViewFields, Relation<StViewFields, StViewRow> {
+  record Impl(List<Path> _path) implements StViewFields, RelationStructure<StViewFields, StViewRow> {
     @Override
     public Field<SalesterritoryId, StViewRow> id() {
       return new Field<SalesterritoryId, StViewRow>(_path, "id", StViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), SalesterritoryId.pgType);
@@ -44,8 +44,8 @@ public interface StViewFields extends FieldsExpr<StViewRow> {
     };
 
     @Override
-    public Field</* max 50 chars */ String, StViewRow> group() {
-      return new Field</* max 50 chars */ String, StViewRow>(_path, "group", StViewRow::group, Optional.empty(), Optional.empty(), (row, value) -> row.withGroup(value), PgTypes.text);
+    public Field<String, StViewRow> group() {
+      return new Field<String, StViewRow>(_path, "group", StViewRow::group, Optional.empty(), Optional.empty(), (row, value) -> row.withGroup(value), PgTypes.text);
     };
 
     @Override
@@ -69,28 +69,28 @@ public interface StViewFields extends FieldsExpr<StViewRow> {
     };
 
     @Override
-    public Field<TypoUUID, StViewRow> rowguid() {
-      return new Field<TypoUUID, StViewRow>(_path, "rowguid", StViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, StViewRow> rowguid() {
+      return new Field<UUID, StViewRow>(_path, "rowguid", StViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, StViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, StViewRow>(_path, "modifieddate", StViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, StViewRow> modifieddate() {
+      return new Field<LocalDateTime, StViewRow>(_path, "modifieddate", StViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, StViewRow>> columns() {
-      return List.of(this.id(), this.territoryid(), this.name(), this.countryregioncode(), this.group(), this.salesytd(), this.saleslastyear(), this.costytd(), this.costlastyear(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.territoryid(), this.name(), this.countryregioncode(), this.group(), this.salesytd(), this.saleslastyear(), this.costytd(), this.costlastyear(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<StViewFields, StViewRow> copy(List<Path> _path) {
+    public RelationStructure<StViewFields, StViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<SalesterritoryId, StViewRow> id();
@@ -101,7 +101,7 @@ public interface StViewFields extends FieldsExpr<StViewRow> {
 
   Field<CountryregionId, StViewRow> countryregioncode();
 
-  Field</* max 50 chars */ String, StViewRow> group();
+  Field<String, StViewRow> group();
 
   Field<BigDecimal, StViewRow> salesytd();
 
@@ -111,9 +111,9 @@ public interface StViewFields extends FieldsExpr<StViewRow> {
 
   Field<BigDecimal, StViewRow> costlastyear();
 
-  Field<TypoUUID, StViewRow> rowguid();
+  Field<UUID, StViewRow> rowguid();
 
-  Field<TypoLocalDateTime, StViewRow> modifieddate();
+  Field<LocalDateTime, StViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, StViewRow>> columns();

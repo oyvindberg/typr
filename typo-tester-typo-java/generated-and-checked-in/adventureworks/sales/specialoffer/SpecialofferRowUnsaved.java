@@ -7,29 +7,29 @@ package adventureworks.sales.specialoffer;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.specialoffer` which has not been persisted yet */
 public record SpecialofferRowUnsaved(
   /** Discount description. */
-  /* max 255 chars */ String description,
+  String description,
   /** Discount type category. */
-  /* max 50 chars */ String type,
+  String type,
   /** Group the discount applies to such as Reseller or Customer. */
-  /* max 50 chars */ String category,
+  String category,
   /** Discount start date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
     */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Discount end date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
     */
-  TypoLocalDateTime enddate,
+  LocalDateTime enddate,
   /** Maximum discount percent allowed.
     * Constraint CK_SpecialOffer_MaxQty affecting columns maxqty:  ((maxqty >= 0))
     */
@@ -49,55 +49,55 @@ public record SpecialofferRowUnsaved(
     */
   Defaulted<Integer> minqty,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SpecialofferRowUnsaved(
     /** Discount description. */
-    /* max 255 chars */ String description,
+    String description,
     /** Discount type category. */
-    /* max 50 chars */ String type,
+    String type,
     /** Group the discount applies to such as Reseller or Customer. */
-    /* max 50 chars */ String category,
+    String category,
     /** Discount start date.
       * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
       */
-    TypoLocalDateTime startdate,
+    LocalDateTime startdate,
     /** Discount end date.
       * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
       */
-    TypoLocalDateTime enddate
+    LocalDateTime enddate
   ) {
     this(description, type, category, startdate, enddate, Optional.empty(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
   };
 
   /** Discount description. */
-  public SpecialofferRowUnsaved withDescription(/* max 255 chars */ String description) {
+  public SpecialofferRowUnsaved withDescription(String description) {
     return new SpecialofferRowUnsaved(description, type, category, startdate, enddate, maxqty, specialofferid, discountpct, minqty, rowguid, modifieddate);
   };
 
   /** Discount type category. */
-  public SpecialofferRowUnsaved withType(/* max 50 chars */ String type) {
+  public SpecialofferRowUnsaved withType(String type) {
     return new SpecialofferRowUnsaved(description, type, category, startdate, enddate, maxqty, specialofferid, discountpct, minqty, rowguid, modifieddate);
   };
 
   /** Group the discount applies to such as Reseller or Customer. */
-  public SpecialofferRowUnsaved withCategory(/* max 50 chars */ String category) {
+  public SpecialofferRowUnsaved withCategory(String category) {
     return new SpecialofferRowUnsaved(description, type, category, startdate, enddate, maxqty, specialofferid, discountpct, minqty, rowguid, modifieddate);
   };
 
   /** Discount start date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
     */
-  public SpecialofferRowUnsaved withStartdate(TypoLocalDateTime startdate) {
+  public SpecialofferRowUnsaved withStartdate(LocalDateTime startdate) {
     return new SpecialofferRowUnsaved(description, type, category, startdate, enddate, maxqty, specialofferid, discountpct, minqty, rowguid, modifieddate);
   };
 
   /** Discount end date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
     */
-  public SpecialofferRowUnsaved withEnddate(TypoLocalDateTime enddate) {
+  public SpecialofferRowUnsaved withEnddate(LocalDateTime enddate) {
     return new SpecialofferRowUnsaved(description, type, category, startdate, enddate, maxqty, specialofferid, discountpct, minqty, rowguid, modifieddate);
   };
 
@@ -132,12 +132,12 @@ public record SpecialofferRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public SpecialofferRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public SpecialofferRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new SpecialofferRowUnsaved(description, type, category, startdate, enddate, maxqty, specialofferid, discountpct, minqty, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SpecialofferRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SpecialofferRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SpecialofferRowUnsaved(description, type, category, startdate, enddate, maxqty, specialofferid, discountpct, minqty, rowguid, modifieddate);
   };
 
@@ -149,9 +149,9 @@ public record SpecialofferRowUnsaved(
       sb.append(PgText.DELIMETER);
       PgTypes.text.pgText().unsafeEncode(row.category, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.startdate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.startdate, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.enddate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.enddate, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.int4.opt().pgText().unsafeEncode(row.maxqty, sb);
       sb.append(PgText.DELIMETER);
@@ -161,17 +161,17 @@ public record SpecialofferRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.minqty, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public SpecialofferRow toRow(
     java.util.function.Supplier<SpecialofferId> specialofferidDefault,
     java.util.function.Supplier<BigDecimal> discountpctDefault,
     java.util.function.Supplier<Integer> minqtyDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new SpecialofferRow(specialofferid.getOrElse(specialofferidDefault), description, discountpct.getOrElse(discountpctDefault), type, category, startdate, enddate, minqty.getOrElse(minqtyDefault), maxqty, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

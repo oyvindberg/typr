@@ -5,12 +5,10 @@
  */
 package adventureworks.pr.wr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.location.LocationId;
 import adventureworks.production.workorder.WorkorderId;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -24,25 +22,25 @@ public record WrViewRow(
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#productid()} */
   Integer productid,
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#operationsequence()} */
-  TypoShort operationsequence,
+  Short operationsequence,
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#locationid()} */
   LocationId locationid,
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#scheduledstartdate()} */
-  TypoLocalDateTime scheduledstartdate,
+  LocalDateTime scheduledstartdate,
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#scheduledenddate()} */
-  TypoLocalDateTime scheduledenddate,
+  LocalDateTime scheduledenddate,
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#actualstartdate()} */
-  Optional<TypoLocalDateTime> actualstartdate,
+  LocalDateTime actualstartdate,
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#actualenddate()} */
-  Optional<TypoLocalDateTime> actualenddate,
+  LocalDateTime actualenddate,
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#actualresourcehrs()} */
-  Optional<BigDecimal> actualresourcehrs,
+  BigDecimal actualresourcehrs,
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#plannedcost()} */
   BigDecimal plannedcost,
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#actualcost()} */
-  Optional<BigDecimal> actualcost,
+  BigDecimal actualcost,
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#workorderid()} */
   public WrViewRow withId(WorkorderId id) {
@@ -60,7 +58,7 @@ public record WrViewRow(
   };
 
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#operationsequence()} */
-  public WrViewRow withOperationsequence(TypoShort operationsequence) {
+  public WrViewRow withOperationsequence(Short operationsequence) {
     return new WrViewRow(id, workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
@@ -70,27 +68,27 @@ public record WrViewRow(
   };
 
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#scheduledstartdate()} */
-  public WrViewRow withScheduledstartdate(TypoLocalDateTime scheduledstartdate) {
+  public WrViewRow withScheduledstartdate(LocalDateTime scheduledstartdate) {
     return new WrViewRow(id, workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#scheduledenddate()} */
-  public WrViewRow withScheduledenddate(TypoLocalDateTime scheduledenddate) {
+  public WrViewRow withScheduledenddate(LocalDateTime scheduledenddate) {
     return new WrViewRow(id, workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#actualstartdate()} */
-  public WrViewRow withActualstartdate(Optional<TypoLocalDateTime> actualstartdate) {
+  public WrViewRow withActualstartdate(LocalDateTime actualstartdate) {
     return new WrViewRow(id, workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#actualenddate()} */
-  public WrViewRow withActualenddate(Optional<TypoLocalDateTime> actualenddate) {
+  public WrViewRow withActualenddate(LocalDateTime actualenddate) {
     return new WrViewRow(id, workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#actualresourcehrs()} */
-  public WrViewRow withActualresourcehrs(Optional<BigDecimal> actualresourcehrs) {
+  public WrViewRow withActualresourcehrs(BigDecimal actualresourcehrs) {
     return new WrViewRow(id, workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
@@ -100,14 +98,14 @@ public record WrViewRow(
   };
 
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#actualcost()} */
-  public WrViewRow withActualcost(Optional<BigDecimal> actualcost) {
+  public WrViewRow withActualcost(BigDecimal actualcost) {
     return new WrViewRow(id, workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.workorderrouting.WorkorderroutingRow#modifieddate()} */
-  public WrViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public WrViewRow withModifieddate(LocalDateTime modifieddate) {
     return new WrViewRow(id, workorderid, productid, operationsequence, locationid, scheduledstartdate, scheduledenddate, actualstartdate, actualenddate, actualresourcehrs, plannedcost, actualcost, modifieddate);
   };
 
-  static RowParser<WrViewRow> _rowParser = RowParsers.of(WorkorderId.pgType, WorkorderId.pgType, PgTypes.int4, TypoShort.pgType, LocationId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric.opt(), TypoLocalDateTime.pgType, WrViewRow::new, row -> new Object[]{row.id(), row.workorderid(), row.productid(), row.operationsequence(), row.locationid(), row.scheduledstartdate(), row.scheduledenddate(), row.actualstartdate(), row.actualenddate(), row.actualresourcehrs(), row.plannedcost(), row.actualcost(), row.modifieddate()});;
+  static RowParser<WrViewRow> _rowParser = RowParsers.of(WorkorderId.pgType, WorkorderId.pgType, PgTypes.int4, PgTypes.int2, LocationId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, WrViewRow::new, row -> new Object[]{row.id(), row.workorderid(), row.productid(), row.operationsequence(), row.locationid(), row.scheduledstartdate(), row.scheduledenddate(), row.actualstartdate(), row.actualenddate(), row.actualresourcehrs(), row.plannedcost(), row.actualcost(), row.modifieddate()});;
 }

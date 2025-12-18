@@ -7,9 +7,10 @@ package adventureworks.production.culture;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.culture` which has not been persisted yet */
 public record CultureRowUnsaved(
@@ -18,7 +19,7 @@ public record CultureRowUnsaved(
   /** Culture description. */
   Name name,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public CultureRowUnsaved(
     /** Primary key for Culture records. */
@@ -40,7 +41,7 @@ public record CultureRowUnsaved(
   };
 
   /** Default: now() */
-  public CultureRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public CultureRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new CultureRowUnsaved(cultureid, name, modifieddate);
   };
 
@@ -50,10 +51,10 @@ public record CultureRowUnsaved(
       sb.append(PgText.DELIMETER);
       Name.pgType.pgText().unsafeEncode(row.name, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public CultureRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public CultureRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new CultureRow(cultureid, name, modifieddate.getOrElse(modifieddateDefault));
   };
 }

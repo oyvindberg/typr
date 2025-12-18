@@ -11,7 +11,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.Inet4
@@ -19,221 +18,223 @@ import typo.data.maria.Inet6
 import typo.data.maria.MariaSet
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `mariatestnull` which has not been persisted yet */
 case class MariatestnullRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("tinyint_col") tinyintCol: Defaulted[Optional[java.lang.Byte]] = new UseDefault(),
+  @JsonProperty("tinyint_col") tinyintCol: Defaulted[Option[Byte]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("smallint_col") smallintCol: Defaulted[Optional[java.lang.Short]] = new UseDefault(),
+  @JsonProperty("smallint_col") smallintCol: Defaulted[Option[Short]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("mediumint_col") mediumintCol: Defaulted[Optional[Integer]] = new UseDefault(),
+  @JsonProperty("mediumint_col") mediumintCol: Defaulted[Option[Int]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("int_col") intCol: Defaulted[Optional[Integer]] = new UseDefault(),
+  @JsonProperty("int_col") intCol: Defaulted[Option[Int]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("bigint_col") bigintCol: Defaulted[Optional[java.lang.Long]] = new UseDefault(),
+  @JsonProperty("bigint_col") bigintCol: Defaulted[Option[Long]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("tinyint_u_col") tinyintUCol: Defaulted[Optional[java.lang.Short]] = new UseDefault(),
+  @JsonProperty("tinyint_u_col") tinyintUCol: Defaulted[Option[Short]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("smallint_u_col") smallintUCol: Defaulted[Optional[Integer]] = new UseDefault(),
+  @JsonProperty("smallint_u_col") smallintUCol: Defaulted[Option[Int]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("mediumint_u_col") mediumintUCol: Defaulted[Optional[Integer]] = new UseDefault(),
+  @JsonProperty("mediumint_u_col") mediumintUCol: Defaulted[Option[Int]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("int_u_col") intUCol: Defaulted[Optional[java.lang.Long]] = new UseDefault(),
+  @JsonProperty("int_u_col") intUCol: Defaulted[Option[Long]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("bigint_u_col") bigintUCol: Defaulted[Optional[BigInteger]] = new UseDefault(),
+  @JsonProperty("bigint_u_col") bigintUCol: Defaulted[Option[BigInteger]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("decimal_col") decimalCol: Defaulted[Optional[java.math.BigDecimal]] = new UseDefault(),
+  @JsonProperty("decimal_col") decimalCol: Defaulted[Option[BigDecimal]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("numeric_col") numericCol: Defaulted[Optional[java.math.BigDecimal]] = new UseDefault(),
+  @JsonProperty("numeric_col") numericCol: Defaulted[Option[BigDecimal]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("float_col") floatCol: Defaulted[Optional[java.lang.Float]] = new UseDefault(),
+  @JsonProperty("float_col") floatCol: Defaulted[Option[Float]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("double_col") doubleCol: Defaulted[Optional[java.lang.Double]] = new UseDefault(),
+  @JsonProperty("double_col") doubleCol: Defaulted[Option[Double]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("bool_col") boolCol: Defaulted[Optional[java.lang.Boolean]] = new UseDefault(),
+  @JsonProperty("bool_col") boolCol: Defaulted[Option[Boolean]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("bit_col") bitCol: Defaulted[Optional[Array[Byte]]] = new UseDefault(),
+  @JsonProperty("bit_col") bitCol: Defaulted[Option[Array[Byte]]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("bit1_col") bit1Col: Defaulted[Optional[Array[Byte]]] = new UseDefault(),
+  @JsonProperty("bit1_col") bit1Col: Defaulted[Option[Array[Byte]]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("char_col") charCol: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("char_col") charCol: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("varchar_col") varcharCol: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("varchar_col") varcharCol: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("tinytext_col") tinytextCol: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("tinytext_col") tinytextCol: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("text_col") textCol: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("text_col") textCol: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("mediumtext_col") mediumtextCol: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("mediumtext_col") mediumtextCol: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("longtext_col") longtextCol: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("longtext_col") longtextCol: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("binary_col") binaryCol: Defaulted[Optional[Array[Byte]]] = new UseDefault(),
+  @JsonProperty("binary_col") binaryCol: Defaulted[Option[Array[Byte]]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("varbinary_col") varbinaryCol: Defaulted[Optional[Array[Byte]]] = new UseDefault(),
+  @JsonProperty("varbinary_col") varbinaryCol: Defaulted[Option[Array[Byte]]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("tinyblob_col") tinyblobCol: Defaulted[Optional[Array[Byte]]] = new UseDefault(),
+  @JsonProperty("tinyblob_col") tinyblobCol: Defaulted[Option[Array[Byte]]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("blob_col") blobCol: Defaulted[Optional[Array[Byte]]] = new UseDefault(),
+  @JsonProperty("blob_col") blobCol: Defaulted[Option[Array[Byte]]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("mediumblob_col") mediumblobCol: Defaulted[Optional[Array[Byte]]] = new UseDefault(),
+  @JsonProperty("mediumblob_col") mediumblobCol: Defaulted[Option[Array[Byte]]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("longblob_col") longblobCol: Defaulted[Optional[Array[Byte]]] = new UseDefault(),
+  @JsonProperty("longblob_col") longblobCol: Defaulted[Option[Array[Byte]]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("date_col") dateCol: Defaulted[Optional[LocalDate]] = new UseDefault(),
+  @JsonProperty("date_col") dateCol: Defaulted[Option[LocalDate]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("time_col") timeCol: Defaulted[Optional[LocalTime]] = new UseDefault(),
+  @JsonProperty("time_col") timeCol: Defaulted[Option[LocalTime]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("time_fsp_col") timeFspCol: Defaulted[Optional[LocalTime]] = new UseDefault(),
+  @JsonProperty("time_fsp_col") timeFspCol: Defaulted[Option[LocalTime]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("datetime_col") datetimeCol: Defaulted[Optional[LocalDateTime]] = new UseDefault(),
+  @JsonProperty("datetime_col") datetimeCol: Defaulted[Option[LocalDateTime]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("datetime_fsp_col") datetimeFspCol: Defaulted[Optional[LocalDateTime]] = new UseDefault(),
+  @JsonProperty("datetime_fsp_col") datetimeFspCol: Defaulted[Option[LocalDateTime]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("timestamp_col") timestampCol: Defaulted[Optional[LocalDateTime]] = new UseDefault(),
+  @JsonProperty("timestamp_col") timestampCol: Defaulted[Option[LocalDateTime]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("timestamp_fsp_col") timestampFspCol: Defaulted[Optional[LocalDateTime]] = new UseDefault(),
+  @JsonProperty("timestamp_fsp_col") timestampFspCol: Defaulted[Option[LocalDateTime]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("year_col") yearCol: Defaulted[Optional[Year]] = new UseDefault(),
+  @JsonProperty("year_col") yearCol: Defaulted[Option[Year]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("enum_col") enumCol: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("enum_col") enumCol: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("set_col") setCol: Defaulted[Optional[MariaSet]] = new UseDefault(),
+  @JsonProperty("set_col") setCol: Defaulted[Option[MariaSet]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("json_col") jsonCol: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("json_col") jsonCol: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("inet4_col") inet4Col: Defaulted[Optional[Inet4]] = new UseDefault(),
+  @JsonProperty("inet4_col") inet4Col: Defaulted[Option[Inet4]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("inet6_col") inet6Col: Defaulted[Optional[Inet6]] = new UseDefault()
+  @JsonProperty("inet6_col") inet6Col: Defaulted[Option[Inet6]] = new UseDefault()
 ) {
   def toRow(
-    tinyintColDefault: => Optional[java.lang.Byte],
-    smallintColDefault: => Optional[java.lang.Short],
-    mediumintColDefault: => Optional[Integer],
-    intColDefault: => Optional[Integer],
-    bigintColDefault: => Optional[java.lang.Long],
-    tinyintUColDefault: => Optional[java.lang.Short],
-    smallintUColDefault: => Optional[Integer],
-    mediumintUColDefault: => Optional[Integer],
-    intUColDefault: => Optional[java.lang.Long],
-    bigintUColDefault: => Optional[BigInteger],
-    decimalColDefault: => Optional[java.math.BigDecimal],
-    numericColDefault: => Optional[java.math.BigDecimal],
-    floatColDefault: => Optional[java.lang.Float],
-    doubleColDefault: => Optional[java.lang.Double],
-    boolColDefault: => Optional[java.lang.Boolean],
-    bitColDefault: => Optional[Array[Byte]],
-    bit1ColDefault: => Optional[Array[Byte]],
-    charColDefault: => Optional[String],
-    varcharColDefault: => Optional[String],
-    tinytextColDefault: => Optional[String],
-    textColDefault: => Optional[String],
-    mediumtextColDefault: => Optional[String],
-    longtextColDefault: => Optional[String],
-    binaryColDefault: => Optional[Array[Byte]],
-    varbinaryColDefault: => Optional[Array[Byte]],
-    tinyblobColDefault: => Optional[Array[Byte]],
-    blobColDefault: => Optional[Array[Byte]],
-    mediumblobColDefault: => Optional[Array[Byte]],
-    longblobColDefault: => Optional[Array[Byte]],
-    dateColDefault: => Optional[LocalDate],
-    timeColDefault: => Optional[LocalTime],
-    timeFspColDefault: => Optional[LocalTime],
-    datetimeColDefault: => Optional[LocalDateTime],
-    datetimeFspColDefault: => Optional[LocalDateTime],
-    timestampColDefault: => Optional[LocalDateTime],
-    timestampFspColDefault: => Optional[LocalDateTime],
-    yearColDefault: => Optional[Year],
-    enumColDefault: => Optional[String],
-    setColDefault: => Optional[MariaSet],
-    jsonColDefault: => Optional[String],
-    inet4ColDefault: => Optional[Inet4],
-    inet6ColDefault: => Optional[Inet6]
+    tinyintColDefault: => Option[Byte],
+    smallintColDefault: => Option[Short],
+    mediumintColDefault: => Option[Int],
+    intColDefault: => Option[Int],
+    bigintColDefault: => Option[Long],
+    tinyintUColDefault: => Option[Short],
+    smallintUColDefault: => Option[Int],
+    mediumintUColDefault: => Option[Int],
+    intUColDefault: => Option[Long],
+    bigintUColDefault: => Option[BigInteger],
+    decimalColDefault: => Option[BigDecimal],
+    numericColDefault: => Option[BigDecimal],
+    floatColDefault: => Option[Float],
+    doubleColDefault: => Option[Double],
+    boolColDefault: => Option[Boolean],
+    bitColDefault: => Option[Array[Byte]],
+    bit1ColDefault: => Option[Array[Byte]],
+    charColDefault: => Option[String],
+    varcharColDefault: => Option[String],
+    tinytextColDefault: => Option[String],
+    textColDefault: => Option[String],
+    mediumtextColDefault: => Option[String],
+    longtextColDefault: => Option[String],
+    binaryColDefault: => Option[Array[Byte]],
+    varbinaryColDefault: => Option[Array[Byte]],
+    tinyblobColDefault: => Option[Array[Byte]],
+    blobColDefault: => Option[Array[Byte]],
+    mediumblobColDefault: => Option[Array[Byte]],
+    longblobColDefault: => Option[Array[Byte]],
+    dateColDefault: => Option[LocalDate],
+    timeColDefault: => Option[LocalTime],
+    timeFspColDefault: => Option[LocalTime],
+    datetimeColDefault: => Option[LocalDateTime],
+    datetimeFspColDefault: => Option[LocalDateTime],
+    timestampColDefault: => Option[LocalDateTime],
+    timestampFspColDefault: => Option[LocalDateTime],
+    yearColDefault: => Option[Year],
+    enumColDefault: => Option[String],
+    setColDefault: => Option[MariaSet],
+    jsonColDefault: => Option[String],
+    inet4ColDefault: => Option[Inet4],
+    inet6ColDefault: => Option[Inet6]
   ): MariatestnullRow = {
     new MariatestnullRow(
       tinyintCol = tinyintCol.getOrElse(tinyintColDefault),
@@ -283,5 +284,5 @@ case class MariatestnullRowUnsaved(
 }
 
 object MariatestnullRowUnsaved {
-  given mariaText: MariaText[MariatestnullRowUnsaved] = MariaText.instance((row, sb) => { Defaulted.mariaText(using MariaTypes.tinyint.opt().mariaText).unsafeEncode(row.tinyintCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.smallint.opt().mariaText).unsafeEncode(row.smallintCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumint.opt().mariaText).unsafeEncode(row.mediumintCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.int_.opt().mariaText).unsafeEncode(row.intCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bigint.opt().mariaText).unsafeEncode(row.bigintCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinyintUnsigned.opt().mariaText).unsafeEncode(row.tinyintUCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.smallintUnsigned.opt().mariaText).unsafeEncode(row.smallintUCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumintUnsigned.opt().mariaText).unsafeEncode(row.mediumintUCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.intUnsigned.opt().mariaText).unsafeEncode(row.intUCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bigintUnsigned.opt().mariaText).unsafeEncode(row.bigintUCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.opt().mariaText).unsafeEncode(row.decimalCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.opt().mariaText).unsafeEncode(row.numericCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.float_.opt().mariaText).unsafeEncode(row.floatCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.double_.opt().mariaText).unsafeEncode(row.doubleCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.opt().mariaText).unsafeEncode(row.boolCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bit.opt().mariaText).unsafeEncode(row.bitCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bit.opt().mariaText).unsafeEncode(row.bit1Col, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.char_.opt().mariaText).unsafeEncode(row.charCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.varcharCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinytext.opt().mariaText).unsafeEncode(row.tinytextCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.opt().mariaText).unsafeEncode(row.textCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumtext.opt().mariaText).unsafeEncode(row.mediumtextCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.longtextCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.binary.opt().mariaText).unsafeEncode(row.binaryCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varbinary.opt().mariaText).unsafeEncode(row.varbinaryCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinyblob.opt().mariaText).unsafeEncode(row.tinyblobCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.blob.opt().mariaText).unsafeEncode(row.blobCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumblob.opt().mariaText).unsafeEncode(row.mediumblobCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longblob.opt().mariaText).unsafeEncode(row.longblobCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.date.opt().mariaText).unsafeEncode(row.dateCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.time.opt().mariaText).unsafeEncode(row.timeCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.time.opt().mariaText).unsafeEncode(row.timeFspCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.datetimeCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.datetimeFspCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.timestamp.opt().mariaText).unsafeEncode(row.timestampCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.timestamp.opt().mariaText).unsafeEncode(row.timestampFspCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.year.opt().mariaText).unsafeEncode(row.yearCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.opt().mariaText).unsafeEncode(row.enumCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.set.opt().mariaText).unsafeEncode(row.setCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.jsonCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.inet4.opt().mariaText).unsafeEncode(row.inet4Col, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.inet6.opt().mariaText).unsafeEncode(row.inet6Col, sb) })
+  given mariaText: MariaText[MariatestnullRowUnsaved] = MariaText.instance((row, sb) => { Defaulted.mariaText(using ScalaDbTypes.MariaTypes.tinyint.nullable.mariaText).unsafeEncode(row.tinyintCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.smallint.nullable.mariaText).unsafeEncode(row.smallintCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.mediumint.nullable.mariaText).unsafeEncode(row.mediumintCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.int_.nullable.mariaText).unsafeEncode(row.intCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bigint.nullable.mariaText).unsafeEncode(row.bigintCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.tinyintUnsigned.nullable.mariaText).unsafeEncode(row.tinyintUCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.smallintUnsigned.nullable.mariaText).unsafeEncode(row.smallintUCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.mediumintUnsigned.nullable.mariaText).unsafeEncode(row.mediumintUCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.intUnsigned.nullable.mariaText).unsafeEncode(row.intUCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bigintUnsigned.nullable.mariaText).unsafeEncode(row.bigintUCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.nullable.mariaText).unsafeEncode(row.decimalCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.nullable.mariaText).unsafeEncode(row.numericCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.float_.nullable.mariaText).unsafeEncode(row.floatCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.double_.nullable.mariaText).unsafeEncode(row.doubleCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.nullable.mariaText).unsafeEncode(row.boolCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bit.nullable.mariaText).unsafeEncode(row.bitCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bit.nullable.mariaText).unsafeEncode(row.bit1Col, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.char_.nullable.mariaText).unsafeEncode(row.charCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.varcharCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinytext.nullable.mariaText).unsafeEncode(row.tinytextCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.nullable.mariaText).unsafeEncode(row.textCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumtext.nullable.mariaText).unsafeEncode(row.mediumtextCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.longtextCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.binary.nullable.mariaText).unsafeEncode(row.binaryCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varbinary.nullable.mariaText).unsafeEncode(row.varbinaryCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinyblob.nullable.mariaText).unsafeEncode(row.tinyblobCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.blob.nullable.mariaText).unsafeEncode(row.blobCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumblob.nullable.mariaText).unsafeEncode(row.mediumblobCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longblob.nullable.mariaText).unsafeEncode(row.longblobCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.date.nullable.mariaText).unsafeEncode(row.dateCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.time.nullable.mariaText).unsafeEncode(row.timeCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.time.nullable.mariaText).unsafeEncode(row.timeFspCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.datetimeCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.datetimeFspCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.timestamp.nullable.mariaText).unsafeEncode(row.timestampCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.timestamp.nullable.mariaText).unsafeEncode(row.timestampFspCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.year.nullable.mariaText).unsafeEncode(row.yearCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.nullable.mariaText).unsafeEncode(row.enumCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.set.nullable.mariaText).unsafeEncode(row.setCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.jsonCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.inet4.nullable.mariaText).unsafeEncode(row.inet4Col, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.inet6.nullable.mariaText).unsafeEncode(row.inet6Col, sb) })
 }

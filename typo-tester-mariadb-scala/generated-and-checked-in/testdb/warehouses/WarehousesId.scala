@@ -6,15 +6,15 @@
 package testdb.warehouses
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
 import typo.runtime.MariaType
-import typo.runtime.MariaTypes
+import typo.scaladsl.Bijection
+import typo.scaladsl.ScalaDbTypes
 
 /** Type for the primary key of table `warehouses` */
-case class WarehousesId(@JsonValue value: java.lang.Short) extends scala.AnyVal
+case class WarehousesId(@JsonValue value: Short) extends scala.AnyVal
 
 object WarehousesId {
-  given bijection: Bijection[WarehousesId, java.lang.Short] = Bijection.apply[WarehousesId, java.lang.Short](_.value)(WarehousesId.apply)
+  given bijection: Bijection[WarehousesId, Short] = Bijection.apply[WarehousesId, Short](_.value)(WarehousesId.apply)
 
-  given pgType: MariaType[WarehousesId] = MariaTypes.smallint.bimap(WarehousesId.apply, _.value)
+  given pgType: MariaType[WarehousesId] = ScalaDbTypes.MariaTypes.tinyintUnsigned.bimap(WarehousesId.apply, _.value)
 }

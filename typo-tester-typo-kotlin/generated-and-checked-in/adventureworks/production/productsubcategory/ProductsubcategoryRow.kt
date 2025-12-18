@@ -6,13 +6,14 @@
 package adventureworks.production.productsubcategory
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.public.Name
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: production.productsubcategory
   * Product subcategories. See ProductCategory table.
@@ -30,22 +31,22 @@ data class ProductsubcategoryRow(
   /** Subcategory description. */
   val name: Name,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): ProductsubcategoryId = productsubcategoryid
 
   fun toUnsavedRow(
     productsubcategoryid: Defaulted<ProductsubcategoryId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): ProductsubcategoryRowUnsaved = ProductsubcategoryRowUnsaved(productcategoryid, name, productsubcategoryid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductsubcategoryRow> = RowParsers.of(ProductsubcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> ProductsubcategoryRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.productsubcategoryid, row.productcategoryid, row.name, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<ProductsubcategoryRow> = RowParsers.of(ProductsubcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> ProductsubcategoryRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.productsubcategoryid, row.productcategoryid, row.name, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<ProductsubcategoryRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

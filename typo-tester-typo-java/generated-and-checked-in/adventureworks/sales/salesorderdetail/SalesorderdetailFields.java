@@ -5,9 +5,6 @@
  */
 package adventureworks.sales.salesorderdetail;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.product.ProductId;
 import adventureworks.sales.salesorderheader.SalesorderheaderFields;
 import adventureworks.sales.salesorderheader.SalesorderheaderId;
@@ -17,11 +14,14 @@ import adventureworks.sales.specialofferproduct.SpecialofferproductFields;
 import adventureworks.sales.specialofferproduct.SpecialofferproductId;
 import adventureworks.sales.specialofferproduct.SpecialofferproductRow;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
@@ -29,12 +29,11 @@ import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SalesorderdetailFields extends FieldsExpr<SalesorderdetailRow> {
-  record Impl(List<Path> _path) implements SalesorderdetailFields, Relation<SalesorderdetailFields, SalesorderdetailRow> {
+  record Impl(List<Path> _path) implements SalesorderdetailFields, RelationStructure<SalesorderdetailFields, SalesorderdetailRow> {
     @Override
     public IdField<SalesorderheaderId, SalesorderdetailRow> salesorderid() {
       return new IdField<SalesorderheaderId, SalesorderdetailRow>(_path, "salesorderid", SalesorderdetailRow::salesorderid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withSalesorderid(value), SalesorderheaderId.pgType);
@@ -46,13 +45,13 @@ public interface SalesorderdetailFields extends FieldsExpr<SalesorderdetailRow> 
     };
 
     @Override
-    public OptField</* max 25 chars */ String, SalesorderdetailRow> carriertrackingnumber() {
-      return new OptField</* max 25 chars */ String, SalesorderdetailRow>(_path, "carriertrackingnumber", SalesorderdetailRow::carriertrackingnumber, Optional.empty(), Optional.empty(), (row, value) -> row.withCarriertrackingnumber(value), PgTypes.text);
+    public OptField<String, SalesorderdetailRow> carriertrackingnumber() {
+      return new OptField<String, SalesorderdetailRow>(_path, "carriertrackingnumber", SalesorderdetailRow::carriertrackingnumber, Optional.empty(), Optional.empty(), (row, value) -> row.withCarriertrackingnumber(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoShort, SalesorderdetailRow> orderqty() {
-      return new Field<TypoShort, SalesorderdetailRow>(_path, "orderqty", SalesorderdetailRow::orderqty, Optional.empty(), Optional.of("int2"), (row, value) -> row.withOrderqty(value), TypoShort.pgType);
+    public Field<Short, SalesorderdetailRow> orderqty() {
+      return new Field<Short, SalesorderdetailRow>(_path, "orderqty", SalesorderdetailRow::orderqty, Optional.empty(), Optional.of("int2"), (row, value) -> row.withOrderqty(value), PgTypes.int2);
     };
 
     @Override
@@ -76,28 +75,28 @@ public interface SalesorderdetailFields extends FieldsExpr<SalesorderdetailRow> 
     };
 
     @Override
-    public Field<TypoUUID, SalesorderdetailRow> rowguid() {
-      return new Field<TypoUUID, SalesorderdetailRow>(_path, "rowguid", SalesorderdetailRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, SalesorderdetailRow> rowguid() {
+      return new Field<UUID, SalesorderdetailRow>(_path, "rowguid", SalesorderdetailRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SalesorderdetailRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SalesorderdetailRow>(_path, "modifieddate", SalesorderdetailRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SalesorderdetailRow> modifieddate() {
+      return new Field<LocalDateTime, SalesorderdetailRow>(_path, "modifieddate", SalesorderdetailRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SalesorderdetailRow>> columns() {
-      return List.of(this.salesorderid(), this.salesorderdetailid(), this.carriertrackingnumber(), this.orderqty(), this.productid(), this.specialofferid(), this.unitprice(), this.unitpricediscount(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.salesorderid(), this.salesorderdetailid(), this.carriertrackingnumber(), this.orderqty(), this.productid(), this.specialofferid(), this.unitprice(), this.unitpricediscount(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SalesorderdetailFields, SalesorderdetailRow> copy(List<Path> _path) {
+    public RelationStructure<SalesorderdetailFields, SalesorderdetailRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<SalesorderheaderId, SalesorderdetailRow> salesorderid();
@@ -106,7 +105,7 @@ public interface SalesorderdetailFields extends FieldsExpr<SalesorderdetailRow> 
 
   OptField</* max 25 chars */ String, SalesorderdetailRow> carriertrackingnumber();
 
-  Field<TypoShort, SalesorderdetailRow> orderqty();
+  Field<Short, SalesorderdetailRow> orderqty();
 
   Field<ProductId, SalesorderdetailRow> productid();
 
@@ -116,17 +115,16 @@ public interface SalesorderdetailFields extends FieldsExpr<SalesorderdetailRow> 
 
   Field<BigDecimal, SalesorderdetailRow> unitpricediscount();
 
-  Field<TypoUUID, SalesorderdetailRow> rowguid();
+  Field<UUID, SalesorderdetailRow> rowguid();
 
-  Field<TypoLocalDateTime, SalesorderdetailRow> modifieddate();
+  Field<LocalDateTime, SalesorderdetailRow> modifieddate();
 
   default ForeignKey<SalesorderheaderFields, SalesorderheaderRow> fkSalesorderheader() {
-    return ForeignKey.<SalesorderheaderFields, SalesorderheaderRow>of("sales.FK_SalesOrderDetail_SalesOrderHeader_SalesOrderID").withColumnPair(salesorderid(), SalesorderheaderFields::salesorderid);
+    return ForeignKey.<SalesorderheaderFields, SalesorderheaderRow>of("sales.FK_SalesOrderDetail_SalesOrderHeader_SalesOrderID").<SalesorderheaderId>withColumnPair(salesorderid(), SalesorderheaderFields::salesorderid);
   };
 
   default ForeignKey<SpecialofferproductFields, SpecialofferproductRow> fkSpecialofferproduct() {
-    return ForeignKey.<SpecialofferproductFields, SpecialofferproductRow>of("sales.FK_SalesOrderDetail_SpecialOfferProduct_SpecialOfferIDProductID").withColumnPair(specialofferid(), SpecialofferproductFields::specialofferid)
-    .withColumnPair(productid(), SpecialofferproductFields::productid);
+    return ForeignKey.<SpecialofferproductFields, SpecialofferproductRow>of("sales.FK_SalesOrderDetail_SpecialOfferProduct_SpecialOfferIDProductID").<SpecialofferId>withColumnPair(specialofferid(), SpecialofferproductFields::specialofferid).<ProductId>withColumnPair(productid(), SpecialofferproductFields::productid);
   };
 
   default SqlExpr<Boolean> extractIdentSpecialofferproductIdIs(SpecialofferproductId id) {

@@ -5,10 +5,9 @@
  */
 package adventureworks.pr.plph;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -20,13 +19,13 @@ public record PlphViewRow(
   /** Points to {@link adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow#productid()} */
   ProductId productid,
   /** Points to {@link adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow#startdate()} */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Points to {@link adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow#enddate()} */
-  Optional<TypoLocalDateTime> enddate,
+  LocalDateTime enddate,
   /** Points to {@link adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow#listprice()} */
   BigDecimal listprice,
   /** Points to {@link adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow#productid()} */
   public PlphViewRow withId(ProductId id) {
@@ -39,12 +38,12 @@ public record PlphViewRow(
   };
 
   /** Points to {@link adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow#startdate()} */
-  public PlphViewRow withStartdate(TypoLocalDateTime startdate) {
+  public PlphViewRow withStartdate(LocalDateTime startdate) {
     return new PlphViewRow(id, productid, startdate, enddate, listprice, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow#enddate()} */
-  public PlphViewRow withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public PlphViewRow withEnddate(LocalDateTime enddate) {
     return new PlphViewRow(id, productid, startdate, enddate, listprice, modifieddate);
   };
 
@@ -54,9 +53,9 @@ public record PlphViewRow(
   };
 
   /** Points to {@link adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow#modifieddate()} */
-  public PlphViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PlphViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PlphViewRow(id, productid, startdate, enddate, listprice, modifieddate);
   };
 
-  static RowParser<PlphViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), PgTypes.numeric, TypoLocalDateTime.pgType, PlphViewRow::new, row -> new Object[]{row.id(), row.productid(), row.startdate(), row.enddate(), row.listprice(), row.modifieddate()});;
+  static RowParser<PlphViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.numeric, PgTypes.timestamp, PlphViewRow::new, row -> new Object[]{row.id(), row.productid(), row.startdate(), row.enddate(), row.listprice(), row.modifieddate()});;
 }

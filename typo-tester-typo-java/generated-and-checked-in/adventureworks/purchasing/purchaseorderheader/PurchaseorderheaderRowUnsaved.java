@@ -7,11 +7,10 @@ package adventureworks.purchasing.purchaseorderheader;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.purchasing.shipmethod.ShipmethodId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -33,7 +32,7 @@ public record PurchaseorderheaderRowUnsaved(
   /** Estimated shipment date from the vendor.
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  Optional<TypoLocalDateTime> shipdate,
+  Optional<LocalDateTime> shipdate,
   /** Default: nextval('purchasing.purchaseorderheader_purchaseorderid_seq'::regclass)
     * Primary key.
     */
@@ -41,17 +40,17 @@ public record PurchaseorderheaderRowUnsaved(
   /** Default: 0
     * Incremental number to track changes to the purchase order over time.
     */
-  Defaulted<TypoShort> revisionnumber,
+  Defaulted<Short> revisionnumber,
   /** Default: 1
     * Order current status. 1 = Pending; 2 = Approved; 3 = Rejected; 4 = Complete
     * Constraint CK_PurchaseOrderHeader_Status affecting columns status:  (((status >= 1) AND (status <= 4)))
     */
-  Defaulted<TypoShort> status,
+  Defaulted<Short> status,
   /** Default: now()
     * Purchase order creation date.
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  Defaulted<TypoLocalDateTime> orderdate,
+  Defaulted<LocalDateTime> orderdate,
   /** Default: 0.00
     * Purchase order subtotal. Computed as SUM(PurchaseOrderDetail.LineTotal)for the appropriate PurchaseOrderID.
     * Constraint CK_PurchaseOrderHeader_SubTotal affecting columns subtotal:  ((subtotal >= 0.00))
@@ -68,7 +67,7 @@ public record PurchaseorderheaderRowUnsaved(
     */
   Defaulted<BigDecimal> freight,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public PurchaseorderheaderRowUnsaved(
     /** Employee who created the purchase order. Foreign key to Employee.BusinessEntityID.
@@ -111,7 +110,7 @@ public record PurchaseorderheaderRowUnsaved(
   /** Estimated shipment date from the vendor.
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  public PurchaseorderheaderRowUnsaved withShipdate(Optional<TypoLocalDateTime> shipdate) {
+  public PurchaseorderheaderRowUnsaved withShipdate(Optional<LocalDateTime> shipdate) {
     return new PurchaseorderheaderRowUnsaved(employeeid, vendorid, shipmethodid, shipdate, purchaseorderid, revisionnumber, status, orderdate, subtotal, taxamt, freight, modifieddate);
   };
 
@@ -125,7 +124,7 @@ public record PurchaseorderheaderRowUnsaved(
   /** Default: 0
     * Incremental number to track changes to the purchase order over time.
     */
-  public PurchaseorderheaderRowUnsaved withRevisionnumber(Defaulted<TypoShort> revisionnumber) {
+  public PurchaseorderheaderRowUnsaved withRevisionnumber(Defaulted<Short> revisionnumber) {
     return new PurchaseorderheaderRowUnsaved(employeeid, vendorid, shipmethodid, shipdate, purchaseorderid, revisionnumber, status, orderdate, subtotal, taxamt, freight, modifieddate);
   };
 
@@ -133,7 +132,7 @@ public record PurchaseorderheaderRowUnsaved(
     * Order current status. 1 = Pending; 2 = Approved; 3 = Rejected; 4 = Complete
     * Constraint CK_PurchaseOrderHeader_Status affecting columns status:  (((status >= 1) AND (status <= 4)))
     */
-  public PurchaseorderheaderRowUnsaved withStatus(Defaulted<TypoShort> status) {
+  public PurchaseorderheaderRowUnsaved withStatus(Defaulted<Short> status) {
     return new PurchaseorderheaderRowUnsaved(employeeid, vendorid, shipmethodid, shipdate, purchaseorderid, revisionnumber, status, orderdate, subtotal, taxamt, freight, modifieddate);
   };
 
@@ -141,7 +140,7 @@ public record PurchaseorderheaderRowUnsaved(
     * Purchase order creation date.
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  public PurchaseorderheaderRowUnsaved withOrderdate(Defaulted<TypoLocalDateTime> orderdate) {
+  public PurchaseorderheaderRowUnsaved withOrderdate(Defaulted<LocalDateTime> orderdate) {
     return new PurchaseorderheaderRowUnsaved(employeeid, vendorid, shipmethodid, shipdate, purchaseorderid, revisionnumber, status, orderdate, subtotal, taxamt, freight, modifieddate);
   };
 
@@ -170,7 +169,7 @@ public record PurchaseorderheaderRowUnsaved(
   };
 
   /** Default: now() */
-  public PurchaseorderheaderRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public PurchaseorderheaderRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new PurchaseorderheaderRowUnsaved(employeeid, vendorid, shipmethodid, shipdate, purchaseorderid, revisionnumber, status, orderdate, subtotal, taxamt, freight, modifieddate);
   };
 
@@ -182,15 +181,15 @@ public record PurchaseorderheaderRowUnsaved(
       sb.append(PgText.DELIMETER);
       ShipmethodId.pgType.pgText().unsafeEncode(row.shipmethodid, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.shipdate, sb);
+      PgTypes.timestamp.opt().pgText().unsafeEncode(row.shipdate, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PurchaseorderheaderId.pgType.pgText()).unsafeEncode(row.purchaseorderid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.revisionnumber, sb);
+      Defaulted.pgText(PgTypes.int2.pgText()).unsafeEncode(row.revisionnumber, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.status, sb);
+      Defaulted.pgText(PgTypes.int2.pgText()).unsafeEncode(row.status, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.orderdate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.orderdate, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.subtotal, sb);
       sb.append(PgText.DELIMETER);
@@ -198,18 +197,18 @@ public record PurchaseorderheaderRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.freight, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public PurchaseorderheaderRow toRow(
     java.util.function.Supplier<PurchaseorderheaderId> purchaseorderidDefault,
-    java.util.function.Supplier<TypoShort> revisionnumberDefault,
-    java.util.function.Supplier<TypoShort> statusDefault,
-    java.util.function.Supplier<TypoLocalDateTime> orderdateDefault,
+    java.util.function.Supplier<Short> revisionnumberDefault,
+    java.util.function.Supplier<Short> statusDefault,
+    java.util.function.Supplier<LocalDateTime> orderdateDefault,
     java.util.function.Supplier<BigDecimal> subtotalDefault,
     java.util.function.Supplier<BigDecimal> taxamtDefault,
     java.util.function.Supplier<BigDecimal> freightDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new PurchaseorderheaderRow(purchaseorderid.getOrElse(purchaseorderidDefault), revisionnumber.getOrElse(revisionnumberDefault), status.getOrElse(statusDefault), employeeid, vendorid, shipmethodid, orderdate.getOrElse(orderdateDefault), shipdate, subtotal.getOrElse(subtotalDefault), taxamt.getOrElse(taxamtDefault), freight.getOrElse(freightDefault), modifieddate.getOrElse(modifieddateDefault));
   };

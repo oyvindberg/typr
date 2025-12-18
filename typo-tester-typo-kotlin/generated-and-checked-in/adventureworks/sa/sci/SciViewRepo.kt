@@ -7,10 +7,10 @@ package adventureworks.sa.sci
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface SciViewRepo {
-  fun select(): SelectBuilder<SciViewFields, SciViewRow>
+  abstract fun select(): SelectBuilder<SciViewFields, SciViewRow>
 
-  fun selectAll(c: Connection): List<SciViewRow>
+  abstract fun selectAll(c: Connection): List<SciViewRow>
 }

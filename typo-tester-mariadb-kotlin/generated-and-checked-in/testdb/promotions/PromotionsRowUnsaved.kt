@@ -8,10 +8,11 @@ package testdb.promotions
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.MariaSet
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -32,15 +33,15 @@ data class PromotionsRowUnsaved(
   /** Default: NULL
 
     */
-  val description: Defaulted<Optional<String>> = UseDefault(),
+  val description: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("min_order_amount") val minOrderAmount: Defaulted<Optional<BigDecimal>> = UseDefault(),
+  @JsonProperty("min_order_amount") val minOrderAmount: Defaulted<BigDecimal?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("max_uses") val maxUses: Defaulted<Optional<Long>> = UseDefault(),
+  @JsonProperty("max_uses") val maxUses: Defaulted<Long?> = UseDefault(),
   /** Default: 0
 
     */
@@ -48,15 +49,15 @@ data class PromotionsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("max_uses_per_customer") val maxUsesPerCustomer: Defaulted<Optional<Short>> = UseDefault(),
+  @JsonProperty("max_uses_per_customer") val maxUsesPerCustomer: Defaulted<Short?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("applicable_to") val applicableTo: Defaulted<Optional<MariaSet>> = UseDefault(),
+  @JsonProperty("applicable_to") val applicableTo: Defaulted<MariaSet?> = UseDefault(),
   /** Default: NULL
     * Complex eligibility rules
     */
-  @JsonProperty("rules_json") val rulesJson: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("rules_json") val rulesJson: Defaulted<String?> = UseDefault(),
   /** Default: 1
 
     */
@@ -67,13 +68,13 @@ data class PromotionsRowUnsaved(
   @JsonProperty("created_at") val createdAt: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
-    descriptionDefault: () -> Optional<String>,
-    minOrderAmountDefault: () -> Optional<BigDecimal>,
-    maxUsesDefault: () -> Optional<Long>,
+    descriptionDefault: () -> String?,
+    minOrderAmountDefault: () -> BigDecimal?,
+    maxUsesDefault: () -> Long?,
     usesCountDefault: () -> Long,
-    maxUsesPerCustomerDefault: () -> Optional<Short>,
-    applicableToDefault: () -> Optional<MariaSet>,
-    rulesJsonDefault: () -> Optional<String>,
+    maxUsesPerCustomerDefault: () -> Short?,
+    applicableToDefault: () -> MariaSet?,
+    rulesJsonDefault: () -> String?,
     isActiveDefault: () -> Boolean,
     createdAtDefault: () -> LocalDateTime,
     promotionIdDefault: () -> PromotionsId
@@ -87,27 +88,27 @@ data class PromotionsRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.text.mariaText().unsafeEncode(row.discountType, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.discountValue, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.discountValue, sb)
       sb.append(MariaText.DELIMETER)
       MariaTypes.datetime.mariaText().unsafeEncode(row.validFrom, sb)
       sb.append(MariaText.DELIMETER)
       MariaTypes.datetime.mariaText().unsafeEncode(row.validTo, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.text.opt().mariaText()).unsafeEncode(row.description, sb)
+      Defaulted.mariaText(MariaTypes.text.nullable().mariaText()).unsafeEncode(row.description, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.minOrderAmount, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.nullable().mariaText()).unsafeEncode(row.minOrderAmount, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.intUnsigned.opt().mariaText()).unsafeEncode(row.maxUses, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.intUnsigned.nullable().mariaText()).unsafeEncode(row.maxUses, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.intUnsigned.mariaText()).unsafeEncode(row.usesCount, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.intUnsigned.mariaText()).unsafeEncode(row.usesCount, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.tinyintUnsigned.opt().mariaText()).unsafeEncode(row.maxUsesPerCustomer, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.tinyintUnsigned.nullable().mariaText()).unsafeEncode(row.maxUsesPerCustomer, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.set.opt().mariaText()).unsafeEncode(row.applicableTo, sb)
+      Defaulted.mariaText(MariaTypes.set.nullable().mariaText()).unsafeEncode(row.applicableTo, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.rulesJson, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.rulesJson, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.createdAt, sb) })
   }

@@ -5,23 +5,23 @@
  */
 package adventureworks.pr.pm;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.production.productmodel.ProductmodelId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PmViewFields extends FieldsExpr<PmViewRow> {
-  record Impl(List<Path> _path) implements PmViewFields, Relation<PmViewFields, PmViewRow> {
+  record Impl(List<Path> _path) implements PmViewFields, RelationStructure<PmViewFields, PmViewRow> {
     @Override
     public Field<ProductmodelId, PmViewRow> id() {
       return new Field<ProductmodelId, PmViewRow>(_path, "id", PmViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), ProductmodelId.pgType);
@@ -38,38 +38,38 @@ public interface PmViewFields extends FieldsExpr<PmViewRow> {
     };
 
     @Override
-    public OptField<TypoXml, PmViewRow> catalogdescription() {
-      return new OptField<TypoXml, PmViewRow>(_path, "catalogdescription", PmViewRow::catalogdescription, Optional.empty(), Optional.empty(), (row, value) -> row.withCatalogdescription(value), TypoXml.pgType);
+    public Field<Xml, PmViewRow> catalogdescription() {
+      return new Field<Xml, PmViewRow>(_path, "catalogdescription", PmViewRow::catalogdescription, Optional.empty(), Optional.empty(), (row, value) -> row.withCatalogdescription(value), PgTypes.xml);
     };
 
     @Override
-    public OptField<TypoXml, PmViewRow> instructions() {
-      return new OptField<TypoXml, PmViewRow>(_path, "instructions", PmViewRow::instructions, Optional.empty(), Optional.empty(), (row, value) -> row.withInstructions(value), TypoXml.pgType);
+    public Field<Xml, PmViewRow> instructions() {
+      return new Field<Xml, PmViewRow>(_path, "instructions", PmViewRow::instructions, Optional.empty(), Optional.empty(), (row, value) -> row.withInstructions(value), PgTypes.xml);
     };
 
     @Override
-    public Field<TypoUUID, PmViewRow> rowguid() {
-      return new Field<TypoUUID, PmViewRow>(_path, "rowguid", PmViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, PmViewRow> rowguid() {
+      return new Field<UUID, PmViewRow>(_path, "rowguid", PmViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, PmViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PmViewRow>(_path, "modifieddate", PmViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PmViewRow> modifieddate() {
+      return new Field<LocalDateTime, PmViewRow>(_path, "modifieddate", PmViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PmViewRow>> columns() {
-      return List.of(this.id(), this.productmodelid(), this.name(), this.catalogdescription(), this.instructions(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.productmodelid(), this.name(), this.catalogdescription(), this.instructions(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<PmViewFields, PmViewRow> copy(List<Path> _path) {
+    public RelationStructure<PmViewFields, PmViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductmodelId, PmViewRow> id();
@@ -78,13 +78,13 @@ public interface PmViewFields extends FieldsExpr<PmViewRow> {
 
   Field<Name, PmViewRow> name();
 
-  OptField<TypoXml, PmViewRow> catalogdescription();
+  Field<Xml, PmViewRow> catalogdescription();
 
-  OptField<TypoXml, PmViewRow> instructions();
+  Field<Xml, PmViewRow> instructions();
 
-  Field<TypoUUID, PmViewRow> rowguid();
+  Field<UUID, PmViewRow> rowguid();
 
-  Field<TypoLocalDateTime, PmViewRow> modifieddate();
+  Field<LocalDateTime, PmViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PmViewRow>> columns();

@@ -5,25 +5,26 @@
  */
 package adventureworks.production.productsubcategory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productcategory.ProductcategoryFields;
 import adventureworks.production.productcategory.ProductcategoryId;
 import adventureworks.production.productcategory.ProductcategoryRow;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface ProductsubcategoryFields extends FieldsExpr<ProductsubcategoryRow> {
-  record Impl(List<Path> _path) implements ProductsubcategoryFields, Relation<ProductsubcategoryFields, ProductsubcategoryRow> {
+  record Impl(List<Path> _path) implements ProductsubcategoryFields, RelationStructure<ProductsubcategoryFields, ProductsubcategoryRow> {
     @Override
     public IdField<ProductsubcategoryId, ProductsubcategoryRow> productsubcategoryid() {
       return new IdField<ProductsubcategoryId, ProductsubcategoryRow>(_path, "productsubcategoryid", ProductsubcategoryRow::productsubcategoryid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withProductsubcategoryid(value), ProductsubcategoryId.pgType);
@@ -40,28 +41,28 @@ public interface ProductsubcategoryFields extends FieldsExpr<ProductsubcategoryR
     };
 
     @Override
-    public Field<TypoUUID, ProductsubcategoryRow> rowguid() {
-      return new Field<TypoUUID, ProductsubcategoryRow>(_path, "rowguid", ProductsubcategoryRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, ProductsubcategoryRow> rowguid() {
+      return new Field<UUID, ProductsubcategoryRow>(_path, "rowguid", ProductsubcategoryRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, ProductsubcategoryRow> modifieddate() {
-      return new Field<TypoLocalDateTime, ProductsubcategoryRow>(_path, "modifieddate", ProductsubcategoryRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ProductsubcategoryRow> modifieddate() {
+      return new Field<LocalDateTime, ProductsubcategoryRow>(_path, "modifieddate", ProductsubcategoryRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, ProductsubcategoryRow>> columns() {
-      return List.of(this.productsubcategoryid(), this.productcategoryid(), this.name(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.productsubcategoryid(), this.productcategoryid(), this.name(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<ProductsubcategoryFields, ProductsubcategoryRow> copy(List<Path> _path) {
+    public RelationStructure<ProductsubcategoryFields, ProductsubcategoryRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ProductsubcategoryId, ProductsubcategoryRow> productsubcategoryid();
@@ -70,12 +71,12 @@ public interface ProductsubcategoryFields extends FieldsExpr<ProductsubcategoryR
 
   Field<Name, ProductsubcategoryRow> name();
 
-  Field<TypoUUID, ProductsubcategoryRow> rowguid();
+  Field<UUID, ProductsubcategoryRow> rowguid();
 
-  Field<TypoLocalDateTime, ProductsubcategoryRow> modifieddate();
+  Field<LocalDateTime, ProductsubcategoryRow> modifieddate();
 
   default ForeignKey<ProductcategoryFields, ProductcategoryRow> fkProductcategory() {
-    return ForeignKey.<ProductcategoryFields, ProductcategoryRow>of("production.FK_ProductSubcategory_ProductCategory_ProductCategoryID").withColumnPair(productcategoryid(), ProductcategoryFields::productcategoryid);
+    return ForeignKey.<ProductcategoryFields, ProductcategoryRow>of("production.FK_ProductSubcategory_ProductCategory_ProductCategoryID").<ProductcategoryId>withColumnPair(productcategoryid(), ProductcategoryFields::productcategoryid);
   };
 
   @Override

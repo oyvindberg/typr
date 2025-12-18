@@ -10,9 +10,9 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait PcViewFields {
   def id: Field[ProductcategoryId, PcViewRow]
@@ -23,11 +23,11 @@ trait PcViewFields {
 }
 
 object PcViewFields {
-  lazy val structure: Relation[PcViewFields, PcViewRow] =
+  lazy val structure: RelationStructure[PcViewFields, PcViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PcViewFields, PcViewRow] {
+    extends RelationStructure[PcViewFields, PcViewRow] {
 
     override lazy val fields: PcViewFields = new PcViewFields {
       override def id = Field[ProductcategoryId, PcViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))

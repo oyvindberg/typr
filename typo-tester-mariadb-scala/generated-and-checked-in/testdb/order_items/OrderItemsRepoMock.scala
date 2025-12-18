@@ -7,48 +7,35 @@ package testdb.order_items
 
 import java.lang.RuntimeException
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
-import java.util.function.Function
-import java.util.stream.Collectors
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.DeleteBuilderMock
+import typo.scaladsl.DeleteParams
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.SelectBuilderMock
+import typo.scaladsl.SelectParams
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.UpdateBuilderMock
+import typo.scaladsl.UpdateParams
 
 case class OrderItemsRepoMock(
   toRow: OrderItemsRowUnsaved => OrderItemsRow,
-  map: HashMap[OrderItemsId, OrderItemsRow] = new HashMap[OrderItemsId, OrderItemsRow]()
+  map: scala.collection.mutable.Map[OrderItemsId, OrderItemsRow] = scala.collection.mutable.Map.empty[OrderItemsId, OrderItemsRow]
 ) extends OrderItemsRepo {
-  override def delete: DeleteBuilder[OrderItemsFields, OrderItemsRow] = {
-    new DeleteBuilderMock(
-      OrderItemsFields.structure,
-      () => new ArrayList(map.values()),
-      DeleteParams.empty(),
-      row => row.itemId,
-      id => map.remove(id): @scala.annotation.nowarn
-    )
-  }
+  override def delete: DeleteBuilder[OrderItemsFields, OrderItemsRow] = DeleteBuilderMock(OrderItemsFields.structure, () => map.values.toList, DeleteParams.empty(), row => row.itemId, id => map.remove(id): @scala.annotation.nowarn)
 
-  override def deleteById(itemId: OrderItemsId)(using c: Connection): java.lang.Boolean = Optional.ofNullable(map.remove(itemId)).isPresent()
+  override def deleteById(itemId: OrderItemsId)(using c: Connection): Boolean = map.remove(itemId).isDefined
 
-  override def deleteByIds(itemIds: Array[OrderItemsId])(using c: Connection): Integer = {
+  override def deleteByIds(itemIds: Array[OrderItemsId])(using c: Connection): Int = {
     var count = 0
-    itemIds.foreach { id => if (Optional.ofNullable(map.remove(id)).isPresent()) {
+    itemIds.foreach { id => if (map.remove(id).isDefined) {
       count = count + 1
     } }
     return count
   }
 
   override def insert(unsaved: OrderItemsRow)(using c: Connection): OrderItemsRow = {
-    if (map.containsKey(unsaved.itemId)) {
-      throw new RuntimeException(s"id $unsaved.itemId already exists")
+    if (map.contains(unsaved.itemId)) {
+      throw new RuntimeException(s"id ${unsaved.itemId} already exists")
     }
     map.put(unsaved.itemId, unsaved): @scala.annotation.nowarn
     return unsaved
@@ -56,33 +43,20 @@ case class OrderItemsRepoMock(
 
   override def insert(unsaved: OrderItemsRowUnsaved)(using c: Connection): OrderItemsRow = insert(toRow(unsaved))(using c)
 
-  override def select: SelectBuilder[OrderItemsFields, OrderItemsRow] = new SelectBuilderMock(OrderItemsFields.structure, () => new ArrayList(map.values()), SelectParams.empty())
+  override def select: SelectBuilder[OrderItemsFields, OrderItemsRow] = SelectBuilderMock(OrderItemsFields.structure, () => map.values.toList, SelectParams.empty())
 
-  override def selectAll(using c: Connection): java.util.List[OrderItemsRow] = new ArrayList(map.values())
+  override def selectAll(using c: Connection): List[OrderItemsRow] = map.values.toList
 
-  override def selectById(itemId: OrderItemsId)(using c: Connection): Optional[OrderItemsRow] = Optional.ofNullable(map.get(itemId))
+  override def selectById(itemId: OrderItemsId)(using c: Connection): Option[OrderItemsRow] = map.get(itemId)
 
-  override def selectByIds(itemIds: Array[OrderItemsId])(using c: Connection): java.util.List[OrderItemsRow] = {
-    val result = new ArrayList[OrderItemsRow]()
-    itemIds.foreach { id => val opt = Optional.ofNullable(map.get(id)); if (opt.isPresent()) {
-      result.add(opt.get()): @scala.annotation.nowarn
-    } }
-    return result
-  }
+  override def selectByIds(itemIds: Array[OrderItemsId])(using c: Connection): List[OrderItemsRow] = itemIds.flatMap(map.get(_)).toList
 
-  override def selectByIdsTracked(itemIds: Array[OrderItemsId])(using c: Connection): java.util.Map[OrderItemsId, OrderItemsRow] = selectByIds(itemIds)(using c).stream().collect(Collectors.toMap((row: OrderItemsRow) => row.itemId, Function.identity()))
+  override def selectByIdsTracked(itemIds: Array[OrderItemsId])(using c: Connection): Map[OrderItemsId, OrderItemsRow] = selectByIds(itemIds)(using c).map(x => (((row: OrderItemsRow) => row.itemId).apply(x), x)).toMap
 
-  override def update: UpdateBuilder[OrderItemsFields, OrderItemsRow] = {
-    new UpdateBuilderMock(
-      OrderItemsFields.structure,
-      () => new ArrayList(map.values()),
-      UpdateParams.empty(),
-      row => row
-    )
-  }
+  override def update: UpdateBuilder[OrderItemsFields, OrderItemsRow] = UpdateBuilderMock(OrderItemsFields.structure, () => map.values.toList, UpdateParams.empty(), row => row)
 
-  override def update(row: OrderItemsRow)(using c: Connection): java.lang.Boolean = {
-    val shouldUpdate = Optional.ofNullable(map.get(row.itemId)).filter(oldRow => (oldRow != row)).isPresent()
+  override def update(row: OrderItemsRow)(using c: Connection): Boolean = {
+    val shouldUpdate = map.get(row.itemId).filter(oldRow => (oldRow != row)).isDefined
     if (shouldUpdate) {
       map.put(row.itemId, row): @scala.annotation.nowarn
     }
@@ -94,13 +68,10 @@ case class OrderItemsRepoMock(
     return unsaved
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[OrderItemsRow])(using c: Connection): java.util.List[OrderItemsRow] = {
-    val result = new ArrayList[OrderItemsRow]()
-    while (unsaved.hasNext()) {
-      val row = unsaved.next()
+  override def upsertBatch(unsaved: Iterator[OrderItemsRow])(using c: Connection): List[OrderItemsRow] = {
+    unsaved.map { row =>
       map.put(row.itemId, row): @scala.annotation.nowarn
-      result.add(row): @scala.annotation.nowarn
-    }
-    return result
+      row
+    }.toList
   }
 }

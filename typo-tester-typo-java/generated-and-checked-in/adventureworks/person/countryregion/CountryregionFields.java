@@ -5,20 +5,21 @@
  */
 package adventureworks.person.countryregion;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface CountryregionFields extends FieldsExpr<CountryregionRow> {
-  record Impl(List<Path> _path) implements CountryregionFields, Relation<CountryregionFields, CountryregionRow> {
+  record Impl(List<Path> _path) implements CountryregionFields, RelationStructure<CountryregionFields, CountryregionRow> {
     @Override
     public IdField<CountryregionId, CountryregionRow> countryregioncode() {
       return new IdField<CountryregionId, CountryregionRow>(_path, "countryregioncode", CountryregionRow::countryregioncode, Optional.empty(), Optional.empty(), (row, value) -> row.withCountryregioncode(value), CountryregionId.pgType);
@@ -30,30 +31,30 @@ public interface CountryregionFields extends FieldsExpr<CountryregionRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, CountryregionRow> modifieddate() {
-      return new Field<TypoLocalDateTime, CountryregionRow>(_path, "modifieddate", CountryregionRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CountryregionRow> modifieddate() {
+      return new Field<LocalDateTime, CountryregionRow>(_path, "modifieddate", CountryregionRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, CountryregionRow>> columns() {
-      return List.of(this.countryregioncode(), this.name(), this.modifieddate());
+      return java.util.List.of(this.countryregioncode(), this.name(), this.modifieddate());
     };
 
     @Override
-    public Relation<CountryregionFields, CountryregionRow> copy(List<Path> _path) {
+    public RelationStructure<CountryregionFields, CountryregionRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<CountryregionId, CountryregionRow> countryregioncode();
 
   Field<Name, CountryregionRow> name();
 
-  Field<TypoLocalDateTime, CountryregionRow> modifieddate();
+  Field<LocalDateTime, CountryregionRow> modifieddate();
 
   @Override
   List<FieldLike<?, CountryregionRow>> columns();

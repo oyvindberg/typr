@@ -6,12 +6,13 @@
 package adventureworks.production.productmodelillustration
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.illustration.IllustrationId
 import adventureworks.production.productmodel.ProductmodelId
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: production.productmodelillustration
   * Cross-reference table mapping product models and illustrations.
@@ -27,23 +28,23 @@ data class ProductmodelillustrationRow(
     */
   val illustrationid: IllustrationId,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): ProductmodelillustrationId = ProductmodelillustrationId(productmodelid, illustrationid)
 
   fun id(): ProductmodelillustrationId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): ProductmodelillustrationRowUnsaved = ProductmodelillustrationRowUnsaved(productmodelid, illustrationid, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): ProductmodelillustrationRowUnsaved = ProductmodelillustrationRowUnsaved(productmodelid, illustrationid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductmodelillustrationRow> = RowParsers.of(ProductmodelId.pgType, IllustrationId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> ProductmodelillustrationRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.illustrationid, row.modifieddate) })
+    val _rowParser: RowParser<ProductmodelillustrationRow> = RowParsers.of(ProductmodelId.pgType, IllustrationId.pgType, PgTypes.timestamp, { t0, t1, t2 -> ProductmodelillustrationRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.illustrationid, row.modifieddate) })
 
     fun apply(
       compositeId: ProductmodelillustrationId,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): ProductmodelillustrationRow = ProductmodelillustrationRow(compositeId.productmodelid, compositeId.illustrationid, modifieddate)
 
     val pgText: PgText<ProductmodelillustrationRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

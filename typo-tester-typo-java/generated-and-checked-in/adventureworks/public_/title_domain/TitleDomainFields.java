@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.RowParser;
 
 public interface TitleDomainFields extends FieldsExpr<TitleDomainRow> {
-  record Impl(List<Path> _path) implements TitleDomainFields, Relation<TitleDomainFields, TitleDomainRow> {
+  record Impl(List<Path> _path) implements TitleDomainFields, RelationStructure<TitleDomainFields, TitleDomainRow> {
     @Override
     public IdField<TitleDomainId, TitleDomainRow> code() {
       return new IdField<TitleDomainId, TitleDomainRow>(_path, "code", TitleDomainRow::code, Optional.empty(), Optional.of("text"), (row, value) -> row.withCode(value), TitleDomainId.pgType);
@@ -23,17 +23,17 @@ public interface TitleDomainFields extends FieldsExpr<TitleDomainRow> {
 
     @Override
     public List<FieldLike<?, TitleDomainRow>> columns() {
-      return List.of(this.code());
+      return java.util.List.of(this.code());
     };
 
     @Override
-    public Relation<TitleDomainFields, TitleDomainRow> copy(List<Path> _path) {
+    public RelationStructure<TitleDomainFields, TitleDomainRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<TitleDomainId, TitleDomainRow> code();

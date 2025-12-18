@@ -25,17 +25,17 @@ case class EViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.nationalidnumber]] */
-  nationalidnumber: /* max 15 chars */ String,
+  nationalidnumber: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.loginid]] */
-  loginid: /* max 256 chars */ String,
+  loginid: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
-  jobtitle: /* max 50 chars */ String,
+  jobtitle: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.birthdate]] */
   birthdate: TypoLocalDate,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.maritalstatus]] */
-  maritalstatus: /* bpchar, max 1 chars */ String,
+  maritalstatus: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.gender]] */
-  gender: /* bpchar, max 1 chars */ String,
+  gender: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.hiredate]] */
   hiredate: TypoLocalDate,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.salariedflag]] */
@@ -51,7 +51,7 @@ case class EViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.modifieddate]] */
   modifieddate: TypoLocalDateTime,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.organizationnode]] */
-  organizationnode: Option[String]
+  organizationnode: String
 )
 
 object EViewRow {
@@ -75,7 +75,7 @@ object EViewRow {
             currentflag = Flag.jdbcDecoder.unsafeDecode(columIndex + 12, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 13, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 14, rs)._2,
-            organizationnode = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 15, rs)._2
+            organizationnode = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 15, rs)._2
           )
     }
   }
@@ -97,7 +97,7 @@ object EViewRow {
       val currentflag = jsonObj.get("currentflag").toRight("Missing field 'currentflag'").flatMap(_.as(Flag.jsonDecoder))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-      val organizationnode = jsonObj.get("organizationnode").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val organizationnode = jsonObj.get("organizationnode").toRight("Missing field 'organizationnode'").flatMap(_.as(JsonDecoder.string))
       if (id.isRight && businessentityid.isRight && nationalidnumber.isRight && loginid.isRight && jobtitle.isRight && birthdate.isRight && maritalstatus.isRight && gender.isRight && hiredate.isRight && salariedflag.isRight && vacationhours.isRight && sickleavehours.isRight && currentflag.isRight && rowguid.isRight && modifieddate.isRight && organizationnode.isRight)
         Right(EViewRow(id = id.toOption.get, businessentityid = businessentityid.toOption.get, nationalidnumber = nationalidnumber.toOption.get, loginid = loginid.toOption.get, jobtitle = jobtitle.toOption.get, birthdate = birthdate.toOption.get, maritalstatus = maritalstatus.toOption.get, gender = gender.toOption.get, hiredate = hiredate.toOption.get, salariedflag = salariedflag.toOption.get, vacationhours = vacationhours.toOption.get, sickleavehours = sickleavehours.toOption.get, currentflag = currentflag.toOption.get, rowguid = rowguid.toOption.get, modifieddate = modifieddate.toOption.get, organizationnode = organizationnode.toOption.get))
       else Left(List[Either[String, Any]](id, businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode).flatMap(_.left.toOption).mkString(", "))
@@ -154,7 +154,7 @@ object EViewRow {
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)
         out.write(",")
         out.write(""""organizationnode":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.organizationnode, indent, out)
+        JsonEncoder.string.unsafeEncode(a.organizationnode, indent, out)
         out.write("}")
       }
     }

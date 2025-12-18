@@ -6,10 +6,11 @@
 package adventureworks.public.only_pk_columns
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: public.only_pk_columns
   * Composite primary key: key_column_1, key_column_2
@@ -23,11 +24,11 @@ data class OnlyPkColumnsRow(
   fun id(): OnlyPkColumnsId = this.compositeId()
 
   companion object {
-    val _rowParser: RowParser<OnlyPkColumnsRow> = RowParsers.of(PgTypes.text, PgTypes.int4, { t0, t1 -> OnlyPkColumnsRow(t0!!, t1!!) }, { row -> arrayOf<Any?>(row.keyColumn1, row.keyColumn2) })
+    val _rowParser: RowParser<OnlyPkColumnsRow> = RowParsers.of(PgTypes.text, KotlinDbTypes.PgTypes.int4, { t0, t1 -> OnlyPkColumnsRow(t0!!, t1!!) }, { row -> arrayOf<Any?>(row.keyColumn1, row.keyColumn2) })
 
     fun apply(compositeId: OnlyPkColumnsId): OnlyPkColumnsRow = OnlyPkColumnsRow(compositeId.keyColumn1, compositeId.keyColumn2)
 
     val pgText: PgText<OnlyPkColumnsRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

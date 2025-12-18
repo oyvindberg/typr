@@ -7,33 +7,34 @@ package adventureworks.humanresources.shift;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoLocalTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `humanresources.shift` which has not been persisted yet */
 public record ShiftRowUnsaved(
   /** Shift description. */
   Name name,
   /** Shift start time. */
-  TypoLocalTime starttime,
+  LocalTime starttime,
   /** Shift end time. */
-  TypoLocalTime endtime,
+  LocalTime endtime,
   /** Default: nextval('humanresources.shift_shiftid_seq'::regclass)
     * Primary key for Shift records.
     */
   Defaulted<ShiftId> shiftid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ShiftRowUnsaved(
     /** Shift description. */
     Name name,
     /** Shift start time. */
-    TypoLocalTime starttime,
+    LocalTime starttime,
     /** Shift end time. */
-    TypoLocalTime endtime
+    LocalTime endtime
   ) {
     this(name, starttime, endtime, new UseDefault<>(), new UseDefault<>());
   };
@@ -44,12 +45,12 @@ public record ShiftRowUnsaved(
   };
 
   /** Shift start time. */
-  public ShiftRowUnsaved withStarttime(TypoLocalTime starttime) {
+  public ShiftRowUnsaved withStarttime(LocalTime starttime) {
     return new ShiftRowUnsaved(name, starttime, endtime, shiftid, modifieddate);
   };
 
   /** Shift end time. */
-  public ShiftRowUnsaved withEndtime(TypoLocalTime endtime) {
+  public ShiftRowUnsaved withEndtime(LocalTime endtime) {
     return new ShiftRowUnsaved(name, starttime, endtime, shiftid, modifieddate);
   };
 
@@ -61,7 +62,7 @@ public record ShiftRowUnsaved(
   };
 
   /** Default: now() */
-  public ShiftRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ShiftRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ShiftRowUnsaved(name, starttime, endtime, shiftid, modifieddate);
   };
 
@@ -69,18 +70,18 @@ public record ShiftRowUnsaved(
     PgText.instance((row, sb) -> {
       Name.pgType.pgText().unsafeEncode(row.name, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalTime.pgType.pgText().unsafeEncode(row.starttime, sb);
+      PgTypes.time.pgText().unsafeEncode(row.starttime, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalTime.pgType.pgText().unsafeEncode(row.endtime, sb);
+      PgTypes.time.pgText().unsafeEncode(row.endtime, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(ShiftId.pgType.pgText()).unsafeEncode(row.shiftid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ShiftRow toRow(
     java.util.function.Supplier<ShiftId> shiftidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ShiftRow(shiftid.getOrElse(shiftidDefault), name, starttime, endtime, modifieddate.getOrElse(modifieddateDefault));
   };

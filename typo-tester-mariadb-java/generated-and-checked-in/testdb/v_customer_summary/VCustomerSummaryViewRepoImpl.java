@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VCustomerSummaryViewRepoImpl implements VCustomerSummaryViewRepo {
@@ -19,9 +20,6 @@ public class VCustomerSummaryViewRepoImpl implements VCustomerSummaryViewRepo {
 
   @Override
   public List<VCustomerSummaryViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `customer_id`, `email`, `full_name`, `tier`, `status`, `created_at`, `last_login_at`, `total_orders`, `lifetime_value`, `last_order_date`
-       from `v_customer_summary`
-    """)).query(VCustomerSummaryViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `customer_id`, `email`, `full_name`, `tier`, `status`, `created_at`, `last_login_at`, `total_orders`, `lifetime_value`, `last_order_date`\nfrom `v_customer_summary`\n")).query(VCustomerSummaryViewRow._rowParser.all()).runUnchecked(c);
   };
 }

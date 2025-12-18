@@ -6,7 +6,6 @@
 package testdb.mariatest_spatial_null
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import org.mariadb.jdbc.type.Geometry
 import org.mariadb.jdbc.type.GeometryCollection
 import org.mariadb.jdbc.type.LineString
@@ -16,10 +15,11 @@ import org.mariadb.jdbc.type.MultiPolygon
 import org.mariadb.jdbc.type.Point
 import org.mariadb.jdbc.type.Polygon
 import testdb.customtypes.Defaulted
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: mariatest_spatial_null
   * Primary key: id
@@ -32,51 +32,51 @@ data class MariatestSpatialNullRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("geometry_col") val geometryCol: Optional<Geometry>,
+  @JsonProperty("geometry_col") val geometryCol: Geometry?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("point_col") val pointCol: Optional<Point>,
+  @JsonProperty("point_col") val pointCol: Point?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("linestring_col") val linestringCol: Optional<LineString>,
+  @JsonProperty("linestring_col") val linestringCol: LineString?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("polygon_col") val polygonCol: Optional<Polygon>,
+  @JsonProperty("polygon_col") val polygonCol: Polygon?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("multipoint_col") val multipointCol: Optional<MultiPoint>,
+  @JsonProperty("multipoint_col") val multipointCol: MultiPoint?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("multilinestring_col") val multilinestringCol: Optional<MultiLineString>,
+  @JsonProperty("multilinestring_col") val multilinestringCol: MultiLineString?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("multipolygon_col") val multipolygonCol: Optional<MultiPolygon>,
+  @JsonProperty("multipolygon_col") val multipolygonCol: MultiPolygon?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("geometrycollection_col") val geometrycollectionCol: Optional<GeometryCollection>
+  @JsonProperty("geometrycollection_col") val geometrycollectionCol: GeometryCollection?
 ) {
   fun toUnsavedRow(
-    geometryCol: Defaulted<Optional<Geometry>>,
-    pointCol: Defaulted<Optional<Point>>,
-    linestringCol: Defaulted<Optional<LineString>>,
-    polygonCol: Defaulted<Optional<Polygon>>,
-    multipointCol: Defaulted<Optional<MultiPoint>>,
-    multilinestringCol: Defaulted<Optional<MultiLineString>>,
-    multipolygonCol: Defaulted<Optional<MultiPolygon>>,
-    geometrycollectionCol: Defaulted<Optional<GeometryCollection>>
+    geometryCol: Defaulted<Geometry?>,
+    pointCol: Defaulted<Point?>,
+    linestringCol: Defaulted<LineString?>,
+    polygonCol: Defaulted<Polygon?>,
+    multipointCol: Defaulted<MultiPoint?>,
+    multilinestringCol: Defaulted<MultiLineString?>,
+    multipolygonCol: Defaulted<MultiPolygon?>,
+    geometrycollectionCol: Defaulted<GeometryCollection?>
   ): MariatestSpatialNullRowUnsaved = MariatestSpatialNullRowUnsaved(geometryCol, pointCol, linestringCol, polygonCol, multipointCol, multilinestringCol, multipolygonCol, geometrycollectionCol)
 
   companion object {
-    val _rowParser: RowParser<MariatestSpatialNullRow> = RowParsers.of(MariatestSpatialNullId.pgType, MariaTypes.geometry.opt(), MariaTypes.point.opt(), MariaTypes.linestring.opt(), MariaTypes.polygon.opt(), MariaTypes.multipoint.opt(), MariaTypes.multilinestring.opt(), MariaTypes.multipolygon.opt(), MariaTypes.geometrycollection.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> MariatestSpatialNullRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.id, row.geometryCol, row.pointCol, row.linestringCol, row.polygonCol, row.multipointCol, row.multilinestringCol, row.multipolygonCol, row.geometrycollectionCol) })
+    val _rowParser: RowParser<MariatestSpatialNullRow> = RowParsers.of(MariatestSpatialNullId.pgType, MariaTypes.geometry.nullable(), MariaTypes.point.nullable(), MariaTypes.linestring.nullable(), MariaTypes.polygon.nullable(), MariaTypes.multipoint.nullable(), MariaTypes.multilinestring.nullable(), MariaTypes.multipolygon.nullable(), MariaTypes.geometrycollection.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> MariatestSpatialNullRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.id, row.geometryCol, row.pointCol, row.linestringCol, row.polygonCol, row.multipointCol, row.multilinestringCol, row.multipolygonCol, row.geometrycollectionCol) })
 
     val mariaText: MariaText<MariatestSpatialNullRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

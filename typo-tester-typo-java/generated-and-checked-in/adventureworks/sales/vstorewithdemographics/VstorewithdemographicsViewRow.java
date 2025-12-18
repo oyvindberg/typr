@@ -5,10 +5,10 @@
  */
 package adventureworks.sales.vstorewithdemographics;
 
-import adventureworks.customtypes.TypoMoney;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import typo.data.Money;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -19,15 +19,15 @@ public record VstorewithdemographicsViewRow(
   BusinessentityId businessentityid,
   /** Points to {@link adventureworks.sales.store.StoreRow#name()} */
   Name name,
-  @JsonProperty("AnnualSales") TypoMoney annualSales,
-  @JsonProperty("AnnualRevenue") TypoMoney annualRevenue,
-  @JsonProperty("BankName") /* max 50 chars */ String bankName,
-  @JsonProperty("BusinessType") /* max 5 chars */ String businessType,
+  @JsonProperty("AnnualSales") Money annualSales,
+  @JsonProperty("AnnualRevenue") Money annualRevenue,
+  @JsonProperty("BankName") String bankName,
+  @JsonProperty("BusinessType") String businessType,
   @JsonProperty("YearOpened") Integer yearOpened,
-  @JsonProperty("Specialty") /* max 50 chars */ String specialty,
+  @JsonProperty("Specialty") String specialty,
   @JsonProperty("SquareFeet") Integer squareFeet,
-  @JsonProperty("Brands") /* max 30 chars */ String brands,
-  @JsonProperty("Internet") /* max 30 chars */ String internet,
+  @JsonProperty("Brands") String brands,
+  @JsonProperty("Internet") String internet,
   @JsonProperty("NumberEmployees") Integer numberEmployees
 ) {
   /** Points to {@link adventureworks.sales.store.StoreRow#businessentityid()} */
@@ -40,19 +40,19 @@ public record VstorewithdemographicsViewRow(
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withAnnualSales(TypoMoney annualSales) {
+  public VstorewithdemographicsViewRow withAnnualSales(Money annualSales) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withAnnualRevenue(TypoMoney annualRevenue) {
+  public VstorewithdemographicsViewRow withAnnualRevenue(Money annualRevenue) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withBankName(/* max 50 chars */ String bankName) {
+  public VstorewithdemographicsViewRow withBankName(String bankName) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withBusinessType(/* max 5 chars */ String businessType) {
+  public VstorewithdemographicsViewRow withBusinessType(String businessType) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
@@ -60,7 +60,7 @@ public record VstorewithdemographicsViewRow(
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withSpecialty(/* max 50 chars */ String specialty) {
+  public VstorewithdemographicsViewRow withSpecialty(String specialty) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
@@ -68,11 +68,11 @@ public record VstorewithdemographicsViewRow(
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withBrands(/* max 30 chars */ String brands) {
+  public VstorewithdemographicsViewRow withBrands(String brands) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  public VstorewithdemographicsViewRow withInternet(/* max 30 chars */ String internet) {
+  public VstorewithdemographicsViewRow withInternet(String internet) {
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
@@ -80,5 +80,5 @@ public record VstorewithdemographicsViewRow(
     return new VstorewithdemographicsViewRow(businessentityid, name, annualSales, annualRevenue, bankName, businessType, yearOpened, specialty, squareFeet, brands, internet, numberEmployees);
   };
 
-  static RowParser<VstorewithdemographicsViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, TypoMoney.pgType, TypoMoney.pgType, PgTypes.text, PgTypes.text, PgTypes.int4, PgTypes.text, PgTypes.int4, PgTypes.text, PgTypes.text, PgTypes.int4, VstorewithdemographicsViewRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.annualSales(), row.annualRevenue(), row.bankName(), row.businessType(), row.yearOpened(), row.specialty(), row.squareFeet(), row.brands(), row.internet(), row.numberEmployees()});;
+  static RowParser<VstorewithdemographicsViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Name.pgType, PgTypes.money, PgTypes.money, PgTypes.text, PgTypes.text, PgTypes.int4, PgTypes.text, PgTypes.int4, PgTypes.text, PgTypes.text, PgTypes.int4, VstorewithdemographicsViewRow::new, row -> new Object[]{row.businessentityid(), row.name(), row.annualSales(), row.annualRevenue(), row.bankName(), row.businessType(), row.yearOpened(), row.specialty(), row.squareFeet(), row.brands(), row.internet(), row.numberEmployees()});;
 }

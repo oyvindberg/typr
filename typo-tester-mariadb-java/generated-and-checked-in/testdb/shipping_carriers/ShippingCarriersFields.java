@@ -9,16 +9,16 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface ShippingCarriersFields extends FieldsExpr<ShippingCarriersRow> {
-  record Impl(List<Path> _path) implements ShippingCarriersFields, Relation<ShippingCarriersFields, ShippingCarriersRow> {
+  record Impl(List<Path> _path) implements ShippingCarriersFields, RelationStructure<ShippingCarriersFields, ShippingCarriersRow> {
     @Override
     public IdField<ShippingCarriersId, ShippingCarriersRow> carrierId() {
       return new IdField<ShippingCarriersId, ShippingCarriersRow>(_path, "carrier_id", ShippingCarriersRow::carrierId, Optional.empty(), Optional.empty(), (row, value) -> row.withCarrierId(value), ShippingCarriersId.pgType);
@@ -51,17 +51,17 @@ public interface ShippingCarriersFields extends FieldsExpr<ShippingCarriersRow> 
 
     @Override
     public List<FieldLike<?, ShippingCarriersRow>> columns() {
-      return List.of(this.carrierId(), this.code(), this.name(), this.trackingUrlTemplate(), this.apiConfig(), this.isActive());
+      return java.util.List.of(this.carrierId(), this.code(), this.name(), this.trackingUrlTemplate(), this.apiConfig(), this.isActive());
     };
 
     @Override
-    public Relation<ShippingCarriersFields, ShippingCarriersRow> copy(List<Path> _path) {
+    public RelationStructure<ShippingCarriersFields, ShippingCarriersRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ShippingCarriersId, ShippingCarriersRow> carrierId();

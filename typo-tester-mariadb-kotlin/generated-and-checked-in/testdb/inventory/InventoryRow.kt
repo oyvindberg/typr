@@ -7,14 +7,15 @@ package testdb.inventory
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: inventory
   * Primary key: inventory_id
@@ -55,11 +56,11 @@ data class InventoryRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("bin_location") val binLocation: Optional<String>,
+  @JsonProperty("bin_location") val binLocation: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("last_counted_at") val lastCountedAt: Optional<LocalDateTime>,
+  @JsonProperty("last_counted_at") val lastCountedAt: LocalDateTime?,
   /** 
     * Default: current_timestamp(6)
     */
@@ -73,15 +74,15 @@ data class InventoryRow(
     quantityOnOrder: Defaulted<Int>,
     reorderPoint: Defaulted<Int>,
     reorderQuantity: Defaulted<Int>,
-    binLocation: Defaulted<Optional<String>>,
-    lastCountedAt: Defaulted<Optional<LocalDateTime>>,
+    binLocation: Defaulted<String?>,
+    lastCountedAt: Defaulted<LocalDateTime?>,
     updatedAt: Defaulted<LocalDateTime>
   ): InventoryRowUnsaved = InventoryRowUnsaved(productId, warehouseId, quantityOnHand, quantityReserved, quantityOnOrder, reorderPoint, reorderQuantity, binLocation, lastCountedAt, updatedAt)
 
   companion object {
-    val _rowParser: RowParser<InventoryRow> = RowParsers.of(InventoryId.pgType, ProductsId.pgType, WarehousesId.pgType, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.varchar.opt(), MariaTypes.datetime.opt(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> InventoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.inventoryId, row.productId, row.warehouseId, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.reorderPoint, row.reorderQuantity, row.binLocation, row.lastCountedAt, row.updatedAt) })
+    val _rowParser: RowParser<InventoryRow> = RowParsers.of(InventoryId.pgType, ProductsId.pgType, WarehousesId.pgType, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, MariaTypes.varchar.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> InventoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.inventoryId, row.productId, row.warehouseId, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.reorderPoint, row.reorderQuantity, row.binLocation, row.lastCountedAt, row.updatedAt) })
 
     val mariaText: MariaText<InventoryRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

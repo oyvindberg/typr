@@ -7,29 +7,13 @@ package testdb.simple_customer_lookup
 
 import java.sql.Connection
 import kotlin.collections.List
+import typo.kotlindsl.Fragment
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Fragment.interpolate
 
 class SimpleCustomerLookupSqlRepoImpl() : SimpleCustomerLookupSqlRepo {
   override fun apply(
     email: String,
     c: Connection
-  ): List<SimpleCustomerLookupSqlRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      -- Simple customer lookup by email
-      SELECT customer_id,
-             email,
-             first_name,
-             last_name,
-             tier,
-             status,
-             created_at
-      FROM customers
-      WHERE email = """.trimMargin()),
-    MariaTypes.text.encode(email),
-    typo.runtime.Fragment.lit("""
-
-
-    """.trimMargin())
-  ).query(SimpleCustomerLookupSqlRow._rowParser.all()).runUnchecked(c)
+  ): List<SimpleCustomerLookupSqlRow> = interpolate(Fragment.lit("-- Simple customer lookup by email\nSELECT customer_id,\n       email,\n       first_name,\n       last_name,\n       tier,\n       status,\n       created_at\nFROM customers\nWHERE email = "), Fragment.encode(MariaTypes.varchar, email), Fragment.lit("\n")).query(SimpleCustomerLookupSqlRow._rowParser.all()).runUnchecked(c)
 }

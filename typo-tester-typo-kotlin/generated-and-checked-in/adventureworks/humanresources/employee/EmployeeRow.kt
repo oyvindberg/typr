@@ -6,17 +6,17 @@
 package adventureworks.humanresources.employee
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
-import java.util.Optional
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: humanresources.employee
   * Employee information such as salary, department, and title.
@@ -28,27 +28,27 @@ data class EmployeeRow(
     */
   val businessentityid: BusinessentityId,
   /** Unique national identification number such as a social security number. */
-  val nationalidnumber: /* max 15 chars */ String,
+  val nationalidnumber: String,
   /** Network login. */
-  val loginid: /* max 256 chars */ String,
+  val loginid: String,
   /** Work title such as Buyer or Sales Representative. */
-  val jobtitle: /* max 50 chars */ String,
+  val jobtitle: String,
   /** Date of birth.
     * Constraint CK_Employee_BirthDate affecting columns birthdate: (((birthdate >= '1930-01-01'::date) AND (birthdate <= (now() - '18 years'::interval))))
     */
-  val birthdate: TypoLocalDate,
+  val birthdate: LocalDate,
   /** M = Married, S = Single
     * Constraint CK_Employee_MaritalStatus affecting columns maritalstatus: ((upper((maritalstatus)::text) = ANY (ARRAY['M'::text, 'S'::text])))
     */
-  val maritalstatus: /* bpchar, max 1 chars */ String,
+  val maritalstatus: String,
   /** M = Male, F = Female
     * Constraint CK_Employee_Gender affecting columns gender: ((upper((gender)::text) = ANY (ARRAY['M'::text, 'F'::text])))
     */
-  val gender: /* bpchar, max 1 chars */ String,
+  val gender: String,
   /** Employee hired on this date.
     * Constraint CK_Employee_HireDate affecting columns hiredate: (((hiredate >= '1996-07-01'::date) AND (hiredate <= (now() + '1 day'::interval))))
     */
-  val hiredate: TypoLocalDate,
+  val hiredate: LocalDate,
   /** Job classification. 0 = Hourly, not exempt from collective bargaining. 1 = Salaried, exempt from collective bargaining.
     * Default: true
     */
@@ -57,41 +57,41 @@ data class EmployeeRow(
     * Default: 0
     * Constraint CK_Employee_VacationHours affecting columns vacationhours: (((vacationhours >= '-40'::integer) AND (vacationhours <= 240)))
     */
-  val vacationhours: TypoShort,
+  val vacationhours: Short,
   /** Number of available sick leave hours.
     * Default: 0
     * Constraint CK_Employee_SickLeaveHours affecting columns sickleavehours: (((sickleavehours >= 0) AND (sickleavehours <= 120)))
     */
-  val sickleavehours: TypoShort,
+  val sickleavehours: Short,
   /** 0 = Inactive, 1 = Active
     * Default: true
     */
   val currentflag: Flag,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime,
+  val modifieddate: LocalDateTime,
   /** Where the employee is located in corporate hierarchy.
     * Default: '/'::character varying
     */
-  val organizationnode: Optional<String>
+  val organizationnode: String?
 ) {
   fun id(): BusinessentityId = businessentityid
 
   fun toUnsavedRow(
     salariedflag: Defaulted<Flag>,
-    vacationhours: Defaulted<TypoShort>,
-    sickleavehours: Defaulted<TypoShort>,
+    vacationhours: Defaulted<Short>,
+    sickleavehours: Defaulted<Short>,
     currentflag: Defaulted<Flag>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>,
-    organizationnode: Defaulted<Optional<String>>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>,
+    organizationnode: Defaulted<String?>
   ): EmployeeRowUnsaved = EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode)
 
   companion object {
-    val _rowParser: RowParser<EmployeeRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, TypoLocalDate.pgType, PgTypes.bpchar, PgTypes.bpchar, TypoLocalDate.pgType, Flag.pgType, TypoShort.pgType, TypoShort.pgType, Flag.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, PgTypes.text.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14 -> EmployeeRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.nationalidnumber, row.loginid, row.jobtitle, row.birthdate, row.maritalstatus, row.gender, row.hiredate, row.salariedflag, row.vacationhours, row.sickleavehours, row.currentflag, row.rowguid, row.modifieddate, row.organizationnode) })
+    val _rowParser: RowParser<EmployeeRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.date, PgTypes.bpchar, PgTypes.bpchar, PgTypes.date, Flag.pgType, KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, Flag.pgType, PgTypes.uuid, PgTypes.timestamp, PgTypes.text.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14 -> EmployeeRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.nationalidnumber, row.loginid, row.jobtitle, row.birthdate, row.maritalstatus, row.gender, row.hiredate, row.salariedflag, row.vacationhours, row.sickleavehours, row.currentflag, row.rowguid, row.modifieddate, row.organizationnode) })
 
     val pgText: PgText<EmployeeRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

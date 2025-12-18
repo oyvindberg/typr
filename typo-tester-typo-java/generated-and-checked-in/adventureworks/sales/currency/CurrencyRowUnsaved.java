@@ -7,9 +7,10 @@ package adventureworks.sales.currency;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.currency` which has not been persisted yet */
 public record CurrencyRowUnsaved(
@@ -18,7 +19,7 @@ public record CurrencyRowUnsaved(
   /** Currency name. */
   Name name,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public CurrencyRowUnsaved(
     /** The ISO code for the Currency. */
@@ -40,7 +41,7 @@ public record CurrencyRowUnsaved(
   };
 
   /** Default: now() */
-  public CurrencyRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public CurrencyRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new CurrencyRowUnsaved(currencycode, name, modifieddate);
   };
 
@@ -50,10 +51,10 @@ public record CurrencyRowUnsaved(
       sb.append(PgText.DELIMETER);
       Name.pgType.pgText().unsafeEncode(row.name, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public CurrencyRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public CurrencyRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new CurrencyRow(currencycode, name, modifieddate.getOrElse(modifieddateDefault));
   };
 }

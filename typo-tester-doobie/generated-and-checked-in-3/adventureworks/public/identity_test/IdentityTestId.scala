@@ -14,14 +14,14 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `public.identity-test` */
-case class IdentityTestId(value: /* max 250 chars */ String) extends scala.AnyVal
+case class IdentityTestId(value: String) extends scala.AnyVal
 
 object IdentityTestId {
   given arrayGet: Get[Array[IdentityTestId]] = adventureworks.StringArrayMeta.get.map(_.map(IdentityTestId.apply))
 
   given arrayPut: Put[Array[IdentityTestId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
 
-  given bijection: Bijection[IdentityTestId, /* max 250 chars */ String] = Bijection.apply[IdentityTestId, /* max 250 chars */ String](_.value)(IdentityTestId.apply)
+  given bijection: Bijection[IdentityTestId, String] = Bijection.apply[IdentityTestId, String](_.value)(IdentityTestId.apply)
 
   given decoder: Decoder[IdentityTestId] = Decoder.decodeString.map(IdentityTestId.apply)
 

@@ -7,11 +7,11 @@ package adventureworks.purchasing.purchaseorderdetail
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -22,11 +22,11 @@ data class PurchaseorderdetailRowUnsaved(
     */
   val purchaseorderid: PurchaseorderheaderId,
   /** Date the product is expected to be received. */
-  val duedate: TypoLocalDateTime,
+  val duedate: LocalDateTime,
   /** Quantity ordered.
     * Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0))
     */
-  val orderqty: TypoShort,
+  val orderqty: Short,
   /** Product identification number. Foreign key to Product.ProductID.
     * Points to [adventureworks.production.product.ProductRow.productid]
     */
@@ -48,20 +48,20 @@ data class PurchaseorderdetailRowUnsaved(
     */
   val purchaseorderdetailid: Defaulted<Int> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     purchaseorderdetailidDefault: () -> Int,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): PurchaseorderdetailRow = PurchaseorderdetailRow(purchaseorderid = purchaseorderid, purchaseorderdetailid = purchaseorderdetailid.getOrElse(purchaseorderdetailidDefault), duedate = duedate, orderqty = orderqty, productid = productid, unitprice = unitprice, receivedqty = receivedqty, rejectedqty = rejectedqty, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<PurchaseorderdetailRowUnsaved> =
       PgText.instance({ row, sb -> PurchaseorderheaderId.pgType.pgText().unsafeEncode(row.purchaseorderid, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.duedate, sb)
+      PgTypes.timestamp.pgText().unsafeEncode(row.duedate, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.orderqty, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.orderqty, sb)
       sb.append(PgText.DELIMETER)
       ProductId.pgType.pgText().unsafeEncode(row.productid, sb)
       sb.append(PgText.DELIMETER)
@@ -71,8 +71,8 @@ data class PurchaseorderdetailRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.numeric.pgText().unsafeEncode(row.rejectedqty, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.purchaseorderdetailid, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.purchaseorderdetailid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

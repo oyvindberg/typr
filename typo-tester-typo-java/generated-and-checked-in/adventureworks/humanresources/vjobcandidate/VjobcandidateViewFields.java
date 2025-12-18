@@ -5,55 +5,54 @@
  */
 package adventureworks.humanresources.vjobcandidate;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.humanresources.jobcandidate.JobcandidateId;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VjobcandidateViewFields extends FieldsExpr<VjobcandidateViewRow> {
-  record Impl(List<Path> _path) implements VjobcandidateViewFields, Relation<VjobcandidateViewFields, VjobcandidateViewRow> {
+  record Impl(List<Path> _path) implements VjobcandidateViewFields, RelationStructure<VjobcandidateViewFields, VjobcandidateViewRow> {
     @Override
     public Field<JobcandidateId, VjobcandidateViewRow> jobcandidateid() {
       return new Field<JobcandidateId, VjobcandidateViewRow>(_path, "jobcandidateid", VjobcandidateViewRow::jobcandidateid, Optional.empty(), Optional.empty(), (row, value) -> row.withJobcandidateid(value), JobcandidateId.pgType);
     };
 
     @Override
-    public OptField<BusinessentityId, VjobcandidateViewRow> businessentityid() {
-      return new OptField<BusinessentityId, VjobcandidateViewRow>(_path, "businessentityid", VjobcandidateViewRow::businessentityid, Optional.empty(), Optional.empty(), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
+    public Field<BusinessentityId, VjobcandidateViewRow> businessentityid() {
+      return new Field<BusinessentityId, VjobcandidateViewRow>(_path, "businessentityid", VjobcandidateViewRow::businessentityid, Optional.empty(), Optional.empty(), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
     };
 
     @Override
-    public OptField</* max 30 chars */ String, VjobcandidateViewRow> namePrefix() {
-      return new OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Name.Prefix", VjobcandidateViewRow::namePrefix, Optional.empty(), Optional.empty(), (row, value) -> row.withNamePrefix(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> namePrefix() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Name.Prefix", VjobcandidateViewRow::namePrefix, Optional.empty(), Optional.empty(), (row, value) -> row.withNamePrefix(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 30 chars */ String, VjobcandidateViewRow> nameFirst() {
-      return new OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Name.First", VjobcandidateViewRow::nameFirst, Optional.empty(), Optional.empty(), (row, value) -> row.withNameFirst(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> nameFirst() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Name.First", VjobcandidateViewRow::nameFirst, Optional.empty(), Optional.empty(), (row, value) -> row.withNameFirst(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 30 chars */ String, VjobcandidateViewRow> nameMiddle() {
-      return new OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Name.Middle", VjobcandidateViewRow::nameMiddle, Optional.empty(), Optional.empty(), (row, value) -> row.withNameMiddle(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> nameMiddle() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Name.Middle", VjobcandidateViewRow::nameMiddle, Optional.empty(), Optional.empty(), (row, value) -> row.withNameMiddle(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 30 chars */ String, VjobcandidateViewRow> nameLast() {
-      return new OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Name.Last", VjobcandidateViewRow::nameLast, Optional.empty(), Optional.empty(), (row, value) -> row.withNameLast(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> nameLast() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Name.Last", VjobcandidateViewRow::nameLast, Optional.empty(), Optional.empty(), (row, value) -> row.withNameLast(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 30 chars */ String, VjobcandidateViewRow> nameSuffix() {
-      return new OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Name.Suffix", VjobcandidateViewRow::nameSuffix, Optional.empty(), Optional.empty(), (row, value) -> row.withNameSuffix(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> nameSuffix() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Name.Suffix", VjobcandidateViewRow::nameSuffix, Optional.empty(), Optional.empty(), (row, value) -> row.withNameSuffix(value), PgTypes.text);
     };
 
     @Override
@@ -62,28 +61,28 @@ public interface VjobcandidateViewFields extends FieldsExpr<VjobcandidateViewRow
     };
 
     @Override
-    public OptField</* max 30 chars */ String, VjobcandidateViewRow> addrType() {
-      return new OptField</* max 30 chars */ String, VjobcandidateViewRow>(_path, "Addr.Type", VjobcandidateViewRow::addrType, Optional.empty(), Optional.empty(), (row, value) -> row.withAddrType(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> addrType() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Addr.Type", VjobcandidateViewRow::addrType, Optional.empty(), Optional.empty(), (row, value) -> row.withAddrType(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 100 chars */ String, VjobcandidateViewRow> addrLocCountryRegion() {
-      return new OptField</* max 100 chars */ String, VjobcandidateViewRow>(_path, "Addr.Loc.CountryRegion", VjobcandidateViewRow::addrLocCountryRegion, Optional.empty(), Optional.empty(), (row, value) -> row.withAddrLocCountryRegion(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> addrLocCountryRegion() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Addr.Loc.CountryRegion", VjobcandidateViewRow::addrLocCountryRegion, Optional.empty(), Optional.empty(), (row, value) -> row.withAddrLocCountryRegion(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 100 chars */ String, VjobcandidateViewRow> addrLocState() {
-      return new OptField</* max 100 chars */ String, VjobcandidateViewRow>(_path, "Addr.Loc.State", VjobcandidateViewRow::addrLocState, Optional.empty(), Optional.empty(), (row, value) -> row.withAddrLocState(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> addrLocState() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Addr.Loc.State", VjobcandidateViewRow::addrLocState, Optional.empty(), Optional.empty(), (row, value) -> row.withAddrLocState(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 100 chars */ String, VjobcandidateViewRow> addrLocCity() {
-      return new OptField</* max 100 chars */ String, VjobcandidateViewRow>(_path, "Addr.Loc.City", VjobcandidateViewRow::addrLocCity, Optional.empty(), Optional.empty(), (row, value) -> row.withAddrLocCity(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> addrLocCity() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Addr.Loc.City", VjobcandidateViewRow::addrLocCity, Optional.empty(), Optional.empty(), (row, value) -> row.withAddrLocCity(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 20 chars */ String, VjobcandidateViewRow> addrPostalCode() {
-      return new OptField</* max 20 chars */ String, VjobcandidateViewRow>(_path, "Addr.PostalCode", VjobcandidateViewRow::addrPostalCode, Optional.empty(), Optional.empty(), (row, value) -> row.withAddrPostalCode(value), PgTypes.text);
+    public Field<String, VjobcandidateViewRow> addrPostalCode() {
+      return new Field<String, VjobcandidateViewRow>(_path, "Addr.PostalCode", VjobcandidateViewRow::addrPostalCode, Optional.empty(), Optional.empty(), (row, value) -> row.withAddrPostalCode(value), PgTypes.text);
     };
 
     @Override
@@ -97,56 +96,56 @@ public interface VjobcandidateViewFields extends FieldsExpr<VjobcandidateViewRow
     };
 
     @Override
-    public Field<TypoLocalDateTime, VjobcandidateViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, VjobcandidateViewRow>(_path, "modifieddate", VjobcandidateViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, VjobcandidateViewRow> modifieddate() {
+      return new Field<LocalDateTime, VjobcandidateViewRow>(_path, "modifieddate", VjobcandidateViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, VjobcandidateViewRow>> columns() {
-      return List.of(this.jobcandidateid(), this.businessentityid(), this.namePrefix(), this.nameFirst(), this.nameMiddle(), this.nameLast(), this.nameSuffix(), this.skills(), this.addrType(), this.addrLocCountryRegion(), this.addrLocState(), this.addrLocCity(), this.addrPostalCode(), this.eMail(), this.webSite(), this.modifieddate());
+      return java.util.List.of(this.jobcandidateid(), this.businessentityid(), this.namePrefix(), this.nameFirst(), this.nameMiddle(), this.nameLast(), this.nameSuffix(), this.skills(), this.addrType(), this.addrLocCountryRegion(), this.addrLocState(), this.addrLocCity(), this.addrPostalCode(), this.eMail(), this.webSite(), this.modifieddate());
     };
 
     @Override
-    public Relation<VjobcandidateViewFields, VjobcandidateViewRow> copy(List<Path> _path) {
+    public RelationStructure<VjobcandidateViewFields, VjobcandidateViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<JobcandidateId, VjobcandidateViewRow> jobcandidateid();
 
-  OptField<BusinessentityId, VjobcandidateViewRow> businessentityid();
+  Field<BusinessentityId, VjobcandidateViewRow> businessentityid();
 
-  OptField</* max 30 chars */ String, VjobcandidateViewRow> namePrefix();
+  Field<String, VjobcandidateViewRow> namePrefix();
 
-  OptField</* max 30 chars */ String, VjobcandidateViewRow> nameFirst();
+  Field<String, VjobcandidateViewRow> nameFirst();
 
-  OptField</* max 30 chars */ String, VjobcandidateViewRow> nameMiddle();
+  Field<String, VjobcandidateViewRow> nameMiddle();
 
-  OptField</* max 30 chars */ String, VjobcandidateViewRow> nameLast();
+  Field<String, VjobcandidateViewRow> nameLast();
 
-  OptField</* max 30 chars */ String, VjobcandidateViewRow> nameSuffix();
+  Field<String, VjobcandidateViewRow> nameSuffix();
 
   Field<String, VjobcandidateViewRow> skills();
 
-  OptField</* max 30 chars */ String, VjobcandidateViewRow> addrType();
+  Field<String, VjobcandidateViewRow> addrType();
 
-  OptField</* max 100 chars */ String, VjobcandidateViewRow> addrLocCountryRegion();
+  Field<String, VjobcandidateViewRow> addrLocCountryRegion();
 
-  OptField</* max 100 chars */ String, VjobcandidateViewRow> addrLocState();
+  Field<String, VjobcandidateViewRow> addrLocState();
 
-  OptField</* max 100 chars */ String, VjobcandidateViewRow> addrLocCity();
+  Field<String, VjobcandidateViewRow> addrLocCity();
 
-  OptField</* max 20 chars */ String, VjobcandidateViewRow> addrPostalCode();
+  Field<String, VjobcandidateViewRow> addrPostalCode();
 
   Field<String, VjobcandidateViewRow> eMail();
 
   Field<String, VjobcandidateViewRow> webSite();
 
-  Field<TypoLocalDateTime, VjobcandidateViewRow> modifieddate();
+  Field<LocalDateTime, VjobcandidateViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, VjobcandidateViewRow>> columns();

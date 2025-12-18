@@ -14,6 +14,7 @@ import adventureworks.sales.salesreason.SalesreasonId
 import adventureworks.sales.salesreason.SalesreasonRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -21,7 +22,6 @@ import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait SalesorderheadersalesreasonFields {
   def salesorderid: IdField[SalesorderheaderId, SalesorderheadersalesreasonRow]
@@ -41,11 +41,11 @@ trait SalesorderheadersalesreasonFields {
 }
 
 object SalesorderheadersalesreasonFields {
-  lazy val structure: Relation[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow] =
+  lazy val structure: RelationStructure[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow] {
+    extends RelationStructure[SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow] {
 
     override lazy val fields: SalesorderheadersalesreasonFields = new SalesorderheadersalesreasonFields {
       override def salesorderid = IdField[SalesorderheaderId, SalesorderheadersalesreasonRow](_path, "salesorderid", None, Some("int4"), x => x.salesorderid, (row, value) => row.copy(salesorderid = value))

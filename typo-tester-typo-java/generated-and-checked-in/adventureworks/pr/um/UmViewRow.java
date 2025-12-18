@@ -5,9 +5,10 @@
  */
 package adventureworks.pr.um;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.unitmeasure.UnitmeasureId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -20,7 +21,7 @@ public record UmViewRow(
   /** Points to {@link adventureworks.production.unitmeasure.UnitmeasureRow#name()} */
   Name name,
   /** Points to {@link adventureworks.production.unitmeasure.UnitmeasureRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.unitmeasure.UnitmeasureRow#unitmeasurecode()} */
   public UmViewRow withId(UnitmeasureId id) {
@@ -38,9 +39,9 @@ public record UmViewRow(
   };
 
   /** Points to {@link adventureworks.production.unitmeasure.UnitmeasureRow#modifieddate()} */
-  public UmViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public UmViewRow withModifieddate(LocalDateTime modifieddate) {
     return new UmViewRow(id, unitmeasurecode, name, modifieddate);
   };
 
-  static RowParser<UmViewRow> _rowParser = RowParsers.of(UnitmeasureId.pgType, UnitmeasureId.pgType, Name.pgType, TypoLocalDateTime.pgType, UmViewRow::new, row -> new Object[]{row.id(), row.unitmeasurecode(), row.name(), row.modifieddate()});;
+  static RowParser<UmViewRow> _rowParser = RowParsers.of(UnitmeasureId.pgType, UnitmeasureId.pgType, Name.pgType, PgTypes.timestamp, UmViewRow::new, row -> new Object[]{row.id(), row.unitmeasurecode(), row.name(), row.modifieddate()});;
 }

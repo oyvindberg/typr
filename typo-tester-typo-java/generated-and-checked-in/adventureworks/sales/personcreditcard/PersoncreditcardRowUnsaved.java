@@ -7,10 +7,11 @@ package adventureworks.sales.personcreditcard;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.userdefined.CustomCreditcardId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.personcreditcard` which has not been persisted yet */
 public record PersoncreditcardRowUnsaved(
@@ -23,7 +24,7 @@ public record PersoncreditcardRowUnsaved(
     */
   /* user-picked */ CustomCreditcardId creditcardid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public PersoncreditcardRowUnsaved(
     /** Business entity identification number. Foreign key to Person.BusinessEntityID.
@@ -53,7 +54,7 @@ public record PersoncreditcardRowUnsaved(
   };
 
   /** Default: now() */
-  public PersoncreditcardRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public PersoncreditcardRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new PersoncreditcardRowUnsaved(businessentityid, creditcardid, modifieddate);
   };
 
@@ -63,10 +64,10 @@ public record PersoncreditcardRowUnsaved(
       sb.append(PgText.DELIMETER);
       CustomCreditcardId.pgType.pgText().unsafeEncode(row.creditcardid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public PersoncreditcardRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public PersoncreditcardRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new PersoncreditcardRow(businessentityid, creditcardid, modifieddate.getOrElse(modifieddateDefault));
   };
 }

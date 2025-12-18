@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VjobcandidateeducationViewRepoImpl implements VjobcandidateeducationViewRepo {
@@ -19,9 +20,6 @@ public class VjobcandidateeducationViewRepoImpl implements Vjobcandidateeducatio
 
   @Override
   public List<VjobcandidateeducationViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "jobcandidateid", "Edu.Level", "Edu.StartDate"::text, "Edu.EndDate"::text, "Edu.Degree", "Edu.Major", "Edu.Minor", "Edu.GPA", "Edu.GPAScale", "Edu.School", "Edu.Loc.CountryRegion", "Edu.Loc.State", "Edu.Loc.City"
-       from "humanresources"."vjobcandidateeducation"
-    """)).query(VjobcandidateeducationViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"jobcandidateid\", \"Edu.Level\", \"Edu.StartDate\", \"Edu.EndDate\", \"Edu.Degree\", \"Edu.Major\", \"Edu.Minor\", \"Edu.GPA\", \"Edu.GPAScale\", \"Edu.School\", \"Edu.Loc.CountryRegion\", \"Edu.Loc.State\", \"Edu.Loc.City\"\nfrom \"humanresources\".\"vjobcandidateeducation\"\n")).query(VjobcandidateeducationViewRow._rowParser.all()).runUnchecked(c);
   };
 }

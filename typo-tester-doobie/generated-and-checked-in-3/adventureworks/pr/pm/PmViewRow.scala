@@ -23,9 +23,9 @@ case class PmViewRow(
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.catalogdescription]] */
-  catalogdescription: Option[TypoXml],
+  catalogdescription: TypoXml,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.instructions]] */
-  instructions: Option[TypoXml],
+  instructions: TypoXml,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
@@ -33,17 +33,17 @@ case class PmViewRow(
 )
 
 object PmViewRow {
-  given decoder: Decoder[PmViewRow] = Decoder.forProduct7[PmViewRow, ProductmodelId, ProductmodelId, Name, Option[TypoXml], Option[TypoXml], TypoUUID, TypoLocalDateTime]("id", "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate")(PmViewRow.apply)(using ProductmodelId.decoder, ProductmodelId.decoder, Name.decoder, Decoder.decodeOption(using TypoXml.decoder), Decoder.decodeOption(using TypoXml.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[PmViewRow] = Decoder.forProduct7[PmViewRow, ProductmodelId, ProductmodelId, Name, TypoXml, TypoXml, TypoUUID, TypoLocalDateTime]("id", "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate")(PmViewRow.apply)(using ProductmodelId.decoder, ProductmodelId.decoder, Name.decoder, TypoXml.decoder, TypoXml.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[PmViewRow] = Encoder.forProduct7[PmViewRow, ProductmodelId, ProductmodelId, Name, Option[TypoXml], Option[TypoXml], TypoUUID, TypoLocalDateTime]("id", "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate")(x => (x.id, x.productmodelid, x.name, x.catalogdescription, x.instructions, x.rowguid, x.modifieddate))(using ProductmodelId.encoder, ProductmodelId.encoder, Name.encoder, Encoder.encodeOption(using TypoXml.encoder), Encoder.encodeOption(using TypoXml.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[PmViewRow] = Encoder.forProduct7[PmViewRow, ProductmodelId, ProductmodelId, Name, TypoXml, TypoXml, TypoUUID, TypoLocalDateTime]("id", "productmodelid", "name", "catalogdescription", "instructions", "rowguid", "modifieddate")(x => (x.id, x.productmodelid, x.name, x.catalogdescription, x.instructions, x.rowguid, x.modifieddate))(using ProductmodelId.encoder, ProductmodelId.encoder, Name.encoder, TypoXml.encoder, TypoXml.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given read: Read[PmViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.Single(ProductmodelId.get).asInstanceOf[Read[Any]],
         new Read.Single(ProductmodelId.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoXml.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
@@ -51,8 +51,8 @@ object PmViewRow {
         id = arr(0).asInstanceOf[ProductmodelId],
             productmodelid = arr(1).asInstanceOf[ProductmodelId],
             name = arr(2).asInstanceOf[Name],
-            catalogdescription = arr(3).asInstanceOf[Option[TypoXml]],
-            instructions = arr(4).asInstanceOf[Option[TypoXml]],
+            catalogdescription = arr(3).asInstanceOf[TypoXml],
+            instructions = arr(4).asInstanceOf[TypoXml],
             rowguid = arr(5).asInstanceOf[TypoUUID],
             modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
       )

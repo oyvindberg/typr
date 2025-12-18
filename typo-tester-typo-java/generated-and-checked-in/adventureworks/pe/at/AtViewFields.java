@@ -5,21 +5,22 @@
  */
 package adventureworks.pe.at;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.addresstype.AddresstypeId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface AtViewFields extends FieldsExpr<AtViewRow> {
-  record Impl(List<Path> _path) implements AtViewFields, Relation<AtViewFields, AtViewRow> {
+  record Impl(List<Path> _path) implements AtViewFields, RelationStructure<AtViewFields, AtViewRow> {
     @Override
     public Field<AddresstypeId, AtViewRow> id() {
       return new Field<AddresstypeId, AtViewRow>(_path, "id", AtViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), AddresstypeId.pgType);
@@ -36,28 +37,28 @@ public interface AtViewFields extends FieldsExpr<AtViewRow> {
     };
 
     @Override
-    public Field<TypoUUID, AtViewRow> rowguid() {
-      return new Field<TypoUUID, AtViewRow>(_path, "rowguid", AtViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, AtViewRow> rowguid() {
+      return new Field<UUID, AtViewRow>(_path, "rowguid", AtViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, AtViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, AtViewRow>(_path, "modifieddate", AtViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, AtViewRow> modifieddate() {
+      return new Field<LocalDateTime, AtViewRow>(_path, "modifieddate", AtViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, AtViewRow>> columns() {
-      return List.of(this.id(), this.addresstypeid(), this.name(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.addresstypeid(), this.name(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<AtViewFields, AtViewRow> copy(List<Path> _path) {
+    public RelationStructure<AtViewFields, AtViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<AddresstypeId, AtViewRow> id();
@@ -66,9 +67,9 @@ public interface AtViewFields extends FieldsExpr<AtViewRow> {
 
   Field<Name, AtViewRow> name();
 
-  Field<TypoUUID, AtViewRow> rowguid();
+  Field<UUID, AtViewRow> rowguid();
 
-  Field<TypoLocalDateTime, AtViewRow> modifieddate();
+  Field<LocalDateTime, AtViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, AtViewRow>> columns();

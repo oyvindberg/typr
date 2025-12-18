@@ -22,16 +22,16 @@ import typo.data.maria.Inet6;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface OrdersFields extends FieldsExpr<OrdersRow> {
-  record Impl(List<Path> _path) implements OrdersFields, Relation<OrdersFields, OrdersRow> {
+  record Impl(List<Path> _path) implements OrdersFields, RelationStructure<OrdersFields, OrdersRow> {
     @Override
     public IdField<OrdersId, OrdersRow> orderId() {
       return new IdField<OrdersId, OrdersRow>(_path, "order_id", OrdersRow::orderId, Optional.empty(), Optional.empty(), (row, value) -> row.withOrderId(value), OrdersId.pgType);
@@ -69,27 +69,27 @@ public interface OrdersFields extends FieldsExpr<OrdersRow> {
 
     @Override
     public Field<BigDecimal, OrdersRow> subtotal() {
-      return new Field<BigDecimal, OrdersRow>(_path, "subtotal", OrdersRow::subtotal, Optional.empty(), Optional.empty(), (row, value) -> row.withSubtotal(value), MariaTypes.decimal);
+      return new Field<BigDecimal, OrdersRow>(_path, "subtotal", OrdersRow::subtotal, Optional.empty(), Optional.empty(), (row, value) -> row.withSubtotal(value), MariaTypes.numeric);
     };
 
     @Override
     public Field<BigDecimal, OrdersRow> shippingCost() {
-      return new Field<BigDecimal, OrdersRow>(_path, "shipping_cost", OrdersRow::shippingCost, Optional.empty(), Optional.empty(), (row, value) -> row.withShippingCost(value), MariaTypes.decimal);
+      return new Field<BigDecimal, OrdersRow>(_path, "shipping_cost", OrdersRow::shippingCost, Optional.empty(), Optional.empty(), (row, value) -> row.withShippingCost(value), MariaTypes.numeric);
     };
 
     @Override
     public Field<BigDecimal, OrdersRow> taxAmount() {
-      return new Field<BigDecimal, OrdersRow>(_path, "tax_amount", OrdersRow::taxAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withTaxAmount(value), MariaTypes.decimal);
+      return new Field<BigDecimal, OrdersRow>(_path, "tax_amount", OrdersRow::taxAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withTaxAmount(value), MariaTypes.numeric);
     };
 
     @Override
     public Field<BigDecimal, OrdersRow> discountAmount() {
-      return new Field<BigDecimal, OrdersRow>(_path, "discount_amount", OrdersRow::discountAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withDiscountAmount(value), MariaTypes.decimal);
+      return new Field<BigDecimal, OrdersRow>(_path, "discount_amount", OrdersRow::discountAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withDiscountAmount(value), MariaTypes.numeric);
     };
 
     @Override
     public Field<BigDecimal, OrdersRow> totalAmount() {
-      return new Field<BigDecimal, OrdersRow>(_path, "total_amount", OrdersRow::totalAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalAmount(value), MariaTypes.decimal);
+      return new Field<BigDecimal, OrdersRow>(_path, "total_amount", OrdersRow::totalAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalAmount(value), MariaTypes.numeric);
     };
 
     @Override
@@ -144,17 +144,17 @@ public interface OrdersFields extends FieldsExpr<OrdersRow> {
 
     @Override
     public List<FieldLike<?, OrdersRow>> columns() {
-      return List.of(this.orderId(), this.orderNumber(), this.customerId(), this.orderStatus(), this.paymentStatus(), this.shippingAddressId(), this.billingAddressId(), this.subtotal(), this.shippingCost(), this.taxAmount(), this.discountAmount(), this.totalAmount(), this.currencyCode(), this.promotionId(), this.notes(), this.internalNotes(), this.ipAddress(), this.userAgent(), this.orderedAt(), this.confirmedAt(), this.shippedAt(), this.deliveredAt());
+      return java.util.List.of(this.orderId(), this.orderNumber(), this.customerId(), this.orderStatus(), this.paymentStatus(), this.shippingAddressId(), this.billingAddressId(), this.subtotal(), this.shippingCost(), this.taxAmount(), this.discountAmount(), this.totalAmount(), this.currencyCode(), this.promotionId(), this.notes(), this.internalNotes(), this.ipAddress(), this.userAgent(), this.orderedAt(), this.confirmedAt(), this.shippedAt(), this.deliveredAt());
     };
 
     @Override
-    public Relation<OrdersFields, OrdersRow> copy(List<Path> _path) {
+    public RelationStructure<OrdersFields, OrdersRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<OrdersId, OrdersRow> orderId();
@@ -202,19 +202,19 @@ public interface OrdersFields extends FieldsExpr<OrdersRow> {
   OptField<LocalDateTime, OrdersRow> deliveredAt();
 
   default ForeignKey<CustomerAddressesFields, CustomerAddressesRow> fkCustomerAddressesBillingAddressId() {
-    return ForeignKey.<CustomerAddressesFields, CustomerAddressesRow>of("fk_order_billing_addr").withColumnPair(billingAddressId(), CustomerAddressesFields::addressId);
+    return ForeignKey.<CustomerAddressesFields, CustomerAddressesRow>of("fk_order_billing_addr").<CustomerAddressesId>withColumnPair(billingAddressId(), CustomerAddressesFields::addressId);
   };
 
   default ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
-    return ForeignKey.<CustomersFields, CustomersRow>of("fk_order_customer").withColumnPair(customerId(), CustomersFields::customerId);
+    return ForeignKey.<CustomersFields, CustomersRow>of("fk_order_customer").<CustomersId>withColumnPair(customerId(), CustomersFields::customerId);
   };
 
   default ForeignKey<PromotionsFields, PromotionsRow> fkPromotions() {
-    return ForeignKey.<PromotionsFields, PromotionsRow>of("fk_order_promotion").withColumnPair(promotionId(), PromotionsFields::promotionId);
+    return ForeignKey.<PromotionsFields, PromotionsRow>of("fk_order_promotion").<PromotionsId>withColumnPair(promotionId(), PromotionsFields::promotionId);
   };
 
   default ForeignKey<CustomerAddressesFields, CustomerAddressesRow> fkCustomerAddressesShippingAddressId() {
-    return ForeignKey.<CustomerAddressesFields, CustomerAddressesRow>of("fk_order_shipping_addr").withColumnPair(shippingAddressId(), CustomerAddressesFields::addressId);
+    return ForeignKey.<CustomerAddressesFields, CustomerAddressesRow>of("fk_order_shipping_addr").<CustomerAddressesId>withColumnPair(shippingAddressId(), CustomerAddressesFields::addressId);
   };
 
   @Override

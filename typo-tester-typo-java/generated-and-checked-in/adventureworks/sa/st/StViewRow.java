@@ -5,12 +5,12 @@
  */
 package adventureworks.sa.st;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.public_.Name;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -26,7 +26,7 @@ public record StViewRow(
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#countryregioncode()} */
   CountryregionId countryregioncode,
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#group()} */
-  /* max 50 chars */ String group,
+  String group,
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#salesytd()} */
   BigDecimal salesytd,
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#saleslastyear()} */
@@ -36,9 +36,9 @@ public record StViewRow(
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#costlastyear()} */
   BigDecimal costlastyear,
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#territoryid()} */
   public StViewRow withId(SalesterritoryId id) {
@@ -61,7 +61,7 @@ public record StViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#group()} */
-  public StViewRow withGroup(/* max 50 chars */ String group) {
+  public StViewRow withGroup(String group) {
     return new StViewRow(id, territoryid, name, countryregioncode, group, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate);
   };
 
@@ -86,14 +86,14 @@ public record StViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#rowguid()} */
-  public StViewRow withRowguid(TypoUUID rowguid) {
+  public StViewRow withRowguid(UUID rowguid) {
     return new StViewRow(id, territoryid, name, countryregioncode, group, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#modifieddate()} */
-  public StViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public StViewRow withModifieddate(LocalDateTime modifieddate) {
     return new StViewRow(id, territoryid, name, countryregioncode, group, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate);
   };
 
-  static RowParser<StViewRow> _rowParser = RowParsers.of(SalesterritoryId.pgType, SalesterritoryId.pgType, Name.pgType, CountryregionId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, StViewRow::new, row -> new Object[]{row.id(), row.territoryid(), row.name(), row.countryregioncode(), row.group(), row.salesytd(), row.saleslastyear(), row.costytd(), row.costlastyear(), row.rowguid(), row.modifieddate()});;
+  static RowParser<StViewRow> _rowParser = RowParsers.of(SalesterritoryId.pgType, SalesterritoryId.pgType, Name.pgType, CountryregionId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, StViewRow::new, row -> new Object[]{row.id(), row.territoryid(), row.name(), row.countryregioncode(), row.group(), row.salesytd(), row.saleslastyear(), row.costytd(), row.costlastyear(), row.rowguid(), row.modifieddate()});;
 }

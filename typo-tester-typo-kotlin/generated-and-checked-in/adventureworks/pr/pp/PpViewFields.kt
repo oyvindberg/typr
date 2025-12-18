@@ -5,60 +5,59 @@
  */
 package adventureworks.pr.pp
 
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.productphoto.ProductphotoId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PpViewFields : FieldsExpr<PpViewRow> {
-  override fun columns(): List<FieldLike<*, PpViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PpViewRow>>
 
-  fun id(): Field<ProductphotoId, PpViewRow>
+  abstract fun id(): Field<ProductphotoId, PpViewRow>
 
-  fun largephoto(): OptField<TypoBytea, PpViewRow>
+  abstract fun largephoto(): Field<ByteArray, PpViewRow>
 
-  fun largephotofilename(): OptField</* max 50 chars */ String, PpViewRow>
+  abstract fun largephotofilename(): Field<String, PpViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PpViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PpViewRow>
 
-  fun productphotoid(): Field<ProductphotoId, PpViewRow>
+  abstract fun productphotoid(): Field<ProductphotoId, PpViewRow>
 
-  override fun rowParser(): RowParser<PpViewRow> = PpViewRow._rowParser
+  override fun rowParser(): RowParser<PpViewRow> = PpViewRow._rowParser.underlying
 
-  fun thumbnailphoto(): OptField<TypoBytea, PpViewRow>
+  abstract fun thumbnailphoto(): Field<ByteArray, PpViewRow>
 
-  fun thumbnailphotofilename(): OptField</* max 50 chars */ String, PpViewRow>
+  abstract fun thumbnailphotofilename(): Field<String, PpViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PpViewFields, Relation<PpViewFields, PpViewRow> {
-      override fun id(): Field<ProductphotoId, PpViewRow> = Field<ProductphotoId, PpViewRow>(_path, "id", PpViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, ProductphotoId.pgType)
+    data class Impl(val _path: List<Path>) : PpViewFields, RelationStructure<PpViewFields, PpViewRow> {
+      override fun id(): Field<ProductphotoId, PpViewRow> = Field<ProductphotoId, PpViewRow>(_path, "id", PpViewRow::id, null, null, { row, value -> row.copy(id = value) }, ProductphotoId.pgType)
 
-      override fun productphotoid(): Field<ProductphotoId, PpViewRow> = Field<ProductphotoId, PpViewRow>(_path, "productphotoid", PpViewRow::productphotoid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productphotoid = value) }, ProductphotoId.pgType)
+      override fun productphotoid(): Field<ProductphotoId, PpViewRow> = Field<ProductphotoId, PpViewRow>(_path, "productphotoid", PpViewRow::productphotoid, null, null, { row, value -> row.copy(productphotoid = value) }, ProductphotoId.pgType)
 
-      override fun thumbnailphoto(): OptField<TypoBytea, PpViewRow> = OptField<TypoBytea, PpViewRow>(_path, "thumbnailphoto", PpViewRow::thumbnailphoto, Optional.empty(), Optional.empty(), { row, value -> row.copy(thumbnailphoto = value) }, TypoBytea.pgType)
+      override fun thumbnailphoto(): Field<ByteArray, PpViewRow> = Field<ByteArray, PpViewRow>(_path, "thumbnailphoto", PpViewRow::thumbnailphoto, null, null, { row, value -> row.copy(thumbnailphoto = value) }, PgTypes.bytea)
 
-      override fun thumbnailphotofilename(): OptField</* max 50 chars */ String, PpViewRow> = OptField</* max 50 chars */ String, PpViewRow>(_path, "thumbnailphotofilename", PpViewRow::thumbnailphotofilename, Optional.empty(), Optional.empty(), { row, value -> row.copy(thumbnailphotofilename = value) }, PgTypes.text)
+      override fun thumbnailphotofilename(): Field<String, PpViewRow> = Field<String, PpViewRow>(_path, "thumbnailphotofilename", PpViewRow::thumbnailphotofilename, null, null, { row, value -> row.copy(thumbnailphotofilename = value) }, PgTypes.text)
 
-      override fun largephoto(): OptField<TypoBytea, PpViewRow> = OptField<TypoBytea, PpViewRow>(_path, "largephoto", PpViewRow::largephoto, Optional.empty(), Optional.empty(), { row, value -> row.copy(largephoto = value) }, TypoBytea.pgType)
+      override fun largephoto(): Field<ByteArray, PpViewRow> = Field<ByteArray, PpViewRow>(_path, "largephoto", PpViewRow::largephoto, null, null, { row, value -> row.copy(largephoto = value) }, PgTypes.bytea)
 
-      override fun largephotofilename(): OptField</* max 50 chars */ String, PpViewRow> = OptField</* max 50 chars */ String, PpViewRow>(_path, "largephotofilename", PpViewRow::largephotofilename, Optional.empty(), Optional.empty(), { row, value -> row.copy(largephotofilename = value) }, PgTypes.text)
+      override fun largephotofilename(): Field<String, PpViewRow> = Field<String, PpViewRow>(_path, "largephotofilename", PpViewRow::largephotofilename, null, null, { row, value -> row.copy(largephotofilename = value) }, PgTypes.text)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PpViewRow> = Field<TypoLocalDateTime, PpViewRow>(_path, "modifieddate", PpViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PpViewRow> = Field<LocalDateTime, PpViewRow>(_path, "modifieddate", PpViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PpViewRow>> = listOf(this.id(), this.productphotoid(), this.thumbnailphoto(), this.thumbnailphotofilename(), this.largephoto(), this.largephotofilename(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PpViewFields, PpViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PpViewRow>> = listOf(this.id().underlying, this.productphotoid().underlying, this.thumbnailphoto().underlying, this.thumbnailphotofilename().underlying, this.largephoto().underlying, this.largephotofilename().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PpViewFields, PpViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

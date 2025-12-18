@@ -24,7 +24,7 @@ case class TransactionhistoryRowUnsaved(
   /** W = WorkOrder, S = SalesOrder, P = PurchaseOrder
    * Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
    */
-  transactiontype: /* bpchar, max 1 chars */ String,
+  transactiontype: String,
   /** Product quantity. */
   quantity: Int,
   /** Product cost. */
@@ -65,9 +65,9 @@ case class TransactionhistoryRowUnsaved(
 }
 
 object TransactionhistoryRowUnsaved {
-  given decoder: Decoder[TransactionhistoryRowUnsaved] = Decoder.forProduct9[TransactionhistoryRowUnsaved, ProductId, Int, /* bpchar, max 1 chars */ String, Int, BigDecimal, Defaulted[TransactionhistoryId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("productid", "referenceorderid", "transactiontype", "quantity", "actualcost", "transactionid", "referenceorderlineid", "transactiondate", "modifieddate")(TransactionhistoryRowUnsaved.apply)(using ProductId.decoder, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeBigDecimal, Defaulted.decoder(using TransactionhistoryId.decoder), Defaulted.decoder(using Decoder.decodeInt), Defaulted.decoder(using TypoLocalDateTime.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+  given decoder: Decoder[TransactionhistoryRowUnsaved] = Decoder.forProduct9[TransactionhistoryRowUnsaved, ProductId, Int, String, Int, BigDecimal, Defaulted[TransactionhistoryId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("productid", "referenceorderid", "transactiontype", "quantity", "actualcost", "transactionid", "referenceorderlineid", "transactiondate", "modifieddate")(TransactionhistoryRowUnsaved.apply)(using ProductId.decoder, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeBigDecimal, Defaulted.decoder(using TransactionhistoryId.decoder), Defaulted.decoder(using Decoder.decodeInt), Defaulted.decoder(using TypoLocalDateTime.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
 
-  given encoder: Encoder[TransactionhistoryRowUnsaved] = Encoder.forProduct9[TransactionhistoryRowUnsaved, ProductId, Int, /* bpchar, max 1 chars */ String, Int, BigDecimal, Defaulted[TransactionhistoryId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("productid", "referenceorderid", "transactiontype", "quantity", "actualcost", "transactionid", "referenceorderlineid", "transactiondate", "modifieddate")(x => (x.productid, x.referenceorderid, x.transactiontype, x.quantity, x.actualcost, x.transactionid, x.referenceorderlineid, x.transactiondate, x.modifieddate))(using ProductId.encoder, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeBigDecimal, Defaulted.encoder(using TransactionhistoryId.encoder), Defaulted.encoder(using Encoder.encodeInt), Defaulted.encoder(using TypoLocalDateTime.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
+  given encoder: Encoder[TransactionhistoryRowUnsaved] = Encoder.forProduct9[TransactionhistoryRowUnsaved, ProductId, Int, String, Int, BigDecimal, Defaulted[TransactionhistoryId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("productid", "referenceorderid", "transactiontype", "quantity", "actualcost", "transactionid", "referenceorderlineid", "transactiondate", "modifieddate")(x => (x.productid, x.referenceorderid, x.transactiontype, x.quantity, x.actualcost, x.transactionid, x.referenceorderlineid, x.transactiondate, x.modifieddate))(using ProductId.encoder, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeBigDecimal, Defaulted.encoder(using TransactionhistoryId.encoder), Defaulted.encoder(using Encoder.encodeInt), Defaulted.encoder(using TypoLocalDateTime.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
 
   given pgText: Text[TransactionhistoryRowUnsaved] = {
     Text.instance[TransactionhistoryRowUnsaved]{ (row, sb) =>

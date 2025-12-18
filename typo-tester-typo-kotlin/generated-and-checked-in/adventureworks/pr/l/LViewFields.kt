@@ -5,56 +5,57 @@
  */
 package adventureworks.pr.l
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.location.LocationId
 import adventureworks.public.Name
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface LViewFields : FieldsExpr<LViewRow> {
-  fun availability(): Field<BigDecimal, LViewRow>
+  abstract fun availability(): Field<BigDecimal, LViewRow>
 
-  override fun columns(): List<FieldLike<*, LViewRow>>
+  abstract override fun columns(): List<FieldLike<*, LViewRow>>
 
-  fun costrate(): Field<BigDecimal, LViewRow>
+  abstract fun costrate(): Field<BigDecimal, LViewRow>
 
-  fun id(): Field<LocationId, LViewRow>
+  abstract fun id(): Field<LocationId, LViewRow>
 
-  fun locationid(): Field<LocationId, LViewRow>
+  abstract fun locationid(): Field<LocationId, LViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, LViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, LViewRow>
 
-  fun name(): Field<Name, LViewRow>
+  abstract fun name(): Field<Name, LViewRow>
 
-  override fun rowParser(): RowParser<LViewRow> = LViewRow._rowParser
+  override fun rowParser(): RowParser<LViewRow> = LViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : LViewFields, Relation<LViewFields, LViewRow> {
-      override fun id(): Field<LocationId, LViewRow> = Field<LocationId, LViewRow>(_path, "id", LViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, LocationId.pgType)
+    data class Impl(val _path: List<Path>) : LViewFields, RelationStructure<LViewFields, LViewRow> {
+      override fun id(): Field<LocationId, LViewRow> = Field<LocationId, LViewRow>(_path, "id", LViewRow::id, null, null, { row, value -> row.copy(id = value) }, LocationId.pgType)
 
-      override fun locationid(): Field<LocationId, LViewRow> = Field<LocationId, LViewRow>(_path, "locationid", LViewRow::locationid, Optional.empty(), Optional.empty(), { row, value -> row.copy(locationid = value) }, LocationId.pgType)
+      override fun locationid(): Field<LocationId, LViewRow> = Field<LocationId, LViewRow>(_path, "locationid", LViewRow::locationid, null, null, { row, value -> row.copy(locationid = value) }, LocationId.pgType)
 
-      override fun name(): Field<Name, LViewRow> = Field<Name, LViewRow>(_path, "name", LViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, LViewRow> = Field<Name, LViewRow>(_path, "name", LViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun costrate(): Field<BigDecimal, LViewRow> = Field<BigDecimal, LViewRow>(_path, "costrate", LViewRow::costrate, Optional.empty(), Optional.empty(), { row, value -> row.copy(costrate = value) }, PgTypes.numeric)
+      override fun costrate(): Field<BigDecimal, LViewRow> = Field<BigDecimal, LViewRow>(_path, "costrate", LViewRow::costrate, null, null, { row, value -> row.copy(costrate = value) }, PgTypes.numeric)
 
-      override fun availability(): Field<BigDecimal, LViewRow> = Field<BigDecimal, LViewRow>(_path, "availability", LViewRow::availability, Optional.empty(), Optional.empty(), { row, value -> row.copy(availability = value) }, PgTypes.numeric)
+      override fun availability(): Field<BigDecimal, LViewRow> = Field<BigDecimal, LViewRow>(_path, "availability", LViewRow::availability, null, null, { row, value -> row.copy(availability = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, LViewRow> = Field<TypoLocalDateTime, LViewRow>(_path, "modifieddate", LViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, LViewRow> = Field<LocalDateTime, LViewRow>(_path, "modifieddate", LViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, LViewRow>> = listOf(this.id(), this.locationid(), this.name(), this.costrate(), this.availability(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<LViewFields, LViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, LViewRow>> = listOf(this.id().underlying, this.locationid().underlying, this.name().underlying, this.costrate().underlying, this.availability().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<LViewFields, LViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

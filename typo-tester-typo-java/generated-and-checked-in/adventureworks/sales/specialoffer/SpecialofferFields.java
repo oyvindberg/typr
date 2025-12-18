@@ -5,31 +5,31 @@
  */
 package adventureworks.sales.specialoffer;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SpecialofferFields extends FieldsExpr<SpecialofferRow> {
-  record Impl(List<Path> _path) implements SpecialofferFields, Relation<SpecialofferFields, SpecialofferRow> {
+  record Impl(List<Path> _path) implements SpecialofferFields, RelationStructure<SpecialofferFields, SpecialofferRow> {
     @Override
     public IdField<SpecialofferId, SpecialofferRow> specialofferid() {
       return new IdField<SpecialofferId, SpecialofferRow>(_path, "specialofferid", SpecialofferRow::specialofferid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withSpecialofferid(value), SpecialofferId.pgType);
     };
 
     @Override
-    public Field</* max 255 chars */ String, SpecialofferRow> description() {
-      return new Field</* max 255 chars */ String, SpecialofferRow>(_path, "description", SpecialofferRow::description, Optional.empty(), Optional.empty(), (row, value) -> row.withDescription(value), PgTypes.text);
+    public Field<String, SpecialofferRow> description() {
+      return new Field<String, SpecialofferRow>(_path, "description", SpecialofferRow::description, Optional.empty(), Optional.empty(), (row, value) -> row.withDescription(value), PgTypes.text);
     };
 
     @Override
@@ -38,23 +38,23 @@ public interface SpecialofferFields extends FieldsExpr<SpecialofferRow> {
     };
 
     @Override
-    public Field</* max 50 chars */ String, SpecialofferRow> type() {
-      return new Field</* max 50 chars */ String, SpecialofferRow>(_path, "type", SpecialofferRow::type, Optional.empty(), Optional.empty(), (row, value) -> row.withType(value), PgTypes.text);
+    public Field<String, SpecialofferRow> type() {
+      return new Field<String, SpecialofferRow>(_path, "type", SpecialofferRow::type, Optional.empty(), Optional.empty(), (row, value) -> row.withType(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 50 chars */ String, SpecialofferRow> category() {
-      return new Field</* max 50 chars */ String, SpecialofferRow>(_path, "category", SpecialofferRow::category, Optional.empty(), Optional.empty(), (row, value) -> row.withCategory(value), PgTypes.text);
+    public Field<String, SpecialofferRow> category() {
+      return new Field<String, SpecialofferRow>(_path, "category", SpecialofferRow::category, Optional.empty(), Optional.empty(), (row, value) -> row.withCategory(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SpecialofferRow> startdate() {
-      return new Field<TypoLocalDateTime, SpecialofferRow>(_path, "startdate", SpecialofferRow::startdate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withStartdate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SpecialofferRow> startdate() {
+      return new Field<LocalDateTime, SpecialofferRow>(_path, "startdate", SpecialofferRow::startdate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withStartdate(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SpecialofferRow> enddate() {
-      return new Field<TypoLocalDateTime, SpecialofferRow>(_path, "enddate", SpecialofferRow::enddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withEnddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SpecialofferRow> enddate() {
+      return new Field<LocalDateTime, SpecialofferRow>(_path, "enddate", SpecialofferRow::enddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withEnddate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -68,51 +68,51 @@ public interface SpecialofferFields extends FieldsExpr<SpecialofferRow> {
     };
 
     @Override
-    public Field<TypoUUID, SpecialofferRow> rowguid() {
-      return new Field<TypoUUID, SpecialofferRow>(_path, "rowguid", SpecialofferRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, SpecialofferRow> rowguid() {
+      return new Field<UUID, SpecialofferRow>(_path, "rowguid", SpecialofferRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SpecialofferRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SpecialofferRow>(_path, "modifieddate", SpecialofferRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SpecialofferRow> modifieddate() {
+      return new Field<LocalDateTime, SpecialofferRow>(_path, "modifieddate", SpecialofferRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SpecialofferRow>> columns() {
-      return List.of(this.specialofferid(), this.description(), this.discountpct(), this.type(), this.category(), this.startdate(), this.enddate(), this.minqty(), this.maxqty(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.specialofferid(), this.description(), this.discountpct(), this.type(), this.category(), this.startdate(), this.enddate(), this.minqty(), this.maxqty(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SpecialofferFields, SpecialofferRow> copy(List<Path> _path) {
+    public RelationStructure<SpecialofferFields, SpecialofferRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<SpecialofferId, SpecialofferRow> specialofferid();
 
-  Field</* max 255 chars */ String, SpecialofferRow> description();
+  Field<String, SpecialofferRow> description();
 
   Field<BigDecimal, SpecialofferRow> discountpct();
 
-  Field</* max 50 chars */ String, SpecialofferRow> type();
+  Field<String, SpecialofferRow> type();
 
-  Field</* max 50 chars */ String, SpecialofferRow> category();
+  Field<String, SpecialofferRow> category();
 
-  Field<TypoLocalDateTime, SpecialofferRow> startdate();
+  Field<LocalDateTime, SpecialofferRow> startdate();
 
-  Field<TypoLocalDateTime, SpecialofferRow> enddate();
+  Field<LocalDateTime, SpecialofferRow> enddate();
 
   Field<Integer, SpecialofferRow> minqty();
 
   OptField<Integer, SpecialofferRow> maxqty();
 
-  Field<TypoUUID, SpecialofferRow> rowguid();
+  Field<UUID, SpecialofferRow> rowguid();
 
-  Field<TypoLocalDateTime, SpecialofferRow> modifieddate();
+  Field<LocalDateTime, SpecialofferRow> modifieddate();
 
   @Override
   List<FieldLike<?, SpecialofferRow>> columns();

@@ -6,88 +6,87 @@
 package adventureworks.production.productsubcategory
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ProductsubcategoryRepo {
-  fun delete(): DeleteBuilder<ProductsubcategoryFields, ProductsubcategoryRow>
+  abstract fun delete(): DeleteBuilder<ProductsubcategoryFields, ProductsubcategoryRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     productsubcategoryid: ProductsubcategoryId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     productsubcategoryids: Array<ProductsubcategoryId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ProductsubcategoryRow,
     c: Connection
   ): ProductsubcategoryRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ProductsubcategoryRowUnsaved,
     c: Connection
   ): ProductsubcategoryRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<ProductsubcategoryRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<ProductsubcategoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<ProductsubcategoryFields, ProductsubcategoryRow>
+  abstract fun select(): SelectBuilder<ProductsubcategoryFields, ProductsubcategoryRow>
 
-  fun selectAll(c: Connection): List<ProductsubcategoryRow>
+  abstract fun selectAll(c: Connection): List<ProductsubcategoryRow>
 
-  fun selectById(
+  abstract fun selectById(
     productsubcategoryid: ProductsubcategoryId,
     c: Connection
-  ): Optional<ProductsubcategoryRow>
+  ): ProductsubcategoryRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     productsubcategoryids: Array<ProductsubcategoryId>,
     c: Connection
   ): List<ProductsubcategoryRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     productsubcategoryids: Array<ProductsubcategoryId>,
     c: Connection
   ): Map<ProductsubcategoryId, ProductsubcategoryRow>
 
-  fun update(): UpdateBuilder<ProductsubcategoryFields, ProductsubcategoryRow>
+  abstract fun update(): UpdateBuilder<ProductsubcategoryFields, ProductsubcategoryRow>
 
-  fun update(
+  abstract fun update(
     row: ProductsubcategoryRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ProductsubcategoryRow,
     c: Connection
   ): ProductsubcategoryRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<ProductsubcategoryRow>,
     c: Connection
   ): List<ProductsubcategoryRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<ProductsubcategoryRow>,
     batchSize: Int,
     c: Connection

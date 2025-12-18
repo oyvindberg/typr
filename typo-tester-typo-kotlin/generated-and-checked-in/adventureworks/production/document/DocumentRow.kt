@@ -6,17 +6,16 @@
 package adventureworks.production.document
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.document
   * Product maintenance documents.
@@ -24,7 +23,7 @@ import typo.runtime.RowParsers
   */
 data class DocumentRow(
   /** Title of the document. */
-  val title: /* max 50 chars */ String,
+  val title: String,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
     * Points to [adventureworks.humanresources.employee.EmployeeRow.businessentityid]
     */
@@ -34,11 +33,11 @@ data class DocumentRow(
     */
   val folderflag: Flag,
   /** File name of the document */
-  val filename: /* max 400 chars */ String,
+  val filename: String,
   /** File extension indicating the document type. For example, .doc or .txt. */
-  val fileextension: Optional</* max 8 chars */ String>,
+  val fileextension: /* max 8 chars */ String?,
   /** Revision number of the document. */
-  val revision: /* bpchar, max 5 chars */ String,
+  val revision: String,
   /** Engineering change approval number.
     * Default: 0
     */
@@ -46,17 +45,17 @@ data class DocumentRow(
   /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
     * Constraint CK_Document_Status affecting columns status: (((status >= 1) AND (status <= 3)))
     */
-  val status: TypoShort,
+  val status: Short,
   /** Document abstract. */
-  val documentsummary: Optional<String>,
+  val documentsummary: String?,
   /** Complete document. */
-  val document: Optional<TypoBytea>,
+  val document: ByteArray?,
   /** ROWGUIDCOL number uniquely identifying the record. Required for FileStream.
     * Default: uuid_generate_v1()
     */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime,
+  val modifieddate: LocalDateTime,
   /** Primary key for Document records.
     * Default: '/'::character varying
     */
@@ -68,14 +67,14 @@ data class DocumentRow(
     documentnode: Defaulted<DocumentId>,
     folderflag: Defaulted<Flag>,
     changenumber: Defaulted<Int>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): DocumentRowUnsaved = DocumentRowUnsaved(title, owner, filename, fileextension, revision, status, documentsummary, document, folderflag, changenumber, rowguid, modifieddate, documentnode)
 
   companion object {
-    val _rowParser: RowParser<DocumentRow> = RowParsers.of(PgTypes.text, BusinessentityId.pgType, Flag.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.bpchar, PgTypes.int4, TypoShort.pgType, PgTypes.text.opt(), TypoBytea.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, DocumentId.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> DocumentRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.title, row.owner, row.folderflag, row.filename, row.fileextension, row.revision, row.changenumber, row.status, row.documentsummary, row.document, row.rowguid, row.modifieddate, row.documentnode) })
+    val _rowParser: RowParser<DocumentRow> = RowParsers.of(PgTypes.text, BusinessentityId.pgType, Flag.pgType, PgTypes.text, PgTypes.text.nullable(), PgTypes.bpchar, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int2, PgTypes.text.nullable(), PgTypes.bytea.nullable(), PgTypes.uuid, PgTypes.timestamp, DocumentId.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> DocumentRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.title, row.owner, row.folderflag, row.filename, row.fileextension, row.revision, row.changenumber, row.status, row.documentsummary, row.document, row.rowguid, row.modifieddate, row.documentnode) })
 
     val pgText: PgText<DocumentRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

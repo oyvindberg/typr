@@ -6,12 +6,13 @@
 package testdb.categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: categories
   * Primary key: category_id
@@ -25,7 +26,7 @@ data class CategoriesRow(
     * Default: NULL
     * Points to [testdb.categories.CategoriesRow.categoryId]
     */
-  @JsonProperty("parent_id") val parentId: Optional<CategoriesId>,
+  @JsonProperty("parent_id") val parentId: CategoriesId?,
   /**  */
   val name: String,
   /**  */
@@ -33,11 +34,11 @@ data class CategoriesRow(
   /** 
     * Default: NULL
     */
-  val description: Optional<String>,
+  val description: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("image_url") val imageUrl: Optional<String>,
+  @JsonProperty("image_url") val imageUrl: String?,
   /** 
     * Default: 0
     */
@@ -49,23 +50,23 @@ data class CategoriesRow(
   /** 
     * Default: NULL
     */
-  val metadata: Optional<String>
+  val metadata: String?
 ) {
   fun id(): CategoriesId = categoryId
 
   fun toUnsavedRow(
-    parentId: Defaulted<Optional<CategoriesId>>,
-    description: Defaulted<Optional<String>>,
-    imageUrl: Defaulted<Optional<String>>,
+    parentId: Defaulted<CategoriesId?>,
+    description: Defaulted<String?>,
+    imageUrl: Defaulted<String?>,
     sortOrder: Defaulted<Short>,
     isVisible: Defaulted<Boolean>,
-    metadata: Defaulted<Optional<String>>
+    metadata: Defaulted<String?>
   ): CategoriesRowUnsaved = CategoriesRowUnsaved(name, slug, parentId, description, imageUrl, sortOrder, isVisible, metadata)
 
   companion object {
-    val _rowParser: RowParser<CategoriesRow> = RowParsers.of(CategoriesId.pgType, CategoriesId.pgType.opt(), MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumtext.opt(), MariaTypes.varchar.opt(), MariaTypes.smallint, MariaTypes.bool, MariaTypes.longtext.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> CategoriesRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.categoryId, row.parentId, row.name, row.slug, row.description, row.imageUrl, row.sortOrder, row.isVisible, row.metadata) })
+    val _rowParser: RowParser<CategoriesRow> = RowParsers.of(CategoriesId.pgType, CategoriesId.pgType.nullable(), MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumtext.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.smallint, KotlinDbTypes.MariaTypes.bool, MariaTypes.longtext.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> CategoriesRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.categoryId, row.parentId, row.name, row.slug, row.description, row.imageUrl, row.sortOrder, row.isVisible, row.metadata) })
 
     val mariaText: MariaText<CategoriesRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

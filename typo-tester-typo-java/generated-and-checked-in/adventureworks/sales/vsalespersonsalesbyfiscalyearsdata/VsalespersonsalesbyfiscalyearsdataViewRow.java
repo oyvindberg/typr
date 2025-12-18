@@ -16,17 +16,17 @@ import typo.runtime.RowParsers;
 /** View: sales.vsalespersonsalesbyfiscalyearsdata */
 public record VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#salespersonid()} */
-  Optional<BusinessentityId> salespersonid,
+  BusinessentityId salespersonid,
   String fullname,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#jobtitle()} */
-  /* max 50 chars */ String jobtitle,
+  String jobtitle,
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#name()} */
   Name salesterritory,
-  /* nullability unknown */ Optional<BigDecimal> salestotal,
+  Optional<BigDecimal> salestotal,
   BigDecimal fiscalyear
 ) {
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#salespersonid()} */
-  public VsalespersonsalesbyfiscalyearsdataViewRow withSalespersonid(Optional<BusinessentityId> salespersonid) {
+  public VsalespersonsalesbyfiscalyearsdataViewRow withSalespersonid(BusinessentityId salespersonid) {
     return new VsalespersonsalesbyfiscalyearsdataViewRow(salespersonid, fullname, jobtitle, salesterritory, salestotal, fiscalyear);
   };
 
@@ -35,7 +35,7 @@ public record VsalespersonsalesbyfiscalyearsdataViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#jobtitle()} */
-  public VsalespersonsalesbyfiscalyearsdataViewRow withJobtitle(/* max 50 chars */ String jobtitle) {
+  public VsalespersonsalesbyfiscalyearsdataViewRow withJobtitle(String jobtitle) {
     return new VsalespersonsalesbyfiscalyearsdataViewRow(salespersonid, fullname, jobtitle, salesterritory, salestotal, fiscalyear);
   };
 
@@ -44,7 +44,7 @@ public record VsalespersonsalesbyfiscalyearsdataViewRow(
     return new VsalespersonsalesbyfiscalyearsdataViewRow(salespersonid, fullname, jobtitle, salesterritory, salestotal, fiscalyear);
   };
 
-  public VsalespersonsalesbyfiscalyearsdataViewRow withSalestotal(/* nullability unknown */ Optional<BigDecimal> salestotal) {
+  public VsalespersonsalesbyfiscalyearsdataViewRow withSalestotal(Optional<BigDecimal> salestotal) {
     return new VsalespersonsalesbyfiscalyearsdataViewRow(salespersonid, fullname, jobtitle, salesterritory, salestotal, fiscalyear);
   };
 
@@ -52,5 +52,5 @@ public record VsalespersonsalesbyfiscalyearsdataViewRow(
     return new VsalespersonsalesbyfiscalyearsdataViewRow(salespersonid, fullname, jobtitle, salesterritory, salestotal, fiscalyear);
   };
 
-  static RowParser<VsalespersonsalesbyfiscalyearsdataViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType.opt(), PgTypes.text, PgTypes.text, Name.pgType, PgTypes.numeric.opt(), PgTypes.numeric, VsalespersonsalesbyfiscalyearsdataViewRow::new, row -> new Object[]{row.salespersonid(), row.fullname(), row.jobtitle(), row.salesterritory(), row.salestotal(), row.fiscalyear()});;
+  static RowParser<VsalespersonsalesbyfiscalyearsdataViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.numeric.opt(), PgTypes.numeric, VsalespersonsalesbyfiscalyearsdataViewRow::new, row -> new Object[]{row.salespersonid(), row.fullname(), row.jobtitle(), row.salesterritory(), row.salestotal(), row.fiscalyear()});;
 }

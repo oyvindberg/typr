@@ -21,8 +21,8 @@ class SimpleCustomerLookupSqlRepoTest extends AnyFunSuite {
 
       val results = repo(testEmail)
 
-      assert(results.size() == 1): @annotation.nowarn
-      val result = results.get(0)
+      assert(results.size == 1): @annotation.nowarn
+      val result = results.head
       assert(result.customerId == customer.customerId): @annotation.nowarn
       assert(result.email == testEmail): @annotation.nowarn
       assert(result.firstName == customer.firstName): @annotation.nowarn

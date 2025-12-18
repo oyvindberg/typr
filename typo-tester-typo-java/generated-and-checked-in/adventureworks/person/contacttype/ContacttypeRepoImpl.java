@@ -5,7 +5,6 @@
  */
 package adventureworks.person.contacttype;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -19,10 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class ContacttypeRepoImpl implements ContacttypeRepo {
   @Override
@@ -35,13 +33,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     ContacttypeId contacttypeid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "person"."contacttype" where "contacttypeid" = 
-      """),
-      ContacttypeId.pgType.encode(contacttypeid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"person\".\"contacttype\" where \"contacttypeid\" = "), Fragment.encode(ContacttypeId.pgType, contacttypeid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -49,14 +41,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     ContacttypeId[] contacttypeids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "person"."contacttype"
-                  where "contacttypeid" = ANY("""),
-               ContacttypeId.pgTypeArray.encode(contacttypeids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"person\".\"contacttype\"\nwhere \"contacttypeid\" = ANY("), Fragment.encode(ContacttypeId.pgTypeArray, contacttypeids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -66,20 +51,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     ContacttypeRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."contacttype"("contacttypeid", "name", "modifieddate")
-         values ("""),
-      ContacttypeId.pgType.encode(unsaved.contacttypeid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "contacttypeid", "name", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"contacttype\"(\"contacttypeid\", \"name\", \"modifieddate\")\nvalues ("), Fragment.encode(ContacttypeId.pgType, unsaved.contacttypeid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"contacttypeid\", \"name\", \"modifieddate\"\n"))
       .updateReturning(ContacttypeRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -88,23 +60,17 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     ContacttypeRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved.contacttypeid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"contacttypeid\""));
-        values.add(interpolate(
-        ContacttypeId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(ContacttypeId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -113,26 +79,10 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."contacttype"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "contacttypeid", "name", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"person\".\"contacttype\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"contacttypeid\", \"name\", \"modifieddate\"\n"));;
     return q.updateReturning(ContacttypeRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -142,9 +92,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."contacttype"("contacttypeid", "name", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, ContacttypeRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"contacttype\"(\"contacttypeid\", \"name\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, ContacttypeRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -154,9 +102,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."contacttype"("name", "contacttypeid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, ContacttypeRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"contacttype\"(\"name\", \"contacttypeid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ContacttypeRowUnsaved.pgText);
   };
 
   @Override
@@ -166,10 +112,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
 
   @Override
   public List<ContacttypeRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "contacttypeid", "name", "modifieddate"::text
-       from "person"."contacttype"
-    """)).query(ContacttypeRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"contacttypeid\", \"name\", \"modifieddate\"\nfrom \"person\".\"contacttype\"\n")).query(ContacttypeRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -177,14 +120,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     ContacttypeId contacttypeid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "contacttypeid", "name", "modifieddate"::text
-         from "person"."contacttype"
-         where "contacttypeid" = """),
-      ContacttypeId.pgType.encode(contacttypeid),
-      typo.runtime.Fragment.lit("")
-    ).query(ContacttypeRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"contacttypeid\", \"name\", \"modifieddate\"\nfrom \"person\".\"contacttype\"\nwhere \"contacttypeid\" = "), Fragment.encode(ContacttypeId.pgType, contacttypeid), Fragment.lit("")).query(ContacttypeRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -192,14 +128,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     ContacttypeId[] contacttypeids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "contacttypeid", "name", "modifieddate"::text
-         from "person"."contacttype"
-         where "contacttypeid" = ANY("""),
-      ContacttypeId.pgTypeArray.encode(contacttypeids),
-      typo.runtime.Fragment.lit(")")
-    ).query(ContacttypeRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"contacttypeid\", \"name\", \"modifieddate\"\nfrom \"person\".\"contacttype\"\nwhere \"contacttypeid\" = ANY("), Fragment.encode(ContacttypeId.pgTypeArray, contacttypeids), Fragment.lit(")")).query(ContacttypeRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -214,7 +143,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
 
   @Override
   public UpdateBuilder<ContacttypeFields, ContacttypeRow> update() {
-    return UpdateBuilder.of("\"person\".\"contacttype\"", ContacttypeFields.structure(), ContacttypeRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"person\".\"contacttype\"", ContacttypeFields.structure(), ContacttypeRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -223,21 +152,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     Connection c
   ) {
     ContacttypeId contacttypeid = row.contacttypeid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "person"."contacttype"
-         set "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "contacttypeid" = """),
-      ContacttypeId.pgType.encode(contacttypeid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"person\".\"contacttype\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"contacttypeid\" = "), Fragment.encode(ContacttypeId.pgType, contacttypeid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -245,23 +160,7 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     ContacttypeRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."contacttype"("contacttypeid", "name", "modifieddate")
-         values ("""),
-      ContacttypeId.pgType.encode(unsaved.contacttypeid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("contacttypeid")
-         do update set
-           "name" = EXCLUDED."name",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "contacttypeid", "name", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"contacttype\"(\"contacttypeid\", \"name\", \"modifieddate\")\nvalues ("), Fragment.encode(ContacttypeId.pgType, unsaved.contacttypeid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"contacttypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"contacttypeid\", \"name\", \"modifieddate\""))
       .updateReturning(ContacttypeRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -271,16 +170,9 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     Iterator<ContacttypeRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "person"."contacttype"("contacttypeid", "name", "modifieddate")
-                values (?::int4, ?::varchar, ?::timestamp)
-                on conflict ("contacttypeid")
-                do update set
-                  "name" = EXCLUDED."name",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "contacttypeid", "name", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"person\".\"contacttype\"(\"contacttypeid\", \"name\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::timestamp)\non conflict (\"contacttypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"contacttypeid\", \"name\", \"modifieddate\""))
       .updateManyReturning(ContacttypeRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -290,20 +182,8 @@ public class ContacttypeRepoImpl implements ContacttypeRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table contacttype_TEMP (like "person"."contacttype") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy contacttype_TEMP("contacttypeid", "name", "modifieddate") from stdin
-    """), batchSize, unsaved, c, ContacttypeRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "person"."contacttype"("contacttypeid", "name", "modifieddate")
-       select * from contacttype_TEMP
-       on conflict ("contacttypeid")
-       do update set
-         "name" = EXCLUDED."name",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table contacttype_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table contacttype_TEMP (like \"person\".\"contacttype\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy contacttype_TEMP(\"contacttypeid\", \"name\", \"modifieddate\") from stdin", batchSize, unsaved, c, ContacttypeRow.pgText);
+    return interpolate(Fragment.lit("insert into \"person\".\"contacttype\"(\"contacttypeid\", \"name\", \"modifieddate\")\nselect * from contacttype_TEMP\non conflict (\"contacttypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table contacttype_TEMP;")).update().runUnchecked(c);
   };
 }

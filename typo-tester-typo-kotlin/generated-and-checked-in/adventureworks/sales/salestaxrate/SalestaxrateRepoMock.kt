@@ -8,21 +8,19 @@ package adventureworks.sales.salestaxrate
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class SalestaxrateRepoMock(
   val toRow: (SalestaxrateRowUnsaved) -> SalestaxrateRow,
@@ -33,7 +31,7 @@ data class SalestaxrateRepoMock(
   override fun deleteById(
     salestaxrateid: SalestaxrateId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(salestaxrateid)).isPresent()
+  ): Boolean = map.remove(salestaxrateid) != null
 
   override fun deleteByIds(
     salestaxrateids: Array<SalestaxrateId>,
@@ -41,7 +39,7 @@ data class SalestaxrateRepoMock(
   ): Int {
     var count = 0
     for (id in salestaxrateids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class SalestaxrateRepoMock(
     c: Connection
   ): SalestaxrateRow {
     if (map.containsKey(unsaved.salestaxrateid)) {
-      throw RuntimeException(str("id $unsaved.salestaxrateid already exists"))
+      throw RuntimeException("id " + unsaved.salestaxrateid + " already exists")
     }
     map[unsaved.salestaxrateid] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class SalestaxrateRepoMock(
   override fun selectById(
     salestaxrateid: SalestaxrateId,
     c: Connection
-  ): Optional<SalestaxrateRow> = Optional.ofNullable(map[salestaxrateid])
+  ): SalestaxrateRow? = map[salestaxrateid]
 
   override fun selectByIds(
     salestaxrateids: Array<SalestaxrateId>,
@@ -109,9 +107,9 @@ data class SalestaxrateRepoMock(
   ): List<SalestaxrateRow> {
     val result = ArrayList<SalestaxrateRow>()
     for (id in salestaxrateids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class SalestaxrateRepoMock(
     row: SalestaxrateRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.salestaxrateid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.salestaxrateid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.salestaxrateid] = row
     }

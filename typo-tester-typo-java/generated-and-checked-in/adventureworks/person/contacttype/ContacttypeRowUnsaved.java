@@ -7,9 +7,10 @@ package adventureworks.person.contacttype;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `person.contacttype` which has not been persisted yet */
 public record ContacttypeRowUnsaved(
@@ -20,7 +21,7 @@ public record ContacttypeRowUnsaved(
     */
   Defaulted<ContacttypeId> contacttypeid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ContacttypeRowUnsaved(
   
@@ -43,7 +44,7 @@ public record ContacttypeRowUnsaved(
   };
 
   /** Default: now() */
-  public ContacttypeRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ContacttypeRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ContacttypeRowUnsaved(name, contacttypeid, modifieddate);
   };
 
@@ -53,12 +54,12 @@ public record ContacttypeRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(ContacttypeId.pgType.pgText()).unsafeEncode(row.contacttypeid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ContacttypeRow toRow(
     java.util.function.Supplier<ContacttypeId> contacttypeidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ContacttypeRow(contacttypeid.getOrElse(contacttypeidDefault), name, modifieddate.getOrElse(modifieddateDefault));
   };

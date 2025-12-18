@@ -7,10 +7,11 @@ package adventureworks.production.productreview
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -23,13 +24,13 @@ data class ProductreviewRowUnsaved(
   /** Name of the reviewer. */
   val reviewername: Name,
   /** Reviewer's e-mail address. */
-  val emailaddress: /* max 50 chars */ String,
+  val emailaddress: String,
   /** Product rating given by the reviewer. Scale is 1 to 5 with 5 as the highest rating.
     * Constraint CK_ProductReview_Rating affecting columns rating:  (((rating >= 1) AND (rating <= 5)))
     */
   val rating: Int,
   /** Reviewer's comments */
-  val comments: Optional</* max 3850 chars */ String> = Optional.empty(),
+  val comments: /* max 3850 chars */ String? = null,
   /** Default: nextval('production.productreview_productreviewid_seq'::regclass)
     * Primary key for ProductReview records.
     */
@@ -37,14 +38,14 @@ data class ProductreviewRowUnsaved(
   /** Default: now()
     * Date review was submitted.
     */
-  val reviewdate: Defaulted<TypoLocalDateTime> = UseDefault(),
+  val reviewdate: Defaulted<LocalDateTime> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     productreviewidDefault: () -> ProductreviewId,
-    reviewdateDefault: () -> TypoLocalDateTime,
-    modifieddateDefault: () -> TypoLocalDateTime
+    reviewdateDefault: () -> LocalDateTime,
+    modifieddateDefault: () -> LocalDateTime
   ): ProductreviewRow = ProductreviewRow(productreviewid = productreviewid.getOrElse(productreviewidDefault), productid = productid, reviewername = reviewername, reviewdate = reviewdate.getOrElse(reviewdateDefault), emailaddress = emailaddress, rating = rating, comments = comments, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -55,14 +56,14 @@ data class ProductreviewRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.emailaddress, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.int4.pgText().unsafeEncode(row.rating, sb)
+      KotlinDbTypes.PgTypes.int4.pgText().unsafeEncode(row.rating, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.comments, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.comments, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(ProductreviewId.pgType.pgText()).unsafeEncode(row.productreviewid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.reviewdate, sb)
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.reviewdate, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

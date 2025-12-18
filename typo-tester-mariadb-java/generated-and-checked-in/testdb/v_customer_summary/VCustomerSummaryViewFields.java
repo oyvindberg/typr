@@ -13,15 +13,15 @@ import testdb.customer_status.CustomerStatusId;
 import testdb.customers.CustomersId;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface VCustomerSummaryViewFields extends FieldsExpr<VCustomerSummaryViewRow> {
-  record Impl(List<Path> _path) implements VCustomerSummaryViewFields, Relation<VCustomerSummaryViewFields, VCustomerSummaryViewRow> {
+  record Impl(List<Path> _path) implements VCustomerSummaryViewFields, RelationStructure<VCustomerSummaryViewFields, VCustomerSummaryViewRow> {
     @Override
     public Field<CustomersId, VCustomerSummaryViewRow> customerId() {
       return new Field<CustomersId, VCustomerSummaryViewRow>(_path, "customer_id", VCustomerSummaryViewRow::customerId, Optional.empty(), Optional.empty(), (row, value) -> row.withCustomerId(value), CustomersId.pgType);
@@ -64,7 +64,7 @@ public interface VCustomerSummaryViewFields extends FieldsExpr<VCustomerSummaryV
 
     @Override
     public Field<BigDecimal, VCustomerSummaryViewRow> lifetimeValue() {
-      return new Field<BigDecimal, VCustomerSummaryViewRow>(_path, "lifetime_value", VCustomerSummaryViewRow::lifetimeValue, Optional.empty(), Optional.empty(), (row, value) -> row.withLifetimeValue(value), MariaTypes.decimal);
+      return new Field<BigDecimal, VCustomerSummaryViewRow>(_path, "lifetime_value", VCustomerSummaryViewRow::lifetimeValue, Optional.empty(), Optional.empty(), (row, value) -> row.withLifetimeValue(value), MariaTypes.numeric);
     };
 
     @Override
@@ -74,17 +74,17 @@ public interface VCustomerSummaryViewFields extends FieldsExpr<VCustomerSummaryV
 
     @Override
     public List<FieldLike<?, VCustomerSummaryViewRow>> columns() {
-      return List.of(this.customerId(), this.email(), this.fullName(), this.tier(), this.status(), this.createdAt(), this.lastLoginAt(), this.totalOrders(), this.lifetimeValue(), this.lastOrderDate());
+      return java.util.List.of(this.customerId(), this.email(), this.fullName(), this.tier(), this.status(), this.createdAt(), this.lastLoginAt(), this.totalOrders(), this.lifetimeValue(), this.lastOrderDate());
     };
 
     @Override
-    public Relation<VCustomerSummaryViewFields, VCustomerSummaryViewRow> copy(List<Path> _path) {
+    public RelationStructure<VCustomerSummaryViewFields, VCustomerSummaryViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<CustomersId, VCustomerSummaryViewRow> customerId();

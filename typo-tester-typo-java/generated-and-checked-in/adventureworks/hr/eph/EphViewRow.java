@@ -5,10 +5,9 @@
  */
 package adventureworks.hr.eph;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -20,13 +19,13 @@ public record EphViewRow(
   /** Points to {@link adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow#businessentityid()} */
   BusinessentityId businessentityid,
   /** Points to {@link adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow#ratechangedate()} */
-  TypoLocalDateTime ratechangedate,
+  LocalDateTime ratechangedate,
   /** Points to {@link adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow#rate()} */
   BigDecimal rate,
   /** Points to {@link adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow#payfrequency()} */
-  TypoShort payfrequency,
+  Short payfrequency,
   /** Points to {@link adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow#businessentityid()} */
   public EphViewRow withId(BusinessentityId id) {
@@ -39,7 +38,7 @@ public record EphViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow#ratechangedate()} */
-  public EphViewRow withRatechangedate(TypoLocalDateTime ratechangedate) {
+  public EphViewRow withRatechangedate(LocalDateTime ratechangedate) {
     return new EphViewRow(id, businessentityid, ratechangedate, rate, payfrequency, modifieddate);
   };
 
@@ -49,14 +48,14 @@ public record EphViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow#payfrequency()} */
-  public EphViewRow withPayfrequency(TypoShort payfrequency) {
+  public EphViewRow withPayfrequency(Short payfrequency) {
     return new EphViewRow(id, businessentityid, ratechangedate, rate, payfrequency, modifieddate);
   };
 
   /** Points to {@link adventureworks.humanresources.employeepayhistory.EmployeepayhistoryRow#modifieddate()} */
-  public EphViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public EphViewRow withModifieddate(LocalDateTime modifieddate) {
     return new EphViewRow(id, businessentityid, ratechangedate, rate, payfrequency, modifieddate);
   };
 
-  static RowParser<EphViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, TypoLocalDateTime.pgType, PgTypes.numeric, TypoShort.pgType, TypoLocalDateTime.pgType, EphViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.ratechangedate(), row.rate(), row.payfrequency(), row.modifieddate()});;
+  static RowParser<EphViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.timestamp, PgTypes.numeric, PgTypes.int2, PgTypes.timestamp, EphViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.ratechangedate(), row.rate(), row.payfrequency(), row.modifieddate()});;
 }

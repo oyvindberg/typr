@@ -5,53 +5,55 @@
  */
 package adventureworks.humanresources.jobcandidate
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoXml
 import adventureworks.humanresources.employee.EmployeeFields
 import adventureworks.humanresources.employee.EmployeeRow
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
+import typo.data.Xml
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface JobcandidateFields : FieldsExpr<JobcandidateRow> {
-  fun businessentityid(): OptField<BusinessentityId, JobcandidateRow>
+  abstract fun businessentityid(): OptField<BusinessentityId, JobcandidateRow>
 
-  override fun columns(): List<FieldLike<*, JobcandidateRow>>
+  abstract override fun columns(): List<FieldLike<*, JobcandidateRow>>
 
-  fun fkEmployee(): ForeignKey<EmployeeFields, EmployeeRow> = ForeignKey.of<EmployeeFields, EmployeeRow>("humanresources.FK_JobCandidate_Employee_BusinessEntityID").withColumnPair(businessentityid(), EmployeeFields::businessentityid)
+  fun fkEmployee(): ForeignKey<EmployeeFields, EmployeeRow> = ForeignKey.of<EmployeeFields, EmployeeRow>("humanresources.FK_JobCandidate_Employee_BusinessEntityID").withColumnPair<BusinessentityId>(businessentityid(), EmployeeFields::businessentityid)
 
-  fun jobcandidateid(): IdField<JobcandidateId, JobcandidateRow>
+  abstract fun jobcandidateid(): IdField<JobcandidateId, JobcandidateRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, JobcandidateRow>
+  abstract fun modifieddate(): Field<LocalDateTime, JobcandidateRow>
 
-  fun resume(): OptField<TypoXml, JobcandidateRow>
+  abstract fun resume(): OptField<Xml, JobcandidateRow>
 
-  override fun rowParser(): RowParser<JobcandidateRow> = JobcandidateRow._rowParser
+  override fun rowParser(): RowParser<JobcandidateRow> = JobcandidateRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : JobcandidateFields, Relation<JobcandidateFields, JobcandidateRow> {
-      override fun jobcandidateid(): IdField<JobcandidateId, JobcandidateRow> = IdField<JobcandidateId, JobcandidateRow>(_path, "jobcandidateid", JobcandidateRow::jobcandidateid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(jobcandidateid = value) }, JobcandidateId.pgType)
+    data class Impl(val _path: List<Path>) : JobcandidateFields, RelationStructure<JobcandidateFields, JobcandidateRow> {
+      override fun jobcandidateid(): IdField<JobcandidateId, JobcandidateRow> = IdField<JobcandidateId, JobcandidateRow>(_path, "jobcandidateid", JobcandidateRow::jobcandidateid, null, "int4", { row, value -> row.copy(jobcandidateid = value) }, JobcandidateId.pgType)
 
-      override fun businessentityid(): OptField<BusinessentityId, JobcandidateRow> = OptField<BusinessentityId, JobcandidateRow>(_path, "businessentityid", JobcandidateRow::businessentityid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): OptField<BusinessentityId, JobcandidateRow> = OptField<BusinessentityId, JobcandidateRow>(_path, "businessentityid", JobcandidateRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun resume(): OptField<TypoXml, JobcandidateRow> = OptField<TypoXml, JobcandidateRow>(_path, "resume", JobcandidateRow::resume, Optional.empty(), Optional.of("xml"), { row, value -> row.copy(resume = value) }, TypoXml.pgType)
+      override fun resume(): OptField<Xml, JobcandidateRow> = OptField<Xml, JobcandidateRow>(_path, "resume", JobcandidateRow::resume, null, "xml", { row, value -> row.copy(resume = value) }, PgTypes.xml)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, JobcandidateRow> = Field<TypoLocalDateTime, JobcandidateRow>(_path, "modifieddate", JobcandidateRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, JobcandidateRow> = Field<LocalDateTime, JobcandidateRow>(_path, "modifieddate", JobcandidateRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, JobcandidateRow>> = listOf(this.jobcandidateid(), this.businessentityid(), this.resume(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<JobcandidateFields, JobcandidateRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, JobcandidateRow>> = listOf(this.jobcandidateid().underlying, this.businessentityid().underlying, this.resume().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<JobcandidateFields, JobcandidateRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

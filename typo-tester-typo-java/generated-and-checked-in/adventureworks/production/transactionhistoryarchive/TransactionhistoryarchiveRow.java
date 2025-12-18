@@ -6,8 +6,8 @@
 package adventureworks.production.transactionhistoryarchive;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -31,17 +31,17 @@ public record TransactionhistoryarchiveRow(
   /** Date and time of the transaction.
     * Default: now()
     */
-  TypoLocalDateTime transactiondate,
+  LocalDateTime transactiondate,
   /** W = Work Order, S = Sales Order, P = Purchase Order
     * Constraint CK_TransactionHistoryArchive_TransactionType affecting columns transactiontype: ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
     */
-  /* bpchar, max 1 chars */ String transactiontype,
+  String transactiontype,
   /** Product quantity. */
   Integer quantity,
   /** Product cost. */
   BigDecimal actualcost,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for TransactionHistoryArchive records. */
   public TransactionhistoryarchiveRow withTransactionid(TransactionhistoryarchiveId transactionid) {
@@ -68,14 +68,14 @@ public record TransactionhistoryarchiveRow(
   /** Date and time of the transaction.
     * Default: now()
     */
-  public TransactionhistoryarchiveRow withTransactiondate(TypoLocalDateTime transactiondate) {
+  public TransactionhistoryarchiveRow withTransactiondate(LocalDateTime transactiondate) {
     return new TransactionhistoryarchiveRow(transactionid, productid, referenceorderid, referenceorderlineid, transactiondate, transactiontype, quantity, actualcost, modifieddate);
   };
 
   /** W = Work Order, S = Sales Order, P = Purchase Order
     * Constraint CK_TransactionHistoryArchive_TransactionType affecting columns transactiontype: ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
     */
-  public TransactionhistoryarchiveRow withTransactiontype(/* bpchar, max 1 chars */ String transactiontype) {
+  public TransactionhistoryarchiveRow withTransactiontype(String transactiontype) {
     return new TransactionhistoryarchiveRow(transactionid, productid, referenceorderid, referenceorderlineid, transactiondate, transactiontype, quantity, actualcost, modifieddate);
   };
 
@@ -90,11 +90,11 @@ public record TransactionhistoryarchiveRow(
   };
 
   /** Default: now() */
-  public TransactionhistoryarchiveRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public TransactionhistoryarchiveRow withModifieddate(LocalDateTime modifieddate) {
     return new TransactionhistoryarchiveRow(transactionid, productid, referenceorderid, referenceorderlineid, transactiondate, transactiontype, quantity, actualcost, modifieddate);
   };
 
-  static RowParser<TransactionhistoryarchiveRow> _rowParser = RowParsers.of(TransactionhistoryarchiveId.pgType, PgTypes.int4, PgTypes.int4, PgTypes.int4, TypoLocalDateTime.pgType, PgTypes.bpchar, PgTypes.int4, PgTypes.numeric, TypoLocalDateTime.pgType, TransactionhistoryarchiveRow::new, row -> new Object[]{row.transactionid(), row.productid(), row.referenceorderid(), row.referenceorderlineid(), row.transactiondate(), row.transactiontype(), row.quantity(), row.actualcost(), row.modifieddate()});;
+  static RowParser<TransactionhistoryarchiveRow> _rowParser = RowParsers.of(TransactionhistoryarchiveId.pgType, PgTypes.int4, PgTypes.int4, PgTypes.int4, PgTypes.timestamp, PgTypes.bpchar, PgTypes.int4, PgTypes.numeric, PgTypes.timestamp, TransactionhistoryarchiveRow::new, row -> new Object[]{row.transactionid(), row.productid(), row.referenceorderid(), row.referenceorderlineid(), row.transactiondate(), row.transactiontype(), row.quantity(), row.actualcost(), row.modifieddate()});;
 
   static public PgText<TransactionhistoryarchiveRow> pgText =
     PgText.from(_rowParser);
@@ -105,8 +105,8 @@ public record TransactionhistoryarchiveRow(
 
   public TransactionhistoryarchiveRowUnsaved toUnsavedRow(
     Defaulted<Integer> referenceorderlineid,
-    Defaulted<TypoLocalDateTime> transactiondate,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> transactiondate,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new TransactionhistoryarchiveRowUnsaved(transactionid, productid, referenceorderid, transactiontype, quantity, actualcost, referenceorderlineid, transactiondate, modifieddate);
   };

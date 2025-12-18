@@ -5,75 +5,75 @@
  */
 package adventureworks.humanresources.vjobcandidateemployment
 
-import adventureworks.customtypes.TypoLocalDate
 import adventureworks.humanresources.jobcandidate.JobcandidateId
-import java.util.Optional
+import java.time.LocalDate
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface VjobcandidateemploymentViewFields : FieldsExpr<VjobcandidateemploymentViewRow> {
-  override fun columns(): List<FieldLike<*, VjobcandidateemploymentViewRow>>
+  abstract override fun columns(): List<FieldLike<*, VjobcandidateemploymentViewRow>>
 
-  fun empEndDate(): OptField<TypoLocalDate, VjobcandidateemploymentViewRow>
+  abstract fun empEndDate(): Field<LocalDate, VjobcandidateemploymentViewRow>
 
-  fun empFunctionCategory(): OptField<String, VjobcandidateemploymentViewRow>
+  abstract fun empFunctionCategory(): Field<String, VjobcandidateemploymentViewRow>
 
-  fun empIndustryCategory(): OptField<String, VjobcandidateemploymentViewRow>
+  abstract fun empIndustryCategory(): Field<String, VjobcandidateemploymentViewRow>
 
-  fun empJobTitle(): OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow>
+  abstract fun empJobTitle(): Field<String, VjobcandidateemploymentViewRow>
 
-  fun empLocCity(): OptField<String, VjobcandidateemploymentViewRow>
+  abstract fun empLocCity(): Field<String, VjobcandidateemploymentViewRow>
 
-  fun empLocCountryRegion(): OptField<String, VjobcandidateemploymentViewRow>
+  abstract fun empLocCountryRegion(): Field<String, VjobcandidateemploymentViewRow>
 
-  fun empLocState(): OptField<String, VjobcandidateemploymentViewRow>
+  abstract fun empLocState(): Field<String, VjobcandidateemploymentViewRow>
 
-  fun empOrgName(): OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow>
+  abstract fun empOrgName(): Field<String, VjobcandidateemploymentViewRow>
 
-  fun empResponsibility(): OptField<String, VjobcandidateemploymentViewRow>
+  abstract fun empResponsibility(): Field<String, VjobcandidateemploymentViewRow>
 
-  fun empStartDate(): OptField<TypoLocalDate, VjobcandidateemploymentViewRow>
+  abstract fun empStartDate(): Field<LocalDate, VjobcandidateemploymentViewRow>
 
-  fun jobcandidateid(): Field<JobcandidateId, VjobcandidateemploymentViewRow>
+  abstract fun jobcandidateid(): Field<JobcandidateId, VjobcandidateemploymentViewRow>
 
-  override fun rowParser(): RowParser<VjobcandidateemploymentViewRow> = VjobcandidateemploymentViewRow._rowParser
+  override fun rowParser(): RowParser<VjobcandidateemploymentViewRow> = VjobcandidateemploymentViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : VjobcandidateemploymentViewFields, Relation<VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow> {
-      override fun jobcandidateid(): Field<JobcandidateId, VjobcandidateemploymentViewRow> = Field<JobcandidateId, VjobcandidateemploymentViewRow>(_path, "jobcandidateid", VjobcandidateemploymentViewRow::jobcandidateid, Optional.empty(), Optional.empty(), { row, value -> row.copy(jobcandidateid = value) }, JobcandidateId.pgType)
+    data class Impl(val _path: List<Path>) : VjobcandidateemploymentViewFields, RelationStructure<VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow> {
+      override fun jobcandidateid(): Field<JobcandidateId, VjobcandidateemploymentViewRow> = Field<JobcandidateId, VjobcandidateemploymentViewRow>(_path, "jobcandidateid", VjobcandidateemploymentViewRow::jobcandidateid, null, null, { row, value -> row.copy(jobcandidateid = value) }, JobcandidateId.pgType)
 
-      override fun empStartDate(): OptField<TypoLocalDate, VjobcandidateemploymentViewRow> = OptField<TypoLocalDate, VjobcandidateemploymentViewRow>(_path, "Emp.StartDate", VjobcandidateemploymentViewRow::empStartDate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(empStartDate = value) }, TypoLocalDate.pgType)
+      override fun empStartDate(): Field<LocalDate, VjobcandidateemploymentViewRow> = Field<LocalDate, VjobcandidateemploymentViewRow>(_path, "Emp.StartDate", VjobcandidateemploymentViewRow::empStartDate, null, null, { row, value -> row.copy(empStartDate = value) }, PgTypes.date)
 
-      override fun empEndDate(): OptField<TypoLocalDate, VjobcandidateemploymentViewRow> = OptField<TypoLocalDate, VjobcandidateemploymentViewRow>(_path, "Emp.EndDate", VjobcandidateemploymentViewRow::empEndDate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(empEndDate = value) }, TypoLocalDate.pgType)
+      override fun empEndDate(): Field<LocalDate, VjobcandidateemploymentViewRow> = Field<LocalDate, VjobcandidateemploymentViewRow>(_path, "Emp.EndDate", VjobcandidateemploymentViewRow::empEndDate, null, null, { row, value -> row.copy(empEndDate = value) }, PgTypes.date)
 
-      override fun empOrgName(): OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow> = OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow>(_path, "Emp.OrgName", VjobcandidateemploymentViewRow::empOrgName, Optional.empty(), Optional.empty(), { row, value -> row.copy(empOrgName = value) }, PgTypes.text)
+      override fun empOrgName(): Field<String, VjobcandidateemploymentViewRow> = Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.OrgName", VjobcandidateemploymentViewRow::empOrgName, null, null, { row, value -> row.copy(empOrgName = value) }, PgTypes.text)
 
-      override fun empJobTitle(): OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow> = OptField</* max 100 chars */ String, VjobcandidateemploymentViewRow>(_path, "Emp.JobTitle", VjobcandidateemploymentViewRow::empJobTitle, Optional.empty(), Optional.empty(), { row, value -> row.copy(empJobTitle = value) }, PgTypes.text)
+      override fun empJobTitle(): Field<String, VjobcandidateemploymentViewRow> = Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.JobTitle", VjobcandidateemploymentViewRow::empJobTitle, null, null, { row, value -> row.copy(empJobTitle = value) }, PgTypes.text)
 
-      override fun empResponsibility(): OptField<String, VjobcandidateemploymentViewRow> = OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.Responsibility", VjobcandidateemploymentViewRow::empResponsibility, Optional.empty(), Optional.empty(), { row, value -> row.copy(empResponsibility = value) }, PgTypes.text)
+      override fun empResponsibility(): Field<String, VjobcandidateemploymentViewRow> = Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.Responsibility", VjobcandidateemploymentViewRow::empResponsibility, null, null, { row, value -> row.copy(empResponsibility = value) }, PgTypes.text)
 
-      override fun empFunctionCategory(): OptField<String, VjobcandidateemploymentViewRow> = OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.FunctionCategory", VjobcandidateemploymentViewRow::empFunctionCategory, Optional.empty(), Optional.empty(), { row, value -> row.copy(empFunctionCategory = value) }, PgTypes.text)
+      override fun empFunctionCategory(): Field<String, VjobcandidateemploymentViewRow> = Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.FunctionCategory", VjobcandidateemploymentViewRow::empFunctionCategory, null, null, { row, value -> row.copy(empFunctionCategory = value) }, PgTypes.text)
 
-      override fun empIndustryCategory(): OptField<String, VjobcandidateemploymentViewRow> = OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.IndustryCategory", VjobcandidateemploymentViewRow::empIndustryCategory, Optional.empty(), Optional.empty(), { row, value -> row.copy(empIndustryCategory = value) }, PgTypes.text)
+      override fun empIndustryCategory(): Field<String, VjobcandidateemploymentViewRow> = Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.IndustryCategory", VjobcandidateemploymentViewRow::empIndustryCategory, null, null, { row, value -> row.copy(empIndustryCategory = value) }, PgTypes.text)
 
-      override fun empLocCountryRegion(): OptField<String, VjobcandidateemploymentViewRow> = OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.CountryRegion", VjobcandidateemploymentViewRow::empLocCountryRegion, Optional.empty(), Optional.empty(), { row, value -> row.copy(empLocCountryRegion = value) }, PgTypes.text)
+      override fun empLocCountryRegion(): Field<String, VjobcandidateemploymentViewRow> = Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.CountryRegion", VjobcandidateemploymentViewRow::empLocCountryRegion, null, null, { row, value -> row.copy(empLocCountryRegion = value) }, PgTypes.text)
 
-      override fun empLocState(): OptField<String, VjobcandidateemploymentViewRow> = OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.State", VjobcandidateemploymentViewRow::empLocState, Optional.empty(), Optional.empty(), { row, value -> row.copy(empLocState = value) }, PgTypes.text)
+      override fun empLocState(): Field<String, VjobcandidateemploymentViewRow> = Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.State", VjobcandidateemploymentViewRow::empLocState, null, null, { row, value -> row.copy(empLocState = value) }, PgTypes.text)
 
-      override fun empLocCity(): OptField<String, VjobcandidateemploymentViewRow> = OptField<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.City", VjobcandidateemploymentViewRow::empLocCity, Optional.empty(), Optional.empty(), { row, value -> row.copy(empLocCity = value) }, PgTypes.text)
+      override fun empLocCity(): Field<String, VjobcandidateemploymentViewRow> = Field<String, VjobcandidateemploymentViewRow>(_path, "Emp.Loc.City", VjobcandidateemploymentViewRow::empLocCity, null, null, { row, value -> row.copy(empLocCity = value) }, PgTypes.text)
 
-      override fun columns(): List<FieldLike<*, VjobcandidateemploymentViewRow>> = listOf(this.jobcandidateid(), this.empStartDate(), this.empEndDate(), this.empOrgName(), this.empJobTitle(), this.empResponsibility(), this.empFunctionCategory(), this.empIndustryCategory(), this.empLocCountryRegion(), this.empLocState(), this.empLocCity())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, VjobcandidateemploymentViewRow>> = listOf(this.jobcandidateid().underlying, this.empStartDate().underlying, this.empEndDate().underlying, this.empOrgName().underlying, this.empJobTitle().underlying, this.empResponsibility().underlying, this.empFunctionCategory().underlying, this.empIndustryCategory().underlying, this.empLocCountryRegion().underlying, this.empLocState().underlying, this.empLocCity().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

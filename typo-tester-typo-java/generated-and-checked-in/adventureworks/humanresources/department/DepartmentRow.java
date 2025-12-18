@@ -6,9 +6,10 @@
 package adventureworks.humanresources.department;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -26,7 +27,7 @@ public record DepartmentRow(
   /** Name of the group to which the department belongs. */
   Name groupname,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for Department records.
     * Default: nextval('humanresources.department_departmentid_seq'::regclass)
@@ -46,11 +47,11 @@ public record DepartmentRow(
   };
 
   /** Default: now() */
-  public DepartmentRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public DepartmentRow withModifieddate(LocalDateTime modifieddate) {
     return new DepartmentRow(departmentid, name, groupname, modifieddate);
   };
 
-  static RowParser<DepartmentRow> _rowParser = RowParsers.of(DepartmentId.pgType, Name.pgType, Name.pgType, TypoLocalDateTime.pgType, DepartmentRow::new, row -> new Object[]{row.departmentid(), row.name(), row.groupname(), row.modifieddate()});;
+  static RowParser<DepartmentRow> _rowParser = RowParsers.of(DepartmentId.pgType, Name.pgType, Name.pgType, PgTypes.timestamp, DepartmentRow::new, row -> new Object[]{row.departmentid(), row.name(), row.groupname(), row.modifieddate()});;
 
   static public PgText<DepartmentRow> pgText =
     PgText.from(_rowParser);
@@ -61,7 +62,7 @@ public record DepartmentRow(
 
   public DepartmentRowUnsaved toUnsavedRow(
     Defaulted<DepartmentId> departmentid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new DepartmentRowUnsaved(name, groupname, departmentid, modifieddate);
   };

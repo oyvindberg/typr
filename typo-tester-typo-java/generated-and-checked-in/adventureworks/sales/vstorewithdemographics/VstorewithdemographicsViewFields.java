@@ -5,21 +5,21 @@
  */
 package adventureworks.sales.vstorewithdemographics;
 
-import adventureworks.customtypes.TypoMoney;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import java.util.List;
 import java.util.Optional;
+import typo.data.Money;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VstorewithdemographicsViewFields extends FieldsExpr<VstorewithdemographicsViewRow> {
-  record Impl(List<Path> _path) implements VstorewithdemographicsViewFields, Relation<VstorewithdemographicsViewFields, VstorewithdemographicsViewRow> {
+  record Impl(List<Path> _path) implements VstorewithdemographicsViewFields, RelationStructure<VstorewithdemographicsViewFields, VstorewithdemographicsViewRow> {
     @Override
     public Field<BusinessentityId, VstorewithdemographicsViewRow> businessentityid() {
       return new Field<BusinessentityId, VstorewithdemographicsViewRow>(_path, "businessentityid", VstorewithdemographicsViewRow::businessentityid, Optional.empty(), Optional.empty(), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
@@ -31,23 +31,23 @@ public interface VstorewithdemographicsViewFields extends FieldsExpr<Vstorewithd
     };
 
     @Override
-    public Field<TypoMoney, VstorewithdemographicsViewRow> annualSales() {
-      return new Field<TypoMoney, VstorewithdemographicsViewRow>(_path, "AnnualSales", VstorewithdemographicsViewRow::annualSales, Optional.of("numeric"), Optional.empty(), (row, value) -> row.withAnnualSales(value), TypoMoney.pgType);
+    public Field<Money, VstorewithdemographicsViewRow> annualSales() {
+      return new Field<Money, VstorewithdemographicsViewRow>(_path, "AnnualSales", VstorewithdemographicsViewRow::annualSales, Optional.of("numeric"), Optional.empty(), (row, value) -> row.withAnnualSales(value), PgTypes.money);
     };
 
     @Override
-    public Field<TypoMoney, VstorewithdemographicsViewRow> annualRevenue() {
-      return new Field<TypoMoney, VstorewithdemographicsViewRow>(_path, "AnnualRevenue", VstorewithdemographicsViewRow::annualRevenue, Optional.of("numeric"), Optional.empty(), (row, value) -> row.withAnnualRevenue(value), TypoMoney.pgType);
+    public Field<Money, VstorewithdemographicsViewRow> annualRevenue() {
+      return new Field<Money, VstorewithdemographicsViewRow>(_path, "AnnualRevenue", VstorewithdemographicsViewRow::annualRevenue, Optional.of("numeric"), Optional.empty(), (row, value) -> row.withAnnualRevenue(value), PgTypes.money);
     };
 
     @Override
-    public Field</* max 50 chars */ String, VstorewithdemographicsViewRow> bankName() {
-      return new Field</* max 50 chars */ String, VstorewithdemographicsViewRow>(_path, "BankName", VstorewithdemographicsViewRow::bankName, Optional.empty(), Optional.empty(), (row, value) -> row.withBankName(value), PgTypes.text);
+    public Field<String, VstorewithdemographicsViewRow> bankName() {
+      return new Field<String, VstorewithdemographicsViewRow>(_path, "BankName", VstorewithdemographicsViewRow::bankName, Optional.empty(), Optional.empty(), (row, value) -> row.withBankName(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 5 chars */ String, VstorewithdemographicsViewRow> businessType() {
-      return new Field</* max 5 chars */ String, VstorewithdemographicsViewRow>(_path, "BusinessType", VstorewithdemographicsViewRow::businessType, Optional.empty(), Optional.empty(), (row, value) -> row.withBusinessType(value), PgTypes.text);
+    public Field<String, VstorewithdemographicsViewRow> businessType() {
+      return new Field<String, VstorewithdemographicsViewRow>(_path, "BusinessType", VstorewithdemographicsViewRow::businessType, Optional.empty(), Optional.empty(), (row, value) -> row.withBusinessType(value), PgTypes.text);
     };
 
     @Override
@@ -56,8 +56,8 @@ public interface VstorewithdemographicsViewFields extends FieldsExpr<Vstorewithd
     };
 
     @Override
-    public Field</* max 50 chars */ String, VstorewithdemographicsViewRow> specialty() {
-      return new Field</* max 50 chars */ String, VstorewithdemographicsViewRow>(_path, "Specialty", VstorewithdemographicsViewRow::specialty, Optional.empty(), Optional.empty(), (row, value) -> row.withSpecialty(value), PgTypes.text);
+    public Field<String, VstorewithdemographicsViewRow> specialty() {
+      return new Field<String, VstorewithdemographicsViewRow>(_path, "Specialty", VstorewithdemographicsViewRow::specialty, Optional.empty(), Optional.empty(), (row, value) -> row.withSpecialty(value), PgTypes.text);
     };
 
     @Override
@@ -66,13 +66,13 @@ public interface VstorewithdemographicsViewFields extends FieldsExpr<Vstorewithd
     };
 
     @Override
-    public Field</* max 30 chars */ String, VstorewithdemographicsViewRow> brands() {
-      return new Field</* max 30 chars */ String, VstorewithdemographicsViewRow>(_path, "Brands", VstorewithdemographicsViewRow::brands, Optional.empty(), Optional.empty(), (row, value) -> row.withBrands(value), PgTypes.text);
+    public Field<String, VstorewithdemographicsViewRow> brands() {
+      return new Field<String, VstorewithdemographicsViewRow>(_path, "Brands", VstorewithdemographicsViewRow::brands, Optional.empty(), Optional.empty(), (row, value) -> row.withBrands(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 30 chars */ String, VstorewithdemographicsViewRow> internet() {
-      return new Field</* max 30 chars */ String, VstorewithdemographicsViewRow>(_path, "Internet", VstorewithdemographicsViewRow::internet, Optional.empty(), Optional.empty(), (row, value) -> row.withInternet(value), PgTypes.text);
+    public Field<String, VstorewithdemographicsViewRow> internet() {
+      return new Field<String, VstorewithdemographicsViewRow>(_path, "Internet", VstorewithdemographicsViewRow::internet, Optional.empty(), Optional.empty(), (row, value) -> row.withInternet(value), PgTypes.text);
     };
 
     @Override
@@ -82,40 +82,40 @@ public interface VstorewithdemographicsViewFields extends FieldsExpr<Vstorewithd
 
     @Override
     public List<FieldLike<?, VstorewithdemographicsViewRow>> columns() {
-      return List.of(this.businessentityid(), this.name(), this.annualSales(), this.annualRevenue(), this.bankName(), this.businessType(), this.yearOpened(), this.specialty(), this.squareFeet(), this.brands(), this.internet(), this.numberEmployees());
+      return java.util.List.of(this.businessentityid(), this.name(), this.annualSales(), this.annualRevenue(), this.bankName(), this.businessType(), this.yearOpened(), this.specialty(), this.squareFeet(), this.brands(), this.internet(), this.numberEmployees());
     };
 
     @Override
-    public Relation<VstorewithdemographicsViewFields, VstorewithdemographicsViewRow> copy(List<Path> _path) {
+    public RelationStructure<VstorewithdemographicsViewFields, VstorewithdemographicsViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<BusinessentityId, VstorewithdemographicsViewRow> businessentityid();
 
   Field<Name, VstorewithdemographicsViewRow> name();
 
-  Field<TypoMoney, VstorewithdemographicsViewRow> annualSales();
+  Field<Money, VstorewithdemographicsViewRow> annualSales();
 
-  Field<TypoMoney, VstorewithdemographicsViewRow> annualRevenue();
+  Field<Money, VstorewithdemographicsViewRow> annualRevenue();
 
-  Field</* max 50 chars */ String, VstorewithdemographicsViewRow> bankName();
+  Field<String, VstorewithdemographicsViewRow> bankName();
 
-  Field</* max 5 chars */ String, VstorewithdemographicsViewRow> businessType();
+  Field<String, VstorewithdemographicsViewRow> businessType();
 
   Field<Integer, VstorewithdemographicsViewRow> yearOpened();
 
-  Field</* max 50 chars */ String, VstorewithdemographicsViewRow> specialty();
+  Field<String, VstorewithdemographicsViewRow> specialty();
 
   Field<Integer, VstorewithdemographicsViewRow> squareFeet();
 
-  Field</* max 30 chars */ String, VstorewithdemographicsViewRow> brands();
+  Field<String, VstorewithdemographicsViewRow> brands();
 
-  Field</* max 30 chars */ String, VstorewithdemographicsViewRow> internet();
+  Field<String, VstorewithdemographicsViewRow> internet();
 
   Field<Integer, VstorewithdemographicsViewRow> numberEmployees();
 

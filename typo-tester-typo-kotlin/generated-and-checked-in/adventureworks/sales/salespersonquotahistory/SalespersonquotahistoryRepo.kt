@@ -6,88 +6,87 @@
 package adventureworks.sales.salespersonquotahistory
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface SalespersonquotahistoryRepo {
-  fun delete(): DeleteBuilder<SalespersonquotahistoryFields, SalespersonquotahistoryRow>
+  abstract fun delete(): DeleteBuilder<SalespersonquotahistoryFields, SalespersonquotahistoryRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: SalespersonquotahistoryId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<SalespersonquotahistoryId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: SalespersonquotahistoryRow,
     c: Connection
   ): SalespersonquotahistoryRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: SalespersonquotahistoryRowUnsaved,
     c: Connection
   ): SalespersonquotahistoryRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<SalespersonquotahistoryRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<SalespersonquotahistoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<SalespersonquotahistoryFields, SalespersonquotahistoryRow>
+  abstract fun select(): SelectBuilder<SalespersonquotahistoryFields, SalespersonquotahistoryRow>
 
-  fun selectAll(c: Connection): List<SalespersonquotahistoryRow>
+  abstract fun selectAll(c: Connection): List<SalespersonquotahistoryRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: SalespersonquotahistoryId,
     c: Connection
-  ): Optional<SalespersonquotahistoryRow>
+  ): SalespersonquotahistoryRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<SalespersonquotahistoryId>,
     c: Connection
   ): List<SalespersonquotahistoryRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<SalespersonquotahistoryId>,
     c: Connection
   ): Map<SalespersonquotahistoryId, SalespersonquotahistoryRow>
 
-  fun update(): UpdateBuilder<SalespersonquotahistoryFields, SalespersonquotahistoryRow>
+  abstract fun update(): UpdateBuilder<SalespersonquotahistoryFields, SalespersonquotahistoryRow>
 
-  fun update(
+  abstract fun update(
     row: SalespersonquotahistoryRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: SalespersonquotahistoryRow,
     c: Connection
   ): SalespersonquotahistoryRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<SalespersonquotahistoryRow>,
     c: Connection
   ): List<SalespersonquotahistoryRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<SalespersonquotahistoryRow>,
     batchSize: Int,
     c: Connection

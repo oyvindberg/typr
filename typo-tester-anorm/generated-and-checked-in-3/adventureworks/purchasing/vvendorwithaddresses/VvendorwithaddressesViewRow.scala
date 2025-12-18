@@ -28,15 +28,15 @@ case class VvendorwithaddressesViewRow(
   /** Points to [[adventureworks.person.addresstype.AddresstypeRow.name]] */
   addresstype: Name,
   /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
-  addressline1: /* max 60 chars */ String,
+  addressline1: String,
   /** Points to [[adventureworks.person.address.AddressRow.addressline2]] */
-  addressline2: Option[/* max 60 chars */ String],
+  addressline2: String,
   /** Points to [[adventureworks.person.address.AddressRow.city]] */
-  city: /* max 30 chars */ String,
+  city: String,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.name]] */
   stateprovincename: Name,
   /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
-  postalcode: /* max 15 chars */ String,
+  postalcode: String,
   /** Points to [[adventureworks.person.countryregion.CountryregionRow.name]] */
   countryregionname: Name
 )
@@ -50,7 +50,7 @@ object VvendorwithaddressesViewRow {
             name = json.\("name").as(Name.reads),
             addresstype = json.\("addresstype").as(Name.reads),
             addressline1 = json.\("addressline1").as(Reads.StringReads),
-            addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
+            addressline2 = json.\("addressline2").as(Reads.StringReads),
             city = json.\("city").as(Reads.StringReads),
             stateprovincename = json.\("stateprovincename").as(Name.reads),
             postalcode = json.\("postalcode").as(Reads.StringReads),
@@ -69,7 +69,7 @@ object VvendorwithaddressesViewRow {
           name = row(idx + 1)(using Name.column),
           addresstype = row(idx + 2)(using Name.column),
           addressline1 = row(idx + 3)(using Column.columnToString),
-          addressline2 = row(idx + 4)(using Column.columnToOption(using Column.columnToString)),
+          addressline2 = row(idx + 4)(using Column.columnToString),
           city = row(idx + 5)(using Column.columnToString),
           stateprovincename = row(idx + 6)(using Name.column),
           postalcode = row(idx + 7)(using Column.columnToString),
@@ -86,7 +86,7 @@ object VvendorwithaddressesViewRow {
         "name" -> Name.writes.writes(o.name),
         "addresstype" -> Name.writes.writes(o.addresstype),
         "addressline1" -> Writes.StringWrites.writes(o.addressline1),
-        "addressline2" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.addressline2),
+        "addressline2" -> Writes.StringWrites.writes(o.addressline2),
         "city" -> Writes.StringWrites.writes(o.city),
         "stateprovincename" -> Name.writes.writes(o.stateprovincename),
         "postalcode" -> Writes.StringWrites.writes(o.postalcode),

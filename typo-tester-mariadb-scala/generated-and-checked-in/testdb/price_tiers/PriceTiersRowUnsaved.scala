@@ -10,6 +10,7 @@ import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `price_tiers` which has not been persisted yet */
 case class PriceTiersRowUnsaved(
@@ -18,14 +19,14 @@ case class PriceTiersRowUnsaved(
   /**  */
   @JsonProperty("discount_type") discountType: String,
   /**  */
-  @JsonProperty("discount_value") discountValue: java.math.BigDecimal,
+  @JsonProperty("discount_value") discountValue: BigDecimal,
   /** Default: 1
 
    */
-  @JsonProperty("min_quantity") minQuantity: Defaulted[java.lang.Long] = new UseDefault()
+  @JsonProperty("min_quantity") minQuantity: Defaulted[Long] = new UseDefault()
 ) {
   def toRow(
-    minQuantityDefault: => java.lang.Long,
+    minQuantityDefault: => Long,
     tierIdDefault: => PriceTiersId
   ): PriceTiersRow = {
     new PriceTiersRow(
@@ -39,5 +40,5 @@ case class PriceTiersRowUnsaved(
 }
 
 object PriceTiersRowUnsaved {
-  given mariaText: MariaText[PriceTiersRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.discountType, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.discountValue, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.intUnsigned.mariaText).unsafeEncode(row.minQuantity, sb) })
+  given mariaText: MariaText[PriceTiersRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.discountType, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.discountValue, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.intUnsigned.mariaText).unsafeEncode(row.minQuantity, sb) })
 }

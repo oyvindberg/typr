@@ -6,20 +6,20 @@
 package adventureworks.public.title_domain
 
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait TitleDomainFields {
   def code: IdField[TitleDomainId, TitleDomainRow]
 }
 
 object TitleDomainFields {
-  lazy val structure: Relation[TitleDomainFields, TitleDomainRow] =
+  lazy val structure: RelationStructure[TitleDomainFields, TitleDomainRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[TitleDomainFields, TitleDomainRow] {
+    extends RelationStructure[TitleDomainFields, TitleDomainRow] {
 
     override lazy val fields: TitleDomainFields = new TitleDomainFields {
       override def code = IdField[TitleDomainId, TitleDomainRow](_path, "code", None, Some("text"), x => x.code, (row, value) => row.copy(code = value))

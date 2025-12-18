@@ -17,6 +17,11 @@ public record CustomersId(@JsonValue BigInteger value) {
     return new CustomersId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<CustomersId, BigInteger> bijection =
     Bijection.of(CustomersId::value, CustomersId::new);
 

@@ -7,10 +7,10 @@ package adventureworks.pr.plph
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PlphViewRepo {
-  fun select(): SelectBuilder<PlphViewFields, PlphViewRow>
+  abstract fun select(): SelectBuilder<PlphViewFields, PlphViewRow>
 
-  fun selectAll(c: Connection): List<PlphViewRow>
+  abstract fun selectAll(c: Connection): List<PlphViewRow>
 }

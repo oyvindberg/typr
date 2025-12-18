@@ -40,9 +40,9 @@ public class DefaultedDeserializer extends JsonDeserializer<Defaulted<?>> implem
     BeanProperty property
   ) {
     JavaType contextType = ctxt.getContextualType();
-    JavaType type = contextType == null && property != null
+    JavaType type = (contextType == null && property != null
       ? property.getType()
-      : contextType;
+      : contextType);
     if (type != null && type.containedTypeCount() > 0) {
       return new DefaultedDeserializer(type.containedType(0), type.getRawClass());
     };

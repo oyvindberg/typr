@@ -6,17 +6,16 @@
 package testdb.mariatest_spatial
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait MariatestSpatialRepo {
   def delete: DeleteBuilder[MariatestSpatialFields, MariatestSpatialRow]
 
-  def deleteById(id: MariatestSpatialId)(using c: Connection): java.lang.Boolean
+  def deleteById(id: MariatestSpatialId)(using c: Connection): Boolean
 
-  def deleteByIds(ids: Array[MariatestSpatialId])(using c: Connection): Integer
+  def deleteByIds(ids: Array[MariatestSpatialId])(using c: Connection): Int
 
   def insert(unsaved: MariatestSpatialRow)(using c: Connection): MariatestSpatialRow
 
@@ -24,19 +23,19 @@ trait MariatestSpatialRepo {
 
   def select: SelectBuilder[MariatestSpatialFields, MariatestSpatialRow]
 
-  def selectAll(using c: Connection): java.util.List[MariatestSpatialRow]
+  def selectAll(using c: Connection): List[MariatestSpatialRow]
 
-  def selectById(id: MariatestSpatialId)(using c: Connection): Optional[MariatestSpatialRow]
+  def selectById(id: MariatestSpatialId)(using c: Connection): Option[MariatestSpatialRow]
 
-  def selectByIds(ids: Array[MariatestSpatialId])(using c: Connection): java.util.List[MariatestSpatialRow]
+  def selectByIds(ids: Array[MariatestSpatialId])(using c: Connection): List[MariatestSpatialRow]
 
-  def selectByIdsTracked(ids: Array[MariatestSpatialId])(using c: Connection): java.util.Map[MariatestSpatialId, MariatestSpatialRow]
+  def selectByIdsTracked(ids: Array[MariatestSpatialId])(using c: Connection): Map[MariatestSpatialId, MariatestSpatialRow]
 
   def update: UpdateBuilder[MariatestSpatialFields, MariatestSpatialRow]
 
-  def update(row: MariatestSpatialRow)(using c: Connection): java.lang.Boolean
+  def update(row: MariatestSpatialRow)(using c: Connection): Boolean
 
   def upsert(unsaved: MariatestSpatialRow)(using c: Connection): MariatestSpatialRow
 
-  def upsertBatch(unsaved: java.util.Iterator[MariatestSpatialRow])(using c: Connection): java.util.List[MariatestSpatialRow]
+  def upsertBatch(unsaved: Iterator[MariatestSpatialRow])(using c: Connection): List[MariatestSpatialRow]
 }

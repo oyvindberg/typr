@@ -5,24 +5,22 @@
  */
 package adventureworks.pr.wr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.location.LocationId;
 import adventureworks.production.workorder.WorkorderId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface WrViewFields extends FieldsExpr<WrViewRow> {
-  record Impl(List<Path> _path) implements WrViewFields, Relation<WrViewFields, WrViewRow> {
+  record Impl(List<Path> _path) implements WrViewFields, RelationStructure<WrViewFields, WrViewRow> {
     @Override
     public Field<WorkorderId, WrViewRow> id() {
       return new Field<WorkorderId, WrViewRow>(_path, "id", WrViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), WorkorderId.pgType);
@@ -39,8 +37,8 @@ public interface WrViewFields extends FieldsExpr<WrViewRow> {
     };
 
     @Override
-    public Field<TypoShort, WrViewRow> operationsequence() {
-      return new Field<TypoShort, WrViewRow>(_path, "operationsequence", WrViewRow::operationsequence, Optional.empty(), Optional.empty(), (row, value) -> row.withOperationsequence(value), TypoShort.pgType);
+    public Field<Short, WrViewRow> operationsequence() {
+      return new Field<Short, WrViewRow>(_path, "operationsequence", WrViewRow::operationsequence, Optional.empty(), Optional.empty(), (row, value) -> row.withOperationsequence(value), PgTypes.int2);
     };
 
     @Override
@@ -49,28 +47,28 @@ public interface WrViewFields extends FieldsExpr<WrViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, WrViewRow> scheduledstartdate() {
-      return new Field<TypoLocalDateTime, WrViewRow>(_path, "scheduledstartdate", WrViewRow::scheduledstartdate, Optional.of("text"), Optional.empty(), (row, value) -> row.withScheduledstartdate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, WrViewRow> scheduledstartdate() {
+      return new Field<LocalDateTime, WrViewRow>(_path, "scheduledstartdate", WrViewRow::scheduledstartdate, Optional.empty(), Optional.empty(), (row, value) -> row.withScheduledstartdate(value), PgTypes.timestamp);
     };
 
     @Override
-    public Field<TypoLocalDateTime, WrViewRow> scheduledenddate() {
-      return new Field<TypoLocalDateTime, WrViewRow>(_path, "scheduledenddate", WrViewRow::scheduledenddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withScheduledenddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, WrViewRow> scheduledenddate() {
+      return new Field<LocalDateTime, WrViewRow>(_path, "scheduledenddate", WrViewRow::scheduledenddate, Optional.empty(), Optional.empty(), (row, value) -> row.withScheduledenddate(value), PgTypes.timestamp);
     };
 
     @Override
-    public OptField<TypoLocalDateTime, WrViewRow> actualstartdate() {
-      return new OptField<TypoLocalDateTime, WrViewRow>(_path, "actualstartdate", WrViewRow::actualstartdate, Optional.of("text"), Optional.empty(), (row, value) -> row.withActualstartdate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, WrViewRow> actualstartdate() {
+      return new Field<LocalDateTime, WrViewRow>(_path, "actualstartdate", WrViewRow::actualstartdate, Optional.empty(), Optional.empty(), (row, value) -> row.withActualstartdate(value), PgTypes.timestamp);
     };
 
     @Override
-    public OptField<TypoLocalDateTime, WrViewRow> actualenddate() {
-      return new OptField<TypoLocalDateTime, WrViewRow>(_path, "actualenddate", WrViewRow::actualenddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withActualenddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, WrViewRow> actualenddate() {
+      return new Field<LocalDateTime, WrViewRow>(_path, "actualenddate", WrViewRow::actualenddate, Optional.empty(), Optional.empty(), (row, value) -> row.withActualenddate(value), PgTypes.timestamp);
     };
 
     @Override
-    public OptField<BigDecimal, WrViewRow> actualresourcehrs() {
-      return new OptField<BigDecimal, WrViewRow>(_path, "actualresourcehrs", WrViewRow::actualresourcehrs, Optional.empty(), Optional.empty(), (row, value) -> row.withActualresourcehrs(value), PgTypes.numeric);
+    public Field<BigDecimal, WrViewRow> actualresourcehrs() {
+      return new Field<BigDecimal, WrViewRow>(_path, "actualresourcehrs", WrViewRow::actualresourcehrs, Optional.empty(), Optional.empty(), (row, value) -> row.withActualresourcehrs(value), PgTypes.numeric);
     };
 
     @Override
@@ -79,28 +77,28 @@ public interface WrViewFields extends FieldsExpr<WrViewRow> {
     };
 
     @Override
-    public OptField<BigDecimal, WrViewRow> actualcost() {
-      return new OptField<BigDecimal, WrViewRow>(_path, "actualcost", WrViewRow::actualcost, Optional.empty(), Optional.empty(), (row, value) -> row.withActualcost(value), PgTypes.numeric);
+    public Field<BigDecimal, WrViewRow> actualcost() {
+      return new Field<BigDecimal, WrViewRow>(_path, "actualcost", WrViewRow::actualcost, Optional.empty(), Optional.empty(), (row, value) -> row.withActualcost(value), PgTypes.numeric);
     };
 
     @Override
-    public Field<TypoLocalDateTime, WrViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, WrViewRow>(_path, "modifieddate", WrViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, WrViewRow> modifieddate() {
+      return new Field<LocalDateTime, WrViewRow>(_path, "modifieddate", WrViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, WrViewRow>> columns() {
-      return List.of(this.id(), this.workorderid(), this.productid(), this.operationsequence(), this.locationid(), this.scheduledstartdate(), this.scheduledenddate(), this.actualstartdate(), this.actualenddate(), this.actualresourcehrs(), this.plannedcost(), this.actualcost(), this.modifieddate());
+      return java.util.List.of(this.id(), this.workorderid(), this.productid(), this.operationsequence(), this.locationid(), this.scheduledstartdate(), this.scheduledenddate(), this.actualstartdate(), this.actualenddate(), this.actualresourcehrs(), this.plannedcost(), this.actualcost(), this.modifieddate());
     };
 
     @Override
-    public Relation<WrViewFields, WrViewRow> copy(List<Path> _path) {
+    public RelationStructure<WrViewFields, WrViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<WorkorderId, WrViewRow> id();
@@ -109,25 +107,25 @@ public interface WrViewFields extends FieldsExpr<WrViewRow> {
 
   Field<Integer, WrViewRow> productid();
 
-  Field<TypoShort, WrViewRow> operationsequence();
+  Field<Short, WrViewRow> operationsequence();
 
   Field<LocationId, WrViewRow> locationid();
 
-  Field<TypoLocalDateTime, WrViewRow> scheduledstartdate();
+  Field<LocalDateTime, WrViewRow> scheduledstartdate();
 
-  Field<TypoLocalDateTime, WrViewRow> scheduledenddate();
+  Field<LocalDateTime, WrViewRow> scheduledenddate();
 
-  OptField<TypoLocalDateTime, WrViewRow> actualstartdate();
+  Field<LocalDateTime, WrViewRow> actualstartdate();
 
-  OptField<TypoLocalDateTime, WrViewRow> actualenddate();
+  Field<LocalDateTime, WrViewRow> actualenddate();
 
-  OptField<BigDecimal, WrViewRow> actualresourcehrs();
+  Field<BigDecimal, WrViewRow> actualresourcehrs();
 
   Field<BigDecimal, WrViewRow> plannedcost();
 
-  OptField<BigDecimal, WrViewRow> actualcost();
+  Field<BigDecimal, WrViewRow> actualcost();
 
-  Field<TypoLocalDateTime, WrViewRow> modifieddate();
+  Field<LocalDateTime, WrViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, WrViewRow>> columns();

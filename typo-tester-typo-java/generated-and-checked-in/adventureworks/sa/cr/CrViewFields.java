@@ -5,30 +5,30 @@
  */
 package adventureworks.sa.cr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.sales.currency.CurrencyId;
 import adventureworks.sales.currencyrate.CurrencyrateId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface CrViewFields extends FieldsExpr<CrViewRow> {
-  record Impl(List<Path> _path) implements CrViewFields, Relation<CrViewFields, CrViewRow> {
+  record Impl(List<Path> _path) implements CrViewFields, RelationStructure<CrViewFields, CrViewRow> {
     @Override
     public Field<CurrencyrateId, CrViewRow> currencyrateid() {
       return new Field<CurrencyrateId, CrViewRow>(_path, "currencyrateid", CrViewRow::currencyrateid, Optional.empty(), Optional.empty(), (row, value) -> row.withCurrencyrateid(value), CurrencyrateId.pgType);
     };
 
     @Override
-    public Field<TypoLocalDateTime, CrViewRow> currencyratedate() {
-      return new Field<TypoLocalDateTime, CrViewRow>(_path, "currencyratedate", CrViewRow::currencyratedate, Optional.of("text"), Optional.empty(), (row, value) -> row.withCurrencyratedate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CrViewRow> currencyratedate() {
+      return new Field<LocalDateTime, CrViewRow>(_path, "currencyratedate", CrViewRow::currencyratedate, Optional.empty(), Optional.empty(), (row, value) -> row.withCurrencyratedate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -52,28 +52,28 @@ public interface CrViewFields extends FieldsExpr<CrViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, CrViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, CrViewRow>(_path, "modifieddate", CrViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CrViewRow> modifieddate() {
+      return new Field<LocalDateTime, CrViewRow>(_path, "modifieddate", CrViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, CrViewRow>> columns() {
-      return List.of(this.currencyrateid(), this.currencyratedate(), this.fromcurrencycode(), this.tocurrencycode(), this.averagerate(), this.endofdayrate(), this.modifieddate());
+      return java.util.List.of(this.currencyrateid(), this.currencyratedate(), this.fromcurrencycode(), this.tocurrencycode(), this.averagerate(), this.endofdayrate(), this.modifieddate());
     };
 
     @Override
-    public Relation<CrViewFields, CrViewRow> copy(List<Path> _path) {
+    public RelationStructure<CrViewFields, CrViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<CurrencyrateId, CrViewRow> currencyrateid();
 
-  Field<TypoLocalDateTime, CrViewRow> currencyratedate();
+  Field<LocalDateTime, CrViewRow> currencyratedate();
 
   Field<CurrencyId, CrViewRow> fromcurrencycode();
 
@@ -83,7 +83,7 @@ public interface CrViewFields extends FieldsExpr<CrViewRow> {
 
   Field<BigDecimal, CrViewRow> endofdayrate();
 
-  Field<TypoLocalDateTime, CrViewRow> modifieddate();
+  Field<LocalDateTime, CrViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, CrViewRow>> columns();

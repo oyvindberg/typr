@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class EphViewRepoImpl implements EphViewRepo {
@@ -19,9 +20,6 @@ public class EphViewRepoImpl implements EphViewRepo {
 
   @Override
   public List<EphViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "businessentityid", "ratechangedate"::text, "rate", "payfrequency", "modifieddate"::text
-       from "hr"."eph"
-    """)).query(EphViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\"\nfrom \"hr\".\"eph\"\n")).query(EphViewRow._rowParser.all()).runUnchecked(c);
   };
 }

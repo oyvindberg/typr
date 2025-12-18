@@ -6,11 +6,12 @@
 package adventureworks.person.businessentity
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: person.businessentity
   * Source of the ID that connects vendors, customers, and employees with address and contact information.
@@ -22,22 +23,22 @@ data class BusinessentityRow(
     */
   val businessentityid: BusinessentityId,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): BusinessentityId = businessentityid
 
   fun toUnsavedRow(
     businessentityid: Defaulted<BusinessentityId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): BusinessentityRowUnsaved = BusinessentityRowUnsaved(businessentityid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<BusinessentityRow> = RowParsers.of(BusinessentityId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> BusinessentityRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<BusinessentityRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2 -> BusinessentityRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<BusinessentityRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

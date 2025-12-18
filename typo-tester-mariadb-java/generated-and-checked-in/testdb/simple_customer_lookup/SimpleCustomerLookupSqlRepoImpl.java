@@ -7,6 +7,7 @@ package testdb.simple_customer_lookup;
 
 import java.sql.Connection;
 import java.util.List;
+import typo.runtime.Fragment;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -16,23 +17,6 @@ public class SimpleCustomerLookupSqlRepoImpl implements SimpleCustomerLookupSqlR
     String email,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         -- Simple customer lookup by email
-         SELECT customer_id,
-                email,
-                first_name,
-                last_name,
-                tier,
-                status,
-                created_at
-         FROM customers
-         WHERE email = """),
-      MariaTypes.text.encode(email),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(SimpleCustomerLookupSqlRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("-- Simple customer lookup by email\nSELECT customer_id,\n       email,\n       first_name,\n       last_name,\n       tier,\n       status,\n       created_at\nFROM customers\nWHERE email = "), Fragment.encode(MariaTypes.varchar, email), Fragment.lit("\n")).query(SimpleCustomerLookupSqlRow._rowParser.all()).runUnchecked(c);
   };
 }

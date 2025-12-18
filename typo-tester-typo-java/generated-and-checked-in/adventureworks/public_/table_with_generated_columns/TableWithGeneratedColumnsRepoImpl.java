@@ -17,10 +17,8 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColumnsRepo {
   @Override
@@ -33,13 +31,7 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     TableWithGeneratedColumnsId name,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "public"."table-with-generated-columns" where "name" = 
-      """),
-      TableWithGeneratedColumnsId.pgType.encode(name),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"public\".\"table-with-generated-columns\" where \"name\" = "), Fragment.encode(TableWithGeneratedColumnsId.pgType, name), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -47,14 +39,7 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     TableWithGeneratedColumnsId[] names,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "public"."table-with-generated-columns"
-                  where "name" = ANY("""),
-               TableWithGeneratedColumnsId.pgTypeArray.encode(names),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"public\".\"table-with-generated-columns\"\nwhere \"name\" = ANY("), Fragment.encode(TableWithGeneratedColumnsId.pgTypeArray, names), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -64,16 +49,7 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     TableWithGeneratedColumnsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."table-with-generated-columns"("name")
-         values ("""),
-      TableWithGeneratedColumnsId.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "name", "name-type-always"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"table-with-generated-columns\"(\"name\")\nvalues ("), Fragment.encode(TableWithGeneratedColumnsId.pgType, unsaved.name()), Fragment.lit(")\nreturning \"name\", \"name-type-always\"\n"))
       .updateReturning(TableWithGeneratedColumnsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -82,28 +58,11 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     TableWithGeneratedColumnsRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      TableWithGeneratedColumnsId.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "public"."table-with-generated-columns"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "name", "name-type-always"
-      """)
-    );;
+    values.add(interpolate(Fragment.encode(TableWithGeneratedColumnsId.pgType, unsaved.name()), Fragment.lit("")));
+    Fragment q = interpolate(Fragment.lit("insert into \"public\".\"table-with-generated-columns\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"name\", \"name-type-always\"\n"));;
     return q.updateReturning(TableWithGeneratedColumnsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -113,9 +72,7 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "public"."table-with-generated-columns"("name") FROM STDIN
-    """), batchSize, unsaved, c, TableWithGeneratedColumnsRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"public\".\"table-with-generated-columns\"(\"name\") FROM STDIN", batchSize, unsaved, c, TableWithGeneratedColumnsRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -125,9 +82,7 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "public"."table-with-generated-columns"("name") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, TableWithGeneratedColumnsRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"public\".\"table-with-generated-columns\"(\"name\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, TableWithGeneratedColumnsRowUnsaved.pgText);
   };
 
   @Override
@@ -137,10 +92,7 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
 
   @Override
   public List<TableWithGeneratedColumnsRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "name", "name-type-always"
-       from "public"."table-with-generated-columns"
-    """)).query(TableWithGeneratedColumnsRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"name\", \"name-type-always\"\nfrom \"public\".\"table-with-generated-columns\"\n")).query(TableWithGeneratedColumnsRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -148,14 +100,7 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     TableWithGeneratedColumnsId name,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "name", "name-type-always"
-         from "public"."table-with-generated-columns"
-         where "name" = """),
-      TableWithGeneratedColumnsId.pgType.encode(name),
-      typo.runtime.Fragment.lit("")
-    ).query(TableWithGeneratedColumnsRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"name\", \"name-type-always\"\nfrom \"public\".\"table-with-generated-columns\"\nwhere \"name\" = "), Fragment.encode(TableWithGeneratedColumnsId.pgType, name), Fragment.lit("")).query(TableWithGeneratedColumnsRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -163,14 +108,7 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     TableWithGeneratedColumnsId[] names,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "name", "name-type-always"
-         from "public"."table-with-generated-columns"
-         where "name" = ANY("""),
-      TableWithGeneratedColumnsId.pgTypeArray.encode(names),
-      typo.runtime.Fragment.lit(")")
-    ).query(TableWithGeneratedColumnsRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"name\", \"name-type-always\"\nfrom \"public\".\"table-with-generated-columns\"\nwhere \"name\" = ANY("), Fragment.encode(TableWithGeneratedColumnsId.pgTypeArray, names), Fragment.lit(")")).query(TableWithGeneratedColumnsRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -185,7 +123,7 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
 
   @Override
   public UpdateBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> update() {
-    return UpdateBuilder.of("\"public\".\"table-with-generated-columns\"", TableWithGeneratedColumnsFields.structure(), TableWithGeneratedColumnsRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"public\".\"table-with-generated-columns\"", TableWithGeneratedColumnsFields.structure(), TableWithGeneratedColumnsRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -193,17 +131,7 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     TableWithGeneratedColumnsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."table-with-generated-columns"("name")
-         values ("""),
-      TableWithGeneratedColumnsId.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-         )
-         on conflict ("name")
-         do update set "name" = EXCLUDED."name"
-         returning "name", "name-type-always\"""")
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"table-with-generated-columns\"(\"name\")\nvalues ("), Fragment.encode(TableWithGeneratedColumnsId.pgType, unsaved.name()), Fragment.lit(")\non conflict (\"name\")\ndo update set \"name\" = EXCLUDED.\"name\"\nreturning \"name\", \"name-type-always\""))
       .updateReturning(TableWithGeneratedColumnsRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -213,14 +141,9 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     Iterator<TableWithGeneratedColumnsRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "public"."table-with-generated-columns"("name")
-                values (?)
-                on conflict ("name")
-                do update set "name" = EXCLUDED."name"
-                returning "name", "name-type-always\""""))
+    return interpolate(Fragment.lit("insert into \"public\".\"table-with-generated-columns\"(\"name\")\nvalues (?)\non conflict (\"name\")\ndo update set \"name\" = EXCLUDED.\"name\"\nreturning \"name\", \"name-type-always\""))
       .updateManyReturning(TableWithGeneratedColumnsRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -230,18 +153,8 @@ public class TableWithGeneratedColumnsRepoImpl implements TableWithGeneratedColu
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table table-with-generated-columns_TEMP (like "public"."table-with-generated-columns") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy table-with-generated-columns_TEMP("name") from stdin
-    """), batchSize, unsaved, c, TableWithGeneratedColumnsRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "public"."table-with-generated-columns"("name")
-       select * from table-with-generated-columns_TEMP
-       on conflict ("name")
-       do nothing
-       ;
-       drop table table-with-generated-columns_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table table-with-generated-columns_TEMP (like \"public\".\"table-with-generated-columns\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy table-with-generated-columns_TEMP(\"name\") from stdin", batchSize, unsaved, c, TableWithGeneratedColumnsRow.pgText);
+    return interpolate(Fragment.lit("insert into \"public\".\"table-with-generated-columns\"(\"name\")\nselect * from table-with-generated-columns_TEMP\non conflict (\"name\")\ndo nothing\n;\ndrop table table-with-generated-columns_TEMP;")).update().runUnchecked(c);
   };
 }

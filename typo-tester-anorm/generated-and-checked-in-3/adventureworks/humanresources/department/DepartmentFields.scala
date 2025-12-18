@@ -8,10 +8,10 @@ package adventureworks.humanresources.department
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait DepartmentFields {
   def departmentid: IdField[DepartmentId, DepartmentRow]
@@ -21,11 +21,11 @@ trait DepartmentFields {
 }
 
 object DepartmentFields {
-  lazy val structure: Relation[DepartmentFields, DepartmentRow] =
+  lazy val structure: RelationStructure[DepartmentFields, DepartmentRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[DepartmentFields, DepartmentRow] {
+    extends RelationStructure[DepartmentFields, DepartmentRow] {
 
     override lazy val fields: DepartmentFields = new DepartmentFields {
       override def departmentid = IdField[DepartmentId, DepartmentRow](_path, "departmentid", None, Some("int4"), x => x.departmentid, (row, value) => row.copy(departmentid = value))

@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PersonFields extends FieldsExpr<PersonRow> {
-  record Impl(List<Path> _path) implements PersonFields, Relation<PersonFields, PersonRow> {
+  record Impl(List<Path> _path) implements PersonFields, RelationStructure<PersonFields, PersonRow> {
     @Override
     public IdField<Long, PersonRow> one() {
       return new IdField<Long, PersonRow>(_path, "one", PersonRow::one, Optional.empty(), Optional.of("int8"), (row, value) -> row.withOne(value), PgTypes.int8);
@@ -35,17 +35,17 @@ public interface PersonFields extends FieldsExpr<PersonRow> {
 
     @Override
     public List<FieldLike<?, PersonRow>> columns() {
-      return List.of(this.one(), this.two(), this.name());
+      return java.util.List.of(this.one(), this.two(), this.name());
     };
 
     @Override
-    public Relation<PersonFields, PersonRow> copy(List<Path> _path) {
+    public RelationStructure<PersonFields, PersonRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<Long, PersonRow> one();

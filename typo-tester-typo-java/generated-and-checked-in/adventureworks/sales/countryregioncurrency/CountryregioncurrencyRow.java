@@ -6,10 +6,11 @@
 package adventureworks.sales.countryregioncurrency;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.sales.currency.CurrencyId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -27,7 +28,7 @@ public record CountryregioncurrencyRow(
     */
   CurrencyId currencycode,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** ISO code for countries and regions. Foreign key to CountryRegion.CountryRegionCode.
     * Points to {@link adventureworks.person.countryregion.CountryregionRow#countryregioncode()}
@@ -44,15 +45,15 @@ public record CountryregioncurrencyRow(
   };
 
   /** Default: now() */
-  public CountryregioncurrencyRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CountryregioncurrencyRow withModifieddate(LocalDateTime modifieddate) {
     return new CountryregioncurrencyRow(countryregioncode, currencycode, modifieddate);
   };
 
-  static RowParser<CountryregioncurrencyRow> _rowParser = RowParsers.of(CountryregionId.pgType, CurrencyId.pgType, TypoLocalDateTime.pgType, CountryregioncurrencyRow::new, row -> new Object[]{row.countryregioncode(), row.currencycode(), row.modifieddate()});;
+  static RowParser<CountryregioncurrencyRow> _rowParser = RowParsers.of(CountryregionId.pgType, CurrencyId.pgType, PgTypes.timestamp, CountryregioncurrencyRow::new, row -> new Object[]{row.countryregioncode(), row.currencycode(), row.modifieddate()});;
 
   static public CountryregioncurrencyRow apply(
     CountryregioncurrencyId compositeId,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new CountryregioncurrencyRow(compositeId.countryregioncode(), compositeId.currencycode(), modifieddate);
   };
@@ -68,7 +69,7 @@ public record CountryregioncurrencyRow(
     return this.compositeId();
   };
 
-  public CountryregioncurrencyRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public CountryregioncurrencyRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new CountryregioncurrencyRowUnsaved(countryregioncode, currencycode, modifieddate);
   };
 }

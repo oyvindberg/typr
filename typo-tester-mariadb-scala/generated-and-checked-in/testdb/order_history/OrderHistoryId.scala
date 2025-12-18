@@ -7,9 +7,9 @@ package testdb.order_history
 
 import com.fasterxml.jackson.annotation.JsonValue
 import java.math.BigInteger
-import typo.dsl.Bijection
 import typo.runtime.MariaType
 import typo.runtime.MariaTypes
+import typo.scaladsl.Bijection
 
 /** Type for the primary key of table `order_history` */
 case class OrderHistoryId(@JsonValue value: BigInteger) extends scala.AnyVal

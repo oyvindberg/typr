@@ -7,14 +7,15 @@ package testdb.inventory
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: inventory
  * Primary key: inventory_id
@@ -35,31 +36,31 @@ case class InventoryRow(
   /** 
    * Default: 0
    */
-  @JsonProperty("quantity_on_hand") quantityOnHand: Integer,
+  @JsonProperty("quantity_on_hand") quantityOnHand: Int,
   /** 
    * Default: 0
    */
-  @JsonProperty("quantity_reserved") quantityReserved: Integer,
+  @JsonProperty("quantity_reserved") quantityReserved: Int,
   /** 
    * Default: 0
    */
-  @JsonProperty("quantity_on_order") quantityOnOrder: Integer,
+  @JsonProperty("quantity_on_order") quantityOnOrder: Int,
   /** 
    * Default: 0
    */
-  @JsonProperty("reorder_point") reorderPoint: Integer,
+  @JsonProperty("reorder_point") reorderPoint: Int,
   /** 
    * Default: 0
    */
-  @JsonProperty("reorder_quantity") reorderQuantity: Integer,
+  @JsonProperty("reorder_quantity") reorderQuantity: Int,
   /** 
    * Default: NULL
    */
-  @JsonProperty("bin_location") binLocation: Optional[String],
+  @JsonProperty("bin_location") binLocation: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("last_counted_at") lastCountedAt: Optional[LocalDateTime],
+  @JsonProperty("last_counted_at") lastCountedAt: Option[LocalDateTime],
   /** 
    * Default: current_timestamp(6)
    */
@@ -68,13 +69,13 @@ case class InventoryRow(
   def id: InventoryId = inventoryId
 
   def toUnsavedRow(
-    quantityOnHand: Defaulted[Integer] = Defaulted.Provided(this.quantityOnHand),
-    quantityReserved: Defaulted[Integer] = Defaulted.Provided(this.quantityReserved),
-    quantityOnOrder: Defaulted[Integer] = Defaulted.Provided(this.quantityOnOrder),
-    reorderPoint: Defaulted[Integer] = Defaulted.Provided(this.reorderPoint),
-    reorderQuantity: Defaulted[Integer] = Defaulted.Provided(this.reorderQuantity),
-    binLocation: Defaulted[Optional[String]] = Defaulted.Provided(this.binLocation),
-    lastCountedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.lastCountedAt),
+    quantityOnHand: Defaulted[Int] = Defaulted.Provided(this.quantityOnHand),
+    quantityReserved: Defaulted[Int] = Defaulted.Provided(this.quantityReserved),
+    quantityOnOrder: Defaulted[Int] = Defaulted.Provided(this.quantityOnOrder),
+    reorderPoint: Defaulted[Int] = Defaulted.Provided(this.reorderPoint),
+    reorderQuantity: Defaulted[Int] = Defaulted.Provided(this.reorderQuantity),
+    binLocation: Defaulted[Option[String]] = Defaulted.Provided(this.binLocation),
+    lastCountedAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.lastCountedAt),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.updatedAt)
   ): InventoryRowUnsaved = {
     new InventoryRowUnsaved(
@@ -93,7 +94,7 @@ case class InventoryRow(
 }
 
 object InventoryRow {
-  val `_rowParser`: RowParser[InventoryRow] = RowParsers.of(InventoryId.pgType, ProductsId.pgType, WarehousesId.pgType, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.varchar.opt(), MariaTypes.datetime.opt(), MariaTypes.datetime, InventoryRow.apply, row => Array[Object](row.inventoryId.asInstanceOf[Object], row.productId.asInstanceOf[Object], row.warehouseId.asInstanceOf[Object], row.quantityOnHand.asInstanceOf[Object], row.quantityReserved.asInstanceOf[Object], row.quantityOnOrder.asInstanceOf[Object], row.reorderPoint.asInstanceOf[Object], row.reorderQuantity.asInstanceOf[Object], row.binLocation.asInstanceOf[Object], row.lastCountedAt.asInstanceOf[Object], row.updatedAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[InventoryRow] = RowParsers.of(InventoryId.pgType, ProductsId.pgType, WarehousesId.pgType, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, MariaTypes.varchar.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime)(InventoryRow.apply)(row => Array[Any](row.inventoryId, row.productId, row.warehouseId, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.reorderPoint, row.reorderQuantity, row.binLocation, row.lastCountedAt, row.updatedAt))
 
-  given mariaText: MariaText[InventoryRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[InventoryRow] = MariaText.from(`_rowParser`.underlying)
 }

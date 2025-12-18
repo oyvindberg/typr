@@ -5,13 +5,11 @@
  */
 package adventureworks.pu.poh;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId;
 import adventureworks.purchasing.shipmethod.ShipmethodId;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -23,9 +21,9 @@ public record PohViewRow(
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#purchaseorderid()} */
   PurchaseorderheaderId purchaseorderid,
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#revisionnumber()} */
-  TypoShort revisionnumber,
+  Short revisionnumber,
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#status()} */
-  TypoShort status,
+  Short status,
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#employeeid()} */
   BusinessentityId employeeid,
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#vendorid()} */
@@ -33,9 +31,9 @@ public record PohViewRow(
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#shipmethodid()} */
   ShipmethodId shipmethodid,
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#orderdate()} */
-  TypoLocalDateTime orderdate,
+  LocalDateTime orderdate,
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#shipdate()} */
-  Optional<TypoLocalDateTime> shipdate,
+  LocalDateTime shipdate,
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#subtotal()} */
   BigDecimal subtotal,
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#taxamt()} */
@@ -43,7 +41,7 @@ public record PohViewRow(
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#freight()} */
   BigDecimal freight,
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#purchaseorderid()} */
   public PohViewRow withId(PurchaseorderheaderId id) {
@@ -56,12 +54,12 @@ public record PohViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#revisionnumber()} */
-  public PohViewRow withRevisionnumber(TypoShort revisionnumber) {
+  public PohViewRow withRevisionnumber(Short revisionnumber) {
     return new PohViewRow(id, purchaseorderid, revisionnumber, status, employeeid, vendorid, shipmethodid, orderdate, shipdate, subtotal, taxamt, freight, modifieddate);
   };
 
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#status()} */
-  public PohViewRow withStatus(TypoShort status) {
+  public PohViewRow withStatus(Short status) {
     return new PohViewRow(id, purchaseorderid, revisionnumber, status, employeeid, vendorid, shipmethodid, orderdate, shipdate, subtotal, taxamt, freight, modifieddate);
   };
 
@@ -81,12 +79,12 @@ public record PohViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#orderdate()} */
-  public PohViewRow withOrderdate(TypoLocalDateTime orderdate) {
+  public PohViewRow withOrderdate(LocalDateTime orderdate) {
     return new PohViewRow(id, purchaseorderid, revisionnumber, status, employeeid, vendorid, shipmethodid, orderdate, shipdate, subtotal, taxamt, freight, modifieddate);
   };
 
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#shipdate()} */
-  public PohViewRow withShipdate(Optional<TypoLocalDateTime> shipdate) {
+  public PohViewRow withShipdate(LocalDateTime shipdate) {
     return new PohViewRow(id, purchaseorderid, revisionnumber, status, employeeid, vendorid, shipmethodid, orderdate, shipdate, subtotal, taxamt, freight, modifieddate);
   };
 
@@ -106,9 +104,9 @@ public record PohViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#modifieddate()} */
-  public PohViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PohViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PohViewRow(id, purchaseorderid, revisionnumber, status, employeeid, vendorid, shipmethodid, orderdate, shipdate, subtotal, taxamt, freight, modifieddate);
   };
 
-  static RowParser<PohViewRow> _rowParser = RowParsers.of(PurchaseorderheaderId.pgType, PurchaseorderheaderId.pgType, TypoShort.pgType, TypoShort.pgType, BusinessentityId.pgType, BusinessentityId.pgType, ShipmethodId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, PohViewRow::new, row -> new Object[]{row.id(), row.purchaseorderid(), row.revisionnumber(), row.status(), row.employeeid(), row.vendorid(), row.shipmethodid(), row.orderdate(), row.shipdate(), row.subtotal(), row.taxamt(), row.freight(), row.modifieddate()});;
+  static RowParser<PohViewRow> _rowParser = RowParsers.of(PurchaseorderheaderId.pgType, PurchaseorderheaderId.pgType, PgTypes.int2, PgTypes.int2, BusinessentityId.pgType, BusinessentityId.pgType, ShipmethodId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, PohViewRow::new, row -> new Object[]{row.id(), row.purchaseorderid(), row.revisionnumber(), row.status(), row.employeeid(), row.vendorid(), row.shipmethodid(), row.orderdate(), row.shipdate(), row.subtotal(), row.taxamt(), row.freight(), row.modifieddate()});;
 }

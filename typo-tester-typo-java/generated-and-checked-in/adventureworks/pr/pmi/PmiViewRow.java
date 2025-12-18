@@ -5,9 +5,10 @@
  */
 package adventureworks.pr.pmi;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.illustration.IllustrationId;
 import adventureworks.production.productmodel.ProductmodelId;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -18,7 +19,7 @@ public record PmiViewRow(
   /** Points to {@link adventureworks.production.productmodelillustration.ProductmodelillustrationRow#illustrationid()} */
   IllustrationId illustrationid,
   /** Points to {@link adventureworks.production.productmodelillustration.ProductmodelillustrationRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productmodelillustration.ProductmodelillustrationRow#productmodelid()} */
   public PmiViewRow withProductmodelid(ProductmodelId productmodelid) {
@@ -31,9 +32,9 @@ public record PmiViewRow(
   };
 
   /** Points to {@link adventureworks.production.productmodelillustration.ProductmodelillustrationRow#modifieddate()} */
-  public PmiViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PmiViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PmiViewRow(productmodelid, illustrationid, modifieddate);
   };
 
-  static RowParser<PmiViewRow> _rowParser = RowParsers.of(ProductmodelId.pgType, IllustrationId.pgType, TypoLocalDateTime.pgType, PmiViewRow::new, row -> new Object[]{row.productmodelid(), row.illustrationid(), row.modifieddate()});;
+  static RowParser<PmiViewRow> _rowParser = RowParsers.of(ProductmodelId.pgType, IllustrationId.pgType, PgTypes.timestamp, PmiViewRow::new, row -> new Object[]{row.productmodelid(), row.illustrationid(), row.modifieddate()});;
 }

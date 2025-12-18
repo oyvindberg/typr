@@ -5,11 +5,12 @@
  */
 package adventureworks.sa.cu
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import adventureworks.sales.currency.CurrencyId
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: sa.cu */
 data class CuViewRow(
@@ -20,9 +21,9 @@ data class CuViewRow(
   /** Points to [adventureworks.sales.currency.CurrencyRow.name] */
   val name: Name,
   /** Points to [adventureworks.sales.currency.CurrencyRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<CuViewRow> = RowParsers.of(CurrencyId.pgType, CurrencyId.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> CuViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.currencycode, row.name, row.modifieddate) })
+    val _rowParser: RowParser<CuViewRow> = RowParsers.of(CurrencyId.pgType, CurrencyId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> CuViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.currencycode, row.name, row.modifieddate) })
   }
 }

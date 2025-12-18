@@ -5,10 +5,11 @@
  */
 package adventureworks.pe.pp;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.phonenumbertype.PhonenumbertypeId;
 import adventureworks.public_.Phone;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -23,7 +24,7 @@ public record PpViewRow(
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#phonenumbertypeid()} */
   PhonenumbertypeId phonenumbertypeid,
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#businessentityid()} */
   public PpViewRow withId(BusinessentityId id) {
@@ -46,9 +47,9 @@ public record PpViewRow(
   };
 
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#modifieddate()} */
-  public PpViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PpViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PpViewRow(id, businessentityid, phonenumber, phonenumbertypeid, modifieddate);
   };
 
-  static RowParser<PpViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, Phone.pgType, PhonenumbertypeId.pgType, TypoLocalDateTime.pgType, PpViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.phonenumber(), row.phonenumbertypeid(), row.modifieddate()});;
+  static RowParser<PpViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, Phone.pgType, PhonenumbertypeId.pgType, PgTypes.timestamp, PpViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.phonenumber(), row.phonenumbertypeid(), row.modifieddate()});;
 }

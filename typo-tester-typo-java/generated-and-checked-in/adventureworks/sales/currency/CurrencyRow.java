@@ -6,9 +6,10 @@
 package adventureworks.sales.currency;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -22,7 +23,7 @@ public record CurrencyRow(
   /** Currency name. */
   Name name,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** The ISO code for the Currency. */
   public CurrencyRow withCurrencycode(CurrencyId currencycode) {
@@ -35,11 +36,11 @@ public record CurrencyRow(
   };
 
   /** Default: now() */
-  public CurrencyRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CurrencyRow withModifieddate(LocalDateTime modifieddate) {
     return new CurrencyRow(currencycode, name, modifieddate);
   };
 
-  static RowParser<CurrencyRow> _rowParser = RowParsers.of(CurrencyId.pgType, Name.pgType, TypoLocalDateTime.pgType, CurrencyRow::new, row -> new Object[]{row.currencycode(), row.name(), row.modifieddate()});;
+  static RowParser<CurrencyRow> _rowParser = RowParsers.of(CurrencyId.pgType, Name.pgType, PgTypes.timestamp, CurrencyRow::new, row -> new Object[]{row.currencycode(), row.name(), row.modifieddate()});;
 
   static public PgText<CurrencyRow> pgText =
     PgText.from(_rowParser);
@@ -48,7 +49,7 @@ public record CurrencyRow(
     return currencycode;
   };
 
-  public CurrencyRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public CurrencyRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new CurrencyRowUnsaved(currencycode, name, modifieddate);
   };
 }

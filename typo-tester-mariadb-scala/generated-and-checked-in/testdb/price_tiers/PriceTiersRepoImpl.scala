@@ -6,52 +6,50 @@
 package testdb.price_tiers
 
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import scala.collection.mutable.ListBuffer
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.Dialect
+import typo.scaladsl.Fragment
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.Fragment.sql
 
 class PriceTiersRepoImpl extends PriceTiersRepo {
   override def delete: DeleteBuilder[PriceTiersFields, PriceTiersRow] = DeleteBuilder.of("`price_tiers`", PriceTiersFields.structure, Dialect.MARIADB)
 
-  override def deleteById(tierId: PriceTiersId)(using c: Connection): java.lang.Boolean = interpolate"delete from `price_tiers` where `tier_id` = ${PriceTiersId.pgType.encode(tierId)}".update().runUnchecked(c) > 0
+  override def deleteById(tierId: PriceTiersId)(using c: Connection): Boolean = sql"delete from `price_tiers` where `tier_id` = ${Fragment.encode(PriceTiersId.pgType, tierId)}".update().runUnchecked(c) > 0
 
-  override def deleteByIds(tierIds: Array[PriceTiersId])(using c: Connection): Integer = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    tierIds.foreach { id => fragments.add(PriceTiersId.pgType.encode(id)) }
+  override def deleteByIds(tierIds: Array[PriceTiersId])(using c: Connection): Int = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    tierIds.foreach { id => fragments.addOne(Fragment.encode(PriceTiersId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `price_tiers` where `tier_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: PriceTiersRow)(using c: Connection): PriceTiersRow = {
-  interpolate"""insert into `price_tiers`(`name`, `min_quantity`, `discount_type`, `discount_value`)
-    values (${MariaTypes.text.encode(unsaved.name)}, ${MariaTypes.bigint.encode(unsaved.minQuantity)}, ${MariaTypes.text.encode(unsaved.discountType)}, ${MariaTypes.numeric.encode(unsaved.discountValue)})
+  sql"""insert into `price_tiers`(`name`, `min_quantity`, `discount_type`, `discount_value`)
+    values (${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, unsaved.minQuantity)}, ${Fragment.encode(MariaTypes.text, unsaved.discountType)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.discountValue)})
     returning `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`
     """
     .updateReturning(PriceTiersRow.`_rowParser`.exactlyOne()).runUnchecked(c)
   }
 
   override def insert(unsaved: PriceTiersRowUnsaved)(using c: Connection): PriceTiersRow = {
-    val columns: ArrayList[Literal] = new ArrayList[Literal]()
-    val values: ArrayList[Fragment] = new ArrayList[Fragment]()
-    columns.add(Fragment.lit("`name`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.name)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`discount_type`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.discountType)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`discount_value`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.numeric.encode(unsaved.discountValue)}"): @scala.annotation.nowarn
+    val columns: ListBuffer[Fragment] = ListBuffer()
+    val values: ListBuffer[Fragment] = ListBuffer()
+    columns.addOne(Fragment.lit("`name`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.name)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`discount_type`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.text, unsaved.discountType)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`discount_value`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.discountValue)}"): @scala.annotation.nowarn
     unsaved.minQuantity.visit(
       {  },
-      value => { columns.add(Fragment.lit("`min_quantity`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.bigint.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`min_quantity`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, value)}"): @scala.annotation.nowarn }
     );
     val q: Fragment = {
-      interpolate"""insert into `price_tiers`(${Fragment.comma(columns)})
+      sql"""insert into `price_tiers`(${Fragment.comma(columns)})
       values (${Fragment.comma(values)})
       returning `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`
       """
@@ -61,45 +59,45 @@ class PriceTiersRepoImpl extends PriceTiersRepo {
 
   override def select: SelectBuilder[PriceTiersFields, PriceTiersRow] = SelectBuilder.of("`price_tiers`", PriceTiersFields.structure, PriceTiersRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[PriceTiersRow] = {
-    interpolate"""select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`
+  override def selectAll(using c: Connection): List[PriceTiersRow] = {
+    sql"""select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`
     from `price_tiers`
     """.query(PriceTiersRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectById(tierId: PriceTiersId)(using c: Connection): Optional[PriceTiersRow] = {
-    interpolate"""select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`
+  override def selectById(tierId: PriceTiersId)(using c: Connection): Option[PriceTiersRow] = {
+    sql"""select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`
     from `price_tiers`
-    where `tier_id` = ${PriceTiersId.pgType.encode(tierId)}""".query(PriceTiersRow.`_rowParser`.first()).runUnchecked(c)
+    where `tier_id` = ${Fragment.encode(PriceTiersId.pgType, tierId)}""".query(PriceTiersRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def selectByIds(tierIds: Array[PriceTiersId])(using c: Connection): java.util.List[PriceTiersRow] = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    tierIds.foreach { id => fragments.add(PriceTiersId.pgType.encode(id)) }
+  override def selectByIds(tierIds: Array[PriceTiersId])(using c: Connection): List[PriceTiersRow] = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    tierIds.foreach { id => fragments.addOne(Fragment.encode(PriceTiersId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value` from `price_tiers` where `tier_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(PriceTiersRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectByIdsTracked(tierIds: Array[PriceTiersId])(using c: Connection): java.util.Map[PriceTiersId, PriceTiersRow] = {
-    val ret: HashMap[PriceTiersId, PriceTiersRow] = new HashMap[PriceTiersId, PriceTiersRow]()
-    selectByIds(tierIds)(using c).forEach(row => ret.put(row.tierId, row): @scala.annotation.nowarn)
-    return ret
+  override def selectByIdsTracked(tierIds: Array[PriceTiersId])(using c: Connection): Map[PriceTiersId, PriceTiersRow] = {
+    val ret: scala.collection.mutable.Map[PriceTiersId, PriceTiersRow] = scala.collection.mutable.Map.empty[PriceTiersId, PriceTiersRow]
+    selectByIds(tierIds)(using c).foreach(row => ret.put(row.tierId, row): @scala.annotation.nowarn)
+    return ret.toMap
   }
 
-  override def update: UpdateBuilder[PriceTiersFields, PriceTiersRow] = UpdateBuilder.of("`price_tiers`", PriceTiersFields.structure, PriceTiersRow.`_rowParser`.all(), Dialect.MARIADB)
+  override def update: UpdateBuilder[PriceTiersFields, PriceTiersRow] = UpdateBuilder.of("`price_tiers`", PriceTiersFields.structure, PriceTiersRow.`_rowParser`, Dialect.MARIADB)
 
-  override def update(row: PriceTiersRow)(using c: Connection): java.lang.Boolean = {
+  override def update(row: PriceTiersRow)(using c: Connection): Boolean = {
     val tierId: PriceTiersId = row.tierId
-    return interpolate"""update `price_tiers`
-    set `name` = ${MariaTypes.text.encode(row.name)},
-    `min_quantity` = ${MariaTypes.bigint.encode(row.minQuantity)},
-    `discount_type` = ${MariaTypes.text.encode(row.discountType)},
-    `discount_value` = ${MariaTypes.numeric.encode(row.discountValue)}
-    where `tier_id` = ${PriceTiersId.pgType.encode(tierId)}""".update().runUnchecked(c) > 0
+    return sql"""update `price_tiers`
+    set `name` = ${Fragment.encode(MariaTypes.varchar, row.name)},
+    `min_quantity` = ${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, row.minQuantity)},
+    `discount_type` = ${Fragment.encode(MariaTypes.text, row.discountType)},
+    `discount_value` = ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, row.discountValue)}
+    where `tier_id` = ${Fragment.encode(PriceTiersId.pgType, tierId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: PriceTiersRow)(using c: Connection): PriceTiersRow = {
-  interpolate"""INSERT INTO `price_tiers`(`name`, `min_quantity`, `discount_type`, `discount_value`)
-    VALUES (${MariaTypes.text.encode(unsaved.name)}, ${MariaTypes.bigint.encode(unsaved.minQuantity)}, ${MariaTypes.text.encode(unsaved.discountType)}, ${MariaTypes.numeric.encode(unsaved.discountValue)})
+  sql"""INSERT INTO `price_tiers`(`name`, `min_quantity`, `discount_type`, `discount_value`)
+    VALUES (${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, unsaved.minQuantity)}, ${Fragment.encode(MariaTypes.text, unsaved.discountType)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.discountValue)})
     ON DUPLICATE KEY UPDATE `name` = VALUES(`name`),
     `min_quantity` = VALUES(`min_quantity`),
     `discount_type` = VALUES(`discount_type`),
@@ -109,8 +107,8 @@ class PriceTiersRepoImpl extends PriceTiersRepo {
     .runUnchecked(c)
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[PriceTiersRow])(using c: Connection): java.util.List[PriceTiersRow] = {
-    interpolate"""INSERT INTO `price_tiers`(`tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`)
+  override def upsertBatch(unsaved: Iterator[PriceTiersRow])(using c: Connection): List[PriceTiersRow] = {
+    sql"""INSERT INTO `price_tiers`(`tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`)
     VALUES (?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE `name` = VALUES(`name`),
     `min_quantity` = VALUES(`min_quantity`),
@@ -118,6 +116,6 @@ class PriceTiersRepoImpl extends PriceTiersRepo {
     `discount_value` = VALUES(`discount_value`)
     RETURNING `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`"""
       .updateReturningEach(PriceTiersRow.`_rowParser`, unsaved)
-      .runUnchecked(c)
+    .runUnchecked(c)
   }
 }

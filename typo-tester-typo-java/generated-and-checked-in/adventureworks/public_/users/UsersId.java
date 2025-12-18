@@ -5,15 +5,16 @@
  */
 package adventureworks.public_.users;
 
-import adventureworks.customtypes.TypoUUID;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
 import typo.dsl.Bijection;
 import typo.runtime.PgType;
+import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 
 /** Type for the primary key of table `public.users` */
-public record UsersId(@JsonValue TypoUUID value) {
-  public UsersId withValue(TypoUUID value) {
+public record UsersId(@JsonValue UUID value) {
+  public UsersId withValue(UUID value) {
     return new UsersId(value);
   };
 
@@ -22,12 +23,12 @@ public record UsersId(@JsonValue TypoUUID value) {
     return value.toString();
   };
 
-  static public Bijection<UsersId, TypoUUID> bijection =
+  static public Bijection<UsersId, UUID> bijection =
     Bijection.of(UsersId::value, UsersId::new);
 
   static public PgType<UsersId> pgType =
-    TypoUUID.pgType.bimap(UsersId::new, UsersId::value);
+    PgTypes.uuid.bimap(UsersId::new, UsersId::value);
 
   static public PgType<UsersId[]> pgTypeArray =
-    TypoUUID.pgTypeArray.bimap(xs -> arrayMap.map(xs, UsersId::new, UsersId.class), xs -> arrayMap.map(xs, UsersId::value, TypoUUID.class));
+    PgTypes.uuidArray.bimap(xs -> arrayMap.map(xs, UsersId::new, UsersId.class), xs -> arrayMap.map(xs, UsersId::value, UUID.class));
 }

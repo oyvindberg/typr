@@ -5,20 +5,21 @@
  */
 package adventureworks.pr.c;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.culture.CultureId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface CViewFields extends FieldsExpr<CViewRow> {
-  record Impl(List<Path> _path) implements CViewFields, Relation<CViewFields, CViewRow> {
+  record Impl(List<Path> _path) implements CViewFields, RelationStructure<CViewFields, CViewRow> {
     @Override
     public Field<CultureId, CViewRow> id() {
       return new Field<CultureId, CViewRow>(_path, "id", CViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), CultureId.pgType);
@@ -35,23 +36,23 @@ public interface CViewFields extends FieldsExpr<CViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, CViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, CViewRow>(_path, "modifieddate", CViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CViewRow> modifieddate() {
+      return new Field<LocalDateTime, CViewRow>(_path, "modifieddate", CViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, CViewRow>> columns() {
-      return List.of(this.id(), this.cultureid(), this.name(), this.modifieddate());
+      return java.util.List.of(this.id(), this.cultureid(), this.name(), this.modifieddate());
     };
 
     @Override
-    public Relation<CViewFields, CViewRow> copy(List<Path> _path) {
+    public RelationStructure<CViewFields, CViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<CultureId, CViewRow> id();
@@ -60,7 +61,7 @@ public interface CViewFields extends FieldsExpr<CViewRow> {
 
   Field<Name, CViewRow> name();
 
-  Field<TypoLocalDateTime, CViewRow> modifieddate();
+  Field<LocalDateTime, CViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, CViewRow>> columns();

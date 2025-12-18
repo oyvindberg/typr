@@ -94,7 +94,7 @@ public record ProductPricesRowUnsaved(
     MariaText.instance((row, sb) -> {
       ProductsId.pgType.mariaText().unsafeEncode(row.productId, sb);
       sb.append(MariaText.DELIMETER);
-      MariaTypes.decimal.mariaText().unsafeEncode(row.price, sb);
+      MariaTypes.numeric.mariaText().unsafeEncode(row.price, sb);
       sb.append(MariaText.DELIMETER);
       MariaTypes.date.mariaText().unsafeEncode(row.validFrom, sb);
       sb.append(MariaText.DELIMETER);

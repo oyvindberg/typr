@@ -32,11 +32,11 @@ case class PersonRow(
   id: PersonId,
   /** Points to [[testdb.hardcoded.myschema.football_club.FootballClubRow.id]] */
   favouriteFootballClubId: FootballClubId,
-  name: /* max 100 chars */ String,
+  name: String,
   nickName: Option[/* max 30 chars */ String],
   blogUrl: Option[/* max 100 chars */ String],
-  email: /* max 254 chars */ String,
-  phone: /* max 8 chars */ String,
+  email: String,
+  phone: String,
   likesPizza: Boolean,
   /** Default: some-value
    * Points to [[testdb.hardcoded.myschema.marital_status.MaritalStatusRow.id]]

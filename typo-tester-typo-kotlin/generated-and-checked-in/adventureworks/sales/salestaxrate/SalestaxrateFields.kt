@@ -5,68 +5,69 @@
  */
 package adventureworks.sales.salestaxrate
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.stateprovince.StateprovinceFields
 import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.person.stateprovince.StateprovinceRow
 import adventureworks.public.Name
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SalestaxrateFields : FieldsExpr<SalestaxrateRow> {
-  override fun columns(): List<FieldLike<*, SalestaxrateRow>>
+  abstract override fun columns(): List<FieldLike<*, SalestaxrateRow>>
 
-  fun fkPersonStateprovince(): ForeignKey<StateprovinceFields, StateprovinceRow> = ForeignKey.of<StateprovinceFields, StateprovinceRow>("sales.FK_SalesTaxRate_StateProvince_StateProvinceID").withColumnPair(stateprovinceid(), StateprovinceFields::stateprovinceid)
+  fun fkPersonStateprovince(): ForeignKey<StateprovinceFields, StateprovinceRow> = ForeignKey.of<StateprovinceFields, StateprovinceRow>("sales.FK_SalesTaxRate_StateProvince_StateProvinceID").withColumnPair<StateprovinceId>(stateprovinceid(), StateprovinceFields::stateprovinceid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, SalestaxrateRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SalestaxrateRow>
 
-  fun name(): Field<Name, SalestaxrateRow>
+  abstract fun name(): Field<Name, SalestaxrateRow>
 
-  override fun rowParser(): RowParser<SalestaxrateRow> = SalestaxrateRow._rowParser
+  override fun rowParser(): RowParser<SalestaxrateRow> = SalestaxrateRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, SalestaxrateRow>
+  abstract fun rowguid(): Field<UUID, SalestaxrateRow>
 
-  fun salestaxrateid(): IdField<SalestaxrateId, SalestaxrateRow>
+  abstract fun salestaxrateid(): IdField<SalestaxrateId, SalestaxrateRow>
 
-  fun stateprovinceid(): Field<StateprovinceId, SalestaxrateRow>
+  abstract fun stateprovinceid(): Field<StateprovinceId, SalestaxrateRow>
 
-  fun taxrate(): Field<BigDecimal, SalestaxrateRow>
+  abstract fun taxrate(): Field<BigDecimal, SalestaxrateRow>
 
-  fun taxtype(): Field<TypoShort, SalestaxrateRow>
+  abstract fun taxtype(): Field<Short, SalestaxrateRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SalestaxrateFields, Relation<SalestaxrateFields, SalestaxrateRow> {
-      override fun salestaxrateid(): IdField<SalestaxrateId, SalestaxrateRow> = IdField<SalestaxrateId, SalestaxrateRow>(_path, "salestaxrateid", SalestaxrateRow::salestaxrateid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(salestaxrateid = value) }, SalestaxrateId.pgType)
+    data class Impl(val _path: List<Path>) : SalestaxrateFields, RelationStructure<SalestaxrateFields, SalestaxrateRow> {
+      override fun salestaxrateid(): IdField<SalestaxrateId, SalestaxrateRow> = IdField<SalestaxrateId, SalestaxrateRow>(_path, "salestaxrateid", SalestaxrateRow::salestaxrateid, null, "int4", { row, value -> row.copy(salestaxrateid = value) }, SalestaxrateId.pgType)
 
-      override fun stateprovinceid(): Field<StateprovinceId, SalestaxrateRow> = Field<StateprovinceId, SalestaxrateRow>(_path, "stateprovinceid", SalestaxrateRow::stateprovinceid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(stateprovinceid = value) }, StateprovinceId.pgType)
+      override fun stateprovinceid(): Field<StateprovinceId, SalestaxrateRow> = Field<StateprovinceId, SalestaxrateRow>(_path, "stateprovinceid", SalestaxrateRow::stateprovinceid, null, "int4", { row, value -> row.copy(stateprovinceid = value) }, StateprovinceId.pgType)
 
-      override fun taxtype(): Field<TypoShort, SalestaxrateRow> = Field<TypoShort, SalestaxrateRow>(_path, "taxtype", SalestaxrateRow::taxtype, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(taxtype = value) }, TypoShort.pgType)
+      override fun taxtype(): Field<Short, SalestaxrateRow> = Field<Short, SalestaxrateRow>(_path, "taxtype", SalestaxrateRow::taxtype, null, "int2", { row, value -> row.copy(taxtype = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun taxrate(): Field<BigDecimal, SalestaxrateRow> = Field<BigDecimal, SalestaxrateRow>(_path, "taxrate", SalestaxrateRow::taxrate, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(taxrate = value) }, PgTypes.numeric)
+      override fun taxrate(): Field<BigDecimal, SalestaxrateRow> = Field<BigDecimal, SalestaxrateRow>(_path, "taxrate", SalestaxrateRow::taxrate, null, "numeric", { row, value -> row.copy(taxrate = value) }, PgTypes.numeric)
 
-      override fun name(): Field<Name, SalestaxrateRow> = Field<Name, SalestaxrateRow>(_path, "name", SalestaxrateRow::name, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, SalestaxrateRow> = Field<Name, SalestaxrateRow>(_path, "name", SalestaxrateRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun rowguid(): Field<TypoUUID, SalestaxrateRow> = Field<TypoUUID, SalestaxrateRow>(_path, "rowguid", SalestaxrateRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, SalestaxrateRow> = Field<UUID, SalestaxrateRow>(_path, "rowguid", SalestaxrateRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SalestaxrateRow> = Field<TypoLocalDateTime, SalestaxrateRow>(_path, "modifieddate", SalestaxrateRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SalestaxrateRow> = Field<LocalDateTime, SalestaxrateRow>(_path, "modifieddate", SalestaxrateRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SalestaxrateRow>> = listOf(this.salestaxrateid(), this.stateprovinceid(), this.taxtype(), this.taxrate(), this.name(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SalestaxrateFields, SalestaxrateRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SalestaxrateRow>> = listOf(this.salestaxrateid().underlying, this.stateprovinceid().underlying, this.taxtype().underlying, this.taxrate().underlying, this.name().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SalestaxrateFields, SalestaxrateRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

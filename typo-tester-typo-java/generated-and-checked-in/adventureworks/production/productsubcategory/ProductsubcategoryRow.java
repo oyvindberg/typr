@@ -6,11 +6,12 @@
 package adventureworks.production.productsubcategory;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productcategory.ProductcategoryId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -30,9 +31,9 @@ public record ProductsubcategoryRow(
   /** Subcategory description. */
   Name name,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for ProductSubcategory records.
     * Default: nextval('production.productsubcategory_productsubcategoryid_seq'::regclass)
@@ -54,16 +55,16 @@ public record ProductsubcategoryRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public ProductsubcategoryRow withRowguid(TypoUUID rowguid) {
+  public ProductsubcategoryRow withRowguid(UUID rowguid) {
     return new ProductsubcategoryRow(productsubcategoryid, productcategoryid, name, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ProductsubcategoryRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductsubcategoryRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductsubcategoryRow(productsubcategoryid, productcategoryid, name, rowguid, modifieddate);
   };
 
-  static RowParser<ProductsubcategoryRow> _rowParser = RowParsers.of(ProductsubcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, ProductsubcategoryRow::new, row -> new Object[]{row.productsubcategoryid(), row.productcategoryid(), row.name(), row.rowguid(), row.modifieddate()});;
+  static RowParser<ProductsubcategoryRow> _rowParser = RowParsers.of(ProductsubcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, ProductsubcategoryRow::new, row -> new Object[]{row.productsubcategoryid(), row.productcategoryid(), row.name(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<ProductsubcategoryRow> pgText =
     PgText.from(_rowParser);
@@ -74,8 +75,8 @@ public record ProductsubcategoryRow(
 
   public ProductsubcategoryRowUnsaved toUnsavedRow(
     Defaulted<ProductsubcategoryId> productsubcategoryid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ProductsubcategoryRowUnsaved(productcategoryid, name, productsubcategoryid, rowguid, modifieddate);
   };

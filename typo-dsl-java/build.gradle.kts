@@ -11,7 +11,7 @@ java {
 sourceSets {
     main {
         java {
-            srcDirs("src/java")
+            srcDirs("src/java", "../.bleep/generated-sources/typo-dsl-java/scripts.GeneratedTuples")
         }
     }
 }

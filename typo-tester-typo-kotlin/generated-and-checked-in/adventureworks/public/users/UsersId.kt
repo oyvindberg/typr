@@ -5,26 +5,27 @@
  */
 package adventureworks.public.users
 
-import adventureworks.customtypes.TypoUUID
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import java.util.UUID
+import typo.kotlindsl.Bijection
 import typo.runtime.PgType
+import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 
 /** Type for the primary key of table `public.users` */
-data class UsersId(@JsonValue val value: TypoUUID) {
+data class UsersId(@JsonValue val value: UUID) {
   override fun toString(): kotlin.String {
     return value.toString()
   }
 
   companion object {
-    val bijection: Bijection<UsersId, TypoUUID> =
+    val bijection: Bijection<UsersId, UUID> =
       Bijection.of(UsersId::value, ::UsersId)
 
     val pgType: PgType<UsersId> =
-      TypoUUID.pgType.bimap(::UsersId, UsersId::value)
+      PgTypes.uuid.bimap(::UsersId, UsersId::value)
 
     val pgTypeArray: PgType<Array<UsersId>> =
-      TypoUUID.pgTypeArray.bimap({ xs -> arrayMap.map(xs, ::UsersId, UsersId::class.java) }, { xs -> arrayMap.map(xs, UsersId::value, TypoUUID::class.java) })
+      PgTypes.uuidArray.bimap({ xs -> arrayMap.map(xs, ::UsersId, UsersId::class.java) }, { xs -> arrayMap.map(xs, UsersId::value, UUID::class.java) })
   }
 }

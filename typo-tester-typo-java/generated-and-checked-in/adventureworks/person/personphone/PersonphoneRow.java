@@ -6,11 +6,12 @@
 package adventureworks.person.personphone;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.phonenumbertype.PhonenumbertypeId;
 import adventureworks.public_.Phone;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -30,7 +31,7 @@ public record PersonphoneRow(
     */
   PhonenumbertypeId phonenumbertypeid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Business entity identification number. Foreign key to Person.BusinessEntityID.
     * Points to {@link adventureworks.person.person.PersonRow#businessentityid()}
@@ -52,15 +53,15 @@ public record PersonphoneRow(
   };
 
   /** Default: now() */
-  public PersonphoneRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PersonphoneRow withModifieddate(LocalDateTime modifieddate) {
     return new PersonphoneRow(businessentityid, phonenumber, phonenumbertypeid, modifieddate);
   };
 
-  static RowParser<PersonphoneRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Phone.pgType, PhonenumbertypeId.pgType, TypoLocalDateTime.pgType, PersonphoneRow::new, row -> new Object[]{row.businessentityid(), row.phonenumber(), row.phonenumbertypeid(), row.modifieddate()});;
+  static RowParser<PersonphoneRow> _rowParser = RowParsers.of(BusinessentityId.pgType, Phone.pgType, PhonenumbertypeId.pgType, PgTypes.timestamp, PersonphoneRow::new, row -> new Object[]{row.businessentityid(), row.phonenumber(), row.phonenumbertypeid(), row.modifieddate()});;
 
   static public PersonphoneRow apply(
     PersonphoneId compositeId,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new PersonphoneRow(compositeId.businessentityid(), compositeId.phonenumber(), compositeId.phonenumbertypeid(), modifieddate);
   };
@@ -76,7 +77,7 @@ public record PersonphoneRow(
     return this.compositeId();
   };
 
-  public PersonphoneRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public PersonphoneRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new PersonphoneRowUnsaved(businessentityid, phonenumber, phonenumbertypeid, modifieddate);
   };
 }

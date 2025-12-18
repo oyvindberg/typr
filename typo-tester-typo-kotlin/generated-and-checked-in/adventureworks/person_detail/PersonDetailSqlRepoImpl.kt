@@ -5,40 +5,18 @@
  */
 package adventureworks.person_detail
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import java.sql.Connection
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Fragment
+import typo.runtime.PgTypes
+import typo.kotlindsl.Fragment.interpolate
 
 class PersonDetailSqlRepoImpl() : PersonDetailSqlRepo {
   override fun apply(
     businessentityid: /* user-picked */ BusinessentityId,
-    modifiedAfter: TypoLocalDateTime,
+    modifiedAfter: LocalDateTime,
     c: Connection
-  ): List<PersonDetailSqlRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      SELECT s.businessentityid,
-             p.title,
-             p.firstname,
-             p.middlename,
-             p.lastname,
-             e.jobtitle,
-             a.addressline1,
-             a.city,
-             a.postalcode,
-             a.rowguid
-      FROM sales.salesperson s
-               JOIN humanresources.employee e ON e.businessentityid = s.businessentityid
-               JOIN person.person p ON p.businessentityid = s.businessentityid
-               JOIN person.businessentityaddress bea ON bea.businessentityid = s.businessentityid
-               LEFT JOIN person.address a ON a.addressid = bea.addressid
-      where s.businessentityid = """.trimMargin()),
-    /* user-picked */ BusinessentityId.pgType.encode(businessentityid),
-    typo.runtime.Fragment.lit("""
-      ::int4
-        and p.modifieddate > """.trimMargin()),
-    TypoLocalDateTime.pgType.encode(modifiedAfter),
-    typo.runtime.Fragment.lit("::timestamp")
-  ).query(PersonDetailSqlRow._rowParser.all()).runUnchecked(c)
+  ): List<PersonDetailSqlRow> = interpolate(Fragment.lit("SELECT s.businessentityid,\n       p.title,\n       p.firstname,\n       p.middlename,\n       p.lastname,\n       e.jobtitle,\n       a.addressline1,\n       a.city,\n       a.postalcode,\n       a.rowguid\nFROM sales.salesperson s\n         JOIN humanresources.employee e ON e.businessentityid = s.businessentityid\n         JOIN person.person p ON p.businessentityid = s.businessentityid\n         JOIN person.businessentityaddress bea ON bea.businessentityid = s.businessentityid\n         LEFT JOIN person.address a ON a.addressid = bea.addressid\nwhere s.businessentityid = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("::int4\n  and p.modifieddate > "), Fragment.encode(PgTypes.timestamp, modifiedAfter), Fragment.lit("::timestamp")).query(PersonDetailSqlRow._rowParser.all()).runUnchecked(c)
 }

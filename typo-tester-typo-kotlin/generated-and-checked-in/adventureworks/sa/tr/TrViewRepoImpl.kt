@@ -7,15 +7,13 @@ package adventureworks.sa.tr
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class TrViewRepoImpl() : TrViewRepo {
   override fun select(): SelectBuilder<TrViewFields, TrViewRow> = SelectBuilder.of("\"sa\".\"tr\"", TrViewFields.structure, TrViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<TrViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text
-    from "sa"."tr"
-  """.trimMargin())).query(TrViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<TrViewRow> = interpolate(Fragment.lit("select \"id\", \"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"sa\".\"tr\"\n")).query(TrViewRow._rowParser.all()).runUnchecked(c)
 }

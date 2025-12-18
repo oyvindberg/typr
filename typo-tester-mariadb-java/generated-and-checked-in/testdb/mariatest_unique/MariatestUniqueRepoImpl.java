@@ -17,7 +17,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -32,11 +31,7 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     MariatestUniqueId id,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `mariatest_unique` where `id` = "),
-      MariatestUniqueId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `mariatest_unique` where `id` = "), Fragment.encode(MariatestUniqueId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,8 +39,8 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     MariatestUniqueId[] ids,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : ids) { fragments.add(MariatestUniqueId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : ids) { fragments.add(Fragment.encode(MariatestUniqueId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `mariatest_unique` where `id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -54,20 +49,7 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     MariatestUniqueRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `mariatest_unique`(`email`, `code`, `category`)
-         values ("""),
-      MariaTypes.text.encode(unsaved.email()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.code()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.category()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `id`, `email`, `code`, `category`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `mariatest_unique`(`email`, `code`, `category`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.email()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.code()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.category()), Fragment.lit(")\nreturning `id`, `email`, `code`, `category`\n"))
       .updateReturning(MariatestUniqueRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -76,38 +58,15 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     MariatestUniqueRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`email`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.email()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.email()), Fragment.lit("")));
     columns.add(Fragment.lit("`code`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.code()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.code()), Fragment.lit("")));
     columns.add(Fragment.lit("`category`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.category()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `mariatest_unique`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `id`, `email`, `code`, `category`
-      """)
-    );;
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.category()), Fragment.lit("")));
+    Fragment q = interpolate(Fragment.lit("insert into `mariatest_unique`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `id`, `email`, `code`, `category`\n"));;
     return q.updateReturning(MariatestUniqueRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -118,10 +77,7 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
 
   @Override
   public List<MariatestUniqueRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `id`, `email`, `code`, `category`
-       from `mariatest_unique`
-    """)).query(MariatestUniqueRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `id`, `email`, `code`, `category`\nfrom `mariatest_unique`\n")).query(MariatestUniqueRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -129,14 +85,7 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     MariatestUniqueId id,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `id`, `email`, `code`, `category`
-         from `mariatest_unique`
-         where `id` = """),
-      MariatestUniqueId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).query(MariatestUniqueRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `id`, `email`, `code`, `category`\nfrom `mariatest_unique`\nwhere `id` = "), Fragment.encode(MariatestUniqueId.pgType, id), Fragment.lit("")).query(MariatestUniqueRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -144,8 +93,8 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     MariatestUniqueId[] ids,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : ids) { fragments.add(MariatestUniqueId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : ids) { fragments.add(Fragment.encode(MariatestUniqueId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `id`, `email`, `code`, `category` from `mariatest_unique` where `id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(MariatestUniqueRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -165,19 +114,7 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     String category,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `id`, `email`, `code`, `category`
-         from `mariatest_unique`
-         where `code` = """),
-      MariaTypes.text.encode(code),
-      typo.runtime.Fragment.lit(" AND `category` = "),
-      MariaTypes.text.encode(category),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(MariatestUniqueRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `id`, `email`, `code`, `category`\nfrom `mariatest_unique`\nwhere `code` = "), Fragment.encode(MariaTypes.varchar, code), Fragment.lit(" AND `category` = "), Fragment.encode(MariaTypes.varchar, category), Fragment.lit("\n")).query(MariatestUniqueRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -185,22 +122,12 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     String email,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `id`, `email`, `code`, `category`
-         from `mariatest_unique`
-         where `email` = """),
-      MariaTypes.text.encode(email),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(MariatestUniqueRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `id`, `email`, `code`, `category`\nfrom `mariatest_unique`\nwhere `email` = "), Fragment.encode(MariaTypes.varchar, email), Fragment.lit("\n")).query(MariatestUniqueRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<MariatestUniqueFields, MariatestUniqueRow> update() {
-    return UpdateBuilder.of("`mariatest_unique`", MariatestUniqueFields.structure(), MariatestUniqueRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`mariatest_unique`", MariatestUniqueFields.structure(), MariatestUniqueRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -209,25 +136,7 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     Connection c
   ) {
     MariatestUniqueId id = row.id();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `mariatest_unique`
-         set `email` = """),
-      MariaTypes.text.encode(row.email()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `code` = """),
-      MariaTypes.text.encode(row.code()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `category` = """),
-      MariaTypes.text.encode(row.category()),
-      typo.runtime.Fragment.lit("""
-   
-         where `id` = """),
-      MariatestUniqueId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `mariatest_unique`\nset `email` = "), Fragment.encode(MariaTypes.varchar, row.email()), Fragment.lit(",\n`code` = "), Fragment.encode(MariaTypes.varchar, row.code()), Fragment.lit(",\n`category` = "), Fragment.encode(MariaTypes.varchar, row.category()), Fragment.lit("\nwhere `id` = "), Fragment.encode(MariatestUniqueId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -235,22 +144,7 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     MariatestUniqueRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `mariatest_unique`(`email`, `code`, `category`)
-         VALUES ("""),
-      MariaTypes.text.encode(unsaved.email()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.code()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.category()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `email` = VALUES(`email`),
-         `code` = VALUES(`code`),
-         `category` = VALUES(`category`)
-         RETURNING `id`, `email`, `code`, `category`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `mariatest_unique`(`email`, `code`, `category`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.email()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.code()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.category()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `email` = VALUES(`email`),\n`code` = VALUES(`code`),\n`category` = VALUES(`category`)\nRETURNING `id`, `email`, `code`, `category`"))
       .updateReturning(MariatestUniqueRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -260,14 +154,8 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     Iterator<MariatestUniqueRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `mariatest_unique`(`id`, `email`, `code`, `category`)
-                VALUES (?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `email` = VALUES(`email`),
-                `code` = VALUES(`code`),
-                `category` = VALUES(`category`)
-                RETURNING `id`, `email`, `code`, `category`"""))
+    return interpolate(Fragment.lit("INSERT INTO `mariatest_unique`(`id`, `email`, `code`, `category`)\nVALUES (?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `email` = VALUES(`email`),\n`code` = VALUES(`code`),\n`category` = VALUES(`category`)\nRETURNING `id`, `email`, `code`, `category`"))
       .updateReturningEach(MariatestUniqueRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

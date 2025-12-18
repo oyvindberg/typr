@@ -5,46 +5,48 @@
  */
 package adventureworks.pr.pdoc
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PdocViewFields : FieldsExpr<PdocViewRow> {
-  override fun columns(): List<FieldLike<*, PdocViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PdocViewRow>>
 
-  fun documentnode(): Field<DocumentId, PdocViewRow>
+  abstract fun documentnode(): Field<DocumentId, PdocViewRow>
 
-  fun id(): Field<ProductId, PdocViewRow>
+  abstract fun id(): Field<ProductId, PdocViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PdocViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PdocViewRow>
 
-  fun productid(): Field<ProductId, PdocViewRow>
+  abstract fun productid(): Field<ProductId, PdocViewRow>
 
-  override fun rowParser(): RowParser<PdocViewRow> = PdocViewRow._rowParser
+  override fun rowParser(): RowParser<PdocViewRow> = PdocViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : PdocViewFields, Relation<PdocViewFields, PdocViewRow> {
-      override fun id(): Field<ProductId, PdocViewRow> = Field<ProductId, PdocViewRow>(_path, "id", PdocViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, ProductId.pgType)
+    data class Impl(val _path: List<Path>) : PdocViewFields, RelationStructure<PdocViewFields, PdocViewRow> {
+      override fun id(): Field<ProductId, PdocViewRow> = Field<ProductId, PdocViewRow>(_path, "id", PdocViewRow::id, null, null, { row, value -> row.copy(id = value) }, ProductId.pgType)
 
-      override fun productid(): Field<ProductId, PdocViewRow> = Field<ProductId, PdocViewRow>(_path, "productid", PdocViewRow::productid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+      override fun productid(): Field<ProductId, PdocViewRow> = Field<ProductId, PdocViewRow>(_path, "productid", PdocViewRow::productid, null, null, { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PdocViewRow> = Field<TypoLocalDateTime, PdocViewRow>(_path, "modifieddate", PdocViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PdocViewRow> = Field<LocalDateTime, PdocViewRow>(_path, "modifieddate", PdocViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun documentnode(): Field<DocumentId, PdocViewRow> = Field<DocumentId, PdocViewRow>(_path, "documentnode", PdocViewRow::documentnode, Optional.empty(), Optional.empty(), { row, value -> row.copy(documentnode = value) }, DocumentId.pgType)
+      override fun documentnode(): Field<DocumentId, PdocViewRow> = Field<DocumentId, PdocViewRow>(_path, "documentnode", PdocViewRow::documentnode, null, null, { row, value -> row.copy(documentnode = value) }, DocumentId.pgType)
 
-      override fun columns(): List<FieldLike<*, PdocViewRow>> = listOf(this.id(), this.productid(), this.modifieddate(), this.documentnode())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PdocViewFields, PdocViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PdocViewRow>> = listOf(this.id().underlying, this.productid().underlying, this.modifieddate().underlying, this.documentnode().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PdocViewFields, PdocViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

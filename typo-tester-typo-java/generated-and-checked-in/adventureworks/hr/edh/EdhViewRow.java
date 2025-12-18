@@ -5,12 +5,12 @@
  */
 package adventureworks.hr.edh;
 
-import adventureworks.customtypes.TypoLocalDate;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.humanresources.department.DepartmentId;
 import adventureworks.humanresources.shift.ShiftId;
 import adventureworks.person.businessentity.BusinessentityId;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -25,11 +25,11 @@ public record EdhViewRow(
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#shiftid()} */
   ShiftId shiftid,
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#startdate()} */
-  TypoLocalDate startdate,
+  LocalDate startdate,
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#enddate()} */
-  Optional<TypoLocalDate> enddate,
+  LocalDate enddate,
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#businessentityid()} */
   public EdhViewRow withId(BusinessentityId id) {
@@ -52,19 +52,19 @@ public record EdhViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#startdate()} */
-  public EdhViewRow withStartdate(TypoLocalDate startdate) {
+  public EdhViewRow withStartdate(LocalDate startdate) {
     return new EdhViewRow(id, businessentityid, departmentid, shiftid, startdate, enddate, modifieddate);
   };
 
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#enddate()} */
-  public EdhViewRow withEnddate(Optional<TypoLocalDate> enddate) {
+  public EdhViewRow withEnddate(LocalDate enddate) {
     return new EdhViewRow(id, businessentityid, departmentid, shiftid, startdate, enddate, modifieddate);
   };
 
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#modifieddate()} */
-  public EdhViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public EdhViewRow withModifieddate(LocalDateTime modifieddate) {
     return new EdhViewRow(id, businessentityid, departmentid, shiftid, startdate, enddate, modifieddate);
   };
 
-  static RowParser<EdhViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, DepartmentId.pgType, ShiftId.pgType, TypoLocalDate.pgType, TypoLocalDate.pgType.opt(), TypoLocalDateTime.pgType, EdhViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.departmentid(), row.shiftid(), row.startdate(), row.enddate(), row.modifieddate()});;
+  static RowParser<EdhViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, DepartmentId.pgType, ShiftId.pgType, PgTypes.date, PgTypes.date, PgTypes.timestamp, EdhViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.departmentid(), row.shiftid(), row.startdate(), row.enddate(), row.modifieddate()});;
 }

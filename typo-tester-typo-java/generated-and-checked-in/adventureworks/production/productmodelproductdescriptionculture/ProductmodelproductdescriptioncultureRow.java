@@ -6,11 +6,12 @@
 package adventureworks.production.productmodelproductdescriptionculture;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.culture.CultureId;
 import adventureworks.production.productdescription.ProductdescriptionId;
 import adventureworks.production.productmodel.ProductmodelId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -32,7 +33,7 @@ public record ProductmodelproductdescriptioncultureRow(
     */
   CultureId cultureid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key. Foreign key to ProductModel.ProductModelID.
     * Points to {@link adventureworks.production.productmodel.ProductmodelRow#productmodelid()}
@@ -56,15 +57,15 @@ public record ProductmodelproductdescriptioncultureRow(
   };
 
   /** Default: now() */
-  public ProductmodelproductdescriptioncultureRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductmodelproductdescriptioncultureRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductmodelproductdescriptioncultureRow(productmodelid, productdescriptionid, cultureid, modifieddate);
   };
 
-  static RowParser<ProductmodelproductdescriptioncultureRow> _rowParser = RowParsers.of(ProductmodelId.pgType, ProductdescriptionId.pgType, CultureId.pgType, TypoLocalDateTime.pgType, ProductmodelproductdescriptioncultureRow::new, row -> new Object[]{row.productmodelid(), row.productdescriptionid(), row.cultureid(), row.modifieddate()});;
+  static RowParser<ProductmodelproductdescriptioncultureRow> _rowParser = RowParsers.of(ProductmodelId.pgType, ProductdescriptionId.pgType, CultureId.pgType, PgTypes.timestamp, ProductmodelproductdescriptioncultureRow::new, row -> new Object[]{row.productmodelid(), row.productdescriptionid(), row.cultureid(), row.modifieddate()});;
 
   static public ProductmodelproductdescriptioncultureRow apply(
     ProductmodelproductdescriptioncultureId compositeId,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new ProductmodelproductdescriptioncultureRow(compositeId.productmodelid(), compositeId.productdescriptionid(), compositeId.cultureid(), modifieddate);
   };
@@ -80,7 +81,7 @@ public record ProductmodelproductdescriptioncultureRow(
     return this.compositeId();
   };
 
-  public ProductmodelproductdescriptioncultureRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductmodelproductdescriptioncultureRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new ProductmodelproductdescriptioncultureRowUnsaved(productmodelid, productdescriptionid, cultureid, modifieddate);
   };
 }

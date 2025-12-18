@@ -54,5 +54,5 @@ public record SubqueryTestSqlRow(
     return new SubqueryTestSqlRow(customerId, email, firstName, orderCount, totalSpent, favoriteBrand);
   };
 
-  static RowParser<SubqueryTestSqlRow> _rowParser = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.bigint, MariaTypes.decimal, MariaTypes.varchar.opt(), SubqueryTestSqlRow::new, row -> new Object[]{row.customerId(), row.email(), row.firstName(), row.orderCount(), row.totalSpent(), row.favoriteBrand()});;
+  static RowParser<SubqueryTestSqlRow> _rowParser = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.bigint, MariaTypes.numeric, MariaTypes.varchar.opt(), SubqueryTestSqlRow::new, row -> new Object[]{row.customerId(), row.email(), row.firstName(), row.orderCount(), row.totalSpent(), row.favoriteBrand()});;
 }

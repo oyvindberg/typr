@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VOrderDetailsViewRepoImpl implements VOrderDetailsViewRepo {
@@ -19,9 +20,6 @@ public class VOrderDetailsViewRepoImpl implements VOrderDetailsViewRepo {
 
   @Override
   public List<VOrderDetailsViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `order_id`, `order_number`, `order_status`, `payment_status`, `total_amount`, `currency_code`, `ordered_at`, `customer_email`, `customer_name`, `item_count`, `total_quantity`, `tracking_number`, `shipping_status`, `carrier_name`
-       from `v_order_details`
-    """)).query(VOrderDetailsViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `order_id`, `order_number`, `order_status`, `payment_status`, `total_amount`, `currency_code`, `ordered_at`, `customer_email`, `customer_name`, `item_count`, `total_quantity`, `tracking_number`, `shipping_status`, `carrier_name`\nfrom `v_order_details`\n")).query(VOrderDetailsViewRow._rowParser.all()).runUnchecked(c);
   };
 }

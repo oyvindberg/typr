@@ -5,11 +5,11 @@
  */
 package adventureworks.person_detail;
 
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import adventureworks.userdefined.FirstName;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -27,15 +27,15 @@ public record PersonDetailSqlRow(
   /** Points to {@link adventureworks.person.person.PersonRow#lastname()} */
   Name lastname,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#jobtitle()} */
-  /* max 50 chars */ String jobtitle,
+  String jobtitle,
   /** Points to {@link adventureworks.person.address.AddressRow#addressline1()} */
-  Optional</* max 60 chars */ String> addressline1,
+  Optional<String> addressline1,
   /** Points to {@link adventureworks.person.address.AddressRow#city()} */
-  Optional</* max 30 chars */ String> city,
+  Optional<String> city,
   /** Points to {@link adventureworks.person.address.AddressRow#postalcode()} */
-  Optional</* max 15 chars */ String> postalcode,
+  Optional<String> postalcode,
   /** Points to {@link adventureworks.person.address.AddressRow#rowguid()} */
-  Optional<TypoUUID> rowguid
+  Optional<UUID> rowguid
 ) {
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#businessentityid()} */
   public PersonDetailSqlRow withBusinessentityid(BusinessentityId businessentityid) {
@@ -63,29 +63,29 @@ public record PersonDetailSqlRow(
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#jobtitle()} */
-  public PersonDetailSqlRow withJobtitle(/* max 50 chars */ String jobtitle) {
+  public PersonDetailSqlRow withJobtitle(String jobtitle) {
     return new PersonDetailSqlRow(businessentityid, title, firstname, middlename, lastname, jobtitle, addressline1, city, postalcode, rowguid);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#addressline1()} */
-  public PersonDetailSqlRow withAddressline1(Optional</* max 60 chars */ String> addressline1) {
+  public PersonDetailSqlRow withAddressline1(Optional<String> addressline1) {
     return new PersonDetailSqlRow(businessentityid, title, firstname, middlename, lastname, jobtitle, addressline1, city, postalcode, rowguid);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#city()} */
-  public PersonDetailSqlRow withCity(Optional</* max 30 chars */ String> city) {
+  public PersonDetailSqlRow withCity(Optional<String> city) {
     return new PersonDetailSqlRow(businessentityid, title, firstname, middlename, lastname, jobtitle, addressline1, city, postalcode, rowguid);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#postalcode()} */
-  public PersonDetailSqlRow withPostalcode(Optional</* max 15 chars */ String> postalcode) {
+  public PersonDetailSqlRow withPostalcode(Optional<String> postalcode) {
     return new PersonDetailSqlRow(businessentityid, title, firstname, middlename, lastname, jobtitle, addressline1, city, postalcode, rowguid);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#rowguid()} */
-  public PersonDetailSqlRow withRowguid(Optional<TypoUUID> rowguid) {
+  public PersonDetailSqlRow withRowguid(Optional<UUID> rowguid) {
     return new PersonDetailSqlRow(businessentityid, title, firstname, middlename, lastname, jobtitle, addressline1, city, postalcode, rowguid);
   };
 
-  static RowParser<PersonDetailSqlRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), TypoUUID.pgType.opt(), PersonDetailSqlRow::new, row -> new Object[]{row.businessentityid(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.jobtitle(), row.addressline1(), row.city(), row.postalcode(), row.rowguid()});;
+  static RowParser<PersonDetailSqlRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.uuid.opt(), PersonDetailSqlRow::new, row -> new Object[]{row.businessentityid(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.jobtitle(), row.addressline1(), row.city(), row.postalcode(), row.rowguid()});;
 }

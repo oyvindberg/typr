@@ -8,13 +8,13 @@ package adventureworks.public.title_domain
 import java.sql.Connection
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
+import typo.dsl.DeleteBuilderMock
 import typo.dsl.DeleteParams
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderMock
 import typo.dsl.SelectParams
 import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
+import typo.dsl.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
 case class TitleDomainRepoMock(map: scala.collection.mutable.Map[TitleDomainId, TitleDomainRow] = scala.collection.mutable.Map.empty[TitleDomainId, TitleDomainRow]) extends TitleDomainRepo {

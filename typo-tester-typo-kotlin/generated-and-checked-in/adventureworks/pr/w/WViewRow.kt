@@ -5,15 +5,14 @@
  */
 package adventureworks.pr.w
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.production.scrapreason.ScrapreasonId
 import adventureworks.production.workorder.WorkorderId
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.w */
 data class WViewRow(
@@ -26,19 +25,19 @@ data class WViewRow(
   /** Points to [adventureworks.production.workorder.WorkorderRow.orderqty] */
   val orderqty: Int,
   /** Points to [adventureworks.production.workorder.WorkorderRow.scrappedqty] */
-  val scrappedqty: TypoShort,
+  val scrappedqty: Short,
   /** Points to [adventureworks.production.workorder.WorkorderRow.startdate] */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Points to [adventureworks.production.workorder.WorkorderRow.enddate] */
-  val enddate: Optional<TypoLocalDateTime>,
+  val enddate: LocalDateTime,
   /** Points to [adventureworks.production.workorder.WorkorderRow.duedate] */
-  val duedate: TypoLocalDateTime,
+  val duedate: LocalDateTime,
   /** Points to [adventureworks.production.workorder.WorkorderRow.scrapreasonid] */
-  val scrapreasonid: Optional<ScrapreasonId>,
+  val scrapreasonid: ScrapreasonId,
   /** Points to [adventureworks.production.workorder.WorkorderRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<WViewRow> = RowParsers.of(WorkorderId.pgType, WorkorderId.pgType, ProductId.pgType, PgTypes.int4, TypoShort.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType, ScrapreasonId.pgType.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> WViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.id, row.workorderid, row.productid, row.orderqty, row.scrappedqty, row.startdate, row.enddate, row.duedate, row.scrapreasonid, row.modifieddate) })
+    val _rowParser: RowParser<WViewRow> = RowParsers.of(WorkorderId.pgType, WorkorderId.pgType, ProductId.pgType, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int2, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp, ScrapreasonId.pgType, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> WViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.id, row.workorderid, row.productid, row.orderqty, row.scrappedqty, row.startdate, row.enddate, row.duedate, row.scrapreasonid, row.modifieddate) })
   }
 }

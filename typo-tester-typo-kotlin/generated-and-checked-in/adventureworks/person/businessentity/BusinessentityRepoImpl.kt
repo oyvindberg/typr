@@ -5,24 +5,20 @@
  */
 package adventureworks.person.businessentity
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class BusinessentityRepoImpl() : BusinessentityRepo {
   override fun delete(): DeleteBuilder<BusinessentityFields, BusinessentityRow> = DeleteBuilder.of("\"person\".\"businessentity\"", BusinessentityFields.structure, Dialect.POSTGRESQL)
@@ -30,94 +26,43 @@ class BusinessentityRepoImpl() : BusinessentityRepo {
   override fun deleteById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "person"."businessentity" where "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(businessentityid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"person\".\"businessentity\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "person"."businessentity"
-               where "businessentityid" = ANY(""".trimMargin()),
-             BusinessentityId.pgTypeArray.encode(businessentityids),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = interpolate(Fragment.lit("delete\nfrom \"person\".\"businessentity\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: BusinessentityRow,
     c: Connection
-  ): BusinessentityRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "businessentityid", "rowguid", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): BusinessentityRow = interpolate(Fragment.lit("insert into \"person\".\"businessentity\"(\"businessentityid\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"rowguid\", \"modifieddate\"\n"))
     .updateReturning(BusinessentityRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: BusinessentityRowUnsaved,
     c: Connection
   ): BusinessentityRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     unsaved.businessentityid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"businessentityid\""))
-      values.add(interpolate(
-        BusinessentityId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      )) }
+      values.add(interpolate(Fragment.encode(BusinessentityId.pgType, value), Fragment.lit("::int4"))) }
     );
     unsaved.rowguid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"rowguid\""))
-      values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = (if (columns.isEmpty()) interpolate(typo.runtime.Fragment.lit("""
-      insert into "person"."businessentity" default values
-      returning "businessentityid", "rowguid", "modifieddate"::text
-    """.trimMargin())) else interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."businessentity"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "businessentityid", "rowguid", "modifieddate"::text
-      """.trimMargin())
-    ))
+    val q: Fragment = (if (columns.isEmpty()) interpolate(Fragment.lit("insert into \"person\".\"businessentity\" default values\nreturning \"businessentityid\", \"rowguid\", \"modifieddate\"\n")) else interpolate(Fragment.lit("insert into \"person\".\"businessentity\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"rowguid\", \"modifieddate\"\n")))
     return q.updateReturning(BusinessentityRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -125,49 +70,28 @@ class BusinessentityRepoImpl() : BusinessentityRepo {
     unsaved: MutableIterator<BusinessentityRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "person"."businessentity"("businessentityid", "rowguid", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, BusinessentityRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"person\".\"businessentity\"(\"businessentityid\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, BusinessentityRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<BusinessentityRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "person"."businessentity"("businessentityid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, BusinessentityRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"person\".\"businessentity\"(\"businessentityid\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, BusinessentityRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<BusinessentityFields, BusinessentityRow> = SelectBuilder.of("\"person\".\"businessentity\"", BusinessentityFields.structure, BusinessentityRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<BusinessentityRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "rowguid", "modifieddate"::text
-    from "person"."businessentity"
-  """.trimMargin())).query(BusinessentityRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<BusinessentityRow> = interpolate(Fragment.lit("select \"businessentityid\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"businessentity\"\n")).query(BusinessentityRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Optional<BusinessentityRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "rowguid", "modifieddate"::text
-      from "person"."businessentity"
-      where "businessentityid" = """.trimMargin()),
-    BusinessentityId.pgType.encode(businessentityid),
-    typo.runtime.Fragment.lit("")
-  ).query(BusinessentityRow._rowParser.first()).runUnchecked(c)
+  ): BusinessentityRow? = interpolate(Fragment.lit("select \"businessentityid\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"businessentity\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).query(BusinessentityRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
-  ): List<BusinessentityRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "rowguid", "modifieddate"::text
-      from "person"."businessentity"
-      where "businessentityid" = ANY(""".trimMargin()),
-    BusinessentityId.pgTypeArray.encode(businessentityids),
-    typo.runtime.Fragment.lit(")")
-  ).query(BusinessentityRow._rowParser.all()).runUnchecked(c)
+  ): List<BusinessentityRow> = interpolate(Fragment.lit("select \"businessentityid\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"businessentity\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")")).query(BusinessentityRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     businessentityids: Array<BusinessentityId>,
@@ -175,69 +99,32 @@ class BusinessentityRepoImpl() : BusinessentityRepo {
   ): Map<BusinessentityId, BusinessentityRow> {
     val ret: MutableMap<BusinessentityId, BusinessentityRow> = mutableMapOf<BusinessentityId, BusinessentityRow>()
     selectByIds(businessentityids, c).forEach({ row -> ret.put(row.businessentityid, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<BusinessentityFields, BusinessentityRow> = UpdateBuilder.of("\"person\".\"businessentity\"", BusinessentityFields.structure, BusinessentityRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<BusinessentityFields, BusinessentityRow> = UpdateBuilder.of("\"person\".\"businessentity\"", BusinessentityFields.structure, BusinessentityRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: BusinessentityRow,
     c: Connection
   ): Boolean {
     val businessentityid: BusinessentityId = row.businessentityid
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "person"."businessentity"
-        set "rowguid" = """.trimMargin()),
-      TypoUUID.pgType.encode(row.rowguid),
-      typo.runtime.Fragment.lit("""
-        ::uuid,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "businessentityid" = """.trimMargin()),
-      BusinessentityId.pgType.encode(businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"person\".\"businessentity\"\nset \"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: BusinessentityRow,
     c: Connection
-  ): BusinessentityRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("businessentityid")
-      do update set
-        "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "businessentityid", "rowguid", "modifieddate"::text""".trimMargin())
-  )
+  ): BusinessentityRow = interpolate(Fragment.lit("insert into \"person\".\"businessentity\"(\"businessentityid\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"businessentityid\")\ndo update set\n  \"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"rowguid\", \"modifieddate\""))
     .updateReturning(BusinessentityRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<BusinessentityRow>,
     c: Connection
-  ): List<BusinessentityRow> = interpolate(typo.runtime.Fragment.lit("""
-                                 insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
-                                 values (?::int4, ?::uuid, ?::timestamp)
-                                 on conflict ("businessentityid")
-                                 do update set
-                                   "rowguid" = EXCLUDED."rowguid",
-                                 "modifieddate" = EXCLUDED."modifieddate"
-                                 returning "businessentityid", "rowguid", "modifieddate"::text""".trimMargin()))
+  ): List<BusinessentityRow> = interpolate(Fragment.lit("insert into \"person\".\"businessentity\"(\"businessentityid\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::uuid, ?::timestamp)\non conflict (\"businessentityid\")\ndo update set\n  \"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"rowguid\", \"modifieddate\""))
     .updateManyReturning(BusinessentityRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -245,20 +132,8 @@ class BusinessentityRepoImpl() : BusinessentityRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table businessentity_TEMP (like "person"."businessentity") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy businessentity_TEMP("businessentityid", "rowguid", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, BusinessentityRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "person"."businessentity"("businessentityid", "rowguid", "modifieddate")
-      select * from businessentity_TEMP
-      on conflict ("businessentityid")
-      do update set
-        "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table businessentity_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table businessentity_TEMP (like \"person\".\"businessentity\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy businessentity_TEMP(\"businessentityid\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, BusinessentityRow.pgText)
+    return interpolate(Fragment.lit("insert into \"person\".\"businessentity\"(\"businessentityid\", \"rowguid\", \"modifieddate\")\nselect * from businessentity_TEMP\non conflict (\"businessentityid\")\ndo update set\n  \"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table businessentity_TEMP;")).update().runUnchecked(c)
   }
 }

@@ -8,10 +8,10 @@ package adventureworks.sales.salesreason
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait SalesreasonFields {
   def salesreasonid: IdField[SalesreasonId, SalesreasonRow]
@@ -21,11 +21,11 @@ trait SalesreasonFields {
 }
 
 object SalesreasonFields {
-  lazy val structure: Relation[SalesreasonFields, SalesreasonRow] =
+  lazy val structure: RelationStructure[SalesreasonFields, SalesreasonRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SalesreasonFields, SalesreasonRow] {
+    extends RelationStructure[SalesreasonFields, SalesreasonRow] {
 
     override lazy val fields: SalesreasonFields = new SalesreasonFields {
       override def salesreasonid = IdField[SalesreasonId, SalesreasonRow](_path, "salesreasonid", None, Some("int4"), x => x.salesreasonid, (row, value) => row.copy(salesreasonid = value))

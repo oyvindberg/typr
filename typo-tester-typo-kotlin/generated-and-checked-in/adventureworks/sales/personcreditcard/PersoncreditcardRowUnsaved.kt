@@ -7,10 +7,11 @@ package adventureworks.sales.personcreditcard
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `sales.personcreditcard` which has not been persisted yet */
 data class PersoncreditcardRowUnsaved(
@@ -23,9 +24,9 @@ data class PersoncreditcardRowUnsaved(
     */
   val creditcardid: /* user-picked */ CustomCreditcardId,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
-  fun toRow(modifieddateDefault: () -> TypoLocalDateTime): PersoncreditcardRow = PersoncreditcardRow(businessentityid = businessentityid, creditcardid = creditcardid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
+  fun toRow(modifieddateDefault: () -> LocalDateTime): PersoncreditcardRow = PersoncreditcardRow(businessentityid = businessentityid, creditcardid = creditcardid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<PersoncreditcardRowUnsaved> =
@@ -33,6 +34,6 @@ data class PersoncreditcardRowUnsaved(
       sb.append(PgText.DELIMETER)
       CustomCreditcardId.pgType.pgText().unsafeEncode(row.creditcardid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

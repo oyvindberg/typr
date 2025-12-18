@@ -16,6 +16,11 @@ public record MariatestSpatialNullId(@JsonValue Integer value) {
     return new MariatestSpatialNullId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<MariatestSpatialNullId, Integer> bijection =
     Bijection.of(MariatestSpatialNullId::value, MariatestSpatialNullId::new);
 

@@ -27,7 +27,7 @@ case class SodViewRow(
   /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.salesorderdetailid]] */
   salesorderdetailid: Int,
   /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.carriertrackingnumber]] */
-  carriertrackingnumber: Option[/* max 25 chars */ String],
+  carriertrackingnumber: String,
   /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.orderqty]] */
   orderqty: TypoShort,
   /** Points to [[adventureworks.sales.salesorderdetail.SalesorderdetailRow.productid]] */
@@ -53,7 +53,7 @@ object SodViewRow {
             id = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 0, rs)._2,
             salesorderid = SalesorderheaderId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             salesorderdetailid = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 2, rs)._2,
-            carriertrackingnumber = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            carriertrackingnumber = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 3, rs)._2,
             orderqty = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             productid = ProductId.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             specialofferid = SpecialofferId.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
@@ -70,7 +70,7 @@ object SodViewRow {
       val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using JsonDecoder.int))
       val salesorderid = jsonObj.get("salesorderid").toRight("Missing field 'salesorderid'").flatMap(_.as(using SalesorderheaderId.jsonDecoder))
       val salesorderdetailid = jsonObj.get("salesorderdetailid").toRight("Missing field 'salesorderdetailid'").flatMap(_.as(using JsonDecoder.int))
-      val carriertrackingnumber = jsonObj.get("carriertrackingnumber").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val carriertrackingnumber = jsonObj.get("carriertrackingnumber").toRight("Missing field 'carriertrackingnumber'").flatMap(_.as(using JsonDecoder.string))
       val orderqty = jsonObj.get("orderqty").toRight("Missing field 'orderqty'").flatMap(_.as(using TypoShort.jsonDecoder))
       val productid = jsonObj.get("productid").toRight("Missing field 'productid'").flatMap(_.as(using ProductId.jsonDecoder))
       val specialofferid = jsonObj.get("specialofferid").toRight("Missing field 'specialofferid'").flatMap(_.as(using SpecialofferId.jsonDecoder))
@@ -98,7 +98,7 @@ object SodViewRow {
         JsonEncoder.int.unsafeEncode(a.salesorderdetailid, indent, out)
         out.write(",")
         out.write(""""carriertrackingnumber":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.carriertrackingnumber, indent, out)
+        JsonEncoder.string.unsafeEncode(a.carriertrackingnumber, indent, out)
         out.write(",")
         out.write(""""orderqty":""")
         TypoShort.jsonEncoder.unsafeEncode(a.orderqty, indent, out)

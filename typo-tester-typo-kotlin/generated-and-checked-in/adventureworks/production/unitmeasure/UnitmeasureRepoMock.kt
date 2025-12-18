@@ -8,21 +8,19 @@ package adventureworks.production.unitmeasure
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class UnitmeasureRepoMock(
   val toRow: (UnitmeasureRowUnsaved) -> UnitmeasureRow,
@@ -33,7 +31,7 @@ data class UnitmeasureRepoMock(
   override fun deleteById(
     unitmeasurecode: UnitmeasureId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(unitmeasurecode)).isPresent()
+  ): Boolean = map.remove(unitmeasurecode) != null
 
   override fun deleteByIds(
     unitmeasurecodes: Array<UnitmeasureId>,
@@ -41,7 +39,7 @@ data class UnitmeasureRepoMock(
   ): Int {
     var count = 0
     for (id in unitmeasurecodes) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class UnitmeasureRepoMock(
     c: Connection
   ): UnitmeasureRow {
     if (map.containsKey(unsaved.unitmeasurecode)) {
-      throw RuntimeException(str("id $unsaved.unitmeasurecode already exists"))
+      throw RuntimeException("id " + unsaved.unitmeasurecode + " already exists")
     }
     map[unsaved.unitmeasurecode] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class UnitmeasureRepoMock(
   override fun selectById(
     unitmeasurecode: UnitmeasureId,
     c: Connection
-  ): Optional<UnitmeasureRow> = Optional.ofNullable(map[unitmeasurecode])
+  ): UnitmeasureRow? = map[unitmeasurecode]
 
   override fun selectByIds(
     unitmeasurecodes: Array<UnitmeasureId>,
@@ -109,9 +107,9 @@ data class UnitmeasureRepoMock(
   ): List<UnitmeasureRow> {
     val result = ArrayList<UnitmeasureRow>()
     for (id in unitmeasurecodes) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class UnitmeasureRepoMock(
     row: UnitmeasureRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.unitmeasurecode]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.unitmeasurecode]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.unitmeasurecode] = row
     }

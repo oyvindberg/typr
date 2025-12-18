@@ -6,10 +6,11 @@
 package adventureworks.person.addresstype;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -25,9 +26,9 @@ public record AddresstypeRow(
   /** Address type description. For example, Billing, Home, or Shipping. */
   Name name,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for AddressType records.
     * Default: nextval('person.addresstype_addresstypeid_seq'::regclass)
@@ -42,16 +43,16 @@ public record AddresstypeRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public AddresstypeRow withRowguid(TypoUUID rowguid) {
+  public AddresstypeRow withRowguid(UUID rowguid) {
     return new AddresstypeRow(addresstypeid, name, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public AddresstypeRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public AddresstypeRow withModifieddate(LocalDateTime modifieddate) {
     return new AddresstypeRow(addresstypeid, name, rowguid, modifieddate);
   };
 
-  static RowParser<AddresstypeRow> _rowParser = RowParsers.of(AddresstypeId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, AddresstypeRow::new, row -> new Object[]{row.addresstypeid(), row.name(), row.rowguid(), row.modifieddate()});;
+  static RowParser<AddresstypeRow> _rowParser = RowParsers.of(AddresstypeId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, AddresstypeRow::new, row -> new Object[]{row.addresstypeid(), row.name(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<AddresstypeRow> pgText =
     PgText.from(_rowParser);
@@ -62,8 +63,8 @@ public record AddresstypeRow(
 
   public AddresstypeRowUnsaved toUnsavedRow(
     Defaulted<AddresstypeId> addresstypeid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new AddresstypeRowUnsaved(name, addresstypeid, rowguid, modifieddate);
   };

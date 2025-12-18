@@ -6,88 +6,87 @@
 package adventureworks.sales.specialofferproduct
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface SpecialofferproductRepo {
-  fun delete(): DeleteBuilder<SpecialofferproductFields, SpecialofferproductRow>
+  abstract fun delete(): DeleteBuilder<SpecialofferproductFields, SpecialofferproductRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: SpecialofferproductId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<SpecialofferproductId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: SpecialofferproductRow,
     c: Connection
   ): SpecialofferproductRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: SpecialofferproductRowUnsaved,
     c: Connection
   ): SpecialofferproductRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<SpecialofferproductRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<SpecialofferproductRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<SpecialofferproductFields, SpecialofferproductRow>
+  abstract fun select(): SelectBuilder<SpecialofferproductFields, SpecialofferproductRow>
 
-  fun selectAll(c: Connection): List<SpecialofferproductRow>
+  abstract fun selectAll(c: Connection): List<SpecialofferproductRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: SpecialofferproductId,
     c: Connection
-  ): Optional<SpecialofferproductRow>
+  ): SpecialofferproductRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<SpecialofferproductId>,
     c: Connection
   ): List<SpecialofferproductRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<SpecialofferproductId>,
     c: Connection
   ): Map<SpecialofferproductId, SpecialofferproductRow>
 
-  fun update(): UpdateBuilder<SpecialofferproductFields, SpecialofferproductRow>
+  abstract fun update(): UpdateBuilder<SpecialofferproductFields, SpecialofferproductRow>
 
-  fun update(
+  abstract fun update(
     row: SpecialofferproductRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: SpecialofferproductRow,
     c: Connection
   ): SpecialofferproductRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<SpecialofferproductRow>,
     c: Connection
   ): List<SpecialofferproductRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<SpecialofferproductRow>,
     batchSize: Int,
     c: Connection

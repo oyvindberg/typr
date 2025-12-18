@@ -5,9 +5,10 @@
  */
 package adventureworks.sa.pcc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.userdefined.CustomCreditcardId;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -20,7 +21,7 @@ public record PccViewRow(
   /** Points to {@link adventureworks.sales.personcreditcard.PersoncreditcardRow#creditcardid()} */
   /* user-picked */ CustomCreditcardId creditcardid,
   /** Points to {@link adventureworks.sales.personcreditcard.PersoncreditcardRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.personcreditcard.PersoncreditcardRow#businessentityid()} */
   public PccViewRow withId(BusinessentityId id) {
@@ -38,9 +39,9 @@ public record PccViewRow(
   };
 
   /** Points to {@link adventureworks.sales.personcreditcard.PersoncreditcardRow#modifieddate()} */
-  public PccViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PccViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PccViewRow(id, businessentityid, creditcardid, modifieddate);
   };
 
-  static RowParser<PccViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, CustomCreditcardId.pgType, TypoLocalDateTime.pgType, PccViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.creditcardid(), row.modifieddate()});;
+  static RowParser<PccViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, CustomCreditcardId.pgType, PgTypes.timestamp, PccViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.creditcardid(), row.modifieddate()});;
 }

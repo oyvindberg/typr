@@ -5,16 +5,17 @@
  */
 package adventureworks.person.emailaddress;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.person.PersonFields;
 import adventureworks.person.person.PersonRow;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
@@ -22,12 +23,11 @@ import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface EmailaddressFields extends FieldsExpr<EmailaddressRow> {
-  record Impl(List<Path> _path) implements EmailaddressFields, Relation<EmailaddressFields, EmailaddressRow> {
+  record Impl(List<Path> _path) implements EmailaddressFields, RelationStructure<EmailaddressFields, EmailaddressRow> {
     @Override
     public IdField<BusinessentityId, EmailaddressRow> businessentityid() {
       return new IdField<BusinessentityId, EmailaddressRow>(_path, "businessentityid", EmailaddressRow::businessentityid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
@@ -39,33 +39,33 @@ public interface EmailaddressFields extends FieldsExpr<EmailaddressRow> {
     };
 
     @Override
-    public OptField</* max 50 chars */ String, EmailaddressRow> emailaddress() {
-      return new OptField</* max 50 chars */ String, EmailaddressRow>(_path, "emailaddress", EmailaddressRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
+    public OptField<String, EmailaddressRow> emailaddress() {
+      return new OptField<String, EmailaddressRow>(_path, "emailaddress", EmailaddressRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoUUID, EmailaddressRow> rowguid() {
-      return new Field<TypoUUID, EmailaddressRow>(_path, "rowguid", EmailaddressRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, EmailaddressRow> rowguid() {
+      return new Field<UUID, EmailaddressRow>(_path, "rowguid", EmailaddressRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, EmailaddressRow> modifieddate() {
-      return new Field<TypoLocalDateTime, EmailaddressRow>(_path, "modifieddate", EmailaddressRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, EmailaddressRow> modifieddate() {
+      return new Field<LocalDateTime, EmailaddressRow>(_path, "modifieddate", EmailaddressRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, EmailaddressRow>> columns() {
-      return List.of(this.businessentityid(), this.emailaddressid(), this.emailaddress(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.businessentityid(), this.emailaddressid(), this.emailaddress(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<EmailaddressFields, EmailaddressRow> copy(List<Path> _path) {
+    public RelationStructure<EmailaddressFields, EmailaddressRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BusinessentityId, EmailaddressRow> businessentityid();
@@ -74,12 +74,12 @@ public interface EmailaddressFields extends FieldsExpr<EmailaddressRow> {
 
   OptField</* max 50 chars */ String, EmailaddressRow> emailaddress();
 
-  Field<TypoUUID, EmailaddressRow> rowguid();
+  Field<UUID, EmailaddressRow> rowguid();
 
-  Field<TypoLocalDateTime, EmailaddressRow> modifieddate();
+  Field<LocalDateTime, EmailaddressRow> modifieddate();
 
   default ForeignKey<PersonFields, PersonRow> fkPerson() {
-    return ForeignKey.<PersonFields, PersonRow>of("person.FK_EmailAddress_Person_BusinessEntityID").withColumnPair(businessentityid(), PersonFields::businessentityid);
+    return ForeignKey.<PersonFields, PersonRow>of("person.FK_EmailAddress_Person_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), PersonFields::businessentityid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(EmailaddressId compositeId) {

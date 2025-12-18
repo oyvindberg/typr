@@ -6,7 +6,6 @@
 package testdb.payments
 
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
 import testdb.orders.OrdersRow
@@ -14,18 +13,19 @@ import testdb.payment_methods.PaymentMethodsFields
 import testdb.payment_methods.PaymentMethodsId
 import testdb.payment_methods.PaymentMethodsRow
 import typo.data.maria.Inet6
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.FieldsExpr0
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait PaymentsFields extends FieldsExpr[PaymentsRow] {
+trait PaymentsFields extends FieldsExpr0[PaymentsRow] {
   def paymentId: IdField[PaymentsId, PaymentsRow]
 
   def orderId: Field[OrdersId, PaymentsRow]
@@ -34,7 +34,7 @@ trait PaymentsFields extends FieldsExpr[PaymentsRow] {
 
   def transactionId: OptField[String, PaymentsRow]
 
-  def amount: Field[java.math.BigDecimal, PaymentsRow]
+  def amount: Field[BigDecimal, PaymentsRow]
 
   def currencyCode: Field[String, PaymentsRow]
 
@@ -50,25 +50,25 @@ trait PaymentsFields extends FieldsExpr[PaymentsRow] {
 
   def processedAt: OptField[LocalDateTime, PaymentsRow]
 
-  def fkPaymentMethods: ForeignKey[PaymentMethodsFields, PaymentMethodsRow] = ForeignKey.of[PaymentMethodsFields, PaymentMethodsRow]("fk_pay_method").withColumnPair(methodId, _.methodId)
+  def fkPaymentMethods: ForeignKey[PaymentMethodsFields, PaymentMethodsRow] = ForeignKey.of[PaymentMethodsFields, PaymentMethodsRow]("fk_pay_method").withColumnPair[PaymentMethodsId](methodId, _.methodId)
 
-  def fkOrders: ForeignKey[OrdersFields, OrdersRow] = ForeignKey.of[OrdersFields, OrdersRow]("fk_pay_order").withColumnPair(orderId, _.orderId)
+  def fkOrders: ForeignKey[OrdersFields, OrdersRow] = ForeignKey.of[OrdersFields, OrdersRow]("fk_pay_order").withColumnPair[OrdersId](orderId, _.orderId)
 
   override def columns: java.util.List[FieldLike[?, PaymentsRow]]
 
-  override def rowParser: RowParser[PaymentsRow] = PaymentsRow._rowParser
+  override def rowParser: RowParser[PaymentsRow] = PaymentsRow._rowParser.underlying
 }
 
 object PaymentsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends PaymentsFields with Relation[PaymentsFields, PaymentsRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends PaymentsFields with RelationStructure[PaymentsFields, PaymentsRow] {
 
     override def paymentId: IdField[PaymentsId, PaymentsRow] = {
       new IdField[PaymentsId, PaymentsRow](
         _path,
         "payment_id",
         _.paymentId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(paymentId = value),
         PaymentsId.pgType
       )
@@ -79,8 +79,8 @@ object PaymentsFields {
         _path,
         "order_id",
         _.orderId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderId = value),
         OrdersId.pgType
       )
@@ -91,8 +91,8 @@ object PaymentsFields {
         _path,
         "method_id",
         _.methodId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(methodId = value),
         PaymentMethodsId.pgType
       )
@@ -103,22 +103,22 @@ object PaymentsFields {
         _path,
         "transaction_id",
         _.transactionId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(transactionId = value),
         MariaTypes.varchar
       )
     }
 
-    override def amount: Field[java.math.BigDecimal, PaymentsRow] = {
-      new Field[java.math.BigDecimal, PaymentsRow](
+    override def amount: Field[BigDecimal, PaymentsRow] = {
+      new Field[BigDecimal, PaymentsRow](
         _path,
         "amount",
         _.amount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(amount = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
@@ -127,8 +127,8 @@ object PaymentsFields {
         _path,
         "currency_code",
         _.currencyCode,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(currencyCode = value),
         MariaTypes.char_
       )
@@ -139,8 +139,8 @@ object PaymentsFields {
         _path,
         "status",
         _.status,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(status = value),
         MariaTypes.text
       )
@@ -151,8 +151,8 @@ object PaymentsFields {
         _path,
         "processor_response",
         _.processorResponse,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(processorResponse = value),
         MariaTypes.longtext
       )
@@ -163,8 +163,8 @@ object PaymentsFields {
         _path,
         "error_message",
         _.errorMessage,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(errorMessage = value),
         MariaTypes.varchar
       )
@@ -175,8 +175,8 @@ object PaymentsFields {
         _path,
         "ip_address",
         _.ipAddress,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(ipAddress = value),
         MariaTypes.inet6
       )
@@ -187,8 +187,8 @@ object PaymentsFields {
         _path,
         "created_at",
         _.createdAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(createdAt = value),
         MariaTypes.datetime
       )
@@ -199,17 +199,17 @@ object PaymentsFields {
         _path,
         "processed_at",
         _.processedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(processedAt = value),
         MariaTypes.datetime
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, PaymentsRow]] = java.util.List.of(this.paymentId, this.orderId, this.methodId, this.transactionId, this.amount, this.currencyCode, this.status, this.processorResponse, this.errorMessage, this.ipAddress, this.createdAt, this.processedAt)
+    override def columns: java.util.List[FieldLike[?, PaymentsRow]] = java.util.List.of(this.paymentId.underlying, this.orderId.underlying, this.methodId.underlying, this.transactionId.underlying, this.amount.underlying, this.currencyCode.underlying, this.status.underlying, this.processorResponse.underlying, this.errorMessage.underlying, this.ipAddress.underlying, this.createdAt.underlying, this.processedAt.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[PaymentsFields, PaymentsRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PaymentsFields, PaymentsRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

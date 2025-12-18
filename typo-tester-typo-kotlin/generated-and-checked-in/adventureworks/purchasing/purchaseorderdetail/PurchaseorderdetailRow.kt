@@ -6,15 +6,15 @@
 package adventureworks.purchasing.purchaseorderdetail
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: purchasing.purchaseorderdetail
   * Individual products associated with a specific purchase order. See PurchaseOrderHeader.
@@ -30,11 +30,11 @@ data class PurchaseorderdetailRow(
     */
   val purchaseorderdetailid: Int,
   /** Date the product is expected to be received. */
-  val duedate: TypoLocalDateTime,
+  val duedate: LocalDateTime,
   /** Quantity ordered.
     * Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty: ((orderqty > 0))
     */
-  val orderqty: TypoShort,
+  val orderqty: Short,
   /** Product identification number. Foreign key to Product.ProductID.
     * Points to [adventureworks.production.product.ProductRow.productid]
     */
@@ -52,7 +52,7 @@ data class PurchaseorderdetailRow(
     */
   val rejectedqty: BigDecimal,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): PurchaseorderdetailId = PurchaseorderdetailId(purchaseorderid, purchaseorderdetailid)
 
@@ -60,24 +60,24 @@ data class PurchaseorderdetailRow(
 
   fun toUnsavedRow(
     purchaseorderdetailid: Defaulted<Int>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): PurchaseorderdetailRowUnsaved = PurchaseorderdetailRowUnsaved(purchaseorderid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, purchaseorderdetailid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<PurchaseorderdetailRow> = RowParsers.of(PurchaseorderheaderId.pgType, PgTypes.int4, TypoLocalDateTime.pgType, TypoShort.pgType, ProductId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> PurchaseorderdetailRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.purchaseorderid, row.purchaseorderdetailid, row.duedate, row.orderqty, row.productid, row.unitprice, row.receivedqty, row.rejectedqty, row.modifieddate) })
+    val _rowParser: RowParser<PurchaseorderdetailRow> = RowParsers.of(PurchaseorderheaderId.pgType, KotlinDbTypes.PgTypes.int4, PgTypes.timestamp, KotlinDbTypes.PgTypes.int2, ProductId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> PurchaseorderdetailRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.purchaseorderid, row.purchaseorderdetailid, row.duedate, row.orderqty, row.productid, row.unitprice, row.receivedqty, row.rejectedqty, row.modifieddate) })
 
     fun apply(
       compositeId: PurchaseorderdetailId,
-      duedate: TypoLocalDateTime,
-      orderqty: TypoShort,
+      duedate: LocalDateTime,
+      orderqty: Short,
       productid: ProductId,
       unitprice: BigDecimal,
       receivedqty: BigDecimal,
       rejectedqty: BigDecimal,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): PurchaseorderdetailRow = PurchaseorderdetailRow(compositeId.purchaseorderid, compositeId.purchaseorderdetailid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, modifieddate)
 
     val pgText: PgText<PurchaseorderdetailRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

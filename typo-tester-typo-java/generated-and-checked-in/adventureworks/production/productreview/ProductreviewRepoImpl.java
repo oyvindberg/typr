@@ -5,7 +5,6 @@
  */
 package adventureworks.production.productreview;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.public_.Name;
 import java.sql.Connection;
@@ -20,11 +19,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class ProductreviewRepoImpl implements ProductreviewRepo {
   @Override
@@ -37,13 +34,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     ProductreviewId productreviewid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "production"."productreview" where "productreviewid" = 
-      """),
-      ProductreviewId.pgType.encode(productreviewid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"production\".\"productreview\" where \"productreviewid\" = "), Fragment.encode(ProductreviewId.pgType, productreviewid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -51,14 +42,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     ProductreviewId[] productreviewids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "production"."productreview"
-                  where "productreviewid" = ANY("""),
-               ProductreviewId.pgTypeArray.encode(productreviewids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"production\".\"productreview\"\nwhere \"productreviewid\" = ANY("), Fragment.encode(ProductreviewId.pgTypeArray, productreviewids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -68,30 +52,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     ProductreviewRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."productreview"("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")
-         values ("""),
-      ProductreviewId.pgType.encode(unsaved.productreviewid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.reviewername()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoLocalDateTime.pgType.encode(unsaved.reviewdate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      PgTypes.text.encode(unsaved.emailaddress()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.int4.encode(unsaved.rating()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.opt().encode(unsaved.comments()),
-      typo.runtime.Fragment.lit(", "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"productreview\"(\"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductreviewId.pgType, unsaved.productreviewid()), Fragment.lit("::int4, "), Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.reviewername()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.reviewdate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.text, unsaved.emailaddress()), Fragment.lit(", "), Fragment.encode(PgTypes.int4, unsaved.rating()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text.opt(), unsaved.comments()), Fragment.lit(", "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\"\n"))
       .updateReturning(ProductreviewRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -100,45 +61,25 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     ProductreviewRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"productid\""));
-    values.add(interpolate(
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"reviewername\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.reviewername()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.reviewername()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"emailaddress\""));
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.emailaddress()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.emailaddress()), Fragment.lit("")));
     columns.add(Fragment.lit("\"rating\""));
-    values.add(interpolate(
-      PgTypes.int4.encode(unsaved.rating()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.int4, unsaved.rating()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"comments\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.comments()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text.opt(), unsaved.comments()), Fragment.lit("")));
     unsaved.productreviewid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"productreviewid\""));
-        values.add(interpolate(
-        ProductreviewId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(ProductreviewId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.reviewdate().visit(
@@ -147,10 +88,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"reviewdate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -159,26 +97,10 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."productreview"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"production\".\"productreview\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\"\n"));;
     return q.updateReturning(ProductreviewRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -188,9 +110,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."productreview"("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, ProductreviewRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"productreview\"(\"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, ProductreviewRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -200,9 +120,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."productreview"("productid", "reviewername", "emailaddress", "rating", "comments", "productreviewid", "reviewdate", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, ProductreviewRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"productreview\"(\"productid\", \"reviewername\", \"emailaddress\", \"rating\", \"comments\", \"productreviewid\", \"reviewdate\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ProductreviewRowUnsaved.pgText);
   };
 
   @Override
@@ -212,10 +130,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
 
   @Override
   public List<ProductreviewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text
-       from "production"."productreview"
-    """)).query(ProductreviewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\"\nfrom \"production\".\"productreview\"\n")).query(ProductreviewRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -223,14 +138,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     ProductreviewId productreviewid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text
-         from "production"."productreview"
-         where "productreviewid" = """),
-      ProductreviewId.pgType.encode(productreviewid),
-      typo.runtime.Fragment.lit("")
-    ).query(ProductreviewRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\"\nfrom \"production\".\"productreview\"\nwhere \"productreviewid\" = "), Fragment.encode(ProductreviewId.pgType, productreviewid), Fragment.lit("")).query(ProductreviewRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -238,14 +146,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     ProductreviewId[] productreviewids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text
-         from "production"."productreview"
-         where "productreviewid" = ANY("""),
-      ProductreviewId.pgTypeArray.encode(productreviewids),
-      typo.runtime.Fragment.lit(")")
-    ).query(ProductreviewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\"\nfrom \"production\".\"productreview\"\nwhere \"productreviewid\" = ANY("), Fragment.encode(ProductreviewId.pgTypeArray, productreviewids), Fragment.lit(")")).query(ProductreviewRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -260,7 +161,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
 
   @Override
   public UpdateBuilder<ProductreviewFields, ProductreviewRow> update() {
-    return UpdateBuilder.of("\"production\".\"productreview\"", ProductreviewFields.structure(), ProductreviewRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"production\".\"productreview\"", ProductreviewFields.structure(), ProductreviewRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -269,41 +170,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     Connection c
   ) {
     ProductreviewId productreviewid = row.productreviewid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "production"."productreview"
-         set "productid" = """),
-      ProductId.pgType.encode(row.productid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "reviewername" = """),
-      Name.pgType.encode(row.reviewername()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "reviewdate" = """),
-      TypoLocalDateTime.pgType.encode(row.reviewdate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp,
-         "emailaddress" = """),
-      PgTypes.text.encode(row.emailaddress()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "rating" = """),
-      PgTypes.int4.encode(row.rating()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "comments" = """),
-      PgTypes.text.opt().encode(row.comments()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "productreviewid" = """),
-      ProductreviewId.pgType.encode(productreviewid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"production\".\"productreview\"\nset \"productid\" = "), Fragment.encode(ProductId.pgType, row.productid()), Fragment.lit("::int4,\n\"reviewername\" = "), Fragment.encode(Name.pgType, row.reviewername()), Fragment.lit("::varchar,\n\"reviewdate\" = "), Fragment.encode(PgTypes.timestamp, row.reviewdate()), Fragment.lit("::timestamp,\n\"emailaddress\" = "), Fragment.encode(PgTypes.text, row.emailaddress()), Fragment.lit(",\n\"rating\" = "), Fragment.encode(PgTypes.int4, row.rating()), Fragment.lit("::int4,\n\"comments\" = "), Fragment.encode(PgTypes.text.opt(), row.comments()), Fragment.lit(",\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"productreviewid\" = "), Fragment.encode(ProductreviewId.pgType, productreviewid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -311,38 +178,7 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     ProductreviewRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."productreview"("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")
-         values ("""),
-      ProductreviewId.pgType.encode(unsaved.productreviewid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.reviewername()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoLocalDateTime.pgType.encode(unsaved.reviewdate()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      PgTypes.text.encode(unsaved.emailaddress()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.int4.encode(unsaved.rating()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.opt().encode(unsaved.comments()),
-      typo.runtime.Fragment.lit(", "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("productreviewid")
-         do update set
-           "productid" = EXCLUDED."productid",
-         "reviewername" = EXCLUDED."reviewername",
-         "reviewdate" = EXCLUDED."reviewdate",
-         "emailaddress" = EXCLUDED."emailaddress",
-         "rating" = EXCLUDED."rating",
-         "comments" = EXCLUDED."comments",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"productreview\"(\"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductreviewId.pgType, unsaved.productreviewid()), Fragment.lit("::int4, "), Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.reviewername()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.reviewdate()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.text, unsaved.emailaddress()), Fragment.lit(", "), Fragment.encode(PgTypes.int4, unsaved.rating()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text.opt(), unsaved.comments()), Fragment.lit(", "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"productreviewid\")\ndo update set\n  \"productid\" = EXCLUDED.\"productid\",\n\"reviewername\" = EXCLUDED.\"reviewername\",\n\"reviewdate\" = EXCLUDED.\"reviewdate\",\n\"emailaddress\" = EXCLUDED.\"emailaddress\",\n\"rating\" = EXCLUDED.\"rating\",\n\"comments\" = EXCLUDED.\"comments\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\""))
       .updateReturning(ProductreviewRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -352,21 +188,9 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     Iterator<ProductreviewRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "production"."productreview"("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")
-                values (?::int4, ?::int4, ?::varchar, ?::timestamp, ?, ?::int4, ?, ?::timestamp)
-                on conflict ("productreviewid")
-                do update set
-                  "productid" = EXCLUDED."productid",
-                "reviewername" = EXCLUDED."reviewername",
-                "reviewdate" = EXCLUDED."reviewdate",
-                "emailaddress" = EXCLUDED."emailaddress",
-                "rating" = EXCLUDED."rating",
-                "comments" = EXCLUDED."comments",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "productreviewid", "productid", "reviewername", "reviewdate"::text, "emailaddress", "rating", "comments", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"production\".\"productreview\"(\"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?::varchar, ?::timestamp, ?, ?::int4, ?, ?::timestamp)\non conflict (\"productreviewid\")\ndo update set\n  \"productid\" = EXCLUDED.\"productid\",\n\"reviewername\" = EXCLUDED.\"reviewername\",\n\"reviewdate\" = EXCLUDED.\"reviewdate\",\n\"emailaddress\" = EXCLUDED.\"emailaddress\",\n\"rating\" = EXCLUDED.\"rating\",\n\"comments\" = EXCLUDED.\"comments\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\""))
       .updateManyReturning(ProductreviewRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -376,25 +200,8 @@ public class ProductreviewRepoImpl implements ProductreviewRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table productreview_TEMP (like "production"."productreview") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy productreview_TEMP("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate") from stdin
-    """), batchSize, unsaved, c, ProductreviewRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "production"."productreview"("productreviewid", "productid", "reviewername", "reviewdate", "emailaddress", "rating", "comments", "modifieddate")
-       select * from productreview_TEMP
-       on conflict ("productreviewid")
-       do update set
-         "productid" = EXCLUDED."productid",
-       "reviewername" = EXCLUDED."reviewername",
-       "reviewdate" = EXCLUDED."reviewdate",
-       "emailaddress" = EXCLUDED."emailaddress",
-       "rating" = EXCLUDED."rating",
-       "comments" = EXCLUDED."comments",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table productreview_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table productreview_TEMP (like \"production\".\"productreview\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy productreview_TEMP(\"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\") from stdin", batchSize, unsaved, c, ProductreviewRow.pgText);
+    return interpolate(Fragment.lit("insert into \"production\".\"productreview\"(\"productreviewid\", \"productid\", \"reviewername\", \"reviewdate\", \"emailaddress\", \"rating\", \"comments\", \"modifieddate\")\nselect * from productreview_TEMP\non conflict (\"productreviewid\")\ndo update set\n  \"productid\" = EXCLUDED.\"productid\",\n\"reviewername\" = EXCLUDED.\"reviewername\",\n\"reviewdate\" = EXCLUDED.\"reviewdate\",\n\"emailaddress\" = EXCLUDED.\"emailaddress\",\n\"rating\" = EXCLUDED.\"rating\",\n\"comments\" = EXCLUDED.\"comments\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table productreview_TEMP;")).update().runUnchecked(c);
   };
 }

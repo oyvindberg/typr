@@ -5,20 +5,21 @@
  */
 package adventureworks.pr.pmi;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.illustration.IllustrationId;
 import adventureworks.production.productmodel.ProductmodelId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PmiViewFields extends FieldsExpr<PmiViewRow> {
-  record Impl(List<Path> _path) implements PmiViewFields, Relation<PmiViewFields, PmiViewRow> {
+  record Impl(List<Path> _path) implements PmiViewFields, RelationStructure<PmiViewFields, PmiViewRow> {
     @Override
     public Field<ProductmodelId, PmiViewRow> productmodelid() {
       return new Field<ProductmodelId, PmiViewRow>(_path, "productmodelid", PmiViewRow::productmodelid, Optional.empty(), Optional.empty(), (row, value) -> row.withProductmodelid(value), ProductmodelId.pgType);
@@ -30,30 +31,30 @@ public interface PmiViewFields extends FieldsExpr<PmiViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PmiViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PmiViewRow>(_path, "modifieddate", PmiViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PmiViewRow> modifieddate() {
+      return new Field<LocalDateTime, PmiViewRow>(_path, "modifieddate", PmiViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PmiViewRow>> columns() {
-      return List.of(this.productmodelid(), this.illustrationid(), this.modifieddate());
+      return java.util.List.of(this.productmodelid(), this.illustrationid(), this.modifieddate());
     };
 
     @Override
-    public Relation<PmiViewFields, PmiViewRow> copy(List<Path> _path) {
+    public RelationStructure<PmiViewFields, PmiViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductmodelId, PmiViewRow> productmodelid();
 
   Field<IllustrationId, PmiViewRow> illustrationid();
 
-  Field<TypoLocalDateTime, PmiViewRow> modifieddate();
+  Field<LocalDateTime, PmiViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PmiViewRow>> columns();

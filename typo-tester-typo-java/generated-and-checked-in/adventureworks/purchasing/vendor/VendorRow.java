@@ -6,12 +6,11 @@
 package adventureworks.purchasing.vendor;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.AccountNumber;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -34,7 +33,7 @@ public record VendorRow(
   /** 1 = Superior, 2 = Excellent, 3 = Above average, 4 = Average, 5 = Below average
     * Constraint CK_Vendor_CreditRating affecting columns creditrating: (((creditrating >= 1) AND (creditrating <= 5)))
     */
-  TypoShort creditrating,
+  Short creditrating,
   /** 0 = Do not use if another vendor is available. 1 = Preferred over other vendors supplying the same product.
     * Default: true
     */
@@ -46,7 +45,7 @@ public record VendorRow(
   /** Vendor URL. */
   Optional</* max 1024 chars */ String> purchasingwebserviceurl,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for Vendor records.  Foreign key to BusinessEntity.BusinessEntityID
     * Points to {@link adventureworks.person.businessentity.BusinessentityRow#businessentityid()}
@@ -68,7 +67,7 @@ public record VendorRow(
   /** 1 = Superior, 2 = Excellent, 3 = Above average, 4 = Average, 5 = Below average
     * Constraint CK_Vendor_CreditRating affecting columns creditrating: (((creditrating >= 1) AND (creditrating <= 5)))
     */
-  public VendorRow withCreditrating(TypoShort creditrating) {
+  public VendorRow withCreditrating(Short creditrating) {
     return new VendorRow(businessentityid, accountnumber, name, creditrating, preferredvendorstatus, activeflag, purchasingwebserviceurl, modifieddate);
   };
 
@@ -92,11 +91,11 @@ public record VendorRow(
   };
 
   /** Default: now() */
-  public VendorRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public VendorRow withModifieddate(LocalDateTime modifieddate) {
     return new VendorRow(businessentityid, accountnumber, name, creditrating, preferredvendorstatus, activeflag, purchasingwebserviceurl, modifieddate);
   };
 
-  static RowParser<VendorRow> _rowParser = RowParsers.of(BusinessentityId.pgType, AccountNumber.pgType, Name.pgType, TypoShort.pgType, Flag.pgType, Flag.pgType, PgTypes.text.opt(), TypoLocalDateTime.pgType, VendorRow::new, row -> new Object[]{row.businessentityid(), row.accountnumber(), row.name(), row.creditrating(), row.preferredvendorstatus(), row.activeflag(), row.purchasingwebserviceurl(), row.modifieddate()});;
+  static RowParser<VendorRow> _rowParser = RowParsers.of(BusinessentityId.pgType, AccountNumber.pgType, Name.pgType, PgTypes.int2, Flag.pgType, Flag.pgType, PgTypes.text.opt(), PgTypes.timestamp, VendorRow::new, row -> new Object[]{row.businessentityid(), row.accountnumber(), row.name(), row.creditrating(), row.preferredvendorstatus(), row.activeflag(), row.purchasingwebserviceurl(), row.modifieddate()});;
 
   static public PgText<VendorRow> pgText =
     PgText.from(_rowParser);
@@ -108,7 +107,7 @@ public record VendorRow(
   public VendorRowUnsaved toUnsavedRow(
     Defaulted<Flag> preferredvendorstatus,
     Defaulted<Flag> activeflag,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new VendorRowUnsaved(businessentityid, accountnumber, name, creditrating, purchasingwebserviceurl, preferredvendorstatus, activeflag, modifieddate);
   };

@@ -7,26 +7,26 @@ package testdb.mariatestnull
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface MariatestnullRepo {
-  fun delete(): DeleteBuilder<MariatestnullFields, MariatestnullRow>
+  abstract fun delete(): DeleteBuilder<MariatestnullFields, MariatestnullRow>
 
-  fun insert(
+  abstract fun insert(
     unsaved: MariatestnullRow,
     c: Connection
   ): MariatestnullRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: MariatestnullRowUnsaved,
     c: Connection
   ): MariatestnullRow
 
-  fun select(): SelectBuilder<MariatestnullFields, MariatestnullRow>
+  abstract fun select(): SelectBuilder<MariatestnullFields, MariatestnullRow>
 
-  fun selectAll(c: Connection): List<MariatestnullRow>
+  abstract fun selectAll(c: Connection): List<MariatestnullRow>
 
-  fun update(): UpdateBuilder<MariatestnullFields, MariatestnullRow>
+  abstract fun update(): UpdateBuilder<MariatestnullFields, MariatestnullRow>
 }

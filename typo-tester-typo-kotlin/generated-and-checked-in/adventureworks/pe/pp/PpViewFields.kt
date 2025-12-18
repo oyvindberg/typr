@@ -5,51 +5,53 @@
  */
 package adventureworks.pe.pp
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.public.Phone
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PpViewFields : FieldsExpr<PpViewRow> {
-  fun businessentityid(): Field<BusinessentityId, PpViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, PpViewRow>
 
-  override fun columns(): List<FieldLike<*, PpViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PpViewRow>>
 
-  fun id(): Field<BusinessentityId, PpViewRow>
+  abstract fun id(): Field<BusinessentityId, PpViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PpViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PpViewRow>
 
-  fun phonenumber(): Field<Phone, PpViewRow>
+  abstract fun phonenumber(): Field<Phone, PpViewRow>
 
-  fun phonenumbertypeid(): Field<PhonenumbertypeId, PpViewRow>
+  abstract fun phonenumbertypeid(): Field<PhonenumbertypeId, PpViewRow>
 
-  override fun rowParser(): RowParser<PpViewRow> = PpViewRow._rowParser
+  override fun rowParser(): RowParser<PpViewRow> = PpViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : PpViewFields, Relation<PpViewFields, PpViewRow> {
-      override fun id(): Field<BusinessentityId, PpViewRow> = Field<BusinessentityId, PpViewRow>(_path, "id", PpViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : PpViewFields, RelationStructure<PpViewFields, PpViewRow> {
+      override fun id(): Field<BusinessentityId, PpViewRow> = Field<BusinessentityId, PpViewRow>(_path, "id", PpViewRow::id, null, null, { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
 
-      override fun businessentityid(): Field<BusinessentityId, PpViewRow> = Field<BusinessentityId, PpViewRow>(_path, "businessentityid", PpViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, PpViewRow> = Field<BusinessentityId, PpViewRow>(_path, "businessentityid", PpViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun phonenumber(): Field<Phone, PpViewRow> = Field<Phone, PpViewRow>(_path, "phonenumber", PpViewRow::phonenumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumber = value) }, Phone.pgType)
+      override fun phonenumber(): Field<Phone, PpViewRow> = Field<Phone, PpViewRow>(_path, "phonenumber", PpViewRow::phonenumber, null, null, { row, value -> row.copy(phonenumber = value) }, Phone.pgType)
 
-      override fun phonenumbertypeid(): Field<PhonenumbertypeId, PpViewRow> = Field<PhonenumbertypeId, PpViewRow>(_path, "phonenumbertypeid", PpViewRow::phonenumbertypeid, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumbertypeid = value) }, PhonenumbertypeId.pgType)
+      override fun phonenumbertypeid(): Field<PhonenumbertypeId, PpViewRow> = Field<PhonenumbertypeId, PpViewRow>(_path, "phonenumbertypeid", PpViewRow::phonenumbertypeid, null, null, { row, value -> row.copy(phonenumbertypeid = value) }, PhonenumbertypeId.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PpViewRow> = Field<TypoLocalDateTime, PpViewRow>(_path, "modifieddate", PpViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PpViewRow> = Field<LocalDateTime, PpViewRow>(_path, "modifieddate", PpViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PpViewRow>> = listOf(this.id(), this.businessentityid(), this.phonenumber(), this.phonenumbertypeid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PpViewFields, PpViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PpViewRow>> = listOf(this.id().underlying, this.businessentityid().underlying, this.phonenumber().underlying, this.phonenumbertypeid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PpViewFields, PpViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

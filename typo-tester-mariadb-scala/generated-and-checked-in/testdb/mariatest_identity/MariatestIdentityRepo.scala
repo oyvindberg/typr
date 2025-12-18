@@ -6,17 +6,16 @@
 package testdb.mariatest_identity
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait MariatestIdentityRepo {
   def delete: DeleteBuilder[MariatestIdentityFields, MariatestIdentityRow]
 
-  def deleteById(id: MariatestIdentityId)(using c: Connection): java.lang.Boolean
+  def deleteById(id: MariatestIdentityId)(using c: Connection): Boolean
 
-  def deleteByIds(ids: Array[MariatestIdentityId])(using c: Connection): Integer
+  def deleteByIds(ids: Array[MariatestIdentityId])(using c: Connection): Int
 
   def insert(unsaved: MariatestIdentityRow)(using c: Connection): MariatestIdentityRow
 
@@ -24,19 +23,19 @@ trait MariatestIdentityRepo {
 
   def select: SelectBuilder[MariatestIdentityFields, MariatestIdentityRow]
 
-  def selectAll(using c: Connection): java.util.List[MariatestIdentityRow]
+  def selectAll(using c: Connection): List[MariatestIdentityRow]
 
-  def selectById(id: MariatestIdentityId)(using c: Connection): Optional[MariatestIdentityRow]
+  def selectById(id: MariatestIdentityId)(using c: Connection): Option[MariatestIdentityRow]
 
-  def selectByIds(ids: Array[MariatestIdentityId])(using c: Connection): java.util.List[MariatestIdentityRow]
+  def selectByIds(ids: Array[MariatestIdentityId])(using c: Connection): List[MariatestIdentityRow]
 
-  def selectByIdsTracked(ids: Array[MariatestIdentityId])(using c: Connection): java.util.Map[MariatestIdentityId, MariatestIdentityRow]
+  def selectByIdsTracked(ids: Array[MariatestIdentityId])(using c: Connection): Map[MariatestIdentityId, MariatestIdentityRow]
 
   def update: UpdateBuilder[MariatestIdentityFields, MariatestIdentityRow]
 
-  def update(row: MariatestIdentityRow)(using c: Connection): java.lang.Boolean
+  def update(row: MariatestIdentityRow)(using c: Connection): Boolean
 
   def upsert(unsaved: MariatestIdentityRow)(using c: Connection): MariatestIdentityRow
 
-  def upsertBatch(unsaved: java.util.Iterator[MariatestIdentityRow])(using c: Connection): java.util.List[MariatestIdentityRow]
+  def upsertBatch(unsaved: Iterator[MariatestIdentityRow])(using c: Connection): List[MariatestIdentityRow]
 }

@@ -5,11 +5,11 @@
  */
 package adventureworks.hr.jc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.humanresources.jobcandidate.JobcandidateId;
 import adventureworks.person.businessentity.BusinessentityId;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import typo.data.Xml;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -20,11 +20,11 @@ public record JcViewRow(
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#jobcandidateid()} */
   JobcandidateId jobcandidateid,
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#businessentityid()} */
-  Optional<BusinessentityId> businessentityid,
+  BusinessentityId businessentityid,
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#resume()} */
-  Optional<TypoXml> resume,
+  Xml resume,
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#jobcandidateid()} */
   public JcViewRow withId(JobcandidateId id) {
@@ -37,19 +37,19 @@ public record JcViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#businessentityid()} */
-  public JcViewRow withBusinessentityid(Optional<BusinessentityId> businessentityid) {
+  public JcViewRow withBusinessentityid(BusinessentityId businessentityid) {
     return new JcViewRow(id, jobcandidateid, businessentityid, resume, modifieddate);
   };
 
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#resume()} */
-  public JcViewRow withResume(Optional<TypoXml> resume) {
+  public JcViewRow withResume(Xml resume) {
     return new JcViewRow(id, jobcandidateid, businessentityid, resume, modifieddate);
   };
 
   /** Points to {@link adventureworks.humanresources.jobcandidate.JobcandidateRow#modifieddate()} */
-  public JcViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public JcViewRow withModifieddate(LocalDateTime modifieddate) {
     return new JcViewRow(id, jobcandidateid, businessentityid, resume, modifieddate);
   };
 
-  static RowParser<JcViewRow> _rowParser = RowParsers.of(JobcandidateId.pgType, JobcandidateId.pgType, BusinessentityId.pgType.opt(), TypoXml.pgType.opt(), TypoLocalDateTime.pgType, JcViewRow::new, row -> new Object[]{row.id(), row.jobcandidateid(), row.businessentityid(), row.resume(), row.modifieddate()});;
+  static RowParser<JcViewRow> _rowParser = RowParsers.of(JobcandidateId.pgType, JobcandidateId.pgType, BusinessentityId.pgType, PgTypes.xml, PgTypes.timestamp, JcViewRow::new, row -> new Object[]{row.id(), row.jobcandidateid(), row.businessentityid(), row.resume(), row.modifieddate()});;
 }

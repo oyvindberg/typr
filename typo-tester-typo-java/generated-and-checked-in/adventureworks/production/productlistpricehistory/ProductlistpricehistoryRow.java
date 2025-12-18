@@ -6,9 +6,9 @@
 package adventureworks.production.productlistpricehistory;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -27,17 +27,17 @@ public record ProductlistpricehistoryRow(
   /** List price start date.
     * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** List price end date
     * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  Optional<TypoLocalDateTime> enddate,
+  Optional<LocalDateTime> enddate,
   /** Product list price.
     * Constraint CK_ProductListPriceHistory_ListPrice affecting columns listprice: ((listprice > 0.00))
     */
   BigDecimal listprice,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Product identification number. Foreign key to Product.ProductID
     * Points to {@link adventureworks.production.product.ProductRow#productid()}
@@ -49,14 +49,14 @@ public record ProductlistpricehistoryRow(
   /** List price start date.
     * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public ProductlistpricehistoryRow withStartdate(TypoLocalDateTime startdate) {
+  public ProductlistpricehistoryRow withStartdate(LocalDateTime startdate) {
     return new ProductlistpricehistoryRow(productid, startdate, enddate, listprice, modifieddate);
   };
 
   /** List price end date
     * Constraint CK_ProductListPriceHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public ProductlistpricehistoryRow withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public ProductlistpricehistoryRow withEnddate(Optional<LocalDateTime> enddate) {
     return new ProductlistpricehistoryRow(productid, startdate, enddate, listprice, modifieddate);
   };
 
@@ -68,17 +68,17 @@ public record ProductlistpricehistoryRow(
   };
 
   /** Default: now() */
-  public ProductlistpricehistoryRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductlistpricehistoryRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductlistpricehistoryRow(productid, startdate, enddate, listprice, modifieddate);
   };
 
-  static RowParser<ProductlistpricehistoryRow> _rowParser = RowParsers.of(ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), PgTypes.numeric, TypoLocalDateTime.pgType, ProductlistpricehistoryRow::new, row -> new Object[]{row.productid(), row.startdate(), row.enddate(), row.listprice(), row.modifieddate()});;
+  static RowParser<ProductlistpricehistoryRow> _rowParser = RowParsers.of(ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.numeric, PgTypes.timestamp, ProductlistpricehistoryRow::new, row -> new Object[]{row.productid(), row.startdate(), row.enddate(), row.listprice(), row.modifieddate()});;
 
   static public ProductlistpricehistoryRow apply(
     ProductlistpricehistoryId compositeId,
-    Optional<TypoLocalDateTime> enddate,
+    Optional<LocalDateTime> enddate,
     BigDecimal listprice,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new ProductlistpricehistoryRow(compositeId.productid(), compositeId.startdate(), enddate, listprice, modifieddate);
   };
@@ -94,7 +94,7 @@ public record ProductlistpricehistoryRow(
     return this.compositeId();
   };
 
-  public ProductlistpricehistoryRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductlistpricehistoryRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new ProductlistpricehistoryRowUnsaved(productid, startdate, enddate, listprice, modifieddate);
   };
 }

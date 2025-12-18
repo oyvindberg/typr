@@ -151,7 +151,7 @@ public record PaymentsRow(
     return new PaymentsRow(paymentId, orderId, methodId, transactionId, amount, currencyCode, status, processorResponse, errorMessage, ipAddress, createdAt, processedAt);
   };
 
-  static RowParser<PaymentsRow> _rowParser = RowParsers.of(PaymentsId.pgType, OrdersId.pgType, PaymentMethodsId.pgType, MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.char_, MariaTypes.text, MariaTypes.longtext.opt(), MariaTypes.varchar.opt(), MariaTypes.inet6.opt(), MariaTypes.datetime, MariaTypes.datetime.opt(), PaymentsRow::new, row -> new Object[]{row.paymentId(), row.orderId(), row.methodId(), row.transactionId(), row.amount(), row.currencyCode(), row.status(), row.processorResponse(), row.errorMessage(), row.ipAddress(), row.createdAt(), row.processedAt()});;
+  static RowParser<PaymentsRow> _rowParser = RowParsers.of(PaymentsId.pgType, OrdersId.pgType, PaymentMethodsId.pgType, MariaTypes.varchar.opt(), MariaTypes.numeric, MariaTypes.char_, MariaTypes.text, MariaTypes.longtext.opt(), MariaTypes.varchar.opt(), MariaTypes.inet6.opt(), MariaTypes.datetime, MariaTypes.datetime.opt(), PaymentsRow::new, row -> new Object[]{row.paymentId(), row.orderId(), row.methodId(), row.transactionId(), row.amount(), row.currencyCode(), row.status(), row.processorResponse(), row.errorMessage(), row.ipAddress(), row.createdAt(), row.processedAt()});;
 
   static public MariaText<PaymentsRow> mariaText =
     MariaText.from(_rowParser);

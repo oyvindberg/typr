@@ -14,7 +14,7 @@ import zio.json.internal.Write
 /** Type for the composite primary key of table `public.flaff` */
 case class FlaffId(
   code: ShortText,
-  anotherCode: /* max 20 chars */ String,
+  anotherCode: String,
   someNumber: Int,
   specifier: ShortText
 )

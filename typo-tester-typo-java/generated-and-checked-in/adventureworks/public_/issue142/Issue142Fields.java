@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.RowParser;
 
 public interface Issue142Fields extends FieldsExpr<Issue142Row> {
-  record Impl(List<Path> _path) implements Issue142Fields, Relation<Issue142Fields, Issue142Row> {
+  record Impl(List<Path> _path) implements Issue142Fields, RelationStructure<Issue142Fields, Issue142Row> {
     @Override
     public IdField<Issue142Id, Issue142Row> tabellkode() {
       return new IdField<Issue142Id, Issue142Row>(_path, "tabellkode", Issue142Row::tabellkode, Optional.empty(), Optional.empty(), (row, value) -> row.withTabellkode(value), Issue142Id.pgType);
@@ -23,17 +23,17 @@ public interface Issue142Fields extends FieldsExpr<Issue142Row> {
 
     @Override
     public List<FieldLike<?, Issue142Row>> columns() {
-      return List.of(this.tabellkode());
+      return java.util.List.of(this.tabellkode());
     };
 
     @Override
-    public Relation<Issue142Fields, Issue142Row> copy(List<Path> _path) {
+    public RelationStructure<Issue142Fields, Issue142Row> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<Issue142Id, Issue142Row> tabellkode();

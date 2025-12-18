@@ -6,12 +6,13 @@
 package adventureworks.production.productmodel;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -27,13 +28,13 @@ public record ProductmodelRow(
   /** Product model description. */
   Name name,
   /** Detailed product catalog information in xml format. */
-  Optional<TypoXml> catalogdescription,
+  Optional<Xml> catalogdescription,
   /** Manufacturing instructions in xml format. */
-  Optional<TypoXml> instructions,
+  Optional<Xml> instructions,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for ProductModel records.
     * Default: nextval('production.productmodel_productmodelid_seq'::regclass)
@@ -48,26 +49,26 @@ public record ProductmodelRow(
   };
 
   /** Detailed product catalog information in xml format. */
-  public ProductmodelRow withCatalogdescription(Optional<TypoXml> catalogdescription) {
+  public ProductmodelRow withCatalogdescription(Optional<Xml> catalogdescription) {
     return new ProductmodelRow(productmodelid, name, catalogdescription, instructions, rowguid, modifieddate);
   };
 
   /** Manufacturing instructions in xml format. */
-  public ProductmodelRow withInstructions(Optional<TypoXml> instructions) {
+  public ProductmodelRow withInstructions(Optional<Xml> instructions) {
     return new ProductmodelRow(productmodelid, name, catalogdescription, instructions, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public ProductmodelRow withRowguid(TypoUUID rowguid) {
+  public ProductmodelRow withRowguid(UUID rowguid) {
     return new ProductmodelRow(productmodelid, name, catalogdescription, instructions, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ProductmodelRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductmodelRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductmodelRow(productmodelid, name, catalogdescription, instructions, rowguid, modifieddate);
   };
 
-  static RowParser<ProductmodelRow> _rowParser = RowParsers.of(ProductmodelId.pgType, Name.pgType, TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, ProductmodelRow::new, row -> new Object[]{row.productmodelid(), row.name(), row.catalogdescription(), row.instructions(), row.rowguid(), row.modifieddate()});;
+  static RowParser<ProductmodelRow> _rowParser = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.xml.opt(), PgTypes.xml.opt(), PgTypes.uuid, PgTypes.timestamp, ProductmodelRow::new, row -> new Object[]{row.productmodelid(), row.name(), row.catalogdescription(), row.instructions(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<ProductmodelRow> pgText =
     PgText.from(_rowParser);
@@ -78,8 +79,8 @@ public record ProductmodelRow(
 
   public ProductmodelRowUnsaved toUnsavedRow(
     Defaulted<ProductmodelId> productmodelid,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ProductmodelRowUnsaved(name, catalogdescription, instructions, productmodelid, rowguid, modifieddate);
   };

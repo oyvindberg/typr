@@ -18,18 +18,18 @@ import zio.json.internal.Write
 case class VjobcandidateeducationViewRow(
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
-  eduLevel: /* nullability unknown */ Option[/* max 50 chars */ String],
-  eduStartDate: /* nullability unknown */ Option[TypoLocalDate],
-  eduEndDate: /* nullability unknown */ Option[TypoLocalDate],
-  eduDegree: /* nullability unknown */ Option[/* max 50 chars */ String],
-  eduMajor: /* nullability unknown */ Option[/* max 50 chars */ String],
-  eduMinor: /* nullability unknown */ Option[/* max 50 chars */ String],
-  eduGPA: /* nullability unknown */ Option[/* max 5 chars */ String],
-  eduGPAScale: /* nullability unknown */ Option[/* max 5 chars */ String],
-  eduSchool: /* nullability unknown */ Option[/* max 100 chars */ String],
-  eduLocCountryRegion: /* nullability unknown */ Option[/* max 100 chars */ String],
-  eduLocState: /* nullability unknown */ Option[/* max 100 chars */ String],
-  eduLocCity: /* nullability unknown */ Option[/* max 100 chars */ String]
+  eduLevel: Option[/* max 50 chars */ String],
+  eduStartDate: Option[TypoLocalDate],
+  eduEndDate: Option[TypoLocalDate],
+  eduDegree: Option[/* max 50 chars */ String],
+  eduMajor: Option[/* max 50 chars */ String],
+  eduMinor: Option[/* max 50 chars */ String],
+  eduGPA: Option[/* max 5 chars */ String],
+  eduGPAScale: Option[/* max 5 chars */ String],
+  eduSchool: Option[/* max 100 chars */ String],
+  eduLocCountryRegion: Option[/* max 100 chars */ String],
+  eduLocState: Option[/* max 100 chars */ String],
+  eduLocCity: Option[/* max 100 chars */ String]
 )
 
 object VjobcandidateeducationViewRow {

@@ -8,21 +8,19 @@ package adventureworks.humanresources.department
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class DepartmentRepoMock(
   val toRow: (DepartmentRowUnsaved) -> DepartmentRow,
@@ -33,7 +31,7 @@ data class DepartmentRepoMock(
   override fun deleteById(
     departmentid: DepartmentId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(departmentid)).isPresent()
+  ): Boolean = map.remove(departmentid) != null
 
   override fun deleteByIds(
     departmentids: Array<DepartmentId>,
@@ -41,7 +39,7 @@ data class DepartmentRepoMock(
   ): Int {
     var count = 0
     for (id in departmentids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class DepartmentRepoMock(
     c: Connection
   ): DepartmentRow {
     if (map.containsKey(unsaved.departmentid)) {
-      throw RuntimeException(str("id $unsaved.departmentid already exists"))
+      throw RuntimeException("id " + unsaved.departmentid + " already exists")
     }
     map[unsaved.departmentid] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class DepartmentRepoMock(
   override fun selectById(
     departmentid: DepartmentId,
     c: Connection
-  ): Optional<DepartmentRow> = Optional.ofNullable(map[departmentid])
+  ): DepartmentRow? = map[departmentid]
 
   override fun selectByIds(
     departmentids: Array<DepartmentId>,
@@ -109,9 +107,9 @@ data class DepartmentRepoMock(
   ): List<DepartmentRow> {
     val result = ArrayList<DepartmentRow>()
     for (id in departmentids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class DepartmentRepoMock(
     row: DepartmentRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.departmentid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.departmentid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.departmentid] = row
     }

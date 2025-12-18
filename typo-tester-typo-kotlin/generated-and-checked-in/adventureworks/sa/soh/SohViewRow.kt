@@ -5,9 +5,6 @@
  */
 package adventureworks.sa.soh
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.address.AddressId
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.AccountNumber
@@ -20,10 +17,12 @@ import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesterritory.SalesterritoryId
 import adventureworks.userdefined.CustomCreditcardId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sa.soh */
 data class SohViewRow(
@@ -32,27 +31,27 @@ data class SohViewRow(
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.salesorderid] */
   val salesorderid: SalesorderheaderId,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.revisionnumber] */
-  val revisionnumber: TypoShort,
+  val revisionnumber: Short,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.orderdate] */
-  val orderdate: TypoLocalDateTime,
+  val orderdate: LocalDateTime,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.duedate] */
-  val duedate: TypoLocalDateTime,
+  val duedate: LocalDateTime,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.shipdate] */
-  val shipdate: Optional<TypoLocalDateTime>,
+  val shipdate: LocalDateTime,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.status] */
-  val status: TypoShort,
+  val status: Short,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.onlineorderflag] */
   val onlineorderflag: Flag,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.purchaseordernumber] */
-  val purchaseordernumber: Optional<OrderNumber>,
+  val purchaseordernumber: OrderNumber,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.accountnumber] */
-  val accountnumber: Optional<AccountNumber>,
+  val accountnumber: AccountNumber,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.customerid] */
   val customerid: CustomerId,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.salespersonid] */
-  val salespersonid: Optional<BusinessentityId>,
+  val salespersonid: BusinessentityId,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.territoryid] */
-  val territoryid: Optional<SalesterritoryId>,
+  val territoryid: SalesterritoryId,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.billtoaddressid] */
   val billtoaddressid: AddressId,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.shiptoaddressid] */
@@ -60,11 +59,11 @@ data class SohViewRow(
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.shipmethodid] */
   val shipmethodid: ShipmethodId,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.creditcardid] */
-  val creditcardid: Optional</* user-picked */ CustomCreditcardId>,
+  val creditcardid: /* user-picked */ CustomCreditcardId,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.creditcardapprovalcode] */
-  val creditcardapprovalcode: Optional</* max 15 chars */ String>,
+  val creditcardapprovalcode: String,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.currencyrateid] */
-  val currencyrateid: Optional<CurrencyrateId>,
+  val currencyrateid: CurrencyrateId,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.subtotal] */
   val subtotal: BigDecimal,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.taxamt] */
@@ -72,15 +71,15 @@ data class SohViewRow(
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.freight] */
   val freight: BigDecimal,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.totaldue] */
-  val totaldue: Optional<BigDecimal>,
+  val totaldue: BigDecimal,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.comment] */
-  val comment: Optional</* max 128 chars */ String>,
+  val comment: String,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.sales.salesorderheader.SalesorderheaderRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SohViewRow> = RowParsers.of(SalesorderheaderId.pgType, SalesorderheaderId.pgType, TypoShort.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoShort.pgType, Flag.pgType, OrderNumber.pgType.opt(), AccountNumber.pgType.opt(), CustomerId.pgType, BusinessentityId.pgType.opt(), SalesterritoryId.pgType.opt(), AddressId.pgType, AddressId.pgType, ShipmethodId.pgType, CustomCreditcardId.pgType.opt(), PgTypes.text.opt(), CurrencyrateId.pgType.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25 -> SohViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!, t22!!, t23!!, t24!!, t25!!) }, { row -> arrayOf<Any?>(row.id, row.salesorderid, row.revisionnumber, row.orderdate, row.duedate, row.shipdate, row.status, row.onlineorderflag, row.purchaseordernumber, row.accountnumber, row.customerid, row.salespersonid, row.territoryid, row.billtoaddressid, row.shiptoaddressid, row.shipmethodid, row.creditcardid, row.creditcardapprovalcode, row.currencyrateid, row.subtotal, row.taxamt, row.freight, row.totaldue, row.comment, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SohViewRow> = RowParsers.of(SalesorderheaderId.pgType, SalesorderheaderId.pgType, KotlinDbTypes.PgTypes.int2, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp, KotlinDbTypes.PgTypes.int2, Flag.pgType, OrderNumber.pgType, AccountNumber.pgType, CustomerId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType, AddressId.pgType, AddressId.pgType, ShipmethodId.pgType, CustomCreditcardId.pgType, PgTypes.text, CurrencyrateId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25 -> SohViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!, t22!!, t23!!, t24!!, t25!!) }, { row -> arrayOf<Any?>(row.id, row.salesorderid, row.revisionnumber, row.orderdate, row.duedate, row.shipdate, row.status, row.onlineorderflag, row.purchaseordernumber, row.accountnumber, row.customerid, row.salespersonid, row.territoryid, row.billtoaddressid, row.shiptoaddressid, row.shipmethodid, row.creditcardid, row.creditcardapprovalcode, row.currencyrateid, row.subtotal, row.taxamt, row.freight, row.totaldue, row.comment, row.rowguid, row.modifieddate) })
   }
 }

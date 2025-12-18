@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VproductanddescriptionMVFields extends FieldsExpr<VproductanddescriptionMVRow> {
-  record Impl(List<Path> _path) implements VproductanddescriptionMVFields, Relation<VproductanddescriptionMVFields, VproductanddescriptionMVRow> {
+  record Impl(List<Path> _path) implements VproductanddescriptionMVFields, RelationStructure<VproductanddescriptionMVFields, VproductanddescriptionMVRow> {
     @Override
     public Field<ProductId, VproductanddescriptionMVRow> productid() {
       return new Field<ProductId, VproductanddescriptionMVRow>(_path, "productid", VproductanddescriptionMVRow::productid, Optional.empty(), Optional.empty(), (row, value) -> row.withProductid(value), ProductId.pgType);
@@ -41,23 +41,23 @@ public interface VproductanddescriptionMVFields extends FieldsExpr<Vproductandde
     };
 
     @Override
-    public Field</* max 400 chars */ String, VproductanddescriptionMVRow> description() {
-      return new Field</* max 400 chars */ String, VproductanddescriptionMVRow>(_path, "description", VproductanddescriptionMVRow::description, Optional.empty(), Optional.empty(), (row, value) -> row.withDescription(value), PgTypes.text);
+    public Field<String, VproductanddescriptionMVRow> description() {
+      return new Field<String, VproductanddescriptionMVRow>(_path, "description", VproductanddescriptionMVRow::description, Optional.empty(), Optional.empty(), (row, value) -> row.withDescription(value), PgTypes.text);
     };
 
     @Override
     public List<FieldLike<?, VproductanddescriptionMVRow>> columns() {
-      return List.of(this.productid(), this.name(), this.productmodel(), this.cultureid(), this.description());
+      return java.util.List.of(this.productid(), this.name(), this.productmodel(), this.cultureid(), this.description());
     };
 
     @Override
-    public Relation<VproductanddescriptionMVFields, VproductanddescriptionMVRow> copy(List<Path> _path) {
+    public RelationStructure<VproductanddescriptionMVFields, VproductanddescriptionMVRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductId, VproductanddescriptionMVRow> productid();
@@ -68,7 +68,7 @@ public interface VproductanddescriptionMVFields extends FieldsExpr<Vproductandde
 
   Field<CultureId, VproductanddescriptionMVRow> cultureid();
 
-  Field</* max 400 chars */ String, VproductanddescriptionMVRow> description();
+  Field<String, VproductanddescriptionMVRow> description();
 
   @Override
   List<FieldLike<?, VproductanddescriptionMVRow>> columns();

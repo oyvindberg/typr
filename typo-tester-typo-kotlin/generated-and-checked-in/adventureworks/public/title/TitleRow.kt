@@ -5,9 +5,9 @@
  */
 package adventureworks.public.title
 
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: public.title
   * Primary key: code
@@ -19,6 +19,6 @@ data class TitleRow(val code: TitleId) {
     val _rowParser: RowParser<TitleRow> = RowParsers.of(TitleId.pgType, { t0 -> TitleRow(t0!!) }, { row -> arrayOf<Any?>(row.code) })
 
     val pgText: PgText<TitleRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

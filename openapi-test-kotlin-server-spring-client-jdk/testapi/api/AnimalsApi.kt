@@ -7,5 +7,5 @@ import testapi.model.Animal
 interface AnimalsApi {
   /** List all animals (polymorphic) */
   @Throws(Exception::class)
-  fun listAnimals(): Response2004XX5XX<List<Animal>>
+  abstract fun listAnimals(): Response2004XX5XX<List<Animal>>
 }

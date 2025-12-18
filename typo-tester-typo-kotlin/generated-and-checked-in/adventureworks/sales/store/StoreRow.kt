@@ -6,15 +6,16 @@
 package adventureworks.sales.store
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.data.Xml
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: sales.store
   * Customers (resellers) of Adventure Works products.
@@ -30,25 +31,25 @@ data class StoreRow(
   /** ID of the sales person assigned to the customer. Foreign key to SalesPerson.BusinessEntityID.
     * Points to [adventureworks.sales.salesperson.SalespersonRow.businessentityid]
     */
-  val salespersonid: Optional<BusinessentityId>,
+  val salespersonid: BusinessentityId?,
   /** Demographic informationg about the store such as the number of employees, annual sales and store type. */
-  val demographics: Optional<TypoXml>,
+  val demographics: Xml?,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): BusinessentityId = businessentityid
 
   fun toUnsavedRow(
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): StoreRowUnsaved = StoreRowUnsaved(businessentityid, name, salespersonid, demographics, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<StoreRow> = RowParsers.of(BusinessentityId.pgType, Name.pgType, BusinessentityId.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> StoreRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.name, row.salespersonid, row.demographics, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<StoreRow> = RowParsers.of(BusinessentityId.pgType, Name.pgType, BusinessentityId.pgType.nullable(), PgTypes.xml.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> StoreRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.name, row.salespersonid, row.demographics, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<StoreRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

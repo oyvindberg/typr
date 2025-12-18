@@ -16,18 +16,18 @@ import testdb.products.ProductsRow;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface ProductCategoriesFields extends FieldsExpr<ProductCategoriesRow> {
-  record Impl(List<Path> _path) implements ProductCategoriesFields, Relation<ProductCategoriesFields, ProductCategoriesRow> {
+  record Impl(List<Path> _path) implements ProductCategoriesFields, RelationStructure<ProductCategoriesFields, ProductCategoriesRow> {
     @Override
     public IdField<ProductsId, ProductCategoriesRow> productId() {
       return new IdField<ProductsId, ProductCategoriesRow>(_path, "product_id", ProductCategoriesRow::productId, Optional.empty(), Optional.empty(), (row, value) -> row.withProductId(value), ProductsId.pgType);
@@ -50,17 +50,17 @@ public interface ProductCategoriesFields extends FieldsExpr<ProductCategoriesRow
 
     @Override
     public List<FieldLike<?, ProductCategoriesRow>> columns() {
-      return List.of(this.productId(), this.categoryId(), this.isPrimary(), this.sortOrder());
+      return java.util.List.of(this.productId(), this.categoryId(), this.isPrimary(), this.sortOrder());
     };
 
     @Override
-    public Relation<ProductCategoriesFields, ProductCategoriesRow> copy(List<Path> _path) {
+    public RelationStructure<ProductCategoriesFields, ProductCategoriesRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ProductsId, ProductCategoriesRow> productId();
@@ -72,11 +72,11 @@ public interface ProductCategoriesFields extends FieldsExpr<ProductCategoriesRow
   Field<Short, ProductCategoriesRow> sortOrder();
 
   default ForeignKey<CategoriesFields, CategoriesRow> fkCategories() {
-    return ForeignKey.<CategoriesFields, CategoriesRow>of("fk_pc_category").withColumnPair(categoryId(), CategoriesFields::categoryId);
+    return ForeignKey.<CategoriesFields, CategoriesRow>of("fk_pc_category").<CategoriesId>withColumnPair(categoryId(), CategoriesFields::categoryId);
   };
 
   default ForeignKey<ProductsFields, ProductsRow> fkProducts() {
-    return ForeignKey.<ProductsFields, ProductsRow>of("fk_pc_product").withColumnPair(productId(), ProductsFields::productId);
+    return ForeignKey.<ProductsFields, ProductsRow>of("fk_pc_product").<ProductsId>withColumnPair(productId(), ProductsFields::productId);
   };
 
   default SqlExpr<Boolean> compositeIdIs(ProductCategoriesId compositeId) {

@@ -6,12 +6,13 @@
 package testdb.v_product_catalog
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.products.ProductsId
 import typo.data.maria.MariaSet
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** View: v_product_catalog
  * VIEW
@@ -34,11 +35,11 @@ case class VProductCatalogViewRow(
    * Default: NULL
    * Points to [[testdb.products.ProductsRow.shortDescription]]
    */
-  @JsonProperty("short_description") shortDescription: Optional[String],
+  @JsonProperty("short_description") shortDescription: Option[String],
   /** 
    * Points to [[testdb.products.ProductsRow.basePrice]]
    */
-  @JsonProperty("base_price") basePrice: java.math.BigDecimal,
+  @JsonProperty("base_price") basePrice: BigDecimal,
   /** 
    * Default: 'draft'
    * Points to [[testdb.products.ProductsRow.status]]
@@ -48,25 +49,25 @@ case class VProductCatalogViewRow(
    * Default: NULL
    * Points to [[testdb.products.ProductsRow.tags]]
    */
-  tags: Optional[MariaSet],
+  tags: Option[MariaSet],
   /** 
    * Points to [[testdb.brands.BrandsRow.name]]
    */
-  @JsonProperty("brand_name") brandName: Optional[String],
+  @JsonProperty("brand_name") brandName: Option[String],
   /** 
    * Default: 0
    */
-  @JsonProperty("available_quantity") availableQuantity: java.math.BigDecimal,
+  @JsonProperty("available_quantity") availableQuantity: BigDecimal,
   /** 
    * Default: 0.0000
    */
-  @JsonProperty("avg_rating") avgRating: java.math.BigDecimal,
+  @JsonProperty("avg_rating") avgRating: BigDecimal,
   /** 
    * Default: 0
    */
-  @JsonProperty("review_count") reviewCount: java.lang.Long
+  @JsonProperty("review_count") reviewCount: Long
 )
 
 object VProductCatalogViewRow {
-  val `_rowParser`: RowParser[VProductCatalogViewRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.text, MariaTypes.set.opt(), MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.decimal, MariaTypes.bigint, VProductCatalogViewRow.apply, row => Array[Object](row.productId.asInstanceOf[Object], row.sku.asInstanceOf[Object], row.name.asInstanceOf[Object], row.shortDescription.asInstanceOf[Object], row.basePrice.asInstanceOf[Object], row.status.asInstanceOf[Object], row.tags.asInstanceOf[Object], row.brandName.asInstanceOf[Object], row.availableQuantity.asInstanceOf[Object], row.avgRating.asInstanceOf[Object], row.reviewCount.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VProductCatalogViewRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.set.nullable, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.bigint)(VProductCatalogViewRow.apply)(row => Array[Any](row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount))
 }

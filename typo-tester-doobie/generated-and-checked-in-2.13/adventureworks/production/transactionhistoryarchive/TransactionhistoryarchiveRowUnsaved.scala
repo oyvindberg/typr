@@ -23,7 +23,7 @@ case class TransactionhistoryarchiveRowUnsaved(
   /** W = Work Order, S = Sales Order, P = Purchase Order
    * Constraint CK_TransactionHistoryArchive_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
    */
-  transactiontype: /* bpchar, max 1 chars */ String,
+  transactiontype: String,
   /** Product quantity. */
   quantity: Int,
   /** Product cost. */
@@ -59,9 +59,9 @@ case class TransactionhistoryarchiveRowUnsaved(
 }
 
 object TransactionhistoryarchiveRowUnsaved {
-  implicit lazy val decoder: Decoder[TransactionhistoryarchiveRowUnsaved] = Decoder.forProduct9[TransactionhistoryarchiveRowUnsaved, TransactionhistoryarchiveId, Int, Int, /* bpchar, max 1 chars */ String, Int, BigDecimal, Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("transactionid", "productid", "referenceorderid", "transactiontype", "quantity", "actualcost", "referenceorderlineid", "transactiondate", "modifieddate")(TransactionhistoryarchiveRowUnsaved.apply)(TransactionhistoryarchiveId.decoder, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeBigDecimal, Defaulted.decoder(Decoder.decodeInt), Defaulted.decoder(TypoLocalDateTime.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+  implicit lazy val decoder: Decoder[TransactionhistoryarchiveRowUnsaved] = Decoder.forProduct9[TransactionhistoryarchiveRowUnsaved, TransactionhistoryarchiveId, Int, Int, String, Int, BigDecimal, Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("transactionid", "productid", "referenceorderid", "transactiontype", "quantity", "actualcost", "referenceorderlineid", "transactiondate", "modifieddate")(TransactionhistoryarchiveRowUnsaved.apply)(TransactionhistoryarchiveId.decoder, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeBigDecimal, Defaulted.decoder(Decoder.decodeInt), Defaulted.decoder(TypoLocalDateTime.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
 
-  implicit lazy val encoder: Encoder[TransactionhistoryarchiveRowUnsaved] = Encoder.forProduct9[TransactionhistoryarchiveRowUnsaved, TransactionhistoryarchiveId, Int, Int, /* bpchar, max 1 chars */ String, Int, BigDecimal, Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("transactionid", "productid", "referenceorderid", "transactiontype", "quantity", "actualcost", "referenceorderlineid", "transactiondate", "modifieddate")(x => (x.transactionid, x.productid, x.referenceorderid, x.transactiontype, x.quantity, x.actualcost, x.referenceorderlineid, x.transactiondate, x.modifieddate))(TransactionhistoryarchiveId.encoder, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeBigDecimal, Defaulted.encoder(Encoder.encodeInt), Defaulted.encoder(TypoLocalDateTime.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
+  implicit lazy val encoder: Encoder[TransactionhistoryarchiveRowUnsaved] = Encoder.forProduct9[TransactionhistoryarchiveRowUnsaved, TransactionhistoryarchiveId, Int, Int, String, Int, BigDecimal, Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("transactionid", "productid", "referenceorderid", "transactiontype", "quantity", "actualcost", "referenceorderlineid", "transactiondate", "modifieddate")(x => (x.transactionid, x.productid, x.referenceorderid, x.transactiontype, x.quantity, x.actualcost, x.referenceorderlineid, x.transactiondate, x.modifieddate))(TransactionhistoryarchiveId.encoder, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeBigDecimal, Defaulted.encoder(Encoder.encodeInt), Defaulted.encoder(TypoLocalDateTime.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
 
   implicit lazy val pgText: Text[TransactionhistoryarchiveRowUnsaved] = {
     Text.instance[TransactionhistoryarchiveRowUnsaved]{ (row, sb) =>

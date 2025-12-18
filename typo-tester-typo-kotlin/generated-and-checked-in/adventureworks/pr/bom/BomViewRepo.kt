@@ -7,10 +7,10 @@ package adventureworks.pr.bom
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface BomViewRepo {
-  fun select(): SelectBuilder<BomViewFields, BomViewRow>
+  abstract fun select(): SelectBuilder<BomViewFields, BomViewRow>
 
-  fun selectAll(c: Connection): List<BomViewRow>
+  abstract fun selectAll(c: Connection): List<BomViewRow>
 }

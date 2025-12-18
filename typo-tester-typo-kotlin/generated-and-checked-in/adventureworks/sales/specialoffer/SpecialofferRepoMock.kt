@@ -8,21 +8,19 @@ package adventureworks.sales.specialoffer
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class SpecialofferRepoMock(
   val toRow: (SpecialofferRowUnsaved) -> SpecialofferRow,
@@ -33,7 +31,7 @@ data class SpecialofferRepoMock(
   override fun deleteById(
     specialofferid: SpecialofferId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(specialofferid)).isPresent()
+  ): Boolean = map.remove(specialofferid) != null
 
   override fun deleteByIds(
     specialofferids: Array<SpecialofferId>,
@@ -41,7 +39,7 @@ data class SpecialofferRepoMock(
   ): Int {
     var count = 0
     for (id in specialofferids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class SpecialofferRepoMock(
     c: Connection
   ): SpecialofferRow {
     if (map.containsKey(unsaved.specialofferid)) {
-      throw RuntimeException(str("id $unsaved.specialofferid already exists"))
+      throw RuntimeException("id " + unsaved.specialofferid + " already exists")
     }
     map[unsaved.specialofferid] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class SpecialofferRepoMock(
   override fun selectById(
     specialofferid: SpecialofferId,
     c: Connection
-  ): Optional<SpecialofferRow> = Optional.ofNullable(map[specialofferid])
+  ): SpecialofferRow? = map[specialofferid]
 
   override fun selectByIds(
     specialofferids: Array<SpecialofferId>,
@@ -109,9 +107,9 @@ data class SpecialofferRepoMock(
   ): List<SpecialofferRow> {
     val result = ArrayList<SpecialofferRow>()
     for (id in specialofferids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class SpecialofferRepoMock(
     row: SpecialofferRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.specialofferid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.specialofferid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.specialofferid] = row
     }

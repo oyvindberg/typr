@@ -14,16 +14,16 @@ import testdb.orders.OrdersRow;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface OrderHistoryFields extends FieldsExpr<OrderHistoryRow> {
-  record Impl(List<Path> _path) implements OrderHistoryFields, Relation<OrderHistoryFields, OrderHistoryRow> {
+  record Impl(List<Path> _path) implements OrderHistoryFields, RelationStructure<OrderHistoryFields, OrderHistoryRow> {
     @Override
     public IdField<OrderHistoryId, OrderHistoryRow> historyId() {
       return new IdField<OrderHistoryId, OrderHistoryRow>(_path, "history_id", OrderHistoryRow::historyId, Optional.empty(), Optional.empty(), (row, value) -> row.withHistoryId(value), OrderHistoryId.pgType);
@@ -66,17 +66,17 @@ public interface OrderHistoryFields extends FieldsExpr<OrderHistoryRow> {
 
     @Override
     public List<FieldLike<?, OrderHistoryRow>> columns() {
-      return List.of(this.historyId(), this.orderId(), this.previousStatus(), this.newStatus(), this.changedBy(), this.changeReason(), this.metadata(), this.createdAt());
+      return java.util.List.of(this.historyId(), this.orderId(), this.previousStatus(), this.newStatus(), this.changedBy(), this.changeReason(), this.metadata(), this.createdAt());
     };
 
     @Override
-    public Relation<OrderHistoryFields, OrderHistoryRow> copy(List<Path> _path) {
+    public RelationStructure<OrderHistoryFields, OrderHistoryRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<OrderHistoryId, OrderHistoryRow> historyId();
@@ -96,7 +96,7 @@ public interface OrderHistoryFields extends FieldsExpr<OrderHistoryRow> {
   Field<LocalDateTime, OrderHistoryRow> createdAt();
 
   default ForeignKey<OrdersFields, OrdersRow> fkOrders() {
-    return ForeignKey.<OrdersFields, OrdersRow>of("fk_oh_order").withColumnPair(orderId(), OrdersFields::orderId);
+    return ForeignKey.<OrdersFields, OrdersRow>of("fk_oh_order").<OrdersId>withColumnPair(orderId(), OrdersFields::orderId);
   };
 
   @Override

@@ -6,88 +6,87 @@
 package adventureworks.sales.salesorderheadersalesreason
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface SalesorderheadersalesreasonRepo {
-  fun delete(): DeleteBuilder<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow>
+  abstract fun delete(): DeleteBuilder<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: SalesorderheadersalesreasonId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<SalesorderheadersalesreasonId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: SalesorderheadersalesreasonRow,
     c: Connection
   ): SalesorderheadersalesreasonRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: SalesorderheadersalesreasonRowUnsaved,
     c: Connection
   ): SalesorderheadersalesreasonRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<SalesorderheadersalesreasonRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<SalesorderheadersalesreasonRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow>
+  abstract fun select(): SelectBuilder<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow>
 
-  fun selectAll(c: Connection): List<SalesorderheadersalesreasonRow>
+  abstract fun selectAll(c: Connection): List<SalesorderheadersalesreasonRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: SalesorderheadersalesreasonId,
     c: Connection
-  ): Optional<SalesorderheadersalesreasonRow>
+  ): SalesorderheadersalesreasonRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<SalesorderheadersalesreasonId>,
     c: Connection
   ): List<SalesorderheadersalesreasonRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<SalesorderheadersalesreasonId>,
     c: Connection
   ): Map<SalesorderheadersalesreasonId, SalesorderheadersalesreasonRow>
 
-  fun update(): UpdateBuilder<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow>
+  abstract fun update(): UpdateBuilder<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow>
 
-  fun update(
+  abstract fun update(
     row: SalesorderheadersalesreasonRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: SalesorderheadersalesreasonRow,
     c: Connection
   ): SalesorderheadersalesreasonRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<SalesorderheadersalesreasonRow>,
     c: Connection
   ): List<SalesorderheadersalesreasonRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<SalesorderheadersalesreasonRow>,
     batchSize: Int,
     c: Connection

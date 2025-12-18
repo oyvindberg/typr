@@ -7,12 +7,13 @@ package testdb.customer_orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customers.CustomersId
 import testdb.orders.OrdersId
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** SQL file: customer_orders.sql */
 case class CustomerOrdersSqlRow(
@@ -27,17 +28,17 @@ case class CustomerOrdersSqlRow(
   /** Points to [[testdb.customers.CustomersRow.tier]] */
   tier: String,
   /** Points to [[testdb.orders.OrdersRow.orderId]] */
-  @JsonProperty("order_id") orderId: Optional[OrdersId],
+  @JsonProperty("order_id") orderId: Option[OrdersId],
   /** Points to [[testdb.orders.OrdersRow.orderNumber]] */
-  @JsonProperty("order_number") orderNumber: Optional[String],
+  @JsonProperty("order_number") orderNumber: Option[String],
   /** Points to [[testdb.orders.OrdersRow.orderStatus]] */
-  @JsonProperty("order_status") orderStatus: Optional[String],
+  @JsonProperty("order_status") orderStatus: Option[String],
   /** Points to [[testdb.orders.OrdersRow.totalAmount]] */
-  @JsonProperty("total_amount") totalAmount: Optional[java.math.BigDecimal],
+  @JsonProperty("total_amount") totalAmount: Option[BigDecimal],
   /** Points to [[testdb.orders.OrdersRow.orderedAt]] */
-  @JsonProperty("ordered_at") orderedAt: Optional[LocalDateTime]
+  @JsonProperty("ordered_at") orderedAt: Option[LocalDateTime]
 )
 
 object CustomerOrdersSqlRow {
-  val `_rowParser`: RowParser[CustomerOrdersSqlRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, OrdersId.pgType.opt(), MariaTypes.varchar.opt(), MariaTypes.text.opt(), MariaTypes.decimal.opt(), MariaTypes.datetime.opt(), CustomerOrdersSqlRow.apply, row => Array[Object](row.customerId.asInstanceOf[Object], row.email.asInstanceOf[Object], row.firstName.asInstanceOf[Object], row.lastName.asInstanceOf[Object], row.tier.asInstanceOf[Object], row.orderId.asInstanceOf[Object], row.orderNumber.asInstanceOf[Object], row.orderStatus.asInstanceOf[Object], row.totalAmount.asInstanceOf[Object], row.orderedAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[CustomerOrdersSqlRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, OrdersId.pgType.nullable, MariaTypes.varchar.nullable, MariaTypes.text.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.datetime.nullable)(CustomerOrdersSqlRow.apply)(row => Array[Any](row.customerId, row.email, row.firstName, row.lastName, row.tier, row.orderId, row.orderNumber, row.orderStatus, row.totalAmount, row.orderedAt))
 }

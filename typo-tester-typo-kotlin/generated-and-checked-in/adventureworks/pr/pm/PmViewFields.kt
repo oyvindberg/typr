@@ -5,61 +5,62 @@
  */
 package adventureworks.pr.pm
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
+import typo.data.Xml
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PmViewFields : FieldsExpr<PmViewRow> {
-  fun catalogdescription(): OptField<TypoXml, PmViewRow>
+  abstract fun catalogdescription(): Field<Xml, PmViewRow>
 
-  override fun columns(): List<FieldLike<*, PmViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PmViewRow>>
 
-  fun id(): Field<ProductmodelId, PmViewRow>
+  abstract fun id(): Field<ProductmodelId, PmViewRow>
 
-  fun instructions(): OptField<TypoXml, PmViewRow>
+  abstract fun instructions(): Field<Xml, PmViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PmViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PmViewRow>
 
-  fun name(): Field<Name, PmViewRow>
+  abstract fun name(): Field<Name, PmViewRow>
 
-  fun productmodelid(): Field<ProductmodelId, PmViewRow>
+  abstract fun productmodelid(): Field<ProductmodelId, PmViewRow>
 
-  override fun rowParser(): RowParser<PmViewRow> = PmViewRow._rowParser
+  override fun rowParser(): RowParser<PmViewRow> = PmViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, PmViewRow>
+  abstract fun rowguid(): Field<UUID, PmViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PmViewFields, Relation<PmViewFields, PmViewRow> {
-      override fun id(): Field<ProductmodelId, PmViewRow> = Field<ProductmodelId, PmViewRow>(_path, "id", PmViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, ProductmodelId.pgType)
+    data class Impl(val _path: List<Path>) : PmViewFields, RelationStructure<PmViewFields, PmViewRow> {
+      override fun id(): Field<ProductmodelId, PmViewRow> = Field<ProductmodelId, PmViewRow>(_path, "id", PmViewRow::id, null, null, { row, value -> row.copy(id = value) }, ProductmodelId.pgType)
 
-      override fun productmodelid(): Field<ProductmodelId, PmViewRow> = Field<ProductmodelId, PmViewRow>(_path, "productmodelid", PmViewRow::productmodelid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productmodelid = value) }, ProductmodelId.pgType)
+      override fun productmodelid(): Field<ProductmodelId, PmViewRow> = Field<ProductmodelId, PmViewRow>(_path, "productmodelid", PmViewRow::productmodelid, null, null, { row, value -> row.copy(productmodelid = value) }, ProductmodelId.pgType)
 
-      override fun name(): Field<Name, PmViewRow> = Field<Name, PmViewRow>(_path, "name", PmViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, PmViewRow> = Field<Name, PmViewRow>(_path, "name", PmViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun catalogdescription(): OptField<TypoXml, PmViewRow> = OptField<TypoXml, PmViewRow>(_path, "catalogdescription", PmViewRow::catalogdescription, Optional.empty(), Optional.empty(), { row, value -> row.copy(catalogdescription = value) }, TypoXml.pgType)
+      override fun catalogdescription(): Field<Xml, PmViewRow> = Field<Xml, PmViewRow>(_path, "catalogdescription", PmViewRow::catalogdescription, null, null, { row, value -> row.copy(catalogdescription = value) }, PgTypes.xml)
 
-      override fun instructions(): OptField<TypoXml, PmViewRow> = OptField<TypoXml, PmViewRow>(_path, "instructions", PmViewRow::instructions, Optional.empty(), Optional.empty(), { row, value -> row.copy(instructions = value) }, TypoXml.pgType)
+      override fun instructions(): Field<Xml, PmViewRow> = Field<Xml, PmViewRow>(_path, "instructions", PmViewRow::instructions, null, null, { row, value -> row.copy(instructions = value) }, PgTypes.xml)
 
-      override fun rowguid(): Field<TypoUUID, PmViewRow> = Field<TypoUUID, PmViewRow>(_path, "rowguid", PmViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, PmViewRow> = Field<UUID, PmViewRow>(_path, "rowguid", PmViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PmViewRow> = Field<TypoLocalDateTime, PmViewRow>(_path, "modifieddate", PmViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PmViewRow> = Field<LocalDateTime, PmViewRow>(_path, "modifieddate", PmViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PmViewRow>> = listOf(this.id(), this.productmodelid(), this.name(), this.catalogdescription(), this.instructions(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PmViewFields, PmViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PmViewRow>> = listOf(this.id().underlying, this.productmodelid().underlying, this.name().underlying, this.catalogdescription().underlying, this.instructions().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PmViewFields, PmViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

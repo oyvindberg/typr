@@ -17,7 +17,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -32,11 +31,7 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     PriceTiersId tierId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `price_tiers` where `tier_id` = "),
-      PriceTiersId.pgType.encode(tierId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `price_tiers` where `tier_id` = "), Fragment.encode(PriceTiersId.pgType, tierId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,8 +39,8 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     PriceTiersId[] tierIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : tierIds) { fragments.add(PriceTiersId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : tierIds) { fragments.add(Fragment.encode(PriceTiersId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `price_tiers` where `tier_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -54,22 +49,7 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     PriceTiersRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `price_tiers`(`name`, `min_quantity`, `discount_type`, `discount_value`)
-         values ("""),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.encode(unsaved.minQuantity()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.discountType()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.discountValue()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `price_tiers`(`name`, `min_quantity`, `discount_type`, `discount_value`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.intUnsigned, unsaved.minQuantity()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.discountType()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.discountValue()), Fragment.lit(")\nreturning `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`\n"))
       .updateReturning(PriceTiersRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -78,51 +58,24 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     PriceTiersRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`name`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit("")));
     columns.add(Fragment.lit("`discount_type`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.discountType()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.text, unsaved.discountType()), Fragment.lit("")));
     columns.add(Fragment.lit("`discount_value`"));
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.discountValue()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.numeric, unsaved.discountValue()), Fragment.lit("")));
     unsaved.minQuantity().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`min_quantity`"));
-        values.add(interpolate(
-        MariaTypes.bigint.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.intUnsigned, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `price_tiers`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `price_tiers`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`\n"));;
     return q.updateReturning(PriceTiersRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -133,10 +86,7 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
 
   @Override
   public List<PriceTiersRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`
-       from `price_tiers`
-    """)).query(PriceTiersRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`\nfrom `price_tiers`\n")).query(PriceTiersRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -144,14 +94,7 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     PriceTiersId tierId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`
-         from `price_tiers`
-         where `tier_id` = """),
-      PriceTiersId.pgType.encode(tierId),
-      typo.runtime.Fragment.lit("")
-    ).query(PriceTiersRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`\nfrom `price_tiers`\nwhere `tier_id` = "), Fragment.encode(PriceTiersId.pgType, tierId), Fragment.lit("")).query(PriceTiersRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -159,8 +102,8 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     PriceTiersId[] tierIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : tierIds) { fragments.add(PriceTiersId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : tierIds) { fragments.add(Fragment.encode(PriceTiersId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value` from `price_tiers` where `tier_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(PriceTiersRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -176,7 +119,7 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
 
   @Override
   public UpdateBuilder<PriceTiersFields, PriceTiersRow> update() {
-    return UpdateBuilder.of("`price_tiers`", PriceTiersFields.structure(), PriceTiersRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`price_tiers`", PriceTiersFields.structure(), PriceTiersRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -185,29 +128,7 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     Connection c
   ) {
     PriceTiersId tierId = row.tierId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `price_tiers`
-         set `name` = """),
-      MariaTypes.text.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `min_quantity` = """),
-      MariaTypes.bigint.encode(row.minQuantity()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `discount_type` = """),
-      MariaTypes.text.encode(row.discountType()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `discount_value` = """),
-      MariaTypes.numeric.encode(row.discountValue()),
-      typo.runtime.Fragment.lit("""
-   
-         where `tier_id` = """),
-      PriceTiersId.pgType.encode(tierId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `price_tiers`\nset `name` = "), Fragment.encode(MariaTypes.varchar, row.name()), Fragment.lit(",\n`min_quantity` = "), Fragment.encode(MariaTypes.intUnsigned, row.minQuantity()), Fragment.lit(",\n`discount_type` = "), Fragment.encode(MariaTypes.text, row.discountType()), Fragment.lit(",\n`discount_value` = "), Fragment.encode(MariaTypes.numeric, row.discountValue()), Fragment.lit("\nwhere `tier_id` = "), Fragment.encode(PriceTiersId.pgType, tierId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -215,25 +136,7 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     PriceTiersRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `price_tiers`(`name`, `min_quantity`, `discount_type`, `discount_value`)
-         VALUES ("""),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.encode(unsaved.minQuantity()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.discountType()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.discountValue()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `name` = VALUES(`name`),
-         `min_quantity` = VALUES(`min_quantity`),
-         `discount_type` = VALUES(`discount_type`),
-         `discount_value` = VALUES(`discount_value`)
-         RETURNING `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `price_tiers`(`name`, `min_quantity`, `discount_type`, `discount_value`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.intUnsigned, unsaved.minQuantity()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.discountType()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.discountValue()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`),\n`min_quantity` = VALUES(`min_quantity`),\n`discount_type` = VALUES(`discount_type`),\n`discount_value` = VALUES(`discount_value`)\nRETURNING `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`"))
       .updateReturning(PriceTiersRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -243,15 +146,8 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     Iterator<PriceTiersRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `price_tiers`(`tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`)
-                VALUES (?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `name` = VALUES(`name`),
-                `min_quantity` = VALUES(`min_quantity`),
-                `discount_type` = VALUES(`discount_type`),
-                `discount_value` = VALUES(`discount_value`)
-                RETURNING `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`"""))
+    return interpolate(Fragment.lit("INSERT INTO `price_tiers`(`tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`)\nVALUES (?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`),\n`min_quantity` = VALUES(`min_quantity`),\n`discount_type` = VALUES(`discount_type`),\n`discount_value` = VALUES(`discount_value`)\nRETURNING `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`"))
       .updateReturningEach(PriceTiersRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

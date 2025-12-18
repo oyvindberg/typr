@@ -7,11 +7,12 @@ package testdb.v_order_details
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.orders.OrdersId
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** View: v_order_details
  * VIEW
@@ -39,7 +40,7 @@ case class VOrderDetailsViewRow(
   /** 
    * Points to [[testdb.orders.OrdersRow.totalAmount]]
    */
-  @JsonProperty("total_amount") totalAmount: java.math.BigDecimal,
+  @JsonProperty("total_amount") totalAmount: BigDecimal,
   /** 
    * Default: 'USD'
    * Points to [[testdb.orders.OrdersRow.currencyCode]]
@@ -57,31 +58,31 @@ case class VOrderDetailsViewRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("customer_name") customerName: Optional[String],
+  @JsonProperty("customer_name") customerName: Option[String],
   /** 
    * Default: 0
    */
-  @JsonProperty("item_count") itemCount: java.lang.Long,
+  @JsonProperty("item_count") itemCount: Long,
   /** 
    * Default: NULL
    */
-  @JsonProperty("total_quantity") totalQuantity: Optional[java.math.BigDecimal],
+  @JsonProperty("total_quantity") totalQuantity: Option[BigDecimal],
   /** 
    * Default: NULL
    * Points to [[testdb.shipments.ShipmentsRow.trackingNumber]]
    */
-  @JsonProperty("tracking_number") trackingNumber: Optional[String],
+  @JsonProperty("tracking_number") trackingNumber: Option[String],
   /** 
    * Default: 'pending'
    * Points to [[testdb.shipments.ShipmentsRow.status]]
    */
-  @JsonProperty("shipping_status") shippingStatus: Optional[String],
+  @JsonProperty("shipping_status") shippingStatus: Option[String],
   /** 
    * Points to [[testdb.shipping_carriers.ShippingCarriersRow.name]]
    */
-  @JsonProperty("carrier_name") carrierName: Optional[String]
+  @JsonProperty("carrier_name") carrierName: Option[String]
 )
 
 object VOrderDetailsViewRow {
-  val `_rowParser`: RowParser[VOrderDetailsViewRow] = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, MariaTypes.decimal, MariaTypes.char_, MariaTypes.datetime, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.bigint, MariaTypes.decimal.opt(), MariaTypes.varchar.opt(), MariaTypes.text.opt(), MariaTypes.varchar.opt(), VOrderDetailsViewRow.apply, row => Array[Object](row.orderId.asInstanceOf[Object], row.orderNumber.asInstanceOf[Object], row.orderStatus.asInstanceOf[Object], row.paymentStatus.asInstanceOf[Object], row.totalAmount.asInstanceOf[Object], row.currencyCode.asInstanceOf[Object], row.orderedAt.asInstanceOf[Object], row.customerEmail.asInstanceOf[Object], row.customerName.asInstanceOf[Object], row.itemCount.asInstanceOf[Object], row.totalQuantity.asInstanceOf[Object], row.trackingNumber.asInstanceOf[Object], row.shippingStatus.asInstanceOf[Object], row.carrierName.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VOrderDetailsViewRow] = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.datetime, MariaTypes.varchar, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.varchar.nullable, MariaTypes.text.nullable, MariaTypes.varchar.nullable)(VOrderDetailsViewRow.apply)(row => Array[Any](row.orderId, row.orderNumber, row.orderStatus, row.paymentStatus, row.totalAmount, row.currencyCode, row.orderedAt, row.customerEmail, row.customerName, row.itemCount, row.totalQuantity, row.trackingNumber, row.shippingStatus, row.carrierName))
 }

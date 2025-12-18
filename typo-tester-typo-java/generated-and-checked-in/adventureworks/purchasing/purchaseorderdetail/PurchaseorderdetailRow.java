@@ -6,11 +6,10 @@
 package adventureworks.purchasing.purchaseorderdetail;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -30,11 +29,11 @@ public record PurchaseorderdetailRow(
     */
   Integer purchaseorderdetailid,
   /** Date the product is expected to be received. */
-  TypoLocalDateTime duedate,
+  LocalDateTime duedate,
   /** Quantity ordered.
     * Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty: ((orderqty > 0))
     */
-  TypoShort orderqty,
+  Short orderqty,
   /** Product identification number. Foreign key to Product.ProductID.
     * Points to {@link adventureworks.production.product.ProductRow#productid()}
     */
@@ -52,7 +51,7 @@ public record PurchaseorderdetailRow(
     */
   BigDecimal rejectedqty,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key. Foreign key to PurchaseOrderHeader.PurchaseOrderID.
     * Points to {@link adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow#purchaseorderid()}
@@ -69,14 +68,14 @@ public record PurchaseorderdetailRow(
   };
 
   /** Date the product is expected to be received. */
-  public PurchaseorderdetailRow withDuedate(TypoLocalDateTime duedate) {
+  public PurchaseorderdetailRow withDuedate(LocalDateTime duedate) {
     return new PurchaseorderdetailRow(purchaseorderid, purchaseorderdetailid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, modifieddate);
   };
 
   /** Quantity ordered.
     * Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty: ((orderqty > 0))
     */
-  public PurchaseorderdetailRow withOrderqty(TypoShort orderqty) {
+  public PurchaseorderdetailRow withOrderqty(Short orderqty) {
     return new PurchaseorderdetailRow(purchaseorderid, purchaseorderdetailid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, modifieddate);
   };
 
@@ -109,21 +108,21 @@ public record PurchaseorderdetailRow(
   };
 
   /** Default: now() */
-  public PurchaseorderdetailRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PurchaseorderdetailRow withModifieddate(LocalDateTime modifieddate) {
     return new PurchaseorderdetailRow(purchaseorderid, purchaseorderdetailid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, modifieddate);
   };
 
-  static RowParser<PurchaseorderdetailRow> _rowParser = RowParsers.of(PurchaseorderheaderId.pgType, PgTypes.int4, TypoLocalDateTime.pgType, TypoShort.pgType, ProductId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, PurchaseorderdetailRow::new, row -> new Object[]{row.purchaseorderid(), row.purchaseorderdetailid(), row.duedate(), row.orderqty(), row.productid(), row.unitprice(), row.receivedqty(), row.rejectedqty(), row.modifieddate()});;
+  static RowParser<PurchaseorderdetailRow> _rowParser = RowParsers.of(PurchaseorderheaderId.pgType, PgTypes.int4, PgTypes.timestamp, PgTypes.int2, ProductId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, PurchaseorderdetailRow::new, row -> new Object[]{row.purchaseorderid(), row.purchaseorderdetailid(), row.duedate(), row.orderqty(), row.productid(), row.unitprice(), row.receivedqty(), row.rejectedqty(), row.modifieddate()});;
 
   static public PurchaseorderdetailRow apply(
     PurchaseorderdetailId compositeId,
-    TypoLocalDateTime duedate,
-    TypoShort orderqty,
+    LocalDateTime duedate,
+    Short orderqty,
     ProductId productid,
     BigDecimal unitprice,
     BigDecimal receivedqty,
     BigDecimal rejectedqty,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new PurchaseorderdetailRow(compositeId.purchaseorderid(), compositeId.purchaseorderdetailid(), duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, modifieddate);
   };
@@ -141,7 +140,7 @@ public record PurchaseorderdetailRow(
 
   public PurchaseorderdetailRowUnsaved toUnsavedRow(
     Defaulted<Integer> purchaseorderdetailid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new PurchaseorderdetailRowUnsaved(purchaseorderid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, purchaseorderdetailid, modifieddate);
   };

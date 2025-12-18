@@ -5,24 +5,21 @@
  */
 package adventureworks.production.unitmeasure
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class UnitmeasureRepoImpl() : UnitmeasureRepo {
   override fun delete(): DeleteBuilder<UnitmeasureFields, UnitmeasureRow> = DeleteBuilder.of("\"production\".\"unitmeasure\"", UnitmeasureFields.structure, Dialect.POSTGRESQL)
@@ -30,85 +27,37 @@ class UnitmeasureRepoImpl() : UnitmeasureRepo {
   override fun deleteById(
     unitmeasurecode: UnitmeasureId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "production"."unitmeasure" where "unitmeasurecode" = 
-    """.trimMargin()),
-    UnitmeasureId.pgType.encode(unitmeasurecode),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"production\".\"unitmeasure\" where \"unitmeasurecode\" = "), Fragment.encode(UnitmeasureId.pgType, unitmeasurecode), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     unitmeasurecodes: Array<UnitmeasureId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "production"."unitmeasure"
-               where "unitmeasurecode" = ANY(""".trimMargin()),
-             UnitmeasureId.pgTypeArray.encode(unitmeasurecodes),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = interpolate(Fragment.lit("delete\nfrom \"production\".\"unitmeasure\"\nwhere \"unitmeasurecode\" = ANY("), Fragment.encode(UnitmeasureId.pgTypeArray, unitmeasurecodes), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: UnitmeasureRow,
     c: Connection
-  ): UnitmeasureRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "production"."unitmeasure"("unitmeasurecode", "name", "modifieddate")
-      values (""".trimMargin()),
-    UnitmeasureId.pgType.encode(unsaved.unitmeasurecode),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "unitmeasurecode", "name", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): UnitmeasureRow = interpolate(Fragment.lit("insert into \"production\".\"unitmeasure\"(\"unitmeasurecode\", \"name\", \"modifieddate\")\nvalues ("), Fragment.encode(UnitmeasureId.pgType, unsaved.unitmeasurecode), Fragment.lit("::bpchar, "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"unitmeasurecode\", \"name\", \"modifieddate\"\n"))
     .updateReturning(UnitmeasureRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: UnitmeasureRowUnsaved,
     c: Connection
   ): UnitmeasureRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"unitmeasurecode\""))
-    values.add(interpolate(
-      UnitmeasureId.pgType.encode(unsaved.unitmeasurecode),
-      typo.runtime.Fragment.lit("::bpchar")
-    ))
+    values.add(interpolate(Fragment.encode(UnitmeasureId.pgType, unsaved.unitmeasurecode), Fragment.lit("::bpchar")))
     columns.add(Fragment.lit("\"name\""))
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name),
-      typo.runtime.Fragment.lit("::varchar")
-    ))
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar")))
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."unitmeasure"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "unitmeasurecode", "name", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"production\".\"unitmeasure\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"unitmeasurecode\", \"name\", \"modifieddate\"\n"))
     return q.updateReturning(UnitmeasureRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -116,49 +65,28 @@ class UnitmeasureRepoImpl() : UnitmeasureRepo {
     unsaved: MutableIterator<UnitmeasureRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "production"."unitmeasure"("unitmeasurecode", "name", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, UnitmeasureRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"production\".\"unitmeasure\"(\"unitmeasurecode\", \"name\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, UnitmeasureRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<UnitmeasureRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "production"."unitmeasure"("unitmeasurecode", "name", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, UnitmeasureRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"production\".\"unitmeasure\"(\"unitmeasurecode\", \"name\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, UnitmeasureRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<UnitmeasureFields, UnitmeasureRow> = SelectBuilder.of("\"production\".\"unitmeasure\"", UnitmeasureFields.structure, UnitmeasureRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<UnitmeasureRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "unitmeasurecode", "name", "modifieddate"::text
-    from "production"."unitmeasure"
-  """.trimMargin())).query(UnitmeasureRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<UnitmeasureRow> = interpolate(Fragment.lit("select \"unitmeasurecode\", \"name\", \"modifieddate\"\nfrom \"production\".\"unitmeasure\"\n")).query(UnitmeasureRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     unitmeasurecode: UnitmeasureId,
     c: Connection
-  ): Optional<UnitmeasureRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "unitmeasurecode", "name", "modifieddate"::text
-      from "production"."unitmeasure"
-      where "unitmeasurecode" = """.trimMargin()),
-    UnitmeasureId.pgType.encode(unitmeasurecode),
-    typo.runtime.Fragment.lit("")
-  ).query(UnitmeasureRow._rowParser.first()).runUnchecked(c)
+  ): UnitmeasureRow? = interpolate(Fragment.lit("select \"unitmeasurecode\", \"name\", \"modifieddate\"\nfrom \"production\".\"unitmeasure\"\nwhere \"unitmeasurecode\" = "), Fragment.encode(UnitmeasureId.pgType, unitmeasurecode), Fragment.lit("")).query(UnitmeasureRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     unitmeasurecodes: Array<UnitmeasureId>,
     c: Connection
-  ): List<UnitmeasureRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "unitmeasurecode", "name", "modifieddate"::text
-      from "production"."unitmeasure"
-      where "unitmeasurecode" = ANY(""".trimMargin()),
-    UnitmeasureId.pgTypeArray.encode(unitmeasurecodes),
-    typo.runtime.Fragment.lit(")")
-  ).query(UnitmeasureRow._rowParser.all()).runUnchecked(c)
+  ): List<UnitmeasureRow> = interpolate(Fragment.lit("select \"unitmeasurecode\", \"name\", \"modifieddate\"\nfrom \"production\".\"unitmeasure\"\nwhere \"unitmeasurecode\" = ANY("), Fragment.encode(UnitmeasureId.pgTypeArray, unitmeasurecodes), Fragment.lit(")")).query(UnitmeasureRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     unitmeasurecodes: Array<UnitmeasureId>,
@@ -166,69 +94,32 @@ class UnitmeasureRepoImpl() : UnitmeasureRepo {
   ): Map<UnitmeasureId, UnitmeasureRow> {
     val ret: MutableMap<UnitmeasureId, UnitmeasureRow> = mutableMapOf<UnitmeasureId, UnitmeasureRow>()
     selectByIds(unitmeasurecodes, c).forEach({ row -> ret.put(row.unitmeasurecode, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<UnitmeasureFields, UnitmeasureRow> = UpdateBuilder.of("\"production\".\"unitmeasure\"", UnitmeasureFields.structure, UnitmeasureRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<UnitmeasureFields, UnitmeasureRow> = UpdateBuilder.of("\"production\".\"unitmeasure\"", UnitmeasureFields.structure, UnitmeasureRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: UnitmeasureRow,
     c: Connection
   ): Boolean {
     val unitmeasurecode: UnitmeasureId = row.unitmeasurecode
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "production"."unitmeasure"
-        set "name" = """.trimMargin()),
-      Name.pgType.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ::varchar,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "unitmeasurecode" = """.trimMargin()),
-      UnitmeasureId.pgType.encode(unitmeasurecode),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"production\".\"unitmeasure\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name), Fragment.lit("::varchar,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"unitmeasurecode\" = "), Fragment.encode(UnitmeasureId.pgType, unitmeasurecode), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: UnitmeasureRow,
     c: Connection
-  ): UnitmeasureRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "production"."unitmeasure"("unitmeasurecode", "name", "modifieddate")
-      values (""".trimMargin()),
-    UnitmeasureId.pgType.encode(unsaved.unitmeasurecode),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("unitmeasurecode")
-      do update set
-        "name" = EXCLUDED."name",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "unitmeasurecode", "name", "modifieddate"::text""".trimMargin())
-  )
+  ): UnitmeasureRow = interpolate(Fragment.lit("insert into \"production\".\"unitmeasure\"(\"unitmeasurecode\", \"name\", \"modifieddate\")\nvalues ("), Fragment.encode(UnitmeasureId.pgType, unsaved.unitmeasurecode), Fragment.lit("::bpchar, "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"unitmeasurecode\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"unitmeasurecode\", \"name\", \"modifieddate\""))
     .updateReturning(UnitmeasureRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<UnitmeasureRow>,
     c: Connection
-  ): List<UnitmeasureRow> = interpolate(typo.runtime.Fragment.lit("""
-                              insert into "production"."unitmeasure"("unitmeasurecode", "name", "modifieddate")
-                              values (?::bpchar, ?::varchar, ?::timestamp)
-                              on conflict ("unitmeasurecode")
-                              do update set
-                                "name" = EXCLUDED."name",
-                              "modifieddate" = EXCLUDED."modifieddate"
-                              returning "unitmeasurecode", "name", "modifieddate"::text""".trimMargin()))
+  ): List<UnitmeasureRow> = interpolate(Fragment.lit("insert into \"production\".\"unitmeasure\"(\"unitmeasurecode\", \"name\", \"modifieddate\")\nvalues (?::bpchar, ?::varchar, ?::timestamp)\non conflict (\"unitmeasurecode\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"unitmeasurecode\", \"name\", \"modifieddate\""))
     .updateManyReturning(UnitmeasureRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -236,20 +127,8 @@ class UnitmeasureRepoImpl() : UnitmeasureRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table unitmeasure_TEMP (like "production"."unitmeasure") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy unitmeasure_TEMP("unitmeasurecode", "name", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, UnitmeasureRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "production"."unitmeasure"("unitmeasurecode", "name", "modifieddate")
-      select * from unitmeasure_TEMP
-      on conflict ("unitmeasurecode")
-      do update set
-        "name" = EXCLUDED."name",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table unitmeasure_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table unitmeasure_TEMP (like \"production\".\"unitmeasure\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy unitmeasure_TEMP(\"unitmeasurecode\", \"name\", \"modifieddate\") from stdin", batchSize, unsaved, c, UnitmeasureRow.pgText)
+    return interpolate(Fragment.lit("insert into \"production\".\"unitmeasure\"(\"unitmeasurecode\", \"name\", \"modifieddate\")\nselect * from unitmeasure_TEMP\non conflict (\"unitmeasurecode\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table unitmeasure_TEMP;")).update().runUnchecked(c)
   }
 }

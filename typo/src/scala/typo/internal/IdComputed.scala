@@ -16,6 +16,23 @@ object IdComputed {
     def col: ComputedColumn
     override def cols: NonEmptyList[ComputedColumn] = NonEmptyList(col, Nil)
     override def paramName: jvm.Ident = col.name
+
+    /** TypoType for the ID type itself (not the underlying column) */
+    def typoType: TypoType = this match {
+      case x: UnaryNormal => TypoType.Generated(x.tpe, col.dbCol.tpe, x.tpe)
+      case x: UnaryInherited =>
+        x.tpe match {
+          case q: jvm.Type.Qualified => TypoType.Generated(q, col.dbCol.tpe, q)
+          case _                     => col.typoType
+        }
+      case _: UnaryNoIdType => col.typoType
+      case x: UnaryOpenEnum => TypoType.Generated(x.tpe, col.dbCol.tpe, x.tpe)
+      case x: UnaryUserSpecified =>
+        x.tpe match {
+          case q: jvm.Type.Qualified => TypoType.UserDefined(q, col.dbCol.tpe, Left(q))
+          case _                     => col.typoType
+        }
+    }
   }
 
   // normal generated code for a normal single-column id

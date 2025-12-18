@@ -5,9 +5,6 @@
  */
 package adventureworks.sales.salestaxrate;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.stateprovince.StateprovinceId;
 import adventureworks.public_.Name;
 import java.sql.Connection;
@@ -22,11 +19,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class SalestaxrateRepoImpl implements SalestaxrateRepo {
   @Override
@@ -39,13 +34,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     SalestaxrateId salestaxrateid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "sales"."salestaxrate" where "salestaxrateid" = 
-      """),
-      SalestaxrateId.pgType.encode(salestaxrateid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"sales\".\"salestaxrate\" where \"salestaxrateid\" = "), Fragment.encode(SalestaxrateId.pgType, salestaxrateid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -53,14 +42,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     SalestaxrateId[] salestaxrateids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "sales"."salestaxrate"
-                  where "salestaxrateid" = ANY("""),
-               SalestaxrateId.pgTypeArray.encode(salestaxrateids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"sales\".\"salestaxrate\"\nwhere \"salestaxrateid\" = ANY("), Fragment.encode(SalestaxrateId.pgTypeArray, salestaxrateids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -70,28 +52,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     SalestaxrateRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "sales"."salestaxrate"("salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate")
-         values ("""),
-      SalestaxrateId.pgType.encode(unsaved.salestaxrateid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      StateprovinceId.pgType.encode(unsaved.stateprovinceid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoShort.pgType.encode(unsaved.taxtype()),
-      typo.runtime.Fragment.lit("::int2, "),
-      PgTypes.numeric.encode(unsaved.taxrate()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"sales\".\"salestaxrate\"(\"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(SalestaxrateId.pgType, unsaved.salestaxrateid()), Fragment.lit("::int4, "), Fragment.encode(StateprovinceId.pgType, unsaved.stateprovinceid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.int2, unsaved.taxtype()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.numeric, unsaved.taxrate()), Fragment.lit("::numeric, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(SalestaxrateRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -100,33 +61,21 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     SalestaxrateRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"stateprovinceid\""));
-    values.add(interpolate(
-      StateprovinceId.pgType.encode(unsaved.stateprovinceid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(StateprovinceId.pgType, unsaved.stateprovinceid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"taxtype\""));
-    values.add(interpolate(
-      TypoShort.pgType.encode(unsaved.taxtype()),
-      typo.runtime.Fragment.lit("::int2")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.int2, unsaved.taxtype()), Fragment.lit("::int2")));
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved.salestaxrateid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"salestaxrateid\""));
-        values.add(interpolate(
-        SalestaxrateId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(SalestaxrateId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.taxrate().visit(
@@ -135,10 +84,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"taxrate\""));
-        values.add(interpolate(
-        PgTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("::numeric")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.numeric, value), Fragment.lit("::numeric")));
       }
     );;
     unsaved.rowguid().visit(
@@ -147,10 +93,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -159,26 +102,10 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "sales"."salestaxrate"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"sales\".\"salestaxrate\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(SalestaxrateRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -188,9 +115,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "sales"."salestaxrate"("salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, SalestaxrateRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"sales\".\"salestaxrate\"(\"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, SalestaxrateRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -200,9 +125,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "sales"."salestaxrate"("stateprovinceid", "taxtype", "name", "salestaxrateid", "taxrate", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, SalestaxrateRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"sales\".\"salestaxrate\"(\"stateprovinceid\", \"taxtype\", \"name\", \"salestaxrateid\", \"taxrate\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, SalestaxrateRowUnsaved.pgText);
   };
 
   @Override
@@ -212,10 +135,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
 
   @Override
   public List<SalestaxrateRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text
-       from "sales"."salestaxrate"
-    """)).query(SalestaxrateRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salestaxrate\"\n")).query(SalestaxrateRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -223,14 +143,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     SalestaxrateId salestaxrateid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text
-         from "sales"."salestaxrate"
-         where "salestaxrateid" = """),
-      SalestaxrateId.pgType.encode(salestaxrateid),
-      typo.runtime.Fragment.lit("")
-    ).query(SalestaxrateRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salestaxrate\"\nwhere \"salestaxrateid\" = "), Fragment.encode(SalestaxrateId.pgType, salestaxrateid), Fragment.lit("")).query(SalestaxrateRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -238,14 +151,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     SalestaxrateId[] salestaxrateids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text
-         from "sales"."salestaxrate"
-         where "salestaxrateid" = ANY("""),
-      SalestaxrateId.pgTypeArray.encode(salestaxrateids),
-      typo.runtime.Fragment.lit(")")
-    ).query(SalestaxrateRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salestaxrate\"\nwhere \"salestaxrateid\" = ANY("), Fragment.encode(SalestaxrateId.pgTypeArray, salestaxrateids), Fragment.lit(")")).query(SalestaxrateRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -260,7 +166,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
 
   @Override
   public UpdateBuilder<SalestaxrateFields, SalestaxrateRow> update() {
-    return UpdateBuilder.of("\"sales\".\"salestaxrate\"", SalestaxrateFields.structure(), SalestaxrateRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"sales\".\"salestaxrate\"", SalestaxrateFields.structure(), SalestaxrateRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -269,37 +175,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     Connection c
   ) {
     SalestaxrateId salestaxrateid = row.salestaxrateid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "sales"."salestaxrate"
-         set "stateprovinceid" = """),
-      StateprovinceId.pgType.encode(row.stateprovinceid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "taxtype" = """),
-      TypoShort.pgType.encode(row.taxtype()),
-      typo.runtime.Fragment.lit("""
-         ::int2,
-         "taxrate" = """),
-      PgTypes.numeric.encode(row.taxrate()),
-      typo.runtime.Fragment.lit("""
-         ::numeric,
-         "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "salestaxrateid" = """),
-      SalestaxrateId.pgType.encode(salestaxrateid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"sales\".\"salestaxrate\"\nset \"stateprovinceid\" = "), Fragment.encode(StateprovinceId.pgType, row.stateprovinceid()), Fragment.lit("::int4,\n\"taxtype\" = "), Fragment.encode(PgTypes.int2, row.taxtype()), Fragment.lit("::int2,\n\"taxrate\" = "), Fragment.encode(PgTypes.numeric, row.taxrate()), Fragment.lit("::numeric,\n\"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"salestaxrateid\" = "), Fragment.encode(SalestaxrateId.pgType, salestaxrateid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -307,35 +183,7 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     SalestaxrateRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "sales"."salestaxrate"("salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate")
-         values ("""),
-      SalestaxrateId.pgType.encode(unsaved.salestaxrateid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      StateprovinceId.pgType.encode(unsaved.stateprovinceid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoShort.pgType.encode(unsaved.taxtype()),
-      typo.runtime.Fragment.lit("::int2, "),
-      PgTypes.numeric.encode(unsaved.taxrate()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("salestaxrateid")
-         do update set
-           "stateprovinceid" = EXCLUDED."stateprovinceid",
-         "taxtype" = EXCLUDED."taxtype",
-         "taxrate" = EXCLUDED."taxrate",
-         "name" = EXCLUDED."name",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"sales\".\"salestaxrate\"(\"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(SalestaxrateId.pgType, unsaved.salestaxrateid()), Fragment.lit("::int4, "), Fragment.encode(StateprovinceId.pgType, unsaved.stateprovinceid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.int2, unsaved.taxtype()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.numeric, unsaved.taxrate()), Fragment.lit("::numeric, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"salestaxrateid\")\ndo update set\n  \"stateprovinceid\" = EXCLUDED.\"stateprovinceid\",\n\"taxtype\" = EXCLUDED.\"taxtype\",\n\"taxrate\" = EXCLUDED.\"taxrate\",\n\"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\""))
       .updateReturning(SalestaxrateRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -345,20 +193,9 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     Iterator<SalestaxrateRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "sales"."salestaxrate"("salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate")
-                values (?::int4, ?::int4, ?::int2, ?::numeric, ?::varchar, ?::uuid, ?::timestamp)
-                on conflict ("salestaxrateid")
-                do update set
-                  "stateprovinceid" = EXCLUDED."stateprovinceid",
-                "taxtype" = EXCLUDED."taxtype",
-                "taxrate" = EXCLUDED."taxrate",
-                "name" = EXCLUDED."name",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"sales\".\"salestaxrate\"(\"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?::int2, ?::numeric, ?::varchar, ?::uuid, ?::timestamp)\non conflict (\"salestaxrateid\")\ndo update set\n  \"stateprovinceid\" = EXCLUDED.\"stateprovinceid\",\n\"taxtype\" = EXCLUDED.\"taxtype\",\n\"taxrate\" = EXCLUDED.\"taxrate\",\n\"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(SalestaxrateRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -368,24 +205,8 @@ public class SalestaxrateRepoImpl implements SalestaxrateRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table salestaxrate_TEMP (like "sales"."salestaxrate") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy salestaxrate_TEMP("salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, SalestaxrateRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "sales"."salestaxrate"("salestaxrateid", "stateprovinceid", "taxtype", "taxrate", "name", "rowguid", "modifieddate")
-       select * from salestaxrate_TEMP
-       on conflict ("salestaxrateid")
-       do update set
-         "stateprovinceid" = EXCLUDED."stateprovinceid",
-       "taxtype" = EXCLUDED."taxtype",
-       "taxrate" = EXCLUDED."taxrate",
-       "name" = EXCLUDED."name",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table salestaxrate_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table salestaxrate_TEMP (like \"sales\".\"salestaxrate\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy salestaxrate_TEMP(\"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, SalestaxrateRow.pgText);
+    return interpolate(Fragment.lit("insert into \"sales\".\"salestaxrate\"(\"salestaxrateid\", \"stateprovinceid\", \"taxtype\", \"taxrate\", \"name\", \"rowguid\", \"modifieddate\")\nselect * from salestaxrate_TEMP\non conflict (\"salestaxrateid\")\ndo update set\n  \"stateprovinceid\" = EXCLUDED.\"stateprovinceid\",\n\"taxtype\" = EXCLUDED.\"taxtype\",\n\"taxrate\" = EXCLUDED.\"taxrate\",\n\"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table salestaxrate_TEMP;")).update().runUnchecked(c);
   };
 }

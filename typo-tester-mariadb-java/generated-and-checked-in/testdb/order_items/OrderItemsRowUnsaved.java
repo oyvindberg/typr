@@ -166,13 +166,13 @@ public record OrderItemsRowUnsaved(
       sb.append(MariaText.DELIMETER);
       MariaTypes.smallintUnsigned.mariaText().unsafeEncode(row.quantity, sb);
       sb.append(MariaText.DELIMETER);
-      MariaTypes.decimal.mariaText().unsafeEncode(row.unitPrice, sb);
+      MariaTypes.numeric.mariaText().unsafeEncode(row.unitPrice, sb);
       sb.append(MariaText.DELIMETER);
-      MariaTypes.decimal.mariaText().unsafeEncode(row.lineTotal, sb);
+      MariaTypes.numeric.mariaText().unsafeEncode(row.lineTotal, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.mariaText()).unsafeEncode(row.discountAmount, sb);
+      Defaulted.mariaText(MariaTypes.numeric.mariaText()).unsafeEncode(row.discountAmount, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.mariaText()).unsafeEncode(row.taxAmount, sb);
+      Defaulted.mariaText(MariaTypes.numeric.mariaText()).unsafeEncode(row.taxAmount, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.text.mariaText()).unsafeEncode(row.fulfillmentStatus, sb);
       sb.append(MariaText.DELIMETER);

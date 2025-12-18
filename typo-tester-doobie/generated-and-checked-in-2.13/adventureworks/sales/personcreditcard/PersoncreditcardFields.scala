@@ -14,6 +14,7 @@ import adventureworks.sales.creditcard.CreditcardRow
 import adventureworks.userdefined.CustomCreditcardId
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -21,7 +22,6 @@ import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait PersoncreditcardFields {
   def businessentityid: IdField[BusinessentityId, PersoncreditcardRow]
@@ -41,11 +41,11 @@ trait PersoncreditcardFields {
 }
 
 object PersoncreditcardFields {
-  lazy val structure: Relation[PersoncreditcardFields, PersoncreditcardRow] =
+  lazy val structure: RelationStructure[PersoncreditcardFields, PersoncreditcardRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PersoncreditcardFields, PersoncreditcardRow] {
+    extends RelationStructure[PersoncreditcardFields, PersoncreditcardRow] {
 
     override lazy val fields: PersoncreditcardFields = new PersoncreditcardFields {
       override def businessentityid = IdField[BusinessentityId, PersoncreditcardRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))

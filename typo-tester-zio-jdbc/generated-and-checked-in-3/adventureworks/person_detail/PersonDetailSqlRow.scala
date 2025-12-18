@@ -29,13 +29,13 @@ case class PersonDetailSqlRow(
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
-  jobtitle: /* max 50 chars */ String,
+  jobtitle: String,
   /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
-  addressline1: Option[/* max 60 chars */ String],
+  addressline1: Option[String],
   /** Points to [[adventureworks.person.address.AddressRow.city]] */
-  city: Option[/* max 30 chars */ String],
+  city: Option[String],
   /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
-  postalcode: Option[/* max 15 chars */ String],
+  postalcode: Option[String],
   /** Points to [[adventureworks.person.address.AddressRow.rowguid]] */
   rowguid: Option[TypoUUID]
 )

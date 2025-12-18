@@ -23,8 +23,8 @@ public record SqlIdentifier(@JsonValue String value) {
     Bijection.of(SqlIdentifier::value, SqlIdentifier::new);
 
   static public PgType<SqlIdentifier> pgType =
-    PgTypes.text.bimap(SqlIdentifier::new, SqlIdentifier::value).renamed("\"information_schema\".\"sql_identifier\"");
+    PgTypes.name.bimap(SqlIdentifier::new, SqlIdentifier::value).renamed("\"information_schema\".\"sql_identifier\"");
 
   static public PgType<SqlIdentifier[]> pgTypeArray =
-    PgTypes.textArray.bimap(xs -> arrayMap.map(xs, SqlIdentifier::new, SqlIdentifier.class), xs -> arrayMap.map(xs, SqlIdentifier::value, String.class)).renamed("\"information_schema\".\"sql_identifier\"[]");
+    PgTypes.nameArray.bimap(xs -> arrayMap.map(xs, SqlIdentifier::new, SqlIdentifier.class), xs -> arrayMap.map(xs, SqlIdentifier::value, String.class)).renamed("\"information_schema\".\"sql_identifier\"[]");
 }

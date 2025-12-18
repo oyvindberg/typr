@@ -19,7 +19,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -34,11 +33,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     PaymentsId paymentId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `payments` where `payment_id` = "),
-      PaymentsId.pgType.encode(paymentId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `payments` where `payment_id` = "), Fragment.encode(PaymentsId.pgType, paymentId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -46,8 +41,8 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     PaymentsId[] paymentIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : paymentIds) { fragments.add(PaymentsId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : paymentIds) { fragments.add(Fragment.encode(PaymentsId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `payments` where `payment_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -56,36 +51,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     PaymentsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `payments`(`order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`)
-         values ("""),
-      OrdersId.pgType.encode(unsaved.orderId()),
-      typo.runtime.Fragment.lit(", "),
-      PaymentMethodsId.pgType.encode(unsaved.methodId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.transactionId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.amount()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.currencyCode()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.status()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.processorResponse()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.errorMessage()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.inet6.opt().encode(unsaved.ipAddress()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.processedAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `payments`(`order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`)\nvalues ("), Fragment.encode(OrdersId.pgType, unsaved.orderId()), Fragment.lit(", "), Fragment.encode(PaymentMethodsId.pgType, unsaved.methodId()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.transactionId()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.amount()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.currencyCode()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.status()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.processorResponse()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.errorMessage()), Fragment.lit(", "), Fragment.encode(MariaTypes.inet6.opt(), unsaved.ipAddress()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.processedAt()), Fragment.lit(")\nreturning `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`\n"))
       .updateReturning(PaymentsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -94,37 +60,21 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     PaymentsRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`order_id`"));
-    values.add(interpolate(
-      OrdersId.pgType.encode(unsaved.orderId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(OrdersId.pgType, unsaved.orderId()), Fragment.lit("")));
     columns.add(Fragment.lit("`method_id`"));
-    values.add(interpolate(
-      PaymentMethodsId.pgType.encode(unsaved.methodId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PaymentMethodsId.pgType, unsaved.methodId()), Fragment.lit("")));
     columns.add(Fragment.lit("`amount`"));
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.amount()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.numeric, unsaved.amount()), Fragment.lit("")));
     unsaved.transactionId().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`transaction_id`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.currencyCode().visit(
@@ -133,11 +83,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`currency_code`"));
-        values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.char_, value), Fragment.lit("")));
       }
     );;
     unsaved.status().visit(
@@ -146,11 +92,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`status`"));
-        values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text, value), Fragment.lit("")));
       }
     );;
     unsaved.processorResponse().visit(
@@ -159,11 +101,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`processor_response`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.errorMessage().visit(
@@ -172,11 +110,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`error_message`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.ipAddress().visit(
@@ -185,11 +119,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`ip_address`"));
-        values.add(interpolate(
-        MariaTypes.inet6.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.inet6.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.createdAt().visit(
@@ -198,11 +128,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`created_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
     unsaved.processedAt().visit(
@@ -211,25 +137,10 @@ public class PaymentsRepoImpl implements PaymentsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`processed_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime.opt(), value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `payments`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `payments`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`\n"));;
     return q.updateReturning(PaymentsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -240,10 +151,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
 
   @Override
   public List<PaymentsRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`
-       from `payments`
-    """)).query(PaymentsRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`\nfrom `payments`\n")).query(PaymentsRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -251,14 +159,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     PaymentsId paymentId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`
-         from `payments`
-         where `payment_id` = """),
-      PaymentsId.pgType.encode(paymentId),
-      typo.runtime.Fragment.lit("")
-    ).query(PaymentsRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`\nfrom `payments`\nwhere `payment_id` = "), Fragment.encode(PaymentsId.pgType, paymentId), Fragment.lit("")).query(PaymentsRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -266,8 +167,8 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     PaymentsId[] paymentIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : paymentIds) { fragments.add(PaymentsId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : paymentIds) { fragments.add(Fragment.encode(PaymentsId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at` from `payments` where `payment_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(PaymentsRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -283,7 +184,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
 
   @Override
   public UpdateBuilder<PaymentsFields, PaymentsRow> update() {
-    return UpdateBuilder.of("`payments`", PaymentsFields.structure(), PaymentsRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`payments`", PaymentsFields.structure(), PaymentsRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -292,57 +193,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     Connection c
   ) {
     PaymentsId paymentId = row.paymentId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `payments`
-         set `order_id` = """),
-      OrdersId.pgType.encode(row.orderId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `method_id` = """),
-      PaymentMethodsId.pgType.encode(row.methodId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `transaction_id` = """),
-      MariaTypes.text.opt().encode(row.transactionId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `amount` = """),
-      MariaTypes.numeric.encode(row.amount()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `currency_code` = """),
-      MariaTypes.text.encode(row.currencyCode()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `status` = """),
-      MariaTypes.text.encode(row.status()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `processor_response` = """),
-      MariaTypes.text.opt().encode(row.processorResponse()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `error_message` = """),
-      MariaTypes.text.opt().encode(row.errorMessage()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `ip_address` = """),
-      MariaTypes.inet6.opt().encode(row.ipAddress()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `created_at` = """),
-      MariaTypes.datetime.encode(row.createdAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `processed_at` = """),
-      MariaTypes.datetime.opt().encode(row.processedAt()),
-      typo.runtime.Fragment.lit("""
-   
-         where `payment_id` = """),
-      PaymentsId.pgType.encode(paymentId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `payments`\nset `order_id` = "), Fragment.encode(OrdersId.pgType, row.orderId()), Fragment.lit(",\n`method_id` = "), Fragment.encode(PaymentMethodsId.pgType, row.methodId()), Fragment.lit(",\n`transaction_id` = "), Fragment.encode(MariaTypes.varchar.opt(), row.transactionId()), Fragment.lit(",\n`amount` = "), Fragment.encode(MariaTypes.numeric, row.amount()), Fragment.lit(",\n`currency_code` = "), Fragment.encode(MariaTypes.char_, row.currencyCode()), Fragment.lit(",\n`status` = "), Fragment.encode(MariaTypes.text, row.status()), Fragment.lit(",\n`processor_response` = "), Fragment.encode(MariaTypes.longtext.opt(), row.processorResponse()), Fragment.lit(",\n`error_message` = "), Fragment.encode(MariaTypes.varchar.opt(), row.errorMessage()), Fragment.lit(",\n`ip_address` = "), Fragment.encode(MariaTypes.inet6.opt(), row.ipAddress()), Fragment.lit(",\n`created_at` = "), Fragment.encode(MariaTypes.datetime, row.createdAt()), Fragment.lit(",\n`processed_at` = "), Fragment.encode(MariaTypes.datetime.opt(), row.processedAt()), Fragment.lit("\nwhere `payment_id` = "), Fragment.encode(PaymentsId.pgType, paymentId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -350,46 +201,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     PaymentsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `payments`(`order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`)
-         VALUES ("""),
-      OrdersId.pgType.encode(unsaved.orderId()),
-      typo.runtime.Fragment.lit(", "),
-      PaymentMethodsId.pgType.encode(unsaved.methodId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.transactionId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.amount()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.currencyCode()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.status()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.processorResponse()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.errorMessage()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.inet6.opt().encode(unsaved.ipAddress()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.processedAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),
-         `method_id` = VALUES(`method_id`),
-         `transaction_id` = VALUES(`transaction_id`),
-         `amount` = VALUES(`amount`),
-         `currency_code` = VALUES(`currency_code`),
-         `status` = VALUES(`status`),
-         `processor_response` = VALUES(`processor_response`),
-         `error_message` = VALUES(`error_message`),
-         `ip_address` = VALUES(`ip_address`),
-         `created_at` = VALUES(`created_at`),
-         `processed_at` = VALUES(`processed_at`)
-         RETURNING `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `payments`(`order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`)\nVALUES ("), Fragment.encode(OrdersId.pgType, unsaved.orderId()), Fragment.lit(", "), Fragment.encode(PaymentMethodsId.pgType, unsaved.methodId()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.transactionId()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.amount()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.currencyCode()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.status()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.processorResponse()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.errorMessage()), Fragment.lit(", "), Fragment.encode(MariaTypes.inet6.opt(), unsaved.ipAddress()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.processedAt()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),\n`method_id` = VALUES(`method_id`),\n`transaction_id` = VALUES(`transaction_id`),\n`amount` = VALUES(`amount`),\n`currency_code` = VALUES(`currency_code`),\n`status` = VALUES(`status`),\n`processor_response` = VALUES(`processor_response`),\n`error_message` = VALUES(`error_message`),\n`ip_address` = VALUES(`ip_address`),\n`created_at` = VALUES(`created_at`),\n`processed_at` = VALUES(`processed_at`)\nRETURNING `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`"))
       .updateReturning(PaymentsRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -399,22 +211,8 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     Iterator<PaymentsRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `payments`(`payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),
-                `method_id` = VALUES(`method_id`),
-                `transaction_id` = VALUES(`transaction_id`),
-                `amount` = VALUES(`amount`),
-                `currency_code` = VALUES(`currency_code`),
-                `status` = VALUES(`status`),
-                `processor_response` = VALUES(`processor_response`),
-                `error_message` = VALUES(`error_message`),
-                `ip_address` = VALUES(`ip_address`),
-                `created_at` = VALUES(`created_at`),
-                `processed_at` = VALUES(`processed_at`)
-                RETURNING `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`"""))
+    return interpolate(Fragment.lit("INSERT INTO `payments`(`payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),\n`method_id` = VALUES(`method_id`),\n`transaction_id` = VALUES(`transaction_id`),\n`amount` = VALUES(`amount`),\n`currency_code` = VALUES(`currency_code`),\n`status` = VALUES(`status`),\n`processor_response` = VALUES(`processor_response`),\n`error_message` = VALUES(`error_message`),\n`ip_address` = VALUES(`ip_address`),\n`created_at` = VALUES(`created_at`),\n`processed_at` = VALUES(`processed_at`)\nRETURNING `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`"))
       .updateReturningEach(PaymentsRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

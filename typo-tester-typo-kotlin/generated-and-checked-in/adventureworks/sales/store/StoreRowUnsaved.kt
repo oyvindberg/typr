@@ -7,13 +7,14 @@ package adventureworks.sales.store
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.data.Xml
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `sales.store` which has not been persisted yet */
 data class StoreRowUnsaved(
@@ -26,17 +27,17 @@ data class StoreRowUnsaved(
   /** ID of the sales person assigned to the customer. Foreign key to SalesPerson.BusinessEntityID.
     * Points to [adventureworks.sales.salesperson.SalespersonRow.businessentityid]
     */
-  val salespersonid: Optional<BusinessentityId> = Optional.empty(),
+  val salespersonid: BusinessentityId? = null,
   /** Demographic informationg about the store such as the number of employees, annual sales and store type. */
-  val demographics: Optional<TypoXml> = Optional.empty(),
+  val demographics: Xml? = null,
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): StoreRow = StoreRow(businessentityid = businessentityid, name = name, salespersonid = salespersonid, demographics = demographics, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -45,12 +46,12 @@ data class StoreRowUnsaved(
       sb.append(PgText.DELIMETER)
       Name.pgType.pgText().unsafeEncode(row.name, sb)
       sb.append(PgText.DELIMETER)
-      BusinessentityId.pgType.opt().pgText().unsafeEncode(row.salespersonid, sb)
+      BusinessentityId.pgType.nullable().pgText().unsafeEncode(row.salespersonid, sb)
       sb.append(PgText.DELIMETER)
-      TypoXml.pgType.opt().pgText().unsafeEncode(row.demographics, sb)
+      PgTypes.xml.nullable().pgText().unsafeEncode(row.demographics, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

@@ -5,18 +5,18 @@
  */
 package testdb.payment_methods
 
-import java.util.Optional
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.FieldsExpr0
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait PaymentMethodsFields extends FieldsExpr[PaymentMethodsRow] {
+trait PaymentMethodsFields extends FieldsExpr0[PaymentMethodsRow] {
   def methodId: IdField[PaymentMethodsId, PaymentMethodsRow]
 
   def code: Field[String, PaymentMethodsRow]
@@ -27,25 +27,25 @@ trait PaymentMethodsFields extends FieldsExpr[PaymentMethodsRow] {
 
   def processorConfig: OptField[String, PaymentMethodsRow]
 
-  def isActive: Field[java.lang.Boolean, PaymentMethodsRow]
+  def isActive: Field[Boolean, PaymentMethodsRow]
 
-  def sortOrder: Field[java.lang.Byte, PaymentMethodsRow]
+  def sortOrder: Field[Byte, PaymentMethodsRow]
 
   override def columns: java.util.List[FieldLike[?, PaymentMethodsRow]]
 
-  override def rowParser: RowParser[PaymentMethodsRow] = PaymentMethodsRow._rowParser
+  override def rowParser: RowParser[PaymentMethodsRow] = PaymentMethodsRow._rowParser.underlying
 }
 
 object PaymentMethodsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends PaymentMethodsFields with Relation[PaymentMethodsFields, PaymentMethodsRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends PaymentMethodsFields with RelationStructure[PaymentMethodsFields, PaymentMethodsRow] {
 
     override def methodId: IdField[PaymentMethodsId, PaymentMethodsRow] = {
       new IdField[PaymentMethodsId, PaymentMethodsRow](
         _path,
         "method_id",
         _.methodId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(methodId = value),
         PaymentMethodsId.pgType
       )
@@ -56,8 +56,8 @@ object PaymentMethodsFields {
         _path,
         "code",
         _.code,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(code = value),
         MariaTypes.varchar
       )
@@ -68,8 +68,8 @@ object PaymentMethodsFields {
         _path,
         "name",
         _.name,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(name = value),
         MariaTypes.varchar
       )
@@ -80,8 +80,8 @@ object PaymentMethodsFields {
         _path,
         "method_type",
         _.methodType,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(methodType = value),
         MariaTypes.text
       )
@@ -92,41 +92,41 @@ object PaymentMethodsFields {
         _path,
         "processor_config",
         _.processorConfig,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(processorConfig = value),
         MariaTypes.longtext
       )
     }
 
-    override def isActive: Field[java.lang.Boolean, PaymentMethodsRow] = {
-      new Field[java.lang.Boolean, PaymentMethodsRow](
+    override def isActive: Field[Boolean, PaymentMethodsRow] = {
+      new Field[Boolean, PaymentMethodsRow](
         _path,
         "is_active",
         _.isActive,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isActive = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
-    override def sortOrder: Field[java.lang.Byte, PaymentMethodsRow] = {
-      new Field[java.lang.Byte, PaymentMethodsRow](
+    override def sortOrder: Field[Byte, PaymentMethodsRow] = {
+      new Field[Byte, PaymentMethodsRow](
         _path,
         "sort_order",
         _.sortOrder,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(sortOrder = value),
-        MariaTypes.tinyint
+        ScalaDbTypes.MariaTypes.tinyint
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, PaymentMethodsRow]] = java.util.List.of(this.methodId, this.code, this.name, this.methodType, this.processorConfig, this.isActive, this.sortOrder)
+    override def columns: java.util.List[FieldLike[?, PaymentMethodsRow]] = java.util.List.of(this.methodId.underlying, this.code.underlying, this.name.underlying, this.methodType.underlying, this.processorConfig.underlying, this.isActive.underlying, this.sortOrder.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[PaymentMethodsFields, PaymentMethodsRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PaymentMethodsFields, PaymentMethodsRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

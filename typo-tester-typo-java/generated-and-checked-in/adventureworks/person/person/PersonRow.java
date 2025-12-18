@@ -6,14 +6,14 @@
 package adventureworks.person.person;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import adventureworks.public_.NameStyle;
 import adventureworks.userdefined.FirstName;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -31,7 +31,7 @@ public record PersonRow(
   /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
     * Constraint CK_Person_PersonType affecting columns persontype: (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
     */
-  /* bpchar, max 2 chars */ String persontype,
+  String persontype,
   /** 0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order.
     * Default: false
     */
@@ -52,13 +52,13 @@ public record PersonRow(
     */
   Integer emailpromotion,
   /** Additional contact information about the person stored in xml format. */
-  Optional<TypoXml> additionalcontactinfo,
+  Optional<Xml> additionalcontactinfo,
   /** Personal information such as hobbies, and income collected from online shoppers. Used for sales analysis. */
-  Optional<TypoXml> demographics,
+  Optional<Xml> demographics,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for Person records.
     * Points to {@link adventureworks.person.businessentity.BusinessentityRow#businessentityid()}
@@ -70,7 +70,7 @@ public record PersonRow(
   /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
     * Constraint CK_Person_PersonType affecting columns persontype: (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
     */
-  public PersonRow withPersontype(/* bpchar, max 2 chars */ String persontype) {
+  public PersonRow withPersontype(String persontype) {
     return new PersonRow(businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
@@ -115,26 +115,26 @@ public record PersonRow(
   };
 
   /** Additional contact information about the person stored in xml format. */
-  public PersonRow withAdditionalcontactinfo(Optional<TypoXml> additionalcontactinfo) {
+  public PersonRow withAdditionalcontactinfo(Optional<Xml> additionalcontactinfo) {
     return new PersonRow(businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
   /** Personal information such as hobbies, and income collected from online shoppers. Used for sales analysis. */
-  public PersonRow withDemographics(Optional<TypoXml> demographics) {
+  public PersonRow withDemographics(Optional<Xml> demographics) {
     return new PersonRow(businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public PersonRow withRowguid(TypoUUID rowguid) {
+  public PersonRow withRowguid(UUID rowguid) {
     return new PersonRow(businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public PersonRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PersonRow withModifieddate(LocalDateTime modifieddate) {
     return new PersonRow(businessentityid, persontype, namestyle, title, firstname, middlename, lastname, suffix, emailpromotion, additionalcontactinfo, demographics, rowguid, modifieddate);
   };
 
-  static RowParser<PersonRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.bpchar, NameStyle.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.int4, TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, PersonRow::new, row -> new Object[]{row.businessentityid(), row.persontype(), row.namestyle(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.emailpromotion(), row.additionalcontactinfo(), row.demographics(), row.rowguid(), row.modifieddate()});;
+  static RowParser<PersonRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.bpchar, NameStyle.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.int4, PgTypes.xml.opt(), PgTypes.xml.opt(), PgTypes.uuid, PgTypes.timestamp, PersonRow::new, row -> new Object[]{row.businessentityid(), row.persontype(), row.namestyle(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.emailpromotion(), row.additionalcontactinfo(), row.demographics(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<PersonRow> pgText =
     PgText.from(_rowParser);
@@ -146,8 +146,8 @@ public record PersonRow(
   public PersonRowUnsaved toUnsavedRow(
     Defaulted<NameStyle> namestyle,
     Defaulted<Integer> emailpromotion,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new PersonRowUnsaved(businessentityid, persontype, title, firstname, middlename, lastname, suffix, additionalcontactinfo, demographics, namestyle, emailpromotion, rowguid, modifieddate);
   };

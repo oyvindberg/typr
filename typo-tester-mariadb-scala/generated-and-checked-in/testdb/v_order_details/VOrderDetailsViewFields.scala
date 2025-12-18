@@ -6,18 +6,18 @@
 package testdb.v_order_details
 
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.orders.OrdersId
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.FieldsExpr0
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.OptField
 
-trait VOrderDetailsViewFields extends FieldsExpr[VOrderDetailsViewRow] {
+trait VOrderDetailsViewFields extends FieldsExpr0[VOrderDetailsViewRow] {
   def orderId: Field[OrdersId, VOrderDetailsViewRow]
 
   def orderNumber: Field[String, VOrderDetailsViewRow]
@@ -26,7 +26,7 @@ trait VOrderDetailsViewFields extends FieldsExpr[VOrderDetailsViewRow] {
 
   def paymentStatus: Field[String, VOrderDetailsViewRow]
 
-  def totalAmount: Field[java.math.BigDecimal, VOrderDetailsViewRow]
+  def totalAmount: Field[BigDecimal, VOrderDetailsViewRow]
 
   def currencyCode: Field[String, VOrderDetailsViewRow]
 
@@ -36,9 +36,9 @@ trait VOrderDetailsViewFields extends FieldsExpr[VOrderDetailsViewRow] {
 
   def customerName: OptField[String, VOrderDetailsViewRow]
 
-  def itemCount: Field[java.lang.Long, VOrderDetailsViewRow]
+  def itemCount: Field[Long, VOrderDetailsViewRow]
 
-  def totalQuantity: OptField[java.math.BigDecimal, VOrderDetailsViewRow]
+  def totalQuantity: OptField[BigDecimal, VOrderDetailsViewRow]
 
   def trackingNumber: OptField[String, VOrderDetailsViewRow]
 
@@ -48,19 +48,19 @@ trait VOrderDetailsViewFields extends FieldsExpr[VOrderDetailsViewRow] {
 
   override def columns: java.util.List[FieldLike[?, VOrderDetailsViewRow]]
 
-  override def rowParser: RowParser[VOrderDetailsViewRow] = VOrderDetailsViewRow._rowParser
+  override def rowParser: RowParser[VOrderDetailsViewRow] = VOrderDetailsViewRow._rowParser.underlying
 }
 
 object VOrderDetailsViewFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends VOrderDetailsViewFields with Relation[VOrderDetailsViewFields, VOrderDetailsViewRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends VOrderDetailsViewFields with RelationStructure[VOrderDetailsViewFields, VOrderDetailsViewRow] {
 
     override def orderId: Field[OrdersId, VOrderDetailsViewRow] = {
       new Field[OrdersId, VOrderDetailsViewRow](
         _path,
         "order_id",
         _.orderId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderId = value),
         OrdersId.pgType
       )
@@ -71,8 +71,8 @@ object VOrderDetailsViewFields {
         _path,
         "order_number",
         _.orderNumber,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderNumber = value),
         MariaTypes.varchar
       )
@@ -83,8 +83,8 @@ object VOrderDetailsViewFields {
         _path,
         "order_status",
         _.orderStatus,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderStatus = value),
         MariaTypes.text
       )
@@ -95,22 +95,22 @@ object VOrderDetailsViewFields {
         _path,
         "payment_status",
         _.paymentStatus,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(paymentStatus = value),
         MariaTypes.text
       )
     }
 
-    override def totalAmount: Field[java.math.BigDecimal, VOrderDetailsViewRow] = {
-      new Field[java.math.BigDecimal, VOrderDetailsViewRow](
+    override def totalAmount: Field[BigDecimal, VOrderDetailsViewRow] = {
+      new Field[BigDecimal, VOrderDetailsViewRow](
         _path,
         "total_amount",
         _.totalAmount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(totalAmount = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
@@ -119,8 +119,8 @@ object VOrderDetailsViewFields {
         _path,
         "currency_code",
         _.currencyCode,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(currencyCode = value),
         MariaTypes.char_
       )
@@ -131,8 +131,8 @@ object VOrderDetailsViewFields {
         _path,
         "ordered_at",
         _.orderedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderedAt = value),
         MariaTypes.datetime
       )
@@ -143,8 +143,8 @@ object VOrderDetailsViewFields {
         _path,
         "customer_email",
         _.customerEmail,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(customerEmail = value),
         MariaTypes.varchar
       )
@@ -155,34 +155,34 @@ object VOrderDetailsViewFields {
         _path,
         "customer_name",
         _.customerName,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(customerName = value),
         MariaTypes.varchar
       )
     }
 
-    override def itemCount: Field[java.lang.Long, VOrderDetailsViewRow] = {
-      new Field[java.lang.Long, VOrderDetailsViewRow](
+    override def itemCount: Field[Long, VOrderDetailsViewRow] = {
+      new Field[Long, VOrderDetailsViewRow](
         _path,
         "item_count",
         _.itemCount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(itemCount = value),
-        MariaTypes.bigint
+        ScalaDbTypes.MariaTypes.bigint
       )
     }
 
-    override def totalQuantity: OptField[java.math.BigDecimal, VOrderDetailsViewRow] = {
-      new OptField[java.math.BigDecimal, VOrderDetailsViewRow](
+    override def totalQuantity: OptField[BigDecimal, VOrderDetailsViewRow] = {
+      new OptField[BigDecimal, VOrderDetailsViewRow](
         _path,
         "total_quantity",
         _.totalQuantity,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(totalQuantity = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
@@ -191,8 +191,8 @@ object VOrderDetailsViewFields {
         _path,
         "tracking_number",
         _.trackingNumber,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(trackingNumber = value),
         MariaTypes.varchar
       )
@@ -203,8 +203,8 @@ object VOrderDetailsViewFields {
         _path,
         "shipping_status",
         _.shippingStatus,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(shippingStatus = value),
         MariaTypes.text
       )
@@ -215,17 +215,17 @@ object VOrderDetailsViewFields {
         _path,
         "carrier_name",
         _.carrierName,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(carrierName = value),
         MariaTypes.varchar
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, VOrderDetailsViewRow]] = java.util.List.of(this.orderId, this.orderNumber, this.orderStatus, this.paymentStatus, this.totalAmount, this.currencyCode, this.orderedAt, this.customerEmail, this.customerName, this.itemCount, this.totalQuantity, this.trackingNumber, this.shippingStatus, this.carrierName)
+    override def columns: java.util.List[FieldLike[?, VOrderDetailsViewRow]] = java.util.List.of(this.orderId.underlying, this.orderNumber.underlying, this.orderStatus.underlying, this.paymentStatus.underlying, this.totalAmount.underlying, this.currencyCode.underlying, this.orderedAt.underlying, this.customerEmail.underlying, this.customerName.underlying, this.itemCount.underlying, this.totalQuantity.underlying, this.trackingNumber.underlying, this.shippingStatus.underlying, this.carrierName.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[VOrderDetailsViewFields, VOrderDetailsViewRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VOrderDetailsViewFields, VOrderDetailsViewRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

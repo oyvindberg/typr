@@ -6,17 +6,16 @@
 package testdb.order_items
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait OrderItemsRepo {
   def delete: DeleteBuilder[OrderItemsFields, OrderItemsRow]
 
-  def deleteById(itemId: OrderItemsId)(using c: Connection): java.lang.Boolean
+  def deleteById(itemId: OrderItemsId)(using c: Connection): Boolean
 
-  def deleteByIds(itemIds: Array[OrderItemsId])(using c: Connection): Integer
+  def deleteByIds(itemIds: Array[OrderItemsId])(using c: Connection): Int
 
   def insert(unsaved: OrderItemsRow)(using c: Connection): OrderItemsRow
 
@@ -24,19 +23,19 @@ trait OrderItemsRepo {
 
   def select: SelectBuilder[OrderItemsFields, OrderItemsRow]
 
-  def selectAll(using c: Connection): java.util.List[OrderItemsRow]
+  def selectAll(using c: Connection): List[OrderItemsRow]
 
-  def selectById(itemId: OrderItemsId)(using c: Connection): Optional[OrderItemsRow]
+  def selectById(itemId: OrderItemsId)(using c: Connection): Option[OrderItemsRow]
 
-  def selectByIds(itemIds: Array[OrderItemsId])(using c: Connection): java.util.List[OrderItemsRow]
+  def selectByIds(itemIds: Array[OrderItemsId])(using c: Connection): List[OrderItemsRow]
 
-  def selectByIdsTracked(itemIds: Array[OrderItemsId])(using c: Connection): java.util.Map[OrderItemsId, OrderItemsRow]
+  def selectByIdsTracked(itemIds: Array[OrderItemsId])(using c: Connection): Map[OrderItemsId, OrderItemsRow]
 
   def update: UpdateBuilder[OrderItemsFields, OrderItemsRow]
 
-  def update(row: OrderItemsRow)(using c: Connection): java.lang.Boolean
+  def update(row: OrderItemsRow)(using c: Connection): Boolean
 
   def upsert(unsaved: OrderItemsRow)(using c: Connection): OrderItemsRow
 
-  def upsertBatch(unsaved: java.util.Iterator[OrderItemsRow])(using c: Connection): java.util.List[OrderItemsRow]
+  def upsertBatch(unsaved: Iterator[OrderItemsRow])(using c: Connection): List[OrderItemsRow]
 }

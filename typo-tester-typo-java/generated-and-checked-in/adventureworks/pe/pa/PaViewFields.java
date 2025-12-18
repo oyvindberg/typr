@@ -5,21 +5,21 @@
  */
 package adventureworks.pe.pa;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PaViewFields extends FieldsExpr<PaViewRow> {
-  record Impl(List<Path> _path) implements PaViewFields, Relation<PaViewFields, PaViewRow> {
+  record Impl(List<Path> _path) implements PaViewFields, RelationStructure<PaViewFields, PaViewRow> {
     @Override
     public Field<BusinessentityId, PaViewRow> id() {
       return new Field<BusinessentityId, PaViewRow>(_path, "id", PaViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), BusinessentityId.pgType);
@@ -31,51 +31,51 @@ public interface PaViewFields extends FieldsExpr<PaViewRow> {
     };
 
     @Override
-    public Field</* max 128 chars */ String, PaViewRow> passwordhash() {
-      return new Field</* max 128 chars */ String, PaViewRow>(_path, "passwordhash", PaViewRow::passwordhash, Optional.empty(), Optional.empty(), (row, value) -> row.withPasswordhash(value), PgTypes.text);
+    public Field<String, PaViewRow> passwordhash() {
+      return new Field<String, PaViewRow>(_path, "passwordhash", PaViewRow::passwordhash, Optional.empty(), Optional.empty(), (row, value) -> row.withPasswordhash(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 10 chars */ String, PaViewRow> passwordsalt() {
-      return new Field</* max 10 chars */ String, PaViewRow>(_path, "passwordsalt", PaViewRow::passwordsalt, Optional.empty(), Optional.empty(), (row, value) -> row.withPasswordsalt(value), PgTypes.text);
+    public Field<String, PaViewRow> passwordsalt() {
+      return new Field<String, PaViewRow>(_path, "passwordsalt", PaViewRow::passwordsalt, Optional.empty(), Optional.empty(), (row, value) -> row.withPasswordsalt(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoUUID, PaViewRow> rowguid() {
-      return new Field<TypoUUID, PaViewRow>(_path, "rowguid", PaViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, PaViewRow> rowguid() {
+      return new Field<UUID, PaViewRow>(_path, "rowguid", PaViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, PaViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PaViewRow>(_path, "modifieddate", PaViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PaViewRow> modifieddate() {
+      return new Field<LocalDateTime, PaViewRow>(_path, "modifieddate", PaViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PaViewRow>> columns() {
-      return List.of(this.id(), this.businessentityid(), this.passwordhash(), this.passwordsalt(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.businessentityid(), this.passwordhash(), this.passwordsalt(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<PaViewFields, PaViewRow> copy(List<Path> _path) {
+    public RelationStructure<PaViewFields, PaViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<BusinessentityId, PaViewRow> id();
 
   Field<BusinessentityId, PaViewRow> businessentityid();
 
-  Field</* max 128 chars */ String, PaViewRow> passwordhash();
+  Field<String, PaViewRow> passwordhash();
 
-  Field</* max 10 chars */ String, PaViewRow> passwordsalt();
+  Field<String, PaViewRow> passwordsalt();
 
-  Field<TypoUUID, PaViewRow> rowguid();
+  Field<UUID, PaViewRow> rowguid();
 
-  Field<TypoLocalDateTime, PaViewRow> modifieddate();
+  Field<LocalDateTime, PaViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PaViewRow>> columns();

@@ -7,16 +7,16 @@ package adventureworks.sales.currencyrate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyId
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `sales.currencyrate` which has not been persisted yet */
 data class CurrencyrateRowUnsaved(
   /** Date and time the exchange rate was obtained. */
-  val currencyratedate: TypoLocalDateTime,
+  val currencyratedate: LocalDateTime,
   /** Exchange rate was converted from this currency code.
     * Points to [adventureworks.sales.currency.CurrencyRow.currencycode]
     */
@@ -34,16 +34,16 @@ data class CurrencyrateRowUnsaved(
     */
   val currencyrateid: Defaulted<CurrencyrateId> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     currencyrateidDefault: () -> CurrencyrateId,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): CurrencyrateRow = CurrencyrateRow(currencyrateid = currencyrateid.getOrElse(currencyrateidDefault), currencyratedate = currencyratedate, fromcurrencycode = fromcurrencycode, tocurrencycode = tocurrencycode, averagerate = averagerate, endofdayrate = endofdayrate, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<CurrencyrateRowUnsaved> =
-      PgText.instance({ row, sb -> TypoLocalDateTime.pgType.pgText().unsafeEncode(row.currencyratedate, sb)
+      PgText.instance({ row, sb -> PgTypes.timestamp.pgText().unsafeEncode(row.currencyratedate, sb)
       sb.append(PgText.DELIMETER)
       CurrencyId.pgType.pgText().unsafeEncode(row.fromcurrencycode, sb)
       sb.append(PgText.DELIMETER)
@@ -55,6 +55,6 @@ data class CurrencyrateRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(CurrencyrateId.pgType.pgText()).unsafeEncode(row.currencyrateid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

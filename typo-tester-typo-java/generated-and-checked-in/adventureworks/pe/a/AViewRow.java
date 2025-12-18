@@ -5,12 +5,10 @@
  */
 package adventureworks.pe.a;
 
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.address.AddressId;
 import adventureworks.person.stateprovince.StateprovinceId;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -22,21 +20,21 @@ public record AViewRow(
   /** Points to {@link adventureworks.person.address.AddressRow#addressid()} */
   AddressId addressid,
   /** Points to {@link adventureworks.person.address.AddressRow#addressline1()} */
-  /* max 60 chars */ String addressline1,
+  String addressline1,
   /** Points to {@link adventureworks.person.address.AddressRow#addressline2()} */
-  Optional</* max 60 chars */ String> addressline2,
+  String addressline2,
   /** Points to {@link adventureworks.person.address.AddressRow#city()} */
-  /* max 30 chars */ String city,
+  String city,
   /** Points to {@link adventureworks.person.address.AddressRow#stateprovinceid()} */
   StateprovinceId stateprovinceid,
   /** Points to {@link adventureworks.person.address.AddressRow#postalcode()} */
-  /* max 15 chars */ String postalcode,
+  String postalcode,
   /** Points to {@link adventureworks.person.address.AddressRow#spatiallocation()} */
-  Optional<TypoBytea> spatiallocation,
+  byte[] spatiallocation,
   /** Points to {@link adventureworks.person.address.AddressRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.person.address.AddressRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.address.AddressRow#addressid()} */
   public AViewRow withId(AddressId id) {
@@ -49,17 +47,17 @@ public record AViewRow(
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#addressline1()} */
-  public AViewRow withAddressline1(/* max 60 chars */ String addressline1) {
+  public AViewRow withAddressline1(String addressline1) {
     return new AViewRow(id, addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#addressline2()} */
-  public AViewRow withAddressline2(Optional</* max 60 chars */ String> addressline2) {
+  public AViewRow withAddressline2(String addressline2) {
     return new AViewRow(id, addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#city()} */
-  public AViewRow withCity(/* max 30 chars */ String city) {
+  public AViewRow withCity(String city) {
     return new AViewRow(id, addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
@@ -69,24 +67,24 @@ public record AViewRow(
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#postalcode()} */
-  public AViewRow withPostalcode(/* max 15 chars */ String postalcode) {
+  public AViewRow withPostalcode(String postalcode) {
     return new AViewRow(id, addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#spatiallocation()} */
-  public AViewRow withSpatiallocation(Optional<TypoBytea> spatiallocation) {
+  public AViewRow withSpatiallocation(byte[] spatiallocation) {
     return new AViewRow(id, addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#rowguid()} */
-  public AViewRow withRowguid(TypoUUID rowguid) {
+  public AViewRow withRowguid(UUID rowguid) {
     return new AViewRow(id, addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#modifieddate()} */
-  public AViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public AViewRow withModifieddate(LocalDateTime modifieddate) {
     return new AViewRow(id, addressid, addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, rowguid, modifieddate);
   };
 
-  static RowParser<AViewRow> _rowParser = RowParsers.of(AddressId.pgType, AddressId.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, StateprovinceId.pgType, PgTypes.text, TypoBytea.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, AViewRow::new, row -> new Object[]{row.id(), row.addressid(), row.addressline1(), row.addressline2(), row.city(), row.stateprovinceid(), row.postalcode(), row.spatiallocation(), row.rowguid(), row.modifieddate()});;
+  static RowParser<AViewRow> _rowParser = RowParsers.of(AddressId.pgType, AddressId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, StateprovinceId.pgType, PgTypes.text, PgTypes.bytea, PgTypes.uuid, PgTypes.timestamp, AViewRow::new, row -> new Object[]{row.id(), row.addressid(), row.addressline1(), row.addressline2(), row.city(), row.stateprovinceid(), row.postalcode(), row.spatiallocation(), row.rowguid(), row.modifieddate()});;
 }

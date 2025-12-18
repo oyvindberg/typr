@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface PriceTiersFields extends FieldsExpr<PriceTiersRow> {
-  record Impl(List<Path> _path) implements PriceTiersFields, Relation<PriceTiersFields, PriceTiersRow> {
+  record Impl(List<Path> _path) implements PriceTiersFields, RelationStructure<PriceTiersFields, PriceTiersRow> {
     @Override
     public IdField<PriceTiersId, PriceTiersRow> tierId() {
       return new IdField<PriceTiersId, PriceTiersRow>(_path, "tier_id", PriceTiersRow::tierId, Optional.empty(), Optional.empty(), (row, value) -> row.withTierId(value), PriceTiersId.pgType);
@@ -41,22 +41,22 @@ public interface PriceTiersFields extends FieldsExpr<PriceTiersRow> {
 
     @Override
     public Field<BigDecimal, PriceTiersRow> discountValue() {
-      return new Field<BigDecimal, PriceTiersRow>(_path, "discount_value", PriceTiersRow::discountValue, Optional.empty(), Optional.empty(), (row, value) -> row.withDiscountValue(value), MariaTypes.decimal);
+      return new Field<BigDecimal, PriceTiersRow>(_path, "discount_value", PriceTiersRow::discountValue, Optional.empty(), Optional.empty(), (row, value) -> row.withDiscountValue(value), MariaTypes.numeric);
     };
 
     @Override
     public List<FieldLike<?, PriceTiersRow>> columns() {
-      return List.of(this.tierId(), this.name(), this.minQuantity(), this.discountType(), this.discountValue());
+      return java.util.List.of(this.tierId(), this.name(), this.minQuantity(), this.discountType(), this.discountValue());
     };
 
     @Override
-    public Relation<PriceTiersFields, PriceTiersRow> copy(List<Path> _path) {
+    public RelationStructure<PriceTiersFields, PriceTiersRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<PriceTiersId, PriceTiersRow> tierId();

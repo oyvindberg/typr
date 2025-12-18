@@ -5,7 +5,7 @@ object ComputedRowUnsaved {
   sealed trait CategorizedColumn {
     def col: ComputedColumn
   }
-  case class DefaultedCol(col: ComputedColumn, originalType: jvm.Type) extends CategorizedColumn
+  case class DefaultedCol(col: ComputedColumn, originalType: jvm.Type, originalTypoType: TypoType) extends CategorizedColumn
   case class AlwaysGeneratedCol(col: ComputedColumn) extends CategorizedColumn
   case class NormalCol(col: ComputedColumn) extends CategorizedColumn
 
@@ -14,9 +14,11 @@ object ComputedRowUnsaved {
       cols.map {
         case col if col.dbCol.maybeGenerated.exists(_.ALWAYS) => AlwaysGeneratedCol(col)
         case col if col.dbCol.isDefaulted =>
+          val wrappedType = jvm.Type.TApply(default.Defaulted, List(col.tpe))
           DefaultedCol(
-            col = col.copy(tpe = jvm.Type.TApply(default.Defaulted, List(col.tpe))),
-            originalType = col.tpe
+            col = col.copy(typoType = col.typoType.withJvmType(wrappedType)),
+            originalType = col.tpe,
+            originalTypoType = col.typoType
           )
         case col => NormalCol(col)
       }

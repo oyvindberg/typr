@@ -11,8 +11,8 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
 
   // Helper to wrap nullable expressions with !! for Kotlin
   private def notNull(code: jvm.Code): jvm.Code = lang match {
-    case codegen.LangKotlin => jvm.NotNull(code).code
-    case _                  => code
+    case _: codegen.LangKotlin => jvm.NotNull(code).code
+    case _                     => code
   }
 
   lazy val TypoBox = CustomType(
@@ -82,7 +82,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
         forbidArray = true,
         toText = CustomType.Text(primitiveByteArray, expr => code"${TypesJava.ByteArrays}.unbox(${prop(expr, "value")})")
       )
-    case LangKotlin =>
+    case _: LangKotlin =>
       // Kotlin's ByteArray is a primitive array type, equivalent to byte[] in Java
       CustomType(
         comment = "This represents the bytea datatype in PostgreSQL",
@@ -764,7 +764,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
         },
         pgTypeAnnotations = List(jvm.Annotation(jvm.Type.Qualified("java.lang.SuppressWarnings"), List(jvm.Annotation.Arg.Positional(jvm.StrLit("unchecked").code))))
       )
-    case LangKotlin =>
+    case _: LangKotlin =>
       // In Kotlin, use kotlin.collections.Map with kotlin.String for native Kotlin interop
       val kotlinMap = TypesKotlin.Map.of(lang.String, lang.String)
       CustomType(
@@ -891,7 +891,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
           )
         )
       )
-    case LangKotlin =>
+    case _: LangKotlin =>
       CustomType(
         comment = "Short primitive",
         sqlType = "int2",
@@ -1045,7 +1045,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
         toText =
           CustomType.Text.string(expr => code""""[" + ${TypesJava.Arrays}.stream(${prop(expr, "value")}).map(${TypesJava.String}::valueOf).collect(${TypesJava.Collectors}.joining(",")) + "]"""")
       )
-    case LangKotlin =>
+    case _: LangKotlin =>
       val floatArray = jvm.Type.ArrayOf(TypesJava.Float)
       CustomType(
         comment = "extension: https://github.com/pgvector/pgvector",
@@ -1121,7 +1121,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
           )
         )
       )
-    case LangKotlin =>
+    case _: LangKotlin =>
       CustomType(
         comment = "XML",
         sqlType = "xml",
@@ -1195,7 +1195,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
   }
 
   def obj(sqlType: String, name: String): CustomType = lang match {
-    case LangJava | LangKotlin =>
+    case LangJava | _: LangKotlin =>
       CustomType(
         comment = s"$sqlType (via PGObject)",
         sqlType = sqlType,

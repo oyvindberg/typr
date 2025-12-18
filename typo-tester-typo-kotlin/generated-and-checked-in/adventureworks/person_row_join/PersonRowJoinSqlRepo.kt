@@ -9,5 +9,5 @@ import java.sql.Connection
 import kotlin.collections.List
 
 interface PersonRowJoinSqlRepo {
-  fun apply(c: Connection): List<PersonRowJoinSqlRow>
+  abstract fun apply(c: Connection): List<PersonRowJoinSqlRow>
 }

@@ -7,10 +7,11 @@ package adventureworks.person.addresstype;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `person.addresstype` which has not been persisted yet */
 public record AddresstypeRowUnsaved(
@@ -21,9 +22,9 @@ public record AddresstypeRowUnsaved(
     */
   Defaulted<AddresstypeId> addresstypeid,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public AddresstypeRowUnsaved(
   
@@ -46,12 +47,12 @@ public record AddresstypeRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public AddresstypeRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public AddresstypeRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new AddresstypeRowUnsaved(name, addresstypeid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public AddresstypeRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public AddresstypeRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new AddresstypeRowUnsaved(name, addresstypeid, rowguid, modifieddate);
   };
 
@@ -61,15 +62,15 @@ public record AddresstypeRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(AddresstypeId.pgType.pgText()).unsafeEncode(row.addresstypeid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public AddresstypeRow toRow(
     java.util.function.Supplier<AddresstypeId> addresstypeidDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new AddresstypeRow(addresstypeid.getOrElse(addresstypeidDefault), name, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

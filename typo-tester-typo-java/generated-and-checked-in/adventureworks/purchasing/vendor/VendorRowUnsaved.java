@@ -7,12 +7,11 @@ package adventureworks.purchasing.vendor;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.AccountNumber;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -30,7 +29,7 @@ public record VendorRowUnsaved(
   /** 1 = Superior, 2 = Excellent, 3 = Above average, 4 = Average, 5 = Below average
     * Constraint CK_Vendor_CreditRating affecting columns creditrating:  (((creditrating >= 1) AND (creditrating <= 5)))
     */
-  TypoShort creditrating,
+  Short creditrating,
   /** Vendor URL. */
   Optional</* max 1024 chars */ String> purchasingwebserviceurl,
   /** Default: true
@@ -42,7 +41,7 @@ public record VendorRowUnsaved(
     */
   Defaulted<Flag> activeflag,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public VendorRowUnsaved(
     /** Primary key for Vendor records.  Foreign key to BusinessEntity.BusinessEntityID
@@ -56,7 +55,7 @@ public record VendorRowUnsaved(
     /** 1 = Superior, 2 = Excellent, 3 = Above average, 4 = Average, 5 = Below average
       * Constraint CK_Vendor_CreditRating affecting columns creditrating:  (((creditrating >= 1) AND (creditrating <= 5)))
       */
-    TypoShort creditrating
+    Short creditrating
   ) {
     this(businessentityid, accountnumber, name, creditrating, Optional.empty(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
   };
@@ -81,7 +80,7 @@ public record VendorRowUnsaved(
   /** 1 = Superior, 2 = Excellent, 3 = Above average, 4 = Average, 5 = Below average
     * Constraint CK_Vendor_CreditRating affecting columns creditrating:  (((creditrating >= 1) AND (creditrating <= 5)))
     */
-  public VendorRowUnsaved withCreditrating(TypoShort creditrating) {
+  public VendorRowUnsaved withCreditrating(Short creditrating) {
     return new VendorRowUnsaved(businessentityid, accountnumber, name, creditrating, purchasingwebserviceurl, preferredvendorstatus, activeflag, modifieddate);
   };
 
@@ -105,7 +104,7 @@ public record VendorRowUnsaved(
   };
 
   /** Default: now() */
-  public VendorRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public VendorRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new VendorRowUnsaved(businessentityid, accountnumber, name, creditrating, purchasingwebserviceurl, preferredvendorstatus, activeflag, modifieddate);
   };
 
@@ -117,7 +116,7 @@ public record VendorRowUnsaved(
       sb.append(PgText.DELIMETER);
       Name.pgType.pgText().unsafeEncode(row.name, sb);
       sb.append(PgText.DELIMETER);
-      TypoShort.pgType.pgText().unsafeEncode(row.creditrating, sb);
+      PgTypes.int2.pgText().unsafeEncode(row.creditrating, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.text.opt().pgText().unsafeEncode(row.purchasingwebserviceurl, sb);
       sb.append(PgText.DELIMETER);
@@ -125,13 +124,13 @@ public record VendorRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.activeflag, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public VendorRow toRow(
     java.util.function.Supplier<Flag> preferredvendorstatusDefault,
     java.util.function.Supplier<Flag> activeflagDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new VendorRow(businessentityid, accountnumber, name, creditrating, preferredvendorstatus.getOrElse(preferredvendorstatusDefault), activeflag.getOrElse(activeflagDefault), purchasingwebserviceurl, modifieddate.getOrElse(modifieddateDefault));
   };

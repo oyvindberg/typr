@@ -18,7 +18,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -33,11 +32,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     OrderHistoryId historyId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `order_history` where `history_id` = "),
-      OrderHistoryId.pgType.encode(historyId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `order_history` where `history_id` = "), Fragment.encode(OrderHistoryId.pgType, historyId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -45,8 +40,8 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     OrderHistoryId[] historyIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : historyIds) { fragments.add(OrderHistoryId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : historyIds) { fragments.add(Fragment.encode(OrderHistoryId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `order_history` where `history_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -55,28 +50,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     OrderHistoryRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `order_history`(`order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)
-         values ("""),
-      OrdersId.pgType.encode(unsaved.orderId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.previousStatus()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.newStatus()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.changedBy()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.changeReason()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.metadata()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `order_history`(`order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)\nvalues ("), Fragment.encode(OrdersId.pgType, unsaved.orderId()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.previousStatus()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.newStatus()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.changedBy()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.changeReason()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.metadata()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(")\nreturning `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`\n"))
       .updateReturning(OrderHistoryRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -85,31 +59,19 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     OrderHistoryRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`order_id`"));
-    values.add(interpolate(
-      OrdersId.pgType.encode(unsaved.orderId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(OrdersId.pgType, unsaved.orderId()), Fragment.lit("")));
     columns.add(Fragment.lit("`new_status`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.newStatus()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.text, unsaved.newStatus()), Fragment.lit("")));
     unsaved.previousStatus().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`previous_status`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.changedBy().visit(
@@ -118,11 +80,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`changed_by`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.changeReason().visit(
@@ -131,11 +89,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`change_reason`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.metadata().visit(
@@ -144,11 +98,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`metadata`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.createdAt().visit(
@@ -157,25 +107,10 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("`created_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `order_history`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `order_history`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`\n"));;
     return q.updateReturning(OrderHistoryRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -186,10 +121,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
 
   @Override
   public List<OrderHistoryRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`
-       from `order_history`
-    """)).query(OrderHistoryRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`\nfrom `order_history`\n")).query(OrderHistoryRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -197,14 +129,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     OrderHistoryId historyId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`
-         from `order_history`
-         where `history_id` = """),
-      OrderHistoryId.pgType.encode(historyId),
-      typo.runtime.Fragment.lit("")
-    ).query(OrderHistoryRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`\nfrom `order_history`\nwhere `history_id` = "), Fragment.encode(OrderHistoryId.pgType, historyId), Fragment.lit("")).query(OrderHistoryRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -212,8 +137,8 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     OrderHistoryId[] historyIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : historyIds) { fragments.add(OrderHistoryId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : historyIds) { fragments.add(Fragment.encode(OrderHistoryId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at` from `order_history` where `history_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(OrderHistoryRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -229,7 +154,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
 
   @Override
   public UpdateBuilder<OrderHistoryFields, OrderHistoryRow> update() {
-    return UpdateBuilder.of("`order_history`", OrderHistoryFields.structure(), OrderHistoryRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`order_history`", OrderHistoryFields.structure(), OrderHistoryRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -238,41 +163,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     Connection c
   ) {
     OrderHistoryId historyId = row.historyId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `order_history`
-         set `order_id` = """),
-      OrdersId.pgType.encode(row.orderId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `previous_status` = """),
-      MariaTypes.text.opt().encode(row.previousStatus()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `new_status` = """),
-      MariaTypes.text.encode(row.newStatus()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `changed_by` = """),
-      MariaTypes.text.opt().encode(row.changedBy()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `change_reason` = """),
-      MariaTypes.text.opt().encode(row.changeReason()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `metadata` = """),
-      MariaTypes.text.opt().encode(row.metadata()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `created_at` = """),
-      MariaTypes.datetime.encode(row.createdAt()),
-      typo.runtime.Fragment.lit("""
-   
-         where `history_id` = """),
-      OrderHistoryId.pgType.encode(historyId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `order_history`\nset `order_id` = "), Fragment.encode(OrdersId.pgType, row.orderId()), Fragment.lit(",\n`previous_status` = "), Fragment.encode(MariaTypes.text.opt(), row.previousStatus()), Fragment.lit(",\n`new_status` = "), Fragment.encode(MariaTypes.text, row.newStatus()), Fragment.lit(",\n`changed_by` = "), Fragment.encode(MariaTypes.varchar.opt(), row.changedBy()), Fragment.lit(",\n`change_reason` = "), Fragment.encode(MariaTypes.varchar.opt(), row.changeReason()), Fragment.lit(",\n`metadata` = "), Fragment.encode(MariaTypes.longtext.opt(), row.metadata()), Fragment.lit(",\n`created_at` = "), Fragment.encode(MariaTypes.datetime, row.createdAt()), Fragment.lit("\nwhere `history_id` = "), Fragment.encode(OrderHistoryId.pgType, historyId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -280,34 +171,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     OrderHistoryRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `order_history`(`order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)
-         VALUES ("""),
-      OrdersId.pgType.encode(unsaved.orderId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.previousStatus()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.newStatus()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.changedBy()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.changeReason()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.metadata()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),
-         `previous_status` = VALUES(`previous_status`),
-         `new_status` = VALUES(`new_status`),
-         `changed_by` = VALUES(`changed_by`),
-         `change_reason` = VALUES(`change_reason`),
-         `metadata` = VALUES(`metadata`),
-         `created_at` = VALUES(`created_at`)
-         RETURNING `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `order_history`(`order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)\nVALUES ("), Fragment.encode(OrdersId.pgType, unsaved.orderId()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.previousStatus()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.newStatus()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.changedBy()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.changeReason()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.metadata()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),\n`previous_status` = VALUES(`previous_status`),\n`new_status` = VALUES(`new_status`),\n`changed_by` = VALUES(`changed_by`),\n`change_reason` = VALUES(`change_reason`),\n`metadata` = VALUES(`metadata`),\n`created_at` = VALUES(`created_at`)\nRETURNING `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`"))
       .updateReturning(OrderHistoryRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -317,18 +181,8 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     Iterator<OrderHistoryRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `order_history`(`history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),
-                `previous_status` = VALUES(`previous_status`),
-                `new_status` = VALUES(`new_status`),
-                `changed_by` = VALUES(`changed_by`),
-                `change_reason` = VALUES(`change_reason`),
-                `metadata` = VALUES(`metadata`),
-                `created_at` = VALUES(`created_at`)
-                RETURNING `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`"""))
+    return interpolate(Fragment.lit("INSERT INTO `order_history`(`history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),\n`previous_status` = VALUES(`previous_status`),\n`new_status` = VALUES(`new_status`),\n`changed_by` = VALUES(`changed_by`),\n`change_reason` = VALUES(`change_reason`),\n`metadata` = VALUES(`metadata`),\n`created_at` = VALUES(`created_at`)\nRETURNING `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`"))
       .updateReturningEach(OrderHistoryRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

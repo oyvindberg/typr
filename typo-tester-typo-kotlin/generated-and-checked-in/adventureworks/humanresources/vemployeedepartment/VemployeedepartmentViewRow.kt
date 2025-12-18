@@ -5,39 +5,38 @@
  */
 package adventureworks.humanresources.vemployeedepartment
 
-import adventureworks.customtypes.TypoLocalDate
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
-import java.util.Optional
+import java.time.LocalDate
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: humanresources.vemployeedepartment */
 data class VemployeedepartmentViewRow(
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Points to [adventureworks.person.person.PersonRow.title] */
-  val title: Optional</* max 8 chars */ String>,
+  val title: String,
   /** Points to [adventureworks.person.person.PersonRow.firstname] */
   val firstname: /* user-picked */ FirstName,
   /** Points to [adventureworks.person.person.PersonRow.middlename] */
-  val middlename: Optional<Name>,
+  val middlename: Name,
   /** Points to [adventureworks.person.person.PersonRow.lastname] */
   val lastname: Name,
   /** Points to [adventureworks.person.person.PersonRow.suffix] */
-  val suffix: Optional</* max 10 chars */ String>,
+  val suffix: String,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.jobtitle] */
-  val jobtitle: /* max 50 chars */ String,
+  val jobtitle: String,
   /** Points to [adventureworks.humanresources.department.DepartmentRow.name] */
   val department: Name,
   /** Points to [adventureworks.humanresources.department.DepartmentRow.groupname] */
   val groupname: Name,
   /** Points to [adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.startdate] */
-  val startdate: TypoLocalDate
+  val startdate: LocalDate
 ) {
   companion object {
-    val _rowParser: RowParser<VemployeedepartmentViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.text, Name.pgType, Name.pgType, TypoLocalDate.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VemployeedepartmentViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.jobtitle, row.department, row.groupname, row.startdate) })
+    val _rowParser: RowParser<VemployeedepartmentViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, FirstName.pgType, Name.pgType, Name.pgType, PgTypes.text, PgTypes.text, Name.pgType, Name.pgType, PgTypes.date, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VemployeedepartmentViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.jobtitle, row.department, row.groupname, row.startdate) })
   }
 }

@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VproductanddescriptionMVRepoImpl implements VproductanddescriptionMVRepo {
@@ -19,9 +20,6 @@ public class VproductanddescriptionMVRepoImpl implements VproductanddescriptionM
 
   @Override
   public List<VproductanddescriptionMVRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "productid", "name", "productmodel", "cultureid", "description"
-       from "production"."vproductanddescription"
-    """)).query(VproductanddescriptionMVRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productid\", \"name\", \"productmodel\", \"cultureid\", \"description\"\nfrom \"production\".\"vproductanddescription\"\n")).query(VproductanddescriptionMVRow._rowParser.all()).runUnchecked(c);
   };
 }

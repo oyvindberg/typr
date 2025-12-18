@@ -16,9 +16,14 @@ public record ProductImagesId(@JsonValue Long value) {
     return new ProductImagesId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<ProductImagesId, Long> bijection =
     Bijection.of(ProductImagesId::value, ProductImagesId::new);
 
   static public MariaType<ProductImagesId> pgType =
-    MariaTypes.bigint.bimap(ProductImagesId::new, ProductImagesId::value);
+    MariaTypes.intUnsigned.bimap(ProductImagesId::new, ProductImagesId::value);
 }

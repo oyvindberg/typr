@@ -7,50 +7,49 @@ package adventureworks.person.address
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.stateprovince.StateprovinceId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `person.address` which has not been persisted yet */
 data class AddressRowUnsaved(
   /** First street address line. */
-  val addressline1: /* max 60 chars */ String,
+  val addressline1: String,
   /** Second street address line. */
-  val addressline2: Optional</* max 60 chars */ String> = Optional.empty(),
+  val addressline2: /* max 60 chars */ String? = null,
   /** Name of the city. */
-  val city: /* max 30 chars */ String,
+  val city: String,
   /** Unique identification number for the state or province. Foreign key to StateProvince table.
     * Points to [adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]
     */
   val stateprovinceid: StateprovinceId,
   /** Postal code for the street address. */
-  val postalcode: /* max 15 chars */ String,
+  val postalcode: String,
   /** Latitude and longitude of this address. */
-  val spatiallocation: Optional<TypoBytea> = Optional.empty(),
+  val spatiallocation: ByteArray? = null,
   /** Default: nextval('person.address_addressid_seq'::regclass)
     * Primary key for Address records.
     */
   val addressid: Defaulted<AddressId> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     addressidDefault: () -> AddressId,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): AddressRow = AddressRow(addressid = addressid.getOrElse(addressidDefault), addressline1 = addressline1, addressline2 = addressline2, city = city, stateprovinceid = stateprovinceid, postalcode = postalcode, spatiallocation = spatiallocation, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<AddressRowUnsaved> =
       PgText.instance({ row, sb -> PgTypes.text.pgText().unsafeEncode(row.addressline1, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.addressline2, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.addressline2, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.city, sb)
       sb.append(PgText.DELIMETER)
@@ -58,12 +57,12 @@ data class AddressRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.postalcode, sb)
       sb.append(PgText.DELIMETER)
-      TypoBytea.pgType.opt().pgText().unsafeEncode(row.spatiallocation, sb)
+      PgTypes.bytea.nullable().pgText().unsafeEncode(row.spatiallocation, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(AddressId.pgType.pgText()).unsafeEncode(row.addressid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

@@ -5,20 +5,21 @@
  */
 package adventureworks.sales.currency;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface CurrencyFields extends FieldsExpr<CurrencyRow> {
-  record Impl(List<Path> _path) implements CurrencyFields, Relation<CurrencyFields, CurrencyRow> {
+  record Impl(List<Path> _path) implements CurrencyFields, RelationStructure<CurrencyFields, CurrencyRow> {
     @Override
     public IdField<CurrencyId, CurrencyRow> currencycode() {
       return new IdField<CurrencyId, CurrencyRow>(_path, "currencycode", CurrencyRow::currencycode, Optional.empty(), Optional.of("bpchar"), (row, value) -> row.withCurrencycode(value), CurrencyId.pgType);
@@ -30,30 +31,30 @@ public interface CurrencyFields extends FieldsExpr<CurrencyRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, CurrencyRow> modifieddate() {
-      return new Field<TypoLocalDateTime, CurrencyRow>(_path, "modifieddate", CurrencyRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CurrencyRow> modifieddate() {
+      return new Field<LocalDateTime, CurrencyRow>(_path, "modifieddate", CurrencyRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, CurrencyRow>> columns() {
-      return List.of(this.currencycode(), this.name(), this.modifieddate());
+      return java.util.List.of(this.currencycode(), this.name(), this.modifieddate());
     };
 
     @Override
-    public Relation<CurrencyFields, CurrencyRow> copy(List<Path> _path) {
+    public RelationStructure<CurrencyFields, CurrencyRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<CurrencyId, CurrencyRow> currencycode();
 
   Field<Name, CurrencyRow> name();
 
-  Field<TypoLocalDateTime, CurrencyRow> modifieddate();
+  Field<LocalDateTime, CurrencyRow> modifieddate();
 
   @Override
   List<FieldLike<?, CurrencyRow>> columns();

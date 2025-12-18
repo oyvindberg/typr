@@ -12,15 +12,15 @@ import testdb.products.ProductsId;
 import testdb.warehouses.WarehousesId;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface VInventoryStatusViewFields extends FieldsExpr<VInventoryStatusViewRow> {
-  record Impl(List<Path> _path) implements VInventoryStatusViewFields, Relation<VInventoryStatusViewFields, VInventoryStatusViewRow> {
+  record Impl(List<Path> _path) implements VInventoryStatusViewFields, RelationStructure<VInventoryStatusViewFields, VInventoryStatusViewRow> {
     @Override
     public Field<ProductsId, VInventoryStatusViewRow> productId() {
       return new Field<ProductsId, VInventoryStatusViewRow>(_path, "product_id", VInventoryStatusViewRow::productId, Optional.empty(), Optional.empty(), (row, value) -> row.withProductId(value), ProductsId.pgType);
@@ -93,17 +93,17 @@ public interface VInventoryStatusViewFields extends FieldsExpr<VInventoryStatusV
 
     @Override
     public List<FieldLike<?, VInventoryStatusViewRow>> columns() {
-      return List.of(this.productId(), this.sku(), this.productName(), this.warehouseId(), this.warehouseCode(), this.warehouseName(), this.quantityOnHand(), this.quantityReserved(), this.quantityOnOrder(), this.available(), this.reorderPoint(), this.stockStatus(), this.binLocation(), this.lastCountedAt());
+      return java.util.List.of(this.productId(), this.sku(), this.productName(), this.warehouseId(), this.warehouseCode(), this.warehouseName(), this.quantityOnHand(), this.quantityReserved(), this.quantityOnOrder(), this.available(), this.reorderPoint(), this.stockStatus(), this.binLocation(), this.lastCountedAt());
     };
 
     @Override
-    public Relation<VInventoryStatusViewFields, VInventoryStatusViewRow> copy(List<Path> _path) {
+    public RelationStructure<VInventoryStatusViewFields, VInventoryStatusViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductsId, VInventoryStatusViewRow> productId();

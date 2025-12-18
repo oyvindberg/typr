@@ -8,21 +8,19 @@ package adventureworks.purchasing.shipmethod
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ShipmethodRepoMock(
   val toRow: (ShipmethodRowUnsaved) -> ShipmethodRow,
@@ -33,7 +31,7 @@ data class ShipmethodRepoMock(
   override fun deleteById(
     shipmethodid: ShipmethodId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(shipmethodid)).isPresent()
+  ): Boolean = map.remove(shipmethodid) != null
 
   override fun deleteByIds(
     shipmethodids: Array<ShipmethodId>,
@@ -41,7 +39,7 @@ data class ShipmethodRepoMock(
   ): Int {
     var count = 0
     for (id in shipmethodids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ShipmethodRepoMock(
     c: Connection
   ): ShipmethodRow {
     if (map.containsKey(unsaved.shipmethodid)) {
-      throw RuntimeException(str("id $unsaved.shipmethodid already exists"))
+      throw RuntimeException("id " + unsaved.shipmethodid + " already exists")
     }
     map[unsaved.shipmethodid] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class ShipmethodRepoMock(
   override fun selectById(
     shipmethodid: ShipmethodId,
     c: Connection
-  ): Optional<ShipmethodRow> = Optional.ofNullable(map[shipmethodid])
+  ): ShipmethodRow? = map[shipmethodid]
 
   override fun selectByIds(
     shipmethodids: Array<ShipmethodId>,
@@ -109,9 +107,9 @@ data class ShipmethodRepoMock(
   ): List<ShipmethodRow> {
     val result = ArrayList<ShipmethodRow>()
     for (id in shipmethodids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class ShipmethodRepoMock(
     row: ShipmethodRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.shipmethodid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.shipmethodid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.shipmethodid] = row
     }

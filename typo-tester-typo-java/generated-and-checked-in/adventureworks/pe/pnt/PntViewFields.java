@@ -5,20 +5,21 @@
  */
 package adventureworks.pe.pnt;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.phonenumbertype.PhonenumbertypeId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PntViewFields extends FieldsExpr<PntViewRow> {
-  record Impl(List<Path> _path) implements PntViewFields, Relation<PntViewFields, PntViewRow> {
+  record Impl(List<Path> _path) implements PntViewFields, RelationStructure<PntViewFields, PntViewRow> {
     @Override
     public Field<PhonenumbertypeId, PntViewRow> id() {
       return new Field<PhonenumbertypeId, PntViewRow>(_path, "id", PntViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), PhonenumbertypeId.pgType);
@@ -35,23 +36,23 @@ public interface PntViewFields extends FieldsExpr<PntViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PntViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PntViewRow>(_path, "modifieddate", PntViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PntViewRow> modifieddate() {
+      return new Field<LocalDateTime, PntViewRow>(_path, "modifieddate", PntViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PntViewRow>> columns() {
-      return List.of(this.id(), this.phonenumbertypeid(), this.name(), this.modifieddate());
+      return java.util.List.of(this.id(), this.phonenumbertypeid(), this.name(), this.modifieddate());
     };
 
     @Override
-    public Relation<PntViewFields, PntViewRow> copy(List<Path> _path) {
+    public RelationStructure<PntViewFields, PntViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<PhonenumbertypeId, PntViewRow> id();
@@ -60,7 +61,7 @@ public interface PntViewFields extends FieldsExpr<PntViewRow> {
 
   Field<Name, PntViewRow> name();
 
-  Field<TypoLocalDateTime, PntViewRow> modifieddate();
+  Field<LocalDateTime, PntViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PntViewRow>> columns();

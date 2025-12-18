@@ -17,7 +17,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -32,11 +31,7 @@ public class BrandsRepoImpl implements BrandsRepo {
     BrandsId brandId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `brands` where `brand_id` = "),
-      BrandsId.pgType.encode(brandId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `brands` where `brand_id` = "), Fragment.encode(BrandsId.pgType, brandId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,8 +39,8 @@ public class BrandsRepoImpl implements BrandsRepo {
     BrandsId[] brandIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : brandIds) { fragments.add(BrandsId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : brandIds) { fragments.add(Fragment.encode(BrandsId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `brands` where `brand_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -54,26 +49,7 @@ public class BrandsRepoImpl implements BrandsRepo {
     BrandsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `brands`(`name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)
-         values ("""),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.slug()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.logoBlob()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.websiteUrl()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.countryOfOrigin()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isActive()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `brands`(`name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.slug()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumblob.opt(), unsaved.logoBlob()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.websiteUrl()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_.opt(), unsaved.countryOfOrigin()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isActive()), Fragment.lit(")\nreturning `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`\n"))
       .updateReturning(BrandsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -82,31 +58,19 @@ public class BrandsRepoImpl implements BrandsRepo {
     BrandsRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`name`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit("")));
     columns.add(Fragment.lit("`slug`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.slug()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.slug()), Fragment.lit("")));
     unsaved.logoBlob().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`logo_blob`"));
-        values.add(interpolate(
-        MariaTypes.blob.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.mediumblob.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.websiteUrl().visit(
@@ -115,11 +79,7 @@ public class BrandsRepoImpl implements BrandsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`website_url`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.countryOfOrigin().visit(
@@ -128,11 +88,7 @@ public class BrandsRepoImpl implements BrandsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`country_of_origin`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.char_.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.isActive().visit(
@@ -141,25 +97,10 @@ public class BrandsRepoImpl implements BrandsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`is_active`"));
-        values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `brands`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `brands`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`\n"));;
     return q.updateReturning(BrandsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -170,10 +111,7 @@ public class BrandsRepoImpl implements BrandsRepo {
 
   @Override
   public List<BrandsRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
-       from `brands`
-    """)).query(BrandsRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`\nfrom `brands`\n")).query(BrandsRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -181,14 +119,7 @@ public class BrandsRepoImpl implements BrandsRepo {
     BrandsId brandId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
-         from `brands`
-         where `brand_id` = """),
-      BrandsId.pgType.encode(brandId),
-      typo.runtime.Fragment.lit("")
-    ).query(BrandsRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`\nfrom `brands`\nwhere `brand_id` = "), Fragment.encode(BrandsId.pgType, brandId), Fragment.lit("")).query(BrandsRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -196,8 +127,8 @@ public class BrandsRepoImpl implements BrandsRepo {
     BrandsId[] brandIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : brandIds) { fragments.add(BrandsId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : brandIds) { fragments.add(Fragment.encode(BrandsId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active` from `brands` where `brand_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(BrandsRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -216,22 +147,12 @@ public class BrandsRepoImpl implements BrandsRepo {
     String slug,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
-         from `brands`
-         where `slug` = """),
-      MariaTypes.text.encode(slug),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(BrandsRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`\nfrom `brands`\nwhere `slug` = "), Fragment.encode(MariaTypes.varchar, slug), Fragment.lit("\n")).query(BrandsRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<BrandsFields, BrandsRow> update() {
-    return UpdateBuilder.of("`brands`", BrandsFields.structure(), BrandsRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`brands`", BrandsFields.structure(), BrandsRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -240,37 +161,7 @@ public class BrandsRepoImpl implements BrandsRepo {
     Connection c
   ) {
     BrandsId brandId = row.brandId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `brands`
-         set `name` = """),
-      MariaTypes.text.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `slug` = """),
-      MariaTypes.text.encode(row.slug()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `logo_blob` = """),
-      MariaTypes.blob.opt().encode(row.logoBlob()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `website_url` = """),
-      MariaTypes.text.opt().encode(row.websiteUrl()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `country_of_origin` = """),
-      MariaTypes.text.opt().encode(row.countryOfOrigin()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `is_active` = """),
-      MariaTypes.bool.encode(row.isActive()),
-      typo.runtime.Fragment.lit("""
-   
-         where `brand_id` = """),
-      BrandsId.pgType.encode(brandId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `brands`\nset `name` = "), Fragment.encode(MariaTypes.varchar, row.name()), Fragment.lit(",\n`slug` = "), Fragment.encode(MariaTypes.varchar, row.slug()), Fragment.lit(",\n`logo_blob` = "), Fragment.encode(MariaTypes.mediumblob.opt(), row.logoBlob()), Fragment.lit(",\n`website_url` = "), Fragment.encode(MariaTypes.varchar.opt(), row.websiteUrl()), Fragment.lit(",\n`country_of_origin` = "), Fragment.encode(MariaTypes.char_.opt(), row.countryOfOrigin()), Fragment.lit(",\n`is_active` = "), Fragment.encode(MariaTypes.bool, row.isActive()), Fragment.lit("\nwhere `brand_id` = "), Fragment.encode(BrandsId.pgType, brandId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -278,31 +169,7 @@ public class BrandsRepoImpl implements BrandsRepo {
     BrandsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `brands`(`name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)
-         VALUES ("""),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.slug()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.blob.opt().encode(unsaved.logoBlob()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.websiteUrl()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.countryOfOrigin()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isActive()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `name` = VALUES(`name`),
-         `slug` = VALUES(`slug`),
-         `logo_blob` = VALUES(`logo_blob`),
-         `website_url` = VALUES(`website_url`),
-         `country_of_origin` = VALUES(`country_of_origin`),
-         `is_active` = VALUES(`is_active`)
-         RETURNING `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `brands`(`name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.slug()), Fragment.lit(", "), Fragment.encode(MariaTypes.mediumblob.opt(), unsaved.logoBlob()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.websiteUrl()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_.opt(), unsaved.countryOfOrigin()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isActive()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`),\n`slug` = VALUES(`slug`),\n`logo_blob` = VALUES(`logo_blob`),\n`website_url` = VALUES(`website_url`),\n`country_of_origin` = VALUES(`country_of_origin`),\n`is_active` = VALUES(`is_active`)\nRETURNING `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`"))
       .updateReturning(BrandsRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -312,17 +179,8 @@ public class BrandsRepoImpl implements BrandsRepo {
     Iterator<BrandsRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `brands`(`brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `name` = VALUES(`name`),
-                `slug` = VALUES(`slug`),
-                `logo_blob` = VALUES(`logo_blob`),
-                `website_url` = VALUES(`website_url`),
-                `country_of_origin` = VALUES(`country_of_origin`),
-                `is_active` = VALUES(`is_active`)
-                RETURNING `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`"""))
+    return interpolate(Fragment.lit("INSERT INTO `brands`(`brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)\nVALUES (?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`),\n`slug` = VALUES(`slug`),\n`logo_blob` = VALUES(`logo_blob`),\n`website_url` = VALUES(`website_url`),\n`country_of_origin` = VALUES(`country_of_origin`),\n`is_active` = VALUES(`is_active`)\nRETURNING `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`"))
       .updateReturningEach(BrandsRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

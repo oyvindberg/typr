@@ -18,7 +18,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -33,11 +32,7 @@ public class ProductsRepoImpl implements ProductsRepo {
     ProductsId productId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `products` where `product_id` = "),
-      ProductsId.pgType.encode(productId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `products` where `product_id` = "), Fragment.encode(ProductsId.pgType, productId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -45,8 +40,8 @@ public class ProductsRepoImpl implements ProductsRepo {
     ProductsId[] productIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : productIds) { fragments.add(ProductsId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : productIds) { fragments.add(Fragment.encode(ProductsId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `products` where `product_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -55,48 +50,7 @@ public class ProductsRepoImpl implements ProductsRepo {
     ProductsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `products`(`sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)
-         values ("""),
-      MariaTypes.text.encode(unsaved.sku()),
-      typo.runtime.Fragment.lit(", "),
-      BrandsId.pgType.opt().encode(unsaved.brandId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.shortDescription()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.fullDescription()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.basePrice()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.opt().encode(unsaved.costPrice()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.opt().encode(unsaved.weightKg()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.dimensionsJson()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.status()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.taxClass()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.set.opt().encode(unsaved.tags()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.attributes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.seoMetadata()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.updatedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.publishedAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `products`(`sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.sku()), Fragment.lit(", "), Fragment.encode(BrandsId.pgType.opt(), unsaved.brandId()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.shortDescription()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.fullDescription()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.basePrice()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric.opt(), unsaved.costPrice()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric.opt(), unsaved.weightKg()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.dimensionsJson()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.status()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.taxClass()), Fragment.lit(", "), Fragment.encode(MariaTypes.set.opt(), unsaved.tags()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.attributes()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.seoMetadata()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.publishedAt()), Fragment.lit(")\nreturning `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`\n"))
       .updateReturning(ProductsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -105,37 +59,21 @@ public class ProductsRepoImpl implements ProductsRepo {
     ProductsRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`sku`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.sku()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.sku()), Fragment.lit("")));
     columns.add(Fragment.lit("`name`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit("")));
     columns.add(Fragment.lit("`base_price`"));
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.basePrice()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.numeric, unsaved.basePrice()), Fragment.lit("")));
     unsaved.brandId().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`brand_id`"));
-        values.add(interpolate(
-        BrandsId.pgType.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(BrandsId.pgType.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.shortDescription().visit(
@@ -144,11 +82,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`short_description`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.fullDescription().visit(
@@ -157,11 +91,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`full_description`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.costPrice().visit(
@@ -170,11 +100,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`cost_price`"));
-        values.add(interpolate(
-        MariaTypes.numeric.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.numeric.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.weightKg().visit(
@@ -183,11 +109,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`weight_kg`"));
-        values.add(interpolate(
-        MariaTypes.numeric.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.numeric.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.dimensionsJson().visit(
@@ -196,11 +118,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`dimensions_json`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.status().visit(
@@ -209,11 +127,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`status`"));
-        values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text, value), Fragment.lit("")));
       }
     );;
     unsaved.taxClass().visit(
@@ -222,11 +136,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`tax_class`"));
-        values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text, value), Fragment.lit("")));
       }
     );;
     unsaved.tags().visit(
@@ -235,11 +145,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`tags`"));
-        values.add(interpolate(
-        MariaTypes.set.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.set.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.attributes().visit(
@@ -248,11 +154,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`attributes`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.seoMetadata().visit(
@@ -261,11 +163,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`seo_metadata`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.createdAt().visit(
@@ -274,11 +172,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`created_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
     unsaved.updatedAt().visit(
@@ -287,11 +181,7 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`updated_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
     unsaved.publishedAt().visit(
@@ -300,25 +190,10 @@ public class ProductsRepoImpl implements ProductsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`published_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime.opt(), value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `products`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `products`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`\n"));;
     return q.updateReturning(ProductsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -329,10 +204,7 @@ public class ProductsRepoImpl implements ProductsRepo {
 
   @Override
   public List<ProductsRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
-       from `products`
-    """)).query(ProductsRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`\nfrom `products`\n")).query(ProductsRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -340,14 +212,7 @@ public class ProductsRepoImpl implements ProductsRepo {
     ProductsId productId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
-         from `products`
-         where `product_id` = """),
-      ProductsId.pgType.encode(productId),
-      typo.runtime.Fragment.lit("")
-    ).query(ProductsRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`\nfrom `products`\nwhere `product_id` = "), Fragment.encode(ProductsId.pgType, productId), Fragment.lit("")).query(ProductsRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -355,8 +220,8 @@ public class ProductsRepoImpl implements ProductsRepo {
     ProductsId[] productIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : productIds) { fragments.add(ProductsId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : productIds) { fragments.add(Fragment.encode(ProductsId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at` from `products` where `product_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ProductsRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -375,22 +240,12 @@ public class ProductsRepoImpl implements ProductsRepo {
     String sku,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
-         from `products`
-         where `sku` = """),
-      MariaTypes.text.encode(sku),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(ProductsRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`\nfrom `products`\nwhere `sku` = "), Fragment.encode(MariaTypes.varchar, sku), Fragment.lit("\n")).query(ProductsRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<ProductsFields, ProductsRow> update() {
-    return UpdateBuilder.of("`products`", ProductsFields.structure(), ProductsRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`products`", ProductsFields.structure(), ProductsRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -399,81 +254,7 @@ public class ProductsRepoImpl implements ProductsRepo {
     Connection c
   ) {
     ProductsId productId = row.productId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `products`
-         set `sku` = """),
-      MariaTypes.text.encode(row.sku()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `brand_id` = """),
-      BrandsId.pgType.opt().encode(row.brandId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `name` = """),
-      MariaTypes.text.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `short_description` = """),
-      MariaTypes.text.opt().encode(row.shortDescription()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `full_description` = """),
-      MariaTypes.text.opt().encode(row.fullDescription()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `base_price` = """),
-      MariaTypes.numeric.encode(row.basePrice()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `cost_price` = """),
-      MariaTypes.numeric.opt().encode(row.costPrice()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `weight_kg` = """),
-      MariaTypes.numeric.opt().encode(row.weightKg()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `dimensions_json` = """),
-      MariaTypes.text.opt().encode(row.dimensionsJson()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `status` = """),
-      MariaTypes.text.encode(row.status()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `tax_class` = """),
-      MariaTypes.text.encode(row.taxClass()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `tags` = """),
-      MariaTypes.set.opt().encode(row.tags()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `attributes` = """),
-      MariaTypes.text.opt().encode(row.attributes()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `seo_metadata` = """),
-      MariaTypes.text.opt().encode(row.seoMetadata()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `created_at` = """),
-      MariaTypes.datetime.encode(row.createdAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `updated_at` = """),
-      MariaTypes.datetime.encode(row.updatedAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `published_at` = """),
-      MariaTypes.datetime.opt().encode(row.publishedAt()),
-      typo.runtime.Fragment.lit("""
-   
-         where `product_id` = """),
-      ProductsId.pgType.encode(productId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `products`\nset `sku` = "), Fragment.encode(MariaTypes.varchar, row.sku()), Fragment.lit(",\n`brand_id` = "), Fragment.encode(BrandsId.pgType.opt(), row.brandId()), Fragment.lit(",\n`name` = "), Fragment.encode(MariaTypes.varchar, row.name()), Fragment.lit(",\n`short_description` = "), Fragment.encode(MariaTypes.varchar.opt(), row.shortDescription()), Fragment.lit(",\n`full_description` = "), Fragment.encode(MariaTypes.longtext.opt(), row.fullDescription()), Fragment.lit(",\n`base_price` = "), Fragment.encode(MariaTypes.numeric, row.basePrice()), Fragment.lit(",\n`cost_price` = "), Fragment.encode(MariaTypes.numeric.opt(), row.costPrice()), Fragment.lit(",\n`weight_kg` = "), Fragment.encode(MariaTypes.numeric.opt(), row.weightKg()), Fragment.lit(",\n`dimensions_json` = "), Fragment.encode(MariaTypes.longtext.opt(), row.dimensionsJson()), Fragment.lit(",\n`status` = "), Fragment.encode(MariaTypes.text, row.status()), Fragment.lit(",\n`tax_class` = "), Fragment.encode(MariaTypes.text, row.taxClass()), Fragment.lit(",\n`tags` = "), Fragment.encode(MariaTypes.set.opt(), row.tags()), Fragment.lit(",\n`attributes` = "), Fragment.encode(MariaTypes.longtext.opt(), row.attributes()), Fragment.lit(",\n`seo_metadata` = "), Fragment.encode(MariaTypes.longtext.opt(), row.seoMetadata()), Fragment.lit(",\n`created_at` = "), Fragment.encode(MariaTypes.datetime, row.createdAt()), Fragment.lit(",\n`updated_at` = "), Fragment.encode(MariaTypes.datetime, row.updatedAt()), Fragment.lit(",\n`published_at` = "), Fragment.encode(MariaTypes.datetime.opt(), row.publishedAt()), Fragment.lit("\nwhere `product_id` = "), Fragment.encode(ProductsId.pgType, productId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -481,64 +262,7 @@ public class ProductsRepoImpl implements ProductsRepo {
     ProductsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `products`(`sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)
-         VALUES ("""),
-      MariaTypes.text.encode(unsaved.sku()),
-      typo.runtime.Fragment.lit(", "),
-      BrandsId.pgType.opt().encode(unsaved.brandId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.shortDescription()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.fullDescription()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.encode(unsaved.basePrice()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.opt().encode(unsaved.costPrice()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.numeric.opt().encode(unsaved.weightKg()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.dimensionsJson()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.status()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.taxClass()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.set.opt().encode(unsaved.tags()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.attributes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.seoMetadata()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.updatedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.publishedAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `sku` = VALUES(`sku`),
-         `brand_id` = VALUES(`brand_id`),
-         `name` = VALUES(`name`),
-         `short_description` = VALUES(`short_description`),
-         `full_description` = VALUES(`full_description`),
-         `base_price` = VALUES(`base_price`),
-         `cost_price` = VALUES(`cost_price`),
-         `weight_kg` = VALUES(`weight_kg`),
-         `dimensions_json` = VALUES(`dimensions_json`),
-         `status` = VALUES(`status`),
-         `tax_class` = VALUES(`tax_class`),
-         `tags` = VALUES(`tags`),
-         `attributes` = VALUES(`attributes`),
-         `seo_metadata` = VALUES(`seo_metadata`),
-         `created_at` = VALUES(`created_at`),
-         `updated_at` = VALUES(`updated_at`),
-         `published_at` = VALUES(`published_at`)
-         RETURNING `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `products`(`sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.sku()), Fragment.lit(", "), Fragment.encode(BrandsId.pgType.opt(), unsaved.brandId()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.shortDescription()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.fullDescription()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric, unsaved.basePrice()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric.opt(), unsaved.costPrice()), Fragment.lit(", "), Fragment.encode(MariaTypes.numeric.opt(), unsaved.weightKg()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.dimensionsJson()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.status()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.taxClass()), Fragment.lit(", "), Fragment.encode(MariaTypes.set.opt(), unsaved.tags()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.attributes()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.seoMetadata()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.publishedAt()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `sku` = VALUES(`sku`),\n`brand_id` = VALUES(`brand_id`),\n`name` = VALUES(`name`),\n`short_description` = VALUES(`short_description`),\n`full_description` = VALUES(`full_description`),\n`base_price` = VALUES(`base_price`),\n`cost_price` = VALUES(`cost_price`),\n`weight_kg` = VALUES(`weight_kg`),\n`dimensions_json` = VALUES(`dimensions_json`),\n`status` = VALUES(`status`),\n`tax_class` = VALUES(`tax_class`),\n`tags` = VALUES(`tags`),\n`attributes` = VALUES(`attributes`),\n`seo_metadata` = VALUES(`seo_metadata`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`),\n`published_at` = VALUES(`published_at`)\nRETURNING `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`"))
       .updateReturning(ProductsRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -548,28 +272,8 @@ public class ProductsRepoImpl implements ProductsRepo {
     Iterator<ProductsRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `products`(`product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `sku` = VALUES(`sku`),
-                `brand_id` = VALUES(`brand_id`),
-                `name` = VALUES(`name`),
-                `short_description` = VALUES(`short_description`),
-                `full_description` = VALUES(`full_description`),
-                `base_price` = VALUES(`base_price`),
-                `cost_price` = VALUES(`cost_price`),
-                `weight_kg` = VALUES(`weight_kg`),
-                `dimensions_json` = VALUES(`dimensions_json`),
-                `status` = VALUES(`status`),
-                `tax_class` = VALUES(`tax_class`),
-                `tags` = VALUES(`tags`),
-                `attributes` = VALUES(`attributes`),
-                `seo_metadata` = VALUES(`seo_metadata`),
-                `created_at` = VALUES(`created_at`),
-                `updated_at` = VALUES(`updated_at`),
-                `published_at` = VALUES(`published_at`)
-                RETURNING `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`"""))
+    return interpolate(Fragment.lit("INSERT INTO `products`(`product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `sku` = VALUES(`sku`),\n`brand_id` = VALUES(`brand_id`),\n`name` = VALUES(`name`),\n`short_description` = VALUES(`short_description`),\n`full_description` = VALUES(`full_description`),\n`base_price` = VALUES(`base_price`),\n`cost_price` = VALUES(`cost_price`),\n`weight_kg` = VALUES(`weight_kg`),\n`dimensions_json` = VALUES(`dimensions_json`),\n`status` = VALUES(`status`),\n`tax_class` = VALUES(`tax_class`),\n`tags` = VALUES(`tags`),\n`attributes` = VALUES(`attributes`),\n`seo_metadata` = VALUES(`seo_metadata`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`),\n`published_at` = VALUES(`published_at`)\nRETURNING `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`"))
       .updateReturningEach(ProductsRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

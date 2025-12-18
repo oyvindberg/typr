@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface IdentityTestFields extends FieldsExpr<IdentityTestRow> {
-  record Impl(List<Path> _path) implements IdentityTestFields, Relation<IdentityTestFields, IdentityTestRow> {
+  record Impl(List<Path> _path) implements IdentityTestFields, RelationStructure<IdentityTestFields, IdentityTestRow> {
     @Override
     public Field<Integer, IdentityTestRow> alwaysGenerated() {
       return new Field<Integer, IdentityTestRow>(_path, "always_generated", IdentityTestRow::alwaysGenerated, Optional.empty(), Optional.of("int4"), (row, value) -> row.withAlwaysGenerated(value), PgTypes.int4);
@@ -35,17 +35,17 @@ public interface IdentityTestFields extends FieldsExpr<IdentityTestRow> {
 
     @Override
     public List<FieldLike<?, IdentityTestRow>> columns() {
-      return List.of(this.alwaysGenerated(), this.defaultGenerated(), this.name());
+      return java.util.List.of(this.alwaysGenerated(), this.defaultGenerated(), this.name());
     };
 
     @Override
-    public Relation<IdentityTestFields, IdentityTestRow> copy(List<Path> _path) {
+    public RelationStructure<IdentityTestFields, IdentityTestRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<Integer, IdentityTestRow> alwaysGenerated();

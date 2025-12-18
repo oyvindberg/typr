@@ -5,34 +5,32 @@
  */
 package adventureworks.public_.pgtestnull;
 
-import adventureworks.customtypes.TypoBox;
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoCircle;
-import adventureworks.customtypes.TypoHStore;
-import adventureworks.customtypes.TypoInet;
-import adventureworks.customtypes.TypoInstant;
-import adventureworks.customtypes.TypoInt2Vector;
-import adventureworks.customtypes.TypoInterval;
-import adventureworks.customtypes.TypoJson;
-import adventureworks.customtypes.TypoJsonb;
-import adventureworks.customtypes.TypoLine;
-import adventureworks.customtypes.TypoLineSegment;
-import adventureworks.customtypes.TypoLocalDate;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoLocalTime;
-import adventureworks.customtypes.TypoMoney;
-import adventureworks.customtypes.TypoOffsetTime;
-import adventureworks.customtypes.TypoPath;
-import adventureworks.customtypes.TypoPoint;
-import adventureworks.customtypes.TypoPolygon;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoVector;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.public_.Mydomain;
 import adventureworks.public_.Myenum;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetTime;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import org.postgresql.geometric.PGbox;
+import org.postgresql.geometric.PGcircle;
+import org.postgresql.geometric.PGline;
+import org.postgresql.geometric.PGlseg;
+import org.postgresql.geometric.PGpath;
+import org.postgresql.geometric.PGpoint;
+import org.postgresql.geometric.PGpolygon;
+import org.postgresql.util.PGInterval;
+import typo.data.Inet;
+import typo.data.Int2Vector;
+import typo.data.Json;
+import typo.data.Jsonb;
+import typo.data.Money;
+import typo.data.Vector;
+import typo.data.Xml;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -41,81 +39,81 @@ import typo.runtime.RowParsers;
 /** Table: public.pgtestnull */
 public record PgtestnullRow(
   Optional<Boolean> bool,
-  Optional<TypoBox> box,
+  Optional<PGbox> box,
   Optional</* bpchar, max 3 chars */ String> bpchar,
-  Optional<TypoBytea> bytea,
+  Optional<byte[]> bytea,
   Optional</* bpchar, max 1 chars */ String> char_,
-  Optional<TypoCircle> circle,
-  Optional<TypoLocalDate> date,
+  Optional<PGcircle> circle,
+  Optional<LocalDate> date,
   Optional<Float> float4,
   Optional<Double> float8,
-  Optional<TypoHStore> hstore,
-  Optional<TypoInet> inet,
-  Optional<TypoShort> int2,
-  Optional<TypoInt2Vector> int2vector,
+  Optional<Map<String, String>> hstore,
+  Optional<Inet> inet,
+  Optional<Short> int2,
+  Optional<Int2Vector> int2vector,
   Optional<Integer> int4,
   Optional<Long> int8,
-  Optional<TypoInterval> interval,
-  Optional<TypoJson> json,
-  Optional<TypoJsonb> jsonb,
-  Optional<TypoLine> line,
-  Optional<TypoLineSegment> lseg,
-  Optional<TypoMoney> money,
+  Optional<PGInterval> interval,
+  Optional<Json> json,
+  Optional<Jsonb> jsonb,
+  Optional<PGline> line,
+  Optional<PGlseg> lseg,
+  Optional<Money> money,
   Optional<Mydomain> mydomain,
   Optional<Myenum> myenum,
   Optional<String> name,
   Optional<BigDecimal> numeric,
-  Optional<TypoPath> path,
-  Optional<TypoPoint> point,
-  Optional<TypoPolygon> polygon,
+  Optional<PGpath> path,
+  Optional<PGpoint> point,
+  Optional<PGpolygon> polygon,
   Optional<String> text,
-  Optional<TypoLocalTime> time,
-  Optional<TypoLocalDateTime> timestamp,
-  Optional<TypoInstant> timestampz,
-  Optional<TypoOffsetTime> timez,
-  Optional<TypoUUID> uuid,
+  Optional<LocalTime> time,
+  Optional<LocalDateTime> timestamp,
+  Optional<Instant> timestampz,
+  Optional<OffsetTime> timez,
+  Optional<UUID> uuid,
   Optional<String> varchar,
-  Optional<TypoVector> vector,
-  Optional<TypoXml> xml,
-  Optional<TypoBox[]> boxes,
+  Optional<Vector> vector,
+  Optional<Xml> xml,
+  Optional<PGbox[]> boxes,
   Optional</* bpchar */ String[]> bpchares,
   Optional</* bpchar */ String[]> chares,
-  Optional<TypoCircle[]> circlees,
-  Optional<TypoLocalDate[]> datees,
+  Optional<PGcircle[]> circlees,
+  Optional<LocalDate[]> datees,
   Optional<Float[]> float4es,
   Optional<Double[]> float8es,
-  Optional<TypoInet[]> inetes,
-  Optional<TypoShort[]> int2es,
-  Optional<TypoInt2Vector[]> int2vectores,
+  Optional<Inet[]> inetes,
+  Optional<Short[]> int2es,
+  Optional<Int2Vector[]> int2vectores,
   Optional<Integer[]> int4es,
   Optional<Long[]> int8es,
-  Optional<TypoInterval[]> intervales,
-  Optional<TypoJson[]> jsones,
-  Optional<TypoJsonb[]> jsonbes,
-  Optional<TypoLine[]> linees,
-  Optional<TypoLineSegment[]> lseges,
-  Optional<TypoMoney[]> moneyes,
+  Optional<PGInterval[]> intervales,
+  Optional<Json[]> jsones,
+  Optional<Jsonb[]> jsonbes,
+  Optional<PGline[]> linees,
+  Optional<PGlseg[]> lseges,
+  Optional<Money[]> moneyes,
   Optional<Mydomain[]> mydomaines,
   Optional<Myenum[]> myenumes,
   Optional<String[]> namees,
   Optional<BigDecimal[]> numerices,
-  Optional<TypoPath[]> pathes,
-  Optional<TypoPoint[]> pointes,
-  Optional<TypoPolygon[]> polygones,
+  Optional<PGpath[]> pathes,
+  Optional<PGpoint[]> pointes,
+  Optional<PGpolygon[]> polygones,
   Optional<String[]> textes,
-  Optional<TypoLocalTime[]> timees,
-  Optional<TypoLocalDateTime[]> timestampes,
-  Optional<TypoInstant[]> timestampzes,
-  Optional<TypoOffsetTime[]> timezes,
-  Optional<TypoUUID[]> uuides,
+  Optional<LocalTime[]> timees,
+  Optional<LocalDateTime[]> timestampes,
+  Optional<Instant[]> timestampzes,
+  Optional<OffsetTime[]> timezes,
+  Optional<UUID[]> uuides,
   Optional<String[]> varchares,
-  Optional<TypoXml[]> xmles
+  Optional<Xml[]> xmles
 ) {
   public PgtestnullRow withBool(Optional<Boolean> bool) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withBox(Optional<TypoBox> box) {
+  public PgtestnullRow withBox(Optional<PGbox> box) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -123,7 +121,7 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withBytea(Optional<TypoBytea> bytea) {
+  public PgtestnullRow withBytea(Optional<byte[]> bytea) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -131,11 +129,11 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withCircle(Optional<TypoCircle> circle) {
+  public PgtestnullRow withCircle(Optional<PGcircle> circle) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withDate(Optional<TypoLocalDate> date) {
+  public PgtestnullRow withDate(Optional<LocalDate> date) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -147,19 +145,19 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withHstore(Optional<TypoHStore> hstore) {
+  public PgtestnullRow withHstore(Optional<Map<String, String>> hstore) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withInet(Optional<TypoInet> inet) {
+  public PgtestnullRow withInet(Optional<Inet> inet) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withInt2(Optional<TypoShort> int2) {
+  public PgtestnullRow withInt2(Optional<Short> int2) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withInt2vector(Optional<TypoInt2Vector> int2vector) {
+  public PgtestnullRow withInt2vector(Optional<Int2Vector> int2vector) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -171,27 +169,27 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withInterval(Optional<TypoInterval> interval) {
+  public PgtestnullRow withInterval(Optional<PGInterval> interval) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withJson(Optional<TypoJson> json) {
+  public PgtestnullRow withJson(Optional<Json> json) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withJsonb(Optional<TypoJsonb> jsonb) {
+  public PgtestnullRow withJsonb(Optional<Jsonb> jsonb) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withLine(Optional<TypoLine> line) {
+  public PgtestnullRow withLine(Optional<PGline> line) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withLseg(Optional<TypoLineSegment> lseg) {
+  public PgtestnullRow withLseg(Optional<PGlseg> lseg) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withMoney(Optional<TypoMoney> money) {
+  public PgtestnullRow withMoney(Optional<Money> money) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -211,15 +209,15 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withPath(Optional<TypoPath> path) {
+  public PgtestnullRow withPath(Optional<PGpath> path) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withPoint(Optional<TypoPoint> point) {
+  public PgtestnullRow withPoint(Optional<PGpoint> point) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withPolygon(Optional<TypoPolygon> polygon) {
+  public PgtestnullRow withPolygon(Optional<PGpolygon> polygon) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -227,23 +225,23 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withTime(Optional<TypoLocalTime> time) {
+  public PgtestnullRow withTime(Optional<LocalTime> time) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withTimestamp(Optional<TypoLocalDateTime> timestamp) {
+  public PgtestnullRow withTimestamp(Optional<LocalDateTime> timestamp) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withTimestampz(Optional<TypoInstant> timestampz) {
+  public PgtestnullRow withTimestampz(Optional<Instant> timestampz) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withTimez(Optional<TypoOffsetTime> timez) {
+  public PgtestnullRow withTimez(Optional<OffsetTime> timez) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withUuid(Optional<TypoUUID> uuid) {
+  public PgtestnullRow withUuid(Optional<UUID> uuid) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -251,15 +249,15 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withVector(Optional<TypoVector> vector) {
+  public PgtestnullRow withVector(Optional<Vector> vector) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withXml(Optional<TypoXml> xml) {
+  public PgtestnullRow withXml(Optional<Xml> xml) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withBoxes(Optional<TypoBox[]> boxes) {
+  public PgtestnullRow withBoxes(Optional<PGbox[]> boxes) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -271,11 +269,11 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withCirclees(Optional<TypoCircle[]> circlees) {
+  public PgtestnullRow withCirclees(Optional<PGcircle[]> circlees) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withDatees(Optional<TypoLocalDate[]> datees) {
+  public PgtestnullRow withDatees(Optional<LocalDate[]> datees) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -287,15 +285,15 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withInetes(Optional<TypoInet[]> inetes) {
+  public PgtestnullRow withInetes(Optional<Inet[]> inetes) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withInt2es(Optional<TypoShort[]> int2es) {
+  public PgtestnullRow withInt2es(Optional<Short[]> int2es) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withInt2vectores(Optional<TypoInt2Vector[]> int2vectores) {
+  public PgtestnullRow withInt2vectores(Optional<Int2Vector[]> int2vectores) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -307,27 +305,27 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withIntervales(Optional<TypoInterval[]> intervales) {
+  public PgtestnullRow withIntervales(Optional<PGInterval[]> intervales) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withJsones(Optional<TypoJson[]> jsones) {
+  public PgtestnullRow withJsones(Optional<Json[]> jsones) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withJsonbes(Optional<TypoJsonb[]> jsonbes) {
+  public PgtestnullRow withJsonbes(Optional<Jsonb[]> jsonbes) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withLinees(Optional<TypoLine[]> linees) {
+  public PgtestnullRow withLinees(Optional<PGline[]> linees) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withLseges(Optional<TypoLineSegment[]> lseges) {
+  public PgtestnullRow withLseges(Optional<PGlseg[]> lseges) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withMoneyes(Optional<TypoMoney[]> moneyes) {
+  public PgtestnullRow withMoneyes(Optional<Money[]> moneyes) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -347,15 +345,15 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withPathes(Optional<TypoPath[]> pathes) {
+  public PgtestnullRow withPathes(Optional<PGpath[]> pathes) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withPointes(Optional<TypoPoint[]> pointes) {
+  public PgtestnullRow withPointes(Optional<PGpoint[]> pointes) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withPolygones(Optional<TypoPolygon[]> polygones) {
+  public PgtestnullRow withPolygones(Optional<PGpolygon[]> polygones) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -363,23 +361,23 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withTimees(Optional<TypoLocalTime[]> timees) {
+  public PgtestnullRow withTimees(Optional<LocalTime[]> timees) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withTimestampes(Optional<TypoLocalDateTime[]> timestampes) {
+  public PgtestnullRow withTimestampes(Optional<LocalDateTime[]> timestampes) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withTimestampzes(Optional<TypoInstant[]> timestampzes) {
+  public PgtestnullRow withTimestampzes(Optional<Instant[]> timestampzes) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withTimezes(Optional<TypoOffsetTime[]> timezes) {
+  public PgtestnullRow withTimezes(Optional<OffsetTime[]> timezes) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withUuides(Optional<TypoUUID[]> uuides) {
+  public PgtestnullRow withUuides(Optional<UUID[]> uuides) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
@@ -387,11 +385,11 @@ public record PgtestnullRow(
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  public PgtestnullRow withXmles(Optional<TypoXml[]> xmles) {
+  public PgtestnullRow withXmles(Optional<Xml[]> xmles) {
     return new PgtestnullRow(bool, box, bpchar, bytea, char_, circle, date, float4, float8, hstore, inet, int2, int2vector, int4, int8, interval, json, jsonb, line, lseg, money, mydomain, myenum, name, numeric, path, point, polygon, text, time, timestamp, timestampz, timez, uuid, varchar, vector, xml, boxes, bpchares, chares, circlees, datees, float4es, float8es, inetes, int2es, int2vectores, int4es, int8es, intervales, jsones, jsonbes, linees, lseges, moneyes, mydomaines, myenumes, namees, numerices, pathes, pointes, polygones, textes, timees, timestampes, timestampzes, timezes, uuides, varchares, xmles);
   };
 
-  static RowParser<PgtestnullRow> _rowParser = RowParsers.of(PgTypes.bool.opt(), TypoBox.pgType.opt(), PgTypes.bpchar.opt(), TypoBytea.pgType.opt(), PgTypes.bpchar.opt(), TypoCircle.pgType.opt(), TypoLocalDate.pgType.opt(), PgTypes.float4.opt(), PgTypes.float8.opt(), TypoHStore.pgType.opt(), TypoInet.pgType.opt(), TypoShort.pgType.opt(), TypoInt2Vector.pgType.opt(), PgTypes.int4.opt(), PgTypes.int8.opt(), TypoInterval.pgType.opt(), TypoJson.pgType.opt(), TypoJsonb.pgType.opt(), TypoLine.pgType.opt(), TypoLineSegment.pgType.opt(), TypoMoney.pgType.opt(), Mydomain.pgType.opt(), Myenum.pgType.opt(), PgTypes.name.opt(), PgTypes.numeric.opt(), TypoPath.pgType.opt(), TypoPoint.pgType.opt(), TypoPolygon.pgType.opt(), PgTypes.text.opt(), TypoLocalTime.pgType.opt(), TypoLocalDateTime.pgType.opt(), TypoInstant.pgType.opt(), TypoOffsetTime.pgType.opt(), TypoUUID.pgType.opt(), PgTypes.text.opt(), TypoVector.pgType.opt(), TypoXml.pgType.opt(), TypoBox.pgTypeArray.opt(), PgTypes.bpcharArray.opt(), PgTypes.bpcharArray.opt(), TypoCircle.pgTypeArray.opt(), TypoLocalDate.pgTypeArray.opt(), PgTypes.float4Array.opt(), PgTypes.float8Array.opt(), TypoInet.pgTypeArray.opt(), TypoShort.pgTypeArray.opt(), TypoInt2Vector.pgTypeArray.opt(), PgTypes.int4Array.opt(), PgTypes.int8Array.opt(), TypoInterval.pgTypeArray.opt(), TypoJson.pgTypeArray.opt(), TypoJsonb.pgTypeArray.opt(), TypoLine.pgTypeArray.opt(), TypoLineSegment.pgTypeArray.opt(), TypoMoney.pgTypeArray.opt(), Mydomain.pgTypeArray.opt(), Myenum.pgTypeArray.opt(), PgTypes.nameArray.opt(), PgTypes.numericArray.opt(), TypoPath.pgTypeArray.opt(), TypoPoint.pgTypeArray.opt(), TypoPolygon.pgTypeArray.opt(), PgTypes.textArray.opt(), TypoLocalTime.pgTypeArray.opt(), TypoLocalDateTime.pgTypeArray.opt(), TypoInstant.pgTypeArray.opt(), TypoOffsetTime.pgTypeArray.opt(), TypoUUID.pgTypeArray.opt(), PgTypes.textArray.opt(), TypoXml.pgTypeArray.opt(), PgtestnullRow::new, row -> new Object[]{row.bool(), row.box(), row.bpchar(), row.bytea(), row.char_(), row.circle(), row.date(), row.float4(), row.float8(), row.hstore(), row.inet(), row.int2(), row.int2vector(), row.int4(), row.int8(), row.interval(), row.json(), row.jsonb(), row.line(), row.lseg(), row.money(), row.mydomain(), row.myenum(), row.name(), row.numeric(), row.path(), row.point(), row.polygon(), row.text(), row.time(), row.timestamp(), row.timestampz(), row.timez(), row.uuid(), row.varchar(), row.vector(), row.xml(), row.boxes(), row.bpchares(), row.chares(), row.circlees(), row.datees(), row.float4es(), row.float8es(), row.inetes(), row.int2es(), row.int2vectores(), row.int4es(), row.int8es(), row.intervales(), row.jsones(), row.jsonbes(), row.linees(), row.lseges(), row.moneyes(), row.mydomaines(), row.myenumes(), row.namees(), row.numerices(), row.pathes(), row.pointes(), row.polygones(), row.textes(), row.timees(), row.timestampes(), row.timestampzes(), row.timezes(), row.uuides(), row.varchares(), row.xmles()});;
+  static RowParser<PgtestnullRow> _rowParser = RowParsers.of(PgTypes.bool.opt(), PgTypes.box.opt(), PgTypes.bpchar.opt(), PgTypes.bytea.opt(), PgTypes.bpchar.opt(), PgTypes.circle.opt(), PgTypes.date.opt(), PgTypes.float4.opt(), PgTypes.float8.opt(), PgTypes.hstore.opt(), PgTypes.inet.opt(), PgTypes.int2.opt(), PgTypes.int2vector.opt(), PgTypes.int4.opt(), PgTypes.int8.opt(), PgTypes.interval.opt(), PgTypes.json.opt(), PgTypes.jsonb.opt(), PgTypes.line.opt(), PgTypes.lseg.opt(), PgTypes.money.opt(), Mydomain.pgType.opt(), Myenum.pgType.opt(), PgTypes.name.opt(), PgTypes.numeric.opt(), PgTypes.path.opt(), PgTypes.point.opt(), PgTypes.polygon.opt(), PgTypes.text.opt(), PgTypes.time.opt(), PgTypes.timestamp.opt(), PgTypes.timestamptz.opt(), PgTypes.timetz.opt(), PgTypes.uuid.opt(), PgTypes.text.opt(), PgTypes.vector.opt(), PgTypes.xml.opt(), PgTypes.boxArray.opt(), PgTypes.bpcharArray.opt(), PgTypes.bpcharArray.opt(), PgTypes.circleArray.opt(), PgTypes.dateArray.opt(), PgTypes.float4Array.opt(), PgTypes.float8Array.opt(), PgTypes.inetArray.opt(), PgTypes.int2Array.opt(), PgTypes.int2vectorArray.opt(), PgTypes.int4Array.opt(), PgTypes.int8Array.opt(), PgTypes.intervalArray.opt(), PgTypes.jsonArray.opt(), PgTypes.jsonbArray.opt(), PgTypes.lineArray.opt(), PgTypes.lsegArray.opt(), PgTypes.moneyArray.opt(), Mydomain.pgTypeArray.opt(), Myenum.pgTypeArray.opt(), PgTypes.nameArray.opt(), PgTypes.numericArray.opt(), PgTypes.pathArray.opt(), PgTypes.pointArray.opt(), PgTypes.polygonArray.opt(), PgTypes.textArray.opt(), PgTypes.timeArray.opt(), PgTypes.timestampArray.opt(), PgTypes.timestamptzArray.opt(), PgTypes.timetzArray.opt(), PgTypes.uuidArray.opt(), PgTypes.textArray.opt(), PgTypes.xmlArray.opt(), PgtestnullRow::new, row -> new Object[]{row.bool(), row.box(), row.bpchar(), row.bytea(), row.char_(), row.circle(), row.date(), row.float4(), row.float8(), row.hstore(), row.inet(), row.int2(), row.int2vector(), row.int4(), row.int8(), row.interval(), row.json(), row.jsonb(), row.line(), row.lseg(), row.money(), row.mydomain(), row.myenum(), row.name(), row.numeric(), row.path(), row.point(), row.polygon(), row.text(), row.time(), row.timestamp(), row.timestampz(), row.timez(), row.uuid(), row.varchar(), row.vector(), row.xml(), row.boxes(), row.bpchares(), row.chares(), row.circlees(), row.datees(), row.float4es(), row.float8es(), row.inetes(), row.int2es(), row.int2vectores(), row.int4es(), row.int8es(), row.intervales(), row.jsones(), row.jsonbes(), row.linees(), row.lseges(), row.moneyes(), row.mydomaines(), row.myenumes(), row.namees(), row.numerices(), row.pathes(), row.pointes(), row.polygones(), row.textes(), row.timees(), row.timestampes(), row.timestampzes(), row.timezes(), row.uuides(), row.varchares(), row.xmles()});;
 
   static public PgText<PgtestnullRow> pgText =
     PgText.from(_rowParser);

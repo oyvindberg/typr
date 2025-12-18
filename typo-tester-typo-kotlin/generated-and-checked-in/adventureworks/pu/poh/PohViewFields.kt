@@ -5,87 +5,87 @@
  */
 package adventureworks.pu.poh
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import adventureworks.purchasing.shipmethod.ShipmethodId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PohViewFields : FieldsExpr<PohViewRow> {
-  override fun columns(): List<FieldLike<*, PohViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PohViewRow>>
 
-  fun employeeid(): Field<BusinessentityId, PohViewRow>
+  abstract fun employeeid(): Field<BusinessentityId, PohViewRow>
 
-  fun freight(): Field<BigDecimal, PohViewRow>
+  abstract fun freight(): Field<BigDecimal, PohViewRow>
 
-  fun id(): Field<PurchaseorderheaderId, PohViewRow>
+  abstract fun id(): Field<PurchaseorderheaderId, PohViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PohViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PohViewRow>
 
-  fun orderdate(): Field<TypoLocalDateTime, PohViewRow>
+  abstract fun orderdate(): Field<LocalDateTime, PohViewRow>
 
-  fun purchaseorderid(): Field<PurchaseorderheaderId, PohViewRow>
+  abstract fun purchaseorderid(): Field<PurchaseorderheaderId, PohViewRow>
 
-  fun revisionnumber(): Field<TypoShort, PohViewRow>
+  abstract fun revisionnumber(): Field<Short, PohViewRow>
 
-  override fun rowParser(): RowParser<PohViewRow> = PohViewRow._rowParser
+  override fun rowParser(): RowParser<PohViewRow> = PohViewRow._rowParser.underlying
 
-  fun shipdate(): OptField<TypoLocalDateTime, PohViewRow>
+  abstract fun shipdate(): Field<LocalDateTime, PohViewRow>
 
-  fun shipmethodid(): Field<ShipmethodId, PohViewRow>
+  abstract fun shipmethodid(): Field<ShipmethodId, PohViewRow>
 
-  fun status(): Field<TypoShort, PohViewRow>
+  abstract fun status(): Field<Short, PohViewRow>
 
-  fun subtotal(): Field<BigDecimal, PohViewRow>
+  abstract fun subtotal(): Field<BigDecimal, PohViewRow>
 
-  fun taxamt(): Field<BigDecimal, PohViewRow>
+  abstract fun taxamt(): Field<BigDecimal, PohViewRow>
 
-  fun vendorid(): Field<BusinessentityId, PohViewRow>
+  abstract fun vendorid(): Field<BusinessentityId, PohViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PohViewFields, Relation<PohViewFields, PohViewRow> {
-      override fun id(): Field<PurchaseorderheaderId, PohViewRow> = Field<PurchaseorderheaderId, PohViewRow>(_path, "id", PohViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, PurchaseorderheaderId.pgType)
+    data class Impl(val _path: List<Path>) : PohViewFields, RelationStructure<PohViewFields, PohViewRow> {
+      override fun id(): Field<PurchaseorderheaderId, PohViewRow> = Field<PurchaseorderheaderId, PohViewRow>(_path, "id", PohViewRow::id, null, null, { row, value -> row.copy(id = value) }, PurchaseorderheaderId.pgType)
 
-      override fun purchaseorderid(): Field<PurchaseorderheaderId, PohViewRow> = Field<PurchaseorderheaderId, PohViewRow>(_path, "purchaseorderid", PohViewRow::purchaseorderid, Optional.empty(), Optional.empty(), { row, value -> row.copy(purchaseorderid = value) }, PurchaseorderheaderId.pgType)
+      override fun purchaseorderid(): Field<PurchaseorderheaderId, PohViewRow> = Field<PurchaseorderheaderId, PohViewRow>(_path, "purchaseorderid", PohViewRow::purchaseorderid, null, null, { row, value -> row.copy(purchaseorderid = value) }, PurchaseorderheaderId.pgType)
 
-      override fun revisionnumber(): Field<TypoShort, PohViewRow> = Field<TypoShort, PohViewRow>(_path, "revisionnumber", PohViewRow::revisionnumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(revisionnumber = value) }, TypoShort.pgType)
+      override fun revisionnumber(): Field<Short, PohViewRow> = Field<Short, PohViewRow>(_path, "revisionnumber", PohViewRow::revisionnumber, null, null, { row, value -> row.copy(revisionnumber = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun status(): Field<TypoShort, PohViewRow> = Field<TypoShort, PohViewRow>(_path, "status", PohViewRow::status, Optional.empty(), Optional.empty(), { row, value -> row.copy(status = value) }, TypoShort.pgType)
+      override fun status(): Field<Short, PohViewRow> = Field<Short, PohViewRow>(_path, "status", PohViewRow::status, null, null, { row, value -> row.copy(status = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun employeeid(): Field<BusinessentityId, PohViewRow> = Field<BusinessentityId, PohViewRow>(_path, "employeeid", PohViewRow::employeeid, Optional.empty(), Optional.empty(), { row, value -> row.copy(employeeid = value) }, BusinessentityId.pgType)
+      override fun employeeid(): Field<BusinessentityId, PohViewRow> = Field<BusinessentityId, PohViewRow>(_path, "employeeid", PohViewRow::employeeid, null, null, { row, value -> row.copy(employeeid = value) }, BusinessentityId.pgType)
 
-      override fun vendorid(): Field<BusinessentityId, PohViewRow> = Field<BusinessentityId, PohViewRow>(_path, "vendorid", PohViewRow::vendorid, Optional.empty(), Optional.empty(), { row, value -> row.copy(vendorid = value) }, BusinessentityId.pgType)
+      override fun vendorid(): Field<BusinessentityId, PohViewRow> = Field<BusinessentityId, PohViewRow>(_path, "vendorid", PohViewRow::vendorid, null, null, { row, value -> row.copy(vendorid = value) }, BusinessentityId.pgType)
 
-      override fun shipmethodid(): Field<ShipmethodId, PohViewRow> = Field<ShipmethodId, PohViewRow>(_path, "shipmethodid", PohViewRow::shipmethodid, Optional.empty(), Optional.empty(), { row, value -> row.copy(shipmethodid = value) }, ShipmethodId.pgType)
+      override fun shipmethodid(): Field<ShipmethodId, PohViewRow> = Field<ShipmethodId, PohViewRow>(_path, "shipmethodid", PohViewRow::shipmethodid, null, null, { row, value -> row.copy(shipmethodid = value) }, ShipmethodId.pgType)
 
-      override fun orderdate(): Field<TypoLocalDateTime, PohViewRow> = Field<TypoLocalDateTime, PohViewRow>(_path, "orderdate", PohViewRow::orderdate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(orderdate = value) }, TypoLocalDateTime.pgType)
+      override fun orderdate(): Field<LocalDateTime, PohViewRow> = Field<LocalDateTime, PohViewRow>(_path, "orderdate", PohViewRow::orderdate, null, null, { row, value -> row.copy(orderdate = value) }, PgTypes.timestamp)
 
-      override fun shipdate(): OptField<TypoLocalDateTime, PohViewRow> = OptField<TypoLocalDateTime, PohViewRow>(_path, "shipdate", PohViewRow::shipdate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(shipdate = value) }, TypoLocalDateTime.pgType)
+      override fun shipdate(): Field<LocalDateTime, PohViewRow> = Field<LocalDateTime, PohViewRow>(_path, "shipdate", PohViewRow::shipdate, null, null, { row, value -> row.copy(shipdate = value) }, PgTypes.timestamp)
 
-      override fun subtotal(): Field<BigDecimal, PohViewRow> = Field<BigDecimal, PohViewRow>(_path, "subtotal", PohViewRow::subtotal, Optional.empty(), Optional.empty(), { row, value -> row.copy(subtotal = value) }, PgTypes.numeric)
+      override fun subtotal(): Field<BigDecimal, PohViewRow> = Field<BigDecimal, PohViewRow>(_path, "subtotal", PohViewRow::subtotal, null, null, { row, value -> row.copy(subtotal = value) }, PgTypes.numeric)
 
-      override fun taxamt(): Field<BigDecimal, PohViewRow> = Field<BigDecimal, PohViewRow>(_path, "taxamt", PohViewRow::taxamt, Optional.empty(), Optional.empty(), { row, value -> row.copy(taxamt = value) }, PgTypes.numeric)
+      override fun taxamt(): Field<BigDecimal, PohViewRow> = Field<BigDecimal, PohViewRow>(_path, "taxamt", PohViewRow::taxamt, null, null, { row, value -> row.copy(taxamt = value) }, PgTypes.numeric)
 
-      override fun freight(): Field<BigDecimal, PohViewRow> = Field<BigDecimal, PohViewRow>(_path, "freight", PohViewRow::freight, Optional.empty(), Optional.empty(), { row, value -> row.copy(freight = value) }, PgTypes.numeric)
+      override fun freight(): Field<BigDecimal, PohViewRow> = Field<BigDecimal, PohViewRow>(_path, "freight", PohViewRow::freight, null, null, { row, value -> row.copy(freight = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PohViewRow> = Field<TypoLocalDateTime, PohViewRow>(_path, "modifieddate", PohViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PohViewRow> = Field<LocalDateTime, PohViewRow>(_path, "modifieddate", PohViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PohViewRow>> = listOf(this.id(), this.purchaseorderid(), this.revisionnumber(), this.status(), this.employeeid(), this.vendorid(), this.shipmethodid(), this.orderdate(), this.shipdate(), this.subtotal(), this.taxamt(), this.freight(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PohViewFields, PohViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PohViewRow>> = listOf(this.id().underlying, this.purchaseorderid().underlying, this.revisionnumber().underlying, this.status().underlying, this.employeeid().underlying, this.vendorid().underlying, this.shipmethodid().underlying, this.orderdate().underlying, this.shipdate().underlying, this.subtotal().underlying, this.taxamt().underlying, this.freight().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PohViewFields, PohViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

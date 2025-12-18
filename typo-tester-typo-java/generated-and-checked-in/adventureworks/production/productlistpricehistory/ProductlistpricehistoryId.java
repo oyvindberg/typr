@@ -5,19 +5,19 @@
  */
 package adventureworks.production.productlistpricehistory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
+import java.time.LocalDateTime;
 
 /** Type for the composite primary key of table `production.productlistpricehistory` */
 public record ProductlistpricehistoryId(
   ProductId productid,
-  TypoLocalDateTime startdate
+  LocalDateTime startdate
 ) {
   public ProductlistpricehistoryId withProductid(ProductId productid) {
     return new ProductlistpricehistoryId(productid, startdate);
   };
 
-  public ProductlistpricehistoryId withStartdate(TypoLocalDateTime startdate) {
+  public ProductlistpricehistoryId withStartdate(LocalDateTime startdate) {
     return new ProductlistpricehistoryId(productid, startdate);
   };
 }

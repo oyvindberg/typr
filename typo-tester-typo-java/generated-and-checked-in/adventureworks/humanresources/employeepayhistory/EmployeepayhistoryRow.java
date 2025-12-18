@@ -6,10 +6,9 @@
 package adventureworks.humanresources.employeepayhistory;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.person.businessentity.BusinessentityId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -25,7 +24,7 @@ public record EmployeepayhistoryRow(
     */
   BusinessentityId businessentityid,
   /** Date the change in pay is effective */
-  TypoLocalDateTime ratechangedate,
+  LocalDateTime ratechangedate,
   /** Salary hourly rate.
     * Constraint CK_EmployeePayHistory_Rate affecting columns rate: (((rate >= 6.50) AND (rate <= 200.00)))
     */
@@ -33,9 +32,9 @@ public record EmployeepayhistoryRow(
   /** 1 = Salary received monthly, 2 = Salary received biweekly
     * Constraint CK_EmployeePayHistory_PayFrequency affecting columns payfrequency: ((payfrequency = ANY (ARRAY[1, 2])))
     */
-  TypoShort payfrequency,
+  Short payfrequency,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Employee identification number. Foreign key to Employee.BusinessEntityID.
     * Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()}
@@ -45,7 +44,7 @@ public record EmployeepayhistoryRow(
   };
 
   /** Date the change in pay is effective */
-  public EmployeepayhistoryRow withRatechangedate(TypoLocalDateTime ratechangedate) {
+  public EmployeepayhistoryRow withRatechangedate(LocalDateTime ratechangedate) {
     return new EmployeepayhistoryRow(businessentityid, ratechangedate, rate, payfrequency, modifieddate);
   };
 
@@ -59,22 +58,22 @@ public record EmployeepayhistoryRow(
   /** 1 = Salary received monthly, 2 = Salary received biweekly
     * Constraint CK_EmployeePayHistory_PayFrequency affecting columns payfrequency: ((payfrequency = ANY (ARRAY[1, 2])))
     */
-  public EmployeepayhistoryRow withPayfrequency(TypoShort payfrequency) {
+  public EmployeepayhistoryRow withPayfrequency(Short payfrequency) {
     return new EmployeepayhistoryRow(businessentityid, ratechangedate, rate, payfrequency, modifieddate);
   };
 
   /** Default: now() */
-  public EmployeepayhistoryRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public EmployeepayhistoryRow withModifieddate(LocalDateTime modifieddate) {
     return new EmployeepayhistoryRow(businessentityid, ratechangedate, rate, payfrequency, modifieddate);
   };
 
-  static RowParser<EmployeepayhistoryRow> _rowParser = RowParsers.of(BusinessentityId.pgType, TypoLocalDateTime.pgType, PgTypes.numeric, TypoShort.pgType, TypoLocalDateTime.pgType, EmployeepayhistoryRow::new, row -> new Object[]{row.businessentityid(), row.ratechangedate(), row.rate(), row.payfrequency(), row.modifieddate()});;
+  static RowParser<EmployeepayhistoryRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.timestamp, PgTypes.numeric, PgTypes.int2, PgTypes.timestamp, EmployeepayhistoryRow::new, row -> new Object[]{row.businessentityid(), row.ratechangedate(), row.rate(), row.payfrequency(), row.modifieddate()});;
 
   static public EmployeepayhistoryRow apply(
     EmployeepayhistoryId compositeId,
     BigDecimal rate,
-    TypoShort payfrequency,
-    TypoLocalDateTime modifieddate
+    Short payfrequency,
+    LocalDateTime modifieddate
   ) {
     return new EmployeepayhistoryRow(compositeId.businessentityid(), compositeId.ratechangedate(), rate, payfrequency, modifieddate);
   };
@@ -90,7 +89,7 @@ public record EmployeepayhistoryRow(
     return this.compositeId();
   };
 
-  public EmployeepayhistoryRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public EmployeepayhistoryRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new EmployeepayhistoryRowUnsaved(businessentityid, ratechangedate, rate, payfrequency, modifieddate);
   };
 }

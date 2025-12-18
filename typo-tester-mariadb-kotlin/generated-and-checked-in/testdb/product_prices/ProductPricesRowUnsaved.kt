@@ -8,11 +8,12 @@ package testdb.product_prices
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.price_tiers.PriceTiersId
 import testdb.products.ProductsId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -29,7 +30,7 @@ data class ProductPricesRowUnsaved(
   /** Default: NULL
     * Points to [testdb.price_tiers.PriceTiersRow.tierId]
     */
-  @JsonProperty("tier_id") val tierId: Defaulted<Optional<PriceTiersId>> = UseDefault(),
+  @JsonProperty("tier_id") val tierId: Defaulted<PriceTiersId?> = UseDefault(),
   /** Default: 'USD'
 
     */
@@ -37,12 +38,12 @@ data class ProductPricesRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("valid_to") val validTo: Defaulted<Optional<LocalDate>> = UseDefault()
+  @JsonProperty("valid_to") val validTo: Defaulted<LocalDate?> = UseDefault()
 ) {
   fun toRow(
-    tierIdDefault: () -> Optional<PriceTiersId>,
+    tierIdDefault: () -> PriceTiersId?,
     currencyCodeDefault: () -> String,
-    validToDefault: () -> Optional<LocalDate>,
+    validToDefault: () -> LocalDate?,
     priceIdDefault: () -> ProductPricesId
   ): ProductPricesRow = ProductPricesRow(priceId = priceIdDefault(), productId = productId, tierId = tierId.getOrElse(tierIdDefault), price = price, currencyCode = currencyCode.getOrElse(currencyCodeDefault), validFrom = validFrom, validTo = validTo.getOrElse(validToDefault))
 
@@ -50,14 +51,14 @@ data class ProductPricesRowUnsaved(
     val mariaText: MariaText<ProductPricesRowUnsaved> =
       MariaText.instance({ row, sb -> ProductsId.pgType.mariaText().unsafeEncode(row.productId, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.price, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.price, sb)
       sb.append(MariaText.DELIMETER)
       MariaTypes.date.mariaText().unsafeEncode(row.validFrom, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(PriceTiersId.pgType.opt().mariaText()).unsafeEncode(row.tierId, sb)
+      Defaulted.mariaText(PriceTiersId.pgType.nullable().mariaText()).unsafeEncode(row.tierId, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.char_.mariaText()).unsafeEncode(row.currencyCode, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.date.opt().mariaText()).unsafeEncode(row.validTo, sb) })
+      Defaulted.mariaText(MariaTypes.date.nullable().mariaText()).unsafeEncode(row.validTo, sb) })
   }
 }

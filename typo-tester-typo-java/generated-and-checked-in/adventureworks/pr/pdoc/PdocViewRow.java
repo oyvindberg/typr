@@ -5,9 +5,10 @@
  */
 package adventureworks.pr.pdoc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.document.DocumentId;
 import adventureworks.production.product.ProductId;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -18,7 +19,7 @@ public record PdocViewRow(
   /** Points to {@link adventureworks.production.productdocument.ProductdocumentRow#productid()} */
   ProductId productid,
   /** Points to {@link adventureworks.production.productdocument.ProductdocumentRow#modifieddate()} */
-  TypoLocalDateTime modifieddate,
+  LocalDateTime modifieddate,
   /** Points to {@link adventureworks.production.productdocument.ProductdocumentRow#documentnode()} */
   DocumentId documentnode
 ) {
@@ -33,7 +34,7 @@ public record PdocViewRow(
   };
 
   /** Points to {@link adventureworks.production.productdocument.ProductdocumentRow#modifieddate()} */
-  public PdocViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PdocViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PdocViewRow(id, productid, modifieddate, documentnode);
   };
 
@@ -42,5 +43,5 @@ public record PdocViewRow(
     return new PdocViewRow(id, productid, modifieddate, documentnode);
   };
 
-  static RowParser<PdocViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, TypoLocalDateTime.pgType, DocumentId.pgType, PdocViewRow::new, row -> new Object[]{row.id(), row.productid(), row.modifieddate(), row.documentnode()});;
+  static RowParser<PdocViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, PgTypes.timestamp, DocumentId.pgType, PdocViewRow::new, row -> new Object[]{row.id(), row.productid(), row.modifieddate(), row.documentnode()});;
 }

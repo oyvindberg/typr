@@ -5,11 +5,12 @@
  */
 package adventureworks.pr.psc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productcategory.ProductcategoryId;
 import adventureworks.production.productsubcategory.ProductsubcategoryId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -24,9 +25,9 @@ public record PscViewRow(
   /** Points to {@link adventureworks.production.productsubcategory.ProductsubcategoryRow#name()} */
   Name name,
   /** Points to {@link adventureworks.production.productsubcategory.ProductsubcategoryRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.production.productsubcategory.ProductsubcategoryRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productsubcategory.ProductsubcategoryRow#productsubcategoryid()} */
   public PscViewRow withId(ProductsubcategoryId id) {
@@ -49,14 +50,14 @@ public record PscViewRow(
   };
 
   /** Points to {@link adventureworks.production.productsubcategory.ProductsubcategoryRow#rowguid()} */
-  public PscViewRow withRowguid(TypoUUID rowguid) {
+  public PscViewRow withRowguid(UUID rowguid) {
     return new PscViewRow(id, productsubcategoryid, productcategoryid, name, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productsubcategory.ProductsubcategoryRow#modifieddate()} */
-  public PscViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PscViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PscViewRow(id, productsubcategoryid, productcategoryid, name, rowguid, modifieddate);
   };
 
-  static RowParser<PscViewRow> _rowParser = RowParsers.of(ProductsubcategoryId.pgType, ProductsubcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, PscViewRow::new, row -> new Object[]{row.id(), row.productsubcategoryid(), row.productcategoryid(), row.name(), row.rowguid(), row.modifieddate()});;
+  static RowParser<PscViewRow> _rowParser = RowParsers.of(ProductsubcategoryId.pgType, ProductsubcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, PscViewRow::new, row -> new Object[]{row.id(), row.productsubcategoryid(), row.productcategoryid(), row.name(), row.rowguid(), row.modifieddate()});;
 }

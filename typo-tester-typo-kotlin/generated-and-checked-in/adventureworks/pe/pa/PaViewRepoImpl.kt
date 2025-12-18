@@ -7,15 +7,13 @@ package adventureworks.pe.pa
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class PaViewRepoImpl() : PaViewRepo {
   override fun select(): SelectBuilder<PaViewFields, PaViewRow> = SelectBuilder.of("\"pe\".\"pa\"", PaViewFields.structure, PaViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<PaViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate"::text
-    from "pe"."pa"
-  """.trimMargin())).query(PaViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<PaViewRow> = interpolate(Fragment.lit("select \"id\", \"businessentityid\", \"passwordhash\", \"passwordsalt\", \"rowguid\", \"modifieddate\"\nfrom \"pe\".\"pa\"\n")).query(PaViewRow._rowParser.all()).runUnchecked(c)
 }

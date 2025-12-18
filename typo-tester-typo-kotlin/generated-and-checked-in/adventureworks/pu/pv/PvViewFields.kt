@@ -5,82 +5,83 @@
  */
 package adventureworks.pu.pv
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PvViewFields : FieldsExpr<PvViewRow> {
-  fun averageleadtime(): Field<Int, PvViewRow>
+  abstract fun averageleadtime(): Field<Int, PvViewRow>
 
-  fun businessentityid(): Field<BusinessentityId, PvViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, PvViewRow>
 
-  override fun columns(): List<FieldLike<*, PvViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PvViewRow>>
 
-  fun id(): Field<ProductId, PvViewRow>
+  abstract fun id(): Field<ProductId, PvViewRow>
 
-  fun lastreceiptcost(): OptField<BigDecimal, PvViewRow>
+  abstract fun lastreceiptcost(): Field<BigDecimal, PvViewRow>
 
-  fun lastreceiptdate(): OptField<TypoLocalDateTime, PvViewRow>
+  abstract fun lastreceiptdate(): Field<LocalDateTime, PvViewRow>
 
-  fun maxorderqty(): Field<Int, PvViewRow>
+  abstract fun maxorderqty(): Field<Int, PvViewRow>
 
-  fun minorderqty(): Field<Int, PvViewRow>
+  abstract fun minorderqty(): Field<Int, PvViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PvViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PvViewRow>
 
-  fun onorderqty(): OptField<Int, PvViewRow>
+  abstract fun onorderqty(): Field<Int, PvViewRow>
 
-  fun productid(): Field<ProductId, PvViewRow>
+  abstract fun productid(): Field<ProductId, PvViewRow>
 
-  override fun rowParser(): RowParser<PvViewRow> = PvViewRow._rowParser
+  override fun rowParser(): RowParser<PvViewRow> = PvViewRow._rowParser.underlying
 
-  fun standardprice(): Field<BigDecimal, PvViewRow>
+  abstract fun standardprice(): Field<BigDecimal, PvViewRow>
 
-  fun unitmeasurecode(): Field<UnitmeasureId, PvViewRow>
+  abstract fun unitmeasurecode(): Field<UnitmeasureId, PvViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PvViewFields, Relation<PvViewFields, PvViewRow> {
-      override fun id(): Field<ProductId, PvViewRow> = Field<ProductId, PvViewRow>(_path, "id", PvViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, ProductId.pgType)
+    data class Impl(val _path: List<Path>) : PvViewFields, RelationStructure<PvViewFields, PvViewRow> {
+      override fun id(): Field<ProductId, PvViewRow> = Field<ProductId, PvViewRow>(_path, "id", PvViewRow::id, null, null, { row, value -> row.copy(id = value) }, ProductId.pgType)
 
-      override fun productid(): Field<ProductId, PvViewRow> = Field<ProductId, PvViewRow>(_path, "productid", PvViewRow::productid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+      override fun productid(): Field<ProductId, PvViewRow> = Field<ProductId, PvViewRow>(_path, "productid", PvViewRow::productid, null, null, { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun businessentityid(): Field<BusinessentityId, PvViewRow> = Field<BusinessentityId, PvViewRow>(_path, "businessentityid", PvViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, PvViewRow> = Field<BusinessentityId, PvViewRow>(_path, "businessentityid", PvViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun averageleadtime(): Field<Int, PvViewRow> = Field<Int, PvViewRow>(_path, "averageleadtime", PvViewRow::averageleadtime, Optional.empty(), Optional.empty(), { row, value -> row.copy(averageleadtime = value) }, PgTypes.int4)
+      override fun averageleadtime(): Field<Int, PvViewRow> = Field<Int, PvViewRow>(_path, "averageleadtime", PvViewRow::averageleadtime, null, null, { row, value -> row.copy(averageleadtime = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun standardprice(): Field<BigDecimal, PvViewRow> = Field<BigDecimal, PvViewRow>(_path, "standardprice", PvViewRow::standardprice, Optional.empty(), Optional.empty(), { row, value -> row.copy(standardprice = value) }, PgTypes.numeric)
+      override fun standardprice(): Field<BigDecimal, PvViewRow> = Field<BigDecimal, PvViewRow>(_path, "standardprice", PvViewRow::standardprice, null, null, { row, value -> row.copy(standardprice = value) }, PgTypes.numeric)
 
-      override fun lastreceiptcost(): OptField<BigDecimal, PvViewRow> = OptField<BigDecimal, PvViewRow>(_path, "lastreceiptcost", PvViewRow::lastreceiptcost, Optional.empty(), Optional.empty(), { row, value -> row.copy(lastreceiptcost = value) }, PgTypes.numeric)
+      override fun lastreceiptcost(): Field<BigDecimal, PvViewRow> = Field<BigDecimal, PvViewRow>(_path, "lastreceiptcost", PvViewRow::lastreceiptcost, null, null, { row, value -> row.copy(lastreceiptcost = value) }, PgTypes.numeric)
 
-      override fun lastreceiptdate(): OptField<TypoLocalDateTime, PvViewRow> = OptField<TypoLocalDateTime, PvViewRow>(_path, "lastreceiptdate", PvViewRow::lastreceiptdate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(lastreceiptdate = value) }, TypoLocalDateTime.pgType)
+      override fun lastreceiptdate(): Field<LocalDateTime, PvViewRow> = Field<LocalDateTime, PvViewRow>(_path, "lastreceiptdate", PvViewRow::lastreceiptdate, null, null, { row, value -> row.copy(lastreceiptdate = value) }, PgTypes.timestamp)
 
-      override fun minorderqty(): Field<Int, PvViewRow> = Field<Int, PvViewRow>(_path, "minorderqty", PvViewRow::minorderqty, Optional.empty(), Optional.empty(), { row, value -> row.copy(minorderqty = value) }, PgTypes.int4)
+      override fun minorderqty(): Field<Int, PvViewRow> = Field<Int, PvViewRow>(_path, "minorderqty", PvViewRow::minorderqty, null, null, { row, value -> row.copy(minorderqty = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun maxorderqty(): Field<Int, PvViewRow> = Field<Int, PvViewRow>(_path, "maxorderqty", PvViewRow::maxorderqty, Optional.empty(), Optional.empty(), { row, value -> row.copy(maxorderqty = value) }, PgTypes.int4)
+      override fun maxorderqty(): Field<Int, PvViewRow> = Field<Int, PvViewRow>(_path, "maxorderqty", PvViewRow::maxorderqty, null, null, { row, value -> row.copy(maxorderqty = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun onorderqty(): OptField<Int, PvViewRow> = OptField<Int, PvViewRow>(_path, "onorderqty", PvViewRow::onorderqty, Optional.empty(), Optional.empty(), { row, value -> row.copy(onorderqty = value) }, PgTypes.int4)
+      override fun onorderqty(): Field<Int, PvViewRow> = Field<Int, PvViewRow>(_path, "onorderqty", PvViewRow::onorderqty, null, null, { row, value -> row.copy(onorderqty = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun unitmeasurecode(): Field<UnitmeasureId, PvViewRow> = Field<UnitmeasureId, PvViewRow>(_path, "unitmeasurecode", PvViewRow::unitmeasurecode, Optional.empty(), Optional.empty(), { row, value -> row.copy(unitmeasurecode = value) }, UnitmeasureId.pgType)
+      override fun unitmeasurecode(): Field<UnitmeasureId, PvViewRow> = Field<UnitmeasureId, PvViewRow>(_path, "unitmeasurecode", PvViewRow::unitmeasurecode, null, null, { row, value -> row.copy(unitmeasurecode = value) }, UnitmeasureId.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PvViewRow> = Field<TypoLocalDateTime, PvViewRow>(_path, "modifieddate", PvViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PvViewRow> = Field<LocalDateTime, PvViewRow>(_path, "modifieddate", PvViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PvViewRow>> = listOf(this.id(), this.productid(), this.businessentityid(), this.averageleadtime(), this.standardprice(), this.lastreceiptcost(), this.lastreceiptdate(), this.minorderqty(), this.maxorderqty(), this.onorderqty(), this.unitmeasurecode(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PvViewFields, PvViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PvViewRow>> = listOf(this.id().underlying, this.productid().underlying, this.businessentityid().underlying, this.averageleadtime().underlying, this.standardprice().underlying, this.lastreceiptcost().underlying, this.lastreceiptdate().underlying, this.minorderqty().underlying, this.maxorderqty().underlying, this.onorderqty().underlying, this.unitmeasurecode().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PvViewFields, PvViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

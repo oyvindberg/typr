@@ -5,8 +5,6 @@
  */
 package adventureworks.person.businessentitycontact;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityFields;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.businessentity.BusinessentityRow;
@@ -15,22 +13,25 @@ import adventureworks.person.contacttype.ContacttypeId;
 import adventureworks.person.contacttype.ContacttypeRow;
 import adventureworks.person.person.PersonFields;
 import adventureworks.person.person.PersonRow;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface BusinessentitycontactFields extends FieldsExpr<BusinessentitycontactRow> {
-  record Impl(List<Path> _path) implements BusinessentitycontactFields, Relation<BusinessentitycontactFields, BusinessentitycontactRow> {
+  record Impl(List<Path> _path) implements BusinessentitycontactFields, RelationStructure<BusinessentitycontactFields, BusinessentitycontactRow> {
     @Override
     public IdField<BusinessentityId, BusinessentitycontactRow> businessentityid() {
       return new IdField<BusinessentityId, BusinessentitycontactRow>(_path, "businessentityid", BusinessentitycontactRow::businessentityid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
@@ -47,28 +48,28 @@ public interface BusinessentitycontactFields extends FieldsExpr<Businessentityco
     };
 
     @Override
-    public Field<TypoUUID, BusinessentitycontactRow> rowguid() {
-      return new Field<TypoUUID, BusinessentitycontactRow>(_path, "rowguid", BusinessentitycontactRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, BusinessentitycontactRow> rowguid() {
+      return new Field<UUID, BusinessentitycontactRow>(_path, "rowguid", BusinessentitycontactRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, BusinessentitycontactRow> modifieddate() {
-      return new Field<TypoLocalDateTime, BusinessentitycontactRow>(_path, "modifieddate", BusinessentitycontactRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, BusinessentitycontactRow> modifieddate() {
+      return new Field<LocalDateTime, BusinessentitycontactRow>(_path, "modifieddate", BusinessentitycontactRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, BusinessentitycontactRow>> columns() {
-      return List.of(this.businessentityid(), this.personid(), this.contacttypeid(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.businessentityid(), this.personid(), this.contacttypeid(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<BusinessentitycontactFields, BusinessentitycontactRow> copy(List<Path> _path) {
+    public RelationStructure<BusinessentitycontactFields, BusinessentitycontactRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BusinessentityId, BusinessentitycontactRow> businessentityid();
@@ -77,20 +78,20 @@ public interface BusinessentitycontactFields extends FieldsExpr<Businessentityco
 
   IdField<ContacttypeId, BusinessentitycontactRow> contacttypeid();
 
-  Field<TypoUUID, BusinessentitycontactRow> rowguid();
+  Field<UUID, BusinessentitycontactRow> rowguid();
 
-  Field<TypoLocalDateTime, BusinessentitycontactRow> modifieddate();
+  Field<LocalDateTime, BusinessentitycontactRow> modifieddate();
 
   default ForeignKey<BusinessentityFields, BusinessentityRow> fkBusinessentity() {
-    return ForeignKey.<BusinessentityFields, BusinessentityRow>of("person.FK_BusinessEntityContact_BusinessEntity_BusinessEntityID").withColumnPair(businessentityid(), BusinessentityFields::businessentityid);
+    return ForeignKey.<BusinessentityFields, BusinessentityRow>of("person.FK_BusinessEntityContact_BusinessEntity_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), BusinessentityFields::businessentityid);
   };
 
   default ForeignKey<ContacttypeFields, ContacttypeRow> fkContacttype() {
-    return ForeignKey.<ContacttypeFields, ContacttypeRow>of("person.FK_BusinessEntityContact_ContactType_ContactTypeID").withColumnPair(contacttypeid(), ContacttypeFields::contacttypeid);
+    return ForeignKey.<ContacttypeFields, ContacttypeRow>of("person.FK_BusinessEntityContact_ContactType_ContactTypeID").<ContacttypeId>withColumnPair(contacttypeid(), ContacttypeFields::contacttypeid);
   };
 
   default ForeignKey<PersonFields, PersonRow> fkPerson() {
-    return ForeignKey.<PersonFields, PersonRow>of("person.FK_BusinessEntityContact_Person_PersonID").withColumnPair(personid(), PersonFields::businessentityid);
+    return ForeignKey.<PersonFields, PersonRow>of("person.FK_BusinessEntityContact_Person_PersonID").<BusinessentityId>withColumnPair(personid(), PersonFields::businessentityid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(BusinessentitycontactId compositeId) {

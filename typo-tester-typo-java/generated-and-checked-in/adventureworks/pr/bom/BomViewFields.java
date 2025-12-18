@@ -5,24 +5,22 @@
  */
 package adventureworks.pr.bom;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.unitmeasure.UnitmeasureId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface BomViewFields extends FieldsExpr<BomViewRow> {
-  record Impl(List<Path> _path) implements BomViewFields, Relation<BomViewFields, BomViewRow> {
+  record Impl(List<Path> _path) implements BomViewFields, RelationStructure<BomViewFields, BomViewRow> {
     @Override
     public Field<Integer, BomViewRow> id() {
       return new Field<Integer, BomViewRow>(_path, "id", BomViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), PgTypes.int4);
@@ -34,8 +32,8 @@ public interface BomViewFields extends FieldsExpr<BomViewRow> {
     };
 
     @Override
-    public OptField<ProductId, BomViewRow> productassemblyid() {
-      return new OptField<ProductId, BomViewRow>(_path, "productassemblyid", BomViewRow::productassemblyid, Optional.empty(), Optional.empty(), (row, value) -> row.withProductassemblyid(value), ProductId.pgType);
+    public Field<ProductId, BomViewRow> productassemblyid() {
+      return new Field<ProductId, BomViewRow>(_path, "productassemblyid", BomViewRow::productassemblyid, Optional.empty(), Optional.empty(), (row, value) -> row.withProductassemblyid(value), ProductId.pgType);
     };
 
     @Override
@@ -44,13 +42,13 @@ public interface BomViewFields extends FieldsExpr<BomViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, BomViewRow> startdate() {
-      return new Field<TypoLocalDateTime, BomViewRow>(_path, "startdate", BomViewRow::startdate, Optional.of("text"), Optional.empty(), (row, value) -> row.withStartdate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, BomViewRow> startdate() {
+      return new Field<LocalDateTime, BomViewRow>(_path, "startdate", BomViewRow::startdate, Optional.empty(), Optional.empty(), (row, value) -> row.withStartdate(value), PgTypes.timestamp);
     };
 
     @Override
-    public OptField<TypoLocalDateTime, BomViewRow> enddate() {
-      return new OptField<TypoLocalDateTime, BomViewRow>(_path, "enddate", BomViewRow::enddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withEnddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, BomViewRow> enddate() {
+      return new Field<LocalDateTime, BomViewRow>(_path, "enddate", BomViewRow::enddate, Optional.empty(), Optional.empty(), (row, value) -> row.withEnddate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -59,8 +57,8 @@ public interface BomViewFields extends FieldsExpr<BomViewRow> {
     };
 
     @Override
-    public Field<TypoShort, BomViewRow> bomlevel() {
-      return new Field<TypoShort, BomViewRow>(_path, "bomlevel", BomViewRow::bomlevel, Optional.empty(), Optional.empty(), (row, value) -> row.withBomlevel(value), TypoShort.pgType);
+    public Field<Short, BomViewRow> bomlevel() {
+      return new Field<Short, BomViewRow>(_path, "bomlevel", BomViewRow::bomlevel, Optional.empty(), Optional.empty(), (row, value) -> row.withBomlevel(value), PgTypes.int2);
     };
 
     @Override
@@ -69,44 +67,44 @@ public interface BomViewFields extends FieldsExpr<BomViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, BomViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, BomViewRow>(_path, "modifieddate", BomViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, BomViewRow> modifieddate() {
+      return new Field<LocalDateTime, BomViewRow>(_path, "modifieddate", BomViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, BomViewRow>> columns() {
-      return List.of(this.id(), this.billofmaterialsid(), this.productassemblyid(), this.componentid(), this.startdate(), this.enddate(), this.unitmeasurecode(), this.bomlevel(), this.perassemblyqty(), this.modifieddate());
+      return java.util.List.of(this.id(), this.billofmaterialsid(), this.productassemblyid(), this.componentid(), this.startdate(), this.enddate(), this.unitmeasurecode(), this.bomlevel(), this.perassemblyqty(), this.modifieddate());
     };
 
     @Override
-    public Relation<BomViewFields, BomViewRow> copy(List<Path> _path) {
+    public RelationStructure<BomViewFields, BomViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<Integer, BomViewRow> id();
 
   Field<Integer, BomViewRow> billofmaterialsid();
 
-  OptField<ProductId, BomViewRow> productassemblyid();
+  Field<ProductId, BomViewRow> productassemblyid();
 
   Field<ProductId, BomViewRow> componentid();
 
-  Field<TypoLocalDateTime, BomViewRow> startdate();
+  Field<LocalDateTime, BomViewRow> startdate();
 
-  OptField<TypoLocalDateTime, BomViewRow> enddate();
+  Field<LocalDateTime, BomViewRow> enddate();
 
   Field<UnitmeasureId, BomViewRow> unitmeasurecode();
 
-  Field<TypoShort, BomViewRow> bomlevel();
+  Field<Short, BomViewRow> bomlevel();
 
   Field<BigDecimal, BomViewRow> perassemblyqty();
 
-  Field<TypoLocalDateTime, BomViewRow> modifieddate();
+  Field<LocalDateTime, BomViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, BomViewRow>> columns();

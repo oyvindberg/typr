@@ -30,7 +30,7 @@ case class ThViewRow(
   /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.transactiondate]] */
   transactiondate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.transactiontype]] */
-  transactiontype: /* bpchar, max 1 chars */ String,
+  transactiontype: String,
   /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.quantity]] */
   quantity: Int,
   /** Points to [[adventureworks.production.transactionhistory.TransactionhistoryRow.actualcost]] */

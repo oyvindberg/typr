@@ -14,23 +14,22 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> {
-  record Impl(List<Path> _path) implements VsalespersonViewFields, Relation<VsalespersonViewFields, VsalespersonViewRow> {
+  record Impl(List<Path> _path) implements VsalespersonViewFields, RelationStructure<VsalespersonViewFields, VsalespersonViewRow> {
     @Override
     public Field<BusinessentityId, VsalespersonViewRow> businessentityid() {
       return new Field<BusinessentityId, VsalespersonViewRow>(_path, "businessentityid", VsalespersonViewRow::businessentityid, Optional.empty(), Optional.empty(), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
     };
 
     @Override
-    public OptField</* max 8 chars */ String, VsalespersonViewRow> title() {
-      return new OptField</* max 8 chars */ String, VsalespersonViewRow>(_path, "title", VsalespersonViewRow::title, Optional.empty(), Optional.empty(), (row, value) -> row.withTitle(value), PgTypes.text);
+    public Field<String, VsalespersonViewRow> title() {
+      return new Field<String, VsalespersonViewRow>(_path, "title", VsalespersonViewRow::title, Optional.empty(), Optional.empty(), (row, value) -> row.withTitle(value), PgTypes.text);
     };
 
     @Override
@@ -39,8 +38,8 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
     };
 
     @Override
-    public OptField<Name, VsalespersonViewRow> middlename() {
-      return new OptField<Name, VsalespersonViewRow>(_path, "middlename", VsalespersonViewRow::middlename, Optional.empty(), Optional.empty(), (row, value) -> row.withMiddlename(value), Name.pgType);
+    public Field<Name, VsalespersonViewRow> middlename() {
+      return new Field<Name, VsalespersonViewRow>(_path, "middlename", VsalespersonViewRow::middlename, Optional.empty(), Optional.empty(), (row, value) -> row.withMiddlename(value), Name.pgType);
     };
 
     @Override
@@ -49,13 +48,13 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
     };
 
     @Override
-    public OptField</* max 10 chars */ String, VsalespersonViewRow> suffix() {
-      return new OptField</* max 10 chars */ String, VsalespersonViewRow>(_path, "suffix", VsalespersonViewRow::suffix, Optional.empty(), Optional.empty(), (row, value) -> row.withSuffix(value), PgTypes.text);
+    public Field<String, VsalespersonViewRow> suffix() {
+      return new Field<String, VsalespersonViewRow>(_path, "suffix", VsalespersonViewRow::suffix, Optional.empty(), Optional.empty(), (row, value) -> row.withSuffix(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 50 chars */ String, VsalespersonViewRow> jobtitle() {
-      return new Field</* max 50 chars */ String, VsalespersonViewRow>(_path, "jobtitle", VsalespersonViewRow::jobtitle, Optional.empty(), Optional.empty(), (row, value) -> row.withJobtitle(value), PgTypes.text);
+    public Field<String, VsalespersonViewRow> jobtitle() {
+      return new Field<String, VsalespersonViewRow>(_path, "jobtitle", VsalespersonViewRow::jobtitle, Optional.empty(), Optional.empty(), (row, value) -> row.withJobtitle(value), PgTypes.text);
     };
 
     @Override
@@ -69,8 +68,8 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
     };
 
     @Override
-    public OptField</* max 50 chars */ String, VsalespersonViewRow> emailaddress() {
-      return new OptField</* max 50 chars */ String, VsalespersonViewRow>(_path, "emailaddress", VsalespersonViewRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
+    public Field<String, VsalespersonViewRow> emailaddress() {
+      return new Field<String, VsalespersonViewRow>(_path, "emailaddress", VsalespersonViewRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
     };
 
     @Override
@@ -79,18 +78,18 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
     };
 
     @Override
-    public Field</* max 60 chars */ String, VsalespersonViewRow> addressline1() {
-      return new Field</* max 60 chars */ String, VsalespersonViewRow>(_path, "addressline1", VsalespersonViewRow::addressline1, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline1(value), PgTypes.text);
+    public Field<String, VsalespersonViewRow> addressline1() {
+      return new Field<String, VsalespersonViewRow>(_path, "addressline1", VsalespersonViewRow::addressline1, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline1(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 60 chars */ String, VsalespersonViewRow> addressline2() {
-      return new OptField</* max 60 chars */ String, VsalespersonViewRow>(_path, "addressline2", VsalespersonViewRow::addressline2, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline2(value), PgTypes.text);
+    public Field<String, VsalespersonViewRow> addressline2() {
+      return new Field<String, VsalespersonViewRow>(_path, "addressline2", VsalespersonViewRow::addressline2, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline2(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 30 chars */ String, VsalespersonViewRow> city() {
-      return new Field</* max 30 chars */ String, VsalespersonViewRow>(_path, "city", VsalespersonViewRow::city, Optional.empty(), Optional.empty(), (row, value) -> row.withCity(value), PgTypes.text);
+    public Field<String, VsalespersonViewRow> city() {
+      return new Field<String, VsalespersonViewRow>(_path, "city", VsalespersonViewRow::city, Optional.empty(), Optional.empty(), (row, value) -> row.withCity(value), PgTypes.text);
     };
 
     @Override
@@ -99,8 +98,8 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
     };
 
     @Override
-    public Field</* max 15 chars */ String, VsalespersonViewRow> postalcode() {
-      return new Field</* max 15 chars */ String, VsalespersonViewRow>(_path, "postalcode", VsalespersonViewRow::postalcode, Optional.empty(), Optional.empty(), (row, value) -> row.withPostalcode(value), PgTypes.text);
+    public Field<String, VsalespersonViewRow> postalcode() {
+      return new Field<String, VsalespersonViewRow>(_path, "postalcode", VsalespersonViewRow::postalcode, Optional.empty(), Optional.empty(), (row, value) -> row.withPostalcode(value), PgTypes.text);
     };
 
     @Override
@@ -114,13 +113,13 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
     };
 
     @Override
-    public Field</* max 50 chars */ String, VsalespersonViewRow> territorygroup() {
-      return new Field</* max 50 chars */ String, VsalespersonViewRow>(_path, "territorygroup", VsalespersonViewRow::territorygroup, Optional.empty(), Optional.empty(), (row, value) -> row.withTerritorygroup(value), PgTypes.text);
+    public Field<String, VsalespersonViewRow> territorygroup() {
+      return new Field<String, VsalespersonViewRow>(_path, "territorygroup", VsalespersonViewRow::territorygroup, Optional.empty(), Optional.empty(), (row, value) -> row.withTerritorygroup(value), PgTypes.text);
     };
 
     @Override
-    public OptField<BigDecimal, VsalespersonViewRow> salesquota() {
-      return new OptField<BigDecimal, VsalespersonViewRow>(_path, "salesquota", VsalespersonViewRow::salesquota, Optional.empty(), Optional.empty(), (row, value) -> row.withSalesquota(value), PgTypes.numeric);
+    public Field<BigDecimal, VsalespersonViewRow> salesquota() {
+      return new Field<BigDecimal, VsalespersonViewRow>(_path, "salesquota", VsalespersonViewRow::salesquota, Optional.empty(), Optional.empty(), (row, value) -> row.withSalesquota(value), PgTypes.numeric);
     };
 
     @Override
@@ -135,58 +134,58 @@ public interface VsalespersonViewFields extends FieldsExpr<VsalespersonViewRow> 
 
     @Override
     public List<FieldLike<?, VsalespersonViewRow>> columns() {
-      return List.of(this.businessentityid(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.jobtitle(), this.phonenumber(), this.phonenumbertype(), this.emailaddress(), this.emailpromotion(), this.addressline1(), this.addressline2(), this.city(), this.stateprovincename(), this.postalcode(), this.countryregionname(), this.territoryname(), this.territorygroup(), this.salesquota(), this.salesytd(), this.saleslastyear());
+      return java.util.List.of(this.businessentityid(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.jobtitle(), this.phonenumber(), this.phonenumbertype(), this.emailaddress(), this.emailpromotion(), this.addressline1(), this.addressline2(), this.city(), this.stateprovincename(), this.postalcode(), this.countryregionname(), this.territoryname(), this.territorygroup(), this.salesquota(), this.salesytd(), this.saleslastyear());
     };
 
     @Override
-    public Relation<VsalespersonViewFields, VsalespersonViewRow> copy(List<Path> _path) {
+    public RelationStructure<VsalespersonViewFields, VsalespersonViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<BusinessentityId, VsalespersonViewRow> businessentityid();
 
-  OptField</* max 8 chars */ String, VsalespersonViewRow> title();
+  Field<String, VsalespersonViewRow> title();
 
   Field</* user-picked */ FirstName, VsalespersonViewRow> firstname();
 
-  OptField<Name, VsalespersonViewRow> middlename();
+  Field<Name, VsalespersonViewRow> middlename();
 
   Field<Name, VsalespersonViewRow> lastname();
 
-  OptField</* max 10 chars */ String, VsalespersonViewRow> suffix();
+  Field<String, VsalespersonViewRow> suffix();
 
-  Field</* max 50 chars */ String, VsalespersonViewRow> jobtitle();
+  Field<String, VsalespersonViewRow> jobtitle();
 
   Field<Phone, VsalespersonViewRow> phonenumber();
 
   Field<Name, VsalespersonViewRow> phonenumbertype();
 
-  OptField</* max 50 chars */ String, VsalespersonViewRow> emailaddress();
+  Field<String, VsalespersonViewRow> emailaddress();
 
   Field<Integer, VsalespersonViewRow> emailpromotion();
 
-  Field</* max 60 chars */ String, VsalespersonViewRow> addressline1();
+  Field<String, VsalespersonViewRow> addressline1();
 
-  OptField</* max 60 chars */ String, VsalespersonViewRow> addressline2();
+  Field<String, VsalespersonViewRow> addressline2();
 
-  Field</* max 30 chars */ String, VsalespersonViewRow> city();
+  Field<String, VsalespersonViewRow> city();
 
   Field<Name, VsalespersonViewRow> stateprovincename();
 
-  Field</* max 15 chars */ String, VsalespersonViewRow> postalcode();
+  Field<String, VsalespersonViewRow> postalcode();
 
   Field<Name, VsalespersonViewRow> countryregionname();
 
   Field<Name, VsalespersonViewRow> territoryname();
 
-  Field</* max 50 chars */ String, VsalespersonViewRow> territorygroup();
+  Field<String, VsalespersonViewRow> territorygroup();
 
-  OptField<BigDecimal, VsalespersonViewRow> salesquota();
+  Field<BigDecimal, VsalespersonViewRow> salesquota();
 
   Field<BigDecimal, VsalespersonViewRow> salesytd();
 

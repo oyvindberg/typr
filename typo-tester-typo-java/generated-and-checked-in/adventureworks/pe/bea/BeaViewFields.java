@@ -5,22 +5,23 @@
  */
 package adventureworks.pe.bea;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.address.AddressId;
 import adventureworks.person.addresstype.AddresstypeId;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface BeaViewFields extends FieldsExpr<BeaViewRow> {
-  record Impl(List<Path> _path) implements BeaViewFields, Relation<BeaViewFields, BeaViewRow> {
+  record Impl(List<Path> _path) implements BeaViewFields, RelationStructure<BeaViewFields, BeaViewRow> {
     @Override
     public Field<BusinessentityId, BeaViewRow> id() {
       return new Field<BusinessentityId, BeaViewRow>(_path, "id", BeaViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), BusinessentityId.pgType);
@@ -42,28 +43,28 @@ public interface BeaViewFields extends FieldsExpr<BeaViewRow> {
     };
 
     @Override
-    public Field<TypoUUID, BeaViewRow> rowguid() {
-      return new Field<TypoUUID, BeaViewRow>(_path, "rowguid", BeaViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, BeaViewRow> rowguid() {
+      return new Field<UUID, BeaViewRow>(_path, "rowguid", BeaViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, BeaViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, BeaViewRow>(_path, "modifieddate", BeaViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, BeaViewRow> modifieddate() {
+      return new Field<LocalDateTime, BeaViewRow>(_path, "modifieddate", BeaViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, BeaViewRow>> columns() {
-      return List.of(this.id(), this.businessentityid(), this.addressid(), this.addresstypeid(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.businessentityid(), this.addressid(), this.addresstypeid(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<BeaViewFields, BeaViewRow> copy(List<Path> _path) {
+    public RelationStructure<BeaViewFields, BeaViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<BusinessentityId, BeaViewRow> id();
@@ -74,9 +75,9 @@ public interface BeaViewFields extends FieldsExpr<BeaViewRow> {
 
   Field<AddresstypeId, BeaViewRow> addresstypeid();
 
-  Field<TypoUUID, BeaViewRow> rowguid();
+  Field<UUID, BeaViewRow> rowguid();
 
-  Field<TypoLocalDateTime, BeaViewRow> modifieddate();
+  Field<LocalDateTime, BeaViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, BeaViewRow>> columns();

@@ -5,14 +5,14 @@
  */
 package adventureworks.update_person;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import java.sql.Connection;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UpdatePersonSqlRepo {
   Integer apply(
     String suffix,
-    Optional<TypoLocalDateTime> cutoff,
+    Optional<LocalDateTime> cutoff,
     Connection c
   );
 }

@@ -6,6 +6,7 @@ import typo.internal.analysis.MaybeReturnsRows
 
 class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDefault, enableStreamingInserts: Boolean, override val lang: LangScala) extends DbLib {
   val dialect = lang.dialect
+  private val sqlCast = new SqlCast(needsTimestampCasts = true)
 
   val BatchSql = jvm.Type.Qualified("anorm.BatchSql")
   val Column = jvm.Type.Qualified("anorm.Column")
@@ -89,7 +90,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
 
   def dbNames(cols: NonEmptyList[ComputedColumn], isRead: Boolean): jvm.Code =
     cols
-      .map(c => c.dbName.code ++ (if (isRead) SqlCast.fromPgCode(c) else jvm.Code.Empty))
+      .map(c => c.dbName.code ++ (if (isRead) sqlCast.fromPgCode(c) else jvm.Code.Empty))
       .mkCode(", ")
 
   def matchId(id: IdComputed): jvm.Code =
@@ -194,13 +195,15 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
         case other => jvm.Summon(ToStatement.of(other)).code
       }
 
-  override def resolveConstAs(tpe: jvm.Type): jvm.Code =
-    tpe match {
-      case lang.Optional(underlying) =>
-        code"${jvm.Type.dsl.ConstAsAsOpt}[$underlying]($ToParameterValue(null, ${lookupToStatementFor(tpe)}), ${lookupParameterMetaDataFor(tpe)})"
+  override def resolveConstAs(typoType: TypoType): jvm.Code = {
+    val tpe = typoType.jvmType
+    typoType match {
+      case TypoType.Nullable(_, inner) =>
+        code"${lang.dsl.ConstAsAsOpt}[${inner.jvmType}]($ToParameterValue(null, ${lookupToStatementFor(tpe)}), ${lookupParameterMetaDataFor(tpe)})"
       case _ =>
-        code"${jvm.Type.dsl.ConstAsAs}[$tpe](${dialect.usingCall}$ToParameterValue(null, ${lookupToStatementFor(tpe)}), ${lookupParameterMetaDataFor(tpe)})"
+        code"${lang.dsl.ConstAsAs}[$tpe](${dialect.usingCall}$ToParameterValue(null, ${lookupToStatementFor(tpe)}), ${lookupParameterMetaDataFor(tpe)})"
     }
+  }
 
   val c = jvm.Param(jvm.Ident("c"), TypesJava.Connection)
 
@@ -227,7 +230,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
 
     repoMethod match {
       case RepoMethod.SelectBuilder(_, fieldsType, rowType) =>
-        sig(params = Nil, implicitParams = Nil, returnType = jvm.Type.dsl.SelectBuilder.of(fieldsType, rowType))
+        sig(params = Nil, implicitParams = Nil, returnType = lang.dsl.SelectBuilder.of(fieldsType, rowType))
       case RepoMethod.SelectAll(_, _, rowType) =>
         sig(params = Nil, implicitParams = List(c), returnType = TypesScala.List.of(rowType))
       case RepoMethod.SelectById(_, _, id, rowType) =>
@@ -241,7 +244,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
       case RepoMethod.SelectByFieldValues(_, _, _, fieldValueOrIdsParam, rowType) =>
         sig(params = List(fieldValueOrIdsParam), implicitParams = List(c), returnType = TypesScala.List.of(rowType))
       case RepoMethod.UpdateBuilder(_, fieldsType, rowType) =>
-        sig(params = Nil, implicitParams = Nil, returnType = jvm.Type.dsl.UpdateBuilder.of(fieldsType, rowType))
+        sig(params = Nil, implicitParams = Nil, returnType = lang.dsl.UpdateBuilder.of(fieldsType, rowType))
       case RepoMethod.UpdateFieldValues(_, id, varargs, _, _, _) =>
         sig(params = List(id.param, varargs), implicitParams = List(c), returnType = TypesScala.Boolean)
       case RepoMethod.Update(_, _, _, param, _) =>
@@ -268,7 +271,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
         val batchSize = jvm.Param(Nil, jvm.Comments.Empty, jvm.Ident("batchSize"), TypesScala.Int, Some(code"10000"))
         sig(params = List(unsavedParam, batchSize), implicitParams = List(c), returnType = TypesScala.Long)
       case RepoMethod.DeleteBuilder(_, fieldsType, rowType) =>
-        sig(params = Nil, implicitParams = Nil, returnType = jvm.Type.dsl.DeleteBuilder.of(fieldsType, rowType))
+        sig(params = Nil, implicitParams = Nil, returnType = lang.dsl.DeleteBuilder.of(fieldsType, rowType))
       case RepoMethod.Delete(_, id) =>
         sig(params = List(id.param), implicitParams = List(c), returnType = TypesScala.Boolean)
       case RepoMethod.DeleteByIds(_, _, idsParam) =>
@@ -286,7 +289,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
   override def repoImpl(repoMethod: RepoMethod): jvm.Body =
     repoMethod match {
       case RepoMethod.SelectBuilder(relName, fieldsType, rowType) =>
-        jvm.Body.Expr(code"""${jvm.Type.dsl.SelectBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.rowParser)""")
+        jvm.Body.Expr(code"""${lang.dsl.SelectBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.rowParser)""")
       case RepoMethod.SelectAll(relName, cols, rowType) =>
         val sql = SQL {
           code"""|select ${dbNames(cols, isRead = true)}
@@ -338,7 +341,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
         )
 
       case RepoMethod.UpdateBuilder(relName, fieldsType, rowType) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.UpdateBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.rowParser(1).*)")
+        jvm.Body.Expr(code"${lang.dsl.UpdateBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.rowParser(1).*)")
 
       case RepoMethod.SelectByUnique(relName, keyColumns, allCols, rowType) =>
         val sql = SQL {
@@ -418,7 +421,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
       case RepoMethod.Update(relName, cols, id, param, writeableColumnsNotId) =>
         val sql = SQL {
           val setCols = writeableColumnsNotId.map { col =>
-            code"${col.dbName.code} = ${runtimeInterpolateValue(code"${param.name}.${col.name}", col.tpe)}${SqlCast.toPgCode(col)}"
+            code"${col.dbName.code} = ${runtimeInterpolateValue(code"${param.name}.${col.name}", col.tpe)}${sqlCast.toPgCode(col)}"
           }
           code"""|update $relName
                  |set ${setCols.mkCode(",\n")}
@@ -435,7 +438,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
 
       case RepoMethod.Insert(relName, cols, unsavedParam, rowType, writeableColumnsWithId) =>
         val values = writeableColumnsWithId.map { c =>
-          runtimeInterpolateValue(code"${unsavedParam.name}.${c.name}", c.tpe).code ++ SqlCast.toPgCode(c)
+          runtimeInterpolateValue(code"${unsavedParam.name}.${c.name}", c.tpe).code ++ sqlCast.toPgCode(c)
         }
         val sql = SQL {
           code"""|insert into $relName(${dbNames(writeableColumnsWithId, isRead = false)})
@@ -451,7 +454,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
         val writeableColumnsNotId = writeableColumnsWithId.toList.filterNot(c => id.cols.exists(_.name == c.name))
 
         val values = writeableColumnsWithId.map { c =>
-          runtimeInterpolateValue(code"${unsavedParam.name}.${c.name}", c.tpe).code ++ SqlCast.toPgCode(c)
+          runtimeInterpolateValue(code"${unsavedParam.name}.${c.name}", c.tpe).code ++ sqlCast.toPgCode(c)
         }
 
         val conflictAction = writeableColumnsNotId match {
@@ -489,7 +492,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
 
         val sql = lang.s {
           code"""|insert into $relName(${dbNames(writeableColumnsWithId, isRead = false)})
-                 |values (${writeableColumnsWithId.map(c => code"{${c.dbName.value}}${SqlCast.toPgCode(c)}").mkCode(", ")})
+                 |values (${writeableColumnsWithId.map(c => code"{${c.dbName.value}}${sqlCast.toPgCode(c)}").mkCode(", ")})
                  |on conflict (${dbNames(id.cols, isRead = false)})
                  |$conflictAction
                  |returning ${dbNames(cols, isRead = true)}
@@ -544,12 +547,12 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
 
       case RepoMethod.InsertUnsaved(relName, cols, unsaved, unsavedParam, default, rowType) =>
         val cases0 = unsaved.normalColumns.map { col =>
-          val colCast = jvm.StrLit(SqlCast.toPg(col.dbCol).fold("")(_.withColons))
+          val colCast = jvm.StrLit(sqlCast.toPg(col.dbCol).fold("")(_.withColons))
           code"""Some(($NamedParameter(${jvm.StrLit(col.dbName.value)}, $ParameterValue(${unsavedParam.name}.${col.name}, null, ${lookupToStatementFor(col.tpe)})), $colCast))"""
         }
-        val cases1 = unsaved.defaultedCols.map { case ComputedRowUnsaved.DefaultedCol(col @ ComputedColumn(_, ident, _, dbCol), origType) =>
+        val cases1 = unsaved.defaultedCols.map { case ComputedRowUnsaved.DefaultedCol(col @ ComputedColumn(_, ident, dbCol, _), origType, _) =>
           val dbName = jvm.StrLit(dbCol.name.value)
-          val colCast = jvm.StrLit(SqlCast.toPg(col.dbCol).fold("")(_.withColons))
+          val colCast = jvm.StrLit(sqlCast.toPg(col.dbCol).fold("")(_.withColons))
 
           code"""|${unsavedParam.name}.$ident match {
                  |  case ${default.Defaulted}.${default.UseDefault}() => None
@@ -595,7 +598,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
         jvm.Body.Expr(code"${textSupport.get.streamingInsert}($sql, batchSize, unsaved)(${dialect.usingCall}${textSupport.get.lookupTextFor(unsaved.tpe)}, c)")
 
       case RepoMethod.DeleteBuilder(relName, fieldsType, rowType) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.DeleteBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.rowParser(1).*)")
+        jvm.Body.Expr(code"${lang.dsl.DeleteBuilder}.of(${jvm.StrLit(relName.quotedValue)}, $fieldsType.structure, $rowType.rowParser(1).*)")
       case RepoMethod.Delete(relName, id) =>
         val sql = SQL {
           code"""delete from $relName where ${matchId(id)}"""
@@ -627,7 +630,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
       case RepoMethod.SqlFile(sqlScript) =>
         val renderedScript: jvm.Code = sqlScript.sqlFile.decomposedSql.renderCode { (paramAtIndex: Int) =>
           val param = sqlScript.params.find(_.indices.contains(paramAtIndex)).get
-          val cast = SqlCast.toPg(param).fold("")(_.withColons)
+          val cast = sqlCast.toPg(param).fold("")(_.withColons)
           code"${runtimeInterpolateValue(param.name, param.tpe)}$cast"
         }
         val ret = for {
@@ -636,7 +639,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
         } yield {
           // this is necessary to make custom types work with sql scripts, unfortunately.
           val renderedWithCasts: jvm.Code =
-            cols.toList.flatMap(c => SqlCast.fromPg(c.dbCol.tpe)) match {
+            cols.toList.flatMap(c => sqlCast.fromPg(c.dbCol.tpe)) match {
               case Nil => renderedScript.code
               case _ =>
                 val row = jvm.Ident("row")
@@ -644,7 +647,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
                 code"""|with $row as (
                        |  $renderedScript
                        |)
-                       |select ${cols.map(c => code"$row.${c.dbCol.parsedName.originalName.code}${SqlCast.fromPgCode(c)}").mkCode(", ")}
+                       |select ${cols.map(c => code"$row.${c.dbCol.parsedName.originalName.code}${sqlCast.fromPgCode(c)}").mkCode(", ")}
                        |from $row""".stripMargin
             }
 
@@ -662,7 +665,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
   override def mockRepoImpl(id: IdComputed, repoMethod: RepoMethod, maybeToRow: Option[jvm.Param[jvm.Type.Function1]]): jvm.Body =
     repoMethod match {
       case RepoMethod.SelectBuilder(_, fieldsType, _) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.SelectBuilderMock}($fieldsType.structure, () => map.values.toList, ${jvm.Type.dsl.SelectParams}.empty)")
+        jvm.Body.Expr(code"${lang.dsl.SelectBuilderMock}($fieldsType.structure, () => map.values.toList, ${lang.dsl.SelectParams}.empty)")
       case RepoMethod.SelectAll(_, _, _) =>
         jvm.Body.Expr(code"map.values.toList")
       case RepoMethod.SelectById(_, _, id, _) =>
@@ -703,7 +706,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
                |  case ${TypesScala.None} => false
                |}""".stripMargin)
       case RepoMethod.UpdateBuilder(_, fieldsType, _) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.UpdateBuilderMock}(${jvm.Type.dsl.UpdateParams}.empty, $fieldsType.structure, map)")
+        jvm.Body.Expr(code"${lang.dsl.UpdateBuilderMock}(${lang.dsl.UpdateParams}.empty, $fieldsType.structure, map)")
       case RepoMethod.Update(_, _, _, param, _) =>
         jvm.Body.Expr(code"""|map.get(${param.name}.${id.paramName}).map { _ =>
                |  map.put(${param.name}.${id.paramName}, ${param.name}): @${TypesScala.nowarn}
@@ -755,7 +758,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
                |unsaved.size.toLong""".stripMargin)
         )
       case RepoMethod.DeleteBuilder(_, fieldsType, _) =>
-        jvm.Body.Expr(code"${jvm.Type.dsl.DeleteBuilderMock}(${jvm.Type.dsl.DeleteParams}.empty, $fieldsType.structure, map)")
+        jvm.Body.Expr(code"${lang.dsl.DeleteBuilderMock}(${lang.dsl.DeleteParams}.empty, $fieldsType.structure, map)")
       case RepoMethod.Delete(_, id) =>
         jvm.Body.Expr(code"map.remove(${id.paramName}).isDefined")
       case RepoMethod.DeleteByIds(_, _, idsParam) =>
@@ -783,7 +786,8 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
   override val defaultedInstance: List[jvm.Given] =
     textSupport.map(_.defaultedInstance).toList
 
-  override def stringEnumInstances(wrapperType: jvm.Type, underlying: jvm.Type, sqlType: String, openEnum: Boolean): List[jvm.Given] = {
+  override def stringEnumInstances(wrapperType: jvm.Type, underlyingTypoType: TypoType, sqlType: String, openEnum: Boolean): List[jvm.Given] = {
+    val underlying = underlyingTypoType.jvmType
     val sqlTypeLit = jvm.StrLit(sqlType)
     val arrayWrapper = jvm.Type.ArrayOf(wrapperType)
     List(
@@ -839,10 +843,16 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
     ).flatten
   }
 
-  override def wrapperTypeInstances(wrapperType: jvm.Type.Qualified, underlying: jvm.Type, overrideDbType: Option[String]): List[jvm.Given] =
+  override def wrapperTypeInstances(wrapperType: jvm.Type.Qualified, underlyingJvmType: jvm.Type, underlyingDbType: db.Type, overrideDbType: Option[String]): List[jvm.Given] =
     List(
       Some(
-        jvm.Given(tparams = Nil, name = toStatementName, implicitParams = Nil, tpe = ToStatement.of(wrapperType), body = code"${lookupToStatementFor(underlying)}.contramap(_.value)")
+        jvm.Given(
+          tparams = Nil,
+          name = toStatementName,
+          implicitParams = Nil,
+          tpe = ToStatement.of(wrapperType),
+          body = code"${lookupToStatementFor(underlyingJvmType)}.contramap(_.value)"
+        )
       ),
       Some(
         jvm.Given(
@@ -850,7 +860,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
           name = arrayToStatementName,
           implicitParams = Nil,
           tpe = ToStatement.of(jvm.Type.ArrayOf(wrapperType)),
-          body = code"${lookupToStatementFor(jvm.Type.ArrayOf(underlying))}.contramap(_.map(_.value))"
+          body = code"${lookupToStatementFor(jvm.Type.ArrayOf(underlyingJvmType))}.contramap(_.map(_.value))"
         )
       ),
       Some(
@@ -863,7 +873,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
         )
       ),
       Some(
-        jvm.Given(tparams = Nil, name = columnName, implicitParams = Nil, tpe = Column.of(wrapperType), body = code"${lookupColumnFor(underlying)}.map($wrapperType.apply)")
+        jvm.Given(tparams = Nil, name = columnName, implicitParams = Nil, tpe = Column.of(wrapperType), body = code"${lookupColumnFor(underlyingJvmType)}.map($wrapperType.apply)")
       ),
       Some(
         jvm.Given(
@@ -879,13 +889,13 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
                        |}""".stripMargin
             case None =>
               code"""|new ${ParameterMetaData.of(wrapperType)} {
-                     |  override def sqlType: String = ${lookupParameterMetaDataFor(underlying)}.sqlType
-                     |  override def jdbcType: Int = ${lookupParameterMetaDataFor(underlying)}.jdbcType
+                     |  override def sqlType: String = ${lookupParameterMetaDataFor(underlyingJvmType)}.sqlType
+                     |  override def jdbcType: Int = ${lookupParameterMetaDataFor(underlyingJvmType)}.jdbcType
                      |}""".stripMargin
           }
         )
       ),
-      textSupport.map(_.anyValInstance(wrapperType, underlying))
+      textSupport.map(_.anyValInstance(wrapperType, underlyingJvmType))
     ).flatten
 
   override val missingInstances: List[jvm.ClassMember] = {

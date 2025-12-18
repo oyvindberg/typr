@@ -21,16 +21,16 @@ import adventureworks.public.Flag
 import adventureworks.public.Name
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait ProductFields {
   def productid: IdField[ProductId, ProductRow]
   def name: Field[Name, ProductRow]
-  def productnumber: Field[/* max 25 chars */ String, ProductRow]
+  def productnumber: Field[String, ProductRow]
   def makeflag: Field[Flag, ProductRow]
   def finishedgoodsflag: Field[Flag, ProductRow]
   def color: OptField[/* max 15 chars */ String, ProductRow]
@@ -68,16 +68,16 @@ trait ProductFields {
 }
 
 object ProductFields {
-  lazy val structure: Relation[ProductFields, ProductRow] =
+  lazy val structure: RelationStructure[ProductFields, ProductRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductFields, ProductRow] {
+    extends RelationStructure[ProductFields, ProductRow] {
 
     override lazy val fields: ProductFields = new ProductFields {
       override def productid = IdField[ProductId, ProductRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
       override def name = Field[Name, ProductRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
-      override def productnumber = Field[/* max 25 chars */ String, ProductRow](_path, "productnumber", None, None, x => x.productnumber, (row, value) => row.copy(productnumber = value))
+      override def productnumber = Field[String, ProductRow](_path, "productnumber", None, None, x => x.productnumber, (row, value) => row.copy(productnumber = value))
       override def makeflag = Field[Flag, ProductRow](_path, "makeflag", None, Some("bool"), x => x.makeflag, (row, value) => row.copy(makeflag = value))
       override def finishedgoodsflag = Field[Flag, ProductRow](_path, "finishedgoodsflag", None, Some("bool"), x => x.finishedgoodsflag, (row, value) => row.copy(finishedgoodsflag = value))
       override def color = OptField[/* max 15 chars */ String, ProductRow](_path, "color", None, None, x => x.color, (row, value) => row.copy(color = value))

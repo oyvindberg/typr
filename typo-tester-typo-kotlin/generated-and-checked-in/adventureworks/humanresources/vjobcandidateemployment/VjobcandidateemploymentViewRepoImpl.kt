@@ -7,15 +7,13 @@ package adventureworks.humanresources.vjobcandidateemployment
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class VjobcandidateemploymentViewRepoImpl() : VjobcandidateemploymentViewRepo {
   override fun select(): SelectBuilder<VjobcandidateemploymentViewFields, VjobcandidateemploymentViewRow> = SelectBuilder.of("\"humanresources\".\"vjobcandidateemployment\"", VjobcandidateemploymentViewFields.structure, VjobcandidateemploymentViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<VjobcandidateemploymentViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "jobcandidateid", "Emp.StartDate"::text, "Emp.EndDate"::text, "Emp.OrgName", "Emp.JobTitle", "Emp.Responsibility", "Emp.FunctionCategory", "Emp.IndustryCategory", "Emp.Loc.CountryRegion", "Emp.Loc.State", "Emp.Loc.City"
-    from "humanresources"."vjobcandidateemployment"
-  """.trimMargin())).query(VjobcandidateemploymentViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<VjobcandidateemploymentViewRow> = interpolate(Fragment.lit("select \"jobcandidateid\", \"Emp.StartDate\", \"Emp.EndDate\", \"Emp.OrgName\", \"Emp.JobTitle\", \"Emp.Responsibility\", \"Emp.FunctionCategory\", \"Emp.IndustryCategory\", \"Emp.Loc.CountryRegion\", \"Emp.Loc.State\", \"Emp.Loc.City\"\nfrom \"humanresources\".\"vjobcandidateemployment\"\n")).query(VjobcandidateemploymentViewRow._rowParser.all()).runUnchecked(c)
 }

@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VstorewithcontactsViewRepoImpl implements VstorewithcontactsViewRepo {
@@ -19,9 +20,6 @@ public class VstorewithcontactsViewRepoImpl implements VstorewithcontactsViewRep
 
   @Override
   public List<VstorewithcontactsViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "businessentityid", "name", "contacttype", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion"
-       from "sales"."vstorewithcontacts"
-    """)).query(VstorewithcontactsViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"name\", \"contacttype\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"phonenumber\", \"phonenumbertype\", \"emailaddress\", \"emailpromotion\"\nfrom \"sales\".\"vstorewithcontacts\"\n")).query(VstorewithcontactsViewRow._rowParser.all()).runUnchecked(c);
   };
 }

@@ -5,11 +5,10 @@
  */
 package adventureworks.pr.pi;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.location.LocationId;
 import adventureworks.production.product.ProductId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -23,15 +22,15 @@ public record PiViewRow(
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#locationid()} */
   LocationId locationid,
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#shelf()} */
-  /* max 10 chars */ String shelf,
+  String shelf,
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#bin()} */
-  TypoShort bin,
+  Short bin,
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#quantity()} */
-  TypoShort quantity,
+  Short quantity,
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#productid()} */
   public PiViewRow withId(ProductId id) {
@@ -49,29 +48,29 @@ public record PiViewRow(
   };
 
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#shelf()} */
-  public PiViewRow withShelf(/* max 10 chars */ String shelf) {
+  public PiViewRow withShelf(String shelf) {
     return new PiViewRow(id, productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#bin()} */
-  public PiViewRow withBin(TypoShort bin) {
+  public PiViewRow withBin(Short bin) {
     return new PiViewRow(id, productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#quantity()} */
-  public PiViewRow withQuantity(TypoShort quantity) {
+  public PiViewRow withQuantity(Short quantity) {
     return new PiViewRow(id, productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#rowguid()} */
-  public PiViewRow withRowguid(TypoUUID rowguid) {
+  public PiViewRow withRowguid(UUID rowguid) {
     return new PiViewRow(id, productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productinventory.ProductinventoryRow#modifieddate()} */
-  public PiViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PiViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PiViewRow(id, productid, locationid, shelf, bin, quantity, rowguid, modifieddate);
   };
 
-  static RowParser<PiViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, LocationId.pgType, PgTypes.text, TypoShort.pgType, TypoShort.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, PiViewRow::new, row -> new Object[]{row.id(), row.productid(), row.locationid(), row.shelf(), row.bin(), row.quantity(), row.rowguid(), row.modifieddate()});;
+  static RowParser<PiViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, LocationId.pgType, PgTypes.text, PgTypes.int2, PgTypes.int2, PgTypes.uuid, PgTypes.timestamp, PiViewRow::new, row -> new Object[]{row.id(), row.productid(), row.locationid(), row.shelf(), row.bin(), row.quantity(), row.rowguid(), row.modifieddate()});;
 }

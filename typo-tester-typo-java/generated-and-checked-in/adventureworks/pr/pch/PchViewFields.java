@@ -5,22 +5,21 @@
  */
 package adventureworks.pr.pch;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PchViewFields extends FieldsExpr<PchViewRow> {
-  record Impl(List<Path> _path) implements PchViewFields, Relation<PchViewFields, PchViewRow> {
+  record Impl(List<Path> _path) implements PchViewFields, RelationStructure<PchViewFields, PchViewRow> {
     @Override
     public Field<ProductId, PchViewRow> id() {
       return new Field<ProductId, PchViewRow>(_path, "id", PchViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), ProductId.pgType);
@@ -32,13 +31,13 @@ public interface PchViewFields extends FieldsExpr<PchViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PchViewRow> startdate() {
-      return new Field<TypoLocalDateTime, PchViewRow>(_path, "startdate", PchViewRow::startdate, Optional.of("text"), Optional.empty(), (row, value) -> row.withStartdate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PchViewRow> startdate() {
+      return new Field<LocalDateTime, PchViewRow>(_path, "startdate", PchViewRow::startdate, Optional.empty(), Optional.empty(), (row, value) -> row.withStartdate(value), PgTypes.timestamp);
     };
 
     @Override
-    public OptField<TypoLocalDateTime, PchViewRow> enddate() {
-      return new OptField<TypoLocalDateTime, PchViewRow>(_path, "enddate", PchViewRow::enddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withEnddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PchViewRow> enddate() {
+      return new Field<LocalDateTime, PchViewRow>(_path, "enddate", PchViewRow::enddate, Optional.empty(), Optional.empty(), (row, value) -> row.withEnddate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -47,36 +46,36 @@ public interface PchViewFields extends FieldsExpr<PchViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PchViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PchViewRow>(_path, "modifieddate", PchViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PchViewRow> modifieddate() {
+      return new Field<LocalDateTime, PchViewRow>(_path, "modifieddate", PchViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PchViewRow>> columns() {
-      return List.of(this.id(), this.productid(), this.startdate(), this.enddate(), this.standardcost(), this.modifieddate());
+      return java.util.List.of(this.id(), this.productid(), this.startdate(), this.enddate(), this.standardcost(), this.modifieddate());
     };
 
     @Override
-    public Relation<PchViewFields, PchViewRow> copy(List<Path> _path) {
+    public RelationStructure<PchViewFields, PchViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductId, PchViewRow> id();
 
   Field<ProductId, PchViewRow> productid();
 
-  Field<TypoLocalDateTime, PchViewRow> startdate();
+  Field<LocalDateTime, PchViewRow> startdate();
 
-  OptField<TypoLocalDateTime, PchViewRow> enddate();
+  Field<LocalDateTime, PchViewRow> enddate();
 
   Field<BigDecimal, PchViewRow> standardcost();
 
-  Field<TypoLocalDateTime, PchViewRow> modifieddate();
+  Field<LocalDateTime, PchViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, PchViewRow>> columns();

@@ -16,15 +16,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import typo.dsl.DeleteBuilder;
-import typo.dsl.DeleteBuilder.DeleteBuilderMock;
+import typo.dsl.DeleteBuilderMock;
 import typo.dsl.DeleteParams;
 import typo.dsl.SelectBuilder;
 import typo.dsl.SelectBuilderMock;
 import typo.dsl.SelectParams;
 import typo.dsl.UpdateBuilder;
-import typo.dsl.UpdateBuilder.UpdateBuilderMock;
+import typo.dsl.UpdateBuilderMock;
 import typo.dsl.UpdateParams;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public record ShipmethodRepoMock(
   java.util.function.Function<ShipmethodRowUnsaved, ShipmethodRow> toRow,
@@ -75,7 +74,7 @@ public record ShipmethodRepoMock(
     Connection c
   ) {
     if (map.containsKey(unsaved.shipmethodid())) {
-      throw new RuntimeException(str("id $unsaved.shipmethodid() already exists"));
+      throw new RuntimeException("id " + unsaved.shipmethodid() + " already exists");
     };
     map.put(unsaved.shipmethodid(), unsaved);
     return unsaved;

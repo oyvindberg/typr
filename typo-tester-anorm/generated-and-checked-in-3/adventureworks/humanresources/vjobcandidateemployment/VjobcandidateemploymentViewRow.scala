@@ -23,16 +23,16 @@ import scala.util.Try
 case class VjobcandidateemploymentViewRow(
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
-  empStartDate: Option[TypoLocalDate],
-  empEndDate: Option[TypoLocalDate],
-  empOrgName: Option[/* max 100 chars */ String],
-  empJobTitle: Option[/* max 100 chars */ String],
-  empResponsibility: Option[String],
-  empFunctionCategory: Option[String],
-  empIndustryCategory: Option[String],
-  empLocCountryRegion: Option[String],
-  empLocState: Option[String],
-  empLocCity: Option[String]
+  empStartDate: TypoLocalDate,
+  empEndDate: TypoLocalDate,
+  empOrgName: String,
+  empJobTitle: String,
+  empResponsibility: String,
+  empFunctionCategory: String,
+  empIndustryCategory: String,
+  empLocCountryRegion: String,
+  empLocState: String,
+  empLocCity: String
 )
 
 object VjobcandidateemploymentViewRow {
@@ -41,16 +41,16 @@ object VjobcandidateemploymentViewRow {
         Try(
           VjobcandidateemploymentViewRow(
             jobcandidateid = json.\("jobcandidateid").as(JobcandidateId.reads),
-            empStartDate = json.\("Emp.StartDate").toOption.map(_.as(TypoLocalDate.reads)),
-            empEndDate = json.\("Emp.EndDate").toOption.map(_.as(TypoLocalDate.reads)),
-            empOrgName = json.\("Emp.OrgName").toOption.map(_.as(Reads.StringReads)),
-            empJobTitle = json.\("Emp.JobTitle").toOption.map(_.as(Reads.StringReads)),
-            empResponsibility = json.\("Emp.Responsibility").toOption.map(_.as(Reads.StringReads)),
-            empFunctionCategory = json.\("Emp.FunctionCategory").toOption.map(_.as(Reads.StringReads)),
-            empIndustryCategory = json.\("Emp.IndustryCategory").toOption.map(_.as(Reads.StringReads)),
-            empLocCountryRegion = json.\("Emp.Loc.CountryRegion").toOption.map(_.as(Reads.StringReads)),
-            empLocState = json.\("Emp.Loc.State").toOption.map(_.as(Reads.StringReads)),
-            empLocCity = json.\("Emp.Loc.City").toOption.map(_.as(Reads.StringReads))
+            empStartDate = json.\("Emp.StartDate").as(TypoLocalDate.reads),
+            empEndDate = json.\("Emp.EndDate").as(TypoLocalDate.reads),
+            empOrgName = json.\("Emp.OrgName").as(Reads.StringReads),
+            empJobTitle = json.\("Emp.JobTitle").as(Reads.StringReads),
+            empResponsibility = json.\("Emp.Responsibility").as(Reads.StringReads),
+            empFunctionCategory = json.\("Emp.FunctionCategory").as(Reads.StringReads),
+            empIndustryCategory = json.\("Emp.IndustryCategory").as(Reads.StringReads),
+            empLocCountryRegion = json.\("Emp.Loc.CountryRegion").as(Reads.StringReads),
+            empLocState = json.\("Emp.Loc.State").as(Reads.StringReads),
+            empLocCity = json.\("Emp.Loc.City").as(Reads.StringReads)
           )
         )
       ),
@@ -62,16 +62,16 @@ object VjobcandidateemploymentViewRow {
       Success(
         VjobcandidateemploymentViewRow(
           jobcandidateid = row(idx + 0)(using JobcandidateId.column),
-          empStartDate = row(idx + 1)(using Column.columnToOption(using TypoLocalDate.column)),
-          empEndDate = row(idx + 2)(using Column.columnToOption(using TypoLocalDate.column)),
-          empOrgName = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
-          empJobTitle = row(idx + 4)(using Column.columnToOption(using Column.columnToString)),
-          empResponsibility = row(idx + 5)(using Column.columnToOption(using Column.columnToString)),
-          empFunctionCategory = row(idx + 6)(using Column.columnToOption(using Column.columnToString)),
-          empIndustryCategory = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
-          empLocCountryRegion = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
-          empLocState = row(idx + 9)(using Column.columnToOption(using Column.columnToString)),
-          empLocCity = row(idx + 10)(using Column.columnToOption(using Column.columnToString))
+          empStartDate = row(idx + 1)(using TypoLocalDate.column),
+          empEndDate = row(idx + 2)(using TypoLocalDate.column),
+          empOrgName = row(idx + 3)(using Column.columnToString),
+          empJobTitle = row(idx + 4)(using Column.columnToString),
+          empResponsibility = row(idx + 5)(using Column.columnToString),
+          empFunctionCategory = row(idx + 6)(using Column.columnToString),
+          empIndustryCategory = row(idx + 7)(using Column.columnToString),
+          empLocCountryRegion = row(idx + 8)(using Column.columnToString),
+          empLocState = row(idx + 9)(using Column.columnToString),
+          empLocCity = row(idx + 10)(using Column.columnToString)
         )
       )
     }
@@ -81,16 +81,16 @@ object VjobcandidateemploymentViewRow {
     OWrites[VjobcandidateemploymentViewRow](o =>
       new JsObject(ListMap[String, JsValue](
         "jobcandidateid" -> JobcandidateId.writes.writes(o.jobcandidateid),
-        "Emp.StartDate" -> Writes.OptionWrites(using TypoLocalDate.writes).writes(o.empStartDate),
-        "Emp.EndDate" -> Writes.OptionWrites(using TypoLocalDate.writes).writes(o.empEndDate),
-        "Emp.OrgName" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.empOrgName),
-        "Emp.JobTitle" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.empJobTitle),
-        "Emp.Responsibility" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.empResponsibility),
-        "Emp.FunctionCategory" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.empFunctionCategory),
-        "Emp.IndustryCategory" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.empIndustryCategory),
-        "Emp.Loc.CountryRegion" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.empLocCountryRegion),
-        "Emp.Loc.State" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.empLocState),
-        "Emp.Loc.City" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.empLocCity)
+        "Emp.StartDate" -> TypoLocalDate.writes.writes(o.empStartDate),
+        "Emp.EndDate" -> TypoLocalDate.writes.writes(o.empEndDate),
+        "Emp.OrgName" -> Writes.StringWrites.writes(o.empOrgName),
+        "Emp.JobTitle" -> Writes.StringWrites.writes(o.empJobTitle),
+        "Emp.Responsibility" -> Writes.StringWrites.writes(o.empResponsibility),
+        "Emp.FunctionCategory" -> Writes.StringWrites.writes(o.empFunctionCategory),
+        "Emp.IndustryCategory" -> Writes.StringWrites.writes(o.empIndustryCategory),
+        "Emp.Loc.CountryRegion" -> Writes.StringWrites.writes(o.empLocCountryRegion),
+        "Emp.Loc.State" -> Writes.StringWrites.writes(o.empLocState),
+        "Emp.Loc.City" -> Writes.StringWrites.writes(o.empLocCity)
       ))
     )
   }

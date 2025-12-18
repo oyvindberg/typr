@@ -30,13 +30,13 @@ case class PViewRow(
   /** Points to [[adventureworks.production.product.ProductRow.name]] */
   name: Name,
   /** Points to [[adventureworks.production.product.ProductRow.productnumber]] */
-  productnumber: /* max 25 chars */ String,
+  productnumber: String,
   /** Points to [[adventureworks.production.product.ProductRow.makeflag]] */
   makeflag: Flag,
   /** Points to [[adventureworks.production.product.ProductRow.finishedgoodsflag]] */
   finishedgoodsflag: Flag,
   /** Points to [[adventureworks.production.product.ProductRow.color]] */
-  color: Option[/* max 15 chars */ String],
+  color: String,
   /** Points to [[adventureworks.production.product.ProductRow.safetystocklevel]] */
   safetystocklevel: TypoShort,
   /** Points to [[adventureworks.production.product.ProductRow.reorderpoint]] */
@@ -46,31 +46,31 @@ case class PViewRow(
   /** Points to [[adventureworks.production.product.ProductRow.listprice]] */
   listprice: BigDecimal,
   /** Points to [[adventureworks.production.product.ProductRow.size]] */
-  size: Option[/* max 5 chars */ String],
+  size: String,
   /** Points to [[adventureworks.production.product.ProductRow.sizeunitmeasurecode]] */
-  sizeunitmeasurecode: Option[UnitmeasureId],
+  sizeunitmeasurecode: UnitmeasureId,
   /** Points to [[adventureworks.production.product.ProductRow.weightunitmeasurecode]] */
-  weightunitmeasurecode: Option[UnitmeasureId],
+  weightunitmeasurecode: UnitmeasureId,
   /** Points to [[adventureworks.production.product.ProductRow.weight]] */
-  weight: Option[BigDecimal],
+  weight: BigDecimal,
   /** Points to [[adventureworks.production.product.ProductRow.daystomanufacture]] */
   daystomanufacture: Int,
   /** Points to [[adventureworks.production.product.ProductRow.productline]] */
-  productline: Option[/* bpchar, max 2 chars */ String],
+  productline: String,
   /** Points to [[adventureworks.production.product.ProductRow.class]] */
-  `class`: Option[/* bpchar, max 2 chars */ String],
+  `class`: String,
   /** Points to [[adventureworks.production.product.ProductRow.style]] */
-  style: Option[/* bpchar, max 2 chars */ String],
+  style: String,
   /** Points to [[adventureworks.production.product.ProductRow.productsubcategoryid]] */
-  productsubcategoryid: Option[ProductsubcategoryId],
+  productsubcategoryid: ProductsubcategoryId,
   /** Points to [[adventureworks.production.product.ProductRow.productmodelid]] */
-  productmodelid: Option[ProductmodelId],
+  productmodelid: ProductmodelId,
   /** Points to [[adventureworks.production.product.ProductRow.sellstartdate]] */
   sellstartdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.product.ProductRow.sellenddate]] */
-  sellenddate: Option[TypoLocalDateTime],
+  sellenddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.product.ProductRow.discontinueddate]] */
-  discontinueddate: Option[TypoLocalDateTime],
+  discontinueddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.product.ProductRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.product.ProductRow.modifieddate]] */
@@ -89,24 +89,24 @@ object PViewRow {
             productnumber = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 3, rs)._2,
             makeflag = Flag.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             finishedgoodsflag = Flag.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
-            color = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 6, rs)._2,
+            color = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 6, rs)._2,
             safetystocklevel = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
             reorderpoint = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2,
             standardcost = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 9, rs)._2,
             listprice = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 10, rs)._2,
-            size = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 11, rs)._2,
-            sizeunitmeasurecode = JdbcDecoder.optionDecoder(using UnitmeasureId.jdbcDecoder).unsafeDecode(columIndex + 12, rs)._2,
-            weightunitmeasurecode = JdbcDecoder.optionDecoder(using UnitmeasureId.jdbcDecoder).unsafeDecode(columIndex + 13, rs)._2,
-            weight = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 14, rs)._2,
+            size = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 11, rs)._2,
+            sizeunitmeasurecode = UnitmeasureId.jdbcDecoder.unsafeDecode(columIndex + 12, rs)._2,
+            weightunitmeasurecode = UnitmeasureId.jdbcDecoder.unsafeDecode(columIndex + 13, rs)._2,
+            weight = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 14, rs)._2,
             daystomanufacture = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 15, rs)._2,
-            productline = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 16, rs)._2,
-            `class` = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 17, rs)._2,
-            style = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 18, rs)._2,
-            productsubcategoryid = JdbcDecoder.optionDecoder(using ProductsubcategoryId.jdbcDecoder).unsafeDecode(columIndex + 19, rs)._2,
-            productmodelid = JdbcDecoder.optionDecoder(using ProductmodelId.jdbcDecoder).unsafeDecode(columIndex + 20, rs)._2,
+            productline = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 16, rs)._2,
+            `class` = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 17, rs)._2,
+            style = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 18, rs)._2,
+            productsubcategoryid = ProductsubcategoryId.jdbcDecoder.unsafeDecode(columIndex + 19, rs)._2,
+            productmodelid = ProductmodelId.jdbcDecoder.unsafeDecode(columIndex + 20, rs)._2,
             sellstartdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 21, rs)._2,
-            sellenddate = JdbcDecoder.optionDecoder(using TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 22, rs)._2,
-            discontinueddate = JdbcDecoder.optionDecoder(using TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 23, rs)._2,
+            sellenddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 22, rs)._2,
+            discontinueddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 23, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 24, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 25, rs)._2
           )
@@ -121,24 +121,24 @@ object PViewRow {
       val productnumber = jsonObj.get("productnumber").toRight("Missing field 'productnumber'").flatMap(_.as(using JsonDecoder.string))
       val makeflag = jsonObj.get("makeflag").toRight("Missing field 'makeflag'").flatMap(_.as(using Flag.jsonDecoder))
       val finishedgoodsflag = jsonObj.get("finishedgoodsflag").toRight("Missing field 'finishedgoodsflag'").flatMap(_.as(using Flag.jsonDecoder))
-      val color = jsonObj.get("color").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val color = jsonObj.get("color").toRight("Missing field 'color'").flatMap(_.as(using JsonDecoder.string))
       val safetystocklevel = jsonObj.get("safetystocklevel").toRight("Missing field 'safetystocklevel'").flatMap(_.as(using TypoShort.jsonDecoder))
       val reorderpoint = jsonObj.get("reorderpoint").toRight("Missing field 'reorderpoint'").flatMap(_.as(using TypoShort.jsonDecoder))
       val standardcost = jsonObj.get("standardcost").toRight("Missing field 'standardcost'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
       val listprice = jsonObj.get("listprice").toRight("Missing field 'listprice'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
-      val size = jsonObj.get("size").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val sizeunitmeasurecode = jsonObj.get("sizeunitmeasurecode").fold[Either[String, Option[UnitmeasureId]]](Right(None))(_.as(using JsonDecoder.option(using UnitmeasureId.jsonDecoder)))
-      val weightunitmeasurecode = jsonObj.get("weightunitmeasurecode").fold[Either[String, Option[UnitmeasureId]]](Right(None))(_.as(using JsonDecoder.option(using UnitmeasureId.jsonDecoder)))
-      val weight = jsonObj.get("weight").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
+      val size = jsonObj.get("size").toRight("Missing field 'size'").flatMap(_.as(using JsonDecoder.string))
+      val sizeunitmeasurecode = jsonObj.get("sizeunitmeasurecode").toRight("Missing field 'sizeunitmeasurecode'").flatMap(_.as(using UnitmeasureId.jsonDecoder))
+      val weightunitmeasurecode = jsonObj.get("weightunitmeasurecode").toRight("Missing field 'weightunitmeasurecode'").flatMap(_.as(using UnitmeasureId.jsonDecoder))
+      val weight = jsonObj.get("weight").toRight("Missing field 'weight'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
       val daystomanufacture = jsonObj.get("daystomanufacture").toRight("Missing field 'daystomanufacture'").flatMap(_.as(using JsonDecoder.int))
-      val productline = jsonObj.get("productline").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val `class` = jsonObj.get("class").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val style = jsonObj.get("style").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val productsubcategoryid = jsonObj.get("productsubcategoryid").fold[Either[String, Option[ProductsubcategoryId]]](Right(None))(_.as(using JsonDecoder.option(using ProductsubcategoryId.jsonDecoder)))
-      val productmodelid = jsonObj.get("productmodelid").fold[Either[String, Option[ProductmodelId]]](Right(None))(_.as(using JsonDecoder.option(using ProductmodelId.jsonDecoder)))
+      val productline = jsonObj.get("productline").toRight("Missing field 'productline'").flatMap(_.as(using JsonDecoder.string))
+      val `class` = jsonObj.get("class").toRight("Missing field 'class'").flatMap(_.as(using JsonDecoder.string))
+      val style = jsonObj.get("style").toRight("Missing field 'style'").flatMap(_.as(using JsonDecoder.string))
+      val productsubcategoryid = jsonObj.get("productsubcategoryid").toRight("Missing field 'productsubcategoryid'").flatMap(_.as(using ProductsubcategoryId.jsonDecoder))
+      val productmodelid = jsonObj.get("productmodelid").toRight("Missing field 'productmodelid'").flatMap(_.as(using ProductmodelId.jsonDecoder))
       val sellstartdate = jsonObj.get("sellstartdate").toRight("Missing field 'sellstartdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-      val sellenddate = jsonObj.get("sellenddate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDateTime.jsonDecoder)))
-      val discontinueddate = jsonObj.get("discontinueddate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDateTime.jsonDecoder)))
+      val sellenddate = jsonObj.get("sellenddate").toRight("Missing field 'sellenddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      val discontinueddate = jsonObj.get("discontinueddate").toRight("Missing field 'discontinueddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (id.isRight && productid.isRight && name.isRight && productnumber.isRight && makeflag.isRight && finishedgoodsflag.isRight && color.isRight && safetystocklevel.isRight && reorderpoint.isRight && standardcost.isRight && listprice.isRight && size.isRight && sizeunitmeasurecode.isRight && weightunitmeasurecode.isRight && weight.isRight && daystomanufacture.isRight && productline.isRight && `class`.isRight && style.isRight && productsubcategoryid.isRight && productmodelid.isRight && sellstartdate.isRight && sellenddate.isRight && discontinueddate.isRight && rowguid.isRight && modifieddate.isRight)
@@ -170,7 +170,7 @@ object PViewRow {
         Flag.jsonEncoder.unsafeEncode(a.finishedgoodsflag, indent, out)
         out.write(",")
         out.write(""""color":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.color, indent, out)
+        JsonEncoder.string.unsafeEncode(a.color, indent, out)
         out.write(",")
         out.write(""""safetystocklevel":""")
         TypoShort.jsonEncoder.unsafeEncode(a.safetystocklevel, indent, out)
@@ -185,43 +185,43 @@ object PViewRow {
         JsonEncoder.scalaBigDecimal.unsafeEncode(a.listprice, indent, out)
         out.write(",")
         out.write(""""size":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.size, indent, out)
+        JsonEncoder.string.unsafeEncode(a.size, indent, out)
         out.write(",")
         out.write(""""sizeunitmeasurecode":""")
-        JsonEncoder.option(using UnitmeasureId.jsonEncoder).unsafeEncode(a.sizeunitmeasurecode, indent, out)
+        UnitmeasureId.jsonEncoder.unsafeEncode(a.sizeunitmeasurecode, indent, out)
         out.write(",")
         out.write(""""weightunitmeasurecode":""")
-        JsonEncoder.option(using UnitmeasureId.jsonEncoder).unsafeEncode(a.weightunitmeasurecode, indent, out)
+        UnitmeasureId.jsonEncoder.unsafeEncode(a.weightunitmeasurecode, indent, out)
         out.write(",")
         out.write(""""weight":""")
-        JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.weight, indent, out)
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.weight, indent, out)
         out.write(",")
         out.write(""""daystomanufacture":""")
         JsonEncoder.int.unsafeEncode(a.daystomanufacture, indent, out)
         out.write(",")
         out.write(""""productline":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.productline, indent, out)
+        JsonEncoder.string.unsafeEncode(a.productline, indent, out)
         out.write(",")
         out.write(""""class":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.`class`, indent, out)
+        JsonEncoder.string.unsafeEncode(a.`class`, indent, out)
         out.write(",")
         out.write(""""style":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.style, indent, out)
+        JsonEncoder.string.unsafeEncode(a.style, indent, out)
         out.write(",")
         out.write(""""productsubcategoryid":""")
-        JsonEncoder.option(using ProductsubcategoryId.jsonEncoder).unsafeEncode(a.productsubcategoryid, indent, out)
+        ProductsubcategoryId.jsonEncoder.unsafeEncode(a.productsubcategoryid, indent, out)
         out.write(",")
         out.write(""""productmodelid":""")
-        JsonEncoder.option(using ProductmodelId.jsonEncoder).unsafeEncode(a.productmodelid, indent, out)
+        ProductmodelId.jsonEncoder.unsafeEncode(a.productmodelid, indent, out)
         out.write(",")
         out.write(""""sellstartdate":""")
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.sellstartdate, indent, out)
         out.write(",")
         out.write(""""sellenddate":""")
-        JsonEncoder.option(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.sellenddate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.sellenddate, indent, out)
         out.write(",")
         out.write(""""discontinueddate":""")
-        JsonEncoder.option(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.discontinueddate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.discontinueddate, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

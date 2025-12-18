@@ -17,6 +17,11 @@ public record ProductsId(@JsonValue BigInteger value) {
     return new ProductsId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<ProductsId, BigInteger> bijection =
     Bijection.of(ProductsId::value, ProductsId::new);
 

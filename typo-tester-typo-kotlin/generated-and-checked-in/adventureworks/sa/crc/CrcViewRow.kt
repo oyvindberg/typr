@@ -5,11 +5,12 @@
  */
 package adventureworks.sa.crc
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.sales.currency.CurrencyId
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: sa.crc */
 data class CrcViewRow(
@@ -18,9 +19,9 @@ data class CrcViewRow(
   /** Points to [adventureworks.sales.countryregioncurrency.CountryregioncurrencyRow.currencycode] */
   val currencycode: CurrencyId,
   /** Points to [adventureworks.sales.countryregioncurrency.CountryregioncurrencyRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<CrcViewRow> = RowParsers.of(CountryregionId.pgType, CurrencyId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> CrcViewRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.countryregioncode, row.currencycode, row.modifieddate) })
+    val _rowParser: RowParser<CrcViewRow> = RowParsers.of(CountryregionId.pgType, CurrencyId.pgType, PgTypes.timestamp, { t0, t1, t2 -> CrcViewRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.countryregioncode, row.currencycode, row.modifieddate) })
   }
 }

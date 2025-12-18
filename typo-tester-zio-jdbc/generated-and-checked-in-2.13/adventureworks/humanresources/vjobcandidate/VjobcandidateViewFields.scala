@@ -9,51 +9,50 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import adventureworks.person.businessentity.BusinessentityId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait VjobcandidateViewFields {
   def jobcandidateid: Field[JobcandidateId, VjobcandidateViewRow]
-  def businessentityid: OptField[BusinessentityId, VjobcandidateViewRow]
-  def namePrefix: OptField[/* max 30 chars */ String, VjobcandidateViewRow]
-  def nameFirst: OptField[/* max 30 chars */ String, VjobcandidateViewRow]
-  def nameMiddle: OptField[/* max 30 chars */ String, VjobcandidateViewRow]
-  def nameLast: OptField[/* max 30 chars */ String, VjobcandidateViewRow]
-  def nameSuffix: OptField[/* max 30 chars */ String, VjobcandidateViewRow]
+  def businessentityid: Field[BusinessentityId, VjobcandidateViewRow]
+  def namePrefix: Field[String, VjobcandidateViewRow]
+  def nameFirst: Field[String, VjobcandidateViewRow]
+  def nameMiddle: Field[String, VjobcandidateViewRow]
+  def nameLast: Field[String, VjobcandidateViewRow]
+  def nameSuffix: Field[String, VjobcandidateViewRow]
   def skills: Field[String, VjobcandidateViewRow]
-  def addrType: OptField[/* max 30 chars */ String, VjobcandidateViewRow]
-  def addrLocCountryRegion: OptField[/* max 100 chars */ String, VjobcandidateViewRow]
-  def addrLocState: OptField[/* max 100 chars */ String, VjobcandidateViewRow]
-  def addrLocCity: OptField[/* max 100 chars */ String, VjobcandidateViewRow]
-  def addrPostalCode: OptField[/* max 20 chars */ String, VjobcandidateViewRow]
+  def addrType: Field[String, VjobcandidateViewRow]
+  def addrLocCountryRegion: Field[String, VjobcandidateViewRow]
+  def addrLocState: Field[String, VjobcandidateViewRow]
+  def addrLocCity: Field[String, VjobcandidateViewRow]
+  def addrPostalCode: Field[String, VjobcandidateViewRow]
   def eMail: Field[String, VjobcandidateViewRow]
   def webSite: Field[String, VjobcandidateViewRow]
   def modifieddate: Field[TypoLocalDateTime, VjobcandidateViewRow]
 }
 
 object VjobcandidateViewFields {
-  lazy val structure: Relation[VjobcandidateViewFields, VjobcandidateViewRow] =
+  lazy val structure: RelationStructure[VjobcandidateViewFields, VjobcandidateViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[VjobcandidateViewFields, VjobcandidateViewRow] {
+    extends RelationStructure[VjobcandidateViewFields, VjobcandidateViewRow] {
 
     override lazy val fields: VjobcandidateViewFields = new VjobcandidateViewFields {
       override def jobcandidateid = Field[JobcandidateId, VjobcandidateViewRow](_path, "jobcandidateid", None, None, x => x.jobcandidateid, (row, value) => row.copy(jobcandidateid = value))
-      override def businessentityid = OptField[BusinessentityId, VjobcandidateViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
-      override def namePrefix = OptField[/* max 30 chars */ String, VjobcandidateViewRow](_path, "Name.Prefix", None, None, x => x.namePrefix, (row, value) => row.copy(namePrefix = value))
-      override def nameFirst = OptField[/* max 30 chars */ String, VjobcandidateViewRow](_path, "Name.First", None, None, x => x.nameFirst, (row, value) => row.copy(nameFirst = value))
-      override def nameMiddle = OptField[/* max 30 chars */ String, VjobcandidateViewRow](_path, "Name.Middle", None, None, x => x.nameMiddle, (row, value) => row.copy(nameMiddle = value))
-      override def nameLast = OptField[/* max 30 chars */ String, VjobcandidateViewRow](_path, "Name.Last", None, None, x => x.nameLast, (row, value) => row.copy(nameLast = value))
-      override def nameSuffix = OptField[/* max 30 chars */ String, VjobcandidateViewRow](_path, "Name.Suffix", None, None, x => x.nameSuffix, (row, value) => row.copy(nameSuffix = value))
+      override def businessentityid = Field[BusinessentityId, VjobcandidateViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
+      override def namePrefix = Field[String, VjobcandidateViewRow](_path, "Name.Prefix", None, None, x => x.namePrefix, (row, value) => row.copy(namePrefix = value))
+      override def nameFirst = Field[String, VjobcandidateViewRow](_path, "Name.First", None, None, x => x.nameFirst, (row, value) => row.copy(nameFirst = value))
+      override def nameMiddle = Field[String, VjobcandidateViewRow](_path, "Name.Middle", None, None, x => x.nameMiddle, (row, value) => row.copy(nameMiddle = value))
+      override def nameLast = Field[String, VjobcandidateViewRow](_path, "Name.Last", None, None, x => x.nameLast, (row, value) => row.copy(nameLast = value))
+      override def nameSuffix = Field[String, VjobcandidateViewRow](_path, "Name.Suffix", None, None, x => x.nameSuffix, (row, value) => row.copy(nameSuffix = value))
       override def skills = Field[String, VjobcandidateViewRow](_path, "Skills", None, None, x => x.skills, (row, value) => row.copy(skills = value))
-      override def addrType = OptField[/* max 30 chars */ String, VjobcandidateViewRow](_path, "Addr.Type", None, None, x => x.addrType, (row, value) => row.copy(addrType = value))
-      override def addrLocCountryRegion = OptField[/* max 100 chars */ String, VjobcandidateViewRow](_path, "Addr.Loc.CountryRegion", None, None, x => x.addrLocCountryRegion, (row, value) => row.copy(addrLocCountryRegion = value))
-      override def addrLocState = OptField[/* max 100 chars */ String, VjobcandidateViewRow](_path, "Addr.Loc.State", None, None, x => x.addrLocState, (row, value) => row.copy(addrLocState = value))
-      override def addrLocCity = OptField[/* max 100 chars */ String, VjobcandidateViewRow](_path, "Addr.Loc.City", None, None, x => x.addrLocCity, (row, value) => row.copy(addrLocCity = value))
-      override def addrPostalCode = OptField[/* max 20 chars */ String, VjobcandidateViewRow](_path, "Addr.PostalCode", None, None, x => x.addrPostalCode, (row, value) => row.copy(addrPostalCode = value))
+      override def addrType = Field[String, VjobcandidateViewRow](_path, "Addr.Type", None, None, x => x.addrType, (row, value) => row.copy(addrType = value))
+      override def addrLocCountryRegion = Field[String, VjobcandidateViewRow](_path, "Addr.Loc.CountryRegion", None, None, x => x.addrLocCountryRegion, (row, value) => row.copy(addrLocCountryRegion = value))
+      override def addrLocState = Field[String, VjobcandidateViewRow](_path, "Addr.Loc.State", None, None, x => x.addrLocState, (row, value) => row.copy(addrLocState = value))
+      override def addrLocCity = Field[String, VjobcandidateViewRow](_path, "Addr.Loc.City", None, None, x => x.addrLocCity, (row, value) => row.copy(addrLocCity = value))
+      override def addrPostalCode = Field[String, VjobcandidateViewRow](_path, "Addr.PostalCode", None, None, x => x.addrPostalCode, (row, value) => row.copy(addrPostalCode = value))
       override def eMail = Field[String, VjobcandidateViewRow](_path, "EMail", None, None, x => x.eMail, (row, value) => row.copy(eMail = value))
       override def webSite = Field[String, VjobcandidateViewRow](_path, "WebSite", None, None, x => x.webSite, (row, value) => row.copy(webSite = value))
       override def modifieddate = Field[TypoLocalDateTime, VjobcandidateViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))

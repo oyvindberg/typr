@@ -8,10 +8,10 @@ package adventureworks.public.titledperson
 import adventureworks.public.title.TitleId
 import adventureworks.public.title_domain.TitleDomainId
 import com.fasterxml.jackson.annotation.JsonProperty
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: public.titledperson */
 data class TitledpersonRow(
@@ -25,6 +25,6 @@ data class TitledpersonRow(
     val _rowParser: RowParser<TitledpersonRow> = RowParsers.of(TitleDomainId.pgType, TitleId.pgType, PgTypes.text, { t0, t1, t2 -> TitledpersonRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.titleShort, row.title, row.name) })
 
     val pgText: PgText<TitledpersonRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

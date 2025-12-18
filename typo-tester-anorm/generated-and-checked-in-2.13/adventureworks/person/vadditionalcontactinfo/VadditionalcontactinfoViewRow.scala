@@ -30,20 +30,20 @@ case class VadditionalcontactinfoViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
-  telephonenumber: /* nullability unknown */ Option[TypoXml],
-  telephonespecialinstructions: /* nullability unknown */ Option[String],
-  street: /* nullability unknown */ Option[TypoXml],
-  city: /* nullability unknown */ Option[TypoXml],
-  stateprovince: /* nullability unknown */ Option[TypoXml],
-  postalcode: /* nullability unknown */ Option[TypoXml],
-  countryregion: /* nullability unknown */ Option[TypoXml],
-  homeaddressspecialinstructions: /* nullability unknown */ Option[TypoXml],
-  emailaddress: /* nullability unknown */ Option[TypoXml],
-  emailspecialinstructions: /* nullability unknown */ Option[String],
-  emailtelephonenumber: /* nullability unknown */ Option[TypoXml],
+  telephonenumber: Option[TypoXml],
+  telephonespecialinstructions: Option[String],
+  street: Option[TypoXml],
+  city: Option[TypoXml],
+  stateprovince: Option[TypoXml],
+  postalcode: Option[TypoXml],
+  countryregion: Option[TypoXml],
+  homeaddressspecialinstructions: Option[TypoXml],
+  emailaddress: Option[TypoXml],
+  emailspecialinstructions: Option[String],
+  emailtelephonenumber: Option[TypoXml],
   /** Points to [[adventureworks.person.person.PersonRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.person.person.PersonRow.modifieddate]] */
@@ -57,7 +57,7 @@ object VadditionalcontactinfoViewRow {
           VadditionalcontactinfoViewRow(
             businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
             firstname = json.\("firstname").as(FirstName.reads),
-            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            middlename = json.\("middlename").as(Name.reads),
             lastname = json.\("lastname").as(Name.reads),
             telephonenumber = json.\("telephonenumber").toOption.map(_.as(TypoXml.reads)),
             telephonespecialinstructions = json.\("telephonespecialinstructions").toOption.map(_.as(Reads.StringReads)),
@@ -84,7 +84,7 @@ object VadditionalcontactinfoViewRow {
         VadditionalcontactinfoViewRow(
           businessentityid = row(idx + 0)(BusinessentityId.column),
           firstname = row(idx + 1)(/* user-picked */ FirstName.column),
-          middlename = row(idx + 2)(Column.columnToOption(Name.column)),
+          middlename = row(idx + 2)(Name.column),
           lastname = row(idx + 3)(Name.column),
           telephonenumber = row(idx + 4)(Column.columnToOption(TypoXml.column)),
           telephonespecialinstructions = row(idx + 5)(Column.columnToOption(Column.columnToString)),
@@ -109,7 +109,7 @@ object VadditionalcontactinfoViewRow {
       new JsObject(ListMap[String, JsValue](
         "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
         "firstname" -> FirstName.writes.writes(o.firstname),
-        "middlename" -> Writes.OptionWrites(Name.writes).writes(o.middlename),
+        "middlename" -> Name.writes.writes(o.middlename),
         "lastname" -> Name.writes.writes(o.lastname),
         "telephonenumber" -> Writes.OptionWrites(TypoXml.writes).writes(o.telephonenumber),
         "telephonespecialinstructions" -> Writes.OptionWrites(Writes.StringWrites).writes(o.telephonespecialinstructions),

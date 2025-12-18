@@ -7,9 +7,10 @@ package adventureworks.person.businessentity;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `person.businessentity` which has not been persisted yet */
 public record BusinessentityRowUnsaved(
@@ -18,9 +19,9 @@ public record BusinessentityRowUnsaved(
     */
   Defaulted<BusinessentityId> businessentityid,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public BusinessentityRowUnsaved() {
     this(new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
@@ -34,12 +35,12 @@ public record BusinessentityRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public BusinessentityRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public BusinessentityRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new BusinessentityRowUnsaved(businessentityid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public BusinessentityRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public BusinessentityRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new BusinessentityRowUnsaved(businessentityid, rowguid, modifieddate);
   };
 
@@ -47,15 +48,15 @@ public record BusinessentityRowUnsaved(
     PgText.instance((row, sb) -> {
       Defaulted.pgText(BusinessentityId.pgType.pgText()).unsafeEncode(row.businessentityid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public BusinessentityRow toRow(
     java.util.function.Supplier<BusinessentityId> businessentityidDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new BusinessentityRow(businessentityid.getOrElse(businessentityidDefault), rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

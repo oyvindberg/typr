@@ -7,29 +7,30 @@ package adventureworks.production.productmodel;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.productmodel` which has not been persisted yet */
 public record ProductmodelRowUnsaved(
   /** Product model description. */
   Name name,
   /** Detailed product catalog information in xml format. */
-  Optional<TypoXml> catalogdescription,
+  Optional<Xml> catalogdescription,
   /** Manufacturing instructions in xml format. */
-  Optional<TypoXml> instructions,
+  Optional<Xml> instructions,
   /** Default: nextval('production.productmodel_productmodelid_seq'::regclass)
     * Primary key for ProductModel records.
     */
   Defaulted<ProductmodelId> productmodelid,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ProductmodelRowUnsaved(
   
@@ -45,12 +46,12 @@ public record ProductmodelRowUnsaved(
   };
 
   /** Detailed product catalog information in xml format. */
-  public ProductmodelRowUnsaved withCatalogdescription(Optional<TypoXml> catalogdescription) {
+  public ProductmodelRowUnsaved withCatalogdescription(Optional<Xml> catalogdescription) {
     return new ProductmodelRowUnsaved(name, catalogdescription, instructions, productmodelid, rowguid, modifieddate);
   };
 
   /** Manufacturing instructions in xml format. */
-  public ProductmodelRowUnsaved withInstructions(Optional<TypoXml> instructions) {
+  public ProductmodelRowUnsaved withInstructions(Optional<Xml> instructions) {
     return new ProductmodelRowUnsaved(name, catalogdescription, instructions, productmodelid, rowguid, modifieddate);
   };
 
@@ -62,12 +63,12 @@ public record ProductmodelRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public ProductmodelRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public ProductmodelRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new ProductmodelRowUnsaved(name, catalogdescription, instructions, productmodelid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ProductmodelRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductmodelRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductmodelRowUnsaved(name, catalogdescription, instructions, productmodelid, rowguid, modifieddate);
   };
 
@@ -75,21 +76,21 @@ public record ProductmodelRowUnsaved(
     PgText.instance((row, sb) -> {
       Name.pgType.pgText().unsafeEncode(row.name, sb);
       sb.append(PgText.DELIMETER);
-      TypoXml.pgType.opt().pgText().unsafeEncode(row.catalogdescription, sb);
+      PgTypes.xml.opt().pgText().unsafeEncode(row.catalogdescription, sb);
       sb.append(PgText.DELIMETER);
-      TypoXml.pgType.opt().pgText().unsafeEncode(row.instructions, sb);
+      PgTypes.xml.opt().pgText().unsafeEncode(row.instructions, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(ProductmodelId.pgType.pgText()).unsafeEncode(row.productmodelid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ProductmodelRow toRow(
     java.util.function.Supplier<ProductmodelId> productmodelidDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ProductmodelRow(productmodelid.getOrElse(productmodelidDefault), name, catalogdescription, instructions, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

@@ -7,15 +7,13 @@ package adventureworks.pr.bom
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.Fragment.interpolate
 
 class BomViewRepoImpl() : BomViewRepo {
   override fun select(): SelectBuilder<BomViewFields, BomViewRow> = SelectBuilder.of("\"pr\".\"bom\"", BomViewFields.structure, BomViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<BomViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "billofmaterialsid", "productassemblyid", "componentid", "startdate"::text, "enddate"::text, "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate"::text
-    from "pr"."bom"
-  """.trimMargin())).query(BomViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<BomViewRow> = interpolate(Fragment.lit("select \"id\", \"billofmaterialsid\", \"productassemblyid\", \"componentid\", \"startdate\", \"enddate\", \"unitmeasurecode\", \"bomlevel\", \"perassemblyqty\", \"modifieddate\"\nfrom \"pr\".\"bom\"\n")).query(BomViewRow._rowParser.all()).runUnchecked(c)
 }

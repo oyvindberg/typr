@@ -5,8 +5,6 @@
  */
 package adventureworks.person.stateprovince;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
@@ -23,11 +21,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class StateprovinceRepoImpl implements StateprovinceRepo {
   @Override
@@ -40,13 +36,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     StateprovinceId stateprovinceid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "person"."stateprovince" where "stateprovinceid" = 
-      """),
-      StateprovinceId.pgType.encode(stateprovinceid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"person\".\"stateprovince\" where \"stateprovinceid\" = "), Fragment.encode(StateprovinceId.pgType, stateprovinceid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -54,14 +44,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     StateprovinceId[] stateprovinceids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "person"."stateprovince"
-                  where "stateprovinceid" = ANY("""),
-               StateprovinceId.pgTypeArray.encode(stateprovinceids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"person\".\"stateprovince\"\nwhere \"stateprovinceid\" = ANY("), Fragment.encode(StateprovinceId.pgTypeArray, stateprovinceids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -71,30 +54,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     StateprovinceRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."stateprovince"("stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate")
-         values ("""),
-      StateprovinceId.pgType.encode(unsaved.stateprovinceid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.encode(unsaved.stateprovincecode()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      CountryregionId.pgType.encode(unsaved.countryregioncode()),
-      typo.runtime.Fragment.lit(", "),
-      Flag.pgType.encode(unsaved.isonlystateprovinceflag()),
-      typo.runtime.Fragment.lit("::bool, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      SalesterritoryId.pgType.encode(unsaved.territoryid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"stateprovince\"(\"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(StateprovinceId.pgType, unsaved.stateprovinceid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.bpchar, unsaved.stateprovincecode()), Fragment.lit("::bpchar, "), Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()), Fragment.lit(", "), Fragment.encode(Flag.pgType, unsaved.isonlystateprovinceflag()), Fragment.lit("::bool, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(SalesterritoryId.pgType, unsaved.territoryid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(StateprovinceRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -103,39 +63,23 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     StateprovinceRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"stateprovincecode\""));
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.stateprovincecode()),
-      typo.runtime.Fragment.lit("::bpchar")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.bpchar, unsaved.stateprovincecode()), Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"countryregioncode\""));
-    values.add(interpolate(
-      CountryregionId.pgType.encode(unsaved.countryregioncode()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()), Fragment.lit("")));
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"territoryid\""));
-    values.add(interpolate(
-      SalesterritoryId.pgType.encode(unsaved.territoryid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(SalesterritoryId.pgType, unsaved.territoryid()), Fragment.lit("::int4")));
     unsaved.stateprovinceid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"stateprovinceid\""));
-        values.add(interpolate(
-        StateprovinceId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(StateprovinceId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.isonlystateprovinceflag().visit(
@@ -144,10 +88,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"isonlystateprovinceflag\""));
-        values.add(interpolate(
-        Flag.pgType.encode(value),
-        typo.runtime.Fragment.lit("::bool")
-      ));
+        values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool")));
       }
     );;
     unsaved.rowguid().visit(
@@ -156,10 +97,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -168,26 +106,10 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."stateprovince"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"person\".\"stateprovince\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(StateprovinceRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -197,9 +119,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."stateprovince"("stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, StateprovinceRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"stateprovince\"(\"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, StateprovinceRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -209,9 +129,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."stateprovince"("stateprovincecode", "countryregioncode", "name", "territoryid", "stateprovinceid", "isonlystateprovinceflag", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, StateprovinceRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"stateprovince\"(\"stateprovincecode\", \"countryregioncode\", \"name\", \"territoryid\", \"stateprovinceid\", \"isonlystateprovinceflag\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, StateprovinceRowUnsaved.pgText);
   };
 
   @Override
@@ -221,10 +139,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
 
   @Override
   public List<StateprovinceRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text
-       from "person"."stateprovince"
-    """)).query(StateprovinceRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"stateprovince\"\n")).query(StateprovinceRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -232,14 +147,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     StateprovinceId stateprovinceid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text
-         from "person"."stateprovince"
-         where "stateprovinceid" = """),
-      StateprovinceId.pgType.encode(stateprovinceid),
-      typo.runtime.Fragment.lit("")
-    ).query(StateprovinceRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"stateprovince\"\nwhere \"stateprovinceid\" = "), Fragment.encode(StateprovinceId.pgType, stateprovinceid), Fragment.lit("")).query(StateprovinceRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -247,14 +155,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     StateprovinceId[] stateprovinceids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text
-         from "person"."stateprovince"
-         where "stateprovinceid" = ANY("""),
-      StateprovinceId.pgTypeArray.encode(stateprovinceids),
-      typo.runtime.Fragment.lit(")")
-    ).query(StateprovinceRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"stateprovince\"\nwhere \"stateprovinceid\" = ANY("), Fragment.encode(StateprovinceId.pgTypeArray, stateprovinceids), Fragment.lit(")")).query(StateprovinceRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -269,7 +170,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
 
   @Override
   public UpdateBuilder<StateprovinceFields, StateprovinceRow> update() {
-    return UpdateBuilder.of("\"person\".\"stateprovince\"", StateprovinceFields.structure(), StateprovinceRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"person\".\"stateprovince\"", StateprovinceFields.structure(), StateprovinceRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -278,41 +179,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     Connection c
   ) {
     StateprovinceId stateprovinceid = row.stateprovinceid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "person"."stateprovince"
-         set "stateprovincecode" = """),
-      PgTypes.text.encode(row.stateprovincecode()),
-      typo.runtime.Fragment.lit("""
-         ::bpchar,
-         "countryregioncode" = """),
-      CountryregionId.pgType.encode(row.countryregioncode()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "isonlystateprovinceflag" = """),
-      Flag.pgType.encode(row.isonlystateprovinceflag()),
-      typo.runtime.Fragment.lit("""
-         ::bool,
-         "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "territoryid" = """),
-      SalesterritoryId.pgType.encode(row.territoryid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "stateprovinceid" = """),
-      StateprovinceId.pgType.encode(stateprovinceid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"person\".\"stateprovince\"\nset \"stateprovincecode\" = "), Fragment.encode(PgTypes.bpchar, row.stateprovincecode()), Fragment.lit("::bpchar,\n\"countryregioncode\" = "), Fragment.encode(CountryregionId.pgType, row.countryregioncode()), Fragment.lit(",\n\"isonlystateprovinceflag\" = "), Fragment.encode(Flag.pgType, row.isonlystateprovinceflag()), Fragment.lit("::bool,\n\"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"territoryid\" = "), Fragment.encode(SalesterritoryId.pgType, row.territoryid()), Fragment.lit("::int4,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"stateprovinceid\" = "), Fragment.encode(StateprovinceId.pgType, stateprovinceid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -320,38 +187,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     StateprovinceRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."stateprovince"("stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate")
-         values ("""),
-      StateprovinceId.pgType.encode(unsaved.stateprovinceid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.encode(unsaved.stateprovincecode()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      CountryregionId.pgType.encode(unsaved.countryregioncode()),
-      typo.runtime.Fragment.lit(", "),
-      Flag.pgType.encode(unsaved.isonlystateprovinceflag()),
-      typo.runtime.Fragment.lit("::bool, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      SalesterritoryId.pgType.encode(unsaved.territoryid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("stateprovinceid")
-         do update set
-           "stateprovincecode" = EXCLUDED."stateprovincecode",
-         "countryregioncode" = EXCLUDED."countryregioncode",
-         "isonlystateprovinceflag" = EXCLUDED."isonlystateprovinceflag",
-         "name" = EXCLUDED."name",
-         "territoryid" = EXCLUDED."territoryid",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"stateprovince\"(\"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(StateprovinceId.pgType, unsaved.stateprovinceid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.bpchar, unsaved.stateprovincecode()), Fragment.lit("::bpchar, "), Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()), Fragment.lit(", "), Fragment.encode(Flag.pgType, unsaved.isonlystateprovinceflag()), Fragment.lit("::bool, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(SalesterritoryId.pgType, unsaved.territoryid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"stateprovinceid\")\ndo update set\n  \"stateprovincecode\" = EXCLUDED.\"stateprovincecode\",\n\"countryregioncode\" = EXCLUDED.\"countryregioncode\",\n\"isonlystateprovinceflag\" = EXCLUDED.\"isonlystateprovinceflag\",\n\"name\" = EXCLUDED.\"name\",\n\"territoryid\" = EXCLUDED.\"territoryid\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\""))
       .updateReturning(StateprovinceRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -361,21 +197,9 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     Iterator<StateprovinceRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "person"."stateprovince"("stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate")
-                values (?::int4, ?::bpchar, ?, ?::bool, ?::varchar, ?::int4, ?::uuid, ?::timestamp)
-                on conflict ("stateprovinceid")
-                do update set
-                  "stateprovincecode" = EXCLUDED."stateprovincecode",
-                "countryregioncode" = EXCLUDED."countryregioncode",
-                "isonlystateprovinceflag" = EXCLUDED."isonlystateprovinceflag",
-                "name" = EXCLUDED."name",
-                "territoryid" = EXCLUDED."territoryid",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"person\".\"stateprovince\"(\"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::bpchar, ?, ?::bool, ?::varchar, ?::int4, ?::uuid, ?::timestamp)\non conflict (\"stateprovinceid\")\ndo update set\n  \"stateprovincecode\" = EXCLUDED.\"stateprovincecode\",\n\"countryregioncode\" = EXCLUDED.\"countryregioncode\",\n\"isonlystateprovinceflag\" = EXCLUDED.\"isonlystateprovinceflag\",\n\"name\" = EXCLUDED.\"name\",\n\"territoryid\" = EXCLUDED.\"territoryid\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(StateprovinceRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -385,25 +209,8 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table stateprovince_TEMP (like "person"."stateprovince") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy stateprovince_TEMP("stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, StateprovinceRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "person"."stateprovince"("stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate")
-       select * from stateprovince_TEMP
-       on conflict ("stateprovinceid")
-       do update set
-         "stateprovincecode" = EXCLUDED."stateprovincecode",
-       "countryregioncode" = EXCLUDED."countryregioncode",
-       "isonlystateprovinceflag" = EXCLUDED."isonlystateprovinceflag",
-       "name" = EXCLUDED."name",
-       "territoryid" = EXCLUDED."territoryid",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table stateprovince_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table stateprovince_TEMP (like \"person\".\"stateprovince\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy stateprovince_TEMP(\"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, StateprovinceRow.pgText);
+    return interpolate(Fragment.lit("insert into \"person\".\"stateprovince\"(\"stateprovinceid\", \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\", \"name\", \"territoryid\", \"rowguid\", \"modifieddate\")\nselect * from stateprovince_TEMP\non conflict (\"stateprovinceid\")\ndo update set\n  \"stateprovincecode\" = EXCLUDED.\"stateprovincecode\",\n\"countryregioncode\" = EXCLUDED.\"countryregioncode\",\n\"isonlystateprovinceflag\" = EXCLUDED.\"isonlystateprovinceflag\",\n\"name\" = EXCLUDED.\"name\",\n\"territoryid\" = EXCLUDED.\"territoryid\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table stateprovince_TEMP;")).update().runUnchecked(c);
   };
 }

@@ -7,12 +7,13 @@ package adventureworks.sales.customer;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.customer` which has not been persisted yet */
 public record CustomerRowUnsaved(
@@ -33,9 +34,9 @@ public record CustomerRowUnsaved(
     */
   Defaulted<CustomerId> customerid,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public CustomerRowUnsaved() {
     this(Optional.empty(), Optional.empty(), Optional.empty(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
@@ -70,12 +71,12 @@ public record CustomerRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public CustomerRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public CustomerRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new CustomerRowUnsaved(personid, storeid, territoryid, customerid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public CustomerRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public CustomerRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new CustomerRowUnsaved(personid, storeid, territoryid, customerid, rowguid, modifieddate);
   };
 
@@ -89,15 +90,15 @@ public record CustomerRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(CustomerId.pgType.pgText()).unsafeEncode(row.customerid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public CustomerRow toRow(
     java.util.function.Supplier<CustomerId> customeridDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new CustomerRow(customerid.getOrElse(customeridDefault), personid, storeid, territoryid, rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

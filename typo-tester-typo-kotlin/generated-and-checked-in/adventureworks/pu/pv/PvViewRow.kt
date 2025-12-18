@@ -5,15 +5,15 @@
  */
 package adventureworks.pu.pv
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pu.pv */
 data class PvViewRow(
@@ -28,21 +28,21 @@ data class PvViewRow(
   /** Points to [adventureworks.purchasing.productvendor.ProductvendorRow.standardprice] */
   val standardprice: BigDecimal,
   /** Points to [adventureworks.purchasing.productvendor.ProductvendorRow.lastreceiptcost] */
-  val lastreceiptcost: Optional<BigDecimal>,
+  val lastreceiptcost: BigDecimal,
   /** Points to [adventureworks.purchasing.productvendor.ProductvendorRow.lastreceiptdate] */
-  val lastreceiptdate: Optional<TypoLocalDateTime>,
+  val lastreceiptdate: LocalDateTime,
   /** Points to [adventureworks.purchasing.productvendor.ProductvendorRow.minorderqty] */
   val minorderqty: Int,
   /** Points to [adventureworks.purchasing.productvendor.ProductvendorRow.maxorderqty] */
   val maxorderqty: Int,
   /** Points to [adventureworks.purchasing.productvendor.ProductvendorRow.onorderqty] */
-  val onorderqty: Optional<Int>,
+  val onorderqty: Int,
   /** Points to [adventureworks.purchasing.productvendor.ProductvendorRow.unitmeasurecode] */
   val unitmeasurecode: UnitmeasureId,
   /** Points to [adventureworks.purchasing.productvendor.ProductvendorRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PvViewRow> = RowParsers.of(ProductId.pgType, ProductId.pgType, BusinessentityId.pgType, PgTypes.int4, PgTypes.numeric, PgTypes.numeric.opt(), TypoLocalDateTime.pgType.opt(), PgTypes.int4, PgTypes.int4, PgTypes.int4.opt(), UnitmeasureId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> PvViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.id, row.productid, row.businessentityid, row.averageleadtime, row.standardprice, row.lastreceiptcost, row.lastreceiptdate, row.minorderqty, row.maxorderqty, row.onorderqty, row.unitmeasurecode, row.modifieddate) })
+    val _rowParser: RowParser<PvViewRow> = RowParsers.of(ProductId.pgType, ProductId.pgType, BusinessentityId.pgType, KotlinDbTypes.PgTypes.int4, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, UnitmeasureId.pgType, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> PvViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.id, row.productid, row.businessentityid, row.averageleadtime, row.standardprice, row.lastreceiptcost, row.lastreceiptdate, row.minorderqty, row.maxorderqty, row.onorderqty, row.unitmeasurecode, row.modifieddate) })
   }
 }

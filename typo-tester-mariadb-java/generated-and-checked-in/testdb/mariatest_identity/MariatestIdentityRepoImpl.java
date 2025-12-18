@@ -17,7 +17,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -32,11 +31,7 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     MariatestIdentityId id,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `mariatest_identity` where `id` = "),
-      MariatestIdentityId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `mariatest_identity` where `id` = "), Fragment.encode(MariatestIdentityId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,8 +39,8 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     MariatestIdentityId[] ids,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : ids) { fragments.add(MariatestIdentityId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : ids) { fragments.add(Fragment.encode(MariatestIdentityId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `mariatest_identity` where `id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -54,16 +49,7 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     MariatestIdentityRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `mariatest_identity`(`name`)
-         values ("""),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `id`, `name`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `mariatest_identity`(`name`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(")\nreturning `id`, `name`\n"))
       .updateReturning(MariatestIdentityRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -72,26 +58,11 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     MariatestIdentityRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`name`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `mariatest_identity`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `id`, `name`
-      """)
-    );;
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit("")));
+    Fragment q = interpolate(Fragment.lit("insert into `mariatest_identity`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `id`, `name`\n"));;
     return q.updateReturning(MariatestIdentityRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -102,10 +73,7 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
 
   @Override
   public List<MariatestIdentityRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `id`, `name`
-       from `mariatest_identity`
-    """)).query(MariatestIdentityRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `id`, `name`\nfrom `mariatest_identity`\n")).query(MariatestIdentityRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -113,14 +81,7 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     MariatestIdentityId id,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `id`, `name`
-         from `mariatest_identity`
-         where `id` = """),
-      MariatestIdentityId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).query(MariatestIdentityRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `id`, `name`\nfrom `mariatest_identity`\nwhere `id` = "), Fragment.encode(MariatestIdentityId.pgType, id), Fragment.lit("")).query(MariatestIdentityRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -128,8 +89,8 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     MariatestIdentityId[] ids,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : ids) { fragments.add(MariatestIdentityId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : ids) { fragments.add(Fragment.encode(MariatestIdentityId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `id`, `name` from `mariatest_identity` where `id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(MariatestIdentityRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -145,7 +106,7 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
 
   @Override
   public UpdateBuilder<MariatestIdentityFields, MariatestIdentityRow> update() {
-    return UpdateBuilder.of("`mariatest_identity`", MariatestIdentityFields.structure(), MariatestIdentityRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`mariatest_identity`", MariatestIdentityFields.structure(), MariatestIdentityRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -154,17 +115,7 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     Connection c
   ) {
     MariatestIdentityId id = row.id();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `mariatest_identity`
-         set `name` = """),
-      MariaTypes.text.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-   
-         where `id` = """),
-      MariatestIdentityId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `mariatest_identity`\nset `name` = "), Fragment.encode(MariaTypes.varchar, row.name()), Fragment.lit("\nwhere `id` = "), Fragment.encode(MariatestIdentityId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -172,16 +123,7 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     MariatestIdentityRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `mariatest_identity`(`name`)
-         VALUES ("""),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `name` = VALUES(`name`)
-         RETURNING `id`, `name`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `mariatest_identity`(`name`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`)\nRETURNING `id`, `name`"))
       .updateReturning(MariatestIdentityRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -191,12 +133,8 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     Iterator<MariatestIdentityRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `mariatest_identity`(`id`, `name`)
-                VALUES (?, ?)
-                ON DUPLICATE KEY UPDATE `name` = VALUES(`name`)
-                RETURNING `id`, `name`"""))
+    return interpolate(Fragment.lit("INSERT INTO `mariatest_identity`(`id`, `name`)\nVALUES (?, ?)\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`)\nRETURNING `id`, `name`"))
       .updateReturningEach(MariatestIdentityRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

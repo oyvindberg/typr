@@ -6,10 +6,10 @@
 package testdb.v_inventory_status
 
 import java.sql.Connection
-import typo.dsl.SelectBuilder
+import typo.scaladsl.SelectBuilder
 
 trait VInventoryStatusViewRepo {
   def select: SelectBuilder[VInventoryStatusViewFields, VInventoryStatusViewRow]
 
-  def selectAll(using c: Connection): java.util.List[VInventoryStatusViewRow]
+  def selectAll(using c: Connection): List[VInventoryStatusViewRow]
 }

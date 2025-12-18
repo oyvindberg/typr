@@ -6,10 +6,10 @@
 package adventureworks.public.table_with_generated_columns
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: public.table-with-generated-columns
   * Primary key: name
@@ -32,6 +32,6 @@ data class TableWithGeneratedColumnsRow(
     val _rowParser: RowParser<TableWithGeneratedColumnsRow> = RowParsers.of(TableWithGeneratedColumnsId.pgType, PgTypes.text, { t0, t1 -> TableWithGeneratedColumnsRow(t0!!, t1!!) }, { row -> arrayOf<Any?>(row.name, row.nameTypeAlways) })
 
     val pgText: PgText<TableWithGeneratedColumnsRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

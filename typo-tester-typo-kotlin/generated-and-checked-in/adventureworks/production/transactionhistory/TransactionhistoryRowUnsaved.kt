@@ -7,9 +7,10 @@ package adventureworks.production.transactionhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -24,7 +25,7 @@ data class TransactionhistoryRowUnsaved(
   /** W = WorkOrder, S = SalesOrder, P = PurchaseOrder
     * Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
     */
-  val transactiontype: /* bpchar, max 1 chars */ String,
+  val transactiontype: String,
   /** Product quantity. */
   val quantity: Int,
   /** Product cost. */
@@ -40,35 +41,35 @@ data class TransactionhistoryRowUnsaved(
   /** Default: now()
     * Date and time of the transaction.
     */
-  val transactiondate: Defaulted<TypoLocalDateTime> = UseDefault(),
+  val transactiondate: Defaulted<LocalDateTime> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     transactionidDefault: () -> TransactionhistoryId,
     referenceorderlineidDefault: () -> Int,
-    transactiondateDefault: () -> TypoLocalDateTime,
-    modifieddateDefault: () -> TypoLocalDateTime
+    transactiondateDefault: () -> LocalDateTime,
+    modifieddateDefault: () -> LocalDateTime
   ): TransactionhistoryRow = TransactionhistoryRow(transactionid = transactionid.getOrElse(transactionidDefault), productid = productid, referenceorderid = referenceorderid, referenceorderlineid = referenceorderlineid.getOrElse(referenceorderlineidDefault), transactiondate = transactiondate.getOrElse(transactiondateDefault), transactiontype = transactiontype, quantity = quantity, actualcost = actualcost, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<TransactionhistoryRowUnsaved> =
       PgText.instance({ row, sb -> ProductId.pgType.pgText().unsafeEncode(row.productid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.int4.pgText().unsafeEncode(row.referenceorderid, sb)
+      KotlinDbTypes.PgTypes.int4.pgText().unsafeEncode(row.referenceorderid, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.bpchar.pgText().unsafeEncode(row.transactiontype, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.int4.pgText().unsafeEncode(row.quantity, sb)
+      KotlinDbTypes.PgTypes.int4.pgText().unsafeEncode(row.quantity, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.numeric.pgText().unsafeEncode(row.actualcost, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(TransactionhistoryId.pgType.pgText()).unsafeEncode(row.transactionid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.referenceorderlineid, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.referenceorderlineid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.transactiondate, sb)
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.transactiondate, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

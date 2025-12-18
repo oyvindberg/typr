@@ -27,7 +27,7 @@ case class VstateprovincecountryregionMVRow(
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovincecode]] */
-  stateprovincecode: /* bpchar, max 3 chars */ String,
+  stateprovincecode: String,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.isonlystateprovinceflag]] */
   isonlystateprovinceflag: Flag,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.name]] */

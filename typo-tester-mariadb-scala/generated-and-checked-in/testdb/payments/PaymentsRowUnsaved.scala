@@ -7,7 +7,6 @@ package testdb.payments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.orders.OrdersId
@@ -15,6 +14,8 @@ import testdb.payment_methods.PaymentMethodsId
 import typo.data.maria.Inet6
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `payments` which has not been persisted yet */
 case class PaymentsRowUnsaved(
@@ -27,11 +28,11 @@ case class PaymentsRowUnsaved(
    */
   @JsonProperty("method_id") methodId: PaymentMethodsId,
   /**  */
-  amount: java.math.BigDecimal,
+  amount: BigDecimal,
   /** Default: NULL
 
    */
-  @JsonProperty("transaction_id") transactionId: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("transaction_id") transactionId: Defaulted[Option[String]] = new UseDefault(),
   /** Default: 'USD'
 
    */
@@ -43,15 +44,15 @@ case class PaymentsRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("processor_response") processorResponse: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("processor_response") processorResponse: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("error_message") errorMessage: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("error_message") errorMessage: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("ip_address") ipAddress: Defaulted[Optional[Inet6]] = new UseDefault(),
+  @JsonProperty("ip_address") ipAddress: Defaulted[Option[Inet6]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
@@ -59,17 +60,17 @@ case class PaymentsRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("processed_at") processedAt: Defaulted[Optional[LocalDateTime]] = new UseDefault()
+  @JsonProperty("processed_at") processedAt: Defaulted[Option[LocalDateTime]] = new UseDefault()
 ) {
   def toRow(
-    transactionIdDefault: => Optional[String],
+    transactionIdDefault: => Option[String],
     currencyCodeDefault: => String,
     statusDefault: => String,
-    processorResponseDefault: => Optional[String],
-    errorMessageDefault: => Optional[String],
-    ipAddressDefault: => Optional[Inet6],
+    processorResponseDefault: => Option[String],
+    errorMessageDefault: => Option[String],
+    ipAddressDefault: => Option[Inet6],
     createdAtDefault: => LocalDateTime,
-    processedAtDefault: => Optional[LocalDateTime],
+    processedAtDefault: => Option[LocalDateTime],
     paymentIdDefault: => PaymentsId
   ): PaymentsRow = {
     new PaymentsRow(
@@ -90,5 +91,5 @@ case class PaymentsRowUnsaved(
 }
 
 object PaymentsRowUnsaved {
-  given mariaText: MariaText[PaymentsRowUnsaved] = MariaText.instance((row, sb) => { OrdersId.pgType.mariaText.unsafeEncode(row.orderId, sb); sb.append(MariaText.DELIMETER); PaymentMethodsId.pgType.mariaText.unsafeEncode(row.methodId, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.amount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.transactionId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.char_.mariaText).unsafeEncode(row.currencyCode, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.status, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.processorResponse, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.errorMessage, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.inet6.opt().mariaText).unsafeEncode(row.ipAddress, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.processedAt, sb) })
+  given mariaText: MariaText[PaymentsRowUnsaved] = MariaText.instance((row, sb) => { OrdersId.pgType.mariaText.unsafeEncode(row.orderId, sb); sb.append(MariaText.DELIMETER); PaymentMethodsId.pgType.mariaText.unsafeEncode(row.methodId, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.amount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.transactionId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.char_.mariaText).unsafeEncode(row.currencyCode, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.status, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.processorResponse, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.errorMessage, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.inet6.nullable.mariaText).unsafeEncode(row.ipAddress, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.processedAt, sb) })
 }

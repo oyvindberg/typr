@@ -6,17 +6,16 @@
 package testdb.orders
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait OrdersRepo {
   def delete: DeleteBuilder[OrdersFields, OrdersRow]
 
-  def deleteById(orderId: OrdersId)(using c: Connection): java.lang.Boolean
+  def deleteById(orderId: OrdersId)(using c: Connection): Boolean
 
-  def deleteByIds(orderIds: Array[OrdersId])(using c: Connection): Integer
+  def deleteByIds(orderIds: Array[OrdersId])(using c: Connection): Int
 
   def insert(unsaved: OrdersRow)(using c: Connection): OrdersRow
 
@@ -24,21 +23,21 @@ trait OrdersRepo {
 
   def select: SelectBuilder[OrdersFields, OrdersRow]
 
-  def selectAll(using c: Connection): java.util.List[OrdersRow]
+  def selectAll(using c: Connection): List[OrdersRow]
 
-  def selectById(orderId: OrdersId)(using c: Connection): Optional[OrdersRow]
+  def selectById(orderId: OrdersId)(using c: Connection): Option[OrdersRow]
 
-  def selectByIds(orderIds: Array[OrdersId])(using c: Connection): java.util.List[OrdersRow]
+  def selectByIds(orderIds: Array[OrdersId])(using c: Connection): List[OrdersRow]
 
-  def selectByIdsTracked(orderIds: Array[OrdersId])(using c: Connection): java.util.Map[OrdersId, OrdersRow]
+  def selectByIdsTracked(orderIds: Array[OrdersId])(using c: Connection): Map[OrdersId, OrdersRow]
 
-  def selectByUniqueOrderNumber(orderNumber: String)(using c: Connection): Optional[OrdersRow]
+  def selectByUniqueOrderNumber(orderNumber: String)(using c: Connection): Option[OrdersRow]
 
   def update: UpdateBuilder[OrdersFields, OrdersRow]
 
-  def update(row: OrdersRow)(using c: Connection): java.lang.Boolean
+  def update(row: OrdersRow)(using c: Connection): Boolean
 
   def upsert(unsaved: OrdersRow)(using c: Connection): OrdersRow
 
-  def upsertBatch(unsaved: java.util.Iterator[OrdersRow])(using c: Connection): java.util.List[OrdersRow]
+  def upsertBatch(unsaved: Iterator[OrdersRow])(using c: Connection): List[OrdersRow]
 }

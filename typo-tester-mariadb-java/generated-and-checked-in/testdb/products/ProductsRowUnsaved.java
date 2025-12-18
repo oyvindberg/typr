@@ -211,7 +211,7 @@ public record ProductsRowUnsaved(
       sb.append(MariaText.DELIMETER);
       MariaTypes.varchar.mariaText().unsafeEncode(row.name, sb);
       sb.append(MariaText.DELIMETER);
-      MariaTypes.decimal.mariaText().unsafeEncode(row.basePrice, sb);
+      MariaTypes.numeric.mariaText().unsafeEncode(row.basePrice, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(BrandsId.pgType.opt().mariaText()).unsafeEncode(row.brandId, sb);
       sb.append(MariaText.DELIMETER);
@@ -219,9 +219,9 @@ public record ProductsRowUnsaved(
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.fullDescription, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.costPrice, sb);
+      Defaulted.mariaText(MariaTypes.numeric.opt().mariaText()).unsafeEncode(row.costPrice, sb);
       sb.append(MariaText.DELIMETER);
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.weightKg, sb);
+      Defaulted.mariaText(MariaTypes.numeric.opt().mariaText()).unsafeEncode(row.weightKg, sb);
       sb.append(MariaText.DELIMETER);
       Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.dimensionsJson, sb);
       sb.append(MariaText.DELIMETER);

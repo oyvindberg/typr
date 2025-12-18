@@ -6,16 +6,15 @@
 package adventureworks.production.product;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.productmodel.ProductmodelId;
 import adventureworks.production.productsubcategory.ProductsubcategoryId;
 import adventureworks.production.unitmeasure.UnitmeasureId;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -33,7 +32,7 @@ public record ProductRow(
   /** Name of the product. */
   Name name,
   /** Unique product identification number. */
-  /* max 25 chars */ String productnumber,
+  String productnumber,
   /** 0 = Product is purchased, 1 = Product is manufactured in-house.
     * Default: true
     */
@@ -47,11 +46,11 @@ public record ProductRow(
   /** Minimum inventory quantity.
     * Constraint CK_Product_SafetyStockLevel affecting columns safetystocklevel: ((safetystocklevel > 0))
     */
-  TypoShort safetystocklevel,
+  Short safetystocklevel,
   /** Inventory level that triggers a purchase order or work order.
     * Constraint CK_Product_ReorderPoint affecting columns reorderpoint: ((reorderpoint > 0))
     */
-  TypoShort reorderpoint,
+  Short reorderpoint,
   /** Standard cost of the product.
     * Constraint CK_Product_StandardCost affecting columns standardcost: ((standardcost >= 0.00))
     */
@@ -101,17 +100,17 @@ public record ProductRow(
   /** Date the product was available for sale.
     * Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate: (((sellenddate >= sellstartdate) OR (sellenddate IS NULL)))
     */
-  TypoLocalDateTime sellstartdate,
+  LocalDateTime sellstartdate,
   /** Date the product was no longer available for sale.
     * Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate: (((sellenddate >= sellstartdate) OR (sellenddate IS NULL)))
     */
-  Optional<TypoLocalDateTime> sellenddate,
+  Optional<LocalDateTime> sellenddate,
   /** Date the product was discontinued. */
-  Optional<TypoLocalDateTime> discontinueddate,
+  Optional<LocalDateTime> discontinueddate,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for Product records.
     * Default: nextval('production.product_productid_seq'::regclass)
@@ -126,7 +125,7 @@ public record ProductRow(
   };
 
   /** Unique product identification number. */
-  public ProductRow withProductnumber(/* max 25 chars */ String productnumber) {
+  public ProductRow withProductnumber(String productnumber) {
     return new ProductRow(productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
@@ -152,14 +151,14 @@ public record ProductRow(
   /** Minimum inventory quantity.
     * Constraint CK_Product_SafetyStockLevel affecting columns safetystocklevel: ((safetystocklevel > 0))
     */
-  public ProductRow withSafetystocklevel(TypoShort safetystocklevel) {
+  public ProductRow withSafetystocklevel(Short safetystocklevel) {
     return new ProductRow(productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Inventory level that triggers a purchase order or work order.
     * Constraint CK_Product_ReorderPoint affecting columns reorderpoint: ((reorderpoint > 0))
     */
-  public ProductRow withReorderpoint(TypoShort reorderpoint) {
+  public ProductRow withReorderpoint(Short reorderpoint) {
     return new ProductRow(productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
@@ -248,33 +247,33 @@ public record ProductRow(
   /** Date the product was available for sale.
     * Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate: (((sellenddate >= sellstartdate) OR (sellenddate IS NULL)))
     */
-  public ProductRow withSellstartdate(TypoLocalDateTime sellstartdate) {
+  public ProductRow withSellstartdate(LocalDateTime sellstartdate) {
     return new ProductRow(productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Date the product was no longer available for sale.
     * Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate: (((sellenddate >= sellstartdate) OR (sellenddate IS NULL)))
     */
-  public ProductRow withSellenddate(Optional<TypoLocalDateTime> sellenddate) {
+  public ProductRow withSellenddate(Optional<LocalDateTime> sellenddate) {
     return new ProductRow(productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Date the product was discontinued. */
-  public ProductRow withDiscontinueddate(Optional<TypoLocalDateTime> discontinueddate) {
+  public ProductRow withDiscontinueddate(Optional<LocalDateTime> discontinueddate) {
     return new ProductRow(productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public ProductRow withRowguid(TypoUUID rowguid) {
+  public ProductRow withRowguid(UUID rowguid) {
     return new ProductRow(productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public ProductRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductRow(productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
-  static RowParser<ProductRow> _rowParser = RowParsers.of(ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text.opt(), TypoShort.pgType, TypoShort.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.text.opt(), UnitmeasureId.pgType.opt(), UnitmeasureId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.int4, PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), ProductsubcategoryId.pgType.opt(), ProductmodelId.pgType.opt(), TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, ProductRow::new, row -> new Object[]{row.productid(), row.name(), row.productnumber(), row.makeflag(), row.finishedgoodsflag(), row.color(), row.safetystocklevel(), row.reorderpoint(), row.standardcost(), row.listprice(), row.size(), row.sizeunitmeasurecode(), row.weightunitmeasurecode(), row.weight(), row.daystomanufacture(), row.productline(), row.class_(), row.style(), row.productsubcategoryid(), row.productmodelid(), row.sellstartdate(), row.sellenddate(), row.discontinueddate(), row.rowguid(), row.modifieddate()});;
+  static RowParser<ProductRow> _rowParser = RowParsers.of(ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text.opt(), PgTypes.int2, PgTypes.int2, PgTypes.numeric, PgTypes.numeric, PgTypes.text.opt(), UnitmeasureId.pgType.opt(), UnitmeasureId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.int4, PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), ProductsubcategoryId.pgType.opt(), ProductmodelId.pgType.opt(), PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.timestamp.opt(), PgTypes.uuid, PgTypes.timestamp, ProductRow::new, row -> new Object[]{row.productid(), row.name(), row.productnumber(), row.makeflag(), row.finishedgoodsflag(), row.color(), row.safetystocklevel(), row.reorderpoint(), row.standardcost(), row.listprice(), row.size(), row.sizeunitmeasurecode(), row.weightunitmeasurecode(), row.weight(), row.daystomanufacture(), row.productline(), row.class_(), row.style(), row.productsubcategoryid(), row.productmodelid(), row.sellstartdate(), row.sellenddate(), row.discontinueddate(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<ProductRow> pgText =
     PgText.from(_rowParser);
@@ -287,8 +286,8 @@ public record ProductRow(
     Defaulted<ProductId> productid,
     Defaulted<Flag> makeflag,
     Defaulted<Flag> finishedgoodsflag,
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ProductRowUnsaved(name, productnumber, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, productid, makeflag, finishedgoodsflag, rowguid, modifieddate);
   };

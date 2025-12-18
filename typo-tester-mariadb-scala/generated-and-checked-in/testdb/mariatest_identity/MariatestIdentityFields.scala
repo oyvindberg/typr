@@ -5,36 +5,35 @@
  */
 package testdb.mariatest_identity
 
-import java.util.Optional
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.FieldsExpr0
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
 
-trait MariatestIdentityFields extends FieldsExpr[MariatestIdentityRow] {
+trait MariatestIdentityFields extends FieldsExpr0[MariatestIdentityRow] {
   def id: IdField[MariatestIdentityId, MariatestIdentityRow]
 
   def name: Field[String, MariatestIdentityRow]
 
   override def columns: java.util.List[FieldLike[?, MariatestIdentityRow]]
 
-  override def rowParser: RowParser[MariatestIdentityRow] = MariatestIdentityRow._rowParser
+  override def rowParser: RowParser[MariatestIdentityRow] = MariatestIdentityRow._rowParser.underlying
 }
 
 object MariatestIdentityFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends MariatestIdentityFields with Relation[MariatestIdentityFields, MariatestIdentityRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends MariatestIdentityFields with RelationStructure[MariatestIdentityFields, MariatestIdentityRow] {
 
     override def id: IdField[MariatestIdentityId, MariatestIdentityRow] = {
       new IdField[MariatestIdentityId, MariatestIdentityRow](
         _path,
         "id",
         _.id,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(id = value),
         MariatestIdentityId.pgType
       )
@@ -45,17 +44,17 @@ object MariatestIdentityFields {
         _path,
         "name",
         _.name,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(name = value),
         MariaTypes.varchar
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, MariatestIdentityRow]] = java.util.List.of(this.id, this.name)
+    override def columns: java.util.List[FieldLike[?, MariatestIdentityRow]] = java.util.List.of(this.id.underlying, this.name.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[MariatestIdentityFields, MariatestIdentityRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[MariatestIdentityFields, MariatestIdentityRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

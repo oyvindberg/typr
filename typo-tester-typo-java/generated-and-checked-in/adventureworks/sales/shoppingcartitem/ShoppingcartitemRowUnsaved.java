@@ -7,15 +7,15 @@ package adventureworks.sales.shoppingcartitem;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.shoppingcartitem` which has not been persisted yet */
 public record ShoppingcartitemRowUnsaved(
   /** Shopping cart identification number. */
-  /* max 50 chars */ String shoppingcartid,
+  String shoppingcartid,
   /** Product ordered. Foreign key to Product.ProductID.
     * Points to {@link adventureworks.production.product.ProductRow#productid()}
     */
@@ -32,13 +32,13 @@ public record ShoppingcartitemRowUnsaved(
   /** Default: now()
     * Date the time the record was created.
     */
-  Defaulted<TypoLocalDateTime> datecreated,
+  Defaulted<LocalDateTime> datecreated,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ShoppingcartitemRowUnsaved(
     /** Shopping cart identification number. */
-    /* max 50 chars */ String shoppingcartid,
+    String shoppingcartid,
     /** Product ordered. Foreign key to Product.ProductID.
       * Points to {@link adventureworks.production.product.ProductRow#productid()}
       */
@@ -48,7 +48,7 @@ public record ShoppingcartitemRowUnsaved(
   };
 
   /** Shopping cart identification number. */
-  public ShoppingcartitemRowUnsaved withShoppingcartid(/* max 50 chars */ String shoppingcartid) {
+  public ShoppingcartitemRowUnsaved withShoppingcartid(String shoppingcartid) {
     return new ShoppingcartitemRowUnsaved(shoppingcartid, productid, shoppingcartitemid, quantity, datecreated, modifieddate);
   };
 
@@ -77,12 +77,12 @@ public record ShoppingcartitemRowUnsaved(
   /** Default: now()
     * Date the time the record was created.
     */
-  public ShoppingcartitemRowUnsaved withDatecreated(Defaulted<TypoLocalDateTime> datecreated) {
+  public ShoppingcartitemRowUnsaved withDatecreated(Defaulted<LocalDateTime> datecreated) {
     return new ShoppingcartitemRowUnsaved(shoppingcartid, productid, shoppingcartitemid, quantity, datecreated, modifieddate);
   };
 
   /** Default: now() */
-  public ShoppingcartitemRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ShoppingcartitemRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ShoppingcartitemRowUnsaved(shoppingcartid, productid, shoppingcartitemid, quantity, datecreated, modifieddate);
   };
 
@@ -96,16 +96,16 @@ public record ShoppingcartitemRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.quantity, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.datecreated, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.datecreated, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ShoppingcartitemRow toRow(
     java.util.function.Supplier<ShoppingcartitemId> shoppingcartitemidDefault,
     java.util.function.Supplier<Integer> quantityDefault,
-    java.util.function.Supplier<TypoLocalDateTime> datecreatedDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> datecreatedDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ShoppingcartitemRow(shoppingcartitemid.getOrElse(shoppingcartitemidDefault), shoppingcartid, quantity.getOrElse(quantityDefault), productid, datecreated.getOrElse(datecreatedDefault), modifieddate.getOrElse(modifieddateDefault));
   };

@@ -5,42 +5,42 @@
  */
 package testdb.price_tiers
 
-import java.util.Optional
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.FieldsExpr0
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
 
-trait PriceTiersFields extends FieldsExpr[PriceTiersRow] {
+trait PriceTiersFields extends FieldsExpr0[PriceTiersRow] {
   def tierId: IdField[PriceTiersId, PriceTiersRow]
 
   def name: Field[String, PriceTiersRow]
 
-  def minQuantity: Field[java.lang.Long, PriceTiersRow]
+  def minQuantity: Field[Long, PriceTiersRow]
 
   def discountType: Field[String, PriceTiersRow]
 
-  def discountValue: Field[java.math.BigDecimal, PriceTiersRow]
+  def discountValue: Field[BigDecimal, PriceTiersRow]
 
   override def columns: java.util.List[FieldLike[?, PriceTiersRow]]
 
-  override def rowParser: RowParser[PriceTiersRow] = PriceTiersRow._rowParser
+  override def rowParser: RowParser[PriceTiersRow] = PriceTiersRow._rowParser.underlying
 }
 
 object PriceTiersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends PriceTiersFields with Relation[PriceTiersFields, PriceTiersRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends PriceTiersFields with RelationStructure[PriceTiersFields, PriceTiersRow] {
 
     override def tierId: IdField[PriceTiersId, PriceTiersRow] = {
       new IdField[PriceTiersId, PriceTiersRow](
         _path,
         "tier_id",
         _.tierId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(tierId = value),
         PriceTiersId.pgType
       )
@@ -51,22 +51,22 @@ object PriceTiersFields {
         _path,
         "name",
         _.name,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(name = value),
         MariaTypes.varchar
       )
     }
 
-    override def minQuantity: Field[java.lang.Long, PriceTiersRow] = {
-      new Field[java.lang.Long, PriceTiersRow](
+    override def minQuantity: Field[Long, PriceTiersRow] = {
+      new Field[Long, PriceTiersRow](
         _path,
         "min_quantity",
         _.minQuantity,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(minQuantity = value),
-        MariaTypes.intUnsigned
+        ScalaDbTypes.MariaTypes.intUnsigned
       )
     }
 
@@ -75,29 +75,29 @@ object PriceTiersFields {
         _path,
         "discount_type",
         _.discountType,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(discountType = value),
         MariaTypes.text
       )
     }
 
-    override def discountValue: Field[java.math.BigDecimal, PriceTiersRow] = {
-      new Field[java.math.BigDecimal, PriceTiersRow](
+    override def discountValue: Field[BigDecimal, PriceTiersRow] = {
+      new Field[BigDecimal, PriceTiersRow](
         _path,
         "discount_value",
         _.discountValue,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(discountValue = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, PriceTiersRow]] = java.util.List.of(this.tierId, this.name, this.minQuantity, this.discountType, this.discountValue)
+    override def columns: java.util.List[FieldLike[?, PriceTiersRow]] = java.util.List.of(this.tierId.underlying, this.name.underlying, this.minQuantity.underlying, this.discountType.underlying, this.discountValue.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[PriceTiersFields, PriceTiersRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PriceTiersFields, PriceTiersRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

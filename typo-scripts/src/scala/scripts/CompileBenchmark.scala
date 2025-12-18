@@ -57,7 +57,7 @@ object CompileBenchmark extends BleepScript("CompileBenchmark") {
         List(false, true).flatMap { inlineImplicits =>
           val options = Options(
             pkg = "adventureworks",
-            lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
+            lang = LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala),
             dbLib = dbLib,
             jsonLibs = List(jsonLib),
             enableTestInserts = Selector.All,

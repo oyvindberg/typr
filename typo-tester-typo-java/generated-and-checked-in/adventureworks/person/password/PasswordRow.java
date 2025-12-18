@@ -6,9 +6,9 @@
 package adventureworks.person.password;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -22,13 +22,13 @@ public record PasswordRow(
   /** Points to {@link adventureworks.person.person.PersonRow#businessentityid()} */
   BusinessentityId businessentityid,
   /** Password for the e-mail account. */
-  /* max 128 chars */ String passwordhash,
+  String passwordhash,
   /** Random value concatenated with the password string before the password is hashed. */
-  /* max 10 chars */ String passwordsalt,
+  String passwordsalt,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.person.PersonRow#businessentityid()} */
   public PasswordRow withBusinessentityid(BusinessentityId businessentityid) {
@@ -36,26 +36,26 @@ public record PasswordRow(
   };
 
   /** Password for the e-mail account. */
-  public PasswordRow withPasswordhash(/* max 128 chars */ String passwordhash) {
+  public PasswordRow withPasswordhash(String passwordhash) {
     return new PasswordRow(businessentityid, passwordhash, passwordsalt, rowguid, modifieddate);
   };
 
   /** Random value concatenated with the password string before the password is hashed. */
-  public PasswordRow withPasswordsalt(/* max 10 chars */ String passwordsalt) {
+  public PasswordRow withPasswordsalt(String passwordsalt) {
     return new PasswordRow(businessentityid, passwordhash, passwordsalt, rowguid, modifieddate);
   };
 
   /** Default: uuid_generate_v1() */
-  public PasswordRow withRowguid(TypoUUID rowguid) {
+  public PasswordRow withRowguid(UUID rowguid) {
     return new PasswordRow(businessentityid, passwordhash, passwordsalt, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public PasswordRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PasswordRow withModifieddate(LocalDateTime modifieddate) {
     return new PasswordRow(businessentityid, passwordhash, passwordsalt, rowguid, modifieddate);
   };
 
-  static RowParser<PasswordRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, TypoUUID.pgType, TypoLocalDateTime.pgType, PasswordRow::new, row -> new Object[]{row.businessentityid(), row.passwordhash(), row.passwordsalt(), row.rowguid(), row.modifieddate()});;
+  static RowParser<PasswordRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, PasswordRow::new, row -> new Object[]{row.businessentityid(), row.passwordhash(), row.passwordsalt(), row.rowguid(), row.modifieddate()});;
 
   static public PgText<PasswordRow> pgText =
     PgText.from(_rowParser);
@@ -65,8 +65,8 @@ public record PasswordRow(
   };
 
   public PasswordRowUnsaved toUnsavedRow(
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new PasswordRowUnsaved(businessentityid, passwordhash, passwordsalt, rowguid, modifieddate);
   };

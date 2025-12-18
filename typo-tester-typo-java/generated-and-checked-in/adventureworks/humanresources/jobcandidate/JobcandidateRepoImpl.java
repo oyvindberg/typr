@@ -5,8 +5,6 @@
  */
 package adventureworks.humanresources.jobcandidate;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -20,10 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class JobcandidateRepoImpl implements JobcandidateRepo {
   @Override
@@ -36,13 +33,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     JobcandidateId jobcandidateid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "humanresources"."jobcandidate" where "jobcandidateid" = 
-      """),
-      JobcandidateId.pgType.encode(jobcandidateid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"humanresources\".\"jobcandidate\" where \"jobcandidateid\" = "), Fragment.encode(JobcandidateId.pgType, jobcandidateid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -50,14 +41,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     JobcandidateId[] jobcandidateids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "humanresources"."jobcandidate"
-                  where "jobcandidateid" = ANY("""),
-               JobcandidateId.pgTypeArray.encode(jobcandidateids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"humanresources\".\"jobcandidate\"\nwhere \"jobcandidateid\" = ANY("), Fragment.encode(JobcandidateId.pgTypeArray, jobcandidateids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -67,22 +51,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     JobcandidateRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "humanresources"."jobcandidate"("jobcandidateid", "businessentityid", "resume", "modifieddate")
-         values ("""),
-      JobcandidateId.pgType.encode(unsaved.jobcandidateid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      BusinessentityId.pgType.opt().encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoXml.pgType.opt().encode(unsaved.resume()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "jobcandidateid", "businessentityid", "resume", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"humanresources\".\"jobcandidate\"(\"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\")\nvalues ("), Fragment.encode(JobcandidateId.pgType, unsaved.jobcandidateid()), Fragment.lit("::int4, "), Fragment.encode(BusinessentityId.pgType.opt(), unsaved.businessentityid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.xml.opt(), unsaved.resume()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\"\n"))
       .updateReturning(JobcandidateRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -91,28 +60,19 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     JobcandidateRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"businessentityid\""));
-    values.add(interpolate(
-      BusinessentityId.pgType.opt().encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType.opt(), unsaved.businessentityid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"resume\""));
-    values.add(interpolate(
-      TypoXml.pgType.opt().encode(unsaved.resume()),
-      typo.runtime.Fragment.lit("::xml")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.xml.opt(), unsaved.resume()), Fragment.lit("::xml")));
     unsaved.jobcandidateid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"jobcandidateid\""));
-        values.add(interpolate(
-        JobcandidateId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(JobcandidateId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -121,26 +81,10 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "humanresources"."jobcandidate"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "jobcandidateid", "businessentityid", "resume", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"humanresources\".\"jobcandidate\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\"\n"));;
     return q.updateReturning(JobcandidateRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -150,9 +94,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "humanresources"."jobcandidate"("jobcandidateid", "businessentityid", "resume", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, JobcandidateRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"humanresources\".\"jobcandidate\"(\"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, JobcandidateRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -162,9 +104,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "humanresources"."jobcandidate"("businessentityid", "resume", "jobcandidateid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, JobcandidateRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"humanresources\".\"jobcandidate\"(\"businessentityid\", \"resume\", \"jobcandidateid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, JobcandidateRowUnsaved.pgText);
   };
 
   @Override
@@ -174,10 +114,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
 
   @Override
   public List<JobcandidateRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "jobcandidateid", "businessentityid", "resume", "modifieddate"::text
-       from "humanresources"."jobcandidate"
-    """)).query(JobcandidateRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\"\nfrom \"humanresources\".\"jobcandidate\"\n")).query(JobcandidateRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -185,14 +122,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     JobcandidateId jobcandidateid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "jobcandidateid", "businessentityid", "resume", "modifieddate"::text
-         from "humanresources"."jobcandidate"
-         where "jobcandidateid" = """),
-      JobcandidateId.pgType.encode(jobcandidateid),
-      typo.runtime.Fragment.lit("")
-    ).query(JobcandidateRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\"\nfrom \"humanresources\".\"jobcandidate\"\nwhere \"jobcandidateid\" = "), Fragment.encode(JobcandidateId.pgType, jobcandidateid), Fragment.lit("")).query(JobcandidateRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -200,14 +130,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     JobcandidateId[] jobcandidateids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "jobcandidateid", "businessentityid", "resume", "modifieddate"::text
-         from "humanresources"."jobcandidate"
-         where "jobcandidateid" = ANY("""),
-      JobcandidateId.pgTypeArray.encode(jobcandidateids),
-      typo.runtime.Fragment.lit(")")
-    ).query(JobcandidateRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\"\nfrom \"humanresources\".\"jobcandidate\"\nwhere \"jobcandidateid\" = ANY("), Fragment.encode(JobcandidateId.pgTypeArray, jobcandidateids), Fragment.lit(")")).query(JobcandidateRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -222,7 +145,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
 
   @Override
   public UpdateBuilder<JobcandidateFields, JobcandidateRow> update() {
-    return UpdateBuilder.of("\"humanresources\".\"jobcandidate\"", JobcandidateFields.structure(), JobcandidateRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"humanresources\".\"jobcandidate\"", JobcandidateFields.structure(), JobcandidateRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -231,25 +154,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     Connection c
   ) {
     JobcandidateId jobcandidateid = row.jobcandidateid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "humanresources"."jobcandidate"
-         set "businessentityid" = """),
-      BusinessentityId.pgType.opt().encode(row.businessentityid()),
-      typo.runtime.Fragment.lit("""
-         ::int4,
-         "resume" = """),
-      TypoXml.pgType.opt().encode(row.resume()),
-      typo.runtime.Fragment.lit("""
-         ::xml,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "jobcandidateid" = """),
-      JobcandidateId.pgType.encode(jobcandidateid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"humanresources\".\"jobcandidate\"\nset \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType.opt(), row.businessentityid()), Fragment.lit("::int4,\n\"resume\" = "), Fragment.encode(PgTypes.xml.opt(), row.resume()), Fragment.lit("::xml,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"jobcandidateid\" = "), Fragment.encode(JobcandidateId.pgType, jobcandidateid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -257,26 +162,7 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     JobcandidateRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "humanresources"."jobcandidate"("jobcandidateid", "businessentityid", "resume", "modifieddate")
-         values ("""),
-      JobcandidateId.pgType.encode(unsaved.jobcandidateid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      BusinessentityId.pgType.opt().encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      TypoXml.pgType.opt().encode(unsaved.resume()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("jobcandidateid")
-         do update set
-           "businessentityid" = EXCLUDED."businessentityid",
-         "resume" = EXCLUDED."resume",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "jobcandidateid", "businessentityid", "resume", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"humanresources\".\"jobcandidate\"(\"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\")\nvalues ("), Fragment.encode(JobcandidateId.pgType, unsaved.jobcandidateid()), Fragment.lit("::int4, "), Fragment.encode(BusinessentityId.pgType.opt(), unsaved.businessentityid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.xml.opt(), unsaved.resume()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"jobcandidateid\")\ndo update set\n  \"businessentityid\" = EXCLUDED.\"businessentityid\",\n\"resume\" = EXCLUDED.\"resume\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\""))
       .updateReturning(JobcandidateRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -286,17 +172,9 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     Iterator<JobcandidateRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "humanresources"."jobcandidate"("jobcandidateid", "businessentityid", "resume", "modifieddate")
-                values (?::int4, ?::int4, ?::xml, ?::timestamp)
-                on conflict ("jobcandidateid")
-                do update set
-                  "businessentityid" = EXCLUDED."businessentityid",
-                "resume" = EXCLUDED."resume",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "jobcandidateid", "businessentityid", "resume", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"humanresources\".\"jobcandidate\"(\"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?::xml, ?::timestamp)\non conflict (\"jobcandidateid\")\ndo update set\n  \"businessentityid\" = EXCLUDED.\"businessentityid\",\n\"resume\" = EXCLUDED.\"resume\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\""))
       .updateManyReturning(JobcandidateRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -306,21 +184,8 @@ public class JobcandidateRepoImpl implements JobcandidateRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table jobcandidate_TEMP (like "humanresources"."jobcandidate") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy jobcandidate_TEMP("jobcandidateid", "businessentityid", "resume", "modifieddate") from stdin
-    """), batchSize, unsaved, c, JobcandidateRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "humanresources"."jobcandidate"("jobcandidateid", "businessentityid", "resume", "modifieddate")
-       select * from jobcandidate_TEMP
-       on conflict ("jobcandidateid")
-       do update set
-         "businessentityid" = EXCLUDED."businessentityid",
-       "resume" = EXCLUDED."resume",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table jobcandidate_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table jobcandidate_TEMP (like \"humanresources\".\"jobcandidate\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy jobcandidate_TEMP(\"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\") from stdin", batchSize, unsaved, c, JobcandidateRow.pgText);
+    return interpolate(Fragment.lit("insert into \"humanresources\".\"jobcandidate\"(\"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\")\nselect * from jobcandidate_TEMP\non conflict (\"jobcandidateid\")\ndo update set\n  \"businessentityid\" = EXCLUDED.\"businessentityid\",\n\"resume\" = EXCLUDED.\"resume\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table jobcandidate_TEMP;")).update().runUnchecked(c);
   };
 }

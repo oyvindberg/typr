@@ -17,6 +17,7 @@ import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.production.productmodel.ProductmodelRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -24,7 +25,6 @@ import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait ProductmodelproductdescriptioncultureFields {
   def productmodelid: IdField[ProductmodelId, ProductmodelproductdescriptioncultureRow]
@@ -48,11 +48,11 @@ trait ProductmodelproductdescriptioncultureFields {
 }
 
 object ProductmodelproductdescriptioncultureFields {
-  lazy val structure: Relation[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] =
+  lazy val structure: RelationStructure[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] {
+    extends RelationStructure[ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow] {
 
     override lazy val fields: ProductmodelproductdescriptioncultureFields = new ProductmodelproductdescriptioncultureFields {
       override def productmodelid = IdField[ProductmodelId, ProductmodelproductdescriptioncultureRow](_path, "productmodelid", None, Some("int4"), x => x.productmodelid, (row, value) => row.copy(productmodelid = value))

@@ -7,48 +7,35 @@ package testdb.mariatest
 
 import java.lang.RuntimeException
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
-import java.util.function.Function
-import java.util.stream.Collectors
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.DeleteBuilderMock
+import typo.scaladsl.DeleteParams
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.SelectBuilderMock
+import typo.scaladsl.SelectParams
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.UpdateBuilderMock
+import typo.scaladsl.UpdateParams
 
 case class MariatestRepoMock(
   toRow: MariatestRowUnsaved => MariatestRow,
-  map: HashMap[MariatestId, MariatestRow] = new HashMap[MariatestId, MariatestRow]()
+  map: scala.collection.mutable.Map[MariatestId, MariatestRow] = scala.collection.mutable.Map.empty[MariatestId, MariatestRow]
 ) extends MariatestRepo {
-  override def delete: DeleteBuilder[MariatestFields, MariatestRow] = {
-    new DeleteBuilderMock(
-      MariatestFields.structure,
-      () => new ArrayList(map.values()),
-      DeleteParams.empty(),
-      row => row.intCol,
-      id => map.remove(id): @scala.annotation.nowarn
-    )
-  }
+  override def delete: DeleteBuilder[MariatestFields, MariatestRow] = DeleteBuilderMock(MariatestFields.structure, () => map.values.toList, DeleteParams.empty(), row => row.intCol, id => map.remove(id): @scala.annotation.nowarn)
 
-  override def deleteById(intCol: MariatestId)(using c: Connection): java.lang.Boolean = Optional.ofNullable(map.remove(intCol)).isPresent()
+  override def deleteById(intCol: MariatestId)(using c: Connection): Boolean = map.remove(intCol).isDefined
 
-  override def deleteByIds(intCols: Array[MariatestId])(using c: Connection): Integer = {
+  override def deleteByIds(intCols: Array[MariatestId])(using c: Connection): Int = {
     var count = 0
-    intCols.foreach { id => if (Optional.ofNullable(map.remove(id)).isPresent()) {
+    intCols.foreach { id => if (map.remove(id).isDefined) {
       count = count + 1
     } }
     return count
   }
 
   override def insert(unsaved: MariatestRow)(using c: Connection): MariatestRow = {
-    if (map.containsKey(unsaved.intCol)) {
-      throw new RuntimeException(s"id $unsaved.intCol already exists")
+    if (map.contains(unsaved.intCol)) {
+      throw new RuntimeException(s"id ${unsaved.intCol} already exists")
     }
     map.put(unsaved.intCol, unsaved): @scala.annotation.nowarn
     return unsaved
@@ -56,33 +43,20 @@ case class MariatestRepoMock(
 
   override def insert(unsaved: MariatestRowUnsaved)(using c: Connection): MariatestRow = insert(toRow(unsaved))(using c)
 
-  override def select: SelectBuilder[MariatestFields, MariatestRow] = new SelectBuilderMock(MariatestFields.structure, () => new ArrayList(map.values()), SelectParams.empty())
+  override def select: SelectBuilder[MariatestFields, MariatestRow] = SelectBuilderMock(MariatestFields.structure, () => map.values.toList, SelectParams.empty())
 
-  override def selectAll(using c: Connection): java.util.List[MariatestRow] = new ArrayList(map.values())
+  override def selectAll(using c: Connection): List[MariatestRow] = map.values.toList
 
-  override def selectById(intCol: MariatestId)(using c: Connection): Optional[MariatestRow] = Optional.ofNullable(map.get(intCol))
+  override def selectById(intCol: MariatestId)(using c: Connection): Option[MariatestRow] = map.get(intCol)
 
-  override def selectByIds(intCols: Array[MariatestId])(using c: Connection): java.util.List[MariatestRow] = {
-    val result = new ArrayList[MariatestRow]()
-    intCols.foreach { id => val opt = Optional.ofNullable(map.get(id)); if (opt.isPresent()) {
-      result.add(opt.get()): @scala.annotation.nowarn
-    } }
-    return result
-  }
+  override def selectByIds(intCols: Array[MariatestId])(using c: Connection): List[MariatestRow] = intCols.flatMap(map.get(_)).toList
 
-  override def selectByIdsTracked(intCols: Array[MariatestId])(using c: Connection): java.util.Map[MariatestId, MariatestRow] = selectByIds(intCols)(using c).stream().collect(Collectors.toMap((row: MariatestRow) => row.intCol, Function.identity()))
+  override def selectByIdsTracked(intCols: Array[MariatestId])(using c: Connection): Map[MariatestId, MariatestRow] = selectByIds(intCols)(using c).map(x => (((row: MariatestRow) => row.intCol).apply(x), x)).toMap
 
-  override def update: UpdateBuilder[MariatestFields, MariatestRow] = {
-    new UpdateBuilderMock(
-      MariatestFields.structure,
-      () => new ArrayList(map.values()),
-      UpdateParams.empty(),
-      row => row
-    )
-  }
+  override def update: UpdateBuilder[MariatestFields, MariatestRow] = UpdateBuilderMock(MariatestFields.structure, () => map.values.toList, UpdateParams.empty(), row => row)
 
-  override def update(row: MariatestRow)(using c: Connection): java.lang.Boolean = {
-    val shouldUpdate = Optional.ofNullable(map.get(row.intCol)).filter(oldRow => (oldRow != row)).isPresent()
+  override def update(row: MariatestRow)(using c: Connection): Boolean = {
+    val shouldUpdate = map.get(row.intCol).filter(oldRow => (oldRow != row)).isDefined
     if (shouldUpdate) {
       map.put(row.intCol, row): @scala.annotation.nowarn
     }
@@ -94,13 +68,10 @@ case class MariatestRepoMock(
     return unsaved
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[MariatestRow])(using c: Connection): java.util.List[MariatestRow] = {
-    val result = new ArrayList[MariatestRow]()
-    while (unsaved.hasNext()) {
-      val row = unsaved.next()
+  override def upsertBatch(unsaved: Iterator[MariatestRow])(using c: Connection): List[MariatestRow] = {
+    unsaved.map { row =>
       map.put(row.intCol, row): @scala.annotation.nowarn
-      result.add(row): @scala.annotation.nowarn
-    }
-    return result
+      row
+    }.toList
   }
 }

@@ -6,12 +6,13 @@
 package adventureworks.sales.shoppingcartitem
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: sales.shoppingcartitem
   * Contains online customer orders until the order is submitted or cancelled.
@@ -23,7 +24,7 @@ data class ShoppingcartitemRow(
     */
   val shoppingcartitemid: ShoppingcartitemId,
   /** Shopping cart identification number. */
-  val shoppingcartid: /* max 50 chars */ String,
+  val shoppingcartid: String,
   /** Product quantity ordered.
     * Default: 1
     * Constraint CK_ShoppingCartItem_Quantity affecting columns quantity: ((quantity >= 1))
@@ -36,23 +37,23 @@ data class ShoppingcartitemRow(
   /** Date the time the record was created.
     * Default: now()
     */
-  val datecreated: TypoLocalDateTime,
+  val datecreated: LocalDateTime,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): ShoppingcartitemId = shoppingcartitemid
 
   fun toUnsavedRow(
     shoppingcartitemid: Defaulted<ShoppingcartitemId>,
     quantity: Defaulted<Int>,
-    datecreated: Defaulted<TypoLocalDateTime>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    datecreated: Defaulted<LocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>
   ): ShoppingcartitemRowUnsaved = ShoppingcartitemRowUnsaved(shoppingcartid, productid, shoppingcartitemid, quantity, datecreated, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ShoppingcartitemRow> = RowParsers.of(ShoppingcartitemId.pgType, PgTypes.text, PgTypes.int4, ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> ShoppingcartitemRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.shoppingcartitemid, row.shoppingcartid, row.quantity, row.productid, row.datecreated, row.modifieddate) })
+    val _rowParser: RowParser<ShoppingcartitemRow> = RowParsers.of(ShoppingcartitemId.pgType, PgTypes.text, KotlinDbTypes.PgTypes.int4, ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> ShoppingcartitemRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.shoppingcartitemid, row.shoppingcartid, row.quantity, row.productid, row.datecreated, row.modifieddate) })
 
     val pgText: PgText<ShoppingcartitemRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

@@ -6,13 +6,14 @@
 package adventureworks.sales.specialofferproduct
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
 import adventureworks.sales.specialoffer.SpecialofferId
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: sales.specialofferproduct
   * Cross-reference table mapping products to special offer discounts.
@@ -28,29 +29,29 @@ data class SpecialofferproductRow(
     */
   val productid: ProductId,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): SpecialofferproductId = SpecialofferproductId(specialofferid, productid)
 
   fun id(): SpecialofferproductId = this.compositeId()
 
   fun toUnsavedRow(
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): SpecialofferproductRowUnsaved = SpecialofferproductRowUnsaved(specialofferid, productid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SpecialofferproductRow> = RowParsers.of(SpecialofferId.pgType, ProductId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> SpecialofferproductRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.specialofferid, row.productid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SpecialofferproductRow> = RowParsers.of(SpecialofferId.pgType, ProductId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3 -> SpecialofferproductRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.specialofferid, row.productid, row.rowguid, row.modifieddate) })
 
     fun apply(
       compositeId: SpecialofferproductId,
-      rowguid: TypoUUID,
-      modifieddate: TypoLocalDateTime
+      rowguid: UUID,
+      modifieddate: LocalDateTime
     ): SpecialofferproductRow = SpecialofferproductRow(compositeId.specialofferid, compositeId.productid, rowguid, modifieddate)
 
     val pgText: PgText<SpecialofferproductRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

@@ -5,9 +5,8 @@
  */
 package adventureworks.sa.cc;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.userdefined.CustomCreditcardId;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -19,15 +18,15 @@ public record CcViewRow(
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#creditcardid()} */
   /* user-picked */ CustomCreditcardId creditcardid,
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#cardtype()} */
-  /* max 50 chars */ String cardtype,
+  String cardtype,
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#cardnumber()} */
-  /* max 25 chars */ String cardnumber,
+  String cardnumber,
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#expmonth()} */
-  TypoShort expmonth,
+  Short expmonth,
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#expyear()} */
-  TypoShort expyear,
+  Short expyear,
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#creditcardid()} */
   public CcViewRow withId(/* user-picked */ CustomCreditcardId id) {
@@ -40,29 +39,29 @@ public record CcViewRow(
   };
 
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#cardtype()} */
-  public CcViewRow withCardtype(/* max 50 chars */ String cardtype) {
+  public CcViewRow withCardtype(String cardtype) {
     return new CcViewRow(id, creditcardid, cardtype, cardnumber, expmonth, expyear, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#cardnumber()} */
-  public CcViewRow withCardnumber(/* max 25 chars */ String cardnumber) {
+  public CcViewRow withCardnumber(String cardnumber) {
     return new CcViewRow(id, creditcardid, cardtype, cardnumber, expmonth, expyear, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#expmonth()} */
-  public CcViewRow withExpmonth(TypoShort expmonth) {
+  public CcViewRow withExpmonth(Short expmonth) {
     return new CcViewRow(id, creditcardid, cardtype, cardnumber, expmonth, expyear, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#expyear()} */
-  public CcViewRow withExpyear(TypoShort expyear) {
+  public CcViewRow withExpyear(Short expyear) {
     return new CcViewRow(id, creditcardid, cardtype, cardnumber, expmonth, expyear, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.creditcard.CreditcardRow#modifieddate()} */
-  public CcViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CcViewRow withModifieddate(LocalDateTime modifieddate) {
     return new CcViewRow(id, creditcardid, cardtype, cardnumber, expmonth, expyear, modifieddate);
   };
 
-  static RowParser<CcViewRow> _rowParser = RowParsers.of(CustomCreditcardId.pgType, CustomCreditcardId.pgType, PgTypes.text, PgTypes.text, TypoShort.pgType, TypoShort.pgType, TypoLocalDateTime.pgType, CcViewRow::new, row -> new Object[]{row.id(), row.creditcardid(), row.cardtype(), row.cardnumber(), row.expmonth(), row.expyear(), row.modifieddate()});;
+  static RowParser<CcViewRow> _rowParser = RowParsers.of(CustomCreditcardId.pgType, CustomCreditcardId.pgType, PgTypes.text, PgTypes.text, PgTypes.int2, PgTypes.int2, PgTypes.timestamp, CcViewRow::new, row -> new Object[]{row.id(), row.creditcardid(), row.cardtype(), row.cardnumber(), row.expmonth(), row.expyear(), row.modifieddate()});;
 }

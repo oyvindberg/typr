@@ -5,14 +5,14 @@
  */
 package adventureworks.hr.edh
 
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDate
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: hr.edh */
 data class EdhViewRow(
@@ -25,13 +25,13 @@ data class EdhViewRow(
   /** Points to [adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.shiftid] */
   val shiftid: ShiftId,
   /** Points to [adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.startdate] */
-  val startdate: TypoLocalDate,
+  val startdate: LocalDate,
   /** Points to [adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.enddate] */
-  val enddate: Optional<TypoLocalDate>,
+  val enddate: LocalDate,
   /** Points to [adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<EdhViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, DepartmentId.pgType, ShiftId.pgType, TypoLocalDate.pgType, TypoLocalDate.pgType.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> EdhViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.departmentid, row.shiftid, row.startdate, row.enddate, row.modifieddate) })
+    val _rowParser: RowParser<EdhViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, DepartmentId.pgType, ShiftId.pgType, PgTypes.date, PgTypes.date, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> EdhViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.departmentid, row.shiftid, row.startdate, row.enddate, row.modifieddate) })
   }
 }

@@ -18,15 +18,14 @@ import java.util.stream.Collectors;
 import testdb.products.ProductsId;
 import testdb.warehouses.WarehousesId;
 import typo.dsl.DeleteBuilder;
-import typo.dsl.DeleteBuilder.DeleteBuilderMock;
+import typo.dsl.DeleteBuilderMock;
 import typo.dsl.DeleteParams;
 import typo.dsl.SelectBuilder;
 import typo.dsl.SelectBuilderMock;
 import typo.dsl.SelectParams;
 import typo.dsl.UpdateBuilder;
-import typo.dsl.UpdateBuilder.UpdateBuilderMock;
+import typo.dsl.UpdateBuilderMock;
 import typo.dsl.UpdateParams;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public record InventoryRepoMock(
   java.util.function.Function<InventoryRowUnsaved, InventoryRow> toRow,
@@ -77,7 +76,7 @@ public record InventoryRepoMock(
     Connection c
   ) {
     if (map.containsKey(unsaved.inventoryId())) {
-      throw new RuntimeException(str("id $unsaved.inventoryId() already exists"));
+      throw new RuntimeException("id " + unsaved.inventoryId() + " already exists");
     };
     map.put(unsaved.inventoryId(), unsaved);
     return unsaved;

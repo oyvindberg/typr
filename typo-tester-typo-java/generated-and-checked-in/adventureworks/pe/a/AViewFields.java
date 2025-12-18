@@ -5,24 +5,22 @@
  */
 package adventureworks.pe.a;
 
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.address.AddressId;
 import adventureworks.person.stateprovince.StateprovinceId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface AViewFields extends FieldsExpr<AViewRow> {
-  record Impl(List<Path> _path) implements AViewFields, Relation<AViewFields, AViewRow> {
+  record Impl(List<Path> _path) implements AViewFields, RelationStructure<AViewFields, AViewRow> {
     @Override
     public Field<AddressId, AViewRow> id() {
       return new Field<AddressId, AViewRow>(_path, "id", AViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), AddressId.pgType);
@@ -34,18 +32,18 @@ public interface AViewFields extends FieldsExpr<AViewRow> {
     };
 
     @Override
-    public Field</* max 60 chars */ String, AViewRow> addressline1() {
-      return new Field</* max 60 chars */ String, AViewRow>(_path, "addressline1", AViewRow::addressline1, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline1(value), PgTypes.text);
+    public Field<String, AViewRow> addressline1() {
+      return new Field<String, AViewRow>(_path, "addressline1", AViewRow::addressline1, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline1(value), PgTypes.text);
     };
 
     @Override
-    public OptField</* max 60 chars */ String, AViewRow> addressline2() {
-      return new OptField</* max 60 chars */ String, AViewRow>(_path, "addressline2", AViewRow::addressline2, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline2(value), PgTypes.text);
+    public Field<String, AViewRow> addressline2() {
+      return new Field<String, AViewRow>(_path, "addressline2", AViewRow::addressline2, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressline2(value), PgTypes.text);
     };
 
     @Override
-    public Field</* max 30 chars */ String, AViewRow> city() {
-      return new Field</* max 30 chars */ String, AViewRow>(_path, "city", AViewRow::city, Optional.empty(), Optional.empty(), (row, value) -> row.withCity(value), PgTypes.text);
+    public Field<String, AViewRow> city() {
+      return new Field<String, AViewRow>(_path, "city", AViewRow::city, Optional.empty(), Optional.empty(), (row, value) -> row.withCity(value), PgTypes.text);
     };
 
     @Override
@@ -54,59 +52,59 @@ public interface AViewFields extends FieldsExpr<AViewRow> {
     };
 
     @Override
-    public Field</* max 15 chars */ String, AViewRow> postalcode() {
-      return new Field</* max 15 chars */ String, AViewRow>(_path, "postalcode", AViewRow::postalcode, Optional.empty(), Optional.empty(), (row, value) -> row.withPostalcode(value), PgTypes.text);
+    public Field<String, AViewRow> postalcode() {
+      return new Field<String, AViewRow>(_path, "postalcode", AViewRow::postalcode, Optional.empty(), Optional.empty(), (row, value) -> row.withPostalcode(value), PgTypes.text);
     };
 
     @Override
-    public OptField<TypoBytea, AViewRow> spatiallocation() {
-      return new OptField<TypoBytea, AViewRow>(_path, "spatiallocation", AViewRow::spatiallocation, Optional.empty(), Optional.empty(), (row, value) -> row.withSpatiallocation(value), TypoBytea.pgType);
+    public Field<byte[], AViewRow> spatiallocation() {
+      return new Field<byte[], AViewRow>(_path, "spatiallocation", AViewRow::spatiallocation, Optional.empty(), Optional.empty(), (row, value) -> row.withSpatiallocation(value), PgTypes.bytea);
     };
 
     @Override
-    public Field<TypoUUID, AViewRow> rowguid() {
-      return new Field<TypoUUID, AViewRow>(_path, "rowguid", AViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, AViewRow> rowguid() {
+      return new Field<UUID, AViewRow>(_path, "rowguid", AViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, AViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, AViewRow>(_path, "modifieddate", AViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, AViewRow> modifieddate() {
+      return new Field<LocalDateTime, AViewRow>(_path, "modifieddate", AViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, AViewRow>> columns() {
-      return List.of(this.id(), this.addressid(), this.addressline1(), this.addressline2(), this.city(), this.stateprovinceid(), this.postalcode(), this.spatiallocation(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.addressid(), this.addressline1(), this.addressline2(), this.city(), this.stateprovinceid(), this.postalcode(), this.spatiallocation(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<AViewFields, AViewRow> copy(List<Path> _path) {
+    public RelationStructure<AViewFields, AViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<AddressId, AViewRow> id();
 
   Field<AddressId, AViewRow> addressid();
 
-  Field</* max 60 chars */ String, AViewRow> addressline1();
+  Field<String, AViewRow> addressline1();
 
-  OptField</* max 60 chars */ String, AViewRow> addressline2();
+  Field<String, AViewRow> addressline2();
 
-  Field</* max 30 chars */ String, AViewRow> city();
+  Field<String, AViewRow> city();
 
   Field<StateprovinceId, AViewRow> stateprovinceid();
 
-  Field</* max 15 chars */ String, AViewRow> postalcode();
+  Field<String, AViewRow> postalcode();
 
-  OptField<TypoBytea, AViewRow> spatiallocation();
+  Field<byte[], AViewRow> spatiallocation();
 
-  Field<TypoUUID, AViewRow> rowguid();
+  Field<UUID, AViewRow> rowguid();
 
-  Field<TypoLocalDateTime, AViewRow> modifieddate();
+  Field<LocalDateTime, AViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, AViewRow>> columns();

@@ -5,22 +5,21 @@
  */
 package adventureworks.pe.e;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface EViewFields extends FieldsExpr<EViewRow> {
-  record Impl(List<Path> _path) implements EViewFields, Relation<EViewFields, EViewRow> {
+  record Impl(List<Path> _path) implements EViewFields, RelationStructure<EViewFields, EViewRow> {
     @Override
     public Field<Integer, EViewRow> id() {
       return new Field<Integer, EViewRow>(_path, "id", EViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), PgTypes.int4);
@@ -37,33 +36,33 @@ public interface EViewFields extends FieldsExpr<EViewRow> {
     };
 
     @Override
-    public OptField</* max 50 chars */ String, EViewRow> emailaddress() {
-      return new OptField</* max 50 chars */ String, EViewRow>(_path, "emailaddress", EViewRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
+    public Field<String, EViewRow> emailaddress() {
+      return new Field<String, EViewRow>(_path, "emailaddress", EViewRow::emailaddress, Optional.empty(), Optional.empty(), (row, value) -> row.withEmailaddress(value), PgTypes.text);
     };
 
     @Override
-    public Field<TypoUUID, EViewRow> rowguid() {
-      return new Field<TypoUUID, EViewRow>(_path, "rowguid", EViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, EViewRow> rowguid() {
+      return new Field<UUID, EViewRow>(_path, "rowguid", EViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, EViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, EViewRow>(_path, "modifieddate", EViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, EViewRow> modifieddate() {
+      return new Field<LocalDateTime, EViewRow>(_path, "modifieddate", EViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, EViewRow>> columns() {
-      return List.of(this.id(), this.businessentityid(), this.emailaddressid(), this.emailaddress(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.businessentityid(), this.emailaddressid(), this.emailaddress(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<EViewFields, EViewRow> copy(List<Path> _path) {
+    public RelationStructure<EViewFields, EViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<Integer, EViewRow> id();
@@ -72,11 +71,11 @@ public interface EViewFields extends FieldsExpr<EViewRow> {
 
   Field<Integer, EViewRow> emailaddressid();
 
-  OptField</* max 50 chars */ String, EViewRow> emailaddress();
+  Field<String, EViewRow> emailaddress();
 
-  Field<TypoUUID, EViewRow> rowguid();
+  Field<UUID, EViewRow> rowguid();
 
-  Field<TypoLocalDateTime, EViewRow> modifieddate();
+  Field<LocalDateTime, EViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, EViewRow>> columns();

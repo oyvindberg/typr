@@ -7,14 +7,15 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.brands.BrandsId
 import testdb.customtypes.Defaulted
 import typo.data.maria.MariaSet
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: products
  * Primary key: product_id
@@ -30,31 +31,31 @@ case class ProductsRow(
    * Default: NULL
    * Points to [[testdb.brands.BrandsRow.brandId]]
    */
-  @JsonProperty("brand_id") brandId: Optional[BrandsId],
+  @JsonProperty("brand_id") brandId: Option[BrandsId],
   /**  */
   name: String,
   /** 
    * Default: NULL
    */
-  @JsonProperty("short_description") shortDescription: Optional[String],
+  @JsonProperty("short_description") shortDescription: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("full_description") fullDescription: Optional[String],
+  @JsonProperty("full_description") fullDescription: Option[String],
   /**  */
-  @JsonProperty("base_price") basePrice: java.math.BigDecimal,
+  @JsonProperty("base_price") basePrice: BigDecimal,
   /** 
    * Default: NULL
    */
-  @JsonProperty("cost_price") costPrice: Optional[java.math.BigDecimal],
+  @JsonProperty("cost_price") costPrice: Option[BigDecimal],
   /** 
    * Default: NULL
    */
-  @JsonProperty("weight_kg") weightKg: Optional[java.math.BigDecimal],
+  @JsonProperty("weight_kg") weightKg: Option[BigDecimal],
   /** length, width, height in cm
    * Default: NULL
    */
-  @JsonProperty("dimensions_json") dimensionsJson: Optional[String],
+  @JsonProperty("dimensions_json") dimensionsJson: Option[String],
   /** 
    * Default: 'draft'
    */
@@ -66,15 +67,15 @@ case class ProductsRow(
   /** 
    * Default: NULL
    */
-  tags: Optional[MariaSet],
+  tags: Option[MariaSet],
   /** 
    * Default: NULL
    */
-  attributes: Optional[String],
+  attributes: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("seo_metadata") seoMetadata: Optional[String],
+  @JsonProperty("seo_metadata") seoMetadata: Option[String],
   /** 
    * Default: current_timestamp(6)
    */
@@ -86,25 +87,25 @@ case class ProductsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("published_at") publishedAt: Optional[LocalDateTime]
+  @JsonProperty("published_at") publishedAt: Option[LocalDateTime]
 ) {
   def id: ProductsId = productId
 
   def toUnsavedRow(
-    brandId: Defaulted[Optional[BrandsId]] = Defaulted.Provided(this.brandId),
-    shortDescription: Defaulted[Optional[String]] = Defaulted.Provided(this.shortDescription),
-    fullDescription: Defaulted[Optional[String]] = Defaulted.Provided(this.fullDescription),
-    costPrice: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.Provided(this.costPrice),
-    weightKg: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.Provided(this.weightKg),
-    dimensionsJson: Defaulted[Optional[String]] = Defaulted.Provided(this.dimensionsJson),
+    brandId: Defaulted[Option[BrandsId]] = Defaulted.Provided(this.brandId),
+    shortDescription: Defaulted[Option[String]] = Defaulted.Provided(this.shortDescription),
+    fullDescription: Defaulted[Option[String]] = Defaulted.Provided(this.fullDescription),
+    costPrice: Defaulted[Option[BigDecimal]] = Defaulted.Provided(this.costPrice),
+    weightKg: Defaulted[Option[BigDecimal]] = Defaulted.Provided(this.weightKg),
+    dimensionsJson: Defaulted[Option[String]] = Defaulted.Provided(this.dimensionsJson),
     status: Defaulted[String] = Defaulted.Provided(this.status),
     taxClass: Defaulted[String] = Defaulted.Provided(this.taxClass),
-    tags: Defaulted[Optional[MariaSet]] = Defaulted.Provided(this.tags),
-    attributes: Defaulted[Optional[String]] = Defaulted.Provided(this.attributes),
-    seoMetadata: Defaulted[Optional[String]] = Defaulted.Provided(this.seoMetadata),
+    tags: Defaulted[Option[MariaSet]] = Defaulted.Provided(this.tags),
+    attributes: Defaulted[Option[String]] = Defaulted.Provided(this.attributes),
+    seoMetadata: Defaulted[Option[String]] = Defaulted.Provided(this.seoMetadata),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.updatedAt),
-    publishedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.publishedAt)
+    publishedAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.publishedAt)
   ): ProductsRowUnsaved = {
     new ProductsRowUnsaved(
       sku,
@@ -129,7 +130,7 @@ case class ProductsRow(
 }
 
 object ProductsRow {
-  val `_rowParser`: RowParser[ProductsRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, BrandsId.pgType.opt(), MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.longtext.opt(), MariaTypes.decimal, MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.longtext.opt(), MariaTypes.text, MariaTypes.text, MariaTypes.set.opt(), MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.opt(), ProductsRow.apply, row => Array[Object](row.productId.asInstanceOf[Object], row.sku.asInstanceOf[Object], row.brandId.asInstanceOf[Object], row.name.asInstanceOf[Object], row.shortDescription.asInstanceOf[Object], row.fullDescription.asInstanceOf[Object], row.basePrice.asInstanceOf[Object], row.costPrice.asInstanceOf[Object], row.weightKg.asInstanceOf[Object], row.dimensionsJson.asInstanceOf[Object], row.status.asInstanceOf[Object], row.taxClass.asInstanceOf[Object], row.tags.asInstanceOf[Object], row.attributes.asInstanceOf[Object], row.seoMetadata.asInstanceOf[Object], row.createdAt.asInstanceOf[Object], row.updatedAt.asInstanceOf[Object], row.publishedAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[ProductsRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, BrandsId.pgType.nullable, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.longtext.nullable, MariaTypes.text, MariaTypes.text, MariaTypes.set.nullable, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable)(ProductsRow.apply)(row => Array[Any](row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt))
 
-  given mariaText: MariaText[ProductsRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[ProductsRow] = MariaText.from(`_rowParser`.underlying)
 }

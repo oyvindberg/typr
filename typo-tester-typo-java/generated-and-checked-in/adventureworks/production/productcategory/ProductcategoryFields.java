@@ -5,21 +5,22 @@
  */
 package adventureworks.production.productcategory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface ProductcategoryFields extends FieldsExpr<ProductcategoryRow> {
-  record Impl(List<Path> _path) implements ProductcategoryFields, Relation<ProductcategoryFields, ProductcategoryRow> {
+  record Impl(List<Path> _path) implements ProductcategoryFields, RelationStructure<ProductcategoryFields, ProductcategoryRow> {
     @Override
     public IdField<ProductcategoryId, ProductcategoryRow> productcategoryid() {
       return new IdField<ProductcategoryId, ProductcategoryRow>(_path, "productcategoryid", ProductcategoryRow::productcategoryid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withProductcategoryid(value), ProductcategoryId.pgType);
@@ -31,37 +32,37 @@ public interface ProductcategoryFields extends FieldsExpr<ProductcategoryRow> {
     };
 
     @Override
-    public Field<TypoUUID, ProductcategoryRow> rowguid() {
-      return new Field<TypoUUID, ProductcategoryRow>(_path, "rowguid", ProductcategoryRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, ProductcategoryRow> rowguid() {
+      return new Field<UUID, ProductcategoryRow>(_path, "rowguid", ProductcategoryRow::rowguid, Optional.empty(), Optional.of("uuid"), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, ProductcategoryRow> modifieddate() {
-      return new Field<TypoLocalDateTime, ProductcategoryRow>(_path, "modifieddate", ProductcategoryRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ProductcategoryRow> modifieddate() {
+      return new Field<LocalDateTime, ProductcategoryRow>(_path, "modifieddate", ProductcategoryRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, ProductcategoryRow>> columns() {
-      return List.of(this.productcategoryid(), this.name(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.productcategoryid(), this.name(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<ProductcategoryFields, ProductcategoryRow> copy(List<Path> _path) {
+    public RelationStructure<ProductcategoryFields, ProductcategoryRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ProductcategoryId, ProductcategoryRow> productcategoryid();
 
   Field<Name, ProductcategoryRow> name();
 
-  Field<TypoUUID, ProductcategoryRow> rowguid();
+  Field<UUID, ProductcategoryRow> rowguid();
 
-  Field<TypoLocalDateTime, ProductcategoryRow> modifieddate();
+  Field<LocalDateTime, ProductcategoryRow> modifieddate();
 
   @Override
   List<FieldLike<?, ProductcategoryRow>> columns();

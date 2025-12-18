@@ -5,9 +5,6 @@
  */
 package adventureworks.sa.soh;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.address.AddressId;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.AccountNumber;
@@ -20,7 +17,8 @@ import adventureworks.sales.salesorderheader.SalesorderheaderId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
 import adventureworks.userdefined.CustomCreditcardId;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -32,27 +30,27 @@ public record SohViewRow(
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#salesorderid()} */
   SalesorderheaderId salesorderid,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#revisionnumber()} */
-  TypoShort revisionnumber,
+  Short revisionnumber,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#orderdate()} */
-  TypoLocalDateTime orderdate,
+  LocalDateTime orderdate,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#duedate()} */
-  TypoLocalDateTime duedate,
+  LocalDateTime duedate,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#shipdate()} */
-  Optional<TypoLocalDateTime> shipdate,
+  LocalDateTime shipdate,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#status()} */
-  TypoShort status,
+  Short status,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#onlineorderflag()} */
   Flag onlineorderflag,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#purchaseordernumber()} */
-  Optional<OrderNumber> purchaseordernumber,
+  OrderNumber purchaseordernumber,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#accountnumber()} */
-  Optional<AccountNumber> accountnumber,
+  AccountNumber accountnumber,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#customerid()} */
   CustomerId customerid,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#salespersonid()} */
-  Optional<BusinessentityId> salespersonid,
+  BusinessentityId salespersonid,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#territoryid()} */
-  Optional<SalesterritoryId> territoryid,
+  SalesterritoryId territoryid,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#billtoaddressid()} */
   AddressId billtoaddressid,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#shiptoaddressid()} */
@@ -60,11 +58,11 @@ public record SohViewRow(
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#shipmethodid()} */
   ShipmethodId shipmethodid,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#creditcardid()} */
-  Optional</* user-picked */ CustomCreditcardId> creditcardid,
+  /* user-picked */ CustomCreditcardId creditcardid,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#creditcardapprovalcode()} */
-  Optional</* max 15 chars */ String> creditcardapprovalcode,
+  String creditcardapprovalcode,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#currencyrateid()} */
-  Optional<CurrencyrateId> currencyrateid,
+  CurrencyrateId currencyrateid,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#subtotal()} */
   BigDecimal subtotal,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#taxamt()} */
@@ -72,13 +70,13 @@ public record SohViewRow(
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#freight()} */
   BigDecimal freight,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#totaldue()} */
-  Optional<BigDecimal> totaldue,
+  BigDecimal totaldue,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#comment()} */
-  Optional</* max 128 chars */ String> comment,
+  String comment,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#salesorderid()} */
   public SohViewRow withId(SalesorderheaderId id) {
@@ -91,27 +89,27 @@ public record SohViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#revisionnumber()} */
-  public SohViewRow withRevisionnumber(TypoShort revisionnumber) {
+  public SohViewRow withRevisionnumber(Short revisionnumber) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#orderdate()} */
-  public SohViewRow withOrderdate(TypoLocalDateTime orderdate) {
+  public SohViewRow withOrderdate(LocalDateTime orderdate) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#duedate()} */
-  public SohViewRow withDuedate(TypoLocalDateTime duedate) {
+  public SohViewRow withDuedate(LocalDateTime duedate) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#shipdate()} */
-  public SohViewRow withShipdate(Optional<TypoLocalDateTime> shipdate) {
+  public SohViewRow withShipdate(LocalDateTime shipdate) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#status()} */
-  public SohViewRow withStatus(TypoShort status) {
+  public SohViewRow withStatus(Short status) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
@@ -121,12 +119,12 @@ public record SohViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#purchaseordernumber()} */
-  public SohViewRow withPurchaseordernumber(Optional<OrderNumber> purchaseordernumber) {
+  public SohViewRow withPurchaseordernumber(OrderNumber purchaseordernumber) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#accountnumber()} */
-  public SohViewRow withAccountnumber(Optional<AccountNumber> accountnumber) {
+  public SohViewRow withAccountnumber(AccountNumber accountnumber) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
@@ -136,12 +134,12 @@ public record SohViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#salespersonid()} */
-  public SohViewRow withSalespersonid(Optional<BusinessentityId> salespersonid) {
+  public SohViewRow withSalespersonid(BusinessentityId salespersonid) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#territoryid()} */
-  public SohViewRow withTerritoryid(Optional<SalesterritoryId> territoryid) {
+  public SohViewRow withTerritoryid(SalesterritoryId territoryid) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
@@ -161,17 +159,17 @@ public record SohViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#creditcardid()} */
-  public SohViewRow withCreditcardid(Optional</* user-picked */ CustomCreditcardId> creditcardid) {
+  public SohViewRow withCreditcardid(/* user-picked */ CustomCreditcardId creditcardid) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#creditcardapprovalcode()} */
-  public SohViewRow withCreditcardapprovalcode(Optional</* max 15 chars */ String> creditcardapprovalcode) {
+  public SohViewRow withCreditcardapprovalcode(String creditcardapprovalcode) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#currencyrateid()} */
-  public SohViewRow withCurrencyrateid(Optional<CurrencyrateId> currencyrateid) {
+  public SohViewRow withCurrencyrateid(CurrencyrateId currencyrateid) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
@@ -191,24 +189,24 @@ public record SohViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#totaldue()} */
-  public SohViewRow withTotaldue(Optional<BigDecimal> totaldue) {
+  public SohViewRow withTotaldue(BigDecimal totaldue) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#comment()} */
-  public SohViewRow withComment(Optional</* max 128 chars */ String> comment) {
+  public SohViewRow withComment(String comment) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#rowguid()} */
-  public SohViewRow withRowguid(TypoUUID rowguid) {
+  public SohViewRow withRowguid(UUID rowguid) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#modifieddate()} */
-  public SohViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SohViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SohViewRow(id, salesorderid, revisionnumber, orderdate, duedate, shipdate, status, onlineorderflag, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, subtotal, taxamt, freight, totaldue, comment, rowguid, modifieddate);
   };
 
-  static RowParser<SohViewRow> _rowParser = RowParsers.of(SalesorderheaderId.pgType, SalesorderheaderId.pgType, TypoShort.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoShort.pgType, Flag.pgType, OrderNumber.pgType.opt(), AccountNumber.pgType.opt(), CustomerId.pgType, BusinessentityId.pgType.opt(), SalesterritoryId.pgType.opt(), AddressId.pgType, AddressId.pgType, ShipmethodId.pgType, CustomCreditcardId.pgType.opt(), PgTypes.text.opt(), CurrencyrateId.pgType.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, SohViewRow::new, row -> new Object[]{row.id(), row.salesorderid(), row.revisionnumber(), row.orderdate(), row.duedate(), row.shipdate(), row.status(), row.onlineorderflag(), row.purchaseordernumber(), row.accountnumber(), row.customerid(), row.salespersonid(), row.territoryid(), row.billtoaddressid(), row.shiptoaddressid(), row.shipmethodid(), row.creditcardid(), row.creditcardapprovalcode(), row.currencyrateid(), row.subtotal(), row.taxamt(), row.freight(), row.totaldue(), row.comment(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SohViewRow> _rowParser = RowParsers.of(SalesorderheaderId.pgType, SalesorderheaderId.pgType, PgTypes.int2, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp, PgTypes.int2, Flag.pgType, OrderNumber.pgType, AccountNumber.pgType, CustomerId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType, AddressId.pgType, AddressId.pgType, ShipmethodId.pgType, CustomCreditcardId.pgType, PgTypes.text, CurrencyrateId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, SohViewRow::new, row -> new Object[]{row.id(), row.salesorderid(), row.revisionnumber(), row.orderdate(), row.duedate(), row.shipdate(), row.status(), row.onlineorderflag(), row.purchaseordernumber(), row.accountnumber(), row.customerid(), row.salespersonid(), row.territoryid(), row.billtoaddressid(), row.shiptoaddressid(), row.shipmethodid(), row.creditcardid(), row.creditcardapprovalcode(), row.currencyrateid(), row.subtotal(), row.taxamt(), row.freight(), row.totaldue(), row.comment(), row.rowguid(), row.modifieddate()});;
 }

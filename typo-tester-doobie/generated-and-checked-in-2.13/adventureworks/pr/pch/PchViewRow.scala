@@ -21,7 +21,7 @@ case class PchViewRow(
   /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.standardcost]] */
   standardcost: BigDecimal,
   /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.modifieddate]] */
@@ -29,16 +29,16 @@ case class PchViewRow(
 )
 
 object PchViewRow {
-  implicit lazy val decoder: Decoder[PchViewRow] = Decoder.forProduct6[PchViewRow, ProductId, ProductId, TypoLocalDateTime, Option[TypoLocalDateTime], BigDecimal, TypoLocalDateTime]("id", "productid", "startdate", "enddate", "standardcost", "modifieddate")(PchViewRow.apply)(ProductId.decoder, ProductId.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(TypoLocalDateTime.decoder), Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
+  implicit lazy val decoder: Decoder[PchViewRow] = Decoder.forProduct6[PchViewRow, ProductId, ProductId, TypoLocalDateTime, TypoLocalDateTime, BigDecimal, TypoLocalDateTime]("id", "productid", "startdate", "enddate", "standardcost", "modifieddate")(PchViewRow.apply)(ProductId.decoder, ProductId.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
 
-  implicit lazy val encoder: Encoder[PchViewRow] = Encoder.forProduct6[PchViewRow, ProductId, ProductId, TypoLocalDateTime, Option[TypoLocalDateTime], BigDecimal, TypoLocalDateTime]("id", "productid", "startdate", "enddate", "standardcost", "modifieddate")(x => (x.id, x.productid, x.startdate, x.enddate, x.standardcost, x.modifieddate))(ProductId.encoder, ProductId.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(TypoLocalDateTime.encoder), Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
+  implicit lazy val encoder: Encoder[PchViewRow] = Encoder.forProduct6[PchViewRow, ProductId, ProductId, TypoLocalDateTime, TypoLocalDateTime, BigDecimal, TypoLocalDateTime]("id", "productid", "startdate", "enddate", "standardcost", "modifieddate")(x => (x.id, x.productid, x.startdate, x.enddate, x.standardcost, x.modifieddate))(ProductId.encoder, ProductId.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
 
   implicit lazy val read: Read[PchViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
         new Read.Single(ProductId.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
     ))(scala.reflect.ClassTag.Any).map { arr =>
@@ -46,7 +46,7 @@ object PchViewRow {
         id = arr(0).asInstanceOf[ProductId],
             productid = arr(1).asInstanceOf[ProductId],
             startdate = arr(2).asInstanceOf[TypoLocalDateTime],
-            enddate = arr(3).asInstanceOf[Option[TypoLocalDateTime]],
+            enddate = arr(3).asInstanceOf[TypoLocalDateTime],
             standardcost = arr(4).asInstanceOf[BigDecimal],
             modifieddate = arr(5).asInstanceOf[TypoLocalDateTime]
       )

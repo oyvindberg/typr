@@ -6,83 +6,82 @@
 package adventureworks.public.table_with_generated_columns
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface TableWithGeneratedColumnsRepo {
-  fun delete(): DeleteBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow>
+  abstract fun delete(): DeleteBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     name: TableWithGeneratedColumnsId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     names: Array<TableWithGeneratedColumnsId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: TableWithGeneratedColumnsRow,
     c: Connection
   ): TableWithGeneratedColumnsRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: TableWithGeneratedColumnsRowUnsaved,
     c: Connection
   ): TableWithGeneratedColumnsRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<TableWithGeneratedColumnsRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<TableWithGeneratedColumnsRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow>
+  abstract fun select(): SelectBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow>
 
-  fun selectAll(c: Connection): List<TableWithGeneratedColumnsRow>
+  abstract fun selectAll(c: Connection): List<TableWithGeneratedColumnsRow>
 
-  fun selectById(
+  abstract fun selectById(
     name: TableWithGeneratedColumnsId,
     c: Connection
-  ): Optional<TableWithGeneratedColumnsRow>
+  ): TableWithGeneratedColumnsRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     names: Array<TableWithGeneratedColumnsId>,
     c: Connection
   ): List<TableWithGeneratedColumnsRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     names: Array<TableWithGeneratedColumnsId>,
     c: Connection
   ): Map<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow>
 
-  fun update(): UpdateBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow>
+  abstract fun update(): UpdateBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow>
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: TableWithGeneratedColumnsRow,
     c: Connection
   ): TableWithGeneratedColumnsRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<TableWithGeneratedColumnsRow>,
     c: Connection
   ): List<TableWithGeneratedColumnsRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<TableWithGeneratedColumnsRow>,
     batchSize: Int,
     c: Connection

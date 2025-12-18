@@ -6,13 +6,14 @@
 package adventureworks.humanresources.jobcandidate
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.data.Xml
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: humanresources.jobcandidate
   * RÃ©sumÃ©s submitted to Human Resources by job applicants.
@@ -26,23 +27,23 @@ data class JobcandidateRow(
   /** Employee identification number if applicant was hired. Foreign key to Employee.BusinessEntityID.
     * Points to [adventureworks.humanresources.employee.EmployeeRow.businessentityid]
     */
-  val businessentityid: Optional<BusinessentityId>,
+  val businessentityid: BusinessentityId?,
   /** RÃ©sumÃ© in XML format. */
-  val resume: Optional<TypoXml>,
+  val resume: Xml?,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): JobcandidateId = jobcandidateid
 
   fun toUnsavedRow(
     jobcandidateid: Defaulted<JobcandidateId>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): JobcandidateRowUnsaved = JobcandidateRowUnsaved(businessentityid, resume, jobcandidateid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<JobcandidateRow> = RowParsers.of(JobcandidateId.pgType, BusinessentityId.pgType.opt(), TypoXml.pgType.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> JobcandidateRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.jobcandidateid, row.businessentityid, row.resume, row.modifieddate) })
+    val _rowParser: RowParser<JobcandidateRow> = RowParsers.of(JobcandidateId.pgType, BusinessentityId.pgType.nullable(), PgTypes.xml.nullable(), PgTypes.timestamp, { t0, t1, t2, t3 -> JobcandidateRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.jobcandidateid, row.businessentityid, row.resume, row.modifieddate) })
 
     val pgText: PgText<JobcandidateRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

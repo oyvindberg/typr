@@ -7,12 +7,12 @@ package adventureworks.sales.salestaxrate
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.public.Name
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -25,7 +25,7 @@ data class SalestaxrateRowUnsaved(
   /** 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
     * Constraint CK_SalesTaxRate_TaxType affecting columns taxtype:  (((taxtype >= 1) AND (taxtype <= 3)))
     */
-  val taxtype: TypoShort,
+  val taxtype: Short,
   /** Tax rate description. */
   val name: Name,
   /** Default: nextval('sales.salestaxrate_salestaxrateid_seq'::regclass)
@@ -37,22 +37,22 @@ data class SalestaxrateRowUnsaved(
     */
   val taxrate: Defaulted<BigDecimal> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     salestaxrateidDefault: () -> SalestaxrateId,
     taxrateDefault: () -> BigDecimal,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): SalestaxrateRow = SalestaxrateRow(salestaxrateid = salestaxrateid.getOrElse(salestaxrateidDefault), stateprovinceid = stateprovinceid, taxtype = taxtype, taxrate = taxrate.getOrElse(taxrateDefault), name = name, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<SalestaxrateRowUnsaved> =
       PgText.instance({ row, sb -> StateprovinceId.pgType.pgText().unsafeEncode(row.stateprovinceid, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.taxtype, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.taxtype, sb)
       sb.append(PgText.DELIMETER)
       Name.pgType.pgText().unsafeEncode(row.name, sb)
       sb.append(PgText.DELIMETER)
@@ -60,8 +60,8 @@ data class SalestaxrateRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.taxrate, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

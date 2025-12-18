@@ -5,11 +5,10 @@
  */
 package adventureworks.humanresources.vemployeedepartmenthistory;
 
-import adventureworks.customtypes.TypoLocalDate;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import adventureworks.userdefined.FirstName;
-import java.util.Optional;
+import java.time.LocalDate;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -19,15 +18,15 @@ public record VemployeedepartmenthistoryViewRow(
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()} */
   BusinessentityId businessentityid,
   /** Points to {@link adventureworks.person.person.PersonRow#title()} */
-  Optional</* max 8 chars */ String> title,
+  String title,
   /** Points to {@link adventureworks.person.person.PersonRow#firstname()} */
   /* user-picked */ FirstName firstname,
   /** Points to {@link adventureworks.person.person.PersonRow#middlename()} */
-  Optional<Name> middlename,
+  Name middlename,
   /** Points to {@link adventureworks.person.person.PersonRow#lastname()} */
   Name lastname,
   /** Points to {@link adventureworks.person.person.PersonRow#suffix()} */
-  Optional</* max 10 chars */ String> suffix,
+  String suffix,
   /** Points to {@link adventureworks.humanresources.shift.ShiftRow#name()} */
   Name shift,
   /** Points to {@link adventureworks.humanresources.department.DepartmentRow#name()} */
@@ -35,9 +34,9 @@ public record VemployeedepartmenthistoryViewRow(
   /** Points to {@link adventureworks.humanresources.department.DepartmentRow#groupname()} */
   Name groupname,
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#startdate()} */
-  TypoLocalDate startdate,
+  LocalDate startdate,
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#enddate()} */
-  Optional<TypoLocalDate> enddate
+  LocalDate enddate
 ) {
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()} */
   public VemployeedepartmenthistoryViewRow withBusinessentityid(BusinessentityId businessentityid) {
@@ -45,7 +44,7 @@ public record VemployeedepartmenthistoryViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#title()} */
-  public VemployeedepartmenthistoryViewRow withTitle(Optional</* max 8 chars */ String> title) {
+  public VemployeedepartmenthistoryViewRow withTitle(String title) {
     return new VemployeedepartmenthistoryViewRow(businessentityid, title, firstname, middlename, lastname, suffix, shift, department, groupname, startdate, enddate);
   };
 
@@ -55,7 +54,7 @@ public record VemployeedepartmenthistoryViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#middlename()} */
-  public VemployeedepartmenthistoryViewRow withMiddlename(Optional<Name> middlename) {
+  public VemployeedepartmenthistoryViewRow withMiddlename(Name middlename) {
     return new VemployeedepartmenthistoryViewRow(businessentityid, title, firstname, middlename, lastname, suffix, shift, department, groupname, startdate, enddate);
   };
 
@@ -65,7 +64,7 @@ public record VemployeedepartmenthistoryViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#suffix()} */
-  public VemployeedepartmenthistoryViewRow withSuffix(Optional</* max 10 chars */ String> suffix) {
+  public VemployeedepartmenthistoryViewRow withSuffix(String suffix) {
     return new VemployeedepartmenthistoryViewRow(businessentityid, title, firstname, middlename, lastname, suffix, shift, department, groupname, startdate, enddate);
   };
 
@@ -85,14 +84,14 @@ public record VemployeedepartmenthistoryViewRow(
   };
 
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#startdate()} */
-  public VemployeedepartmenthistoryViewRow withStartdate(TypoLocalDate startdate) {
+  public VemployeedepartmenthistoryViewRow withStartdate(LocalDate startdate) {
     return new VemployeedepartmenthistoryViewRow(businessentityid, title, firstname, middlename, lastname, suffix, shift, department, groupname, startdate, enddate);
   };
 
   /** Points to {@link adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow#enddate()} */
-  public VemployeedepartmenthistoryViewRow withEnddate(Optional<TypoLocalDate> enddate) {
+  public VemployeedepartmenthistoryViewRow withEnddate(LocalDate enddate) {
     return new VemployeedepartmenthistoryViewRow(businessentityid, title, firstname, middlename, lastname, suffix, shift, department, groupname, startdate, enddate);
   };
 
-  static RowParser<VemployeedepartmenthistoryViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), Name.pgType, Name.pgType, Name.pgType, TypoLocalDate.pgType, TypoLocalDate.pgType.opt(), VemployeedepartmenthistoryViewRow::new, row -> new Object[]{row.businessentityid(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.shift(), row.department(), row.groupname(), row.startdate(), row.enddate()});;
+  static RowParser<VemployeedepartmenthistoryViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text, FirstName.pgType, Name.pgType, Name.pgType, PgTypes.text, Name.pgType, Name.pgType, Name.pgType, PgTypes.date, PgTypes.date, VemployeedepartmenthistoryViewRow::new, row -> new Object[]{row.businessentityid(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.shift(), row.department(), row.groupname(), row.startdate(), row.enddate()});;
 }

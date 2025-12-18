@@ -22,16 +22,16 @@ import testdb.warehouses.WarehousesRow;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface ShipmentsFields extends FieldsExpr<ShipmentsRow> {
-  record Impl(List<Path> _path) implements ShipmentsFields, Relation<ShipmentsFields, ShipmentsRow> {
+  record Impl(List<Path> _path) implements ShipmentsFields, RelationStructure<ShipmentsFields, ShipmentsRow> {
     @Override
     public IdField<ShipmentsId, ShipmentsRow> shipmentId() {
       return new IdField<ShipmentsId, ShipmentsRow>(_path, "shipment_id", ShipmentsRow::shipmentId, Optional.empty(), Optional.empty(), (row, value) -> row.withShipmentId(value), ShipmentsId.pgType);
@@ -59,7 +59,7 @@ public interface ShipmentsFields extends FieldsExpr<ShipmentsRow> {
 
     @Override
     public OptField<BigDecimal, ShipmentsRow> weightKg() {
-      return new OptField<BigDecimal, ShipmentsRow>(_path, "weight_kg", ShipmentsRow::weightKg, Optional.empty(), Optional.empty(), (row, value) -> row.withWeightKg(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, ShipmentsRow>(_path, "weight_kg", ShipmentsRow::weightKg, Optional.empty(), Optional.empty(), (row, value) -> row.withWeightKg(value), MariaTypes.numeric);
     };
 
     @Override
@@ -89,12 +89,12 @@ public interface ShipmentsFields extends FieldsExpr<ShipmentsRow> {
 
     @Override
     public Field<BigDecimal, ShipmentsRow> shippingCost() {
-      return new Field<BigDecimal, ShipmentsRow>(_path, "shipping_cost", ShipmentsRow::shippingCost, Optional.empty(), Optional.empty(), (row, value) -> row.withShippingCost(value), MariaTypes.decimal);
+      return new Field<BigDecimal, ShipmentsRow>(_path, "shipping_cost", ShipmentsRow::shippingCost, Optional.empty(), Optional.empty(), (row, value) -> row.withShippingCost(value), MariaTypes.numeric);
     };
 
     @Override
     public OptField<BigDecimal, ShipmentsRow> insuranceAmount() {
-      return new OptField<BigDecimal, ShipmentsRow>(_path, "insurance_amount", ShipmentsRow::insuranceAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withInsuranceAmount(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, ShipmentsRow>(_path, "insurance_amount", ShipmentsRow::insuranceAmount, Optional.empty(), Optional.empty(), (row, value) -> row.withInsuranceAmount(value), MariaTypes.numeric);
     };
 
     @Override
@@ -119,17 +119,17 @@ public interface ShipmentsFields extends FieldsExpr<ShipmentsRow> {
 
     @Override
     public List<FieldLike<?, ShipmentsRow>> columns() {
-      return List.of(this.shipmentId(), this.orderId(), this.carrierId(), this.trackingNumber(), this.shippingMethod(), this.weightKg(), this.dimensionsJson(), this.labelData(), this.status(), this.estimatedDeliveryDate(), this.actualDeliveryAt(), this.shippingCost(), this.insuranceAmount(), this.originWarehouseId(), this.shippedAt(), this.createdAt(), this.updatedAt());
+      return java.util.List.of(this.shipmentId(), this.orderId(), this.carrierId(), this.trackingNumber(), this.shippingMethod(), this.weightKg(), this.dimensionsJson(), this.labelData(), this.status(), this.estimatedDeliveryDate(), this.actualDeliveryAt(), this.shippingCost(), this.insuranceAmount(), this.originWarehouseId(), this.shippedAt(), this.createdAt(), this.updatedAt());
     };
 
     @Override
-    public Relation<ShipmentsFields, ShipmentsRow> copy(List<Path> _path) {
+    public RelationStructure<ShipmentsFields, ShipmentsRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ShipmentsId, ShipmentsRow> shipmentId();
@@ -167,15 +167,15 @@ public interface ShipmentsFields extends FieldsExpr<ShipmentsRow> {
   Field<LocalDateTime, ShipmentsRow> updatedAt();
 
   default ForeignKey<ShippingCarriersFields, ShippingCarriersRow> fkShippingCarriers() {
-    return ForeignKey.<ShippingCarriersFields, ShippingCarriersRow>of("fk_ship_carrier").withColumnPair(carrierId(), ShippingCarriersFields::carrierId);
+    return ForeignKey.<ShippingCarriersFields, ShippingCarriersRow>of("fk_ship_carrier").<ShippingCarriersId>withColumnPair(carrierId(), ShippingCarriersFields::carrierId);
   };
 
   default ForeignKey<OrdersFields, OrdersRow> fkOrders() {
-    return ForeignKey.<OrdersFields, OrdersRow>of("fk_ship_order").withColumnPair(orderId(), OrdersFields::orderId);
+    return ForeignKey.<OrdersFields, OrdersRow>of("fk_ship_order").<OrdersId>withColumnPair(orderId(), OrdersFields::orderId);
   };
 
   default ForeignKey<WarehousesFields, WarehousesRow> fkWarehouses() {
-    return ForeignKey.<WarehousesFields, WarehousesRow>of("fk_ship_warehouse").withColumnPair(originWarehouseId(), WarehousesFields::warehouseId);
+    return ForeignKey.<WarehousesFields, WarehousesRow>of("fk_ship_warehouse").<WarehousesId>withColumnPair(originWarehouseId(), WarehousesFields::warehouseId);
   };
 
   @Override

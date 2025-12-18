@@ -6,14 +6,14 @@
 package adventureworks.public.users
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoInstant
-import adventureworks.customtypes.TypoUnknownCitext
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
+import java.time.Instant
+import typo.data.Unknown
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: public.users
   * Primary key: user_id
@@ -21,21 +21,21 @@ import typo.runtime.RowParsers
 data class UsersRow(
   @JsonProperty("user_id") val userId: UsersId,
   val name: String,
-  @JsonProperty("last_name") val lastName: Optional<String>,
-  val email: TypoUnknownCitext,
+  @JsonProperty("last_name") val lastName: String?,
+  val email: Unknown,
   val password: String,
   /** Default: now() */
-  @JsonProperty("created_at") val createdAt: TypoInstant,
-  @JsonProperty("verified_on") val verifiedOn: Optional<TypoInstant>
+  @JsonProperty("created_at") val createdAt: Instant,
+  @JsonProperty("verified_on") val verifiedOn: Instant?
 ) {
   fun id(): UsersId = userId
 
-  fun toUnsavedRow(createdAt: Defaulted<TypoInstant>): UsersRowUnsaved = UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt)
+  fun toUnsavedRow(createdAt: Defaulted<Instant>): UsersRowUnsaved = UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt)
 
   companion object {
-    val _rowParser: RowParser<UsersRow> = RowParsers.of(UsersId.pgType, PgTypes.text, PgTypes.text.opt(), TypoUnknownCitext.pgType, PgTypes.text, TypoInstant.pgType, TypoInstant.pgType.opt(), { t0, t1, t2, t3, t4, t5, t6 -> UsersRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.userId, row.name, row.lastName, row.email, row.password, row.createdAt, row.verifiedOn) })
+    val _rowParser: RowParser<UsersRow> = RowParsers.of(UsersId.pgType, PgTypes.text, PgTypes.text.nullable(), PgTypes.unknown, PgTypes.text, PgTypes.timestamptz, PgTypes.timestamptz.nullable(), { t0, t1, t2, t3, t4, t5, t6 -> UsersRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.userId, row.name, row.lastName, row.email, row.password, row.createdAt, row.verifiedOn) })
 
     val pgText: PgText<UsersRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

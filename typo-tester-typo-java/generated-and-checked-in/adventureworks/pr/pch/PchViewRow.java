@@ -5,10 +5,9 @@
  */
 package adventureworks.pr.pch;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -20,13 +19,13 @@ public record PchViewRow(
   /** Points to {@link adventureworks.production.productcosthistory.ProductcosthistoryRow#productid()} */
   ProductId productid,
   /** Points to {@link adventureworks.production.productcosthistory.ProductcosthistoryRow#startdate()} */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Points to {@link adventureworks.production.productcosthistory.ProductcosthistoryRow#enddate()} */
-  Optional<TypoLocalDateTime> enddate,
+  LocalDateTime enddate,
   /** Points to {@link adventureworks.production.productcosthistory.ProductcosthistoryRow#standardcost()} */
   BigDecimal standardcost,
   /** Points to {@link adventureworks.production.productcosthistory.ProductcosthistoryRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productcosthistory.ProductcosthistoryRow#productid()} */
   public PchViewRow withId(ProductId id) {
@@ -39,12 +38,12 @@ public record PchViewRow(
   };
 
   /** Points to {@link adventureworks.production.productcosthistory.ProductcosthistoryRow#startdate()} */
-  public PchViewRow withStartdate(TypoLocalDateTime startdate) {
+  public PchViewRow withStartdate(LocalDateTime startdate) {
     return new PchViewRow(id, productid, startdate, enddate, standardcost, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productcosthistory.ProductcosthistoryRow#enddate()} */
-  public PchViewRow withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public PchViewRow withEnddate(LocalDateTime enddate) {
     return new PchViewRow(id, productid, startdate, enddate, standardcost, modifieddate);
   };
 
@@ -54,9 +53,9 @@ public record PchViewRow(
   };
 
   /** Points to {@link adventureworks.production.productcosthistory.ProductcosthistoryRow#modifieddate()} */
-  public PchViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PchViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PchViewRow(id, productid, startdate, enddate, standardcost, modifieddate);
   };
 
-  static RowParser<PchViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), PgTypes.numeric, TypoLocalDateTime.pgType, PchViewRow::new, row -> new Object[]{row.id(), row.productid(), row.startdate(), row.enddate(), row.standardcost(), row.modifieddate()});;
+  static RowParser<PchViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.numeric, PgTypes.timestamp, PchViewRow::new, row -> new Object[]{row.id(), row.productid(), row.startdate(), row.enddate(), row.standardcost(), row.modifieddate()});;
 }

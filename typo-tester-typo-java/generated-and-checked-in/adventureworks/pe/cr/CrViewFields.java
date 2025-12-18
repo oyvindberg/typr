@@ -5,20 +5,21 @@
  */
 package adventureworks.pe.cr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface CrViewFields extends FieldsExpr<CrViewRow> {
-  record Impl(List<Path> _path) implements CrViewFields, Relation<CrViewFields, CrViewRow> {
+  record Impl(List<Path> _path) implements CrViewFields, RelationStructure<CrViewFields, CrViewRow> {
     @Override
     public Field<CountryregionId, CrViewRow> countryregioncode() {
       return new Field<CountryregionId, CrViewRow>(_path, "countryregioncode", CrViewRow::countryregioncode, Optional.empty(), Optional.empty(), (row, value) -> row.withCountryregioncode(value), CountryregionId.pgType);
@@ -30,30 +31,30 @@ public interface CrViewFields extends FieldsExpr<CrViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, CrViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, CrViewRow>(_path, "modifieddate", CrViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, CrViewRow> modifieddate() {
+      return new Field<LocalDateTime, CrViewRow>(_path, "modifieddate", CrViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, CrViewRow>> columns() {
-      return List.of(this.countryregioncode(), this.name(), this.modifieddate());
+      return java.util.List.of(this.countryregioncode(), this.name(), this.modifieddate());
     };
 
     @Override
-    public Relation<CrViewFields, CrViewRow> copy(List<Path> _path) {
+    public RelationStructure<CrViewFields, CrViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<CountryregionId, CrViewRow> countryregioncode();
 
   Field<Name, CrViewRow> name();
 
-  Field<TypoLocalDateTime, CrViewRow> modifieddate();
+  Field<LocalDateTime, CrViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, CrViewRow>> columns();

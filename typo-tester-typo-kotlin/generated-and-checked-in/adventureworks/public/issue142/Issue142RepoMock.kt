@@ -8,21 +8,19 @@ package adventureworks.public.issue142
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class Issue142RepoMock(val map: MutableMap<Issue142Id, Issue142Row> = mutableMapOf<Issue142Id, Issue142Row>()) : Issue142Repo {
   override fun delete(): DeleteBuilder<Issue142Fields, Issue142Row> = DeleteBuilderMock(Issue142Fields.structure, { map.values.toList() }, DeleteParams.empty(), { row -> row.tabellkode }, { id -> map.remove(id) })
@@ -30,7 +28,7 @@ data class Issue142RepoMock(val map: MutableMap<Issue142Id, Issue142Row> = mutab
   override fun deleteById(
     tabellkode: Issue142Id,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(tabellkode)).isPresent()
+  ): Boolean = map.remove(tabellkode) != null
 
   override fun deleteByIds(
     tabellkodes: Array<Issue142Id>,
@@ -38,7 +36,7 @@ data class Issue142RepoMock(val map: MutableMap<Issue142Id, Issue142Row> = mutab
   ): Int {
     var count = 0
     for (id in tabellkodes) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -50,7 +48,7 @@ data class Issue142RepoMock(val map: MutableMap<Issue142Id, Issue142Row> = mutab
     c: Connection
   ): Issue142Row {
     if (map.containsKey(unsaved.tabellkode)) {
-      throw RuntimeException(str("id $unsaved.tabellkode already exists"))
+      throw RuntimeException("id " + unsaved.tabellkode + " already exists")
     }
     map[unsaved.tabellkode] = unsaved
     return unsaved
@@ -77,7 +75,7 @@ data class Issue142RepoMock(val map: MutableMap<Issue142Id, Issue142Row> = mutab
   override fun selectById(
     tabellkode: Issue142Id,
     c: Connection
-  ): Optional<Issue142Row> = Optional.ofNullable(map[tabellkode])
+  ): Issue142Row? = map[tabellkode]
 
   override fun selectByIds(
     tabellkodes: Array<Issue142Id>,
@@ -85,9 +83,9 @@ data class Issue142RepoMock(val map: MutableMap<Issue142Id, Issue142Row> = mutab
   ): List<Issue142Row> {
     val result = ArrayList<Issue142Row>()
     for (id in tabellkodes) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result

@@ -5,7 +5,6 @@
  */
 package adventureworks.person.personphone;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.person.PersonFields;
 import adventureworks.person.person.PersonRow;
@@ -13,22 +12,24 @@ import adventureworks.person.phonenumbertype.PhonenumbertypeFields;
 import adventureworks.person.phonenumbertype.PhonenumbertypeId;
 import adventureworks.person.phonenumbertype.PhonenumbertypeRow;
 import adventureworks.public_.Phone;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface PersonphoneFields extends FieldsExpr<PersonphoneRow> {
-  record Impl(List<Path> _path) implements PersonphoneFields, Relation<PersonphoneFields, PersonphoneRow> {
+  record Impl(List<Path> _path) implements PersonphoneFields, RelationStructure<PersonphoneFields, PersonphoneRow> {
     @Override
     public IdField<BusinessentityId, PersonphoneRow> businessentityid() {
       return new IdField<BusinessentityId, PersonphoneRow>(_path, "businessentityid", PersonphoneRow::businessentityid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withBusinessentityid(value), BusinessentityId.pgType);
@@ -45,23 +46,23 @@ public interface PersonphoneFields extends FieldsExpr<PersonphoneRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, PersonphoneRow> modifieddate() {
-      return new Field<TypoLocalDateTime, PersonphoneRow>(_path, "modifieddate", PersonphoneRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, PersonphoneRow> modifieddate() {
+      return new Field<LocalDateTime, PersonphoneRow>(_path, "modifieddate", PersonphoneRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, PersonphoneRow>> columns() {
-      return List.of(this.businessentityid(), this.phonenumber(), this.phonenumbertypeid(), this.modifieddate());
+      return java.util.List.of(this.businessentityid(), this.phonenumber(), this.phonenumbertypeid(), this.modifieddate());
     };
 
     @Override
-    public Relation<PersonphoneFields, PersonphoneRow> copy(List<Path> _path) {
+    public RelationStructure<PersonphoneFields, PersonphoneRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<BusinessentityId, PersonphoneRow> businessentityid();
@@ -70,14 +71,14 @@ public interface PersonphoneFields extends FieldsExpr<PersonphoneRow> {
 
   IdField<PhonenumbertypeId, PersonphoneRow> phonenumbertypeid();
 
-  Field<TypoLocalDateTime, PersonphoneRow> modifieddate();
+  Field<LocalDateTime, PersonphoneRow> modifieddate();
 
   default ForeignKey<PersonFields, PersonRow> fkPerson() {
-    return ForeignKey.<PersonFields, PersonRow>of("person.FK_PersonPhone_Person_BusinessEntityID").withColumnPair(businessentityid(), PersonFields::businessentityid);
+    return ForeignKey.<PersonFields, PersonRow>of("person.FK_PersonPhone_Person_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), PersonFields::businessentityid);
   };
 
   default ForeignKey<PhonenumbertypeFields, PhonenumbertypeRow> fkPhonenumbertype() {
-    return ForeignKey.<PhonenumbertypeFields, PhonenumbertypeRow>of("person.FK_PersonPhone_PhoneNumberType_PhoneNumberTypeID").withColumnPair(phonenumbertypeid(), PhonenumbertypeFields::phonenumbertypeid);
+    return ForeignKey.<PhonenumbertypeFields, PhonenumbertypeRow>of("person.FK_PersonPhone_PhoneNumberType_PhoneNumberTypeID").<PhonenumbertypeId>withColumnPair(phonenumbertypeid(), PhonenumbertypeFields::phonenumbertypeid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(PersonphoneId compositeId) {

@@ -5,11 +5,12 @@
  */
 package adventureworks.pe.bea;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.address.AddressId;
 import adventureworks.person.addresstype.AddresstypeId;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -24,9 +25,9 @@ public record BeaViewRow(
   /** Points to {@link adventureworks.person.businessentityaddress.BusinessentityaddressRow#addresstypeid()} */
   AddresstypeId addresstypeid,
   /** Points to {@link adventureworks.person.businessentityaddress.BusinessentityaddressRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.person.businessentityaddress.BusinessentityaddressRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.businessentityaddress.BusinessentityaddressRow#businessentityid()} */
   public BeaViewRow withId(BusinessentityId id) {
@@ -49,14 +50,14 @@ public record BeaViewRow(
   };
 
   /** Points to {@link adventureworks.person.businessentityaddress.BusinessentityaddressRow#rowguid()} */
-  public BeaViewRow withRowguid(TypoUUID rowguid) {
+  public BeaViewRow withRowguid(UUID rowguid) {
     return new BeaViewRow(id, businessentityid, addressid, addresstypeid, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.businessentityaddress.BusinessentityaddressRow#modifieddate()} */
-  public BeaViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public BeaViewRow withModifieddate(LocalDateTime modifieddate) {
     return new BeaViewRow(id, businessentityid, addressid, addresstypeid, rowguid, modifieddate);
   };
 
-  static RowParser<BeaViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, AddressId.pgType, AddresstypeId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, BeaViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.addressid(), row.addresstypeid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<BeaViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, AddressId.pgType, AddresstypeId.pgType, PgTypes.uuid, PgTypes.timestamp, BeaViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.addressid(), row.addresstypeid(), row.rowguid(), row.modifieddate()});;
 }

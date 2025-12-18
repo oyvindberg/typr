@@ -12,15 +12,15 @@ import testdb.products.ProductsId;
 import typo.data.maria.MariaSet;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface VProductCatalogViewFields extends FieldsExpr<VProductCatalogViewRow> {
-  record Impl(List<Path> _path) implements VProductCatalogViewFields, Relation<VProductCatalogViewFields, VProductCatalogViewRow> {
+  record Impl(List<Path> _path) implements VProductCatalogViewFields, RelationStructure<VProductCatalogViewFields, VProductCatalogViewRow> {
     @Override
     public Field<ProductsId, VProductCatalogViewRow> productId() {
       return new Field<ProductsId, VProductCatalogViewRow>(_path, "product_id", VProductCatalogViewRow::productId, Optional.empty(), Optional.empty(), (row, value) -> row.withProductId(value), ProductsId.pgType);
@@ -43,7 +43,7 @@ public interface VProductCatalogViewFields extends FieldsExpr<VProductCatalogVie
 
     @Override
     public Field<BigDecimal, VProductCatalogViewRow> basePrice() {
-      return new Field<BigDecimal, VProductCatalogViewRow>(_path, "base_price", VProductCatalogViewRow::basePrice, Optional.empty(), Optional.empty(), (row, value) -> row.withBasePrice(value), MariaTypes.decimal);
+      return new Field<BigDecimal, VProductCatalogViewRow>(_path, "base_price", VProductCatalogViewRow::basePrice, Optional.empty(), Optional.empty(), (row, value) -> row.withBasePrice(value), MariaTypes.numeric);
     };
 
     @Override
@@ -63,12 +63,12 @@ public interface VProductCatalogViewFields extends FieldsExpr<VProductCatalogVie
 
     @Override
     public Field<BigDecimal, VProductCatalogViewRow> availableQuantity() {
-      return new Field<BigDecimal, VProductCatalogViewRow>(_path, "available_quantity", VProductCatalogViewRow::availableQuantity, Optional.empty(), Optional.empty(), (row, value) -> row.withAvailableQuantity(value), MariaTypes.decimal);
+      return new Field<BigDecimal, VProductCatalogViewRow>(_path, "available_quantity", VProductCatalogViewRow::availableQuantity, Optional.empty(), Optional.empty(), (row, value) -> row.withAvailableQuantity(value), MariaTypes.numeric);
     };
 
     @Override
     public Field<BigDecimal, VProductCatalogViewRow> avgRating() {
-      return new Field<BigDecimal, VProductCatalogViewRow>(_path, "avg_rating", VProductCatalogViewRow::avgRating, Optional.empty(), Optional.empty(), (row, value) -> row.withAvgRating(value), MariaTypes.decimal);
+      return new Field<BigDecimal, VProductCatalogViewRow>(_path, "avg_rating", VProductCatalogViewRow::avgRating, Optional.empty(), Optional.empty(), (row, value) -> row.withAvgRating(value), MariaTypes.numeric);
     };
 
     @Override
@@ -78,17 +78,17 @@ public interface VProductCatalogViewFields extends FieldsExpr<VProductCatalogVie
 
     @Override
     public List<FieldLike<?, VProductCatalogViewRow>> columns() {
-      return List.of(this.productId(), this.sku(), this.name(), this.shortDescription(), this.basePrice(), this.status(), this.tags(), this.brandName(), this.availableQuantity(), this.avgRating(), this.reviewCount());
+      return java.util.List.of(this.productId(), this.sku(), this.name(), this.shortDescription(), this.basePrice(), this.status(), this.tags(), this.brandName(), this.availableQuantity(), this.avgRating(), this.reviewCount());
     };
 
     @Override
-    public Relation<VProductCatalogViewFields, VProductCatalogViewRow> copy(List<Path> _path) {
+    public RelationStructure<VProductCatalogViewFields, VProductCatalogViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ProductsId, VProductCatalogViewRow> productId();

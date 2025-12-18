@@ -11,26 +11,26 @@ import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface FlaffFields extends FieldsExpr<FlaffRow> {
-  record Impl(List<Path> _path) implements FlaffFields, Relation<FlaffFields, FlaffRow> {
+  record Impl(List<Path> _path) implements FlaffFields, RelationStructure<FlaffFields, FlaffRow> {
     @Override
     public IdField<ShortText, FlaffRow> code() {
       return new IdField<ShortText, FlaffRow>(_path, "code", FlaffRow::code, Optional.empty(), Optional.of("text"), (row, value) -> row.withCode(value), ShortText.pgType);
     };
 
     @Override
-    public IdField</* max 20 chars */ String, FlaffRow> anotherCode() {
-      return new IdField</* max 20 chars */ String, FlaffRow>(_path, "another_code", FlaffRow::anotherCode, Optional.empty(), Optional.empty(), (row, value) -> row.withAnotherCode(value), PgTypes.text);
+    public IdField<String, FlaffRow> anotherCode() {
+      return new IdField<String, FlaffRow>(_path, "another_code", FlaffRow::anotherCode, Optional.empty(), Optional.empty(), (row, value) -> row.withAnotherCode(value), PgTypes.text);
     };
 
     @Override
@@ -50,22 +50,22 @@ public interface FlaffFields extends FieldsExpr<FlaffRow> {
 
     @Override
     public List<FieldLike<?, FlaffRow>> columns() {
-      return List.of(this.code(), this.anotherCode(), this.someNumber(), this.specifier(), this.parentspecifier());
+      return java.util.List.of(this.code(), this.anotherCode(), this.someNumber(), this.specifier(), this.parentspecifier());
     };
 
     @Override
-    public Relation<FlaffFields, FlaffRow> copy(List<Path> _path) {
+    public RelationStructure<FlaffFields, FlaffRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ShortText, FlaffRow> code();
 
-  IdField</* max 20 chars */ String, FlaffRow> anotherCode();
+  IdField<String, FlaffRow> anotherCode();
 
   IdField<Integer, FlaffRow> someNumber();
 
@@ -74,10 +74,7 @@ public interface FlaffFields extends FieldsExpr<FlaffRow> {
   OptField<ShortText, FlaffRow> parentspecifier();
 
   default ForeignKey<FlaffFields, FlaffRow> fkFlaff() {
-    return ForeignKey.<FlaffFields, FlaffRow>of("public.flaff_parent_fk").withColumnPair(code(), FlaffFields::code)
-    .withColumnPair(anotherCode(), FlaffFields::anotherCode)
-    .withColumnPair(someNumber(), FlaffFields::someNumber)
-    .withColumnPair(parentspecifier(), FlaffFields::specifier);
+    return ForeignKey.<FlaffFields, FlaffRow>of("public.flaff_parent_fk").<ShortText>withColumnPair(code(), FlaffFields::code).<String>withColumnPair(anotherCode(), FlaffFields::anotherCode).<Integer>withColumnPair(someNumber(), FlaffFields::someNumber).<ShortText>withColumnPair(parentspecifier(), FlaffFields::specifier);
   };
 
   default SqlExpr<Boolean> compositeIdIs(FlaffId compositeId) {
@@ -85,7 +82,7 @@ public interface FlaffFields extends FieldsExpr<FlaffRow> {
   };
 
   default SqlExpr<Boolean> compositeIdIn(List<FlaffId> compositeIds) {
-    return new CompositeIn(List.of(new Part<ShortText, FlaffId, FlaffRow>(code(), FlaffId::code, ShortText.pgType), new Part</* max 20 chars */ String, FlaffId, FlaffRow>(anotherCode(), FlaffId::anotherCode, PgTypes.text), new Part<Integer, FlaffId, FlaffRow>(someNumber(), FlaffId::someNumber, PgTypes.int4), new Part<ShortText, FlaffId, FlaffRow>(specifier(), FlaffId::specifier, ShortText.pgType)), compositeIds);
+    return new CompositeIn(List.of(new Part<ShortText, FlaffId, FlaffRow>(code(), FlaffId::code, ShortText.pgType), new Part<String, FlaffId, FlaffRow>(anotherCode(), FlaffId::anotherCode, PgTypes.text), new Part<Integer, FlaffId, FlaffRow>(someNumber(), FlaffId::someNumber, PgTypes.int4), new Part<ShortText, FlaffId, FlaffRow>(specifier(), FlaffId::specifier, ShortText.pgType)), compositeIds);
   };
 
   @Override

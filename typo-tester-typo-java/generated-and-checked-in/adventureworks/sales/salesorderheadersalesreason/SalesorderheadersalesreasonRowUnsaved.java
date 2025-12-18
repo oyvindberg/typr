@@ -7,10 +7,11 @@ package adventureworks.sales.salesorderheadersalesreason;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.sales.salesorderheader.SalesorderheaderId;
 import adventureworks.sales.salesreason.SalesreasonId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.salesorderheadersalesreason` which has not been persisted yet */
 public record SalesorderheadersalesreasonRowUnsaved(
@@ -23,7 +24,7 @@ public record SalesorderheadersalesreasonRowUnsaved(
     */
   SalesreasonId salesreasonid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SalesorderheadersalesreasonRowUnsaved(
     /** Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
@@ -53,7 +54,7 @@ public record SalesorderheadersalesreasonRowUnsaved(
   };
 
   /** Default: now() */
-  public SalesorderheadersalesreasonRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SalesorderheadersalesreasonRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SalesorderheadersalesreasonRowUnsaved(salesorderid, salesreasonid, modifieddate);
   };
 
@@ -63,10 +64,10 @@ public record SalesorderheadersalesreasonRowUnsaved(
       sb.append(PgText.DELIMETER);
       SalesreasonId.pgType.pgText().unsafeEncode(row.salesreasonid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public SalesorderheadersalesreasonRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public SalesorderheadersalesreasonRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new SalesorderheadersalesreasonRow(salesorderid, salesreasonid, modifieddate.getOrElse(modifieddateDefault));
   };
 }

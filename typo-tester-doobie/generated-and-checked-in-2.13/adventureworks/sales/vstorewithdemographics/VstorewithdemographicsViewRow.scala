@@ -21,20 +21,20 @@ case class VstorewithdemographicsViewRow(
   name: Name,
   annualSales: TypoMoney,
   annualRevenue: TypoMoney,
-  bankName: /* max 50 chars */ String,
-  businessType: /* max 5 chars */ String,
+  bankName: String,
+  businessType: String,
   yearOpened: Int,
-  specialty: /* max 50 chars */ String,
+  specialty: String,
   squareFeet: Int,
-  brands: /* max 30 chars */ String,
-  internet: /* max 30 chars */ String,
+  brands: String,
+  internet: String,
   numberEmployees: Int
 )
 
 object VstorewithdemographicsViewRow {
-  implicit lazy val decoder: Decoder[VstorewithdemographicsViewRow] = Decoder.forProduct12[VstorewithdemographicsViewRow, BusinessentityId, Name, TypoMoney, TypoMoney, /* max 50 chars */ String, /* max 5 chars */ String, Int, /* max 50 chars */ String, Int, /* max 30 chars */ String, /* max 30 chars */ String, Int]("businessentityid", "name", "AnnualSales", "AnnualRevenue", "BankName", "BusinessType", "YearOpened", "Specialty", "SquareFeet", "Brands", "Internet", "NumberEmployees")(VstorewithdemographicsViewRow.apply)(BusinessentityId.decoder, Name.decoder, TypoMoney.decoder, TypoMoney.decoder, Decoder.decodeString, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeString, Decoder.decodeInt)
+  implicit lazy val decoder: Decoder[VstorewithdemographicsViewRow] = Decoder.forProduct12[VstorewithdemographicsViewRow, BusinessentityId, Name, TypoMoney, TypoMoney, String, String, Int, String, Int, String, String, Int]("businessentityid", "name", "AnnualSales", "AnnualRevenue", "BankName", "BusinessType", "YearOpened", "Specialty", "SquareFeet", "Brands", "Internet", "NumberEmployees")(VstorewithdemographicsViewRow.apply)(BusinessentityId.decoder, Name.decoder, TypoMoney.decoder, TypoMoney.decoder, Decoder.decodeString, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeString, Decoder.decodeInt)
 
-  implicit lazy val encoder: Encoder[VstorewithdemographicsViewRow] = Encoder.forProduct12[VstorewithdemographicsViewRow, BusinessentityId, Name, TypoMoney, TypoMoney, /* max 50 chars */ String, /* max 5 chars */ String, Int, /* max 50 chars */ String, Int, /* max 30 chars */ String, /* max 30 chars */ String, Int]("businessentityid", "name", "AnnualSales", "AnnualRevenue", "BankName", "BusinessType", "YearOpened", "Specialty", "SquareFeet", "Brands", "Internet", "NumberEmployees")(x => (x.businessentityid, x.name, x.annualSales, x.annualRevenue, x.bankName, x.businessType, x.yearOpened, x.specialty, x.squareFeet, x.brands, x.internet, x.numberEmployees))(BusinessentityId.encoder, Name.encoder, TypoMoney.encoder, TypoMoney.encoder, Encoder.encodeString, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeString, Encoder.encodeInt)
+  implicit lazy val encoder: Encoder[VstorewithdemographicsViewRow] = Encoder.forProduct12[VstorewithdemographicsViewRow, BusinessentityId, Name, TypoMoney, TypoMoney, String, String, Int, String, Int, String, String, Int]("businessentityid", "name", "AnnualSales", "AnnualRevenue", "BankName", "BusinessType", "YearOpened", "Specialty", "SquareFeet", "Brands", "Internet", "NumberEmployees")(x => (x.businessentityid, x.name, x.annualSales, x.annualRevenue, x.bankName, x.businessType, x.yearOpened, x.specialty, x.squareFeet, x.brands, x.internet, x.numberEmployees))(BusinessentityId.encoder, Name.encoder, TypoMoney.encoder, TypoMoney.encoder, Encoder.encodeString, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeString, Encoder.encodeInt)
 
   implicit lazy val read: Read[VstorewithdemographicsViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -56,13 +56,13 @@ object VstorewithdemographicsViewRow {
             name = arr(1).asInstanceOf[Name],
             annualSales = arr(2).asInstanceOf[TypoMoney],
             annualRevenue = arr(3).asInstanceOf[TypoMoney],
-            bankName = arr(4).asInstanceOf[/* max 50 chars */ String],
-            businessType = arr(5).asInstanceOf[/* max 5 chars */ String],
+            bankName = arr(4).asInstanceOf[String],
+            businessType = arr(5).asInstanceOf[String],
             yearOpened = arr(6).asInstanceOf[Int],
-            specialty = arr(7).asInstanceOf[/* max 50 chars */ String],
+            specialty = arr(7).asInstanceOf[String],
             squareFeet = arr(8).asInstanceOf[Int],
-            brands = arr(9).asInstanceOf[/* max 30 chars */ String],
-            internet = arr(10).asInstanceOf[/* max 30 chars */ String],
+            brands = arr(9).asInstanceOf[String],
+            internet = arr(10).asInstanceOf[String],
             numberEmployees = arr(11).asInstanceOf[Int]
       )
     }

@@ -6,9 +6,10 @@
 package adventureworks.person.countryregion;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -22,7 +23,7 @@ public record CountryregionRow(
   /** Country or region name. */
   Name name,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** ISO standard code for countries and regions. */
   public CountryregionRow withCountryregioncode(CountryregionId countryregioncode) {
@@ -35,11 +36,11 @@ public record CountryregionRow(
   };
 
   /** Default: now() */
-  public CountryregionRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CountryregionRow withModifieddate(LocalDateTime modifieddate) {
     return new CountryregionRow(countryregioncode, name, modifieddate);
   };
 
-  static RowParser<CountryregionRow> _rowParser = RowParsers.of(CountryregionId.pgType, Name.pgType, TypoLocalDateTime.pgType, CountryregionRow::new, row -> new Object[]{row.countryregioncode(), row.name(), row.modifieddate()});;
+  static RowParser<CountryregionRow> _rowParser = RowParsers.of(CountryregionId.pgType, Name.pgType, PgTypes.timestamp, CountryregionRow::new, row -> new Object[]{row.countryregioncode(), row.name(), row.modifieddate()});;
 
   static public PgText<CountryregionRow> pgText =
     PgText.from(_rowParser);
@@ -48,7 +49,7 @@ public record CountryregionRow(
     return countryregioncode;
   };
 
-  public CountryregionRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public CountryregionRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new CountryregionRowUnsaved(countryregioncode, name, modifieddate);
   };
 }

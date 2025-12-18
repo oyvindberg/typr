@@ -33,15 +33,15 @@ case class WrViewRow(
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.scheduledenddate]] */
   scheduledenddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualstartdate]] */
-  actualstartdate: Option[TypoLocalDateTime],
+  actualstartdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualenddate]] */
-  actualenddate: Option[TypoLocalDateTime],
+  actualenddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualresourcehrs]] */
-  actualresourcehrs: Option[BigDecimal],
+  actualresourcehrs: BigDecimal,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.plannedcost]] */
   plannedcost: BigDecimal,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualcost]] */
-  actualcost: Option[BigDecimal],
+  actualcost: BigDecimal,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -59,11 +59,11 @@ object WrViewRow {
             locationid = LocationId.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             scheduledstartdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             scheduledenddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
-            actualstartdate = JdbcDecoder.optionDecoder(using TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 7, rs)._2,
-            actualenddate = JdbcDecoder.optionDecoder(using TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 8, rs)._2,
-            actualresourcehrs = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 9, rs)._2,
+            actualstartdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
+            actualenddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2,
+            actualresourcehrs = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 9, rs)._2,
             plannedcost = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 10, rs)._2,
-            actualcost = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 11, rs)._2,
+            actualcost = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 11, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 12, rs)._2
           )
     }
@@ -78,11 +78,11 @@ object WrViewRow {
       val locationid = jsonObj.get("locationid").toRight("Missing field 'locationid'").flatMap(_.as(using LocationId.jsonDecoder))
       val scheduledstartdate = jsonObj.get("scheduledstartdate").toRight("Missing field 'scheduledstartdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       val scheduledenddate = jsonObj.get("scheduledenddate").toRight("Missing field 'scheduledenddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-      val actualstartdate = jsonObj.get("actualstartdate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDateTime.jsonDecoder)))
-      val actualenddate = jsonObj.get("actualenddate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDateTime.jsonDecoder)))
-      val actualresourcehrs = jsonObj.get("actualresourcehrs").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
+      val actualstartdate = jsonObj.get("actualstartdate").toRight("Missing field 'actualstartdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      val actualenddate = jsonObj.get("actualenddate").toRight("Missing field 'actualenddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
+      val actualresourcehrs = jsonObj.get("actualresourcehrs").toRight("Missing field 'actualresourcehrs'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
       val plannedcost = jsonObj.get("plannedcost").toRight("Missing field 'plannedcost'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
-      val actualcost = jsonObj.get("actualcost").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
+      val actualcost = jsonObj.get("actualcost").toRight("Missing field 'actualcost'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (id.isRight && workorderid.isRight && productid.isRight && operationsequence.isRight && locationid.isRight && scheduledstartdate.isRight && scheduledenddate.isRight && actualstartdate.isRight && actualenddate.isRight && actualresourcehrs.isRight && plannedcost.isRight && actualcost.isRight && modifieddate.isRight)
         Right(WrViewRow(id = id.toOption.get, workorderid = workorderid.toOption.get, productid = productid.toOption.get, operationsequence = operationsequence.toOption.get, locationid = locationid.toOption.get, scheduledstartdate = scheduledstartdate.toOption.get, scheduledenddate = scheduledenddate.toOption.get, actualstartdate = actualstartdate.toOption.get, actualenddate = actualenddate.toOption.get, actualresourcehrs = actualresourcehrs.toOption.get, plannedcost = plannedcost.toOption.get, actualcost = actualcost.toOption.get, modifieddate = modifieddate.toOption.get))
@@ -116,19 +116,19 @@ object WrViewRow {
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.scheduledenddate, indent, out)
         out.write(",")
         out.write(""""actualstartdate":""")
-        JsonEncoder.option(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.actualstartdate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.actualstartdate, indent, out)
         out.write(",")
         out.write(""""actualenddate":""")
-        JsonEncoder.option(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.actualenddate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.actualenddate, indent, out)
         out.write(",")
         out.write(""""actualresourcehrs":""")
-        JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.actualresourcehrs, indent, out)
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.actualresourcehrs, indent, out)
         out.write(",")
         out.write(""""plannedcost":""")
         JsonEncoder.scalaBigDecimal.unsafeEncode(a.plannedcost, indent, out)
         out.write(",")
         out.write(""""actualcost":""")
-        JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.actualcost, indent, out)
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.actualcost, indent, out)
         out.write(",")
         out.write(""""modifieddate":""")
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)

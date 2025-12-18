@@ -5,9 +5,9 @@
  */
 package adventureworks.pr.tha;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -25,15 +25,15 @@ public record ThaViewRow(
   /** Points to {@link adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow#referenceorderlineid()} */
   Integer referenceorderlineid,
   /** Points to {@link adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow#transactiondate()} */
-  TypoLocalDateTime transactiondate,
+  LocalDateTime transactiondate,
   /** Points to {@link adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow#transactiontype()} */
-  /* bpchar, max 1 chars */ String transactiontype,
+  String transactiontype,
   /** Points to {@link adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow#quantity()} */
   Integer quantity,
   /** Points to {@link adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow#actualcost()} */
   BigDecimal actualcost,
   /** Points to {@link adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow#transactionid()} */
   public ThaViewRow withId(TransactionhistoryarchiveId id) {
@@ -61,12 +61,12 @@ public record ThaViewRow(
   };
 
   /** Points to {@link adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow#transactiondate()} */
-  public ThaViewRow withTransactiondate(TypoLocalDateTime transactiondate) {
+  public ThaViewRow withTransactiondate(LocalDateTime transactiondate) {
     return new ThaViewRow(id, transactionid, productid, referenceorderid, referenceorderlineid, transactiondate, transactiontype, quantity, actualcost, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow#transactiontype()} */
-  public ThaViewRow withTransactiontype(/* bpchar, max 1 chars */ String transactiontype) {
+  public ThaViewRow withTransactiontype(String transactiontype) {
     return new ThaViewRow(id, transactionid, productid, referenceorderid, referenceorderlineid, transactiondate, transactiontype, quantity, actualcost, modifieddate);
   };
 
@@ -81,9 +81,9 @@ public record ThaViewRow(
   };
 
   /** Points to {@link adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow#modifieddate()} */
-  public ThaViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ThaViewRow withModifieddate(LocalDateTime modifieddate) {
     return new ThaViewRow(id, transactionid, productid, referenceorderid, referenceorderlineid, transactiondate, transactiontype, quantity, actualcost, modifieddate);
   };
 
-  static RowParser<ThaViewRow> _rowParser = RowParsers.of(TransactionhistoryarchiveId.pgType, TransactionhistoryarchiveId.pgType, PgTypes.int4, PgTypes.int4, PgTypes.int4, TypoLocalDateTime.pgType, PgTypes.bpchar, PgTypes.int4, PgTypes.numeric, TypoLocalDateTime.pgType, ThaViewRow::new, row -> new Object[]{row.id(), row.transactionid(), row.productid(), row.referenceorderid(), row.referenceorderlineid(), row.transactiondate(), row.transactiontype(), row.quantity(), row.actualcost(), row.modifieddate()});;
+  static RowParser<ThaViewRow> _rowParser = RowParsers.of(TransactionhistoryarchiveId.pgType, TransactionhistoryarchiveId.pgType, PgTypes.int4, PgTypes.int4, PgTypes.int4, PgTypes.timestamp, PgTypes.bpchar, PgTypes.int4, PgTypes.numeric, PgTypes.timestamp, ThaViewRow::new, row -> new Object[]{row.id(), row.transactionid(), row.productid(), row.referenceorderid(), row.referenceorderlineid(), row.transactiondate(), row.transactiontype(), row.quantity(), row.actualcost(), row.modifieddate()});;
 }

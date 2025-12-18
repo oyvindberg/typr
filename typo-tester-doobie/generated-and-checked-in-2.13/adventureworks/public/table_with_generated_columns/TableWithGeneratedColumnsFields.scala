@@ -6,10 +6,10 @@
 package adventureworks.public.table_with_generated_columns
 
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait TableWithGeneratedColumnsFields {
   def name: IdField[TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow]
@@ -17,11 +17,11 @@ trait TableWithGeneratedColumnsFields {
 }
 
 object TableWithGeneratedColumnsFields {
-  lazy val structure: Relation[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow] =
+  lazy val structure: RelationStructure[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow] {
+    extends RelationStructure[TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow] {
 
     override lazy val fields: TableWithGeneratedColumnsFields = new TableWithGeneratedColumnsFields {
       override def name = IdField[TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))

@@ -5,10 +5,9 @@
  */
 package adventureworks.pe.e;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -22,11 +21,11 @@ public record EViewRow(
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#emailaddressid()} */
   Integer emailaddressid,
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#emailaddress()} */
-  Optional</* max 50 chars */ String> emailaddress,
+  String emailaddress,
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#emailaddressid()} */
   public EViewRow withId(Integer id) {
@@ -44,19 +43,19 @@ public record EViewRow(
   };
 
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#emailaddress()} */
-  public EViewRow withEmailaddress(Optional</* max 50 chars */ String> emailaddress) {
+  public EViewRow withEmailaddress(String emailaddress) {
     return new EViewRow(id, businessentityid, emailaddressid, emailaddress, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#rowguid()} */
-  public EViewRow withRowguid(TypoUUID rowguid) {
+  public EViewRow withRowguid(UUID rowguid) {
     return new EViewRow(id, businessentityid, emailaddressid, emailaddress, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#modifieddate()} */
-  public EViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public EViewRow withModifieddate(LocalDateTime modifieddate) {
     return new EViewRow(id, businessentityid, emailaddressid, emailaddress, rowguid, modifieddate);
   };
 
-  static RowParser<EViewRow> _rowParser = RowParsers.of(PgTypes.int4, BusinessentityId.pgType, PgTypes.int4, PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, EViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.emailaddressid(), row.emailaddress(), row.rowguid(), row.modifieddate()});;
+  static RowParser<EViewRow> _rowParser = RowParsers.of(PgTypes.int4, BusinessentityId.pgType, PgTypes.int4, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, EViewRow::new, row -> new Object[]{row.id(), row.businessentityid(), row.emailaddressid(), row.emailaddress(), row.rowguid(), row.modifieddate()});;
 }

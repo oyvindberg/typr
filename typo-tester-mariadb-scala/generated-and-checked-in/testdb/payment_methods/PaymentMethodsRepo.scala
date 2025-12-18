@@ -6,17 +6,16 @@
 package testdb.payment_methods
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait PaymentMethodsRepo {
   def delete: DeleteBuilder[PaymentMethodsFields, PaymentMethodsRow]
 
-  def deleteById(methodId: PaymentMethodsId)(using c: Connection): java.lang.Boolean
+  def deleteById(methodId: PaymentMethodsId)(using c: Connection): Boolean
 
-  def deleteByIds(methodIds: Array[PaymentMethodsId])(using c: Connection): Integer
+  def deleteByIds(methodIds: Array[PaymentMethodsId])(using c: Connection): Int
 
   def insert(unsaved: PaymentMethodsRow)(using c: Connection): PaymentMethodsRow
 
@@ -24,21 +23,21 @@ trait PaymentMethodsRepo {
 
   def select: SelectBuilder[PaymentMethodsFields, PaymentMethodsRow]
 
-  def selectAll(using c: Connection): java.util.List[PaymentMethodsRow]
+  def selectAll(using c: Connection): List[PaymentMethodsRow]
 
-  def selectById(methodId: PaymentMethodsId)(using c: Connection): Optional[PaymentMethodsRow]
+  def selectById(methodId: PaymentMethodsId)(using c: Connection): Option[PaymentMethodsRow]
 
-  def selectByIds(methodIds: Array[PaymentMethodsId])(using c: Connection): java.util.List[PaymentMethodsRow]
+  def selectByIds(methodIds: Array[PaymentMethodsId])(using c: Connection): List[PaymentMethodsRow]
 
-  def selectByIdsTracked(methodIds: Array[PaymentMethodsId])(using c: Connection): java.util.Map[PaymentMethodsId, PaymentMethodsRow]
+  def selectByIdsTracked(methodIds: Array[PaymentMethodsId])(using c: Connection): Map[PaymentMethodsId, PaymentMethodsRow]
 
-  def selectByUniqueCode(code: String)(using c: Connection): Optional[PaymentMethodsRow]
+  def selectByUniqueCode(code: String)(using c: Connection): Option[PaymentMethodsRow]
 
   def update: UpdateBuilder[PaymentMethodsFields, PaymentMethodsRow]
 
-  def update(row: PaymentMethodsRow)(using c: Connection): java.lang.Boolean
+  def update(row: PaymentMethodsRow)(using c: Connection): Boolean
 
   def upsert(unsaved: PaymentMethodsRow)(using c: Connection): PaymentMethodsRow
 
-  def upsertBatch(unsaved: java.util.Iterator[PaymentMethodsRow])(using c: Connection): java.util.List[PaymentMethodsRow]
+  def upsertBatch(unsaved: Iterator[PaymentMethodsRow])(using c: Connection): List[PaymentMethodsRow]
 }

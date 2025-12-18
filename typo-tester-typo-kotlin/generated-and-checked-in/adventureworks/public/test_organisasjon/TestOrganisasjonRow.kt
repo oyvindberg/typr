@@ -5,9 +5,9 @@
  */
 package adventureworks.public.test_organisasjon
 
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: public.test_organisasjon
   * Primary key: organisasjonskode
@@ -19,6 +19,6 @@ data class TestOrganisasjonRow(val organisasjonskode: TestOrganisasjonId) {
     val _rowParser: RowParser<TestOrganisasjonRow> = RowParsers.of(TestOrganisasjonId.pgType, { t0 -> TestOrganisasjonRow(t0!!) }, { row -> arrayOf<Any?>(row.organisasjonskode) })
 
     val pgText: PgText<TestOrganisasjonRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

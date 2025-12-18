@@ -10,10 +10,9 @@ import adventureworks.production.product.ProductId
 import adventureworks.production.productreview.ProductreviewId
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PrViewFields {
   def id: Field[ProductreviewId, PrViewRow]
@@ -21,18 +20,18 @@ trait PrViewFields {
   def productid: Field[ProductId, PrViewRow]
   def reviewername: Field[Name, PrViewRow]
   def reviewdate: Field[TypoLocalDateTime, PrViewRow]
-  def emailaddress: Field[/* max 50 chars */ String, PrViewRow]
+  def emailaddress: Field[String, PrViewRow]
   def rating: Field[Int, PrViewRow]
-  def comments: OptField[/* max 3850 chars */ String, PrViewRow]
+  def comments: Field[String, PrViewRow]
   def modifieddate: Field[TypoLocalDateTime, PrViewRow]
 }
 
 object PrViewFields {
-  lazy val structure: Relation[PrViewFields, PrViewRow] =
+  lazy val structure: RelationStructure[PrViewFields, PrViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PrViewFields, PrViewRow] {
+    extends RelationStructure[PrViewFields, PrViewRow] {
 
     override lazy val fields: PrViewFields = new PrViewFields {
       override def id = Field[ProductreviewId, PrViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
@@ -40,9 +39,9 @@ object PrViewFields {
       override def productid = Field[ProductId, PrViewRow](_path, "productid", None, None, x => x.productid, (row, value) => row.copy(productid = value))
       override def reviewername = Field[Name, PrViewRow](_path, "reviewername", None, None, x => x.reviewername, (row, value) => row.copy(reviewername = value))
       override def reviewdate = Field[TypoLocalDateTime, PrViewRow](_path, "reviewdate", Some("text"), None, x => x.reviewdate, (row, value) => row.copy(reviewdate = value))
-      override def emailaddress = Field[/* max 50 chars */ String, PrViewRow](_path, "emailaddress", None, None, x => x.emailaddress, (row, value) => row.copy(emailaddress = value))
+      override def emailaddress = Field[String, PrViewRow](_path, "emailaddress", None, None, x => x.emailaddress, (row, value) => row.copy(emailaddress = value))
       override def rating = Field[Int, PrViewRow](_path, "rating", None, None, x => x.rating, (row, value) => row.copy(rating = value))
-      override def comments = OptField[/* max 3850 chars */ String, PrViewRow](_path, "comments", None, None, x => x.comments, (row, value) => row.copy(comments = value))
+      override def comments = Field[String, PrViewRow](_path, "comments", None, None, x => x.comments, (row, value) => row.copy(comments = value))
       override def modifieddate = Field[TypoLocalDateTime, PrViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
 

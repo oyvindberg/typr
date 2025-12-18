@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface CustomerStatusFields extends FieldsExpr<CustomerStatusRow> {
-  record Impl(List<Path> _path) implements CustomerStatusFields, Relation<CustomerStatusFields, CustomerStatusRow> {
+  record Impl(List<Path> _path) implements CustomerStatusFields, RelationStructure<CustomerStatusFields, CustomerStatusRow> {
     @Override
     public IdField<CustomerStatusId, CustomerStatusRow> statusCode() {
       return new IdField<CustomerStatusId, CustomerStatusRow>(_path, "status_code", CustomerStatusRow::statusCode, Optional.empty(), Optional.empty(), (row, value) -> row.withStatusCode(value), CustomerStatusId.pgType);
@@ -35,17 +35,17 @@ public interface CustomerStatusFields extends FieldsExpr<CustomerStatusRow> {
 
     @Override
     public List<FieldLike<?, CustomerStatusRow>> columns() {
-      return List.of(this.statusCode(), this.description(), this.isActive());
+      return java.util.List.of(this.statusCode(), this.description(), this.isActive());
     };
 
     @Override
-    public Relation<CustomerStatusFields, CustomerStatusRow> copy(List<Path> _path) {
+    public RelationStructure<CustomerStatusFields, CustomerStatusRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<CustomerStatusId, CustomerStatusRow> statusCode();

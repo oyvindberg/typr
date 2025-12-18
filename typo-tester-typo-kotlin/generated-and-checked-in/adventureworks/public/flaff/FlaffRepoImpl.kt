@@ -7,20 +7,21 @@ package adventureworks.public.flaff
 
 import adventureworks.public.ShortText
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class FlaffRepoImpl() : FlaffRepo {
   override fun delete(): DeleteBuilder<FlaffFields, FlaffRow> = DeleteBuilder.of("\"public\".\"flaff\"", FlaffFields.structure, Dialect.POSTGRESQL)
@@ -28,142 +29,49 @@ class FlaffRepoImpl() : FlaffRepo {
   override fun deleteById(
     compositeId: FlaffId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "public"."flaff" where "code" = 
-    """.trimMargin()),
-    ShortText.pgType.encode(compositeId.code),
-    typo.runtime.Fragment.lit("""
-     AND "another_code" = 
-    """.trimMargin()),
-    PgTypes.text.encode(compositeId.anotherCode),
-    typo.runtime.Fragment.lit("""
-     AND "some_number" = 
-    """.trimMargin()),
-    PgTypes.int4.encode(compositeId.someNumber),
-    typo.runtime.Fragment.lit("""
-     AND "specifier" = 
-    """.trimMargin()),
-    ShortText.pgType.encode(compositeId.specifier),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"public\".\"flaff\" where \"code\" = "), Fragment.encode(ShortText.pgType, compositeId.code), Fragment.lit(" AND \"another_code\" = "), Fragment.encode(PgTypes.text, compositeId.anotherCode), Fragment.lit(" AND \"some_number\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, compositeId.someNumber), Fragment.lit(" AND \"specifier\" = "), Fragment.encode(ShortText.pgType, compositeId.specifier), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     compositeIds: Array<FlaffId>,
     c: Connection
   ): Int {
     val code: Array<ShortText> = arrayMap.map(compositeIds, FlaffId::code, ShortText::class.java)
-    val anotherCode: Array</* max 20 chars */ String> = arrayMap.map(compositeIds, FlaffId::anotherCode, /* max 20 chars */ String::class.java)
+    val anotherCode: Array<String> = arrayMap.map(compositeIds, FlaffId::anotherCode, String::class.java)
     val someNumber: Array<Int> = arrayMap.map(compositeIds, FlaffId::someNumber, Int::class.javaObjectType)
     val specifier: Array<ShortText> = arrayMap.map(compositeIds, FlaffId::specifier, ShortText::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        delete
-        from "public"."flaff"
-        where ("code", "another_code", "some_number", "specifier")
-        in (select unnest(""".trimMargin()),
-      ShortText.pgTypeArray.encode(code),
-      typo.runtime.Fragment.lit("::text[]), unnest("),
-      PgTypes.textArray.encode(anotherCode),
-      typo.runtime.Fragment.lit("::varchar[]), unnest("),
-      PgTypes.int4Array.encode(someNumber),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      ShortText.pgTypeArray.encode(specifier),
-      typo.runtime.Fragment.lit("""
-      ::text[]))
-
-      """.trimMargin())
-    ).update().runUnchecked(c)
+    return interpolate(Fragment.lit("delete\nfrom \"public\".\"flaff\"\nwhere (\"code\", \"another_code\", \"some_number\", \"specifier\")\nin (select unnest("), Fragment.encode(ShortText.pgTypeArray, code), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, anotherCode), Fragment.lit("::varchar[]), unnest("), Fragment.encode(PgTypes.int4Array, someNumber), Fragment.lit("::int4[]), unnest("), Fragment.encode(ShortText.pgTypeArray, specifier), Fragment.lit("::text[]))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: FlaffRow,
     c: Connection
-  ): FlaffRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "public"."flaff"("code", "another_code", "some_number", "specifier", "parentspecifier")
-      values (""".trimMargin()),
-    ShortText.pgType.encode(unsaved.code),
-    typo.runtime.Fragment.lit("::text, "),
-    PgTypes.text.encode(unsaved.anotherCode),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.int4.encode(unsaved.someNumber),
-    typo.runtime.Fragment.lit("::int4, "),
-    ShortText.pgType.encode(unsaved.specifier),
-    typo.runtime.Fragment.lit("::text, "),
-    ShortText.pgType.opt().encode(unsaved.parentspecifier),
-    typo.runtime.Fragment.lit("""
-      ::text)
-      returning "code", "another_code", "some_number", "specifier", "parentspecifier"
-    """.trimMargin())
-  )
+  ): FlaffRow = interpolate(Fragment.lit("insert into \"public\".\"flaff\"(\"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\")\nvalues ("), Fragment.encode(ShortText.pgType, unsaved.code), Fragment.lit("::text, "), Fragment.encode(PgTypes.text, unsaved.anotherCode), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.someNumber), Fragment.lit("::int4, "), Fragment.encode(ShortText.pgType, unsaved.specifier), Fragment.lit("::text, "), Fragment.encode(ShortText.pgType.nullable(), unsaved.parentspecifier), Fragment.lit("::text)\nreturning \"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\"\n"))
     .updateReturning(FlaffRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insertStreaming(
     unsaved: MutableIterator<FlaffRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "public"."flaff"("code", "another_code", "some_number", "specifier", "parentspecifier") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, FlaffRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"public\".\"flaff\"(\"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\") FROM STDIN", batchSize, unsaved, c, FlaffRow.pgText)
 
   override fun select(): SelectBuilder<FlaffFields, FlaffRow> = SelectBuilder.of("\"public\".\"flaff\"", FlaffFields.structure, FlaffRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<FlaffRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "code", "another_code", "some_number", "specifier", "parentspecifier"
-    from "public"."flaff"
-  """.trimMargin())).query(FlaffRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<FlaffRow> = interpolate(Fragment.lit("select \"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\"\nfrom \"public\".\"flaff\"\n")).query(FlaffRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     compositeId: FlaffId,
     c: Connection
-  ): Optional<FlaffRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "code", "another_code", "some_number", "specifier", "parentspecifier"
-      from "public"."flaff"
-      where "code" = """.trimMargin()),
-    ShortText.pgType.encode(compositeId.code),
-    typo.runtime.Fragment.lit("""
-     AND "another_code" = 
-    """.trimMargin()),
-    PgTypes.text.encode(compositeId.anotherCode),
-    typo.runtime.Fragment.lit("""
-     AND "some_number" = 
-    """.trimMargin()),
-    PgTypes.int4.encode(compositeId.someNumber),
-    typo.runtime.Fragment.lit("""
-     AND "specifier" = 
-    """.trimMargin()),
-    ShortText.pgType.encode(compositeId.specifier),
-    typo.runtime.Fragment.lit("")
-  ).query(FlaffRow._rowParser.first()).runUnchecked(c)
+  ): FlaffRow? = interpolate(Fragment.lit("select \"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\"\nfrom \"public\".\"flaff\"\nwhere \"code\" = "), Fragment.encode(ShortText.pgType, compositeId.code), Fragment.lit(" AND \"another_code\" = "), Fragment.encode(PgTypes.text, compositeId.anotherCode), Fragment.lit(" AND \"some_number\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, compositeId.someNumber), Fragment.lit(" AND \"specifier\" = "), Fragment.encode(ShortText.pgType, compositeId.specifier), Fragment.lit("")).query(FlaffRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     compositeIds: Array<FlaffId>,
     c: Connection
   ): List<FlaffRow> {
     val code: Array<ShortText> = arrayMap.map(compositeIds, FlaffId::code, ShortText::class.java)
-    val anotherCode: Array</* max 20 chars */ String> = arrayMap.map(compositeIds, FlaffId::anotherCode, /* max 20 chars */ String::class.java)
+    val anotherCode: Array<String> = arrayMap.map(compositeIds, FlaffId::anotherCode, String::class.java)
     val someNumber: Array<Int> = arrayMap.map(compositeIds, FlaffId::someNumber, Int::class.javaObjectType)
     val specifier: Array<ShortText> = arrayMap.map(compositeIds, FlaffId::specifier, ShortText::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        select "code", "another_code", "some_number", "specifier", "parentspecifier"
-        from "public"."flaff"
-        where ("code", "another_code", "some_number", "specifier")
-        in (select unnest(""".trimMargin()),
-      ShortText.pgTypeArray.encode(code),
-      typo.runtime.Fragment.lit("::text[]), unnest("),
-      PgTypes.textArray.encode(anotherCode),
-      typo.runtime.Fragment.lit("::varchar[]), unnest("),
-      PgTypes.int4Array.encode(someNumber),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      ShortText.pgTypeArray.encode(specifier),
-      typo.runtime.Fragment.lit("""
-      ::text[]))
-
-      """.trimMargin())
-    ).query(FlaffRow._rowParser.all()).runUnchecked(c)
+    return interpolate(Fragment.lit("select \"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\"\nfrom \"public\".\"flaff\"\nwhere (\"code\", \"another_code\", \"some_number\", \"specifier\")\nin (select unnest("), Fragment.encode(ShortText.pgTypeArray, code), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, anotherCode), Fragment.lit("::varchar[]), unnest("), Fragment.encode(PgTypes.int4Array, someNumber), Fragment.lit("::int4[]), unnest("), Fragment.encode(ShortText.pgTypeArray, specifier), Fragment.lit("::text[]))\n")).query(FlaffRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(
@@ -172,79 +80,32 @@ class FlaffRepoImpl() : FlaffRepo {
   ): Map<FlaffId, FlaffRow> {
     val ret: MutableMap<FlaffId, FlaffRow> = mutableMapOf<FlaffId, FlaffRow>()
     selectByIds(compositeIds, c).forEach({ row -> ret.put(row.compositeId(), row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<FlaffFields, FlaffRow> = UpdateBuilder.of("\"public\".\"flaff\"", FlaffFields.structure, FlaffRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<FlaffFields, FlaffRow> = UpdateBuilder.of("\"public\".\"flaff\"", FlaffFields.structure, FlaffRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: FlaffRow,
     c: Connection
   ): Boolean {
     val compositeId: FlaffId = row.compositeId()
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "public"."flaff"
-        set "parentspecifier" = """.trimMargin()),
-      ShortText.pgType.opt().encode(row.parentspecifier),
-      typo.runtime.Fragment.lit("""
-        ::text
-        where "code" = """.trimMargin()),
-      ShortText.pgType.encode(compositeId.code),
-      typo.runtime.Fragment.lit("""
-       AND "another_code" = 
-      """.trimMargin()),
-      PgTypes.text.encode(compositeId.anotherCode),
-      typo.runtime.Fragment.lit("""
-       AND "some_number" = 
-      """.trimMargin()),
-      PgTypes.int4.encode(compositeId.someNumber),
-      typo.runtime.Fragment.lit("""
-       AND "specifier" = 
-      """.trimMargin()),
-      ShortText.pgType.encode(compositeId.specifier),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"public\".\"flaff\"\nset \"parentspecifier\" = "), Fragment.encode(ShortText.pgType.nullable(), row.parentspecifier), Fragment.lit("::text\nwhere \"code\" = "), Fragment.encode(ShortText.pgType, compositeId.code), Fragment.lit(" AND \"another_code\" = "), Fragment.encode(PgTypes.text, compositeId.anotherCode), Fragment.lit(" AND \"some_number\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, compositeId.someNumber), Fragment.lit(" AND \"specifier\" = "), Fragment.encode(ShortText.pgType, compositeId.specifier), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: FlaffRow,
     c: Connection
-  ): FlaffRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "public"."flaff"("code", "another_code", "some_number", "specifier", "parentspecifier")
-      values (""".trimMargin()),
-    ShortText.pgType.encode(unsaved.code),
-    typo.runtime.Fragment.lit("::text, "),
-    PgTypes.text.encode(unsaved.anotherCode),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.int4.encode(unsaved.someNumber),
-    typo.runtime.Fragment.lit("::int4, "),
-    ShortText.pgType.encode(unsaved.specifier),
-    typo.runtime.Fragment.lit("::text, "),
-    ShortText.pgType.opt().encode(unsaved.parentspecifier),
-    typo.runtime.Fragment.lit("""
-      ::text)
-      on conflict ("code", "another_code", "some_number", "specifier")
-      do update set
-        "parentspecifier" = EXCLUDED."parentspecifier"
-      returning "code", "another_code", "some_number", "specifier", "parentspecifier"""".trimMargin())
-  )
+  ): FlaffRow = interpolate(Fragment.lit("insert into \"public\".\"flaff\"(\"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\")\nvalues ("), Fragment.encode(ShortText.pgType, unsaved.code), Fragment.lit("::text, "), Fragment.encode(PgTypes.text, unsaved.anotherCode), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.someNumber), Fragment.lit("::int4, "), Fragment.encode(ShortText.pgType, unsaved.specifier), Fragment.lit("::text, "), Fragment.encode(ShortText.pgType.nullable(), unsaved.parentspecifier), Fragment.lit("::text)\non conflict (\"code\", \"another_code\", \"some_number\", \"specifier\")\ndo update set\n  \"parentspecifier\" = EXCLUDED.\"parentspecifier\"\nreturning \"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\""))
     .updateReturning(FlaffRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<FlaffRow>,
     c: Connection
-  ): List<FlaffRow> = interpolate(typo.runtime.Fragment.lit("""
-                        insert into "public"."flaff"("code", "another_code", "some_number", "specifier", "parentspecifier")
-                        values (?::text, ?, ?::int4, ?::text, ?::text)
-                        on conflict ("code", "another_code", "some_number", "specifier")
-                        do update set
-                          "parentspecifier" = EXCLUDED."parentspecifier"
-                        returning "code", "another_code", "some_number", "specifier", "parentspecifier"""".trimMargin()))
+  ): List<FlaffRow> = interpolate(Fragment.lit("insert into \"public\".\"flaff\"(\"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\")\nvalues (?::text, ?, ?::int4, ?::text, ?::text)\non conflict (\"code\", \"another_code\", \"some_number\", \"specifier\")\ndo update set\n  \"parentspecifier\" = EXCLUDED.\"parentspecifier\"\nreturning \"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\""))
     .updateManyReturning(FlaffRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -252,19 +113,8 @@ class FlaffRepoImpl() : FlaffRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table flaff_TEMP (like "public"."flaff") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy flaff_TEMP("code", "another_code", "some_number", "specifier", "parentspecifier") from stdin
-    """.trimMargin()), batchSize, unsaved, c, FlaffRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "public"."flaff"("code", "another_code", "some_number", "specifier", "parentspecifier")
-      select * from flaff_TEMP
-      on conflict ("code", "another_code", "some_number", "specifier")
-      do update set
-        "parentspecifier" = EXCLUDED."parentspecifier"
-      ;
-      drop table flaff_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table flaff_TEMP (like \"public\".\"flaff\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy flaff_TEMP(\"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\") from stdin", batchSize, unsaved, c, FlaffRow.pgText)
+    return interpolate(Fragment.lit("insert into \"public\".\"flaff\"(\"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\")\nselect * from flaff_TEMP\non conflict (\"code\", \"another_code\", \"some_number\", \"specifier\")\ndo update set\n  \"parentspecifier\" = EXCLUDED.\"parentspecifier\"\n;\ndrop table flaff_TEMP;")).update().runUnchecked(c)
   }
 }

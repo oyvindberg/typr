@@ -5,30 +5,6 @@
  */
 package adventureworks.public_.pgtest;
 
-import adventureworks.customtypes.TypoBox;
-import adventureworks.customtypes.TypoBytea;
-import adventureworks.customtypes.TypoCircle;
-import adventureworks.customtypes.TypoHStore;
-import adventureworks.customtypes.TypoInet;
-import adventureworks.customtypes.TypoInstant;
-import adventureworks.customtypes.TypoInt2Vector;
-import adventureworks.customtypes.TypoInterval;
-import adventureworks.customtypes.TypoJson;
-import adventureworks.customtypes.TypoJsonb;
-import adventureworks.customtypes.TypoLine;
-import adventureworks.customtypes.TypoLineSegment;
-import adventureworks.customtypes.TypoLocalDate;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoLocalTime;
-import adventureworks.customtypes.TypoMoney;
-import adventureworks.customtypes.TypoOffsetTime;
-import adventureworks.customtypes.TypoPath;
-import adventureworks.customtypes.TypoPoint;
-import adventureworks.customtypes.TypoPolygon;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoVector;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.public_.Mydomain;
 import adventureworks.public_.Myenum;
 import java.sql.Connection;
@@ -38,10 +14,10 @@ import typo.dsl.DeleteBuilder;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class PgtestRepoImpl implements PgtestRepo {
   @Override
@@ -54,154 +30,7 @@ public class PgtestRepoImpl implements PgtestRepo {
     PgtestRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."pgtest"("bool", "box", "bpchar", "bytea", "char", "circle", "date", "float4", "float8", "hstore", "inet", "int2", "int2vector", "int4", "int8", "interval", "json", "jsonb", "line", "lseg", "money", "mydomain", "myenum", "name", "numeric", "path", "point", "polygon", "text", "time", "timestamp", "timestampz", "timez", "uuid", "varchar", "vector", "xml", "boxes", "bpchares", "chares", "circlees", "datees", "float4es", "float8es", "inetes", "int2es", "int2vectores", "int4es", "int8es", "intervales", "jsones", "jsonbes", "linees", "lseges", "moneyes", "mydomaines", "myenumes", "namees", "numerices", "pathes", "pointes", "polygones", "textes", "timees", "timestampes", "timestampzes", "timezes", "uuides", "varchares", "xmles")
-         values ("""),
-      PgTypes.bool.encode(unsaved.bool()),
-      typo.runtime.Fragment.lit(", "),
-      TypoBox.pgType.encode(unsaved.box()),
-      typo.runtime.Fragment.lit("::box, "),
-      PgTypes.text.encode(unsaved.bpchar()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      TypoBytea.pgType.encode(unsaved.bytea()),
-      typo.runtime.Fragment.lit("::bytea, "),
-      PgTypes.text.encode(unsaved.char_()),
-      typo.runtime.Fragment.lit("::bpchar, "),
-      TypoCircle.pgType.encode(unsaved.circle()),
-      typo.runtime.Fragment.lit("::circle, "),
-      TypoLocalDate.pgType.encode(unsaved.date()),
-      typo.runtime.Fragment.lit("::date, "),
-      PgTypes.float4.encode(unsaved.float4()),
-      typo.runtime.Fragment.lit("::float4, "),
-      PgTypes.float8.encode(unsaved.float8()),
-      typo.runtime.Fragment.lit("::float8, "),
-      TypoHStore.pgType.encode(unsaved.hstore()),
-      typo.runtime.Fragment.lit("::hstore, "),
-      TypoInet.pgType.encode(unsaved.inet()),
-      typo.runtime.Fragment.lit("::inet, "),
-      TypoShort.pgType.encode(unsaved.int2()),
-      typo.runtime.Fragment.lit("::int2, "),
-      TypoInt2Vector.pgType.encode(unsaved.int2vector()),
-      typo.runtime.Fragment.lit("::int2vector, "),
-      PgTypes.int4.encode(unsaved.int4()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.int8.encode(unsaved.int8()),
-      typo.runtime.Fragment.lit("::int8, "),
-      TypoInterval.pgType.encode(unsaved.interval()),
-      typo.runtime.Fragment.lit("::interval, "),
-      TypoJson.pgType.encode(unsaved.json()),
-      typo.runtime.Fragment.lit("::json, "),
-      TypoJsonb.pgType.encode(unsaved.jsonb()),
-      typo.runtime.Fragment.lit("::jsonb, "),
-      TypoLine.pgType.encode(unsaved.line()),
-      typo.runtime.Fragment.lit("::line, "),
-      TypoLineSegment.pgType.encode(unsaved.lseg()),
-      typo.runtime.Fragment.lit("::lseg, "),
-      TypoMoney.pgType.encode(unsaved.money()),
-      typo.runtime.Fragment.lit("::money, "),
-      Mydomain.pgType.encode(unsaved.mydomain()),
-      typo.runtime.Fragment.lit("::text, "),
-      Myenum.pgType.encode(unsaved.myenum()),
-      typo.runtime.Fragment.lit("::public.myenum, "),
-      PgTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::name, "),
-      PgTypes.numeric.encode(unsaved.numeric()),
-      typo.runtime.Fragment.lit("::numeric, "),
-      TypoPath.pgType.encode(unsaved.path()),
-      typo.runtime.Fragment.lit("::path, "),
-      TypoPoint.pgType.encode(unsaved.point()),
-      typo.runtime.Fragment.lit("::point, "),
-      TypoPolygon.pgType.encode(unsaved.polygon()),
-      typo.runtime.Fragment.lit("::polygon, "),
-      PgTypes.text.encode(unsaved.text()),
-      typo.runtime.Fragment.lit(", "),
-      TypoLocalTime.pgType.encode(unsaved.time()),
-      typo.runtime.Fragment.lit("::time, "),
-      TypoLocalDateTime.pgType.encode(unsaved.timestamp()),
-      typo.runtime.Fragment.lit("::timestamp, "),
-      TypoInstant.pgType.encode(unsaved.timestampz()),
-      typo.runtime.Fragment.lit("::timestamptz, "),
-      TypoOffsetTime.pgType.encode(unsaved.timez()),
-      typo.runtime.Fragment.lit("::timetz, "),
-      TypoUUID.pgType.encode(unsaved.uuid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      PgTypes.text.encode(unsaved.varchar()),
-      typo.runtime.Fragment.lit(", "),
-      TypoVector.pgType.encode(unsaved.vector()),
-      typo.runtime.Fragment.lit("::vector, "),
-      TypoXml.pgType.encode(unsaved.xml()),
-      typo.runtime.Fragment.lit("::xml, "),
-      TypoBox.pgTypeArray.encode(unsaved.boxes()),
-      typo.runtime.Fragment.lit("::box[], "),
-      PgTypes.textArray.encode(unsaved.bpchares()),
-      typo.runtime.Fragment.lit("::bpchar[], "),
-      PgTypes.textArray.encode(unsaved.chares()),
-      typo.runtime.Fragment.lit("::bpchar[], "),
-      TypoCircle.pgTypeArray.encode(unsaved.circlees()),
-      typo.runtime.Fragment.lit("::circle[], "),
-      TypoLocalDate.pgTypeArray.encode(unsaved.datees()),
-      typo.runtime.Fragment.lit("::date[], "),
-      PgTypes.float4Array.encode(unsaved.float4es()),
-      typo.runtime.Fragment.lit("::float4[], "),
-      PgTypes.float8Array.encode(unsaved.float8es()),
-      typo.runtime.Fragment.lit("::float8[], "),
-      TypoInet.pgTypeArray.encode(unsaved.inetes()),
-      typo.runtime.Fragment.lit("::inet[], "),
-      TypoShort.pgTypeArray.encode(unsaved.int2es()),
-      typo.runtime.Fragment.lit("::int2[], "),
-      TypoInt2Vector.pgTypeArray.encode(unsaved.int2vectores()),
-      typo.runtime.Fragment.lit("::int2vector[], "),
-      PgTypes.int4Array.encode(unsaved.int4es()),
-      typo.runtime.Fragment.lit("::int4[], "),
-      PgTypes.int8Array.encode(unsaved.int8es()),
-      typo.runtime.Fragment.lit("::int8[], "),
-      TypoInterval.pgTypeArray.encode(unsaved.intervales()),
-      typo.runtime.Fragment.lit("::interval[], "),
-      TypoJson.pgTypeArray.encode(unsaved.jsones()),
-      typo.runtime.Fragment.lit("::json[], "),
-      TypoJsonb.pgTypeArray.encode(unsaved.jsonbes()),
-      typo.runtime.Fragment.lit("::jsonb[], "),
-      TypoLine.pgTypeArray.encode(unsaved.linees()),
-      typo.runtime.Fragment.lit("::line[], "),
-      TypoLineSegment.pgTypeArray.encode(unsaved.lseges()),
-      typo.runtime.Fragment.lit("::lseg[], "),
-      TypoMoney.pgTypeArray.encode(unsaved.moneyes()),
-      typo.runtime.Fragment.lit("::money[], "),
-      Mydomain.pgTypeArray.encode(unsaved.mydomaines()),
-      typo.runtime.Fragment.lit("::mydomain[], "),
-      Myenum.pgTypeArray.encode(unsaved.myenumes()),
-      typo.runtime.Fragment.lit("::myenum[], "),
-      PgTypes.textArray.encode(unsaved.namees()),
-      typo.runtime.Fragment.lit("::name[], "),
-      PgTypes.numericArray.encode(unsaved.numerices()),
-      typo.runtime.Fragment.lit("::numeric[], "),
-      TypoPath.pgTypeArray.encode(unsaved.pathes()),
-      typo.runtime.Fragment.lit("::path[], "),
-      TypoPoint.pgTypeArray.encode(unsaved.pointes()),
-      typo.runtime.Fragment.lit("::point[], "),
-      TypoPolygon.pgTypeArray.encode(unsaved.polygones()),
-      typo.runtime.Fragment.lit("::polygon[], "),
-      PgTypes.textArray.encode(unsaved.textes()),
-      typo.runtime.Fragment.lit("::text[], "),
-      TypoLocalTime.pgTypeArray.encode(unsaved.timees()),
-      typo.runtime.Fragment.lit("::time[], "),
-      TypoLocalDateTime.pgTypeArray.encode(unsaved.timestampes()),
-      typo.runtime.Fragment.lit("::timestamp[], "),
-      TypoInstant.pgTypeArray.encode(unsaved.timestampzes()),
-      typo.runtime.Fragment.lit("::timestamptz[], "),
-      TypoOffsetTime.pgTypeArray.encode(unsaved.timezes()),
-      typo.runtime.Fragment.lit("::timetz[], "),
-      TypoUUID.pgTypeArray.encode(unsaved.uuides()),
-      typo.runtime.Fragment.lit("::uuid[], "),
-      PgTypes.textArray.encode(unsaved.varchares()),
-      typo.runtime.Fragment.lit("::varchar[], "),
-      TypoXml.pgTypeArray.encode(unsaved.xmles()),
-      typo.runtime.Fragment.lit("""
-         ::xml[])
-         returning "bool", "box", "bpchar", "bytea", "char", "circle", "date"::text, "float4", "float8", "hstore", "inet", "int2", "int2vector", "int4", "int8", "interval", "json", "jsonb", "line", "lseg", "money"::numeric, "mydomain", "myenum", "name", "numeric", "path", "point", "polygon", "text", "time"::text, "timestamp"::text, "timestampz"::text, "timez"::text, "uuid", "varchar", "vector"::float4[], "xml", "boxes", "bpchares", "chares", "circlees", "datees"::text[], "float4es", "float8es", "inetes", "int2es", "int2vectores", "int4es", "int8es", "intervales", "jsones", "jsonbes", "linees", "lseges", "moneyes"::numeric[], "mydomaines"::text[], "myenumes", "namees", "numerices", "pathes", "pointes", "polygones", "textes", "timees"::text[], "timestampes"::text[], "timestampzes"::text[], "timezes"::text[], "uuides", "varchares", "xmles"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"pgtest\"(\"bool\", \"box\", \"bpchar\", \"bytea\", \"char\", \"circle\", \"date\", \"float4\", \"float8\", \"hstore\", \"inet\", \"int2\", \"int2vector\", \"int4\", \"int8\", \"interval\", \"json\", \"jsonb\", \"line\", \"lseg\", \"money\", \"mydomain\", \"myenum\", \"name\", \"numeric\", \"path\", \"point\", \"polygon\", \"text\", \"time\", \"timestamp\", \"timestampz\", \"timez\", \"uuid\", \"varchar\", \"vector\", \"xml\", \"boxes\", \"bpchares\", \"chares\", \"circlees\", \"datees\", \"float4es\", \"float8es\", \"inetes\", \"int2es\", \"int2vectores\", \"int4es\", \"int8es\", \"intervales\", \"jsones\", \"jsonbes\", \"linees\", \"lseges\", \"moneyes\", \"mydomaines\", \"myenumes\", \"namees\", \"numerices\", \"pathes\", \"pointes\", \"polygones\", \"textes\", \"timees\", \"timestampes\", \"timestampzes\", \"timezes\", \"uuides\", \"varchares\", \"xmles\")\nvalues ("), Fragment.encode(PgTypes.bool, unsaved.bool()), Fragment.lit(", "), Fragment.encode(PgTypes.box, unsaved.box()), Fragment.lit("::box, "), Fragment.encode(PgTypes.bpchar, unsaved.bpchar()), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.bytea, unsaved.bytea()), Fragment.lit("::bytea, "), Fragment.encode(PgTypes.bpchar, unsaved.char_()), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.circle, unsaved.circle()), Fragment.lit("::circle, "), Fragment.encode(PgTypes.date, unsaved.date()), Fragment.lit("::date, "), Fragment.encode(PgTypes.float4, unsaved.float4()), Fragment.lit("::float4, "), Fragment.encode(PgTypes.float8, unsaved.float8()), Fragment.lit("::float8, "), Fragment.encode(PgTypes.hstore, unsaved.hstore()), Fragment.lit("::hstore, "), Fragment.encode(PgTypes.inet, unsaved.inet()), Fragment.lit("::inet, "), Fragment.encode(PgTypes.int2, unsaved.int2()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.int2vector, unsaved.int2vector()), Fragment.lit("::int2vector, "), Fragment.encode(PgTypes.int4, unsaved.int4()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.int8, unsaved.int8()), Fragment.lit("::int8, "), Fragment.encode(PgTypes.interval, unsaved.interval()), Fragment.lit("::interval, "), Fragment.encode(PgTypes.json, unsaved.json()), Fragment.lit("::json, "), Fragment.encode(PgTypes.jsonb, unsaved.jsonb()), Fragment.lit("::jsonb, "), Fragment.encode(PgTypes.line, unsaved.line()), Fragment.lit("::line, "), Fragment.encode(PgTypes.lseg, unsaved.lseg()), Fragment.lit("::lseg, "), Fragment.encode(PgTypes.money, unsaved.money()), Fragment.lit("::money, "), Fragment.encode(Mydomain.pgType, unsaved.mydomain()), Fragment.lit("::text, "), Fragment.encode(Myenum.pgType, unsaved.myenum()), Fragment.lit("::public.myenum, "), Fragment.encode(PgTypes.name, unsaved.name()), Fragment.lit("::name, "), Fragment.encode(PgTypes.numeric, unsaved.numeric()), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.path, unsaved.path()), Fragment.lit("::path, "), Fragment.encode(PgTypes.point, unsaved.point()), Fragment.lit("::point, "), Fragment.encode(PgTypes.polygon, unsaved.polygon()), Fragment.lit("::polygon, "), Fragment.encode(PgTypes.text, unsaved.text()), Fragment.lit(", "), Fragment.encode(PgTypes.time, unsaved.time()), Fragment.lit("::time, "), Fragment.encode(PgTypes.timestamp, unsaved.timestamp()), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamptz, unsaved.timestampz()), Fragment.lit("::timestamptz, "), Fragment.encode(PgTypes.timetz, unsaved.timez()), Fragment.lit("::timetz, "), Fragment.encode(PgTypes.uuid, unsaved.uuid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.text, unsaved.varchar()), Fragment.lit(", "), Fragment.encode(PgTypes.vector, unsaved.vector()), Fragment.lit("::vector, "), Fragment.encode(PgTypes.xml, unsaved.xml()), Fragment.lit("::xml, "), Fragment.encode(PgTypes.boxArray, unsaved.boxes()), Fragment.lit("::box[], "), Fragment.encode(PgTypes.bpcharArray, unsaved.bpchares()), Fragment.lit("::bpchar[], "), Fragment.encode(PgTypes.bpcharArray, unsaved.chares()), Fragment.lit("::bpchar[], "), Fragment.encode(PgTypes.circleArray, unsaved.circlees()), Fragment.lit("::circle[], "), Fragment.encode(PgTypes.dateArray, unsaved.datees()), Fragment.lit("::date[], "), Fragment.encode(PgTypes.float4Array, unsaved.float4es()), Fragment.lit("::float4[], "), Fragment.encode(PgTypes.float8Array, unsaved.float8es()), Fragment.lit("::float8[], "), Fragment.encode(PgTypes.inetArray, unsaved.inetes()), Fragment.lit("::inet[], "), Fragment.encode(PgTypes.int2Array, unsaved.int2es()), Fragment.lit("::int2[], "), Fragment.encode(PgTypes.int2vectorArray, unsaved.int2vectores()), Fragment.lit("::int2vector[], "), Fragment.encode(PgTypes.int4Array, unsaved.int4es()), Fragment.lit("::int4[], "), Fragment.encode(PgTypes.int8Array, unsaved.int8es()), Fragment.lit("::int8[], "), Fragment.encode(PgTypes.intervalArray, unsaved.intervales()), Fragment.lit("::interval[], "), Fragment.encode(PgTypes.jsonArray, unsaved.jsones()), Fragment.lit("::json[], "), Fragment.encode(PgTypes.jsonbArray, unsaved.jsonbes()), Fragment.lit("::jsonb[], "), Fragment.encode(PgTypes.lineArray, unsaved.linees()), Fragment.lit("::line[], "), Fragment.encode(PgTypes.lsegArray, unsaved.lseges()), Fragment.lit("::lseg[], "), Fragment.encode(PgTypes.moneyArray, unsaved.moneyes()), Fragment.lit("::money[], "), Fragment.encode(Mydomain.pgTypeArray, unsaved.mydomaines()), Fragment.lit("::mydomain[], "), Fragment.encode(Myenum.pgTypeArray, unsaved.myenumes()), Fragment.lit("::myenum[], "), Fragment.encode(PgTypes.nameArray, unsaved.namees()), Fragment.lit("::name[], "), Fragment.encode(PgTypes.numericArray, unsaved.numerices()), Fragment.lit("::numeric[], "), Fragment.encode(PgTypes.pathArray, unsaved.pathes()), Fragment.lit("::path[], "), Fragment.encode(PgTypes.pointArray, unsaved.pointes()), Fragment.lit("::point[], "), Fragment.encode(PgTypes.polygonArray, unsaved.polygones()), Fragment.lit("::polygon[], "), Fragment.encode(PgTypes.textArray, unsaved.textes()), Fragment.lit("::text[], "), Fragment.encode(PgTypes.timeArray, unsaved.timees()), Fragment.lit("::time[], "), Fragment.encode(PgTypes.timestampArray, unsaved.timestampes()), Fragment.lit("::timestamp[], "), Fragment.encode(PgTypes.timestamptzArray, unsaved.timestampzes()), Fragment.lit("::timestamptz[], "), Fragment.encode(PgTypes.timetzArray, unsaved.timezes()), Fragment.lit("::timetz[], "), Fragment.encode(PgTypes.uuidArray, unsaved.uuides()), Fragment.lit("::uuid[], "), Fragment.encode(PgTypes.textArray, unsaved.varchares()), Fragment.lit("::varchar[], "), Fragment.encode(PgTypes.xmlArray, unsaved.xmles()), Fragment.lit("::xml[])\nreturning \"bool\", \"box\", \"bpchar\", \"bytea\", \"char\", \"circle\", \"date\", \"float4\", \"float8\", \"hstore\", \"inet\", \"int2\", \"int2vector\", \"int4\", \"int8\", \"interval\", \"json\", \"jsonb\", \"line\", \"lseg\", \"money\"::numeric, \"mydomain\", \"myenum\", \"name\", \"numeric\", \"path\", \"point\", \"polygon\", \"text\", \"time\", \"timestamp\", \"timestampz\", \"timez\", \"uuid\", \"varchar\", \"vector\", \"xml\", \"boxes\", \"bpchares\", \"chares\", \"circlees\", \"datees\", \"float4es\", \"float8es\", \"inetes\", \"int2es\", \"int2vectores\", \"int4es\", \"int8es\", \"intervales\", \"jsones\", \"jsonbes\", \"linees\", \"lseges\", \"moneyes\"::numeric[], \"mydomaines\"::text[], \"myenumes\", \"namees\", \"numerices\", \"pathes\", \"pointes\", \"polygones\", \"textes\", \"timees\", \"timestampes\", \"timestampzes\", \"timezes\", \"uuides\", \"varchares\", \"xmles\"\n"))
       .updateReturning(PgtestRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -211,9 +40,7 @@ public class PgtestRepoImpl implements PgtestRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "public"."pgtest"("bool", "box", "bpchar", "bytea", "char", "circle", "date", "float4", "float8", "hstore", "inet", "int2", "int2vector", "int4", "int8", "interval", "json", "jsonb", "line", "lseg", "money", "mydomain", "myenum", "name", "numeric", "path", "point", "polygon", "text", "time", "timestamp", "timestampz", "timez", "uuid", "varchar", "vector", "xml", "boxes", "bpchares", "chares", "circlees", "datees", "float4es", "float8es", "inetes", "int2es", "int2vectores", "int4es", "int8es", "intervales", "jsones", "jsonbes", "linees", "lseges", "moneyes", "mydomaines", "myenumes", "namees", "numerices", "pathes", "pointes", "polygones", "textes", "timees", "timestampes", "timestampzes", "timezes", "uuides", "varchares", "xmles") FROM STDIN
-    """), batchSize, unsaved, c, PgtestRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"public\".\"pgtest\"(\"bool\", \"box\", \"bpchar\", \"bytea\", \"char\", \"circle\", \"date\", \"float4\", \"float8\", \"hstore\", \"inet\", \"int2\", \"int2vector\", \"int4\", \"int8\", \"interval\", \"json\", \"jsonb\", \"line\", \"lseg\", \"money\", \"mydomain\", \"myenum\", \"name\", \"numeric\", \"path\", \"point\", \"polygon\", \"text\", \"time\", \"timestamp\", \"timestampz\", \"timez\", \"uuid\", \"varchar\", \"vector\", \"xml\", \"boxes\", \"bpchares\", \"chares\", \"circlees\", \"datees\", \"float4es\", \"float8es\", \"inetes\", \"int2es\", \"int2vectores\", \"int4es\", \"int8es\", \"intervales\", \"jsones\", \"jsonbes\", \"linees\", \"lseges\", \"moneyes\", \"mydomaines\", \"myenumes\", \"namees\", \"numerices\", \"pathes\", \"pointes\", \"polygones\", \"textes\", \"timees\", \"timestampes\", \"timestampzes\", \"timezes\", \"uuides\", \"varchares\", \"xmles\") FROM STDIN", batchSize, unsaved, c, PgtestRow.pgText);
   };
 
   @Override
@@ -223,14 +50,11 @@ public class PgtestRepoImpl implements PgtestRepo {
 
   @Override
   public List<PgtestRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "bool", "box", "bpchar", "bytea", "char", "circle", "date"::text, "float4", "float8", "hstore", "inet", "int2", "int2vector", "int4", "int8", "interval", "json", "jsonb", "line", "lseg", "money"::numeric, "mydomain", "myenum", "name", "numeric", "path", "point", "polygon", "text", "time"::text, "timestamp"::text, "timestampz"::text, "timez"::text, "uuid", "varchar", "vector"::float4[], "xml", "boxes", "bpchares", "chares", "circlees", "datees"::text[], "float4es", "float8es", "inetes", "int2es", "int2vectores", "int4es", "int8es", "intervales", "jsones", "jsonbes", "linees", "lseges", "moneyes"::numeric[], "mydomaines"::text[], "myenumes", "namees", "numerices", "pathes", "pointes", "polygones", "textes", "timees"::text[], "timestampes"::text[], "timestampzes"::text[], "timezes"::text[], "uuides", "varchares", "xmles"
-       from "public"."pgtest"
-    """)).query(PgtestRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"bool\", \"box\", \"bpchar\", \"bytea\", \"char\", \"circle\", \"date\", \"float4\", \"float8\", \"hstore\", \"inet\", \"int2\", \"int2vector\", \"int4\", \"int8\", \"interval\", \"json\", \"jsonb\", \"line\", \"lseg\", \"money\"::numeric, \"mydomain\", \"myenum\", \"name\", \"numeric\", \"path\", \"point\", \"polygon\", \"text\", \"time\", \"timestamp\", \"timestampz\", \"timez\", \"uuid\", \"varchar\", \"vector\", \"xml\", \"boxes\", \"bpchares\", \"chares\", \"circlees\", \"datees\", \"float4es\", \"float8es\", \"inetes\", \"int2es\", \"int2vectores\", \"int4es\", \"int8es\", \"intervales\", \"jsones\", \"jsonbes\", \"linees\", \"lseges\", \"moneyes\"::numeric[], \"mydomaines\"::text[], \"myenumes\", \"namees\", \"numerices\", \"pathes\", \"pointes\", \"polygones\", \"textes\", \"timees\", \"timestampes\", \"timestampzes\", \"timezes\", \"uuides\", \"varchares\", \"xmles\"\nfrom \"public\".\"pgtest\"\n")).query(PgtestRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<PgtestFields, PgtestRow> update() {
-    return UpdateBuilder.of("\"public\".\"pgtest\"", PgtestFields.structure(), PgtestRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"public\".\"pgtest\"", PgtestFields.structure(), PgtestRow._rowParser, Dialect.POSTGRESQL);
   };
 }

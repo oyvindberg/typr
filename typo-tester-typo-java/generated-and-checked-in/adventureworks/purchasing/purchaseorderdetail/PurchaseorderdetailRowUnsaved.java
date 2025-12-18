@@ -7,11 +7,10 @@ package adventureworks.purchasing.purchaseorderdetail;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -22,11 +21,11 @@ public record PurchaseorderdetailRowUnsaved(
     */
   PurchaseorderheaderId purchaseorderid,
   /** Date the product is expected to be received. */
-  TypoLocalDateTime duedate,
+  LocalDateTime duedate,
   /** Quantity ordered.
     * Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0))
     */
-  TypoShort orderqty,
+  Short orderqty,
   /** Product identification number. Foreign key to Product.ProductID.
     * Points to {@link adventureworks.production.product.ProductRow#productid()}
     */
@@ -48,7 +47,7 @@ public record PurchaseorderdetailRowUnsaved(
     */
   Defaulted<Integer> purchaseorderdetailid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public PurchaseorderdetailRowUnsaved(
     /** Primary key. Foreign key to PurchaseOrderHeader.PurchaseOrderID.
@@ -56,11 +55,11 @@ public record PurchaseorderdetailRowUnsaved(
       */
     PurchaseorderheaderId purchaseorderid,
     /** Date the product is expected to be received. */
-    TypoLocalDateTime duedate,
+    LocalDateTime duedate,
     /** Quantity ordered.
       * Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0))
       */
-    TypoShort orderqty,
+    Short orderqty,
     /** Product identification number. Foreign key to Product.ProductID.
       * Points to {@link adventureworks.production.product.ProductRow#productid()}
       */
@@ -89,14 +88,14 @@ public record PurchaseorderdetailRowUnsaved(
   };
 
   /** Date the product is expected to be received. */
-  public PurchaseorderdetailRowUnsaved withDuedate(TypoLocalDateTime duedate) {
+  public PurchaseorderdetailRowUnsaved withDuedate(LocalDateTime duedate) {
     return new PurchaseorderdetailRowUnsaved(purchaseorderid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, purchaseorderdetailid, modifieddate);
   };
 
   /** Quantity ordered.
     * Constraint CK_PurchaseOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0))
     */
-  public PurchaseorderdetailRowUnsaved withOrderqty(TypoShort orderqty) {
+  public PurchaseorderdetailRowUnsaved withOrderqty(Short orderqty) {
     return new PurchaseorderdetailRowUnsaved(purchaseorderid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, purchaseorderdetailid, modifieddate);
   };
 
@@ -136,7 +135,7 @@ public record PurchaseorderdetailRowUnsaved(
   };
 
   /** Default: now() */
-  public PurchaseorderdetailRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public PurchaseorderdetailRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new PurchaseorderdetailRowUnsaved(purchaseorderid, duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, purchaseorderdetailid, modifieddate);
   };
 
@@ -144,9 +143,9 @@ public record PurchaseorderdetailRowUnsaved(
     PgText.instance((row, sb) -> {
       PurchaseorderheaderId.pgType.pgText().unsafeEncode(row.purchaseorderid, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.duedate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.duedate, sb);
       sb.append(PgText.DELIMETER);
-      TypoShort.pgType.pgText().unsafeEncode(row.orderqty, sb);
+      PgTypes.int2.pgText().unsafeEncode(row.orderqty, sb);
       sb.append(PgText.DELIMETER);
       ProductId.pgType.pgText().unsafeEncode(row.productid, sb);
       sb.append(PgText.DELIMETER);
@@ -158,12 +157,12 @@ public record PurchaseorderdetailRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.purchaseorderdetailid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public PurchaseorderdetailRow toRow(
     java.util.function.Supplier<Integer> purchaseorderdetailidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new PurchaseorderdetailRow(purchaseorderid, purchaseorderdetailid.getOrElse(purchaseorderdetailidDefault), duedate, orderqty, productid, unitprice, receivedqty, rejectedqty, modifieddate.getOrElse(modifieddateDefault));
   };

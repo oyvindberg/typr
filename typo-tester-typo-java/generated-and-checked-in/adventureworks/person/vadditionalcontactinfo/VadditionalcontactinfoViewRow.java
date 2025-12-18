@@ -5,13 +5,13 @@
  */
 package adventureworks.person.vadditionalcontactinfo;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Name;
 import adventureworks.userdefined.FirstName;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
+import typo.data.Xml;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -23,24 +23,24 @@ public record VadditionalcontactinfoViewRow(
   /** Points to {@link adventureworks.person.person.PersonRow#firstname()} */
   /* user-picked */ FirstName firstname,
   /** Points to {@link adventureworks.person.person.PersonRow#middlename()} */
-  Optional<Name> middlename,
+  Name middlename,
   /** Points to {@link adventureworks.person.person.PersonRow#lastname()} */
   Name lastname,
-  /* nullability unknown */ Optional<TypoXml> telephonenumber,
-  /* nullability unknown */ Optional<String> telephonespecialinstructions,
-  /* nullability unknown */ Optional<TypoXml> street,
-  /* nullability unknown */ Optional<TypoXml> city,
-  /* nullability unknown */ Optional<TypoXml> stateprovince,
-  /* nullability unknown */ Optional<TypoXml> postalcode,
-  /* nullability unknown */ Optional<TypoXml> countryregion,
-  /* nullability unknown */ Optional<TypoXml> homeaddressspecialinstructions,
-  /* nullability unknown */ Optional<TypoXml> emailaddress,
-  /* nullability unknown */ Optional<String> emailspecialinstructions,
-  /* nullability unknown */ Optional<TypoXml> emailtelephonenumber,
+  Optional<Xml> telephonenumber,
+  Optional<String> telephonespecialinstructions,
+  Optional<Xml> street,
+  Optional<Xml> city,
+  Optional<Xml> stateprovince,
+  Optional<Xml> postalcode,
+  Optional<Xml> countryregion,
+  Optional<Xml> homeaddressspecialinstructions,
+  Optional<Xml> emailaddress,
+  Optional<String> emailspecialinstructions,
+  Optional<Xml> emailtelephonenumber,
   /** Points to {@link adventureworks.person.person.PersonRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.person.person.PersonRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.person.PersonRow#businessentityid()} */
   public VadditionalcontactinfoViewRow withBusinessentityid(BusinessentityId businessentityid) {
@@ -53,7 +53,7 @@ public record VadditionalcontactinfoViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#middlename()} */
-  public VadditionalcontactinfoViewRow withMiddlename(Optional<Name> middlename) {
+  public VadditionalcontactinfoViewRow withMiddlename(Name middlename) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
@@ -62,59 +62,59 @@ public record VadditionalcontactinfoViewRow(
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withTelephonenumber(/* nullability unknown */ Optional<TypoXml> telephonenumber) {
+  public VadditionalcontactinfoViewRow withTelephonenumber(Optional<Xml> telephonenumber) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withTelephonespecialinstructions(/* nullability unknown */ Optional<String> telephonespecialinstructions) {
+  public VadditionalcontactinfoViewRow withTelephonespecialinstructions(Optional<String> telephonespecialinstructions) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withStreet(/* nullability unknown */ Optional<TypoXml> street) {
+  public VadditionalcontactinfoViewRow withStreet(Optional<Xml> street) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withCity(/* nullability unknown */ Optional<TypoXml> city) {
+  public VadditionalcontactinfoViewRow withCity(Optional<Xml> city) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withStateprovince(/* nullability unknown */ Optional<TypoXml> stateprovince) {
+  public VadditionalcontactinfoViewRow withStateprovince(Optional<Xml> stateprovince) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withPostalcode(/* nullability unknown */ Optional<TypoXml> postalcode) {
+  public VadditionalcontactinfoViewRow withPostalcode(Optional<Xml> postalcode) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withCountryregion(/* nullability unknown */ Optional<TypoXml> countryregion) {
+  public VadditionalcontactinfoViewRow withCountryregion(Optional<Xml> countryregion) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withHomeaddressspecialinstructions(/* nullability unknown */ Optional<TypoXml> homeaddressspecialinstructions) {
+  public VadditionalcontactinfoViewRow withHomeaddressspecialinstructions(Optional<Xml> homeaddressspecialinstructions) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withEmailaddress(/* nullability unknown */ Optional<TypoXml> emailaddress) {
+  public VadditionalcontactinfoViewRow withEmailaddress(Optional<Xml> emailaddress) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withEmailspecialinstructions(/* nullability unknown */ Optional<String> emailspecialinstructions) {
+  public VadditionalcontactinfoViewRow withEmailspecialinstructions(Optional<String> emailspecialinstructions) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  public VadditionalcontactinfoViewRow withEmailtelephonenumber(/* nullability unknown */ Optional<TypoXml> emailtelephonenumber) {
+  public VadditionalcontactinfoViewRow withEmailtelephonenumber(Optional<Xml> emailtelephonenumber) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#rowguid()} */
-  public VadditionalcontactinfoViewRow withRowguid(TypoUUID rowguid) {
+  public VadditionalcontactinfoViewRow withRowguid(UUID rowguid) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#modifieddate()} */
-  public VadditionalcontactinfoViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public VadditionalcontactinfoViewRow withModifieddate(LocalDateTime modifieddate) {
     return new VadditionalcontactinfoViewRow(businessentityid, firstname, middlename, lastname, telephonenumber, telephonespecialinstructions, street, city, stateprovince, postalcode, countryregion, homeaddressspecialinstructions, emailaddress, emailspecialinstructions, emailtelephonenumber, rowguid, modifieddate);
   };
 
-  static RowParser<VadditionalcontactinfoViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, FirstName.pgType, Name.pgType.opt(), Name.pgType, TypoXml.pgType.opt(), PgTypes.text.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), PgTypes.text.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, VadditionalcontactinfoViewRow::new, row -> new Object[]{row.businessentityid(), row.firstname(), row.middlename(), row.lastname(), row.telephonenumber(), row.telephonespecialinstructions(), row.street(), row.city(), row.stateprovince(), row.postalcode(), row.countryregion(), row.homeaddressspecialinstructions(), row.emailaddress(), row.emailspecialinstructions(), row.emailtelephonenumber(), row.rowguid(), row.modifieddate()});;
+  static RowParser<VadditionalcontactinfoViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, FirstName.pgType, Name.pgType, Name.pgType, PgTypes.xml.opt(), PgTypes.text.opt(), PgTypes.xml.opt(), PgTypes.xml.opt(), PgTypes.xml.opt(), PgTypes.xml.opt(), PgTypes.xml.opt(), PgTypes.xml.opt(), PgTypes.xml.opt(), PgTypes.text.opt(), PgTypes.xml.opt(), PgTypes.uuid, PgTypes.timestamp, VadditionalcontactinfoViewRow::new, row -> new Object[]{row.businessentityid(), row.firstname(), row.middlename(), row.lastname(), row.telephonenumber(), row.telephonespecialinstructions(), row.street(), row.city(), row.stateprovince(), row.postalcode(), row.countryregion(), row.homeaddressspecialinstructions(), row.emailaddress(), row.emailspecialinstructions(), row.emailtelephonenumber(), row.rowguid(), row.modifieddate()});;
 }

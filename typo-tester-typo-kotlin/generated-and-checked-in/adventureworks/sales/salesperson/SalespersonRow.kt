@@ -6,16 +6,16 @@
 package adventureworks.sales.salesperson
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: sales.salesperson
   * Sales representative current information.
@@ -29,11 +29,11 @@ data class SalespersonRow(
   /** Territory currently assigned to. Foreign key to SalesTerritory.SalesTerritoryID.
     * Points to [adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]
     */
-  val territoryid: Optional<SalesterritoryId>,
+  val territoryid: SalesterritoryId?,
   /** Projected yearly sales.
     * Constraint CK_SalesPerson_SalesQuota affecting columns salesquota: ((salesquota > 0.00))
     */
-  val salesquota: Optional<BigDecimal>,
+  val salesquota: BigDecimal?,
   /** Bonus due if quota is met.
     * Default: 0.00
     * Constraint CK_SalesPerson_Bonus affecting columns bonus: ((bonus >= 0.00))
@@ -55,9 +55,9 @@ data class SalespersonRow(
     */
   val saleslastyear: BigDecimal,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): BusinessentityId = businessentityid
 
@@ -66,14 +66,14 @@ data class SalespersonRow(
     commissionpct: Defaulted<BigDecimal>,
     salesytd: Defaulted<BigDecimal>,
     saleslastyear: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): SalespersonRowUnsaved = SalespersonRowUnsaved(businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SalespersonRow> = RowParsers.of(BusinessentityId.pgType, SalesterritoryId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> SalespersonRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.territoryid, row.salesquota, row.bonus, row.commissionpct, row.salesytd, row.saleslastyear, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SalespersonRow> = RowParsers.of(BusinessentityId.pgType, SalesterritoryId.pgType.nullable(), PgTypes.numeric.nullable(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> SalespersonRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.territoryid, row.salesquota, row.bonus, row.commissionpct, row.salesytd, row.saleslastyear, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<SalespersonRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

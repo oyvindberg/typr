@@ -7,12 +7,13 @@ package adventureworks.purchasing.productvendor
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -37,9 +38,9 @@ data class ProductvendorRowUnsaved(
   /** The selling price when last purchased.
     * Constraint CK_ProductVendor_LastReceiptCost affecting columns lastreceiptcost:  ((lastreceiptcost > 0.00))
     */
-  val lastreceiptcost: Optional<BigDecimal> = Optional.empty(),
+  val lastreceiptcost: BigDecimal? = null,
   /** Date the product was last received by the vendor. */
-  val lastreceiptdate: Optional<TypoLocalDateTime> = Optional.empty(),
+  val lastreceiptdate: LocalDateTime? = null,
   /** The maximum quantity that should be ordered.
     * Constraint CK_ProductVendor_MinOrderQty affecting columns minorderqty:  ((minorderqty >= 1))
     */
@@ -51,15 +52,15 @@ data class ProductvendorRowUnsaved(
   /** The quantity currently on order.
     * Constraint CK_ProductVendor_OnOrderQty affecting columns onorderqty:  ((onorderqty >= 0))
     */
-  val onorderqty: Optional<Int> = Optional.empty(),
+  val onorderqty: Int? = null,
   /** The product's unit of measure.
     * Points to [adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]
     */
   val unitmeasurecode: UnitmeasureId,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
-  fun toRow(modifieddateDefault: () -> TypoLocalDateTime): ProductvendorRow = ProductvendorRow(productid = productid, businessentityid = businessentityid, averageleadtime = averageleadtime, standardprice = standardprice, lastreceiptcost = lastreceiptcost, lastreceiptdate = lastreceiptdate, minorderqty = minorderqty, maxorderqty = maxorderqty, onorderqty = onorderqty, unitmeasurecode = unitmeasurecode, modifieddate = modifieddate.getOrElse(modifieddateDefault))
+  fun toRow(modifieddateDefault: () -> LocalDateTime): ProductvendorRow = ProductvendorRow(productid = productid, businessentityid = businessentityid, averageleadtime = averageleadtime, standardprice = standardprice, lastreceiptcost = lastreceiptcost, lastreceiptdate = lastreceiptdate, minorderqty = minorderqty, maxorderqty = maxorderqty, onorderqty = onorderqty, unitmeasurecode = unitmeasurecode, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<ProductvendorRowUnsaved> =
@@ -67,22 +68,22 @@ data class ProductvendorRowUnsaved(
       sb.append(PgText.DELIMETER)
       BusinessentityId.pgType.pgText().unsafeEncode(row.businessentityid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.int4.pgText().unsafeEncode(row.averageleadtime, sb)
+      KotlinDbTypes.PgTypes.int4.pgText().unsafeEncode(row.averageleadtime, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.numeric.pgText().unsafeEncode(row.standardprice, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.numeric.opt().pgText().unsafeEncode(row.lastreceiptcost, sb)
+      PgTypes.numeric.nullable().pgText().unsafeEncode(row.lastreceiptcost, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.lastreceiptdate, sb)
+      PgTypes.timestamp.nullable().pgText().unsafeEncode(row.lastreceiptdate, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.int4.pgText().unsafeEncode(row.minorderqty, sb)
+      KotlinDbTypes.PgTypes.int4.pgText().unsafeEncode(row.minorderqty, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.int4.pgText().unsafeEncode(row.maxorderqty, sb)
+      KotlinDbTypes.PgTypes.int4.pgText().unsafeEncode(row.maxorderqty, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.int4.opt().pgText().unsafeEncode(row.onorderqty, sb)
+      KotlinDbTypes.PgTypes.int4.nullable().pgText().unsafeEncode(row.onorderqty, sb)
       sb.append(PgText.DELIMETER)
       UnitmeasureId.pgType.pgText().unsafeEncode(row.unitmeasurecode, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

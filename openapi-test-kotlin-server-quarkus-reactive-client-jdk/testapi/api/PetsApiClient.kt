@@ -6,13 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
 import java.lang.Exception
 import java.lang.IllegalStateException
+import Int
 import java.lang.RuntimeException
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
-import java.util.Optional
 import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
@@ -83,11 +83,11 @@ data class PetsApiClient(
   /** List all pets */
   override fun listPets(
     /** Maximum number of pets to return */
-    limit: Optional<Integer>,
+    limit: Integer?,
     /** Filter by status */
-    status: Optional<String>
+    status: String?
   ): Uni<List<Pet>> {
-    var request = HttpRequest.newBuilder(URI.create(baseUri.toString() + "/" + "pets" + (if (limit.isPresent()) "?limit=" + limit.get().toString() else "") + (if (status.isPresent()) "&status=" + status.get().toString() else ""))).method("GET", BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
+    var request = HttpRequest.newBuilder(URI.create(baseUri.toString() + "/" + "pets" + (if (limit != null) "?limit=" + limit!!.toString() else "") + (if (status != null) "&status=" + status!!.toString() else ""))).method("GET", BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
     return Uni.createFrom().completionStage({ httpClient.sendAsync(request, BodyHandlers.ofString()) }).map({ response -> try {
       objectMapper.readValue(response.body(), object : TypeReference<List<Pet>>() {})
     } catch (e: Exception) {

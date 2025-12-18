@@ -5,335 +5,335 @@
  */
 package adventureworks.public.pgtest
 
-import adventureworks.customtypes.TypoBox
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoCircle
-import adventureworks.customtypes.TypoHStore
-import adventureworks.customtypes.TypoInet
-import adventureworks.customtypes.TypoInstant
-import adventureworks.customtypes.TypoInt2Vector
-import adventureworks.customtypes.TypoInterval
-import adventureworks.customtypes.TypoJson
-import adventureworks.customtypes.TypoJsonb
-import adventureworks.customtypes.TypoLine
-import adventureworks.customtypes.TypoLineSegment
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoLocalTime
-import adventureworks.customtypes.TypoMoney
-import adventureworks.customtypes.TypoOffsetTime
-import adventureworks.customtypes.TypoPath
-import adventureworks.customtypes.TypoPoint
-import adventureworks.customtypes.TypoPolygon
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoVector
-import adventureworks.customtypes.TypoXml
 import adventureworks.public.Mydomain
 import adventureworks.public.Myenum
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.OffsetTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
+import kotlin.collections.Map
+import org.postgresql.geometric.PGbox
+import org.postgresql.geometric.PGcircle
+import org.postgresql.geometric.PGline
+import org.postgresql.geometric.PGlseg
+import org.postgresql.geometric.PGpath
+import org.postgresql.geometric.PGpoint
+import org.postgresql.geometric.PGpolygon
+import org.postgresql.util.PGInterval
+import typo.data.Inet
+import typo.data.Int2Vector
+import typo.data.Json
+import typo.data.Jsonb
+import typo.data.Money
+import typo.data.Vector
+import typo.data.Xml
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PgtestFields : FieldsExpr<PgtestRow> {
-  fun bool(): Field<Boolean, PgtestRow>
+  abstract fun bool(): Field<Boolean, PgtestRow>
 
-  fun box(): Field<TypoBox, PgtestRow>
+  abstract fun box(): Field<PGbox, PgtestRow>
 
-  fun boxes(): Field<Array<TypoBox>, PgtestRow>
+  abstract fun boxes(): Field<Array<PGbox>, PgtestRow>
 
-  fun bpchar(): Field</* bpchar, max 3 chars */ String, PgtestRow>
+  abstract fun bpchar(): Field<String, PgtestRow>
 
-  fun bpchares(): Field<Array</* bpchar */ String>, PgtestRow>
+  abstract fun bpchares(): Field<Array</* bpchar */ String>, PgtestRow>
 
-  fun bytea(): Field<TypoBytea, PgtestRow>
+  abstract fun bytea(): Field<ByteArray, PgtestRow>
 
-  fun char(): Field</* bpchar, max 1 chars */ String, PgtestRow>
+  abstract fun char(): Field<String, PgtestRow>
 
-  fun chares(): Field<Array</* bpchar */ String>, PgtestRow>
+  abstract fun chares(): Field<Array</* bpchar */ String>, PgtestRow>
 
-  fun circle(): Field<TypoCircle, PgtestRow>
+  abstract fun circle(): Field<PGcircle, PgtestRow>
 
-  fun circlees(): Field<Array<TypoCircle>, PgtestRow>
+  abstract fun circlees(): Field<Array<PGcircle>, PgtestRow>
 
-  override fun columns(): List<FieldLike<*, PgtestRow>>
+  abstract override fun columns(): List<FieldLike<*, PgtestRow>>
 
-  fun date(): Field<TypoLocalDate, PgtestRow>
+  abstract fun date(): Field<LocalDate, PgtestRow>
 
-  fun datees(): Field<Array<TypoLocalDate>, PgtestRow>
+  abstract fun datees(): Field<Array<LocalDate>, PgtestRow>
 
-  fun float4(): Field<Float, PgtestRow>
+  abstract fun float4(): Field<Float, PgtestRow>
 
-  fun float4es(): Field<Array<Float>, PgtestRow>
+  abstract fun float4es(): Field<Array<Float>, PgtestRow>
 
-  fun float8(): Field<Double, PgtestRow>
+  abstract fun float8(): Field<Double, PgtestRow>
 
-  fun float8es(): Field<Array<Double>, PgtestRow>
+  abstract fun float8es(): Field<Array<Double>, PgtestRow>
 
-  fun hstore(): Field<TypoHStore, PgtestRow>
+  abstract fun hstore(): Field<Map<String, String>, PgtestRow>
 
-  fun inet(): Field<TypoInet, PgtestRow>
+  abstract fun inet(): Field<Inet, PgtestRow>
 
-  fun inetes(): Field<Array<TypoInet>, PgtestRow>
+  abstract fun inetes(): Field<Array<Inet>, PgtestRow>
 
-  fun int2(): Field<TypoShort, PgtestRow>
+  abstract fun int2(): Field<Short, PgtestRow>
 
-  fun int2es(): Field<Array<TypoShort>, PgtestRow>
+  abstract fun int2es(): Field<Array<Short>, PgtestRow>
 
-  fun int2vector(): Field<TypoInt2Vector, PgtestRow>
+  abstract fun int2vector(): Field<Int2Vector, PgtestRow>
 
-  fun int2vectores(): Field<Array<TypoInt2Vector>, PgtestRow>
+  abstract fun int2vectores(): Field<Array<Int2Vector>, PgtestRow>
 
-  fun int4(): Field<Int, PgtestRow>
+  abstract fun int4(): Field<Int, PgtestRow>
 
-  fun int4es(): Field<Array<Int>, PgtestRow>
+  abstract fun int4es(): Field<Array<Int>, PgtestRow>
 
-  fun int8(): Field<Long, PgtestRow>
+  abstract fun int8(): Field<Long, PgtestRow>
 
-  fun int8es(): Field<Array<Long>, PgtestRow>
+  abstract fun int8es(): Field<Array<Long>, PgtestRow>
 
-  fun interval(): Field<TypoInterval, PgtestRow>
+  abstract fun interval(): Field<PGInterval, PgtestRow>
 
-  fun intervales(): Field<Array<TypoInterval>, PgtestRow>
+  abstract fun intervales(): Field<Array<PGInterval>, PgtestRow>
 
-  fun json(): Field<TypoJson, PgtestRow>
+  abstract fun json(): Field<Json, PgtestRow>
 
-  fun jsonb(): Field<TypoJsonb, PgtestRow>
+  abstract fun jsonb(): Field<Jsonb, PgtestRow>
 
-  fun jsonbes(): Field<Array<TypoJsonb>, PgtestRow>
+  abstract fun jsonbes(): Field<Array<Jsonb>, PgtestRow>
 
-  fun jsones(): Field<Array<TypoJson>, PgtestRow>
+  abstract fun jsones(): Field<Array<Json>, PgtestRow>
 
-  fun line(): Field<TypoLine, PgtestRow>
+  abstract fun line(): Field<PGline, PgtestRow>
 
-  fun linees(): Field<Array<TypoLine>, PgtestRow>
+  abstract fun linees(): Field<Array<PGline>, PgtestRow>
 
-  fun lseg(): Field<TypoLineSegment, PgtestRow>
+  abstract fun lseg(): Field<PGlseg, PgtestRow>
 
-  fun lseges(): Field<Array<TypoLineSegment>, PgtestRow>
+  abstract fun lseges(): Field<Array<PGlseg>, PgtestRow>
 
-  fun money(): Field<TypoMoney, PgtestRow>
+  abstract fun money(): Field<Money, PgtestRow>
 
-  fun moneyes(): Field<Array<TypoMoney>, PgtestRow>
+  abstract fun moneyes(): Field<Array<Money>, PgtestRow>
 
-  fun mydomain(): Field<Mydomain, PgtestRow>
+  abstract fun mydomain(): Field<Mydomain, PgtestRow>
 
-  fun mydomaines(): Field<Array<Mydomain>, PgtestRow>
+  abstract fun mydomaines(): Field<Array<Mydomain>, PgtestRow>
 
-  fun myenum(): Field<Myenum, PgtestRow>
+  abstract fun myenum(): Field<Myenum, PgtestRow>
 
-  fun myenumes(): Field<Array<Myenum>, PgtestRow>
+  abstract fun myenumes(): Field<Array<Myenum>, PgtestRow>
 
-  fun name(): Field<String, PgtestRow>
+  abstract fun name(): Field<String, PgtestRow>
 
-  fun namees(): Field<Array<String>, PgtestRow>
+  abstract fun namees(): Field<Array<String>, PgtestRow>
 
-  fun numeric(): Field<BigDecimal, PgtestRow>
+  abstract fun numeric(): Field<BigDecimal, PgtestRow>
 
-  fun numerices(): Field<Array<BigDecimal>, PgtestRow>
+  abstract fun numerices(): Field<Array<BigDecimal>, PgtestRow>
 
-  fun path(): Field<TypoPath, PgtestRow>
+  abstract fun path(): Field<PGpath, PgtestRow>
 
-  fun pathes(): Field<Array<TypoPath>, PgtestRow>
+  abstract fun pathes(): Field<Array<PGpath>, PgtestRow>
 
-  fun point(): Field<TypoPoint, PgtestRow>
+  abstract fun point(): Field<PGpoint, PgtestRow>
 
-  fun pointes(): Field<Array<TypoPoint>, PgtestRow>
+  abstract fun pointes(): Field<Array<PGpoint>, PgtestRow>
 
-  fun polygon(): Field<TypoPolygon, PgtestRow>
+  abstract fun polygon(): Field<PGpolygon, PgtestRow>
 
-  fun polygones(): Field<Array<TypoPolygon>, PgtestRow>
+  abstract fun polygones(): Field<Array<PGpolygon>, PgtestRow>
 
-  override fun rowParser(): RowParser<PgtestRow> = PgtestRow._rowParser
+  override fun rowParser(): RowParser<PgtestRow> = PgtestRow._rowParser.underlying
 
-  fun text(): Field<String, PgtestRow>
+  abstract fun text(): Field<String, PgtestRow>
 
-  fun textes(): Field<Array<String>, PgtestRow>
+  abstract fun textes(): Field<Array<String>, PgtestRow>
 
-  fun time(): Field<TypoLocalTime, PgtestRow>
+  abstract fun time(): Field<LocalTime, PgtestRow>
 
-  fun timees(): Field<Array<TypoLocalTime>, PgtestRow>
+  abstract fun timees(): Field<Array<LocalTime>, PgtestRow>
 
-  fun timestamp(): Field<TypoLocalDateTime, PgtestRow>
+  abstract fun timestamp(): Field<LocalDateTime, PgtestRow>
 
-  fun timestampes(): Field<Array<TypoLocalDateTime>, PgtestRow>
+  abstract fun timestampes(): Field<Array<LocalDateTime>, PgtestRow>
 
-  fun timestampz(): Field<TypoInstant, PgtestRow>
+  abstract fun timestampz(): Field<Instant, PgtestRow>
 
-  fun timestampzes(): Field<Array<TypoInstant>, PgtestRow>
+  abstract fun timestampzes(): Field<Array<Instant>, PgtestRow>
 
-  fun timez(): Field<TypoOffsetTime, PgtestRow>
+  abstract fun timez(): Field<OffsetTime, PgtestRow>
 
-  fun timezes(): Field<Array<TypoOffsetTime>, PgtestRow>
+  abstract fun timezes(): Field<Array<OffsetTime>, PgtestRow>
 
-  fun uuid(): Field<TypoUUID, PgtestRow>
+  abstract fun uuid(): Field<UUID, PgtestRow>
 
-  fun uuides(): Field<Array<TypoUUID>, PgtestRow>
+  abstract fun uuides(): Field<Array<UUID>, PgtestRow>
 
-  fun varchar(): Field<String, PgtestRow>
+  abstract fun varchar(): Field<String, PgtestRow>
 
-  fun varchares(): Field<Array<String>, PgtestRow>
+  abstract fun varchares(): Field<Array<String>, PgtestRow>
 
-  fun vector(): Field<TypoVector, PgtestRow>
+  abstract fun vector(): Field<Vector, PgtestRow>
 
-  fun xml(): Field<TypoXml, PgtestRow>
+  abstract fun xml(): Field<Xml, PgtestRow>
 
-  fun xmles(): Field<Array<TypoXml>, PgtestRow>
+  abstract fun xmles(): Field<Array<Xml>, PgtestRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PgtestFields, Relation<PgtestFields, PgtestRow> {
-      override fun bool(): Field<Boolean, PgtestRow> = Field<Boolean, PgtestRow>(_path, "bool", PgtestRow::bool, Optional.empty(), Optional.empty(), { row, value -> row.copy(bool = value) }, PgTypes.bool)
+    data class Impl(val _path: List<Path>) : PgtestFields, RelationStructure<PgtestFields, PgtestRow> {
+      override fun bool(): Field<Boolean, PgtestRow> = Field<Boolean, PgtestRow>(_path, "bool", PgtestRow::bool, null, null, { row, value -> row.copy(bool = value) }, KotlinDbTypes.PgTypes.bool)
 
-      override fun box(): Field<TypoBox, PgtestRow> = Field<TypoBox, PgtestRow>(_path, "box", PgtestRow::box, Optional.empty(), Optional.of("box"), { row, value -> row.copy(box = value) }, TypoBox.pgType)
+      override fun box(): Field<PGbox, PgtestRow> = Field<PGbox, PgtestRow>(_path, "box", PgtestRow::box, null, "box", { row, value -> row.copy(box = value) }, PgTypes.box)
 
-      override fun bpchar(): Field</* bpchar, max 3 chars */ String, PgtestRow> = Field</* bpchar, max 3 chars */ String, PgtestRow>(_path, "bpchar", PgtestRow::bpchar, Optional.empty(), Optional.of("bpchar"), { row, value -> row.copy(bpchar = value) }, PgTypes.bpchar)
+      override fun bpchar(): Field<String, PgtestRow> = Field<String, PgtestRow>(_path, "bpchar", PgtestRow::bpchar, null, "bpchar", { row, value -> row.copy(bpchar = value) }, PgTypes.bpchar)
 
-      override fun bytea(): Field<TypoBytea, PgtestRow> = Field<TypoBytea, PgtestRow>(_path, "bytea", PgtestRow::bytea, Optional.empty(), Optional.of("bytea"), { row, value -> row.copy(bytea = value) }, TypoBytea.pgType)
+      override fun bytea(): Field<ByteArray, PgtestRow> = Field<ByteArray, PgtestRow>(_path, "bytea", PgtestRow::bytea, null, "bytea", { row, value -> row.copy(bytea = value) }, PgTypes.bytea)
 
-      override fun char(): Field</* bpchar, max 1 chars */ String, PgtestRow> = Field</* bpchar, max 1 chars */ String, PgtestRow>(_path, "char", PgtestRow::char, Optional.empty(), Optional.of("bpchar"), { row, value -> row.copy(char = value) }, PgTypes.bpchar)
+      override fun char(): Field<String, PgtestRow> = Field<String, PgtestRow>(_path, "char", PgtestRow::char, null, "bpchar", { row, value -> row.copy(char = value) }, PgTypes.bpchar)
 
-      override fun circle(): Field<TypoCircle, PgtestRow> = Field<TypoCircle, PgtestRow>(_path, "circle", PgtestRow::circle, Optional.empty(), Optional.of("circle"), { row, value -> row.copy(circle = value) }, TypoCircle.pgType)
+      override fun circle(): Field<PGcircle, PgtestRow> = Field<PGcircle, PgtestRow>(_path, "circle", PgtestRow::circle, null, "circle", { row, value -> row.copy(circle = value) }, PgTypes.circle)
 
-      override fun date(): Field<TypoLocalDate, PgtestRow> = Field<TypoLocalDate, PgtestRow>(_path, "date", PgtestRow::date, Optional.of("text"), Optional.of("date"), { row, value -> row.copy(date = value) }, TypoLocalDate.pgType)
+      override fun date(): Field<LocalDate, PgtestRow> = Field<LocalDate, PgtestRow>(_path, "date", PgtestRow::date, null, "date", { row, value -> row.copy(date = value) }, PgTypes.date)
 
-      override fun float4(): Field<Float, PgtestRow> = Field<Float, PgtestRow>(_path, "float4", PgtestRow::float4, Optional.empty(), Optional.of("float4"), { row, value -> row.copy(float4 = value) }, PgTypes.float4)
+      override fun float4(): Field<Float, PgtestRow> = Field<Float, PgtestRow>(_path, "float4", PgtestRow::float4, null, "float4", { row, value -> row.copy(float4 = value) }, KotlinDbTypes.PgTypes.float4)
 
-      override fun float8(): Field<Double, PgtestRow> = Field<Double, PgtestRow>(_path, "float8", PgtestRow::float8, Optional.empty(), Optional.of("float8"), { row, value -> row.copy(float8 = value) }, PgTypes.float8)
+      override fun float8(): Field<Double, PgtestRow> = Field<Double, PgtestRow>(_path, "float8", PgtestRow::float8, null, "float8", { row, value -> row.copy(float8 = value) }, KotlinDbTypes.PgTypes.float8)
 
-      override fun hstore(): Field<TypoHStore, PgtestRow> = Field<TypoHStore, PgtestRow>(_path, "hstore", PgtestRow::hstore, Optional.empty(), Optional.of("hstore"), { row, value -> row.copy(hstore = value) }, TypoHStore.pgType)
+      override fun hstore(): Field<Map<String, String>, PgtestRow> = Field<Map<String, String>, PgtestRow>(_path, "hstore", PgtestRow::hstore, null, "hstore", { row, value -> row.copy(hstore = value) }, KotlinDbTypes.PgTypes.hstore)
 
-      override fun inet(): Field<TypoInet, PgtestRow> = Field<TypoInet, PgtestRow>(_path, "inet", PgtestRow::inet, Optional.empty(), Optional.of("inet"), { row, value -> row.copy(inet = value) }, TypoInet.pgType)
+      override fun inet(): Field<Inet, PgtestRow> = Field<Inet, PgtestRow>(_path, "inet", PgtestRow::inet, null, "inet", { row, value -> row.copy(inet = value) }, PgTypes.inet)
 
-      override fun int2(): Field<TypoShort, PgtestRow> = Field<TypoShort, PgtestRow>(_path, "int2", PgtestRow::int2, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(int2 = value) }, TypoShort.pgType)
+      override fun int2(): Field<Short, PgtestRow> = Field<Short, PgtestRow>(_path, "int2", PgtestRow::int2, null, "int2", { row, value -> row.copy(int2 = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun int2vector(): Field<TypoInt2Vector, PgtestRow> = Field<TypoInt2Vector, PgtestRow>(_path, "int2vector", PgtestRow::int2vector, Optional.empty(), Optional.of("int2vector"), { row, value -> row.copy(int2vector = value) }, TypoInt2Vector.pgType)
+      override fun int2vector(): Field<Int2Vector, PgtestRow> = Field<Int2Vector, PgtestRow>(_path, "int2vector", PgtestRow::int2vector, null, "int2vector", { row, value -> row.copy(int2vector = value) }, PgTypes.int2vector)
 
-      override fun int4(): Field<Int, PgtestRow> = Field<Int, PgtestRow>(_path, "int4", PgtestRow::int4, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(int4 = value) }, PgTypes.int4)
+      override fun int4(): Field<Int, PgtestRow> = Field<Int, PgtestRow>(_path, "int4", PgtestRow::int4, null, "int4", { row, value -> row.copy(int4 = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun int8(): Field<Long, PgtestRow> = Field<Long, PgtestRow>(_path, "int8", PgtestRow::int8, Optional.empty(), Optional.of("int8"), { row, value -> row.copy(int8 = value) }, PgTypes.int8)
+      override fun int8(): Field<Long, PgtestRow> = Field<Long, PgtestRow>(_path, "int8", PgtestRow::int8, null, "int8", { row, value -> row.copy(int8 = value) }, KotlinDbTypes.PgTypes.int8)
 
-      override fun interval(): Field<TypoInterval, PgtestRow> = Field<TypoInterval, PgtestRow>(_path, "interval", PgtestRow::interval, Optional.empty(), Optional.of("interval"), { row, value -> row.copy(interval = value) }, TypoInterval.pgType)
+      override fun interval(): Field<PGInterval, PgtestRow> = Field<PGInterval, PgtestRow>(_path, "interval", PgtestRow::interval, null, "interval", { row, value -> row.copy(interval = value) }, PgTypes.interval)
 
-      override fun json(): Field<TypoJson, PgtestRow> = Field<TypoJson, PgtestRow>(_path, "json", PgtestRow::json, Optional.empty(), Optional.of("json"), { row, value -> row.copy(json = value) }, TypoJson.pgType)
+      override fun json(): Field<Json, PgtestRow> = Field<Json, PgtestRow>(_path, "json", PgtestRow::json, null, "json", { row, value -> row.copy(json = value) }, PgTypes.json)
 
-      override fun jsonb(): Field<TypoJsonb, PgtestRow> = Field<TypoJsonb, PgtestRow>(_path, "jsonb", PgtestRow::jsonb, Optional.empty(), Optional.of("jsonb"), { row, value -> row.copy(jsonb = value) }, TypoJsonb.pgType)
+      override fun jsonb(): Field<Jsonb, PgtestRow> = Field<Jsonb, PgtestRow>(_path, "jsonb", PgtestRow::jsonb, null, "jsonb", { row, value -> row.copy(jsonb = value) }, PgTypes.jsonb)
 
-      override fun line(): Field<TypoLine, PgtestRow> = Field<TypoLine, PgtestRow>(_path, "line", PgtestRow::line, Optional.empty(), Optional.of("line"), { row, value -> row.copy(line = value) }, TypoLine.pgType)
+      override fun line(): Field<PGline, PgtestRow> = Field<PGline, PgtestRow>(_path, "line", PgtestRow::line, null, "line", { row, value -> row.copy(line = value) }, PgTypes.line)
 
-      override fun lseg(): Field<TypoLineSegment, PgtestRow> = Field<TypoLineSegment, PgtestRow>(_path, "lseg", PgtestRow::lseg, Optional.empty(), Optional.of("lseg"), { row, value -> row.copy(lseg = value) }, TypoLineSegment.pgType)
+      override fun lseg(): Field<PGlseg, PgtestRow> = Field<PGlseg, PgtestRow>(_path, "lseg", PgtestRow::lseg, null, "lseg", { row, value -> row.copy(lseg = value) }, PgTypes.lseg)
 
-      override fun money(): Field<TypoMoney, PgtestRow> = Field<TypoMoney, PgtestRow>(_path, "money", PgtestRow::money, Optional.of("numeric"), Optional.of("money"), { row, value -> row.copy(money = value) }, TypoMoney.pgType)
+      override fun money(): Field<Money, PgtestRow> = Field<Money, PgtestRow>(_path, "money", PgtestRow::money, "numeric", "money", { row, value -> row.copy(money = value) }, PgTypes.money)
 
-      override fun mydomain(): Field<Mydomain, PgtestRow> = Field<Mydomain, PgtestRow>(_path, "mydomain", PgtestRow::mydomain, Optional.empty(), Optional.of("text"), { row, value -> row.copy(mydomain = value) }, Mydomain.pgType)
+      override fun mydomain(): Field<Mydomain, PgtestRow> = Field<Mydomain, PgtestRow>(_path, "mydomain", PgtestRow::mydomain, null, "text", { row, value -> row.copy(mydomain = value) }, Mydomain.pgType)
 
-      override fun myenum(): Field<Myenum, PgtestRow> = Field<Myenum, PgtestRow>(_path, "myenum", PgtestRow::myenum, Optional.empty(), Optional.of("public.myenum"), { row, value -> row.copy(myenum = value) }, Myenum.pgType)
+      override fun myenum(): Field<Myenum, PgtestRow> = Field<Myenum, PgtestRow>(_path, "myenum", PgtestRow::myenum, null, "public.myenum", { row, value -> row.copy(myenum = value) }, Myenum.pgType)
 
-      override fun name(): Field<String, PgtestRow> = Field<String, PgtestRow>(_path, "name", PgtestRow::name, Optional.empty(), Optional.of("name"), { row, value -> row.copy(name = value) }, PgTypes.name)
+      override fun name(): Field<String, PgtestRow> = Field<String, PgtestRow>(_path, "name", PgtestRow::name, null, "name", { row, value -> row.copy(name = value) }, PgTypes.name)
 
-      override fun numeric(): Field<BigDecimal, PgtestRow> = Field<BigDecimal, PgtestRow>(_path, "numeric", PgtestRow::numeric, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(numeric = value) }, PgTypes.numeric)
+      override fun numeric(): Field<BigDecimal, PgtestRow> = Field<BigDecimal, PgtestRow>(_path, "numeric", PgtestRow::numeric, null, "numeric", { row, value -> row.copy(numeric = value) }, PgTypes.numeric)
 
-      override fun path(): Field<TypoPath, PgtestRow> = Field<TypoPath, PgtestRow>(_path, "path", PgtestRow::path, Optional.empty(), Optional.of("path"), { row, value -> row.copy(path = value) }, TypoPath.pgType)
+      override fun path(): Field<PGpath, PgtestRow> = Field<PGpath, PgtestRow>(_path, "path", PgtestRow::path, null, "path", { row, value -> row.copy(path = value) }, PgTypes.path)
 
-      override fun point(): Field<TypoPoint, PgtestRow> = Field<TypoPoint, PgtestRow>(_path, "point", PgtestRow::point, Optional.empty(), Optional.of("point"), { row, value -> row.copy(point = value) }, TypoPoint.pgType)
+      override fun point(): Field<PGpoint, PgtestRow> = Field<PGpoint, PgtestRow>(_path, "point", PgtestRow::point, null, "point", { row, value -> row.copy(point = value) }, PgTypes.point)
 
-      override fun polygon(): Field<TypoPolygon, PgtestRow> = Field<TypoPolygon, PgtestRow>(_path, "polygon", PgtestRow::polygon, Optional.empty(), Optional.of("polygon"), { row, value -> row.copy(polygon = value) }, TypoPolygon.pgType)
+      override fun polygon(): Field<PGpolygon, PgtestRow> = Field<PGpolygon, PgtestRow>(_path, "polygon", PgtestRow::polygon, null, "polygon", { row, value -> row.copy(polygon = value) }, PgTypes.polygon)
 
-      override fun text(): Field<String, PgtestRow> = Field<String, PgtestRow>(_path, "text", PgtestRow::text, Optional.empty(), Optional.empty(), { row, value -> row.copy(text = value) }, PgTypes.text)
+      override fun text(): Field<String, PgtestRow> = Field<String, PgtestRow>(_path, "text", PgtestRow::text, null, null, { row, value -> row.copy(text = value) }, PgTypes.text)
 
-      override fun time(): Field<TypoLocalTime, PgtestRow> = Field<TypoLocalTime, PgtestRow>(_path, "time", PgtestRow::time, Optional.of("text"), Optional.of("time"), { row, value -> row.copy(time = value) }, TypoLocalTime.pgType)
+      override fun time(): Field<LocalTime, PgtestRow> = Field<LocalTime, PgtestRow>(_path, "time", PgtestRow::time, null, "time", { row, value -> row.copy(time = value) }, PgTypes.time)
 
-      override fun timestamp(): Field<TypoLocalDateTime, PgtestRow> = Field<TypoLocalDateTime, PgtestRow>(_path, "timestamp", PgtestRow::timestamp, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(timestamp = value) }, TypoLocalDateTime.pgType)
+      override fun timestamp(): Field<LocalDateTime, PgtestRow> = Field<LocalDateTime, PgtestRow>(_path, "timestamp", PgtestRow::timestamp, null, "timestamp", { row, value -> row.copy(timestamp = value) }, PgTypes.timestamp)
 
-      override fun timestampz(): Field<TypoInstant, PgtestRow> = Field<TypoInstant, PgtestRow>(_path, "timestampz", PgtestRow::timestampz, Optional.of("text"), Optional.of("timestamptz"), { row, value -> row.copy(timestampz = value) }, TypoInstant.pgType)
+      override fun timestampz(): Field<Instant, PgtestRow> = Field<Instant, PgtestRow>(_path, "timestampz", PgtestRow::timestampz, null, "timestamptz", { row, value -> row.copy(timestampz = value) }, PgTypes.timestamptz)
 
-      override fun timez(): Field<TypoOffsetTime, PgtestRow> = Field<TypoOffsetTime, PgtestRow>(_path, "timez", PgtestRow::timez, Optional.of("text"), Optional.of("timetz"), { row, value -> row.copy(timez = value) }, TypoOffsetTime.pgType)
+      override fun timez(): Field<OffsetTime, PgtestRow> = Field<OffsetTime, PgtestRow>(_path, "timez", PgtestRow::timez, null, "timetz", { row, value -> row.copy(timez = value) }, PgTypes.timetz)
 
-      override fun uuid(): Field<TypoUUID, PgtestRow> = Field<TypoUUID, PgtestRow>(_path, "uuid", PgtestRow::uuid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(uuid = value) }, TypoUUID.pgType)
+      override fun uuid(): Field<UUID, PgtestRow> = Field<UUID, PgtestRow>(_path, "uuid", PgtestRow::uuid, null, "uuid", { row, value -> row.copy(uuid = value) }, PgTypes.uuid)
 
-      override fun varchar(): Field<String, PgtestRow> = Field<String, PgtestRow>(_path, "varchar", PgtestRow::varchar, Optional.empty(), Optional.empty(), { row, value -> row.copy(varchar = value) }, PgTypes.text)
+      override fun varchar(): Field<String, PgtestRow> = Field<String, PgtestRow>(_path, "varchar", PgtestRow::varchar, null, null, { row, value -> row.copy(varchar = value) }, PgTypes.text)
 
-      override fun vector(): Field<TypoVector, PgtestRow> = Field<TypoVector, PgtestRow>(_path, "vector", PgtestRow::vector, Optional.of("float4[]"), Optional.of("vector"), { row, value -> row.copy(vector = value) }, TypoVector.pgType)
+      override fun vector(): Field<Vector, PgtestRow> = Field<Vector, PgtestRow>(_path, "vector", PgtestRow::vector, null, "vector", { row, value -> row.copy(vector = value) }, PgTypes.vector)
 
-      override fun xml(): Field<TypoXml, PgtestRow> = Field<TypoXml, PgtestRow>(_path, "xml", PgtestRow::xml, Optional.empty(), Optional.of("xml"), { row, value -> row.copy(xml = value) }, TypoXml.pgType)
+      override fun xml(): Field<Xml, PgtestRow> = Field<Xml, PgtestRow>(_path, "xml", PgtestRow::xml, null, "xml", { row, value -> row.copy(xml = value) }, PgTypes.xml)
 
-      override fun boxes(): Field<Array<TypoBox>, PgtestRow> = Field<Array<TypoBox>, PgtestRow>(_path, "boxes", PgtestRow::boxes, Optional.empty(), Optional.of("box[]"), { row, value -> row.copy(boxes = value) }, TypoBox.pgTypeArray)
+      override fun boxes(): Field<Array<PGbox>, PgtestRow> = Field<Array<PGbox>, PgtestRow>(_path, "boxes", PgtestRow::boxes, null, "box[]", { row, value -> row.copy(boxes = value) }, PgTypes.boxArray)
 
-      override fun bpchares(): Field<Array</* bpchar */ String>, PgtestRow> = Field<Array</* bpchar */ String>, PgtestRow>(_path, "bpchares", PgtestRow::bpchares, Optional.empty(), Optional.of("bpchar[]"), { row, value -> row.copy(bpchares = value) }, PgTypes.bpcharArray)
+      override fun bpchares(): Field<Array</* bpchar */ String>, PgtestRow> = Field<Array</* bpchar */ String>, PgtestRow>(_path, "bpchares", PgtestRow::bpchares, null, "bpchar[]", { row, value -> row.copy(bpchares = value) }, PgTypes.bpcharArray)
 
-      override fun chares(): Field<Array</* bpchar */ String>, PgtestRow> = Field<Array</* bpchar */ String>, PgtestRow>(_path, "chares", PgtestRow::chares, Optional.empty(), Optional.of("bpchar[]"), { row, value -> row.copy(chares = value) }, PgTypes.bpcharArray)
+      override fun chares(): Field<Array</* bpchar */ String>, PgtestRow> = Field<Array</* bpchar */ String>, PgtestRow>(_path, "chares", PgtestRow::chares, null, "bpchar[]", { row, value -> row.copy(chares = value) }, PgTypes.bpcharArray)
 
-      override fun circlees(): Field<Array<TypoCircle>, PgtestRow> = Field<Array<TypoCircle>, PgtestRow>(_path, "circlees", PgtestRow::circlees, Optional.empty(), Optional.of("circle[]"), { row, value -> row.copy(circlees = value) }, TypoCircle.pgTypeArray)
+      override fun circlees(): Field<Array<PGcircle>, PgtestRow> = Field<Array<PGcircle>, PgtestRow>(_path, "circlees", PgtestRow::circlees, null, "circle[]", { row, value -> row.copy(circlees = value) }, PgTypes.circleArray)
 
-      override fun datees(): Field<Array<TypoLocalDate>, PgtestRow> = Field<Array<TypoLocalDate>, PgtestRow>(_path, "datees", PgtestRow::datees, Optional.of("text[]"), Optional.of("date[]"), { row, value -> row.copy(datees = value) }, TypoLocalDate.pgTypeArray)
+      override fun datees(): Field<Array<LocalDate>, PgtestRow> = Field<Array<LocalDate>, PgtestRow>(_path, "datees", PgtestRow::datees, null, "date[]", { row, value -> row.copy(datees = value) }, PgTypes.dateArray)
 
-      override fun float4es(): Field<Array<Float>, PgtestRow> = Field<Array<Float>, PgtestRow>(_path, "float4es", PgtestRow::float4es, Optional.empty(), Optional.of("float4[]"), { row, value -> row.copy(float4es = value) }, PgTypes.float4Array)
+      override fun float4es(): Field<Array<Float>, PgtestRow> = Field<Array<Float>, PgtestRow>(_path, "float4es", PgtestRow::float4es, null, "float4[]", { row, value -> row.copy(float4es = value) }, PgTypes.float4Array)
 
-      override fun float8es(): Field<Array<Double>, PgtestRow> = Field<Array<Double>, PgtestRow>(_path, "float8es", PgtestRow::float8es, Optional.empty(), Optional.of("float8[]"), { row, value -> row.copy(float8es = value) }, PgTypes.float8Array)
+      override fun float8es(): Field<Array<Double>, PgtestRow> = Field<Array<Double>, PgtestRow>(_path, "float8es", PgtestRow::float8es, null, "float8[]", { row, value -> row.copy(float8es = value) }, PgTypes.float8Array)
 
-      override fun inetes(): Field<Array<TypoInet>, PgtestRow> = Field<Array<TypoInet>, PgtestRow>(_path, "inetes", PgtestRow::inetes, Optional.empty(), Optional.of("inet[]"), { row, value -> row.copy(inetes = value) }, TypoInet.pgTypeArray)
+      override fun inetes(): Field<Array<Inet>, PgtestRow> = Field<Array<Inet>, PgtestRow>(_path, "inetes", PgtestRow::inetes, null, "inet[]", { row, value -> row.copy(inetes = value) }, PgTypes.inetArray)
 
-      override fun int2es(): Field<Array<TypoShort>, PgtestRow> = Field<Array<TypoShort>, PgtestRow>(_path, "int2es", PgtestRow::int2es, Optional.empty(), Optional.of("int2[]"), { row, value -> row.copy(int2es = value) }, TypoShort.pgTypeArray)
+      override fun int2es(): Field<Array<Short>, PgtestRow> = Field<Array<Short>, PgtestRow>(_path, "int2es", PgtestRow::int2es, null, "int2[]", { row, value -> row.copy(int2es = value) }, PgTypes.int2Array)
 
-      override fun int2vectores(): Field<Array<TypoInt2Vector>, PgtestRow> = Field<Array<TypoInt2Vector>, PgtestRow>(_path, "int2vectores", PgtestRow::int2vectores, Optional.empty(), Optional.of("int2vector[]"), { row, value -> row.copy(int2vectores = value) }, TypoInt2Vector.pgTypeArray)
+      override fun int2vectores(): Field<Array<Int2Vector>, PgtestRow> = Field<Array<Int2Vector>, PgtestRow>(_path, "int2vectores", PgtestRow::int2vectores, null, "int2vector[]", { row, value -> row.copy(int2vectores = value) }, PgTypes.int2vectorArray)
 
-      override fun int4es(): Field<Array<Int>, PgtestRow> = Field<Array<Int>, PgtestRow>(_path, "int4es", PgtestRow::int4es, Optional.empty(), Optional.of("int4[]"), { row, value -> row.copy(int4es = value) }, PgTypes.int4Array)
+      override fun int4es(): Field<Array<Int>, PgtestRow> = Field<Array<Int>, PgtestRow>(_path, "int4es", PgtestRow::int4es, null, "int4[]", { row, value -> row.copy(int4es = value) }, PgTypes.int4Array)
 
-      override fun int8es(): Field<Array<Long>, PgtestRow> = Field<Array<Long>, PgtestRow>(_path, "int8es", PgtestRow::int8es, Optional.empty(), Optional.of("int8[]"), { row, value -> row.copy(int8es = value) }, PgTypes.int8Array)
+      override fun int8es(): Field<Array<Long>, PgtestRow> = Field<Array<Long>, PgtestRow>(_path, "int8es", PgtestRow::int8es, null, "int8[]", { row, value -> row.copy(int8es = value) }, PgTypes.int8Array)
 
-      override fun intervales(): Field<Array<TypoInterval>, PgtestRow> = Field<Array<TypoInterval>, PgtestRow>(_path, "intervales", PgtestRow::intervales, Optional.empty(), Optional.of("interval[]"), { row, value -> row.copy(intervales = value) }, TypoInterval.pgTypeArray)
+      override fun intervales(): Field<Array<PGInterval>, PgtestRow> = Field<Array<PGInterval>, PgtestRow>(_path, "intervales", PgtestRow::intervales, null, "interval[]", { row, value -> row.copy(intervales = value) }, PgTypes.intervalArray)
 
-      override fun jsones(): Field<Array<TypoJson>, PgtestRow> = Field<Array<TypoJson>, PgtestRow>(_path, "jsones", PgtestRow::jsones, Optional.empty(), Optional.of("json[]"), { row, value -> row.copy(jsones = value) }, TypoJson.pgTypeArray)
+      override fun jsones(): Field<Array<Json>, PgtestRow> = Field<Array<Json>, PgtestRow>(_path, "jsones", PgtestRow::jsones, null, "json[]", { row, value -> row.copy(jsones = value) }, PgTypes.jsonArray)
 
-      override fun jsonbes(): Field<Array<TypoJsonb>, PgtestRow> = Field<Array<TypoJsonb>, PgtestRow>(_path, "jsonbes", PgtestRow::jsonbes, Optional.empty(), Optional.of("jsonb[]"), { row, value -> row.copy(jsonbes = value) }, TypoJsonb.pgTypeArray)
+      override fun jsonbes(): Field<Array<Jsonb>, PgtestRow> = Field<Array<Jsonb>, PgtestRow>(_path, "jsonbes", PgtestRow::jsonbes, null, "jsonb[]", { row, value -> row.copy(jsonbes = value) }, PgTypes.jsonbArray)
 
-      override fun linees(): Field<Array<TypoLine>, PgtestRow> = Field<Array<TypoLine>, PgtestRow>(_path, "linees", PgtestRow::linees, Optional.empty(), Optional.of("line[]"), { row, value -> row.copy(linees = value) }, TypoLine.pgTypeArray)
+      override fun linees(): Field<Array<PGline>, PgtestRow> = Field<Array<PGline>, PgtestRow>(_path, "linees", PgtestRow::linees, null, "line[]", { row, value -> row.copy(linees = value) }, PgTypes.lineArray)
 
-      override fun lseges(): Field<Array<TypoLineSegment>, PgtestRow> = Field<Array<TypoLineSegment>, PgtestRow>(_path, "lseges", PgtestRow::lseges, Optional.empty(), Optional.of("lseg[]"), { row, value -> row.copy(lseges = value) }, TypoLineSegment.pgTypeArray)
+      override fun lseges(): Field<Array<PGlseg>, PgtestRow> = Field<Array<PGlseg>, PgtestRow>(_path, "lseges", PgtestRow::lseges, null, "lseg[]", { row, value -> row.copy(lseges = value) }, PgTypes.lsegArray)
 
-      override fun moneyes(): Field<Array<TypoMoney>, PgtestRow> = Field<Array<TypoMoney>, PgtestRow>(_path, "moneyes", PgtestRow::moneyes, Optional.of("numeric[]"), Optional.of("money[]"), { row, value -> row.copy(moneyes = value) }, TypoMoney.pgTypeArray)
+      override fun moneyes(): Field<Array<Money>, PgtestRow> = Field<Array<Money>, PgtestRow>(_path, "moneyes", PgtestRow::moneyes, "numeric[]", "money[]", { row, value -> row.copy(moneyes = value) }, PgTypes.moneyArray)
 
-      override fun mydomaines(): Field<Array<Mydomain>, PgtestRow> = Field<Array<Mydomain>, PgtestRow>(_path, "mydomaines", PgtestRow::mydomaines, Optional.of("text[]"), Optional.of("mydomain[]"), { row, value -> row.copy(mydomaines = value) }, Mydomain.pgTypeArray)
+      override fun mydomaines(): Field<Array<Mydomain>, PgtestRow> = Field<Array<Mydomain>, PgtestRow>(_path, "mydomaines", PgtestRow::mydomaines, "text[]", "mydomain[]", { row, value -> row.copy(mydomaines = value) }, Mydomain.pgTypeArray)
 
-      override fun myenumes(): Field<Array<Myenum>, PgtestRow> = Field<Array<Myenum>, PgtestRow>(_path, "myenumes", PgtestRow::myenumes, Optional.empty(), Optional.of("myenum[]"), { row, value -> row.copy(myenumes = value) }, Myenum.pgTypeArray)
+      override fun myenumes(): Field<Array<Myenum>, PgtestRow> = Field<Array<Myenum>, PgtestRow>(_path, "myenumes", PgtestRow::myenumes, null, "myenum[]", { row, value -> row.copy(myenumes = value) }, Myenum.pgTypeArray)
 
-      override fun namees(): Field<Array<String>, PgtestRow> = Field<Array<String>, PgtestRow>(_path, "namees", PgtestRow::namees, Optional.empty(), Optional.of("name[]"), { row, value -> row.copy(namees = value) }, PgTypes.nameArray)
+      override fun namees(): Field<Array<String>, PgtestRow> = Field<Array<String>, PgtestRow>(_path, "namees", PgtestRow::namees, null, "name[]", { row, value -> row.copy(namees = value) }, PgTypes.nameArray)
 
-      override fun numerices(): Field<Array<BigDecimal>, PgtestRow> = Field<Array<BigDecimal>, PgtestRow>(_path, "numerices", PgtestRow::numerices, Optional.empty(), Optional.of("numeric[]"), { row, value -> row.copy(numerices = value) }, PgTypes.numericArray)
+      override fun numerices(): Field<Array<BigDecimal>, PgtestRow> = Field<Array<BigDecimal>, PgtestRow>(_path, "numerices", PgtestRow::numerices, null, "numeric[]", { row, value -> row.copy(numerices = value) }, PgTypes.numericArray)
 
-      override fun pathes(): Field<Array<TypoPath>, PgtestRow> = Field<Array<TypoPath>, PgtestRow>(_path, "pathes", PgtestRow::pathes, Optional.empty(), Optional.of("path[]"), { row, value -> row.copy(pathes = value) }, TypoPath.pgTypeArray)
+      override fun pathes(): Field<Array<PGpath>, PgtestRow> = Field<Array<PGpath>, PgtestRow>(_path, "pathes", PgtestRow::pathes, null, "path[]", { row, value -> row.copy(pathes = value) }, PgTypes.pathArray)
 
-      override fun pointes(): Field<Array<TypoPoint>, PgtestRow> = Field<Array<TypoPoint>, PgtestRow>(_path, "pointes", PgtestRow::pointes, Optional.empty(), Optional.of("point[]"), { row, value -> row.copy(pointes = value) }, TypoPoint.pgTypeArray)
+      override fun pointes(): Field<Array<PGpoint>, PgtestRow> = Field<Array<PGpoint>, PgtestRow>(_path, "pointes", PgtestRow::pointes, null, "point[]", { row, value -> row.copy(pointes = value) }, PgTypes.pointArray)
 
-      override fun polygones(): Field<Array<TypoPolygon>, PgtestRow> = Field<Array<TypoPolygon>, PgtestRow>(_path, "polygones", PgtestRow::polygones, Optional.empty(), Optional.of("polygon[]"), { row, value -> row.copy(polygones = value) }, TypoPolygon.pgTypeArray)
+      override fun polygones(): Field<Array<PGpolygon>, PgtestRow> = Field<Array<PGpolygon>, PgtestRow>(_path, "polygones", PgtestRow::polygones, null, "polygon[]", { row, value -> row.copy(polygones = value) }, PgTypes.polygonArray)
 
-      override fun textes(): Field<Array<String>, PgtestRow> = Field<Array<String>, PgtestRow>(_path, "textes", PgtestRow::textes, Optional.empty(), Optional.of("text[]"), { row, value -> row.copy(textes = value) }, PgTypes.textArray)
+      override fun textes(): Field<Array<String>, PgtestRow> = Field<Array<String>, PgtestRow>(_path, "textes", PgtestRow::textes, null, "text[]", { row, value -> row.copy(textes = value) }, PgTypes.textArray)
 
-      override fun timees(): Field<Array<TypoLocalTime>, PgtestRow> = Field<Array<TypoLocalTime>, PgtestRow>(_path, "timees", PgtestRow::timees, Optional.of("text[]"), Optional.of("time[]"), { row, value -> row.copy(timees = value) }, TypoLocalTime.pgTypeArray)
+      override fun timees(): Field<Array<LocalTime>, PgtestRow> = Field<Array<LocalTime>, PgtestRow>(_path, "timees", PgtestRow::timees, null, "time[]", { row, value -> row.copy(timees = value) }, PgTypes.timeArray)
 
-      override fun timestampes(): Field<Array<TypoLocalDateTime>, PgtestRow> = Field<Array<TypoLocalDateTime>, PgtestRow>(_path, "timestampes", PgtestRow::timestampes, Optional.of("text[]"), Optional.of("timestamp[]"), { row, value -> row.copy(timestampes = value) }, TypoLocalDateTime.pgTypeArray)
+      override fun timestampes(): Field<Array<LocalDateTime>, PgtestRow> = Field<Array<LocalDateTime>, PgtestRow>(_path, "timestampes", PgtestRow::timestampes, null, "timestamp[]", { row, value -> row.copy(timestampes = value) }, PgTypes.timestampArray)
 
-      override fun timestampzes(): Field<Array<TypoInstant>, PgtestRow> = Field<Array<TypoInstant>, PgtestRow>(_path, "timestampzes", PgtestRow::timestampzes, Optional.of("text[]"), Optional.of("timestamptz[]"), { row, value -> row.copy(timestampzes = value) }, TypoInstant.pgTypeArray)
+      override fun timestampzes(): Field<Array<Instant>, PgtestRow> = Field<Array<Instant>, PgtestRow>(_path, "timestampzes", PgtestRow::timestampzes, null, "timestamptz[]", { row, value -> row.copy(timestampzes = value) }, PgTypes.timestamptzArray)
 
-      override fun timezes(): Field<Array<TypoOffsetTime>, PgtestRow> = Field<Array<TypoOffsetTime>, PgtestRow>(_path, "timezes", PgtestRow::timezes, Optional.of("text[]"), Optional.of("timetz[]"), { row, value -> row.copy(timezes = value) }, TypoOffsetTime.pgTypeArray)
+      override fun timezes(): Field<Array<OffsetTime>, PgtestRow> = Field<Array<OffsetTime>, PgtestRow>(_path, "timezes", PgtestRow::timezes, null, "timetz[]", { row, value -> row.copy(timezes = value) }, PgTypes.timetzArray)
 
-      override fun uuides(): Field<Array<TypoUUID>, PgtestRow> = Field<Array<TypoUUID>, PgtestRow>(_path, "uuides", PgtestRow::uuides, Optional.empty(), Optional.of("uuid[]"), { row, value -> row.copy(uuides = value) }, TypoUUID.pgTypeArray)
+      override fun uuides(): Field<Array<UUID>, PgtestRow> = Field<Array<UUID>, PgtestRow>(_path, "uuides", PgtestRow::uuides, null, "uuid[]", { row, value -> row.copy(uuides = value) }, PgTypes.uuidArray)
 
-      override fun varchares(): Field<Array<String>, PgtestRow> = Field<Array<String>, PgtestRow>(_path, "varchares", PgtestRow::varchares, Optional.empty(), Optional.of("varchar[]"), { row, value -> row.copy(varchares = value) }, PgTypes.textArray)
+      override fun varchares(): Field<Array<String>, PgtestRow> = Field<Array<String>, PgtestRow>(_path, "varchares", PgtestRow::varchares, null, "varchar[]", { row, value -> row.copy(varchares = value) }, PgTypes.textArray)
 
-      override fun xmles(): Field<Array<TypoXml>, PgtestRow> = Field<Array<TypoXml>, PgtestRow>(_path, "xmles", PgtestRow::xmles, Optional.empty(), Optional.of("xml[]"), { row, value -> row.copy(xmles = value) }, TypoXml.pgTypeArray)
+      override fun xmles(): Field<Array<Xml>, PgtestRow> = Field<Array<Xml>, PgtestRow>(_path, "xmles", PgtestRow::xmles, null, "xml[]", { row, value -> row.copy(xmles = value) }, PgTypes.xmlArray)
 
-      override fun columns(): List<FieldLike<*, PgtestRow>> = listOf(this.bool(), this.box(), this.bpchar(), this.bytea(), this.char(), this.circle(), this.date(), this.float4(), this.float8(), this.hstore(), this.inet(), this.int2(), this.int2vector(), this.int4(), this.int8(), this.interval(), this.json(), this.jsonb(), this.line(), this.lseg(), this.money(), this.mydomain(), this.myenum(), this.name(), this.numeric(), this.path(), this.point(), this.polygon(), this.text(), this.time(), this.timestamp(), this.timestampz(), this.timez(), this.uuid(), this.varchar(), this.vector(), this.xml(), this.boxes(), this.bpchares(), this.chares(), this.circlees(), this.datees(), this.float4es(), this.float8es(), this.inetes(), this.int2es(), this.int2vectores(), this.int4es(), this.int8es(), this.intervales(), this.jsones(), this.jsonbes(), this.linees(), this.lseges(), this.moneyes(), this.mydomaines(), this.myenumes(), this.namees(), this.numerices(), this.pathes(), this.pointes(), this.polygones(), this.textes(), this.timees(), this.timestampes(), this.timestampzes(), this.timezes(), this.uuides(), this.varchares(), this.xmles())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PgtestFields, PgtestRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PgtestRow>> = listOf(this.bool().underlying, this.box().underlying, this.bpchar().underlying, this.bytea().underlying, this.char().underlying, this.circle().underlying, this.date().underlying, this.float4().underlying, this.float8().underlying, this.hstore().underlying, this.inet().underlying, this.int2().underlying, this.int2vector().underlying, this.int4().underlying, this.int8().underlying, this.interval().underlying, this.json().underlying, this.jsonb().underlying, this.line().underlying, this.lseg().underlying, this.money().underlying, this.mydomain().underlying, this.myenum().underlying, this.name().underlying, this.numeric().underlying, this.path().underlying, this.point().underlying, this.polygon().underlying, this.text().underlying, this.time().underlying, this.timestamp().underlying, this.timestampz().underlying, this.timez().underlying, this.uuid().underlying, this.varchar().underlying, this.vector().underlying, this.xml().underlying, this.boxes().underlying, this.bpchares().underlying, this.chares().underlying, this.circlees().underlying, this.datees().underlying, this.float4es().underlying, this.float8es().underlying, this.inetes().underlying, this.int2es().underlying, this.int2vectores().underlying, this.int4es().underlying, this.int8es().underlying, this.intervales().underlying, this.jsones().underlying, this.jsonbes().underlying, this.linees().underlying, this.lseges().underlying, this.moneyes().underlying, this.mydomaines().underlying, this.myenumes().underlying, this.namees().underlying, this.numerices().underlying, this.pathes().underlying, this.pointes().underlying, this.polygones().underlying, this.textes().underlying, this.timees().underlying, this.timestampes().underlying, this.timestampzes().underlying, this.timezes().underlying, this.uuides().underlying, this.varchares().underlying, this.xmles().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PgtestFields, PgtestRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

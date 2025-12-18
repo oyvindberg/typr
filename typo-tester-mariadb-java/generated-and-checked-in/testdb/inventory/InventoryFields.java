@@ -17,16 +17,16 @@ import testdb.warehouses.WarehousesRow;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface InventoryFields extends FieldsExpr<InventoryRow> {
-  record Impl(List<Path> _path) implements InventoryFields, Relation<InventoryFields, InventoryRow> {
+  record Impl(List<Path> _path) implements InventoryFields, RelationStructure<InventoryFields, InventoryRow> {
     @Override
     public IdField<InventoryId, InventoryRow> inventoryId() {
       return new IdField<InventoryId, InventoryRow>(_path, "inventory_id", InventoryRow::inventoryId, Optional.empty(), Optional.empty(), (row, value) -> row.withInventoryId(value), InventoryId.pgType);
@@ -84,17 +84,17 @@ public interface InventoryFields extends FieldsExpr<InventoryRow> {
 
     @Override
     public List<FieldLike<?, InventoryRow>> columns() {
-      return List.of(this.inventoryId(), this.productId(), this.warehouseId(), this.quantityOnHand(), this.quantityReserved(), this.quantityOnOrder(), this.reorderPoint(), this.reorderQuantity(), this.binLocation(), this.lastCountedAt(), this.updatedAt());
+      return java.util.List.of(this.inventoryId(), this.productId(), this.warehouseId(), this.quantityOnHand(), this.quantityReserved(), this.quantityOnOrder(), this.reorderPoint(), this.reorderQuantity(), this.binLocation(), this.lastCountedAt(), this.updatedAt());
     };
 
     @Override
-    public Relation<InventoryFields, InventoryRow> copy(List<Path> _path) {
+    public RelationStructure<InventoryFields, InventoryRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<InventoryId, InventoryRow> inventoryId();
@@ -120,11 +120,11 @@ public interface InventoryFields extends FieldsExpr<InventoryRow> {
   Field<LocalDateTime, InventoryRow> updatedAt();
 
   default ForeignKey<ProductsFields, ProductsRow> fkProducts() {
-    return ForeignKey.<ProductsFields, ProductsRow>of("fk_inventory_product").withColumnPair(productId(), ProductsFields::productId);
+    return ForeignKey.<ProductsFields, ProductsRow>of("fk_inventory_product").<ProductsId>withColumnPair(productId(), ProductsFields::productId);
   };
 
   default ForeignKey<WarehousesFields, WarehousesRow> fkWarehouses() {
-    return ForeignKey.<WarehousesFields, WarehousesRow>of("fk_inventory_warehouse").withColumnPair(warehouseId(), WarehousesFields::warehouseId);
+    return ForeignKey.<WarehousesFields, WarehousesRow>of("fk_inventory_warehouse").<WarehousesId>withColumnPair(warehouseId(), WarehousesFields::warehouseId);
   };
 
   @Override

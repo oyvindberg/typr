@@ -7,13 +7,13 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_status.CustomerStatusId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.MariaSet
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
 
 /** This class corresponds to a row in table `customers` which has not been persisted yet */
 case class CustomersRowUnsaved(
@@ -28,7 +28,7 @@ case class CustomersRowUnsaved(
   /** Default: NULL
 
    */
-  phone: Defaulted[Optional[String]] = new UseDefault(),
+  phone: Defaulted[Option[String]] = new UseDefault(),
   /** Default: 'pending'
    * Points to [[testdb.customer_status.CustomerStatusRow.statusCode]]
    */
@@ -40,15 +40,15 @@ case class CustomersRowUnsaved(
   /** Default: NULL
 
    */
-  preferences: Defaulted[Optional[String]] = new UseDefault(),
+  preferences: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("marketing_flags") marketingFlags: Defaulted[Optional[MariaSet]] = new UseDefault(),
+  @JsonProperty("marketing_flags") marketingFlags: Defaulted[Option[MariaSet]] = new UseDefault(),
   /** Default: NULL
 
    */
-  notes: Defaulted[Optional[String]] = new UseDefault(),
+  notes: Defaulted[Option[String]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
@@ -60,18 +60,18 @@ case class CustomersRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("last_login_at") lastLoginAt: Defaulted[Optional[LocalDateTime]] = new UseDefault()
+  @JsonProperty("last_login_at") lastLoginAt: Defaulted[Option[LocalDateTime]] = new UseDefault()
 ) {
   def toRow(
-    phoneDefault: => Optional[String],
+    phoneDefault: => Option[String],
     statusDefault: => CustomerStatusId,
     tierDefault: => String,
-    preferencesDefault: => Optional[String],
-    marketingFlagsDefault: => Optional[MariaSet],
-    notesDefault: => Optional[String],
+    preferencesDefault: => Option[String],
+    marketingFlagsDefault: => Option[MariaSet],
+    notesDefault: => Option[String],
     createdAtDefault: => LocalDateTime,
     updatedAtDefault: => LocalDateTime,
-    lastLoginAtDefault: => Optional[LocalDateTime],
+    lastLoginAtDefault: => Option[LocalDateTime],
     customerIdDefault: => CustomersId
   ): CustomersRow = {
     new CustomersRow(
@@ -94,5 +94,5 @@ case class CustomersRowUnsaved(
 }
 
 object CustomersRowUnsaved {
-  given mariaText: MariaText[CustomersRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.email, sb); sb.append(MariaText.DELIMETER); MariaTypes.binary.mariaText.unsafeEncode(row.passwordHash, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.firstName, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.lastName, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.phone, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using CustomerStatusId.pgType.mariaText).unsafeEncode(row.status, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.tier, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.preferences, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.set.opt().mariaText).unsafeEncode(row.marketingFlags, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.opt().mariaText).unsafeEncode(row.notes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.updatedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.lastLoginAt, sb) })
+  given mariaText: MariaText[CustomersRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.email, sb); sb.append(MariaText.DELIMETER); MariaTypes.binary.mariaText.unsafeEncode(row.passwordHash, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.firstName, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.lastName, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.phone, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using CustomerStatusId.pgType.mariaText).unsafeEncode(row.status, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.tier, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.preferences, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.set.nullable.mariaText).unsafeEncode(row.marketingFlags, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.nullable.mariaText).unsafeEncode(row.notes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.updatedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.lastLoginAt, sb) })
 }

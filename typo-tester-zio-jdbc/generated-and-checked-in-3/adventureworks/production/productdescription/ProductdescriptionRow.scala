@@ -26,7 +26,7 @@ case class ProductdescriptionRow(
    */
   productdescriptionid: ProductdescriptionId,
   /** Description of the product. */
-  description: /* max 400 chars */ String,
+  description: String,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */

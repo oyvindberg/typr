@@ -12,8 +12,8 @@ import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 
 /** Type for the primary key of table `public.identity-test` */
-public record IdentityTestId(@JsonValue /* max 250 chars */ String value) {
-  public IdentityTestId withValue(/* max 250 chars */ String value) {
+public record IdentityTestId(@JsonValue String value) {
+  public IdentityTestId withValue(String value) {
     return new IdentityTestId(value);
   };
 
@@ -22,12 +22,12 @@ public record IdentityTestId(@JsonValue /* max 250 chars */ String value) {
     return value.toString();
   };
 
-  static public Bijection<IdentityTestId, /* max 250 chars */ String> bijection =
+  static public Bijection<IdentityTestId, String> bijection =
     Bijection.of(IdentityTestId::value, IdentityTestId::new);
 
   static public PgType<IdentityTestId> pgType =
     PgTypes.text.bimap(IdentityTestId::new, IdentityTestId::value);
 
   static public PgType<IdentityTestId[]> pgTypeArray =
-    PgTypes.textArray.bimap(xs -> arrayMap.map(xs, IdentityTestId::new, IdentityTestId.class), xs -> arrayMap.map(xs, IdentityTestId::value, /* max 250 chars */ String.class));
+    PgTypes.textArray.bimap(xs -> arrayMap.map(xs, IdentityTestId::new, IdentityTestId.class), xs -> arrayMap.map(xs, IdentityTestId::value, String.class));
 }

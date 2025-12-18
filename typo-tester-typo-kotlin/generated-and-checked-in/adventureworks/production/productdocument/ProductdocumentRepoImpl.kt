@@ -5,26 +5,23 @@
  */
 package adventureworks.production.productdocument
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class ProductdocumentRepoImpl() : ProductdocumentRepo {
   override fun delete(): DeleteBuilder<ProductdocumentFields, ProductdocumentRow> = DeleteBuilder.of("\"production\".\"productdocument\"", ProductdocumentFields.structure, Dialect.POSTGRESQL)
@@ -32,17 +29,7 @@ class ProductdocumentRepoImpl() : ProductdocumentRepo {
   override fun deleteById(
     compositeId: ProductdocumentId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "production"."productdocument" where "productid" = 
-    """.trimMargin()),
-    ProductId.pgType.encode(compositeId.productid),
-    typo.runtime.Fragment.lit("""
-     AND "documentnode" = 
-    """.trimMargin()),
-    DocumentId.pgType.encode(compositeId.documentnode),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"production\".\"productdocument\" where \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid), Fragment.lit(" AND \"documentnode\" = "), Fragment.encode(DocumentId.pgType, compositeId.documentnode), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     compositeIds: Array<ProductdocumentId>,
@@ -50,83 +37,34 @@ class ProductdocumentRepoImpl() : ProductdocumentRepo {
   ): Int {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductdocumentId::productid, ProductId::class.java)
     val documentnode: Array<DocumentId> = arrayMap.map(compositeIds, ProductdocumentId::documentnode, DocumentId::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        delete
-        from "production"."productdocument"
-        where ("productid", "documentnode")
-        in (select unnest(""".trimMargin()),
-      ProductId.pgTypeArray.encode(productid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      DocumentId.pgTypeArray.encode(documentnode),
-      typo.runtime.Fragment.lit("""
-      ::varchar[]))
-
-      """.trimMargin())
-    ).update().runUnchecked(c)
+    return interpolate(Fragment.lit("delete\nfrom \"production\".\"productdocument\"\nwhere (\"productid\", \"documentnode\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(DocumentId.pgTypeArray, documentnode), Fragment.lit("::varchar[]))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: ProductdocumentRow,
     c: Connection
-  ): ProductdocumentRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "production"."productdocument"("productid", "modifieddate", "documentnode")
-      values (""".trimMargin()),
-    ProductId.pgType.encode(unsaved.productid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    DocumentId.pgType.encode(unsaved.documentnode),
-    typo.runtime.Fragment.lit("""
-      )
-      returning "productid", "modifieddate"::text, "documentnode"
-    """.trimMargin())
-  )
+  ): ProductdocumentRow = interpolate(Fragment.lit("insert into \"production\".\"productdocument\"(\"productid\", \"modifieddate\", \"documentnode\")\nvalues ("), Fragment.encode(ProductId.pgType, unsaved.productid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp, "), Fragment.encode(DocumentId.pgType, unsaved.documentnode), Fragment.lit(")\nreturning \"productid\", \"modifieddate\", \"documentnode\"\n"))
     .updateReturning(ProductdocumentRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: ProductdocumentRowUnsaved,
     c: Connection
   ): ProductdocumentRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"productid\""))
-    values.add(interpolate(
-      ProductId.pgType.encode(unsaved.productid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(interpolate(Fragment.encode(ProductId.pgType, unsaved.productid), Fragment.lit("::int4")))
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
     unsaved.documentnode.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"documentnode\""))
-      values.add(interpolate(
-        DocumentId.pgType.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(interpolate(Fragment.encode(DocumentId.pgType, value), Fragment.lit(""))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."productdocument"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "productid", "modifieddate"::text, "documentnode"
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"production\".\"productdocument\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"productid\", \"modifieddate\", \"documentnode\"\n"))
     return q.updateReturning(ProductdocumentRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -134,41 +72,23 @@ class ProductdocumentRepoImpl() : ProductdocumentRepo {
     unsaved: MutableIterator<ProductdocumentRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "production"."productdocument"("productid", "modifieddate", "documentnode") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, ProductdocumentRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"production\".\"productdocument\"(\"productid\", \"modifieddate\", \"documentnode\") FROM STDIN", batchSize, unsaved, c, ProductdocumentRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<ProductdocumentRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "production"."productdocument"("productid", "modifieddate", "documentnode") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, ProductdocumentRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"production\".\"productdocument\"(\"productid\", \"modifieddate\", \"documentnode\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ProductdocumentRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<ProductdocumentFields, ProductdocumentRow> = SelectBuilder.of("\"production\".\"productdocument\"", ProductdocumentFields.structure, ProductdocumentRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<ProductdocumentRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "productid", "modifieddate"::text, "documentnode"
-    from "production"."productdocument"
-  """.trimMargin())).query(ProductdocumentRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<ProductdocumentRow> = interpolate(Fragment.lit("select \"productid\", \"modifieddate\", \"documentnode\"\nfrom \"production\".\"productdocument\"\n")).query(ProductdocumentRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     compositeId: ProductdocumentId,
     c: Connection
-  ): Optional<ProductdocumentRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "productid", "modifieddate"::text, "documentnode"
-      from "production"."productdocument"
-      where "productid" = """.trimMargin()),
-    ProductId.pgType.encode(compositeId.productid),
-    typo.runtime.Fragment.lit("""
-     AND "documentnode" = 
-    """.trimMargin()),
-    DocumentId.pgType.encode(compositeId.documentnode),
-    typo.runtime.Fragment.lit("")
-  ).query(ProductdocumentRow._rowParser.first()).runUnchecked(c)
+  ): ProductdocumentRow? = interpolate(Fragment.lit("select \"productid\", \"modifieddate\", \"documentnode\"\nfrom \"production\".\"productdocument\"\nwhere \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid), Fragment.lit(" AND \"documentnode\" = "), Fragment.encode(DocumentId.pgType, compositeId.documentnode), Fragment.lit("")).query(ProductdocumentRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     compositeIds: Array<ProductdocumentId>,
@@ -176,20 +96,7 @@ class ProductdocumentRepoImpl() : ProductdocumentRepo {
   ): List<ProductdocumentRow> {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductdocumentId::productid, ProductId::class.java)
     val documentnode: Array<DocumentId> = arrayMap.map(compositeIds, ProductdocumentId::documentnode, DocumentId::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        select "productid", "modifieddate"::text, "documentnode"
-        from "production"."productdocument"
-        where ("productid", "documentnode")
-        in (select unnest(""".trimMargin()),
-      ProductId.pgTypeArray.encode(productid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      DocumentId.pgTypeArray.encode(documentnode),
-      typo.runtime.Fragment.lit("""
-      ::varchar[]))
-
-      """.trimMargin())
-    ).query(ProductdocumentRow._rowParser.all()).runUnchecked(c)
+    return interpolate(Fragment.lit("select \"productid\", \"modifieddate\", \"documentnode\"\nfrom \"production\".\"productdocument\"\nwhere (\"productid\", \"documentnode\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(DocumentId.pgTypeArray, documentnode), Fragment.lit("::varchar[]))\n")).query(ProductdocumentRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(
@@ -198,67 +105,32 @@ class ProductdocumentRepoImpl() : ProductdocumentRepo {
   ): Map<ProductdocumentId, ProductdocumentRow> {
     val ret: MutableMap<ProductdocumentId, ProductdocumentRow> = mutableMapOf<ProductdocumentId, ProductdocumentRow>()
     selectByIds(compositeIds, c).forEach({ row -> ret.put(row.compositeId(), row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<ProductdocumentFields, ProductdocumentRow> = UpdateBuilder.of("\"production\".\"productdocument\"", ProductdocumentFields.structure, ProductdocumentRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<ProductdocumentFields, ProductdocumentRow> = UpdateBuilder.of("\"production\".\"productdocument\"", ProductdocumentFields.structure, ProductdocumentRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: ProductdocumentRow,
     c: Connection
   ): Boolean {
     val compositeId: ProductdocumentId = row.compositeId()
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "production"."productdocument"
-        set "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "productid" = """.trimMargin()),
-      ProductId.pgType.encode(compositeId.productid),
-      typo.runtime.Fragment.lit("""
-       AND "documentnode" = 
-      """.trimMargin()),
-      DocumentId.pgType.encode(compositeId.documentnode),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"production\".\"productdocument\"\nset \"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid), Fragment.lit(" AND \"documentnode\" = "), Fragment.encode(DocumentId.pgType, compositeId.documentnode), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: ProductdocumentRow,
     c: Connection
-  ): ProductdocumentRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "production"."productdocument"("productid", "modifieddate", "documentnode")
-      values (""".trimMargin()),
-    ProductId.pgType.encode(unsaved.productid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    DocumentId.pgType.encode(unsaved.documentnode),
-    typo.runtime.Fragment.lit("""
-      )
-      on conflict ("productid", "documentnode")
-      do update set
-        "modifieddate" = EXCLUDED."modifieddate"
-      returning "productid", "modifieddate"::text, "documentnode"""".trimMargin())
-  )
+  ): ProductdocumentRow = interpolate(Fragment.lit("insert into \"production\".\"productdocument\"(\"productid\", \"modifieddate\", \"documentnode\")\nvalues ("), Fragment.encode(ProductId.pgType, unsaved.productid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp, "), Fragment.encode(DocumentId.pgType, unsaved.documentnode), Fragment.lit(")\non conflict (\"productid\", \"documentnode\")\ndo update set\n  \"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productid\", \"modifieddate\", \"documentnode\""))
     .updateReturning(ProductdocumentRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<ProductdocumentRow>,
     c: Connection
-  ): List<ProductdocumentRow> = interpolate(typo.runtime.Fragment.lit("""
-                                  insert into "production"."productdocument"("productid", "modifieddate", "documentnode")
-                                  values (?::int4, ?::timestamp, ?)
-                                  on conflict ("productid", "documentnode")
-                                  do update set
-                                    "modifieddate" = EXCLUDED."modifieddate"
-                                  returning "productid", "modifieddate"::text, "documentnode"""".trimMargin()))
+  ): List<ProductdocumentRow> = interpolate(Fragment.lit("insert into \"production\".\"productdocument\"(\"productid\", \"modifieddate\", \"documentnode\")\nvalues (?::int4, ?::timestamp, ?)\non conflict (\"productid\", \"documentnode\")\ndo update set\n  \"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productid\", \"modifieddate\", \"documentnode\""))
     .updateManyReturning(ProductdocumentRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -266,19 +138,8 @@ class ProductdocumentRepoImpl() : ProductdocumentRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table productdocument_TEMP (like "production"."productdocument") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy productdocument_TEMP("productid", "modifieddate", "documentnode") from stdin
-    """.trimMargin()), batchSize, unsaved, c, ProductdocumentRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "production"."productdocument"("productid", "modifieddate", "documentnode")
-      select * from productdocument_TEMP
-      on conflict ("productid", "documentnode")
-      do update set
-        "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table productdocument_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table productdocument_TEMP (like \"production\".\"productdocument\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy productdocument_TEMP(\"productid\", \"modifieddate\", \"documentnode\") from stdin", batchSize, unsaved, c, ProductdocumentRow.pgText)
+    return interpolate(Fragment.lit("insert into \"production\".\"productdocument\"(\"productid\", \"modifieddate\", \"documentnode\")\nselect * from productdocument_TEMP\non conflict (\"productid\", \"documentnode\")\ndo update set\n  \"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table productdocument_TEMP;")).update().runUnchecked(c)
   }
 }

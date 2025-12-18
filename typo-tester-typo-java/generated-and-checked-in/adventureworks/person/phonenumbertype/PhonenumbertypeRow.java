@@ -6,9 +6,10 @@
 package adventureworks.person.phonenumbertype;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -24,7 +25,7 @@ public record PhonenumbertypeRow(
   /** Name of the telephone number type */
   Name name,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for telephone number type records.
     * Default: nextval('person.phonenumbertype_phonenumbertypeid_seq'::regclass)
@@ -39,11 +40,11 @@ public record PhonenumbertypeRow(
   };
 
   /** Default: now() */
-  public PhonenumbertypeRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PhonenumbertypeRow withModifieddate(LocalDateTime modifieddate) {
     return new PhonenumbertypeRow(phonenumbertypeid, name, modifieddate);
   };
 
-  static RowParser<PhonenumbertypeRow> _rowParser = RowParsers.of(PhonenumbertypeId.pgType, Name.pgType, TypoLocalDateTime.pgType, PhonenumbertypeRow::new, row -> new Object[]{row.phonenumbertypeid(), row.name(), row.modifieddate()});;
+  static RowParser<PhonenumbertypeRow> _rowParser = RowParsers.of(PhonenumbertypeId.pgType, Name.pgType, PgTypes.timestamp, PhonenumbertypeRow::new, row -> new Object[]{row.phonenumbertypeid(), row.name(), row.modifieddate()});;
 
   static public PgText<PhonenumbertypeRow> pgText =
     PgText.from(_rowParser);
@@ -54,7 +55,7 @@ public record PhonenumbertypeRow(
 
   public PhonenumbertypeRowUnsaved toUnsavedRow(
     Defaulted<PhonenumbertypeId> phonenumbertypeid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new PhonenumbertypeRowUnsaved(name, phonenumbertypeid, modifieddate);
   };

@@ -17,7 +17,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -32,11 +31,7 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     PaymentMethodsId methodId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `payment_methods` where `method_id` = "),
-      PaymentMethodsId.pgType.encode(methodId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `payment_methods` where `method_id` = "), Fragment.encode(PaymentMethodsId.pgType, methodId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,8 +39,8 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     PaymentMethodsId[] methodIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : methodIds) { fragments.add(PaymentMethodsId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : methodIds) { fragments.add(Fragment.encode(PaymentMethodsId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `payment_methods` where `method_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -54,26 +49,7 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     PaymentMethodsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `payment_methods`(`code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)
-         values ("""),
-      MariaTypes.text.encode(unsaved.code()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.methodType()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.processorConfig()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isActive()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.tinyint.encode(unsaved.sortOrder()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `payment_methods`(`code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.code()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.methodType()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.processorConfig()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isActive()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyint, unsaved.sortOrder()), Fragment.lit(")\nreturning `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`\n"))
       .updateReturning(PaymentMethodsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -82,37 +58,21 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     PaymentMethodsRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`code`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.code()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.code()), Fragment.lit("")));
     columns.add(Fragment.lit("`name`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit("")));
     columns.add(Fragment.lit("`method_type`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.methodType()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.text, unsaved.methodType()), Fragment.lit("")));
     unsaved.processorConfig().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`processor_config`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.isActive().visit(
@@ -121,11 +81,7 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`is_active`"));
-        values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool, value), Fragment.lit("")));
       }
     );;
     unsaved.sortOrder().visit(
@@ -134,25 +90,10 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`sort_order`"));
-        values.add(interpolate(
-        MariaTypes.tinyint.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.tinyint, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `payment_methods`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `payment_methods`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`\n"));;
     return q.updateReturning(PaymentMethodsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -163,10 +104,7 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
 
   @Override
   public List<PaymentMethodsRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
-       from `payment_methods`
-    """)).query(PaymentMethodsRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`\nfrom `payment_methods`\n")).query(PaymentMethodsRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -174,14 +112,7 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     PaymentMethodsId methodId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
-         from `payment_methods`
-         where `method_id` = """),
-      PaymentMethodsId.pgType.encode(methodId),
-      typo.runtime.Fragment.lit("")
-    ).query(PaymentMethodsRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`\nfrom `payment_methods`\nwhere `method_id` = "), Fragment.encode(PaymentMethodsId.pgType, methodId), Fragment.lit("")).query(PaymentMethodsRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -189,8 +120,8 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     PaymentMethodsId[] methodIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : methodIds) { fragments.add(PaymentMethodsId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : methodIds) { fragments.add(Fragment.encode(PaymentMethodsId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order` from `payment_methods` where `method_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(PaymentMethodsRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -209,22 +140,12 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     String code,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
-         from `payment_methods`
-         where `code` = """),
-      MariaTypes.text.encode(code),
-      typo.runtime.Fragment.lit("""
-
-
-      """)
-    ).query(PaymentMethodsRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`\nfrom `payment_methods`\nwhere `code` = "), Fragment.encode(MariaTypes.varchar, code), Fragment.lit("\n")).query(PaymentMethodsRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
   public UpdateBuilder<PaymentMethodsFields, PaymentMethodsRow> update() {
-    return UpdateBuilder.of("`payment_methods`", PaymentMethodsFields.structure(), PaymentMethodsRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`payment_methods`", PaymentMethodsFields.structure(), PaymentMethodsRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -233,37 +154,7 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     Connection c
   ) {
     PaymentMethodsId methodId = row.methodId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `payment_methods`
-         set `code` = """),
-      MariaTypes.text.encode(row.code()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `name` = """),
-      MariaTypes.text.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `method_type` = """),
-      MariaTypes.text.encode(row.methodType()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `processor_config` = """),
-      MariaTypes.text.opt().encode(row.processorConfig()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `is_active` = """),
-      MariaTypes.bool.encode(row.isActive()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `sort_order` = """),
-      MariaTypes.tinyint.encode(row.sortOrder()),
-      typo.runtime.Fragment.lit("""
-   
-         where `method_id` = """),
-      PaymentMethodsId.pgType.encode(methodId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `payment_methods`\nset `code` = "), Fragment.encode(MariaTypes.varchar, row.code()), Fragment.lit(",\n`name` = "), Fragment.encode(MariaTypes.varchar, row.name()), Fragment.lit(",\n`method_type` = "), Fragment.encode(MariaTypes.text, row.methodType()), Fragment.lit(",\n`processor_config` = "), Fragment.encode(MariaTypes.longtext.opt(), row.processorConfig()), Fragment.lit(",\n`is_active` = "), Fragment.encode(MariaTypes.bool, row.isActive()), Fragment.lit(",\n`sort_order` = "), Fragment.encode(MariaTypes.tinyint, row.sortOrder()), Fragment.lit("\nwhere `method_id` = "), Fragment.encode(PaymentMethodsId.pgType, methodId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -271,31 +162,7 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     PaymentMethodsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `payment_methods`(`code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)
-         VALUES ("""),
-      MariaTypes.text.encode(unsaved.code()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.methodType()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.processorConfig()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isActive()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.tinyint.encode(unsaved.sortOrder()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
-         `name` = VALUES(`name`),
-         `method_type` = VALUES(`method_type`),
-         `processor_config` = VALUES(`processor_config`),
-         `is_active` = VALUES(`is_active`),
-         `sort_order` = VALUES(`sort_order`)
-         RETURNING `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `payment_methods`(`code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.code()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.methodType()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.processorConfig()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isActive()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyint, unsaved.sortOrder()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`method_type` = VALUES(`method_type`),\n`processor_config` = VALUES(`processor_config`),\n`is_active` = VALUES(`is_active`),\n`sort_order` = VALUES(`sort_order`)\nRETURNING `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`"))
       .updateReturning(PaymentMethodsRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -305,17 +172,8 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     Iterator<PaymentMethodsRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `payment_methods`(`method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
-                `name` = VALUES(`name`),
-                `method_type` = VALUES(`method_type`),
-                `processor_config` = VALUES(`processor_config`),
-                `is_active` = VALUES(`is_active`),
-                `sort_order` = VALUES(`sort_order`)
-                RETURNING `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`"""))
+    return interpolate(Fragment.lit("INSERT INTO `payment_methods`(`method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)\nVALUES (?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`method_type` = VALUES(`method_type`),\n`processor_config` = VALUES(`processor_config`),\n`is_active` = VALUES(`is_active`),\n`sort_order` = VALUES(`sort_order`)\nRETURNING `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`"))
       .updateReturningEach(PaymentMethodsRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

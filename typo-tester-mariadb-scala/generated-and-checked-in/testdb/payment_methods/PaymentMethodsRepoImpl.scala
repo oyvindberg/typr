@@ -6,60 +6,59 @@
 package testdb.payment_methods
 
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import scala.collection.mutable.ListBuffer
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.Dialect
+import typo.scaladsl.Fragment
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.Fragment.sql
 
 class PaymentMethodsRepoImpl extends PaymentMethodsRepo {
   override def delete: DeleteBuilder[PaymentMethodsFields, PaymentMethodsRow] = DeleteBuilder.of("`payment_methods`", PaymentMethodsFields.structure, Dialect.MARIADB)
 
-  override def deleteById(methodId: PaymentMethodsId)(using c: Connection): java.lang.Boolean = interpolate"delete from `payment_methods` where `method_id` = ${PaymentMethodsId.pgType.encode(methodId)}".update().runUnchecked(c) > 0
+  override def deleteById(methodId: PaymentMethodsId)(using c: Connection): Boolean = sql"delete from `payment_methods` where `method_id` = ${Fragment.encode(PaymentMethodsId.pgType, methodId)}".update().runUnchecked(c) > 0
 
-  override def deleteByIds(methodIds: Array[PaymentMethodsId])(using c: Connection): Integer = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    methodIds.foreach { id => fragments.add(PaymentMethodsId.pgType.encode(id)) }
+  override def deleteByIds(methodIds: Array[PaymentMethodsId])(using c: Connection): Int = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    methodIds.foreach { id => fragments.addOne(Fragment.encode(PaymentMethodsId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `payment_methods` where `method_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: PaymentMethodsRow)(using c: Connection): PaymentMethodsRow = {
-  interpolate"""insert into `payment_methods`(`code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)
-    values (${MariaTypes.text.encode(unsaved.code)}, ${MariaTypes.text.encode(unsaved.name)}, ${MariaTypes.text.encode(unsaved.methodType)}, ${MariaTypes.text.opt().encode(unsaved.processorConfig)}, ${MariaTypes.bool.encode(unsaved.isActive)}, ${MariaTypes.tinyint.encode(unsaved.sortOrder)})
+  sql"""insert into `payment_methods`(`code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)
+    values (${Fragment.encode(MariaTypes.varchar, unsaved.code)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.text, unsaved.methodType)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.processorConfig)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isActive)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyint, unsaved.sortOrder)})
     returning `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
     """
     .updateReturning(PaymentMethodsRow.`_rowParser`.exactlyOne()).runUnchecked(c)
   }
 
   override def insert(unsaved: PaymentMethodsRowUnsaved)(using c: Connection): PaymentMethodsRow = {
-    val columns: ArrayList[Literal] = new ArrayList[Literal]()
-    val values: ArrayList[Fragment] = new ArrayList[Fragment]()
-    columns.add(Fragment.lit("`code`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.code)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`name`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.name)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`method_type`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.methodType)}"): @scala.annotation.nowarn
+    val columns: ListBuffer[Fragment] = ListBuffer()
+    val values: ListBuffer[Fragment] = ListBuffer()
+    columns.addOne(Fragment.lit("`code`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.code)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`name`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.name)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`method_type`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.text, unsaved.methodType)}"): @scala.annotation.nowarn
     unsaved.processorConfig.visit(
       {  },
-      value => { columns.add(Fragment.lit("`processor_config`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`processor_config`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longtext.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.isActive.visit(
       {  },
-      value => { columns.add(Fragment.lit("`is_active`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.bool.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`is_active`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.bool, value)}"): @scala.annotation.nowarn }
     );
     unsaved.sortOrder.visit(
       {  },
-      value => { columns.add(Fragment.lit("`sort_order`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.tinyint.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`sort_order`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.tinyint, value)}"): @scala.annotation.nowarn }
     );
     val q: Fragment = {
-      interpolate"""insert into `payment_methods`(${Fragment.comma(columns)})
+      sql"""insert into `payment_methods`(${Fragment.comma(columns)})
       values (${Fragment.comma(values)})
       returning `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
       """
@@ -69,54 +68,54 @@ class PaymentMethodsRepoImpl extends PaymentMethodsRepo {
 
   override def select: SelectBuilder[PaymentMethodsFields, PaymentMethodsRow] = SelectBuilder.of("`payment_methods`", PaymentMethodsFields.structure, PaymentMethodsRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[PaymentMethodsRow] = {
-    interpolate"""select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
+  override def selectAll(using c: Connection): List[PaymentMethodsRow] = {
+    sql"""select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
     from `payment_methods`
     """.query(PaymentMethodsRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectById(methodId: PaymentMethodsId)(using c: Connection): Optional[PaymentMethodsRow] = {
-    interpolate"""select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
+  override def selectById(methodId: PaymentMethodsId)(using c: Connection): Option[PaymentMethodsRow] = {
+    sql"""select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
     from `payment_methods`
-    where `method_id` = ${PaymentMethodsId.pgType.encode(methodId)}""".query(PaymentMethodsRow.`_rowParser`.first()).runUnchecked(c)
+    where `method_id` = ${Fragment.encode(PaymentMethodsId.pgType, methodId)}""".query(PaymentMethodsRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def selectByIds(methodIds: Array[PaymentMethodsId])(using c: Connection): java.util.List[PaymentMethodsRow] = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    methodIds.foreach { id => fragments.add(PaymentMethodsId.pgType.encode(id)) }
+  override def selectByIds(methodIds: Array[PaymentMethodsId])(using c: Connection): List[PaymentMethodsRow] = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    methodIds.foreach { id => fragments.addOne(Fragment.encode(PaymentMethodsId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order` from `payment_methods` where `method_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(PaymentMethodsRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectByIdsTracked(methodIds: Array[PaymentMethodsId])(using c: Connection): java.util.Map[PaymentMethodsId, PaymentMethodsRow] = {
-    val ret: HashMap[PaymentMethodsId, PaymentMethodsRow] = new HashMap[PaymentMethodsId, PaymentMethodsRow]()
-    selectByIds(methodIds)(using c).forEach(row => ret.put(row.methodId, row): @scala.annotation.nowarn)
-    return ret
+  override def selectByIdsTracked(methodIds: Array[PaymentMethodsId])(using c: Connection): Map[PaymentMethodsId, PaymentMethodsRow] = {
+    val ret: scala.collection.mutable.Map[PaymentMethodsId, PaymentMethodsRow] = scala.collection.mutable.Map.empty[PaymentMethodsId, PaymentMethodsRow]
+    selectByIds(methodIds)(using c).foreach(row => ret.put(row.methodId, row): @scala.annotation.nowarn)
+    return ret.toMap
   }
 
-  override def selectByUniqueCode(code: String)(using c: Connection): Optional[PaymentMethodsRow] = {
-    interpolate"""select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
+  override def selectByUniqueCode(code: String)(using c: Connection): Option[PaymentMethodsRow] = {
+    sql"""select `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`
     from `payment_methods`
-    where `code` = ${MariaTypes.text.encode(code)}
+    where `code` = ${Fragment.encode(MariaTypes.varchar, code)}
     """.query(PaymentMethodsRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def update: UpdateBuilder[PaymentMethodsFields, PaymentMethodsRow] = UpdateBuilder.of("`payment_methods`", PaymentMethodsFields.structure, PaymentMethodsRow.`_rowParser`.all(), Dialect.MARIADB)
+  override def update: UpdateBuilder[PaymentMethodsFields, PaymentMethodsRow] = UpdateBuilder.of("`payment_methods`", PaymentMethodsFields.structure, PaymentMethodsRow.`_rowParser`, Dialect.MARIADB)
 
-  override def update(row: PaymentMethodsRow)(using c: Connection): java.lang.Boolean = {
+  override def update(row: PaymentMethodsRow)(using c: Connection): Boolean = {
     val methodId: PaymentMethodsId = row.methodId
-    return interpolate"""update `payment_methods`
-    set `code` = ${MariaTypes.text.encode(row.code)},
-    `name` = ${MariaTypes.text.encode(row.name)},
-    `method_type` = ${MariaTypes.text.encode(row.methodType)},
-    `processor_config` = ${MariaTypes.text.opt().encode(row.processorConfig)},
-    `is_active` = ${MariaTypes.bool.encode(row.isActive)},
-    `sort_order` = ${MariaTypes.tinyint.encode(row.sortOrder)}
-    where `method_id` = ${PaymentMethodsId.pgType.encode(methodId)}""".update().runUnchecked(c) > 0
+    return sql"""update `payment_methods`
+    set `code` = ${Fragment.encode(MariaTypes.varchar, row.code)},
+    `name` = ${Fragment.encode(MariaTypes.varchar, row.name)},
+    `method_type` = ${Fragment.encode(MariaTypes.text, row.methodType)},
+    `processor_config` = ${Fragment.encode(MariaTypes.longtext.nullable, row.processorConfig)},
+    `is_active` = ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, row.isActive)},
+    `sort_order` = ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyint, row.sortOrder)}
+    where `method_id` = ${Fragment.encode(PaymentMethodsId.pgType, methodId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: PaymentMethodsRow)(using c: Connection): PaymentMethodsRow = {
-  interpolate"""INSERT INTO `payment_methods`(`code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)
-    VALUES (${MariaTypes.text.encode(unsaved.code)}, ${MariaTypes.text.encode(unsaved.name)}, ${MariaTypes.text.encode(unsaved.methodType)}, ${MariaTypes.text.opt().encode(unsaved.processorConfig)}, ${MariaTypes.bool.encode(unsaved.isActive)}, ${MariaTypes.tinyint.encode(unsaved.sortOrder)})
+  sql"""INSERT INTO `payment_methods`(`code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)
+    VALUES (${Fragment.encode(MariaTypes.varchar, unsaved.code)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.text, unsaved.methodType)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.processorConfig)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isActive)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyint, unsaved.sortOrder)})
     ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
     `name` = VALUES(`name`),
     `method_type` = VALUES(`method_type`),
@@ -128,8 +127,8 @@ class PaymentMethodsRepoImpl extends PaymentMethodsRepo {
     .runUnchecked(c)
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[PaymentMethodsRow])(using c: Connection): java.util.List[PaymentMethodsRow] = {
-    interpolate"""INSERT INTO `payment_methods`(`method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)
+  override def upsertBatch(unsaved: Iterator[PaymentMethodsRow])(using c: Connection): List[PaymentMethodsRow] = {
+    sql"""INSERT INTO `payment_methods`(`method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)
     VALUES (?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
     `name` = VALUES(`name`),
@@ -139,6 +138,6 @@ class PaymentMethodsRepoImpl extends PaymentMethodsRepo {
     `sort_order` = VALUES(`sort_order`)
     RETURNING `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`"""
       .updateReturningEach(PaymentMethodsRow.`_rowParser`, unsaved)
-      .runUnchecked(c)
+    .runUnchecked(c)
   }
 }

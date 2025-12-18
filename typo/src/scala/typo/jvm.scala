@@ -131,6 +131,9 @@ object jvm {
   case class StringInterpolate(`import`: Type, prefix: Ident, content: Code) extends Tree
   case class RuntimeInterpolation(value: Code) extends Tree
 
+  /** Used to trigger an import without generating any code */
+  case class Import(`import`: Type.Qualified, isStatic: Boolean = false) extends Tree
+
   sealed trait StaticMember extends Tree
 
   sealed trait ClassMember extends StaticMember {
@@ -442,6 +445,24 @@ object jvm {
   sealed trait Type extends Tree {
     def of(targs: Type*): Type = Type.TApply(this, targs.toList)
     def withComment(str: String): Type = Type.Commented(this, s"/* $str */")
+
+    /** Strip optional type wrappers (KotlinNullable, Option, Optional, etc.) recursively. Keeps array structure but removes nullable wrappers from element types. We don't track nullability in the
+      * type-system at the DSL level.
+      */
+    def stripNullable(lang: Lang): Type = {
+      this match {
+        case lang.Optional(underlying)              => underlying.stripNullable(lang)
+        case Type.ArrayOf(underlying)               => Type.ArrayOf(underlying.stripNullable(lang))
+        case Type.TApply(underlying, targs)         => Type.TApply(underlying, targs.map(_.stripNullable(lang)))
+        case Type.Commented(underlying, comment)    => Type.Commented(underlying.stripNullable(lang), comment)
+        case Type.Annotated(underlying, annotation) => Type.Annotated(underlying.stripNullable(lang), annotation)
+        case Type.UserDefined(underlying)           => Type.UserDefined(underlying.stripNullable(lang))
+        case Type.Function0(ret)                    => Type.Function0(ret.stripNullable(lang))
+        case Type.Function1(tpe1, ret)              => Type.Function1(tpe1.stripNullable(lang), ret.stripNullable(lang))
+        case Type.Function2(tpe1, tpe2, ret)        => Type.Function2(tpe1.stripNullable(lang), tpe2.stripNullable(lang), ret.stripNullable(lang))
+        case other                                  => other
+      }
+    }
   }
 
   object Type {
@@ -465,6 +486,9 @@ object jvm {
     case class UserDefined(underlying: Type) extends Type
     case class ArrayOf(underlying: Type) extends Type
 
+    /** Kotlin nullable type: `T?` - for representing Kotlin's native nullable types */
+    case class KotlinNullable(underlying: Type) extends Type
+
     /** Primitive type - rendered as-is without identifier escaping (for Java primitive types like byte, int, etc.) */
     case class Primitive(name: String) extends Type
 
@@ -477,71 +501,40 @@ object jvm {
         Qualified(QIdent(scala.List(value)))
     }
 
-    object dsl {
-      val Bijection = Qualified("typo.dsl.Bijection")
-      val CompositeIn = Qualified("typo.dsl.SqlExpr.CompositeIn")
-      val CompositeInPart = Qualified("typo.dsl.SqlExpr.CompositeIn.Part") // Java
-      val CompositeTuplePart = Qualified("typo.dsl.SqlExpr.CompositeIn.TuplePart") // Scala
-      val ConstAs = Qualified("typo.dsl.SqlExpr.Const.As")
-      val ConstAsAs = ConstAs / Ident("as")
-      val ConstAsAsOpt = ConstAs / Ident("asOpt")
-      val DeleteBuilder = Qualified("typo.dsl.DeleteBuilder")
-      val DeleteBuilderMock = Qualified("typo.dsl.DeleteBuilder.DeleteBuilderMock")
-      val DeleteParams = Qualified("typo.dsl.DeleteParams")
-      val Dialect = Qualified("typo.dsl.Dialect")
-      val Field = Qualified("typo.dsl.SqlExpr.Field")
-      val FieldLikeNoHkt = Qualified("typo.dsl.SqlExpr.FieldLike")
-      val FieldsExpr = Qualified("typo.dsl.FieldsExpr")
-      val ForeignKey = Qualified("typo.dsl.ForeignKey")
-      val IdField = Qualified("typo.dsl.SqlExpr.IdField")
-      val OptField = Qualified("typo.dsl.SqlExpr.OptField")
-      val Path = Qualified("typo.dsl.Path")
-      val SelectBuilder = Qualified("typo.dsl.SelectBuilder")
-      val SelectBuilderMock = Qualified("typo.dsl.SelectBuilderMock")
-      val SelectParams = Qualified("typo.dsl.SelectParams")
-      val SqlExpr = Qualified("typo.dsl.SqlExpr")
-      val StructureRelation = Qualified("typo.dsl.Structure.Relation")
-      val UpdateBuilder = Qualified("typo.dsl.UpdateBuilder")
-      val UpdateBuilderMock = Qualified("typo.dsl.UpdateBuilder.UpdateBuilderMock")
-      val UpdateParams = Qualified("typo.dsl.UpdateParams")
-    }
-
-    object runtime {
-      val RowParser = Qualified("typo.runtime.RowParser")
-    }
-
     // todo: represent this fact better.
     def containsUserDefined(tpe: Type): Boolean =
       tpe match {
-        case Abstract(_, _)            => false
-        case ArrayOf(targ)             => containsUserDefined(targ)
-        case Commented(underlying, _)  => containsUserDefined(underlying)
-        case Annotated(underlying, _)  => containsUserDefined(underlying)
-        case Qualified(_)              => false
-        case TApply(underlying, targs) => containsUserDefined(underlying) || targs.exists(containsUserDefined)
-        case UserDefined(_)            => true
-        case Void                      => false
-        case Wildcard                  => false
-        case Function0(_)              => false
-        case Function1(_, _)           => false
-        case Function2(_, _, _)        => false
-        case Primitive(_)              => false
+        case Abstract(_, _)             => false
+        case ArrayOf(targ)              => containsUserDefined(targ)
+        case KotlinNullable(underlying) => containsUserDefined(underlying)
+        case Commented(underlying, _)   => containsUserDefined(underlying)
+        case Annotated(underlying, _)   => containsUserDefined(underlying)
+        case Qualified(_)               => false
+        case TApply(underlying, targs)  => containsUserDefined(underlying) || targs.exists(containsUserDefined)
+        case UserDefined(_)             => true
+        case Void                       => false
+        case Wildcard                   => false
+        case Function0(_)               => false
+        case Function1(_, _)            => false
+        case Function2(_, _, _)         => false
+        case Primitive(_)               => false
       }
 
     def base(tpe: Type): Type = tpe match {
-      case Abstract(_, _)            => tpe
-      case ArrayOf(targ)             => Type.ArrayOf(base(targ))
-      case Commented(underlying, _)  => base(underlying)
-      case Annotated(underlying, _)  => base(underlying)
-      case Qualified(_)              => tpe
-      case TApply(underlying, targs) => TApply(base(underlying), targs.map(base))
-      case UserDefined(tpe)          => base(tpe)
-      case Void                      => Void
-      case Wildcard                  => tpe
-      case tpe @ Function0(_)        => tpe
-      case tpe @ Function1(_, _)     => tpe
-      case tpe @ Function2(_, _, _)  => tpe
-      case tpe @ Primitive(_)        => tpe
+      case Abstract(_, _)             => tpe
+      case ArrayOf(targ)              => Type.ArrayOf(base(targ))
+      case KotlinNullable(underlying) => KotlinNullable(base(underlying))
+      case Commented(underlying, _)   => base(underlying)
+      case Annotated(underlying, _)   => base(underlying)
+      case Qualified(_)               => tpe
+      case TApply(underlying, targs)  => TApply(base(underlying), targs.map(base))
+      case UserDefined(tpe)           => base(tpe)
+      case Void                       => Void
+      case Wildcard                   => tpe
+      case tpe @ Function0(_)         => tpe
+      case tpe @ Function1(_, _)      => tpe
+      case tpe @ Function2(_, _, _)   => tpe
+      case tpe @ Primitive(_)         => tpe
     }
   }
 

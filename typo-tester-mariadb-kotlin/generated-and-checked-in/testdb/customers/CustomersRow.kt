@@ -7,14 +7,14 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_status.CustomerStatusId
 import testdb.customtypes.Defaulted
 import typo.data.maria.MariaSet
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: customers
   * Primary key: customer_id
@@ -35,7 +35,7 @@ data class CustomersRow(
   /** 
     * Default: NULL
     */
-  val phone: Optional<String>,
+  val phone: String?,
   /** 
     * Default: 'pending'
     * Points to [testdb.customer_status.CustomerStatusRow.statusCode]
@@ -48,15 +48,15 @@ data class CustomersRow(
   /** 
     * Default: NULL
     */
-  val preferences: Optional<String>,
+  val preferences: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("marketing_flags") val marketingFlags: Optional<MariaSet>,
+  @JsonProperty("marketing_flags") val marketingFlags: MariaSet?,
   /** 
     * Default: NULL
     */
-  val notes: Optional<String>,
+  val notes: String?,
   /** 
     * Default: current_timestamp(6)
     */
@@ -68,26 +68,26 @@ data class CustomersRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("last_login_at") val lastLoginAt: Optional<LocalDateTime>
+  @JsonProperty("last_login_at") val lastLoginAt: LocalDateTime?
 ) {
   fun id(): CustomersId = customerId
 
   fun toUnsavedRow(
-    phone: Defaulted<Optional<String>>,
+    phone: Defaulted<String?>,
     status: Defaulted<CustomerStatusId>,
     tier: Defaulted<String>,
-    preferences: Defaulted<Optional<String>>,
-    marketingFlags: Defaulted<Optional<MariaSet>>,
-    notes: Defaulted<Optional<String>>,
+    preferences: Defaulted<String?>,
+    marketingFlags: Defaulted<MariaSet?>,
+    notes: Defaulted<String?>,
     createdAt: Defaulted<LocalDateTime>,
     updatedAt: Defaulted<LocalDateTime>,
-    lastLoginAt: Defaulted<Optional<LocalDateTime>>
+    lastLoginAt: Defaulted<LocalDateTime?>
   ): CustomersRowUnsaved = CustomersRowUnsaved(email, passwordHash, firstName, lastName, phone, status, tier, preferences, marketingFlags, notes, createdAt, updatedAt, lastLoginAt)
 
   companion object {
-    val _rowParser: RowParser<CustomersRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.binary, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), CustomerStatusId.pgType, MariaTypes.text, MariaTypes.longtext.opt(), MariaTypes.set.opt(), MariaTypes.text.opt(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> CustomersRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.passwordHash, row.firstName, row.lastName, row.phone, row.status, row.tier, row.preferences, row.marketingFlags, row.notes, row.createdAt, row.updatedAt, row.lastLoginAt) })
+    val _rowParser: RowParser<CustomersRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.binary, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), CustomerStatusId.pgType, MariaTypes.text, MariaTypes.longtext.nullable(), MariaTypes.set.nullable(), MariaTypes.text.nullable(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> CustomersRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.passwordHash, row.firstName, row.lastName, row.phone, row.status, row.tier, row.preferences, row.marketingFlags, row.notes, row.createdAt, row.updatedAt, row.lastLoginAt) })
 
     val mariaText: MariaText<CustomersRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

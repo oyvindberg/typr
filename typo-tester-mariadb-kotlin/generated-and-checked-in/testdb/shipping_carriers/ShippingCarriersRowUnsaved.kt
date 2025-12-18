@@ -6,9 +6,10 @@
 package testdb.shipping_carriers
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -21,19 +22,19 @@ data class ShippingCarriersRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("tracking_url_template") val trackingUrlTemplate: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("tracking_url_template") val trackingUrlTemplate: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("api_config") val apiConfig: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("api_config") val apiConfig: Defaulted<String?> = UseDefault(),
   /** Default: 1
 
     */
   @JsonProperty("is_active") val isActive: Defaulted<Boolean> = UseDefault()
 ) {
   fun toRow(
-    trackingUrlTemplateDefault: () -> Optional<String>,
-    apiConfigDefault: () -> Optional<String>,
+    trackingUrlTemplateDefault: () -> String?,
+    apiConfigDefault: () -> String?,
     isActiveDefault: () -> Boolean,
     carrierIdDefault: () -> ShippingCarriersId
   ): ShippingCarriersRow = ShippingCarriersRow(carrierId = carrierIdDefault(), code = code, name = name, trackingUrlTemplate = trackingUrlTemplate.getOrElse(trackingUrlTemplateDefault), apiConfig = apiConfig.getOrElse(apiConfigDefault), isActive = isActive.getOrElse(isActiveDefault))
@@ -44,10 +45,10 @@ data class ShippingCarriersRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.varchar.mariaText().unsafeEncode(row.name, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.trackingUrlTemplate, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.trackingUrlTemplate, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.apiConfig, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.apiConfig, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb) })
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb) })
   }
 }

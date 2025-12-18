@@ -8,21 +8,19 @@ package adventureworks.person.contacttype
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ContacttypeRepoMock(
   val toRow: (ContacttypeRowUnsaved) -> ContacttypeRow,
@@ -33,7 +31,7 @@ data class ContacttypeRepoMock(
   override fun deleteById(
     contacttypeid: ContacttypeId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(contacttypeid)).isPresent()
+  ): Boolean = map.remove(contacttypeid) != null
 
   override fun deleteByIds(
     contacttypeids: Array<ContacttypeId>,
@@ -41,7 +39,7 @@ data class ContacttypeRepoMock(
   ): Int {
     var count = 0
     for (id in contacttypeids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ContacttypeRepoMock(
     c: Connection
   ): ContacttypeRow {
     if (map.containsKey(unsaved.contacttypeid)) {
-      throw RuntimeException(str("id $unsaved.contacttypeid already exists"))
+      throw RuntimeException("id " + unsaved.contacttypeid + " already exists")
     }
     map[unsaved.contacttypeid] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class ContacttypeRepoMock(
   override fun selectById(
     contacttypeid: ContacttypeId,
     c: Connection
-  ): Optional<ContacttypeRow> = Optional.ofNullable(map[contacttypeid])
+  ): ContacttypeRow? = map[contacttypeid]
 
   override fun selectByIds(
     contacttypeids: Array<ContacttypeId>,
@@ -109,9 +107,9 @@ data class ContacttypeRepoMock(
   ): List<ContacttypeRow> {
     val result = ArrayList<ContacttypeRow>()
     for (id in contacttypeids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class ContacttypeRepoMock(
     row: ContacttypeRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.contacttypeid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.contacttypeid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.contacttypeid] = row
     }

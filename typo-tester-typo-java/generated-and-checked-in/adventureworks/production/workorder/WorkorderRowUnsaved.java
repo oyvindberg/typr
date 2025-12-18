@@ -7,10 +7,9 @@ package adventureworks.production.workorder;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.scrapreason.ScrapreasonId;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -28,17 +27,17 @@ public record WorkorderRowUnsaved(
   /** Quantity that failed inspection.
     * Constraint CK_WorkOrder_ScrappedQty affecting columns scrappedqty:  ((scrappedqty >= 0))
     */
-  TypoShort scrappedqty,
+  Short scrappedqty,
   /** Work order start date.
     * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Work order end date.
     * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  Optional<TypoLocalDateTime> enddate,
+  Optional<LocalDateTime> enddate,
   /** Work order due date. */
-  TypoLocalDateTime duedate,
+  LocalDateTime duedate,
   /** Reason for inspection failure.
     * Points to {@link adventureworks.production.scrapreason.ScrapreasonRow#scrapreasonid()}
     */
@@ -48,7 +47,7 @@ public record WorkorderRowUnsaved(
     */
   Defaulted<WorkorderId> workorderid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public WorkorderRowUnsaved(
     /** Product identification number. Foreign key to Product.ProductID.
@@ -62,13 +61,13 @@ public record WorkorderRowUnsaved(
     /** Quantity that failed inspection.
       * Constraint CK_WorkOrder_ScrappedQty affecting columns scrappedqty:  ((scrappedqty >= 0))
       */
-    TypoShort scrappedqty,
+    Short scrappedqty,
     /** Work order start date.
       * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
       */
-    TypoLocalDateTime startdate,
+    LocalDateTime startdate,
     /** Work order due date. */
-    TypoLocalDateTime duedate
+    LocalDateTime duedate
   ) {
     this(productid, orderqty, scrappedqty, startdate, Optional.empty(), duedate, Optional.empty(), new UseDefault<>(), new UseDefault<>());
   };
@@ -90,26 +89,26 @@ public record WorkorderRowUnsaved(
   /** Quantity that failed inspection.
     * Constraint CK_WorkOrder_ScrappedQty affecting columns scrappedqty:  ((scrappedqty >= 0))
     */
-  public WorkorderRowUnsaved withScrappedqty(TypoShort scrappedqty) {
+  public WorkorderRowUnsaved withScrappedqty(Short scrappedqty) {
     return new WorkorderRowUnsaved(productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, workorderid, modifieddate);
   };
 
   /** Work order start date.
     * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public WorkorderRowUnsaved withStartdate(TypoLocalDateTime startdate) {
+  public WorkorderRowUnsaved withStartdate(LocalDateTime startdate) {
     return new WorkorderRowUnsaved(productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, workorderid, modifieddate);
   };
 
   /** Work order end date.
     * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  public WorkorderRowUnsaved withEnddate(Optional<TypoLocalDateTime> enddate) {
+  public WorkorderRowUnsaved withEnddate(Optional<LocalDateTime> enddate) {
     return new WorkorderRowUnsaved(productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, workorderid, modifieddate);
   };
 
   /** Work order due date. */
-  public WorkorderRowUnsaved withDuedate(TypoLocalDateTime duedate) {
+  public WorkorderRowUnsaved withDuedate(LocalDateTime duedate) {
     return new WorkorderRowUnsaved(productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, workorderid, modifieddate);
   };
 
@@ -128,7 +127,7 @@ public record WorkorderRowUnsaved(
   };
 
   /** Default: now() */
-  public WorkorderRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public WorkorderRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new WorkorderRowUnsaved(productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, workorderid, modifieddate);
   };
 
@@ -138,24 +137,24 @@ public record WorkorderRowUnsaved(
       sb.append(PgText.DELIMETER);
       PgTypes.int4.pgText().unsafeEncode(row.orderqty, sb);
       sb.append(PgText.DELIMETER);
-      TypoShort.pgType.pgText().unsafeEncode(row.scrappedqty, sb);
+      PgTypes.int2.pgText().unsafeEncode(row.scrappedqty, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.startdate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.startdate, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.enddate, sb);
+      PgTypes.timestamp.opt().pgText().unsafeEncode(row.enddate, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.duedate, sb);
+      PgTypes.timestamp.pgText().unsafeEncode(row.duedate, sb);
       sb.append(PgText.DELIMETER);
       ScrapreasonId.pgType.opt().pgText().unsafeEncode(row.scrapreasonid, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(WorkorderId.pgType.pgText()).unsafeEncode(row.workorderid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public WorkorderRow toRow(
     java.util.function.Supplier<WorkorderId> workorderidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new WorkorderRow(workorderid.getOrElse(workorderidDefault), productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, modifieddate.getOrElse(modifieddateDefault));
   };

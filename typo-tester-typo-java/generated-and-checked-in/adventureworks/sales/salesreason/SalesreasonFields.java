@@ -5,20 +5,21 @@
  */
 package adventureworks.sales.salesreason;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SalesreasonFields extends FieldsExpr<SalesreasonRow> {
-  record Impl(List<Path> _path) implements SalesreasonFields, Relation<SalesreasonFields, SalesreasonRow> {
+  record Impl(List<Path> _path) implements SalesreasonFields, RelationStructure<SalesreasonFields, SalesreasonRow> {
     @Override
     public IdField<SalesreasonId, SalesreasonRow> salesreasonid() {
       return new IdField<SalesreasonId, SalesreasonRow>(_path, "salesreasonid", SalesreasonRow::salesreasonid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withSalesreasonid(value), SalesreasonId.pgType);
@@ -35,23 +36,23 @@ public interface SalesreasonFields extends FieldsExpr<SalesreasonRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, SalesreasonRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SalesreasonRow>(_path, "modifieddate", SalesreasonRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SalesreasonRow> modifieddate() {
+      return new Field<LocalDateTime, SalesreasonRow>(_path, "modifieddate", SalesreasonRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SalesreasonRow>> columns() {
-      return List.of(this.salesreasonid(), this.name(), this.reasontype(), this.modifieddate());
+      return java.util.List.of(this.salesreasonid(), this.name(), this.reasontype(), this.modifieddate());
     };
 
     @Override
-    public Relation<SalesreasonFields, SalesreasonRow> copy(List<Path> _path) {
+    public RelationStructure<SalesreasonFields, SalesreasonRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<SalesreasonId, SalesreasonRow> salesreasonid();
@@ -60,7 +61,7 @@ public interface SalesreasonFields extends FieldsExpr<SalesreasonRow> {
 
   Field<Name, SalesreasonRow> reasontype();
 
-  Field<TypoLocalDateTime, SalesreasonRow> modifieddate();
+  Field<LocalDateTime, SalesreasonRow> modifieddate();
 
   @Override
   List<FieldLike<?, SalesreasonRow>> columns();

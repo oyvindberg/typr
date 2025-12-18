@@ -7,14 +7,13 @@ package adventureworks.sales.salesorderdetail;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.product.ProductId;
 import adventureworks.sales.salesorderheader.SalesorderheaderId;
 import adventureworks.sales.specialoffer.SpecialofferId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -29,7 +28,7 @@ public record SalesorderdetailRowUnsaved(
   /** Quantity ordered per product.
     * Constraint CK_SalesOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0))
     */
-  TypoShort orderqty,
+  Short orderqty,
   /** Product sold to customer. Foreign key to Product.ProductID.
     * Points to {@link adventureworks.sales.specialofferproduct.SpecialofferproductRow#productid()}
     */
@@ -52,9 +51,9 @@ public record SalesorderdetailRowUnsaved(
     */
   Defaulted<BigDecimal> unitpricediscount,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public SalesorderdetailRowUnsaved(
     /** Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
@@ -64,7 +63,7 @@ public record SalesorderdetailRowUnsaved(
     /** Quantity ordered per product.
       * Constraint CK_SalesOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0))
       */
-    TypoShort orderqty,
+    Short orderqty,
     /** Product sold to customer. Foreign key to Product.ProductID.
       * Points to {@link adventureworks.sales.specialofferproduct.SpecialofferproductRow#productid()}
       */
@@ -96,7 +95,7 @@ public record SalesorderdetailRowUnsaved(
   /** Quantity ordered per product.
     * Constraint CK_SalesOrderDetail_OrderQty affecting columns orderqty:  ((orderqty > 0))
     */
-  public SalesorderdetailRowUnsaved withOrderqty(TypoShort orderqty) {
+  public SalesorderdetailRowUnsaved withOrderqty(Short orderqty) {
     return new SalesorderdetailRowUnsaved(salesorderid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, salesorderdetailid, unitpricediscount, rowguid, modifieddate);
   };
 
@@ -137,12 +136,12 @@ public record SalesorderdetailRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public SalesorderdetailRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public SalesorderdetailRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new SalesorderdetailRowUnsaved(salesorderid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, salesorderdetailid, unitpricediscount, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalesorderdetailRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SalesorderdetailRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new SalesorderdetailRowUnsaved(salesorderid, carriertrackingnumber, orderqty, productid, specialofferid, unitprice, salesorderdetailid, unitpricediscount, rowguid, modifieddate);
   };
 
@@ -152,7 +151,7 @@ public record SalesorderdetailRowUnsaved(
       sb.append(PgText.DELIMETER);
       PgTypes.text.opt().pgText().unsafeEncode(row.carriertrackingnumber, sb);
       sb.append(PgText.DELIMETER);
-      TypoShort.pgType.pgText().unsafeEncode(row.orderqty, sb);
+      PgTypes.int2.pgText().unsafeEncode(row.orderqty, sb);
       sb.append(PgText.DELIMETER);
       ProductId.pgType.pgText().unsafeEncode(row.productid, sb);
       sb.append(PgText.DELIMETER);
@@ -164,16 +163,16 @@ public record SalesorderdetailRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.unitpricediscount, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public SalesorderdetailRow toRow(
     java.util.function.Supplier<Integer> salesorderdetailidDefault,
     java.util.function.Supplier<BigDecimal> unitpricediscountDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new SalesorderdetailRow(salesorderid, salesorderdetailid.getOrElse(salesorderdetailidDefault), carriertrackingnumber, orderqty, productid, specialofferid, unitprice, unitpricediscount.getOrElse(unitpricediscountDefault), rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault));
   };

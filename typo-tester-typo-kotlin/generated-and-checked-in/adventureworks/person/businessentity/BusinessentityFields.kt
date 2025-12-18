@@ -5,42 +5,44 @@
  */
 package adventureworks.person.businessentity
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface BusinessentityFields : FieldsExpr<BusinessentityRow> {
-  fun businessentityid(): IdField<BusinessentityId, BusinessentityRow>
+  abstract fun businessentityid(): IdField<BusinessentityId, BusinessentityRow>
 
-  override fun columns(): List<FieldLike<*, BusinessentityRow>>
+  abstract override fun columns(): List<FieldLike<*, BusinessentityRow>>
 
-  fun modifieddate(): Field<TypoLocalDateTime, BusinessentityRow>
+  abstract fun modifieddate(): Field<LocalDateTime, BusinessentityRow>
 
-  override fun rowParser(): RowParser<BusinessentityRow> = BusinessentityRow._rowParser
+  override fun rowParser(): RowParser<BusinessentityRow> = BusinessentityRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, BusinessentityRow>
+  abstract fun rowguid(): Field<UUID, BusinessentityRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : BusinessentityFields, Relation<BusinessentityFields, BusinessentityRow> {
-      override fun businessentityid(): IdField<BusinessentityId, BusinessentityRow> = IdField<BusinessentityId, BusinessentityRow>(_path, "businessentityid", BusinessentityRow::businessentityid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : BusinessentityFields, RelationStructure<BusinessentityFields, BusinessentityRow> {
+      override fun businessentityid(): IdField<BusinessentityId, BusinessentityRow> = IdField<BusinessentityId, BusinessentityRow>(_path, "businessentityid", BusinessentityRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun rowguid(): Field<TypoUUID, BusinessentityRow> = Field<TypoUUID, BusinessentityRow>(_path, "rowguid", BusinessentityRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, BusinessentityRow> = Field<UUID, BusinessentityRow>(_path, "rowguid", BusinessentityRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, BusinessentityRow> = Field<TypoLocalDateTime, BusinessentityRow>(_path, "modifieddate", BusinessentityRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, BusinessentityRow> = Field<LocalDateTime, BusinessentityRow>(_path, "modifieddate", BusinessentityRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, BusinessentityRow>> = listOf(this.businessentityid(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<BusinessentityFields, BusinessentityRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, BusinessentityRow>> = listOf(this.businessentityid().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<BusinessentityFields, BusinessentityRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

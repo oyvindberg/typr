@@ -5,7 +5,6 @@
  */
 package adventureworks.purchasing.productvendor;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.production.product.ProductFields;
 import adventureworks.production.product.ProductId;
@@ -16,11 +15,13 @@ import adventureworks.production.unitmeasure.UnitmeasureRow;
 import adventureworks.purchasing.vendor.VendorFields;
 import adventureworks.purchasing.vendor.VendorRow;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
@@ -28,12 +29,11 @@ import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface ProductvendorFields extends FieldsExpr<ProductvendorRow> {
-  record Impl(List<Path> _path) implements ProductvendorFields, Relation<ProductvendorFields, ProductvendorRow> {
+  record Impl(List<Path> _path) implements ProductvendorFields, RelationStructure<ProductvendorFields, ProductvendorRow> {
     @Override
     public IdField<ProductId, ProductvendorRow> productid() {
       return new IdField<ProductId, ProductvendorRow>(_path, "productid", ProductvendorRow::productid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withProductid(value), ProductId.pgType);
@@ -60,8 +60,8 @@ public interface ProductvendorFields extends FieldsExpr<ProductvendorRow> {
     };
 
     @Override
-    public OptField<TypoLocalDateTime, ProductvendorRow> lastreceiptdate() {
-      return new OptField<TypoLocalDateTime, ProductvendorRow>(_path, "lastreceiptdate", ProductvendorRow::lastreceiptdate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withLastreceiptdate(value), TypoLocalDateTime.pgType);
+    public OptField<LocalDateTime, ProductvendorRow> lastreceiptdate() {
+      return new OptField<LocalDateTime, ProductvendorRow>(_path, "lastreceiptdate", ProductvendorRow::lastreceiptdate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withLastreceiptdate(value), PgTypes.timestamp);
     };
 
     @Override
@@ -85,23 +85,23 @@ public interface ProductvendorFields extends FieldsExpr<ProductvendorRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, ProductvendorRow> modifieddate() {
-      return new Field<TypoLocalDateTime, ProductvendorRow>(_path, "modifieddate", ProductvendorRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ProductvendorRow> modifieddate() {
+      return new Field<LocalDateTime, ProductvendorRow>(_path, "modifieddate", ProductvendorRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, ProductvendorRow>> columns() {
-      return List.of(this.productid(), this.businessentityid(), this.averageleadtime(), this.standardprice(), this.lastreceiptcost(), this.lastreceiptdate(), this.minorderqty(), this.maxorderqty(), this.onorderqty(), this.unitmeasurecode(), this.modifieddate());
+      return java.util.List.of(this.productid(), this.businessentityid(), this.averageleadtime(), this.standardprice(), this.lastreceiptcost(), this.lastreceiptdate(), this.minorderqty(), this.maxorderqty(), this.onorderqty(), this.unitmeasurecode(), this.modifieddate());
     };
 
     @Override
-    public Relation<ProductvendorFields, ProductvendorRow> copy(List<Path> _path) {
+    public RelationStructure<ProductvendorFields, ProductvendorRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ProductId, ProductvendorRow> productid();
@@ -114,7 +114,7 @@ public interface ProductvendorFields extends FieldsExpr<ProductvendorRow> {
 
   OptField<BigDecimal, ProductvendorRow> lastreceiptcost();
 
-  OptField<TypoLocalDateTime, ProductvendorRow> lastreceiptdate();
+  OptField<LocalDateTime, ProductvendorRow> lastreceiptdate();
 
   Field<Integer, ProductvendorRow> minorderqty();
 
@@ -124,18 +124,18 @@ public interface ProductvendorFields extends FieldsExpr<ProductvendorRow> {
 
   Field<UnitmeasureId, ProductvendorRow> unitmeasurecode();
 
-  Field<TypoLocalDateTime, ProductvendorRow> modifieddate();
+  Field<LocalDateTime, ProductvendorRow> modifieddate();
 
   default ForeignKey<ProductFields, ProductRow> fkProductionProduct() {
-    return ForeignKey.<ProductFields, ProductRow>of("purchasing.FK_ProductVendor_Product_ProductID").withColumnPair(productid(), ProductFields::productid);
+    return ForeignKey.<ProductFields, ProductRow>of("purchasing.FK_ProductVendor_Product_ProductID").<ProductId>withColumnPair(productid(), ProductFields::productid);
   };
 
   default ForeignKey<UnitmeasureFields, UnitmeasureRow> fkProductionUnitmeasure() {
-    return ForeignKey.<UnitmeasureFields, UnitmeasureRow>of("purchasing.FK_ProductVendor_UnitMeasure_UnitMeasureCode").withColumnPair(unitmeasurecode(), UnitmeasureFields::unitmeasurecode);
+    return ForeignKey.<UnitmeasureFields, UnitmeasureRow>of("purchasing.FK_ProductVendor_UnitMeasure_UnitMeasureCode").<UnitmeasureId>withColumnPair(unitmeasurecode(), UnitmeasureFields::unitmeasurecode);
   };
 
   default ForeignKey<VendorFields, VendorRow> fkVendor() {
-    return ForeignKey.<VendorFields, VendorRow>of("purchasing.FK_ProductVendor_Vendor_BusinessEntityID").withColumnPair(businessentityid(), VendorFields::businessentityid);
+    return ForeignKey.<VendorFields, VendorRow>of("purchasing.FK_ProductVendor_Vendor_BusinessEntityID").<BusinessentityId>withColumnPair(businessentityid(), VendorFields::businessentityid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(ProductvendorId compositeId) {

@@ -5,7 +5,6 @@
  */
 package adventureworks.person.phonenumbertype;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -19,10 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
   @Override
@@ -35,13 +33,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     PhonenumbertypeId phonenumbertypeid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "person"."phonenumbertype" where "phonenumbertypeid" = 
-      """),
-      PhonenumbertypeId.pgType.encode(phonenumbertypeid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"person\".\"phonenumbertype\" where \"phonenumbertypeid\" = "), Fragment.encode(PhonenumbertypeId.pgType, phonenumbertypeid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -49,14 +41,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     PhonenumbertypeId[] phonenumbertypeids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "person"."phonenumbertype"
-                  where "phonenumbertypeid" = ANY("""),
-               PhonenumbertypeId.pgTypeArray.encode(phonenumbertypeids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"person\".\"phonenumbertype\"\nwhere \"phonenumbertypeid\" = ANY("), Fragment.encode(PhonenumbertypeId.pgTypeArray, phonenumbertypeids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -66,20 +51,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     PhonenumbertypeRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."phonenumbertype"("phonenumbertypeid", "name", "modifieddate")
-         values ("""),
-      PhonenumbertypeId.pgType.encode(unsaved.phonenumbertypeid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "phonenumbertypeid", "name", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"phonenumbertype\"(\"phonenumbertypeid\", \"name\", \"modifieddate\")\nvalues ("), Fragment.encode(PhonenumbertypeId.pgType, unsaved.phonenumbertypeid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"phonenumbertypeid\", \"name\", \"modifieddate\"\n"))
       .updateReturning(PhonenumbertypeRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -88,23 +60,17 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     PhonenumbertypeRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved.phonenumbertypeid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"phonenumbertypeid\""));
-        values.add(interpolate(
-        PhonenumbertypeId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(PhonenumbertypeId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -113,26 +79,10 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."phonenumbertype"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "phonenumbertypeid", "name", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"person\".\"phonenumbertype\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"phonenumbertypeid\", \"name\", \"modifieddate\"\n"));;
     return q.updateReturning(PhonenumbertypeRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -142,9 +92,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."phonenumbertype"("phonenumbertypeid", "name", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, PhonenumbertypeRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"phonenumbertype\"(\"phonenumbertypeid\", \"name\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, PhonenumbertypeRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -154,9 +102,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."phonenumbertype"("name", "phonenumbertypeid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, PhonenumbertypeRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"phonenumbertype\"(\"name\", \"phonenumbertypeid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, PhonenumbertypeRowUnsaved.pgText);
   };
 
   @Override
@@ -166,10 +112,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
 
   @Override
   public List<PhonenumbertypeRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "phonenumbertypeid", "name", "modifieddate"::text
-       from "person"."phonenumbertype"
-    """)).query(PhonenumbertypeRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"phonenumbertypeid\", \"name\", \"modifieddate\"\nfrom \"person\".\"phonenumbertype\"\n")).query(PhonenumbertypeRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -177,14 +120,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     PhonenumbertypeId phonenumbertypeid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "phonenumbertypeid", "name", "modifieddate"::text
-         from "person"."phonenumbertype"
-         where "phonenumbertypeid" = """),
-      PhonenumbertypeId.pgType.encode(phonenumbertypeid),
-      typo.runtime.Fragment.lit("")
-    ).query(PhonenumbertypeRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"phonenumbertypeid\", \"name\", \"modifieddate\"\nfrom \"person\".\"phonenumbertype\"\nwhere \"phonenumbertypeid\" = "), Fragment.encode(PhonenumbertypeId.pgType, phonenumbertypeid), Fragment.lit("")).query(PhonenumbertypeRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -192,14 +128,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     PhonenumbertypeId[] phonenumbertypeids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "phonenumbertypeid", "name", "modifieddate"::text
-         from "person"."phonenumbertype"
-         where "phonenumbertypeid" = ANY("""),
-      PhonenumbertypeId.pgTypeArray.encode(phonenumbertypeids),
-      typo.runtime.Fragment.lit(")")
-    ).query(PhonenumbertypeRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"phonenumbertypeid\", \"name\", \"modifieddate\"\nfrom \"person\".\"phonenumbertype\"\nwhere \"phonenumbertypeid\" = ANY("), Fragment.encode(PhonenumbertypeId.pgTypeArray, phonenumbertypeids), Fragment.lit(")")).query(PhonenumbertypeRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -214,7 +143,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
 
   @Override
   public UpdateBuilder<PhonenumbertypeFields, PhonenumbertypeRow> update() {
-    return UpdateBuilder.of("\"person\".\"phonenumbertype\"", PhonenumbertypeFields.structure(), PhonenumbertypeRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"person\".\"phonenumbertype\"", PhonenumbertypeFields.structure(), PhonenumbertypeRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -223,21 +152,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     Connection c
   ) {
     PhonenumbertypeId phonenumbertypeid = row.phonenumbertypeid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "person"."phonenumbertype"
-         set "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "phonenumbertypeid" = """),
-      PhonenumbertypeId.pgType.encode(phonenumbertypeid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"person\".\"phonenumbertype\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"phonenumbertypeid\" = "), Fragment.encode(PhonenumbertypeId.pgType, phonenumbertypeid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -245,23 +160,7 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     PhonenumbertypeRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."phonenumbertype"("phonenumbertypeid", "name", "modifieddate")
-         values ("""),
-      PhonenumbertypeId.pgType.encode(unsaved.phonenumbertypeid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("phonenumbertypeid")
-         do update set
-           "name" = EXCLUDED."name",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "phonenumbertypeid", "name", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"phonenumbertype\"(\"phonenumbertypeid\", \"name\", \"modifieddate\")\nvalues ("), Fragment.encode(PhonenumbertypeId.pgType, unsaved.phonenumbertypeid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"phonenumbertypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"phonenumbertypeid\", \"name\", \"modifieddate\""))
       .updateReturning(PhonenumbertypeRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -271,16 +170,9 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     Iterator<PhonenumbertypeRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "person"."phonenumbertype"("phonenumbertypeid", "name", "modifieddate")
-                values (?::int4, ?::varchar, ?::timestamp)
-                on conflict ("phonenumbertypeid")
-                do update set
-                  "name" = EXCLUDED."name",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "phonenumbertypeid", "name", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"person\".\"phonenumbertype\"(\"phonenumbertypeid\", \"name\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::timestamp)\non conflict (\"phonenumbertypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"phonenumbertypeid\", \"name\", \"modifieddate\""))
       .updateManyReturning(PhonenumbertypeRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -290,20 +182,8 @@ public class PhonenumbertypeRepoImpl implements PhonenumbertypeRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table phonenumbertype_TEMP (like "person"."phonenumbertype") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy phonenumbertype_TEMP("phonenumbertypeid", "name", "modifieddate") from stdin
-    """), batchSize, unsaved, c, PhonenumbertypeRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "person"."phonenumbertype"("phonenumbertypeid", "name", "modifieddate")
-       select * from phonenumbertype_TEMP
-       on conflict ("phonenumbertypeid")
-       do update set
-         "name" = EXCLUDED."name",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table phonenumbertype_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table phonenumbertype_TEMP (like \"person\".\"phonenumbertype\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy phonenumbertype_TEMP(\"phonenumbertypeid\", \"name\", \"modifieddate\") from stdin", batchSize, unsaved, c, PhonenumbertypeRow.pgText);
+    return interpolate(Fragment.lit("insert into \"person\".\"phonenumbertype\"(\"phonenumbertypeid\", \"name\", \"modifieddate\")\nselect * from phonenumbertype_TEMP\non conflict (\"phonenumbertypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table phonenumbertype_TEMP;")).update().runUnchecked(c);
   };
 }

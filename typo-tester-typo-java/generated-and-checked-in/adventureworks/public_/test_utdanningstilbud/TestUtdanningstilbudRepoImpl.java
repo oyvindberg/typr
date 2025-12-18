@@ -16,11 +16,11 @@ import typo.dsl.DeleteBuilder;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
   @Override
@@ -33,17 +33,7 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
     TestUtdanningstilbudId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "public"."test_utdanningstilbud" where "organisasjonskode" = 
-      """),
-      TestOrganisasjonId.pgType.encode(compositeId.organisasjonskode()),
-      typo.runtime.Fragment.lit("""
-       AND "utdanningsmulighet_kode" = 
-      """),
-      PgTypes.text.encode(compositeId.utdanningsmulighetKode()),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"public\".\"test_utdanningstilbud\" where \"organisasjonskode\" = "), Fragment.encode(TestOrganisasjonId.pgType, compositeId.organisasjonskode()), Fragment.lit(" AND \"utdanningsmulighet_kode\" = "), Fragment.encode(PgTypes.text, compositeId.utdanningsmulighetKode()), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -53,20 +43,7 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
   ) {
     TestOrganisasjonId[] organisasjonskode = arrayMap.map(compositeIds, TestUtdanningstilbudId::organisasjonskode, TestOrganisasjonId.class);;
     String[] utdanningsmulighetKode = arrayMap.map(compositeIds, TestUtdanningstilbudId::utdanningsmulighetKode, String.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         delete
-         from "public"."test_utdanningstilbud"
-         where ("organisasjonskode", "utdanningsmulighet_kode")
-         in (select unnest("""),
-      TestOrganisasjonId.pgTypeArray.encode(organisasjonskode),
-      typo.runtime.Fragment.lit("::text[]), unnest("),
-      PgTypes.textArray.encode(utdanningsmulighetKode),
-      typo.runtime.Fragment.lit("""
-      ::text[]))
-
-      """)
-    ).update().runUnchecked(c);
+    return interpolate(Fragment.lit("delete\nfrom \"public\".\"test_utdanningstilbud\"\nwhere (\"organisasjonskode\", \"utdanningsmulighet_kode\")\nin (select unnest("), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("::text[]))\n")).update().runUnchecked(c);
   };
 
   @Override
@@ -74,18 +51,7 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
     TestUtdanningstilbudRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."test_utdanningstilbud"("organisasjonskode", "utdanningsmulighet_kode")
-         values ("""),
-      TestOrganisasjonId.pgType.encode(unsaved.organisasjonskode()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.text.encode(unsaved.utdanningsmulighetKode()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "organisasjonskode", "utdanningsmulighet_kode"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"test_utdanningstilbud\"(\"organisasjonskode\", \"utdanningsmulighet_kode\")\nvalues ("), Fragment.encode(TestOrganisasjonId.pgType, unsaved.organisasjonskode()), Fragment.lit(", "), Fragment.encode(PgTypes.text, unsaved.utdanningsmulighetKode()), Fragment.lit(")\nreturning \"organisasjonskode\", \"utdanningsmulighet_kode\"\n"))
       .updateReturning(TestUtdanningstilbudRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -95,9 +61,7 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "public"."test_utdanningstilbud"("organisasjonskode", "utdanningsmulighet_kode") FROM STDIN
-    """), batchSize, unsaved, c, TestUtdanningstilbudRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"public\".\"test_utdanningstilbud\"(\"organisasjonskode\", \"utdanningsmulighet_kode\") FROM STDIN", batchSize, unsaved, c, TestUtdanningstilbudRow.pgText);
   };
 
   @Override
@@ -107,10 +71,7 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
 
   @Override
   public List<TestUtdanningstilbudRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "organisasjonskode", "utdanningsmulighet_kode"
-       from "public"."test_utdanningstilbud"
-    """)).query(TestUtdanningstilbudRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"organisasjonskode\", \"utdanningsmulighet_kode\"\nfrom \"public\".\"test_utdanningstilbud\"\n")).query(TestUtdanningstilbudRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -118,18 +79,7 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
     TestUtdanningstilbudId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "organisasjonskode", "utdanningsmulighet_kode"
-         from "public"."test_utdanningstilbud"
-         where "organisasjonskode" = """),
-      TestOrganisasjonId.pgType.encode(compositeId.organisasjonskode()),
-      typo.runtime.Fragment.lit("""
-       AND "utdanningsmulighet_kode" = 
-      """),
-      PgTypes.text.encode(compositeId.utdanningsmulighetKode()),
-      typo.runtime.Fragment.lit("")
-    ).query(TestUtdanningstilbudRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"organisasjonskode\", \"utdanningsmulighet_kode\"\nfrom \"public\".\"test_utdanningstilbud\"\nwhere \"organisasjonskode\" = "), Fragment.encode(TestOrganisasjonId.pgType, compositeId.organisasjonskode()), Fragment.lit(" AND \"utdanningsmulighet_kode\" = "), Fragment.encode(PgTypes.text, compositeId.utdanningsmulighetKode()), Fragment.lit("")).query(TestUtdanningstilbudRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -139,20 +89,7 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
   ) {
     TestOrganisasjonId[] organisasjonskode = arrayMap.map(compositeIds, TestUtdanningstilbudId::organisasjonskode, TestOrganisasjonId.class);;
     String[] utdanningsmulighetKode = arrayMap.map(compositeIds, TestUtdanningstilbudId::utdanningsmulighetKode, String.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "organisasjonskode", "utdanningsmulighet_kode"
-         from "public"."test_utdanningstilbud"
-         where ("organisasjonskode", "utdanningsmulighet_kode")
-         in (select unnest("""),
-      TestOrganisasjonId.pgTypeArray.encode(organisasjonskode),
-      typo.runtime.Fragment.lit("::text[]), unnest("),
-      PgTypes.textArray.encode(utdanningsmulighetKode),
-      typo.runtime.Fragment.lit("""
-      ::text[]))
-
-      """)
-    ).query(TestUtdanningstilbudRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"organisasjonskode\", \"utdanningsmulighet_kode\"\nfrom \"public\".\"test_utdanningstilbud\"\nwhere (\"organisasjonskode\", \"utdanningsmulighet_kode\")\nin (select unnest("), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("::text[]))\n")).query(TestUtdanningstilbudRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -167,7 +104,7 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
 
   @Override
   public UpdateBuilder<TestUtdanningstilbudFields, TestUtdanningstilbudRow> update() {
-    return UpdateBuilder.of("\"public\".\"test_utdanningstilbud\"", TestUtdanningstilbudFields.structure(), TestUtdanningstilbudRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"public\".\"test_utdanningstilbud\"", TestUtdanningstilbudFields.structure(), TestUtdanningstilbudRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -175,19 +112,7 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
     TestUtdanningstilbudRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."test_utdanningstilbud"("organisasjonskode", "utdanningsmulighet_kode")
-         values ("""),
-      TestOrganisasjonId.pgType.encode(unsaved.organisasjonskode()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.text.encode(unsaved.utdanningsmulighetKode()),
-      typo.runtime.Fragment.lit("""
-         )
-         on conflict ("organisasjonskode", "utdanningsmulighet_kode")
-         do update set "organisasjonskode" = EXCLUDED."organisasjonskode"
-         returning "organisasjonskode", "utdanningsmulighet_kode\"""")
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"test_utdanningstilbud\"(\"organisasjonskode\", \"utdanningsmulighet_kode\")\nvalues ("), Fragment.encode(TestOrganisasjonId.pgType, unsaved.organisasjonskode()), Fragment.lit(", "), Fragment.encode(PgTypes.text, unsaved.utdanningsmulighetKode()), Fragment.lit(")\non conflict (\"organisasjonskode\", \"utdanningsmulighet_kode\")\ndo update set \"organisasjonskode\" = EXCLUDED.\"organisasjonskode\"\nreturning \"organisasjonskode\", \"utdanningsmulighet_kode\""))
       .updateReturning(TestUtdanningstilbudRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -197,14 +122,9 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
     Iterator<TestUtdanningstilbudRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "public"."test_utdanningstilbud"("organisasjonskode", "utdanningsmulighet_kode")
-                values (?, ?)
-                on conflict ("organisasjonskode", "utdanningsmulighet_kode")
-                do update set "organisasjonskode" = EXCLUDED."organisasjonskode"
-                returning "organisasjonskode", "utdanningsmulighet_kode\""""))
+    return interpolate(Fragment.lit("insert into \"public\".\"test_utdanningstilbud\"(\"organisasjonskode\", \"utdanningsmulighet_kode\")\nvalues (?, ?)\non conflict (\"organisasjonskode\", \"utdanningsmulighet_kode\")\ndo update set \"organisasjonskode\" = EXCLUDED.\"organisasjonskode\"\nreturning \"organisasjonskode\", \"utdanningsmulighet_kode\""))
       .updateManyReturning(TestUtdanningstilbudRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -214,18 +134,8 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table test_utdanningstilbud_TEMP (like "public"."test_utdanningstilbud") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy test_utdanningstilbud_TEMP("organisasjonskode", "utdanningsmulighet_kode") from stdin
-    """), batchSize, unsaved, c, TestUtdanningstilbudRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "public"."test_utdanningstilbud"("organisasjonskode", "utdanningsmulighet_kode")
-       select * from test_utdanningstilbud_TEMP
-       on conflict ("organisasjonskode", "utdanningsmulighet_kode")
-       do nothing
-       ;
-       drop table test_utdanningstilbud_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table test_utdanningstilbud_TEMP (like \"public\".\"test_utdanningstilbud\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy test_utdanningstilbud_TEMP(\"organisasjonskode\", \"utdanningsmulighet_kode\") from stdin", batchSize, unsaved, c, TestUtdanningstilbudRow.pgText);
+    return interpolate(Fragment.lit("insert into \"public\".\"test_utdanningstilbud\"(\"organisasjonskode\", \"utdanningsmulighet_kode\")\nselect * from test_utdanningstilbud_TEMP\non conflict (\"organisasjonskode\", \"utdanningsmulighet_kode\")\ndo nothing\n;\ndrop table test_utdanningstilbud_TEMP;")).update().runUnchecked(c);
   };
 }

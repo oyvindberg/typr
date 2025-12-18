@@ -11,15 +11,15 @@ import java.util.Optional;
 import testdb.warehouses.WarehousesId;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface VWarehouseCoverageViewFields extends FieldsExpr<VWarehouseCoverageViewRow> {
-  record Impl(List<Path> _path) implements VWarehouseCoverageViewFields, Relation<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> {
+  record Impl(List<Path> _path) implements VWarehouseCoverageViewFields, RelationStructure<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> {
     @Override
     public Field<WarehousesId, VWarehouseCoverageViewRow> warehouseId() {
       return new Field<WarehousesId, VWarehouseCoverageViewRow>(_path, "warehouse_id", VWarehouseCoverageViewRow::warehouseId, Optional.empty(), Optional.empty(), (row, value) -> row.withWarehouseId(value), WarehousesId.pgType);
@@ -67,22 +67,22 @@ public interface VWarehouseCoverageViewFields extends FieldsExpr<VWarehouseCover
 
     @Override
     public OptField<BigDecimal, VWarehouseCoverageViewRow> totalInventory() {
-      return new OptField<BigDecimal, VWarehouseCoverageViewRow>(_path, "total_inventory", VWarehouseCoverageViewRow::totalInventory, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalInventory(value), MariaTypes.decimal);
+      return new OptField<BigDecimal, VWarehouseCoverageViewRow>(_path, "total_inventory", VWarehouseCoverageViewRow::totalInventory, Optional.empty(), Optional.empty(), (row, value) -> row.withTotalInventory(value), MariaTypes.numeric);
     };
 
     @Override
     public List<FieldLike<?, VWarehouseCoverageViewRow>> columns() {
-      return List.of(this.warehouseId(), this.code(), this.name(), this.address(), this.locationWkt(), this.serviceAreaWkt(), this.timezone(), this.isActive(), this.productsStocked(), this.totalInventory());
+      return java.util.List.of(this.warehouseId(), this.code(), this.name(), this.address(), this.locationWkt(), this.serviceAreaWkt(), this.timezone(), this.isActive(), this.productsStocked(), this.totalInventory());
     };
 
     @Override
-    public Relation<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> copy(List<Path> _path) {
+    public RelationStructure<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<WarehousesId, VWarehouseCoverageViewRow> warehouseId();

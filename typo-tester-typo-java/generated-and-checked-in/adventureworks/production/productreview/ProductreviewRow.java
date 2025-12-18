@@ -6,9 +6,9 @@
 package adventureworks.production.productreview;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
@@ -33,9 +33,9 @@ public record ProductreviewRow(
   /** Date review was submitted.
     * Default: now()
     */
-  TypoLocalDateTime reviewdate,
+  LocalDateTime reviewdate,
   /** Reviewer's e-mail address. */
-  /* max 50 chars */ String emailaddress,
+  String emailaddress,
   /** Product rating given by the reviewer. Scale is 1 to 5 with 5 as the highest rating.
     * Constraint CK_ProductReview_Rating affecting columns rating: (((rating >= 1) AND (rating <= 5)))
     */
@@ -43,7 +43,7 @@ public record ProductreviewRow(
   /** Reviewer's comments */
   Optional</* max 3850 chars */ String> comments,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for ProductReview records.
     * Default: nextval('production.productreview_productreviewid_seq'::regclass)
@@ -67,12 +67,12 @@ public record ProductreviewRow(
   /** Date review was submitted.
     * Default: now()
     */
-  public ProductreviewRow withReviewdate(TypoLocalDateTime reviewdate) {
+  public ProductreviewRow withReviewdate(LocalDateTime reviewdate) {
     return new ProductreviewRow(productreviewid, productid, reviewername, reviewdate, emailaddress, rating, comments, modifieddate);
   };
 
   /** Reviewer's e-mail address. */
-  public ProductreviewRow withEmailaddress(/* max 50 chars */ String emailaddress) {
+  public ProductreviewRow withEmailaddress(String emailaddress) {
     return new ProductreviewRow(productreviewid, productid, reviewername, reviewdate, emailaddress, rating, comments, modifieddate);
   };
 
@@ -89,11 +89,11 @@ public record ProductreviewRow(
   };
 
   /** Default: now() */
-  public ProductreviewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ProductreviewRow withModifieddate(LocalDateTime modifieddate) {
     return new ProductreviewRow(productreviewid, productid, reviewername, reviewdate, emailaddress, rating, comments, modifieddate);
   };
 
-  static RowParser<ProductreviewRow> _rowParser = RowParsers.of(ProductreviewId.pgType, ProductId.pgType, Name.pgType, TypoLocalDateTime.pgType, PgTypes.text, PgTypes.int4, PgTypes.text.opt(), TypoLocalDateTime.pgType, ProductreviewRow::new, row -> new Object[]{row.productreviewid(), row.productid(), row.reviewername(), row.reviewdate(), row.emailaddress(), row.rating(), row.comments(), row.modifieddate()});;
+  static RowParser<ProductreviewRow> _rowParser = RowParsers.of(ProductreviewId.pgType, ProductId.pgType, Name.pgType, PgTypes.timestamp, PgTypes.text, PgTypes.int4, PgTypes.text.opt(), PgTypes.timestamp, ProductreviewRow::new, row -> new Object[]{row.productreviewid(), row.productid(), row.reviewername(), row.reviewdate(), row.emailaddress(), row.rating(), row.comments(), row.modifieddate()});;
 
   static public PgText<ProductreviewRow> pgText =
     PgText.from(_rowParser);
@@ -104,8 +104,8 @@ public record ProductreviewRow(
 
   public ProductreviewRowUnsaved toUnsavedRow(
     Defaulted<ProductreviewId> productreviewid,
-    Defaulted<TypoLocalDateTime> reviewdate,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> reviewdate,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ProductreviewRowUnsaved(productid, reviewername, emailaddress, rating, comments, productreviewid, reviewdate, modifieddate);
   };

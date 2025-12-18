@@ -8,32 +8,31 @@ package adventureworks.pr.plph
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PlphViewFields {
   def id: Field[ProductId, PlphViewRow]
   def productid: Field[ProductId, PlphViewRow]
   def startdate: Field[TypoLocalDateTime, PlphViewRow]
-  def enddate: OptField[TypoLocalDateTime, PlphViewRow]
+  def enddate: Field[TypoLocalDateTime, PlphViewRow]
   def listprice: Field[BigDecimal, PlphViewRow]
   def modifieddate: Field[TypoLocalDateTime, PlphViewRow]
 }
 
 object PlphViewFields {
-  lazy val structure: Relation[PlphViewFields, PlphViewRow] =
+  lazy val structure: RelationStructure[PlphViewFields, PlphViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PlphViewFields, PlphViewRow] {
+    extends RelationStructure[PlphViewFields, PlphViewRow] {
 
     override lazy val fields: PlphViewFields = new PlphViewFields {
       override def id = Field[ProductId, PlphViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def productid = Field[ProductId, PlphViewRow](_path, "productid", None, None, x => x.productid, (row, value) => row.copy(productid = value))
       override def startdate = Field[TypoLocalDateTime, PlphViewRow](_path, "startdate", Some("text"), None, x => x.startdate, (row, value) => row.copy(startdate = value))
-      override def enddate = OptField[TypoLocalDateTime, PlphViewRow](_path, "enddate", Some("text"), None, x => x.enddate, (row, value) => row.copy(enddate = value))
+      override def enddate = Field[TypoLocalDateTime, PlphViewRow](_path, "enddate", Some("text"), None, x => x.enddate, (row, value) => row.copy(enddate = value))
       override def listprice = Field[BigDecimal, PlphViewRow](_path, "listprice", None, None, x => x.listprice, (row, value) => row.copy(listprice = value))
       override def modifieddate = Field[TypoLocalDateTime, PlphViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }

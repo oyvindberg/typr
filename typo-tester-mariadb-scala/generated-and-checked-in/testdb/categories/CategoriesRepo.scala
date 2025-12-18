@@ -6,17 +6,16 @@
 package testdb.categories
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait CategoriesRepo {
   def delete: DeleteBuilder[CategoriesFields, CategoriesRow]
 
-  def deleteById(categoryId: CategoriesId)(using c: Connection): java.lang.Boolean
+  def deleteById(categoryId: CategoriesId)(using c: Connection): Boolean
 
-  def deleteByIds(categoryIds: Array[CategoriesId])(using c: Connection): Integer
+  def deleteByIds(categoryIds: Array[CategoriesId])(using c: Connection): Int
 
   def insert(unsaved: CategoriesRow)(using c: Connection): CategoriesRow
 
@@ -24,21 +23,21 @@ trait CategoriesRepo {
 
   def select: SelectBuilder[CategoriesFields, CategoriesRow]
 
-  def selectAll(using c: Connection): java.util.List[CategoriesRow]
+  def selectAll(using c: Connection): List[CategoriesRow]
 
-  def selectById(categoryId: CategoriesId)(using c: Connection): Optional[CategoriesRow]
+  def selectById(categoryId: CategoriesId)(using c: Connection): Option[CategoriesRow]
 
-  def selectByIds(categoryIds: Array[CategoriesId])(using c: Connection): java.util.List[CategoriesRow]
+  def selectByIds(categoryIds: Array[CategoriesId])(using c: Connection): List[CategoriesRow]
 
-  def selectByIdsTracked(categoryIds: Array[CategoriesId])(using c: Connection): java.util.Map[CategoriesId, CategoriesRow]
+  def selectByIdsTracked(categoryIds: Array[CategoriesId])(using c: Connection): Map[CategoriesId, CategoriesRow]
 
-  def selectByUniqueSlug(slug: String)(using c: Connection): Optional[CategoriesRow]
+  def selectByUniqueSlug(slug: String)(using c: Connection): Option[CategoriesRow]
 
   def update: UpdateBuilder[CategoriesFields, CategoriesRow]
 
-  def update(row: CategoriesRow)(using c: Connection): java.lang.Boolean
+  def update(row: CategoriesRow)(using c: Connection): Boolean
 
   def upsert(unsaved: CategoriesRow)(using c: Connection): CategoriesRow
 
-  def upsertBatch(unsaved: java.util.Iterator[CategoriesRow])(using c: Connection): java.util.List[CategoriesRow]
+  def upsertBatch(unsaved: Iterator[CategoriesRow])(using c: Connection): List[CategoriesRow]
 }

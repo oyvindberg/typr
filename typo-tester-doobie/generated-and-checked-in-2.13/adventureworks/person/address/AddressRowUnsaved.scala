@@ -18,17 +18,17 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `person.address` which has not been persisted yet */
 case class AddressRowUnsaved(
   /** First street address line. */
-  addressline1: /* max 60 chars */ String,
+  addressline1: String,
   /** Second street address line. */
   addressline2: Option[/* max 60 chars */ String] = None,
   /** Name of the city. */
-  city: /* max 30 chars */ String,
+  city: String,
   /** Unique identification number for the state or province. Foreign key to StateProvince table.
    * Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]]
    */
   stateprovinceid: StateprovinceId,
   /** Postal code for the street address. */
-  postalcode: /* max 15 chars */ String,
+  postalcode: String,
   /** Latitude and longitude of this address. */
   spatiallocation: Option[TypoBytea] = None,
   /** Default: nextval('person.address_addressid_seq'::regclass)
@@ -60,9 +60,9 @@ case class AddressRowUnsaved(
 }
 
 object AddressRowUnsaved {
-  implicit lazy val decoder: Decoder[AddressRowUnsaved] = Decoder.forProduct9[AddressRowUnsaved, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, StateprovinceId, /* max 15 chars */ String, Option[TypoBytea], Defaulted[AddressId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "addressid", "rowguid", "modifieddate")(AddressRowUnsaved.apply)(Decoder.decodeString, Decoder.decodeOption(Decoder.decodeString), Decoder.decodeString, StateprovinceId.decoder, Decoder.decodeString, Decoder.decodeOption(TypoBytea.decoder), Defaulted.decoder(AddressId.decoder), Defaulted.decoder(TypoUUID.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+  implicit lazy val decoder: Decoder[AddressRowUnsaved] = Decoder.forProduct9[AddressRowUnsaved, String, Option[/* max 60 chars */ String], String, StateprovinceId, String, Option[TypoBytea], Defaulted[AddressId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "addressid", "rowguid", "modifieddate")(AddressRowUnsaved.apply)(Decoder.decodeString, Decoder.decodeOption(Decoder.decodeString), Decoder.decodeString, StateprovinceId.decoder, Decoder.decodeString, Decoder.decodeOption(TypoBytea.decoder), Defaulted.decoder(AddressId.decoder), Defaulted.decoder(TypoUUID.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
 
-  implicit lazy val encoder: Encoder[AddressRowUnsaved] = Encoder.forProduct9[AddressRowUnsaved, /* max 60 chars */ String, Option[/* max 60 chars */ String], /* max 30 chars */ String, StateprovinceId, /* max 15 chars */ String, Option[TypoBytea], Defaulted[AddressId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "addressid", "rowguid", "modifieddate")(x => (x.addressline1, x.addressline2, x.city, x.stateprovinceid, x.postalcode, x.spatiallocation, x.addressid, x.rowguid, x.modifieddate))(Encoder.encodeString, Encoder.encodeOption(Encoder.encodeString), Encoder.encodeString, StateprovinceId.encoder, Encoder.encodeString, Encoder.encodeOption(TypoBytea.encoder), Defaulted.encoder(AddressId.encoder), Defaulted.encoder(TypoUUID.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
+  implicit lazy val encoder: Encoder[AddressRowUnsaved] = Encoder.forProduct9[AddressRowUnsaved, String, Option[/* max 60 chars */ String], String, StateprovinceId, String, Option[TypoBytea], Defaulted[AddressId], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("addressline1", "addressline2", "city", "stateprovinceid", "postalcode", "spatiallocation", "addressid", "rowguid", "modifieddate")(x => (x.addressline1, x.addressline2, x.city, x.stateprovinceid, x.postalcode, x.spatiallocation, x.addressid, x.rowguid, x.modifieddate))(Encoder.encodeString, Encoder.encodeOption(Encoder.encodeString), Encoder.encodeString, StateprovinceId.encoder, Encoder.encodeString, Encoder.encodeOption(TypoBytea.encoder), Defaulted.encoder(AddressId.encoder), Defaulted.encoder(TypoUUID.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
 
   implicit lazy val pgText: Text[AddressRowUnsaved] = {
     Text.instance[AddressRowUnsaved]{ (row, sb) =>

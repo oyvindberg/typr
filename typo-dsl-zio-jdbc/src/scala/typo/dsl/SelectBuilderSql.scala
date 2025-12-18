@@ -61,7 +61,7 @@ select ${SqlFragment(cols.mkString(","))} from ${SqlFragment(ctes.last.name)}"""
 object SelectBuilderSql {
   final case class Relation[Fields, Row](
       name: String,
-      structure: Structure.Relation[Fields, Row],
+      structure: RelationStructure[Fields, Row],
       read: JdbcDecoder[Row],
       params: SelectParams[Fields, Row]
   ) extends SelectBuilderSql[Fields, Row] {

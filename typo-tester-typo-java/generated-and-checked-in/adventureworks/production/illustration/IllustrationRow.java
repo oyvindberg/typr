@@ -6,10 +6,11 @@
 package adventureworks.production.illustration;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoXml;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import typo.data.Xml;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -23,9 +24,9 @@ public record IllustrationRow(
     */
   IllustrationId illustrationid,
   /** Illustrations used in manufacturing instructions. Stored as XML. */
-  Optional<TypoXml> diagram,
+  Optional<Xml> diagram,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for Illustration records.
     * Default: nextval('production.illustration_illustrationid_seq'::regclass)
@@ -35,16 +36,16 @@ public record IllustrationRow(
   };
 
   /** Illustrations used in manufacturing instructions. Stored as XML. */
-  public IllustrationRow withDiagram(Optional<TypoXml> diagram) {
+  public IllustrationRow withDiagram(Optional<Xml> diagram) {
     return new IllustrationRow(illustrationid, diagram, modifieddate);
   };
 
   /** Default: now() */
-  public IllustrationRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public IllustrationRow withModifieddate(LocalDateTime modifieddate) {
     return new IllustrationRow(illustrationid, diagram, modifieddate);
   };
 
-  static RowParser<IllustrationRow> _rowParser = RowParsers.of(IllustrationId.pgType, TypoXml.pgType.opt(), TypoLocalDateTime.pgType, IllustrationRow::new, row -> new Object[]{row.illustrationid(), row.diagram(), row.modifieddate()});;
+  static RowParser<IllustrationRow> _rowParser = RowParsers.of(IllustrationId.pgType, PgTypes.xml.opt(), PgTypes.timestamp, IllustrationRow::new, row -> new Object[]{row.illustrationid(), row.diagram(), row.modifieddate()});;
 
   static public PgText<IllustrationRow> pgText =
     PgText.from(_rowParser);
@@ -55,7 +56,7 @@ public record IllustrationRow(
 
   public IllustrationRowUnsaved toUnsavedRow(
     Defaulted<IllustrationId> illustrationid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new IllustrationRowUnsaved(diagram, illustrationid, modifieddate);
   };

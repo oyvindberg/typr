@@ -34,7 +34,7 @@ case class ThaViewRow(
   /** Points to [[adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow.transactiondate]] */
   transactiondate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow.transactiontype]] */
-  transactiontype: /* bpchar, max 1 chars */ String,
+  transactiontype: String,
   /** Points to [[adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow.quantity]] */
   quantity: Int,
   /** Points to [[adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveRow.actualcost]] */

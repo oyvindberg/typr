@@ -6,9 +6,8 @@
 package adventureworks.sales.creditcard;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
 import adventureworks.userdefined.CustomCreditcardId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -24,15 +23,15 @@ public record CreditcardRow(
     */
   /* user-picked */ CustomCreditcardId creditcardid,
   /** Credit card name. */
-  /* max 50 chars */ String cardtype,
+  String cardtype,
   /** Credit card number. */
-  /* max 25 chars */ String cardnumber,
+  String cardnumber,
   /** Credit card expiration month. */
-  TypoShort expmonth,
+  Short expmonth,
   /** Credit card expiration year. */
-  TypoShort expyear,
+  Short expyear,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for CreditCard records.
     * Default: nextval('sales.creditcard_creditcardid_seq'::regclass)
@@ -42,31 +41,31 @@ public record CreditcardRow(
   };
 
   /** Credit card name. */
-  public CreditcardRow withCardtype(/* max 50 chars */ String cardtype) {
+  public CreditcardRow withCardtype(String cardtype) {
     return new CreditcardRow(creditcardid, cardtype, cardnumber, expmonth, expyear, modifieddate);
   };
 
   /** Credit card number. */
-  public CreditcardRow withCardnumber(/* max 25 chars */ String cardnumber) {
+  public CreditcardRow withCardnumber(String cardnumber) {
     return new CreditcardRow(creditcardid, cardtype, cardnumber, expmonth, expyear, modifieddate);
   };
 
   /** Credit card expiration month. */
-  public CreditcardRow withExpmonth(TypoShort expmonth) {
+  public CreditcardRow withExpmonth(Short expmonth) {
     return new CreditcardRow(creditcardid, cardtype, cardnumber, expmonth, expyear, modifieddate);
   };
 
   /** Credit card expiration year. */
-  public CreditcardRow withExpyear(TypoShort expyear) {
+  public CreditcardRow withExpyear(Short expyear) {
     return new CreditcardRow(creditcardid, cardtype, cardnumber, expmonth, expyear, modifieddate);
   };
 
   /** Default: now() */
-  public CreditcardRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CreditcardRow withModifieddate(LocalDateTime modifieddate) {
     return new CreditcardRow(creditcardid, cardtype, cardnumber, expmonth, expyear, modifieddate);
   };
 
-  static RowParser<CreditcardRow> _rowParser = RowParsers.of(CustomCreditcardId.pgType, PgTypes.text, PgTypes.text, TypoShort.pgType, TypoShort.pgType, TypoLocalDateTime.pgType, CreditcardRow::new, row -> new Object[]{row.creditcardid(), row.cardtype(), row.cardnumber(), row.expmonth(), row.expyear(), row.modifieddate()});;
+  static RowParser<CreditcardRow> _rowParser = RowParsers.of(CustomCreditcardId.pgType, PgTypes.text, PgTypes.text, PgTypes.int2, PgTypes.int2, PgTypes.timestamp, CreditcardRow::new, row -> new Object[]{row.creditcardid(), row.cardtype(), row.cardnumber(), row.expmonth(), row.expyear(), row.modifieddate()});;
 
   static public PgText<CreditcardRow> pgText =
     PgText.from(_rowParser);
@@ -77,7 +76,7 @@ public record CreditcardRow(
 
   public CreditcardRowUnsaved toUnsavedRow(
     Defaulted</* user-picked */ CustomCreditcardId> creditcardid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new CreditcardRowUnsaved(cardtype, cardnumber, expmonth, expyear, creditcardid, modifieddate);
   };

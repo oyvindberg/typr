@@ -7,10 +7,10 @@ package adventureworks.pr.pi
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PiViewRepo {
-  fun select(): SelectBuilder<PiViewFields, PiViewRow>
+  abstract fun select(): SelectBuilder<PiViewFields, PiViewRow>
 
-  fun selectAll(c: Connection): List<PiViewRow>
+  abstract fun selectAll(c: Connection): List<PiViewRow>
 }

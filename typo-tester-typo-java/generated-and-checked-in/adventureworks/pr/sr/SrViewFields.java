@@ -5,20 +5,21 @@
  */
 package adventureworks.pr.sr;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.scrapreason.ScrapreasonId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SrViewFields extends FieldsExpr<SrViewRow> {
-  record Impl(List<Path> _path) implements SrViewFields, Relation<SrViewFields, SrViewRow> {
+  record Impl(List<Path> _path) implements SrViewFields, RelationStructure<SrViewFields, SrViewRow> {
     @Override
     public Field<ScrapreasonId, SrViewRow> id() {
       return new Field<ScrapreasonId, SrViewRow>(_path, "id", SrViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), ScrapreasonId.pgType);
@@ -35,23 +36,23 @@ public interface SrViewFields extends FieldsExpr<SrViewRow> {
     };
 
     @Override
-    public Field<TypoLocalDateTime, SrViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SrViewRow>(_path, "modifieddate", SrViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SrViewRow> modifieddate() {
+      return new Field<LocalDateTime, SrViewRow>(_path, "modifieddate", SrViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SrViewRow>> columns() {
-      return List.of(this.id(), this.scrapreasonid(), this.name(), this.modifieddate());
+      return java.util.List.of(this.id(), this.scrapreasonid(), this.name(), this.modifieddate());
     };
 
     @Override
-    public Relation<SrViewFields, SrViewRow> copy(List<Path> _path) {
+    public RelationStructure<SrViewFields, SrViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<ScrapreasonId, SrViewRow> id();
@@ -60,7 +61,7 @@ public interface SrViewFields extends FieldsExpr<SrViewRow> {
 
   Field<Name, SrViewRow> name();
 
-  Field<TypoLocalDateTime, SrViewRow> modifieddate();
+  Field<LocalDateTime, SrViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, SrViewRow>> columns();

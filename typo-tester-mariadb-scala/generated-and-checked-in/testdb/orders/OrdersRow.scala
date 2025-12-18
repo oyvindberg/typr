@@ -7,7 +7,6 @@ package testdb.orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_addresses.CustomerAddressesId
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
@@ -15,8 +14,10 @@ import testdb.promotions.PromotionsId
 import typo.data.maria.Inet6
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: orders
  * Primary key: order_id
@@ -44,28 +45,28 @@ case class OrdersRow(
    * Default: NULL
    * Points to [[testdb.customer_addresses.CustomerAddressesRow.addressId]]
    */
-  @JsonProperty("shipping_address_id") shippingAddressId: Optional[CustomerAddressesId],
+  @JsonProperty("shipping_address_id") shippingAddressId: Option[CustomerAddressesId],
   /** 
    * Default: NULL
    * Points to [[testdb.customer_addresses.CustomerAddressesRow.addressId]]
    */
-  @JsonProperty("billing_address_id") billingAddressId: Optional[CustomerAddressesId],
+  @JsonProperty("billing_address_id") billingAddressId: Option[CustomerAddressesId],
   /**  */
-  subtotal: java.math.BigDecimal,
+  subtotal: BigDecimal,
   /** 
    * Default: 0.0000
    */
-  @JsonProperty("shipping_cost") shippingCost: java.math.BigDecimal,
+  @JsonProperty("shipping_cost") shippingCost: BigDecimal,
   /** 
    * Default: 0.0000
    */
-  @JsonProperty("tax_amount") taxAmount: java.math.BigDecimal,
+  @JsonProperty("tax_amount") taxAmount: BigDecimal,
   /** 
    * Default: 0.0000
    */
-  @JsonProperty("discount_amount") discountAmount: java.math.BigDecimal,
+  @JsonProperty("discount_amount") discountAmount: BigDecimal,
   /**  */
-  @JsonProperty("total_amount") totalAmount: java.math.BigDecimal,
+  @JsonProperty("total_amount") totalAmount: BigDecimal,
   /** 
    * Default: 'USD'
    */
@@ -74,23 +75,23 @@ case class OrdersRow(
    * Default: NULL
    * Points to [[testdb.promotions.PromotionsRow.promotionId]]
    */
-  @JsonProperty("promotion_id") promotionId: Optional[PromotionsId],
+  @JsonProperty("promotion_id") promotionId: Option[PromotionsId],
   /** 
    * Default: NULL
    */
-  notes: Optional[String],
+  notes: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("internal_notes") internalNotes: Optional[String],
+  @JsonProperty("internal_notes") internalNotes: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("ip_address") ipAddress: Optional[Inet6],
+  @JsonProperty("ip_address") ipAddress: Option[Inet6],
   /** 
    * Default: NULL
    */
-  @JsonProperty("user_agent") userAgent: Optional[String],
+  @JsonProperty("user_agent") userAgent: Option[String],
   /** 
    * Default: current_timestamp(6)
    */
@@ -98,36 +99,36 @@ case class OrdersRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("confirmed_at") confirmedAt: Optional[LocalDateTime],
+  @JsonProperty("confirmed_at") confirmedAt: Option[LocalDateTime],
   /** 
    * Default: NULL
    */
-  @JsonProperty("shipped_at") shippedAt: Optional[LocalDateTime],
+  @JsonProperty("shipped_at") shippedAt: Option[LocalDateTime],
   /** 
    * Default: NULL
    */
-  @JsonProperty("delivered_at") deliveredAt: Optional[LocalDateTime]
+  @JsonProperty("delivered_at") deliveredAt: Option[LocalDateTime]
 ) {
   def id: OrdersId = orderId
 
   def toUnsavedRow(
     orderStatus: Defaulted[String] = Defaulted.Provided(this.orderStatus),
     paymentStatus: Defaulted[String] = Defaulted.Provided(this.paymentStatus),
-    shippingAddressId: Defaulted[Optional[CustomerAddressesId]] = Defaulted.Provided(this.shippingAddressId),
-    billingAddressId: Defaulted[Optional[CustomerAddressesId]] = Defaulted.Provided(this.billingAddressId),
-    shippingCost: Defaulted[java.math.BigDecimal] = Defaulted.Provided(this.shippingCost),
-    taxAmount: Defaulted[java.math.BigDecimal] = Defaulted.Provided(this.taxAmount),
-    discountAmount: Defaulted[java.math.BigDecimal] = Defaulted.Provided(this.discountAmount),
+    shippingAddressId: Defaulted[Option[CustomerAddressesId]] = Defaulted.Provided(this.shippingAddressId),
+    billingAddressId: Defaulted[Option[CustomerAddressesId]] = Defaulted.Provided(this.billingAddressId),
+    shippingCost: Defaulted[BigDecimal] = Defaulted.Provided(this.shippingCost),
+    taxAmount: Defaulted[BigDecimal] = Defaulted.Provided(this.taxAmount),
+    discountAmount: Defaulted[BigDecimal] = Defaulted.Provided(this.discountAmount),
     currencyCode: Defaulted[String] = Defaulted.Provided(this.currencyCode),
-    promotionId: Defaulted[Optional[PromotionsId]] = Defaulted.Provided(this.promotionId),
-    notes: Defaulted[Optional[String]] = Defaulted.Provided(this.notes),
-    internalNotes: Defaulted[Optional[String]] = Defaulted.Provided(this.internalNotes),
-    ipAddress: Defaulted[Optional[Inet6]] = Defaulted.Provided(this.ipAddress),
-    userAgent: Defaulted[Optional[String]] = Defaulted.Provided(this.userAgent),
+    promotionId: Defaulted[Option[PromotionsId]] = Defaulted.Provided(this.promotionId),
+    notes: Defaulted[Option[String]] = Defaulted.Provided(this.notes),
+    internalNotes: Defaulted[Option[String]] = Defaulted.Provided(this.internalNotes),
+    ipAddress: Defaulted[Option[Inet6]] = Defaulted.Provided(this.ipAddress),
+    userAgent: Defaulted[Option[String]] = Defaulted.Provided(this.userAgent),
     orderedAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.orderedAt),
-    confirmedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.confirmedAt),
-    shippedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.shippedAt),
-    deliveredAt: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.deliveredAt)
+    confirmedAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.confirmedAt),
+    shippedAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.shippedAt),
+    deliveredAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.deliveredAt)
   ): OrdersRowUnsaved = {
     new OrdersRowUnsaved(
       orderNumber,
@@ -156,7 +157,7 @@ case class OrdersRow(
 }
 
 object OrdersRow {
-  val `_rowParser`: RowParser[OrdersRow] = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, CustomersId.pgType, MariaTypes.text, MariaTypes.text, CustomerAddressesId.pgType.opt(), CustomerAddressesId.pgType.opt(), MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.char_, PromotionsId.pgType.opt(), MariaTypes.text.opt(), MariaTypes.mediumtext.opt(), MariaTypes.inet6.opt(), MariaTypes.varchar.opt(), MariaTypes.datetime, MariaTypes.datetime.opt(), MariaTypes.datetime.opt(), MariaTypes.datetime.opt(), OrdersRow.apply, row => Array[Object](row.orderId.asInstanceOf[Object], row.orderNumber.asInstanceOf[Object], row.customerId.asInstanceOf[Object], row.orderStatus.asInstanceOf[Object], row.paymentStatus.asInstanceOf[Object], row.shippingAddressId.asInstanceOf[Object], row.billingAddressId.asInstanceOf[Object], row.subtotal.asInstanceOf[Object], row.shippingCost.asInstanceOf[Object], row.taxAmount.asInstanceOf[Object], row.discountAmount.asInstanceOf[Object], row.totalAmount.asInstanceOf[Object], row.currencyCode.asInstanceOf[Object], row.promotionId.asInstanceOf[Object], row.notes.asInstanceOf[Object], row.internalNotes.asInstanceOf[Object], row.ipAddress.asInstanceOf[Object], row.userAgent.asInstanceOf[Object], row.orderedAt.asInstanceOf[Object], row.confirmedAt.asInstanceOf[Object], row.shippedAt.asInstanceOf[Object], row.deliveredAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[OrdersRow] = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, CustomersId.pgType, MariaTypes.text, MariaTypes.text, CustomerAddressesId.pgType.nullable, CustomerAddressesId.pgType.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, PromotionsId.pgType.nullable, MariaTypes.text.nullable, MariaTypes.mediumtext.nullable, MariaTypes.inet6.nullable, MariaTypes.varchar.nullable, MariaTypes.datetime, MariaTypes.datetime.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime.nullable)(OrdersRow.apply)(row => Array[Any](row.orderId, row.orderNumber, row.customerId, row.orderStatus, row.paymentStatus, row.shippingAddressId, row.billingAddressId, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.currencyCode, row.promotionId, row.notes, row.internalNotes, row.ipAddress, row.userAgent, row.orderedAt, row.confirmedAt, row.shippedAt, row.deliveredAt))
 
-  given mariaText: MariaText[OrdersRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[OrdersRow] = MariaText.from(`_rowParser`.underlying)
 }

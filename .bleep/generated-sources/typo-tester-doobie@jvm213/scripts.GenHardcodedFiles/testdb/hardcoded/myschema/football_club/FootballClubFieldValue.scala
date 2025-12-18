@@ -18,7 +18,7 @@ object FootballClubFieldValue {
     override def name: String = "id"
   }
 
-  case class name(value: /* max 100 chars */ String) extends FootballClubFieldValue[/* max 100 chars */ String] {
+  case class name(value: String) extends FootballClubFieldValue[String] {
     override def name: String = "name"
   }
 }

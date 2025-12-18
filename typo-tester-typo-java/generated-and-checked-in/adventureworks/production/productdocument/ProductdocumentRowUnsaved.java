@@ -7,10 +7,11 @@ package adventureworks.production.productdocument;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.document.DocumentId;
 import adventureworks.production.product.ProductId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.productdocument` which has not been persisted yet */
 public record ProductdocumentRowUnsaved(
@@ -19,7 +20,7 @@ public record ProductdocumentRowUnsaved(
     */
   ProductId productid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate,
+  Defaulted<LocalDateTime> modifieddate,
   /** Default: '/'::character varying
     * Document identification number. Foreign key to Document.DocumentNode.
     * Points to {@link adventureworks.production.document.DocumentRow#documentnode()}
@@ -44,7 +45,7 @@ public record ProductdocumentRowUnsaved(
   };
 
   /** Default: now() */
-  public ProductdocumentRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ProductdocumentRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ProductdocumentRowUnsaved(productid, modifieddate, documentnode);
   };
 
@@ -60,13 +61,13 @@ public record ProductdocumentRowUnsaved(
     PgText.instance((row, sb) -> {
       ProductId.pgType.pgText().unsafeEncode(row.productid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(DocumentId.pgType.pgText()).unsafeEncode(row.documentnode, sb);
     });
 
   public ProductdocumentRow toRow(
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault,
     java.util.function.Supplier<DocumentId> documentnodeDefault
   ) {
     return new ProductdocumentRow(productid, modifieddate.getOrElse(modifieddateDefault), documentnode.getOrElse(documentnodeDefault));

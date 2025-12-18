@@ -20,16 +20,16 @@ import testdb.products.ProductsRow;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface ReviewsFields extends FieldsExpr<ReviewsRow> {
-  record Impl(List<Path> _path) implements ReviewsFields, Relation<ReviewsFields, ReviewsRow> {
+  record Impl(List<Path> _path) implements ReviewsFields, RelationStructure<ReviewsFields, ReviewsRow> {
     @Override
     public IdField<ReviewsId, ReviewsRow> reviewId() {
       return new IdField<ReviewsId, ReviewsRow>(_path, "review_id", ReviewsRow::reviewId, Optional.empty(), Optional.empty(), (row, value) -> row.withReviewId(value), ReviewsId.pgType);
@@ -122,17 +122,17 @@ public interface ReviewsFields extends FieldsExpr<ReviewsRow> {
 
     @Override
     public List<FieldLike<?, ReviewsRow>> columns() {
-      return List.of(this.reviewId(), this.productId(), this.customerId(), this.orderItemId(), this.rating(), this.title(), this.content(), this.pros(), this.cons(), this.images(), this.isVerifiedPurchase(), this.isApproved(), this.helpfulVotes(), this.unhelpfulVotes(), this.adminResponse(), this.respondedAt(), this.createdAt(), this.updatedAt());
+      return java.util.List.of(this.reviewId(), this.productId(), this.customerId(), this.orderItemId(), this.rating(), this.title(), this.content(), this.pros(), this.cons(), this.images(), this.isVerifiedPurchase(), this.isApproved(), this.helpfulVotes(), this.unhelpfulVotes(), this.adminResponse(), this.respondedAt(), this.createdAt(), this.updatedAt());
     };
 
     @Override
-    public Relation<ReviewsFields, ReviewsRow> copy(List<Path> _path) {
+    public RelationStructure<ReviewsFields, ReviewsRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ReviewsId, ReviewsRow> reviewId();
@@ -172,15 +172,15 @@ public interface ReviewsFields extends FieldsExpr<ReviewsRow> {
   Field<LocalDateTime, ReviewsRow> updatedAt();
 
   default ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
-    return ForeignKey.<CustomersFields, CustomersRow>of("fk_rev_customer").withColumnPair(customerId(), CustomersFields::customerId);
+    return ForeignKey.<CustomersFields, CustomersRow>of("fk_rev_customer").<CustomersId>withColumnPair(customerId(), CustomersFields::customerId);
   };
 
   default ForeignKey<OrderItemsFields, OrderItemsRow> fkOrderItems() {
-    return ForeignKey.<OrderItemsFields, OrderItemsRow>of("fk_rev_order_item").withColumnPair(orderItemId(), OrderItemsFields::itemId);
+    return ForeignKey.<OrderItemsFields, OrderItemsRow>of("fk_rev_order_item").<OrderItemsId>withColumnPair(orderItemId(), OrderItemsFields::itemId);
   };
 
   default ForeignKey<ProductsFields, ProductsRow> fkProducts() {
-    return ForeignKey.<ProductsFields, ProductsRow>of("fk_rev_product").withColumnPair(productId(), ProductsFields::productId);
+    return ForeignKey.<ProductsFields, ProductsRow>of("fk_rev_product").<ProductsId>withColumnPair(productId(), ProductsFields::productId);
   };
 
   @Override

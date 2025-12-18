@@ -8,21 +8,19 @@ package adventureworks.public.title
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class TitleRepoMock(val map: MutableMap<TitleId, TitleRow> = mutableMapOf<TitleId, TitleRow>()) : TitleRepo {
   override fun delete(): DeleteBuilder<TitleFields, TitleRow> = DeleteBuilderMock(TitleFields.structure, { map.values.toList() }, DeleteParams.empty(), { row -> row.code }, { id -> map.remove(id) })
@@ -30,7 +28,7 @@ data class TitleRepoMock(val map: MutableMap<TitleId, TitleRow> = mutableMapOf<T
   override fun deleteById(
     code: TitleId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(code)).isPresent()
+  ): Boolean = map.remove(code) != null
 
   override fun deleteByIds(
     codes: Array<TitleId>,
@@ -38,7 +36,7 @@ data class TitleRepoMock(val map: MutableMap<TitleId, TitleRow> = mutableMapOf<T
   ): Int {
     var count = 0
     for (id in codes) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -50,7 +48,7 @@ data class TitleRepoMock(val map: MutableMap<TitleId, TitleRow> = mutableMapOf<T
     c: Connection
   ): TitleRow {
     if (map.containsKey(unsaved.code)) {
-      throw RuntimeException(str("id $unsaved.code already exists"))
+      throw RuntimeException("id " + unsaved.code + " already exists")
     }
     map[unsaved.code] = unsaved
     return unsaved
@@ -77,7 +75,7 @@ data class TitleRepoMock(val map: MutableMap<TitleId, TitleRow> = mutableMapOf<T
   override fun selectById(
     code: TitleId,
     c: Connection
-  ): Optional<TitleRow> = Optional.ofNullable(map[code])
+  ): TitleRow? = map[code]
 
   override fun selectByIds(
     codes: Array<TitleId>,
@@ -85,9 +83,9 @@ data class TitleRepoMock(val map: MutableMap<TitleId, TitleRow> = mutableMapOf<T
   ): List<TitleRow> {
     val result = ArrayList<TitleRow>()
     for (id in codes) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result

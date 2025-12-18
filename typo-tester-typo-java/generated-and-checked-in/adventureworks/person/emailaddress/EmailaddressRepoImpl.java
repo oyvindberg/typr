@@ -5,8 +5,6 @@
  */
 package adventureworks.person.emailaddress;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -20,12 +18,10 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class EmailaddressRepoImpl implements EmailaddressRepo {
   @Override
@@ -38,17 +34,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     EmailaddressId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "person"."emailaddress" where "businessentityid" = 
-      """),
-      BusinessentityId.pgType.encode(compositeId.businessentityid()),
-      typo.runtime.Fragment.lit("""
-       AND "emailaddressid" = 
-      """),
-      PgTypes.int4.encode(compositeId.emailaddressid()),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"person\".\"emailaddress\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid()), Fragment.lit(" AND \"emailaddressid\" = "), Fragment.encode(PgTypes.int4, compositeId.emailaddressid()), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -58,20 +44,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
   ) {
     BusinessentityId[] businessentityid = arrayMap.map(compositeIds, EmailaddressId::businessentityid, BusinessentityId.class);;
     Integer[] emailaddressid = arrayMap.map(compositeIds, EmailaddressId::emailaddressid, Integer.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         delete
-         from "person"."emailaddress"
-         where ("businessentityid", "emailaddressid")
-         in (select unnest("""),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      PgTypes.int4Array.encode(emailaddressid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """)
-    ).update().runUnchecked(c);
+    return interpolate(Fragment.lit("delete\nfrom \"person\".\"emailaddress\"\nwhere (\"businessentityid\", \"emailaddressid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c);
   };
 
   @Override
@@ -79,24 +52,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     EmailaddressRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."emailaddress"("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")
-         values ("""),
-      BusinessentityId.pgType.encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.int4.encode(unsaved.emailaddressid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.opt().encode(unsaved.emailaddress()),
-      typo.runtime.Fragment.lit(", "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.int4, unsaved.emailaddressid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text.opt(), unsaved.emailaddress()), Fragment.lit(", "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(EmailaddressRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -105,29 +61,19 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     EmailaddressRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"businessentityid\""));
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"emailaddress\""));
-    values.add(interpolate(
-      PgTypes.text.opt().encode(unsaved.emailaddress()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text.opt(), unsaved.emailaddress()), Fragment.lit("")));
     unsaved.emailaddressid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"emailaddressid\""));
-        values.add(interpolate(
-        PgTypes.int4.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.int4, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.rowguid().visit(
@@ -136,10 +82,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -148,26 +91,10 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."emailaddress"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"person\".\"emailaddress\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(EmailaddressRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -177,9 +104,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."emailaddress"("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, EmailaddressRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, EmailaddressRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -189,9 +114,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."emailaddress"("businessentityid", "emailaddress", "emailaddressid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, EmailaddressRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddress\", \"emailaddressid\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, EmailaddressRowUnsaved.pgText);
   };
 
   @Override
@@ -201,10 +124,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
 
   @Override
   public List<EmailaddressRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
-       from "person"."emailaddress"
-    """)).query(EmailaddressRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"emailaddress\"\n")).query(EmailaddressRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -212,18 +132,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     EmailaddressId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
-         from "person"."emailaddress"
-         where "businessentityid" = """),
-      BusinessentityId.pgType.encode(compositeId.businessentityid()),
-      typo.runtime.Fragment.lit("""
-       AND "emailaddressid" = 
-      """),
-      PgTypes.int4.encode(compositeId.emailaddressid()),
-      typo.runtime.Fragment.lit("")
-    ).query(EmailaddressRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"emailaddress\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid()), Fragment.lit(" AND \"emailaddressid\" = "), Fragment.encode(PgTypes.int4, compositeId.emailaddressid()), Fragment.lit("")).query(EmailaddressRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -233,20 +142,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
   ) {
     BusinessentityId[] businessentityid = arrayMap.map(compositeIds, EmailaddressId::businessentityid, BusinessentityId.class);;
     Integer[] emailaddressid = arrayMap.map(compositeIds, EmailaddressId::emailaddressid, Integer.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text
-         from "person"."emailaddress"
-         where ("businessentityid", "emailaddressid")
-         in (select unnest("""),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      PgTypes.int4Array.encode(emailaddressid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """)
-    ).query(EmailaddressRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"emailaddress\"\nwhere (\"businessentityid\", \"emailaddressid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("::int4[]))\n")).query(EmailaddressRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -261,7 +157,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
 
   @Override
   public UpdateBuilder<EmailaddressFields, EmailaddressRow> update() {
-    return UpdateBuilder.of("\"person\".\"emailaddress\"", EmailaddressFields.structure(), EmailaddressRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"person\".\"emailaddress\"", EmailaddressFields.structure(), EmailaddressRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -270,29 +166,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     Connection c
   ) {
     EmailaddressId compositeId = row.compositeId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "person"."emailaddress"
-         set "emailaddress" = """),
-      PgTypes.text.opt().encode(row.emailaddress()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "businessentityid" = """),
-      BusinessentityId.pgType.encode(compositeId.businessentityid()),
-      typo.runtime.Fragment.lit("""
-       AND "emailaddressid" = 
-      """),
-      PgTypes.int4.encode(compositeId.emailaddressid()),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"person\".\"emailaddress\"\nset \"emailaddress\" = "), Fragment.encode(PgTypes.text.opt(), row.emailaddress()), Fragment.lit(",\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid()), Fragment.lit(" AND \"emailaddressid\" = "), Fragment.encode(PgTypes.int4, compositeId.emailaddressid()), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -300,28 +174,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     EmailaddressRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."emailaddress"("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")
-         values ("""),
-      BusinessentityId.pgType.encode(unsaved.businessentityid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.int4.encode(unsaved.emailaddressid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      PgTypes.text.opt().encode(unsaved.emailaddress()),
-      typo.runtime.Fragment.lit(", "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("businessentityid", "emailaddressid")
-         do update set
-           "emailaddress" = EXCLUDED."emailaddress",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.int4, unsaved.emailaddressid()), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text.opt(), unsaved.emailaddress()), Fragment.lit(", "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"businessentityid\", \"emailaddressid\")\ndo update set\n  \"emailaddress\" = EXCLUDED.\"emailaddress\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\""))
       .updateReturning(EmailaddressRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -331,17 +184,9 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     Iterator<EmailaddressRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "person"."emailaddress"("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")
-                values (?::int4, ?::int4, ?, ?::uuid, ?::timestamp)
-                on conflict ("businessentityid", "emailaddressid")
-                do update set
-                  "emailaddress" = EXCLUDED."emailaddress",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?, ?::uuid, ?::timestamp)\non conflict (\"businessentityid\", \"emailaddressid\")\ndo update set\n  \"emailaddress\" = EXCLUDED.\"emailaddress\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(EmailaddressRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -351,21 +196,8 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table emailaddress_TEMP (like "person"."emailaddress") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy emailaddress_TEMP("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, EmailaddressRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "person"."emailaddress"("businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate")
-       select * from emailaddress_TEMP
-       on conflict ("businessentityid", "emailaddressid")
-       do update set
-         "emailaddress" = EXCLUDED."emailaddress",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table emailaddress_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table emailaddress_TEMP (like \"person\".\"emailaddress\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy emailaddress_TEMP(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, EmailaddressRow.pgText);
+    return interpolate(Fragment.lit("insert into \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\")\nselect * from emailaddress_TEMP\non conflict (\"businessentityid\", \"emailaddressid\")\ndo update set\n  \"emailaddress\" = EXCLUDED.\"emailaddress\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table emailaddress_TEMP;")).update().runUnchecked(c);
   };
 }

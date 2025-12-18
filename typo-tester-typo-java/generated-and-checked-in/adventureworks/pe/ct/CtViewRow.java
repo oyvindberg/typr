@@ -5,9 +5,10 @@
  */
 package adventureworks.pe.ct;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.contacttype.ContacttypeId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -20,7 +21,7 @@ public record CtViewRow(
   /** Points to {@link adventureworks.person.contacttype.ContacttypeRow#name()} */
   Name name,
   /** Points to {@link adventureworks.person.contacttype.ContacttypeRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.person.contacttype.ContacttypeRow#contacttypeid()} */
   public CtViewRow withId(ContacttypeId id) {
@@ -38,9 +39,9 @@ public record CtViewRow(
   };
 
   /** Points to {@link adventureworks.person.contacttype.ContacttypeRow#modifieddate()} */
-  public CtViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CtViewRow withModifieddate(LocalDateTime modifieddate) {
     return new CtViewRow(id, contacttypeid, name, modifieddate);
   };
 
-  static RowParser<CtViewRow> _rowParser = RowParsers.of(ContacttypeId.pgType, ContacttypeId.pgType, Name.pgType, TypoLocalDateTime.pgType, CtViewRow::new, row -> new Object[]{row.id(), row.contacttypeid(), row.name(), row.modifieddate()});;
+  static RowParser<CtViewRow> _rowParser = RowParsers.of(ContacttypeId.pgType, ContacttypeId.pgType, Name.pgType, PgTypes.timestamp, CtViewRow::new, row -> new Object[]{row.id(), row.contacttypeid(), row.name(), row.modifieddate()});;
 }

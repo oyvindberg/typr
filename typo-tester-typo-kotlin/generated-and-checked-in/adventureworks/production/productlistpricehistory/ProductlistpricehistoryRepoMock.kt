@@ -8,21 +8,19 @@ package adventureworks.production.productlistpricehistory
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ProductlistpricehistoryRepoMock(
   val toRow: (ProductlistpricehistoryRowUnsaved) -> ProductlistpricehistoryRow,
@@ -33,7 +31,7 @@ data class ProductlistpricehistoryRepoMock(
   override fun deleteById(
     compositeId: ProductlistpricehistoryId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(compositeId)).isPresent()
+  ): Boolean = map.remove(compositeId) != null
 
   override fun deleteByIds(
     compositeIds: Array<ProductlistpricehistoryId>,
@@ -41,7 +39,7 @@ data class ProductlistpricehistoryRepoMock(
   ): Int {
     var count = 0
     for (id in compositeIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ProductlistpricehistoryRepoMock(
     c: Connection
   ): ProductlistpricehistoryRow {
     if (map.containsKey(unsaved.compositeId())) {
-      throw RuntimeException(str("id $unsaved.compositeId() already exists"))
+      throw RuntimeException("id " + unsaved.compositeId() + " already exists")
     }
     map[unsaved.compositeId()] = unsaved
     return unsaved
@@ -101,7 +99,7 @@ data class ProductlistpricehistoryRepoMock(
   override fun selectById(
     compositeId: ProductlistpricehistoryId,
     c: Connection
-  ): Optional<ProductlistpricehistoryRow> = Optional.ofNullable(map[compositeId])
+  ): ProductlistpricehistoryRow? = map[compositeId]
 
   override fun selectByIds(
     compositeIds: Array<ProductlistpricehistoryId>,
@@ -109,9 +107,9 @@ data class ProductlistpricehistoryRepoMock(
   ): List<ProductlistpricehistoryRow> {
     val result = ArrayList<ProductlistpricehistoryRow>()
     for (id in compositeIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class ProductlistpricehistoryRepoMock(
     row: ProductlistpricehistoryRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.compositeId()]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.compositeId()]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.compositeId()] = row
     }

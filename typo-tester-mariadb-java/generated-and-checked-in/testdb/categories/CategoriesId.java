@@ -16,9 +16,14 @@ public record CategoriesId(@JsonValue Integer value) {
     return new CategoriesId(value);
   };
 
+  @Override
+  public java.lang.String toString() {
+    return value.toString();
+  };
+
   static public Bijection<CategoriesId, Integer> bijection =
     Bijection.of(CategoriesId::value, CategoriesId::new);
 
   static public MariaType<CategoriesId> pgType =
-    MariaTypes.int_.bimap(CategoriesId::new, CategoriesId::value);
+    MariaTypes.mediumintUnsigned.bimap(CategoriesId::new, CategoriesId::value);
 }

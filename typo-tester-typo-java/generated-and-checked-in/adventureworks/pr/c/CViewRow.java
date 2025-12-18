@@ -5,9 +5,10 @@
  */
 package adventureworks.pr.c;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.culture.CultureId;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -20,7 +21,7 @@ public record CViewRow(
   /** Points to {@link adventureworks.production.culture.CultureRow#name()} */
   Name name,
   /** Points to {@link adventureworks.production.culture.CultureRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.culture.CultureRow#cultureid()} */
   public CViewRow withId(CultureId id) {
@@ -38,9 +39,9 @@ public record CViewRow(
   };
 
   /** Points to {@link adventureworks.production.culture.CultureRow#modifieddate()} */
-  public CViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public CViewRow withModifieddate(LocalDateTime modifieddate) {
     return new CViewRow(id, cultureid, name, modifieddate);
   };
 
-  static RowParser<CViewRow> _rowParser = RowParsers.of(CultureId.pgType, CultureId.pgType, Name.pgType, TypoLocalDateTime.pgType, CViewRow::new, row -> new Object[]{row.id(), row.cultureid(), row.name(), row.modifieddate()});;
+  static RowParser<CViewRow> _rowParser = RowParsers.of(CultureId.pgType, CultureId.pgType, Name.pgType, PgTypes.timestamp, CViewRow::new, row -> new Object[]{row.id(), row.cultureid(), row.name(), row.modifieddate()});;
 }

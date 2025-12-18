@@ -6,9 +6,10 @@
 package adventureworks.person.contacttype;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -24,7 +25,7 @@ public record ContacttypeRow(
   /** Contact type description. */
   Name name,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for ContactType records.
     * Default: nextval('person.contacttype_contacttypeid_seq'::regclass)
@@ -39,11 +40,11 @@ public record ContacttypeRow(
   };
 
   /** Default: now() */
-  public ContacttypeRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public ContacttypeRow withModifieddate(LocalDateTime modifieddate) {
     return new ContacttypeRow(contacttypeid, name, modifieddate);
   };
 
-  static RowParser<ContacttypeRow> _rowParser = RowParsers.of(ContacttypeId.pgType, Name.pgType, TypoLocalDateTime.pgType, ContacttypeRow::new, row -> new Object[]{row.contacttypeid(), row.name(), row.modifieddate()});;
+  static RowParser<ContacttypeRow> _rowParser = RowParsers.of(ContacttypeId.pgType, Name.pgType, PgTypes.timestamp, ContacttypeRow::new, row -> new Object[]{row.contacttypeid(), row.name(), row.modifieddate()});;
 
   static public PgText<ContacttypeRow> pgText =
     PgText.from(_rowParser);
@@ -54,7 +55,7 @@ public record ContacttypeRow(
 
   public ContacttypeRowUnsaved toUnsavedRow(
     Defaulted<ContacttypeId> contacttypeid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new ContacttypeRowUnsaved(name, contacttypeid, modifieddate);
   };

@@ -7,9 +7,10 @@ package adventureworks.production.scrapreason;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.public_.Name;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `production.scrapreason` which has not been persisted yet */
 public record ScrapreasonRowUnsaved(
@@ -20,7 +21,7 @@ public record ScrapreasonRowUnsaved(
     */
   Defaulted<ScrapreasonId> scrapreasonid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public ScrapreasonRowUnsaved(
   
@@ -43,7 +44,7 @@ public record ScrapreasonRowUnsaved(
   };
 
   /** Default: now() */
-  public ScrapreasonRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public ScrapreasonRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new ScrapreasonRowUnsaved(name, scrapreasonid, modifieddate);
   };
 
@@ -53,12 +54,12 @@ public record ScrapreasonRowUnsaved(
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(ScrapreasonId.pgType.pgText()).unsafeEncode(row.scrapreasonid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
   public ScrapreasonRow toRow(
     java.util.function.Supplier<ScrapreasonId> scrapreasonidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault
   ) {
     return new ScrapreasonRow(scrapreasonid.getOrElse(scrapreasonidDefault), name, modifieddate.getOrElse(modifieddateDefault));
   };

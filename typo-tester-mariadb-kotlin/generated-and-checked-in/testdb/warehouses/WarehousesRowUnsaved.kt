@@ -6,11 +6,12 @@
 package testdb.warehouses
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import org.mariadb.jdbc.type.Point
 import org.mariadb.jdbc.type.Polygon
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -27,7 +28,7 @@ data class WarehousesRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("service_area") val serviceArea: Defaulted<Optional<Polygon>> = UseDefault(),
+  @JsonProperty("service_area") val serviceArea: Defaulted<Polygon?> = UseDefault(),
   /** Default: 'UTC'
 
     */
@@ -39,18 +40,18 @@ data class WarehousesRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("contact_email") val contactEmail: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("contact_email") val contactEmail: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("contact_phone") val contactPhone: Defaulted<Optional<String>> = UseDefault()
+  @JsonProperty("contact_phone") val contactPhone: Defaulted<String?> = UseDefault()
 ) {
   fun toRow(
-    serviceAreaDefault: () -> Optional<Polygon>,
+    serviceAreaDefault: () -> Polygon?,
     timezoneDefault: () -> String,
     isActiveDefault: () -> Boolean,
-    contactEmailDefault: () -> Optional<String>,
-    contactPhoneDefault: () -> Optional<String>,
+    contactEmailDefault: () -> String?,
+    contactPhoneDefault: () -> String?,
     warehouseIdDefault: () -> WarehousesId
   ): WarehousesRow = WarehousesRow(warehouseId = warehouseIdDefault(), code = code, name = name, address = address, location = location, serviceArea = serviceArea.getOrElse(serviceAreaDefault), timezone = timezone.getOrElse(timezoneDefault), isActive = isActive.getOrElse(isActiveDefault), contactEmail = contactEmail.getOrElse(contactEmailDefault), contactPhone = contactPhone.getOrElse(contactPhoneDefault))
 
@@ -64,14 +65,14 @@ data class WarehousesRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.point.mariaText().unsafeEncode(row.location, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.polygon.opt().mariaText()).unsafeEncode(row.serviceArea, sb)
+      Defaulted.mariaText(MariaTypes.polygon.nullable().mariaText()).unsafeEncode(row.serviceArea, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.varchar.mariaText()).unsafeEncode(row.timezone, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.contactEmail, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.contactEmail, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.contactPhone, sb) })
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.contactPhone, sb) })
   }
 }

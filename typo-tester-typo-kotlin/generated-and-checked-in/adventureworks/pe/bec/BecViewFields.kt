@@ -5,55 +5,57 @@
  */
 package adventureworks.pe.bec
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.contacttype.ContacttypeId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface BecViewFields : FieldsExpr<BecViewRow> {
-  fun businessentityid(): Field<BusinessentityId, BecViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, BecViewRow>
 
-  override fun columns(): List<FieldLike<*, BecViewRow>>
+  abstract override fun columns(): List<FieldLike<*, BecViewRow>>
 
-  fun contacttypeid(): Field<ContacttypeId, BecViewRow>
+  abstract fun contacttypeid(): Field<ContacttypeId, BecViewRow>
 
-  fun id(): Field<BusinessentityId, BecViewRow>
+  abstract fun id(): Field<BusinessentityId, BecViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, BecViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, BecViewRow>
 
-  fun personid(): Field<BusinessentityId, BecViewRow>
+  abstract fun personid(): Field<BusinessentityId, BecViewRow>
 
-  override fun rowParser(): RowParser<BecViewRow> = BecViewRow._rowParser
+  override fun rowParser(): RowParser<BecViewRow> = BecViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, BecViewRow>
+  abstract fun rowguid(): Field<UUID, BecViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : BecViewFields, Relation<BecViewFields, BecViewRow> {
-      override fun id(): Field<BusinessentityId, BecViewRow> = Field<BusinessentityId, BecViewRow>(_path, "id", BecViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : BecViewFields, RelationStructure<BecViewFields, BecViewRow> {
+      override fun id(): Field<BusinessentityId, BecViewRow> = Field<BusinessentityId, BecViewRow>(_path, "id", BecViewRow::id, null, null, { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
 
-      override fun businessentityid(): Field<BusinessentityId, BecViewRow> = Field<BusinessentityId, BecViewRow>(_path, "businessentityid", BecViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, BecViewRow> = Field<BusinessentityId, BecViewRow>(_path, "businessentityid", BecViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun personid(): Field<BusinessentityId, BecViewRow> = Field<BusinessentityId, BecViewRow>(_path, "personid", BecViewRow::personid, Optional.empty(), Optional.empty(), { row, value -> row.copy(personid = value) }, BusinessentityId.pgType)
+      override fun personid(): Field<BusinessentityId, BecViewRow> = Field<BusinessentityId, BecViewRow>(_path, "personid", BecViewRow::personid, null, null, { row, value -> row.copy(personid = value) }, BusinessentityId.pgType)
 
-      override fun contacttypeid(): Field<ContacttypeId, BecViewRow> = Field<ContacttypeId, BecViewRow>(_path, "contacttypeid", BecViewRow::contacttypeid, Optional.empty(), Optional.empty(), { row, value -> row.copy(contacttypeid = value) }, ContacttypeId.pgType)
+      override fun contacttypeid(): Field<ContacttypeId, BecViewRow> = Field<ContacttypeId, BecViewRow>(_path, "contacttypeid", BecViewRow::contacttypeid, null, null, { row, value -> row.copy(contacttypeid = value) }, ContacttypeId.pgType)
 
-      override fun rowguid(): Field<TypoUUID, BecViewRow> = Field<TypoUUID, BecViewRow>(_path, "rowguid", BecViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, BecViewRow> = Field<UUID, BecViewRow>(_path, "rowguid", BecViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, BecViewRow> = Field<TypoLocalDateTime, BecViewRow>(_path, "modifieddate", BecViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, BecViewRow> = Field<LocalDateTime, BecViewRow>(_path, "modifieddate", BecViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, BecViewRow>> = listOf(this.id(), this.businessentityid(), this.personid(), this.contacttypeid(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<BecViewFields, BecViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, BecViewRow>> = listOf(this.id().underlying, this.businessentityid().underlying, this.personid().underlying, this.contacttypeid().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<BecViewFields, BecViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

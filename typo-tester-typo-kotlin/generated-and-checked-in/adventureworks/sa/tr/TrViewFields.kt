@@ -5,67 +5,68 @@
  */
 package adventureworks.sa.tr
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.public.Name
 import adventureworks.sales.salestaxrate.SalestaxrateId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface TrViewFields : FieldsExpr<TrViewRow> {
-  override fun columns(): List<FieldLike<*, TrViewRow>>
+  abstract override fun columns(): List<FieldLike<*, TrViewRow>>
 
-  fun id(): Field<SalestaxrateId, TrViewRow>
+  abstract fun id(): Field<SalestaxrateId, TrViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, TrViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, TrViewRow>
 
-  fun name(): Field<Name, TrViewRow>
+  abstract fun name(): Field<Name, TrViewRow>
 
-  override fun rowParser(): RowParser<TrViewRow> = TrViewRow._rowParser
+  override fun rowParser(): RowParser<TrViewRow> = TrViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, TrViewRow>
+  abstract fun rowguid(): Field<UUID, TrViewRow>
 
-  fun salestaxrateid(): Field<SalestaxrateId, TrViewRow>
+  abstract fun salestaxrateid(): Field<SalestaxrateId, TrViewRow>
 
-  fun stateprovinceid(): Field<StateprovinceId, TrViewRow>
+  abstract fun stateprovinceid(): Field<StateprovinceId, TrViewRow>
 
-  fun taxrate(): Field<BigDecimal, TrViewRow>
+  abstract fun taxrate(): Field<BigDecimal, TrViewRow>
 
-  fun taxtype(): Field<TypoShort, TrViewRow>
+  abstract fun taxtype(): Field<Short, TrViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : TrViewFields, Relation<TrViewFields, TrViewRow> {
-      override fun id(): Field<SalestaxrateId, TrViewRow> = Field<SalestaxrateId, TrViewRow>(_path, "id", TrViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, SalestaxrateId.pgType)
+    data class Impl(val _path: List<Path>) : TrViewFields, RelationStructure<TrViewFields, TrViewRow> {
+      override fun id(): Field<SalestaxrateId, TrViewRow> = Field<SalestaxrateId, TrViewRow>(_path, "id", TrViewRow::id, null, null, { row, value -> row.copy(id = value) }, SalestaxrateId.pgType)
 
-      override fun salestaxrateid(): Field<SalestaxrateId, TrViewRow> = Field<SalestaxrateId, TrViewRow>(_path, "salestaxrateid", TrViewRow::salestaxrateid, Optional.empty(), Optional.empty(), { row, value -> row.copy(salestaxrateid = value) }, SalestaxrateId.pgType)
+      override fun salestaxrateid(): Field<SalestaxrateId, TrViewRow> = Field<SalestaxrateId, TrViewRow>(_path, "salestaxrateid", TrViewRow::salestaxrateid, null, null, { row, value -> row.copy(salestaxrateid = value) }, SalestaxrateId.pgType)
 
-      override fun stateprovinceid(): Field<StateprovinceId, TrViewRow> = Field<StateprovinceId, TrViewRow>(_path, "stateprovinceid", TrViewRow::stateprovinceid, Optional.empty(), Optional.empty(), { row, value -> row.copy(stateprovinceid = value) }, StateprovinceId.pgType)
+      override fun stateprovinceid(): Field<StateprovinceId, TrViewRow> = Field<StateprovinceId, TrViewRow>(_path, "stateprovinceid", TrViewRow::stateprovinceid, null, null, { row, value -> row.copy(stateprovinceid = value) }, StateprovinceId.pgType)
 
-      override fun taxtype(): Field<TypoShort, TrViewRow> = Field<TypoShort, TrViewRow>(_path, "taxtype", TrViewRow::taxtype, Optional.empty(), Optional.empty(), { row, value -> row.copy(taxtype = value) }, TypoShort.pgType)
+      override fun taxtype(): Field<Short, TrViewRow> = Field<Short, TrViewRow>(_path, "taxtype", TrViewRow::taxtype, null, null, { row, value -> row.copy(taxtype = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun taxrate(): Field<BigDecimal, TrViewRow> = Field<BigDecimal, TrViewRow>(_path, "taxrate", TrViewRow::taxrate, Optional.empty(), Optional.empty(), { row, value -> row.copy(taxrate = value) }, PgTypes.numeric)
+      override fun taxrate(): Field<BigDecimal, TrViewRow> = Field<BigDecimal, TrViewRow>(_path, "taxrate", TrViewRow::taxrate, null, null, { row, value -> row.copy(taxrate = value) }, PgTypes.numeric)
 
-      override fun name(): Field<Name, TrViewRow> = Field<Name, TrViewRow>(_path, "name", TrViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, TrViewRow> = Field<Name, TrViewRow>(_path, "name", TrViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun rowguid(): Field<TypoUUID, TrViewRow> = Field<TypoUUID, TrViewRow>(_path, "rowguid", TrViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, TrViewRow> = Field<UUID, TrViewRow>(_path, "rowguid", TrViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, TrViewRow> = Field<TypoLocalDateTime, TrViewRow>(_path, "modifieddate", TrViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, TrViewRow> = Field<LocalDateTime, TrViewRow>(_path, "modifieddate", TrViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, TrViewRow>> = listOf(this.id(), this.salestaxrateid(), this.stateprovinceid(), this.taxtype(), this.taxrate(), this.name(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<TrViewFields, TrViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, TrViewRow>> = listOf(this.id().underlying, this.salestaxrateid().underlying, this.stateprovinceid().underlying, this.taxtype().underlying, this.taxrate().underlying, this.name().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<TrViewFields, TrViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

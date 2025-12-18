@@ -7,11 +7,12 @@ package adventureworks.public.flaff
 
 import adventureworks.public.ShortText
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: public.flaff
   * Composite primary key: code, another_code, some_number, specifier
@@ -20,26 +21,26 @@ data class FlaffRow(
   /** Points to [adventureworks.public.flaff.FlaffRow.code] */
   val code: ShortText,
   /** Points to [adventureworks.public.flaff.FlaffRow.anotherCode] */
-  @JsonProperty("another_code") val anotherCode: /* max 20 chars */ String,
+  @JsonProperty("another_code") val anotherCode: String,
   /** Points to [adventureworks.public.flaff.FlaffRow.someNumber] */
   @JsonProperty("some_number") val someNumber: Int,
   val specifier: ShortText,
   /** Points to [adventureworks.public.flaff.FlaffRow.specifier] */
-  val parentspecifier: Optional<ShortText>
+  val parentspecifier: ShortText?
 ) {
   fun compositeId(): FlaffId = FlaffId(code, anotherCode, someNumber, specifier)
 
   fun id(): FlaffId = this.compositeId()
 
   companion object {
-    val _rowParser: RowParser<FlaffRow> = RowParsers.of(ShortText.pgType, PgTypes.text, PgTypes.int4, ShortText.pgType, ShortText.pgType.opt(), { t0, t1, t2, t3, t4 -> FlaffRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.code, row.anotherCode, row.someNumber, row.specifier, row.parentspecifier) })
+    val _rowParser: RowParser<FlaffRow> = RowParsers.of(ShortText.pgType, PgTypes.text, KotlinDbTypes.PgTypes.int4, ShortText.pgType, ShortText.pgType.nullable(), { t0, t1, t2, t3, t4 -> FlaffRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.code, row.anotherCode, row.someNumber, row.specifier, row.parentspecifier) })
 
     fun apply(
       compositeId: FlaffId,
-      parentspecifier: Optional<ShortText>
+      parentspecifier: ShortText?
     ): FlaffRow = FlaffRow(compositeId.code, compositeId.anotherCode, compositeId.someNumber, compositeId.specifier, parentspecifier)
 
     val pgText: PgText<FlaffRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

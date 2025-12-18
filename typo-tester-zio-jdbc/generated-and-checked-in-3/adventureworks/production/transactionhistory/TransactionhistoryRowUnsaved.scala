@@ -26,7 +26,7 @@ case class TransactionhistoryRowUnsaved(
   /** W = WorkOrder, S = SalesOrder, P = PurchaseOrder
    * Constraint CK_TransactionHistory_TransactionType affecting columns transactiontype:  ((upper((transactiontype)::text) = ANY (ARRAY['W'::text, 'S'::text, 'P'::text])))
    */
-  transactiontype: /* bpchar, max 1 chars */ String,
+  transactiontype: String,
   /** Product quantity. */
   quantity: Int,
   /** Product cost. */

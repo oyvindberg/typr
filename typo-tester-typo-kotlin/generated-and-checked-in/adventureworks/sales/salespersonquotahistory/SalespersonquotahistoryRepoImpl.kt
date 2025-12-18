@@ -5,27 +5,23 @@
  */
 package adventureworks.sales.salespersonquotahistory
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import java.sql.Connection
+import java.time.LocalDateTime
 import java.util.ArrayList
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.Fragment.interpolate
 
 class SalespersonquotahistoryRepoImpl() : SalespersonquotahistoryRepo {
   override fun delete(): DeleteBuilder<SalespersonquotahistoryFields, SalespersonquotahistoryRow> = DeleteBuilder.of("\"sales\".\"salespersonquotahistory\"", SalespersonquotahistoryFields.structure, Dialect.POSTGRESQL)
@@ -33,114 +29,46 @@ class SalespersonquotahistoryRepoImpl() : SalespersonquotahistoryRepo {
   override fun deleteById(
     compositeId: SalespersonquotahistoryId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "sales"."salespersonquotahistory" where "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("""
-     AND "quotadate" = 
-    """.trimMargin()),
-    TypoLocalDateTime.pgType.encode(compositeId.quotadate),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = interpolate(Fragment.lit("delete from \"sales\".\"salespersonquotahistory\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"quotadate\" = "), Fragment.encode(PgTypes.timestamp, compositeId.quotadate), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     compositeIds: Array<SalespersonquotahistoryId>,
     c: Connection
   ): Int {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, SalespersonquotahistoryId::businessentityid, BusinessentityId::class.java)
-    val quotadate: Array<TypoLocalDateTime> = arrayMap.map(compositeIds, SalespersonquotahistoryId::quotadate, TypoLocalDateTime::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        delete
-        from "sales"."salespersonquotahistory"
-        where ("businessentityid", "quotadate")
-        in (select unnest(""".trimMargin()),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      TypoLocalDateTime.pgTypeArray.encode(quotadate),
-      typo.runtime.Fragment.lit("""
-      ::timestamp[]))
-
-      """.trimMargin())
-    ).update().runUnchecked(c)
+    val quotadate: Array<LocalDateTime> = arrayMap.map(compositeIds, SalespersonquotahistoryId::quotadate, LocalDateTime::class.java)
+    return interpolate(Fragment.lit("delete\nfrom \"sales\".\"salespersonquotahistory\"\nwhere (\"businessentityid\", \"quotadate\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, quotadate), Fragment.lit("::timestamp[]))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: SalespersonquotahistoryRow,
     c: Connection
-  ): SalespersonquotahistoryRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "sales"."salespersonquotahistory"("businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.quotadate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    PgTypes.numeric.encode(unsaved.salesquota),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): SalespersonquotahistoryRow = interpolate(Fragment.lit("insert into \"sales\".\"salespersonquotahistory\"(\"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.quotadate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.numeric, unsaved.salesquota), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\"\n"))
     .updateReturning(SalespersonquotahistoryRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: SalespersonquotahistoryRowUnsaved,
     c: Connection
   ): SalespersonquotahistoryRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"businessentityid\""))
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"quotadate\""))
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.encode(unsaved.quotadate),
-      typo.runtime.Fragment.lit("::timestamp")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.timestamp, unsaved.quotadate), Fragment.lit("::timestamp")))
     columns.add(Fragment.lit("\"salesquota\""))
-    values.add(interpolate(
-      PgTypes.numeric.encode(unsaved.salesquota),
-      typo.runtime.Fragment.lit("::numeric")
-    ))
+    values.add(interpolate(Fragment.encode(PgTypes.numeric, unsaved.salesquota), Fragment.lit("::numeric")))
     unsaved.rowguid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"rowguid\""))
-      values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "sales"."salespersonquotahistory"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = interpolate(Fragment.lit("insert into \"sales\".\"salespersonquotahistory\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\"\n"))
     return q.updateReturning(SalespersonquotahistoryRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
@@ -148,62 +76,31 @@ class SalespersonquotahistoryRepoImpl() : SalespersonquotahistoryRepo {
     unsaved: MutableIterator<SalespersonquotahistoryRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "sales"."salespersonquotahistory"("businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, SalespersonquotahistoryRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"sales\".\"salespersonquotahistory\"(\"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, SalespersonquotahistoryRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
     unsaved: MutableIterator<SalespersonquotahistoryRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "sales"."salespersonquotahistory"("businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, SalespersonquotahistoryRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"sales\".\"salespersonquotahistory\"(\"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, SalespersonquotahistoryRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<SalespersonquotahistoryFields, SalespersonquotahistoryRow> = SelectBuilder.of("\"sales\".\"salespersonquotahistory\"", SalespersonquotahistoryFields.structure, SalespersonquotahistoryRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<SalespersonquotahistoryRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text
-    from "sales"."salespersonquotahistory"
-  """.trimMargin())).query(SalespersonquotahistoryRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<SalespersonquotahistoryRow> = interpolate(Fragment.lit("select \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salespersonquotahistory\"\n")).query(SalespersonquotahistoryRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     compositeId: SalespersonquotahistoryId,
     c: Connection
-  ): Optional<SalespersonquotahistoryRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text
-      from "sales"."salespersonquotahistory"
-      where "businessentityid" = """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("""
-     AND "quotadate" = 
-    """.trimMargin()),
-    TypoLocalDateTime.pgType.encode(compositeId.quotadate),
-    typo.runtime.Fragment.lit("")
-  ).query(SalespersonquotahistoryRow._rowParser.first()).runUnchecked(c)
+  ): SalespersonquotahistoryRow? = interpolate(Fragment.lit("select \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salespersonquotahistory\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"quotadate\" = "), Fragment.encode(PgTypes.timestamp, compositeId.quotadate), Fragment.lit("")).query(SalespersonquotahistoryRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     compositeIds: Array<SalespersonquotahistoryId>,
     c: Connection
   ): List<SalespersonquotahistoryRow> {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, SalespersonquotahistoryId::businessentityid, BusinessentityId::class.java)
-    val quotadate: Array<TypoLocalDateTime> = arrayMap.map(compositeIds, SalespersonquotahistoryId::quotadate, TypoLocalDateTime::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        select "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text
-        from "sales"."salespersonquotahistory"
-        where ("businessentityid", "quotadate")
-        in (select unnest(""".trimMargin()),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      TypoLocalDateTime.pgTypeArray.encode(quotadate),
-      typo.runtime.Fragment.lit("""
-      ::timestamp[]))
-
-      """.trimMargin())
-    ).query(SalespersonquotahistoryRow._rowParser.all()).runUnchecked(c)
+    val quotadate: Array<LocalDateTime> = arrayMap.map(compositeIds, SalespersonquotahistoryId::quotadate, LocalDateTime::class.java)
+    return interpolate(Fragment.lit("select \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salespersonquotahistory\"\nwhere (\"businessentityid\", \"quotadate\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, quotadate), Fragment.lit("::timestamp[]))\n")).query(SalespersonquotahistoryRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(
@@ -212,83 +109,32 @@ class SalespersonquotahistoryRepoImpl() : SalespersonquotahistoryRepo {
   ): Map<SalespersonquotahistoryId, SalespersonquotahistoryRow> {
     val ret: MutableMap<SalespersonquotahistoryId, SalespersonquotahistoryRow> = mutableMapOf<SalespersonquotahistoryId, SalespersonquotahistoryRow>()
     selectByIds(compositeIds, c).forEach({ row -> ret.put(row.compositeId(), row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<SalespersonquotahistoryFields, SalespersonquotahistoryRow> = UpdateBuilder.of("\"sales\".\"salespersonquotahistory\"", SalespersonquotahistoryFields.structure, SalespersonquotahistoryRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<SalespersonquotahistoryFields, SalespersonquotahistoryRow> = UpdateBuilder.of("\"sales\".\"salespersonquotahistory\"", SalespersonquotahistoryFields.structure, SalespersonquotahistoryRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: SalespersonquotahistoryRow,
     c: Connection
   ): Boolean {
     val compositeId: SalespersonquotahistoryId = row.compositeId()
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "sales"."salespersonquotahistory"
-        set "salesquota" = """.trimMargin()),
-      PgTypes.numeric.encode(row.salesquota),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "rowguid" = """.trimMargin()),
-      TypoUUID.pgType.encode(row.rowguid),
-      typo.runtime.Fragment.lit("""
-        ::uuid,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "businessentityid" = """.trimMargin()),
-      BusinessentityId.pgType.encode(compositeId.businessentityid),
-      typo.runtime.Fragment.lit("""
-       AND "quotadate" = 
-      """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(compositeId.quotadate),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return interpolate(Fragment.lit("update \"sales\".\"salespersonquotahistory\"\nset \"salesquota\" = "), Fragment.encode(PgTypes.numeric, row.salesquota), Fragment.lit("::numeric,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"quotadate\" = "), Fragment.encode(PgTypes.timestamp, compositeId.quotadate), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: SalespersonquotahistoryRow,
     c: Connection
-  ): SalespersonquotahistoryRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "sales"."salespersonquotahistory"("businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.quotadate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    PgTypes.numeric.encode(unsaved.salesquota),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("businessentityid", "quotadate")
-      do update set
-        "salesquota" = EXCLUDED."salesquota",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text""".trimMargin())
-  )
+  ): SalespersonquotahistoryRow = interpolate(Fragment.lit("insert into \"sales\".\"salespersonquotahistory\"(\"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.quotadate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.numeric, unsaved.salesquota), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"businessentityid\", \"quotadate\")\ndo update set\n  \"salesquota\" = EXCLUDED.\"salesquota\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\""))
     .updateReturning(SalespersonquotahistoryRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
     unsaved: MutableIterator<SalespersonquotahistoryRow>,
     c: Connection
-  ): List<SalespersonquotahistoryRow> = interpolate(typo.runtime.Fragment.lit("""
-                                          insert into "sales"."salespersonquotahistory"("businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate")
-                                          values (?::int4, ?::timestamp, ?::numeric, ?::uuid, ?::timestamp)
-                                          on conflict ("businessentityid", "quotadate")
-                                          do update set
-                                            "salesquota" = EXCLUDED."salesquota",
-                                          "rowguid" = EXCLUDED."rowguid",
-                                          "modifieddate" = EXCLUDED."modifieddate"
-                                          returning "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text""".trimMargin()))
+  ): List<SalespersonquotahistoryRow> = interpolate(Fragment.lit("insert into \"sales\".\"salespersonquotahistory\"(\"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::timestamp, ?::numeric, ?::uuid, ?::timestamp)\non conflict (\"businessentityid\", \"quotadate\")\ndo update set\n  \"salesquota\" = EXCLUDED.\"salesquota\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\""))
     .updateManyReturning(SalespersonquotahistoryRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
@@ -296,21 +142,8 @@ class SalespersonquotahistoryRepoImpl() : SalespersonquotahistoryRepo {
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table salespersonquotahistory_TEMP (like "sales"."salespersonquotahistory") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy salespersonquotahistory_TEMP("businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, SalespersonquotahistoryRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "sales"."salespersonquotahistory"("businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate")
-      select * from salespersonquotahistory_TEMP
-      on conflict ("businessentityid", "quotadate")
-      do update set
-        "salesquota" = EXCLUDED."salesquota",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table salespersonquotahistory_TEMP;""".trimMargin())).update().runUnchecked(c)
+    interpolate(Fragment.lit("create temporary table salespersonquotahistory_TEMP (like \"sales\".\"salespersonquotahistory\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy salespersonquotahistory_TEMP(\"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, SalespersonquotahistoryRow.pgText)
+    return interpolate(Fragment.lit("insert into \"sales\".\"salespersonquotahistory\"(\"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\")\nselect * from salespersonquotahistory_TEMP\non conflict (\"businessentityid\", \"quotadate\")\ndo update set\n  \"salesquota\" = EXCLUDED.\"salesquota\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table salespersonquotahistory_TEMP;")).update().runUnchecked(c)
   }
 }

@@ -6,15 +6,15 @@
 package adventureworks.sales.salesterritory
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Name
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: sales.salesterritory
   * Sales territory lookup table.
@@ -32,7 +32,7 @@ data class SalesterritoryRow(
     */
   val countryregioncode: CountryregionId,
   /** Geographic area to which the sales territory belong. */
-  val group: /* max 50 chars */ String,
+  val group: String,
   /** Sales in the territory year to date.
     * Default: 0.00
     * Constraint CK_SalesTerritory_SalesYTD affecting columns salesytd: ((salesytd >= 0.00))
@@ -54,9 +54,9 @@ data class SalesterritoryRow(
     */
   val costlastyear: BigDecimal,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): SalesterritoryId = territoryid
 
@@ -66,14 +66,14 @@ data class SalesterritoryRow(
     saleslastyear: Defaulted<BigDecimal>,
     costytd: Defaulted<BigDecimal>,
     costlastyear: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): SalesterritoryRowUnsaved = SalesterritoryRowUnsaved(name, countryregioncode, group, territoryid, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SalesterritoryRow> = RowParsers.of(SalesterritoryId.pgType, Name.pgType, CountryregionId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> SalesterritoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.territoryid, row.name, row.countryregioncode, row.group, row.salesytd, row.saleslastyear, row.costytd, row.costlastyear, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SalesterritoryRow> = RowParsers.of(SalesterritoryId.pgType, Name.pgType, CountryregionId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> SalesterritoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.territoryid, row.name, row.countryregioncode, row.group, row.salesytd, row.saleslastyear, row.costytd, row.costlastyear, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<SalesterritoryRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

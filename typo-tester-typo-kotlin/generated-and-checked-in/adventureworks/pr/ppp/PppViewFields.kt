@@ -5,47 +5,49 @@
  */
 package adventureworks.pr.ppp
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.production.productphoto.ProductphotoId
 import adventureworks.public.Flag
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PppViewFields : FieldsExpr<PppViewRow> {
-  override fun columns(): List<FieldLike<*, PppViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PppViewRow>>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PppViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PppViewRow>
 
-  fun primary(): Field<Flag, PppViewRow>
+  abstract fun primary(): Field<Flag, PppViewRow>
 
-  fun productid(): Field<ProductId, PppViewRow>
+  abstract fun productid(): Field<ProductId, PppViewRow>
 
-  fun productphotoid(): Field<ProductphotoId, PppViewRow>
+  abstract fun productphotoid(): Field<ProductphotoId, PppViewRow>
 
-  override fun rowParser(): RowParser<PppViewRow> = PppViewRow._rowParser
+  override fun rowParser(): RowParser<PppViewRow> = PppViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : PppViewFields, Relation<PppViewFields, PppViewRow> {
-      override fun productid(): Field<ProductId, PppViewRow> = Field<ProductId, PppViewRow>(_path, "productid", PppViewRow::productid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+    data class Impl(val _path: List<Path>) : PppViewFields, RelationStructure<PppViewFields, PppViewRow> {
+      override fun productid(): Field<ProductId, PppViewRow> = Field<ProductId, PppViewRow>(_path, "productid", PppViewRow::productid, null, null, { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun productphotoid(): Field<ProductphotoId, PppViewRow> = Field<ProductphotoId, PppViewRow>(_path, "productphotoid", PppViewRow::productphotoid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productphotoid = value) }, ProductphotoId.pgType)
+      override fun productphotoid(): Field<ProductphotoId, PppViewRow> = Field<ProductphotoId, PppViewRow>(_path, "productphotoid", PppViewRow::productphotoid, null, null, { row, value -> row.copy(productphotoid = value) }, ProductphotoId.pgType)
 
-      override fun primary(): Field<Flag, PppViewRow> = Field<Flag, PppViewRow>(_path, "primary", PppViewRow::primary, Optional.empty(), Optional.empty(), { row, value -> row.copy(primary = value) }, Flag.pgType)
+      override fun primary(): Field<Flag, PppViewRow> = Field<Flag, PppViewRow>(_path, "primary", PppViewRow::primary, null, null, { row, value -> row.copy(primary = value) }, Flag.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PppViewRow> = Field<TypoLocalDateTime, PppViewRow>(_path, "modifieddate", PppViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PppViewRow> = Field<LocalDateTime, PppViewRow>(_path, "modifieddate", PppViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PppViewRow>> = listOf(this.productid(), this.productphotoid(), this.primary(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PppViewFields, PppViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PppViewRow>> = listOf(this.productid().underlying, this.productphotoid().underlying, this.primary().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PppViewFields, PppViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

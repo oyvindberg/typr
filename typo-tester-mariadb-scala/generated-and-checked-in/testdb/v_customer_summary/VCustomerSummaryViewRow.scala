@@ -7,12 +7,13 @@ package testdb.v_customer_summary
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_status.CustomerStatusId
 import testdb.customers.CustomersId
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** View: v_customer_summary
  * VIEW
@@ -30,7 +31,7 @@ case class VCustomerSummaryViewRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("full_name") fullName: Optional[String],
+  @JsonProperty("full_name") fullName: Option[String],
   /** 
    * Default: 'bronze'
    * Points to [[testdb.customers.CustomersRow.tier]]
@@ -50,21 +51,21 @@ case class VCustomerSummaryViewRow(
    * Default: NULL
    * Points to [[testdb.customers.CustomersRow.lastLoginAt]]
    */
-  @JsonProperty("last_login_at") lastLoginAt: Optional[LocalDateTime],
+  @JsonProperty("last_login_at") lastLoginAt: Option[LocalDateTime],
   /** 
    * Default: 0
    */
-  @JsonProperty("total_orders") totalOrders: java.lang.Long,
+  @JsonProperty("total_orders") totalOrders: Long,
   /** 
    * Default: 0.0000
    */
-  @JsonProperty("lifetime_value") lifetimeValue: java.math.BigDecimal,
+  @JsonProperty("lifetime_value") lifetimeValue: BigDecimal,
   /** 
    * Default: current_timestamp(6)
    */
-  @JsonProperty("last_order_date") lastOrderDate: Optional[LocalDateTime]
+  @JsonProperty("last_order_date") lastOrderDate: Option[LocalDateTime]
 )
 
 object VCustomerSummaryViewRow {
-  val `_rowParser`: RowParser[VCustomerSummaryViewRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, MariaTypes.datetime.opt(), MariaTypes.bigint, MariaTypes.decimal, MariaTypes.datetime.opt(), VCustomerSummaryViewRow.apply, row => Array[Object](row.customerId.asInstanceOf[Object], row.email.asInstanceOf[Object], row.fullName.asInstanceOf[Object], row.tier.asInstanceOf[Object], row.status.asInstanceOf[Object], row.createdAt.asInstanceOf[Object], row.lastLoginAt.asInstanceOf[Object], row.totalOrders.asInstanceOf[Object], row.lifetimeValue.asInstanceOf[Object], row.lastOrderDate.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VCustomerSummaryViewRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, MariaTypes.datetime.nullable, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric, MariaTypes.datetime.nullable)(VCustomerSummaryViewRow.apply)(row => Array[Any](row.customerId, row.email, row.fullName, row.tier, row.status, row.createdAt, row.lastLoginAt, row.totalOrders, row.lifetimeValue, row.lastOrderDate))
 }

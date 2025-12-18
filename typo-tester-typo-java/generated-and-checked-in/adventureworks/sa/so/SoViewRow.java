@@ -5,11 +5,10 @@
  */
 package adventureworks.sa.so;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.sales.specialoffer.SpecialofferId;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -21,25 +20,25 @@ public record SoViewRow(
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#specialofferid()} */
   SpecialofferId specialofferid,
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#description()} */
-  /* max 255 chars */ String description,
+  String description,
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#discountpct()} */
   BigDecimal discountpct,
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#type()} */
-  /* max 50 chars */ String type,
+  String type,
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#category()} */
-  /* max 50 chars */ String category,
+  String category,
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#startdate()} */
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#enddate()} */
-  TypoLocalDateTime enddate,
+  LocalDateTime enddate,
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#minqty()} */
   Integer minqty,
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#maxqty()} */
-  Optional<Integer> maxqty,
+  Integer maxqty,
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#specialofferid()} */
   public SoViewRow withId(SpecialofferId id) {
@@ -52,7 +51,7 @@ public record SoViewRow(
   };
 
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#description()} */
-  public SoViewRow withDescription(/* max 255 chars */ String description) {
+  public SoViewRow withDescription(String description) {
     return new SoViewRow(id, specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
@@ -62,22 +61,22 @@ public record SoViewRow(
   };
 
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#type()} */
-  public SoViewRow withType(/* max 50 chars */ String type) {
+  public SoViewRow withType(String type) {
     return new SoViewRow(id, specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#category()} */
-  public SoViewRow withCategory(/* max 50 chars */ String category) {
+  public SoViewRow withCategory(String category) {
     return new SoViewRow(id, specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#startdate()} */
-  public SoViewRow withStartdate(TypoLocalDateTime startdate) {
+  public SoViewRow withStartdate(LocalDateTime startdate) {
     return new SoViewRow(id, specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#enddate()} */
-  public SoViewRow withEnddate(TypoLocalDateTime enddate) {
+  public SoViewRow withEnddate(LocalDateTime enddate) {
     return new SoViewRow(id, specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
@@ -87,19 +86,19 @@ public record SoViewRow(
   };
 
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#maxqty()} */
-  public SoViewRow withMaxqty(Optional<Integer> maxqty) {
+  public SoViewRow withMaxqty(Integer maxqty) {
     return new SoViewRow(id, specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#rowguid()} */
-  public SoViewRow withRowguid(TypoUUID rowguid) {
+  public SoViewRow withRowguid(UUID rowguid) {
     return new SoViewRow(id, specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#modifieddate()} */
-  public SoViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SoViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SoViewRow(id, specialofferid, description, discountpct, type, category, startdate, enddate, minqty, maxqty, rowguid, modifieddate);
   };
 
-  static RowParser<SoViewRow> _rowParser = RowParsers.of(SpecialofferId.pgType, SpecialofferId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.text, PgTypes.text, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, PgTypes.int4, PgTypes.int4.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, SoViewRow::new, row -> new Object[]{row.id(), row.specialofferid(), row.description(), row.discountpct(), row.type(), row.category(), row.startdate(), row.enddate(), row.minqty(), row.maxqty(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SoViewRow> _rowParser = RowParsers.of(SpecialofferId.pgType, SpecialofferId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.text, PgTypes.text, PgTypes.timestamp, PgTypes.timestamp, PgTypes.int4, PgTypes.int4, PgTypes.uuid, PgTypes.timestamp, SoViewRow::new, row -> new Object[]{row.id(), row.specialofferid(), row.description(), row.discountpct(), row.type(), row.category(), row.startdate(), row.enddate(), row.minqty(), row.maxqty(), row.rowguid(), row.modifieddate()});;
 }

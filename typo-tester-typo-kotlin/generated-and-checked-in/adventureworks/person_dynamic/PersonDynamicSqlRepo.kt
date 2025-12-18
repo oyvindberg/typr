@@ -6,12 +6,11 @@
 package adventureworks.person_dynamic
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 
 interface PersonDynamicSqlRepo {
-  fun apply(
-    firstName: Optional<String>,
+  abstract fun apply(
+    firstName: String?,
     c: Connection
   ): List<PersonDynamicSqlRow>
 }

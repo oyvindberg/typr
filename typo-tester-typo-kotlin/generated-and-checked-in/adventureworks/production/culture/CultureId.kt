@@ -6,25 +6,25 @@
 package adventureworks.production.culture
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 
 /** Type for the primary key of table `production.culture` */
-data class CultureId(@JsonValue val value: /* bpchar, max 6 chars */ String) {
+data class CultureId(@JsonValue val value: String) {
   override fun toString(): kotlin.String {
     return value.toString()
   }
 
   companion object {
-    val bijection: Bijection<CultureId, /* bpchar, max 6 chars */ String> =
+    val bijection: Bijection<CultureId, String> =
       Bijection.of(CultureId::value, ::CultureId)
 
     val pgType: PgType<CultureId> =
-      PgTypes.text.bimap(::CultureId, CultureId::value)
+      PgTypes.bpchar.bimap(::CultureId, CultureId::value)
 
     val pgTypeArray: PgType<Array<CultureId>> =
-      PgTypes.textArray.bimap({ xs -> arrayMap.map(xs, ::CultureId, CultureId::class.java) }, { xs -> arrayMap.map(xs, CultureId::value, /* bpchar, max 6 chars */ String::class.java) })
+      PgTypes.bpcharArray.bimap({ xs -> arrayMap.map(xs, ::CultureId, CultureId::class.java) }, { xs -> arrayMap.map(xs, CultureId::value, String::class.java) })
   }
 }

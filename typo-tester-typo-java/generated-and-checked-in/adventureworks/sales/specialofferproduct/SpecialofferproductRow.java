@@ -6,11 +6,12 @@
 package adventureworks.sales.specialofferproduct;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.product.ProductId;
 import adventureworks.sales.specialoffer.SpecialofferId;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -28,9 +29,9 @@ public record SpecialofferproductRow(
     */
   ProductId productid,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key for SpecialOfferProduct records.
     * Points to {@link adventureworks.sales.specialoffer.SpecialofferRow#specialofferid()}
@@ -47,21 +48,21 @@ public record SpecialofferproductRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public SpecialofferproductRow withRowguid(TypoUUID rowguid) {
+  public SpecialofferproductRow withRowguid(UUID rowguid) {
     return new SpecialofferproductRow(specialofferid, productid, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SpecialofferproductRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SpecialofferproductRow withModifieddate(LocalDateTime modifieddate) {
     return new SpecialofferproductRow(specialofferid, productid, rowguid, modifieddate);
   };
 
-  static RowParser<SpecialofferproductRow> _rowParser = RowParsers.of(SpecialofferId.pgType, ProductId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, SpecialofferproductRow::new, row -> new Object[]{row.specialofferid(), row.productid(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SpecialofferproductRow> _rowParser = RowParsers.of(SpecialofferId.pgType, ProductId.pgType, PgTypes.uuid, PgTypes.timestamp, SpecialofferproductRow::new, row -> new Object[]{row.specialofferid(), row.productid(), row.rowguid(), row.modifieddate()});;
 
   static public SpecialofferproductRow apply(
     SpecialofferproductId compositeId,
-    TypoUUID rowguid,
-    TypoLocalDateTime modifieddate
+    UUID rowguid,
+    LocalDateTime modifieddate
   ) {
     return new SpecialofferproductRow(compositeId.specialofferid(), compositeId.productid(), rowguid, modifieddate);
   };
@@ -78,8 +79,8 @@ public record SpecialofferproductRow(
   };
 
   public SpecialofferproductRowUnsaved toUnsavedRow(
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new SpecialofferproductRowUnsaved(specialofferid, productid, rowguid, modifieddate);
   };

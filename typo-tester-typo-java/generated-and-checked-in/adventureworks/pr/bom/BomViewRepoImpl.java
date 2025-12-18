@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class BomViewRepoImpl implements BomViewRepo {
@@ -19,9 +20,6 @@ public class BomViewRepoImpl implements BomViewRepo {
 
   @Override
   public List<BomViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "billofmaterialsid", "productassemblyid", "componentid", "startdate"::text, "enddate"::text, "unitmeasurecode", "bomlevel", "perassemblyqty", "modifieddate"::text
-       from "pr"."bom"
-    """)).query(BomViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"billofmaterialsid\", \"productassemblyid\", \"componentid\", \"startdate\", \"enddate\", \"unitmeasurecode\", \"bomlevel\", \"perassemblyqty\", \"modifieddate\"\nfrom \"pr\".\"bom\"\n")).query(BomViewRow._rowParser.all()).runUnchecked(c);
   };
 }

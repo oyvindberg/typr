@@ -15,9 +15,9 @@ import typo.dsl.DeleteBuilder;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class Issue142RepoImpl implements Issue142Repo {
   @Override
@@ -30,13 +30,7 @@ public class Issue142RepoImpl implements Issue142Repo {
     Issue142Id tabellkode,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "public"."issue142" where "tabellkode" = 
-      """),
-      Issue142Id.pgType.encode(tabellkode),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"public\".\"issue142\" where \"tabellkode\" = "), Fragment.encode(Issue142Id.pgType, tabellkode), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -44,14 +38,7 @@ public class Issue142RepoImpl implements Issue142Repo {
     Issue142Id[] tabellkodes,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "public"."issue142"
-                  where "tabellkode" = ANY("""),
-               Issue142Id.pgTypeArray.encode(tabellkodes),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"public\".\"issue142\"\nwhere \"tabellkode\" = ANY("), Fragment.encode(Issue142Id.pgTypeArray, tabellkodes), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -61,16 +48,7 @@ public class Issue142RepoImpl implements Issue142Repo {
     Issue142Row unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."issue142"("tabellkode")
-         values ("""),
-      Issue142Id.pgType.encode(unsaved.tabellkode()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "tabellkode"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"issue142\"(\"tabellkode\")\nvalues ("), Fragment.encode(Issue142Id.pgType, unsaved.tabellkode()), Fragment.lit(")\nreturning \"tabellkode\"\n"))
       .updateReturning(Issue142Row._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -80,9 +58,7 @@ public class Issue142RepoImpl implements Issue142Repo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "public"."issue142"("tabellkode") FROM STDIN
-    """), batchSize, unsaved, c, Issue142Row.pgText);
+    return streamingInsert.insertUnchecked("COPY \"public\".\"issue142\"(\"tabellkode\") FROM STDIN", batchSize, unsaved, c, Issue142Row.pgText);
   };
 
   @Override
@@ -92,10 +68,7 @@ public class Issue142RepoImpl implements Issue142Repo {
 
   @Override
   public List<Issue142Row> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "tabellkode"
-       from "public"."issue142"
-    """)).query(Issue142Row._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"tabellkode\"\nfrom \"public\".\"issue142\"\n")).query(Issue142Row._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -103,14 +76,7 @@ public class Issue142RepoImpl implements Issue142Repo {
     Issue142Id tabellkode,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "tabellkode"
-         from "public"."issue142"
-         where "tabellkode" = """),
-      Issue142Id.pgType.encode(tabellkode),
-      typo.runtime.Fragment.lit("")
-    ).query(Issue142Row._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"tabellkode\"\nfrom \"public\".\"issue142\"\nwhere \"tabellkode\" = "), Fragment.encode(Issue142Id.pgType, tabellkode), Fragment.lit("")).query(Issue142Row._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -118,14 +84,7 @@ public class Issue142RepoImpl implements Issue142Repo {
     Issue142Id[] tabellkodes,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "tabellkode"
-         from "public"."issue142"
-         where "tabellkode" = ANY("""),
-      Issue142Id.pgTypeArray.encode(tabellkodes),
-      typo.runtime.Fragment.lit(")")
-    ).query(Issue142Row._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"tabellkode\"\nfrom \"public\".\"issue142\"\nwhere \"tabellkode\" = ANY("), Fragment.encode(Issue142Id.pgTypeArray, tabellkodes), Fragment.lit(")")).query(Issue142Row._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -140,7 +99,7 @@ public class Issue142RepoImpl implements Issue142Repo {
 
   @Override
   public UpdateBuilder<Issue142Fields, Issue142Row> update() {
-    return UpdateBuilder.of("\"public\".\"issue142\"", Issue142Fields.structure(), Issue142Row._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"public\".\"issue142\"", Issue142Fields.structure(), Issue142Row._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -148,17 +107,7 @@ public class Issue142RepoImpl implements Issue142Repo {
     Issue142Row unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."issue142"("tabellkode")
-         values ("""),
-      Issue142Id.pgType.encode(unsaved.tabellkode()),
-      typo.runtime.Fragment.lit("""
-         )
-         on conflict ("tabellkode")
-         do update set "tabellkode" = EXCLUDED."tabellkode"
-         returning "tabellkode\"""")
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"issue142\"(\"tabellkode\")\nvalues ("), Fragment.encode(Issue142Id.pgType, unsaved.tabellkode()), Fragment.lit(")\non conflict (\"tabellkode\")\ndo update set \"tabellkode\" = EXCLUDED.\"tabellkode\"\nreturning \"tabellkode\""))
       .updateReturning(Issue142Row._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -168,14 +117,9 @@ public class Issue142RepoImpl implements Issue142Repo {
     Iterator<Issue142Row> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "public"."issue142"("tabellkode")
-                values (?)
-                on conflict ("tabellkode")
-                do update set "tabellkode" = EXCLUDED."tabellkode"
-                returning "tabellkode\""""))
+    return interpolate(Fragment.lit("insert into \"public\".\"issue142\"(\"tabellkode\")\nvalues (?)\non conflict (\"tabellkode\")\ndo update set \"tabellkode\" = EXCLUDED.\"tabellkode\"\nreturning \"tabellkode\""))
       .updateManyReturning(Issue142Row._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -185,18 +129,8 @@ public class Issue142RepoImpl implements Issue142Repo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table issue142_TEMP (like "public"."issue142") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy issue142_TEMP("tabellkode") from stdin
-    """), batchSize, unsaved, c, Issue142Row.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "public"."issue142"("tabellkode")
-       select * from issue142_TEMP
-       on conflict ("tabellkode")
-       do nothing
-       ;
-       drop table issue142_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table issue142_TEMP (like \"public\".\"issue142\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy issue142_TEMP(\"tabellkode\") from stdin", batchSize, unsaved, c, Issue142Row.pgText);
+    return interpolate(Fragment.lit("insert into \"public\".\"issue142\"(\"tabellkode\")\nselect * from issue142_TEMP\non conflict (\"tabellkode\")\ndo nothing\n;\ndrop table issue142_TEMP;")).update().runUnchecked(c);
   };
 }

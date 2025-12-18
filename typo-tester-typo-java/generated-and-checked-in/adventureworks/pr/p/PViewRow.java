@@ -5,9 +5,6 @@
  */
 package adventureworks.pr.p;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.product.ProductId;
 import adventureworks.production.productmodel.ProductmodelId;
 import adventureworks.production.productsubcategory.ProductsubcategoryId;
@@ -15,7 +12,8 @@ import adventureworks.production.unitmeasure.UnitmeasureId;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -29,51 +27,51 @@ public record PViewRow(
   /** Points to {@link adventureworks.production.product.ProductRow#name()} */
   Name name,
   /** Points to {@link adventureworks.production.product.ProductRow#productnumber()} */
-  /* max 25 chars */ String productnumber,
+  String productnumber,
   /** Points to {@link adventureworks.production.product.ProductRow#makeflag()} */
   Flag makeflag,
   /** Points to {@link adventureworks.production.product.ProductRow#finishedgoodsflag()} */
   Flag finishedgoodsflag,
   /** Points to {@link adventureworks.production.product.ProductRow#color()} */
-  Optional</* max 15 chars */ String> color,
+  String color,
   /** Points to {@link adventureworks.production.product.ProductRow#safetystocklevel()} */
-  TypoShort safetystocklevel,
+  Short safetystocklevel,
   /** Points to {@link adventureworks.production.product.ProductRow#reorderpoint()} */
-  TypoShort reorderpoint,
+  Short reorderpoint,
   /** Points to {@link adventureworks.production.product.ProductRow#standardcost()} */
   BigDecimal standardcost,
   /** Points to {@link adventureworks.production.product.ProductRow#listprice()} */
   BigDecimal listprice,
   /** Points to {@link adventureworks.production.product.ProductRow#size()} */
-  Optional</* max 5 chars */ String> size,
+  String size,
   /** Points to {@link adventureworks.production.product.ProductRow#sizeunitmeasurecode()} */
-  Optional<UnitmeasureId> sizeunitmeasurecode,
+  UnitmeasureId sizeunitmeasurecode,
   /** Points to {@link adventureworks.production.product.ProductRow#weightunitmeasurecode()} */
-  Optional<UnitmeasureId> weightunitmeasurecode,
+  UnitmeasureId weightunitmeasurecode,
   /** Points to {@link adventureworks.production.product.ProductRow#weight()} */
-  Optional<BigDecimal> weight,
+  BigDecimal weight,
   /** Points to {@link adventureworks.production.product.ProductRow#daystomanufacture()} */
   Integer daystomanufacture,
   /** Points to {@link adventureworks.production.product.ProductRow#productline()} */
-  Optional</* bpchar, max 2 chars */ String> productline,
+  String productline,
   /** Points to {@link adventureworks.production.product.ProductRow#class()} */
-  Optional</* bpchar, max 2 chars */ String> class_,
+  String class_,
   /** Points to {@link adventureworks.production.product.ProductRow#style()} */
-  Optional</* bpchar, max 2 chars */ String> style,
+  String style,
   /** Points to {@link adventureworks.production.product.ProductRow#productsubcategoryid()} */
-  Optional<ProductsubcategoryId> productsubcategoryid,
+  ProductsubcategoryId productsubcategoryid,
   /** Points to {@link adventureworks.production.product.ProductRow#productmodelid()} */
-  Optional<ProductmodelId> productmodelid,
+  ProductmodelId productmodelid,
   /** Points to {@link adventureworks.production.product.ProductRow#sellstartdate()} */
-  TypoLocalDateTime sellstartdate,
+  LocalDateTime sellstartdate,
   /** Points to {@link adventureworks.production.product.ProductRow#sellenddate()} */
-  Optional<TypoLocalDateTime> sellenddate,
+  LocalDateTime sellenddate,
   /** Points to {@link adventureworks.production.product.ProductRow#discontinueddate()} */
-  Optional<TypoLocalDateTime> discontinueddate,
+  LocalDateTime discontinueddate,
   /** Points to {@link adventureworks.production.product.ProductRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.production.product.ProductRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.product.ProductRow#productid()} */
   public PViewRow withId(ProductId id) {
@@ -91,7 +89,7 @@ public record PViewRow(
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#productnumber()} */
-  public PViewRow withProductnumber(/* max 25 chars */ String productnumber) {
+  public PViewRow withProductnumber(String productnumber) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
@@ -106,17 +104,17 @@ public record PViewRow(
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#color()} */
-  public PViewRow withColor(Optional</* max 15 chars */ String> color) {
+  public PViewRow withColor(String color) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#safetystocklevel()} */
-  public PViewRow withSafetystocklevel(TypoShort safetystocklevel) {
+  public PViewRow withSafetystocklevel(Short safetystocklevel) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#reorderpoint()} */
-  public PViewRow withReorderpoint(TypoShort reorderpoint) {
+  public PViewRow withReorderpoint(Short reorderpoint) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
@@ -131,22 +129,22 @@ public record PViewRow(
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#size()} */
-  public PViewRow withSize(Optional</* max 5 chars */ String> size) {
+  public PViewRow withSize(String size) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#sizeunitmeasurecode()} */
-  public PViewRow withSizeunitmeasurecode(Optional<UnitmeasureId> sizeunitmeasurecode) {
+  public PViewRow withSizeunitmeasurecode(UnitmeasureId sizeunitmeasurecode) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#weightunitmeasurecode()} */
-  public PViewRow withWeightunitmeasurecode(Optional<UnitmeasureId> weightunitmeasurecode) {
+  public PViewRow withWeightunitmeasurecode(UnitmeasureId weightunitmeasurecode) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#weight()} */
-  public PViewRow withWeight(Optional<BigDecimal> weight) {
+  public PViewRow withWeight(BigDecimal weight) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
@@ -156,54 +154,54 @@ public record PViewRow(
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#productline()} */
-  public PViewRow withProductline(Optional</* bpchar, max 2 chars */ String> productline) {
+  public PViewRow withProductline(String productline) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#class()} */
-  public PViewRow withClass(Optional</* bpchar, max 2 chars */ String> class_) {
+  public PViewRow withClass(String class_) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#style()} */
-  public PViewRow withStyle(Optional</* bpchar, max 2 chars */ String> style) {
+  public PViewRow withStyle(String style) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#productsubcategoryid()} */
-  public PViewRow withProductsubcategoryid(Optional<ProductsubcategoryId> productsubcategoryid) {
+  public PViewRow withProductsubcategoryid(ProductsubcategoryId productsubcategoryid) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#productmodelid()} */
-  public PViewRow withProductmodelid(Optional<ProductmodelId> productmodelid) {
+  public PViewRow withProductmodelid(ProductmodelId productmodelid) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#sellstartdate()} */
-  public PViewRow withSellstartdate(TypoLocalDateTime sellstartdate) {
+  public PViewRow withSellstartdate(LocalDateTime sellstartdate) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#sellenddate()} */
-  public PViewRow withSellenddate(Optional<TypoLocalDateTime> sellenddate) {
+  public PViewRow withSellenddate(LocalDateTime sellenddate) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#discontinueddate()} */
-  public PViewRow withDiscontinueddate(Optional<TypoLocalDateTime> discontinueddate) {
+  public PViewRow withDiscontinueddate(LocalDateTime discontinueddate) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#rowguid()} */
-  public PViewRow withRowguid(TypoUUID rowguid) {
+  public PViewRow withRowguid(UUID rowguid) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.product.ProductRow#modifieddate()} */
-  public PViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PViewRow(id, productid, name, productnumber, makeflag, finishedgoodsflag, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, class_, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, rowguid, modifieddate);
   };
 
-  static RowParser<PViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text.opt(), TypoShort.pgType, TypoShort.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.text.opt(), UnitmeasureId.pgType.opt(), UnitmeasureId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.int4, PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), ProductsubcategoryId.pgType.opt(), ProductmodelId.pgType.opt(), TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, PViewRow::new, row -> new Object[]{row.id(), row.productid(), row.name(), row.productnumber(), row.makeflag(), row.finishedgoodsflag(), row.color(), row.safetystocklevel(), row.reorderpoint(), row.standardcost(), row.listprice(), row.size(), row.sizeunitmeasurecode(), row.weightunitmeasurecode(), row.weight(), row.daystomanufacture(), row.productline(), row.class_(), row.style(), row.productsubcategoryid(), row.productmodelid(), row.sellstartdate(), row.sellenddate(), row.discontinueddate(), row.rowguid(), row.modifieddate()});;
+  static RowParser<PViewRow> _rowParser = RowParsers.of(ProductId.pgType, ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text, PgTypes.int2, PgTypes.int2, PgTypes.numeric, PgTypes.numeric, PgTypes.text, UnitmeasureId.pgType, UnitmeasureId.pgType, PgTypes.numeric, PgTypes.int4, PgTypes.bpchar, PgTypes.bpchar, PgTypes.bpchar, ProductsubcategoryId.pgType, ProductmodelId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp, PgTypes.uuid, PgTypes.timestamp, PViewRow::new, row -> new Object[]{row.id(), row.productid(), row.name(), row.productnumber(), row.makeflag(), row.finishedgoodsflag(), row.color(), row.safetystocklevel(), row.reorderpoint(), row.standardcost(), row.listprice(), row.size(), row.sizeunitmeasurecode(), row.weightunitmeasurecode(), row.weight(), row.daystomanufacture(), row.productline(), row.class_(), row.style(), row.productsubcategoryid(), row.productmodelid(), row.sellstartdate(), row.sellenddate(), row.discontinueddate(), row.rowguid(), row.modifieddate()});;
 }

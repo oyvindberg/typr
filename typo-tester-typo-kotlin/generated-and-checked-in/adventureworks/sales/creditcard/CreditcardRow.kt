@@ -6,13 +6,13 @@
 package adventureworks.sales.creditcard
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.userdefined.CustomCreditcardId
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: sales.creditcard
   * Customer credit card information.
@@ -24,27 +24,27 @@ data class CreditcardRow(
     */
   val creditcardid: /* user-picked */ CustomCreditcardId,
   /** Credit card name. */
-  val cardtype: /* max 50 chars */ String,
+  val cardtype: String,
   /** Credit card number. */
-  val cardnumber: /* max 25 chars */ String,
+  val cardnumber: String,
   /** Credit card expiration month. */
-  val expmonth: TypoShort,
+  val expmonth: Short,
   /** Credit card expiration year. */
-  val expyear: TypoShort,
+  val expyear: Short,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): /* user-picked */ CustomCreditcardId = creditcardid
 
   fun toUnsavedRow(
     creditcardid: Defaulted</* user-picked */ CustomCreditcardId>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): CreditcardRowUnsaved = CreditcardRowUnsaved(cardtype, cardnumber, expmonth, expyear, creditcardid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<CreditcardRow> = RowParsers.of(CustomCreditcardId.pgType, PgTypes.text, PgTypes.text, TypoShort.pgType, TypoShort.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> CreditcardRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.creditcardid, row.cardtype, row.cardnumber, row.expmonth, row.expyear, row.modifieddate) })
+    val _rowParser: RowParser<CreditcardRow> = RowParsers.of(CustomCreditcardId.pgType, PgTypes.text, PgTypes.text, KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> CreditcardRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.creditcardid, row.cardtype, row.cardnumber, row.expmonth, row.expyear, row.modifieddate) })
 
     val pgText: PgText<CreditcardRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

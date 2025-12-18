@@ -5,12 +5,13 @@
  */
 package adventureworks.pr.ppp
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.production.productphoto.ProductphotoId
 import adventureworks.public.Flag
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pr.ppp */
 data class PppViewRow(
@@ -21,9 +22,9 @@ data class PppViewRow(
   /** Points to [adventureworks.production.productproductphoto.ProductproductphotoRow.primary] */
   val primary: Flag,
   /** Points to [adventureworks.production.productproductphoto.ProductproductphotoRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PppViewRow> = RowParsers.of(ProductId.pgType, ProductphotoId.pgType, Flag.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> PppViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productid, row.productphotoid, row.primary, row.modifieddate) })
+    val _rowParser: RowParser<PppViewRow> = RowParsers.of(ProductId.pgType, ProductphotoId.pgType, Flag.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> PppViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productid, row.productphotoid, row.primary, row.modifieddate) })
   }
 }

@@ -37,53 +37,29 @@ object addPackageAndImports {
       )
     }
 
-    // Filter out scala.* imports for Kotlin - they're not valid in Kotlin
-    // Also filter out Java boxed types that map to Kotlin built-ins (Integer -> Int, etc.)
-    def filterImports(imports: scala.collection.mutable.Map[jvm.Ident, jvm.Type.Qualified]): List[jvm.Type.Qualified] =
-      language match {
-        case LangKotlin =>
-          // These Java types get mapped to Kotlin built-ins in renderTree, so they shouldn't be imported
-          val javaToKotlinBuiltins = Set(
-            "java.lang.String",
-            "java.lang.Integer",
-            "java.lang.Long",
-            "java.lang.Short",
-            "java.lang.Byte",
-            "java.lang.Float",
-            "java.lang.Double",
-            "java.lang.Boolean",
-            "java.lang.Character",
-            "java.lang.Object",
-            "java.lang.Throwable" // kotlin.Throwable is auto-imported and maps to java.lang.Throwable
-          )
-          imports.values
-            .filter(!_.dotName.startsWith("scala."))
-            .filter(t => !javaToKotlinBuiltins.contains(t.dotName))
-            .toList
-            .sorted
-        case _ => imports.values.toList.sorted
-      }
+    def sortedImports(imports: scala.collection.mutable.Map[jvm.Ident, jvm.Type.Qualified]): List[jvm.Type.Qualified] =
+      imports.values.toList.sorted
 
-    val renderedImports = filterImports(newImports).map { i =>
+    val renderedImports = sortedImports(newImports).map { i =>
       language match {
-        case LangJava                  => code"import $i;"
-        case _: LangScala | LangKotlin => code"import $i"
-        case other                     => sys.error(s"Unsupported language: $other")
+        case LangJava                     => code"import $i;"
+        case _: LangScala | _: LangKotlin => code"import $i"
+        case other                        => sys.error(s"Unsupported language: $other")
       }
     }
-    val renderedStaticImports = filterImports(newStaticImports).map { i =>
+    val renderedStaticImports = sortedImports(newStaticImports).map { i =>
       language match {
-        case LangJava                  => code"import static $i;"
-        case _: LangScala | LangKotlin => code"import $i"
-        case other                     => sys.error(s"Unsupported language: $other")
+        case LangJava                     => code"import static $i;"
+        case _: LangScala | _: LangKotlin => code"import $i"
+        case other                        => sys.error(s"Unsupported language: $other")
       }
     }
     // Render additional imports (wildcard imports like "org.http4s.circe._")
     val renderedAdditionalImports = file.additionalImports.map { imp =>
       language match {
-        case LangJava                  => code"import $imp;"
-        case _: LangScala | LangKotlin => code"import $imp"
-        case other                     => sys.error(s"Unsupported language: $other")
+        case LangJava                     => code"import $imp;"
+        case _: LangScala | _: LangKotlin => code"import $imp"
+        case other                        => sys.error(s"Unsupported language: $other")
       }
     }
 
@@ -101,6 +77,10 @@ object addPackageAndImports {
   // traverse tree and rewrite qualified names
   def shortenNames(tree: jvm.Tree, typeImport: jvm.Type.Qualified => jvm.Type.Qualified, staticImport: jvm.Type.Qualified => jvm.Type.Qualified): jvm.Tree =
     tree match {
+      case jvm.Import(imp, isStatic) =>
+        val importFn = if (isStatic) staticImport else typeImport
+        val _ = importFn(imp) // Register the import, discard shortened version
+        jvm.Import(imp, isStatic) // Return unchanged
       case jvm.IgnoreResult(expr) => jvm.IgnoreResult(expr.mapTrees(shortenNames(_, typeImport, staticImport)))
       case jvm.NotNull(expr)      => jvm.NotNull(expr.mapTrees(shortenNames(_, typeImport, staticImport)))
       case jvm.IfExpr(pred, thenp, elsep) =>
@@ -397,6 +377,7 @@ object addPackageAndImports {
       case q @ jvm.Type.Qualified(_)                  => f(q)
       case jvm.Type.Abstract(value, variance)         => jvm.Type.Abstract(value, variance)
       case jvm.Type.ArrayOf(value)                    => jvm.Type.ArrayOf(shortenNamesType(value, f))
+      case jvm.Type.KotlinNullable(underlying)        => jvm.Type.KotlinNullable(shortenNamesType(underlying, f))
       case jvm.Type.Commented(underlying, comment)    => jvm.Type.Commented(shortenNamesType(underlying, f), comment)
       case jvm.Type.Annotated(underlying, annotation) => jvm.Type.Annotated(shortenNamesType(underlying, f), f(annotation).asInstanceOf[jvm.Type.Qualified])
       case jvm.Type.TApply(underlying, targs)         => jvm.Type.TApply(shortenNamesType(underlying, f), targs.map(targ => shortenNamesType(targ, f)))

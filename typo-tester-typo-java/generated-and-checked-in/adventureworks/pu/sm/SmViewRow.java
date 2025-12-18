@@ -5,11 +5,11 @@
  */
 package adventureworks.pu.sm;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
 import adventureworks.purchasing.shipmethod.ShipmethodId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -27,9 +27,9 @@ public record SmViewRow(
   /** Points to {@link adventureworks.purchasing.shipmethod.ShipmethodRow#shiprate()} */
   BigDecimal shiprate,
   /** Points to {@link adventureworks.purchasing.shipmethod.ShipmethodRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.purchasing.shipmethod.ShipmethodRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.purchasing.shipmethod.ShipmethodRow#shipmethodid()} */
   public SmViewRow withId(ShipmethodId id) {
@@ -57,14 +57,14 @@ public record SmViewRow(
   };
 
   /** Points to {@link adventureworks.purchasing.shipmethod.ShipmethodRow#rowguid()} */
-  public SmViewRow withRowguid(TypoUUID rowguid) {
+  public SmViewRow withRowguid(UUID rowguid) {
     return new SmViewRow(id, shipmethodid, name, shipbase, shiprate, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.purchasing.shipmethod.ShipmethodRow#modifieddate()} */
-  public SmViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SmViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SmViewRow(id, shipmethodid, name, shipbase, shiprate, rowguid, modifieddate);
   };
 
-  static RowParser<SmViewRow> _rowParser = RowParsers.of(ShipmethodId.pgType, ShipmethodId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, SmViewRow::new, row -> new Object[]{row.id(), row.shipmethodid(), row.name(), row.shipbase(), row.shiprate(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SmViewRow> _rowParser = RowParsers.of(ShipmethodId.pgType, ShipmethodId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, SmViewRow::new, row -> new Object[]{row.id(), row.shipmethodid(), row.name(), row.shipbase(), row.shiprate(), row.rowguid(), row.modifieddate()});;
 }

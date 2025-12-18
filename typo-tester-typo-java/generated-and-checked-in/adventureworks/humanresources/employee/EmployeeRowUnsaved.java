@@ -7,13 +7,12 @@ package adventureworks.humanresources.employee;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDate;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.public_.Flag;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 
@@ -24,27 +23,27 @@ public record EmployeeRowUnsaved(
     */
   BusinessentityId businessentityid,
   /** Unique national identification number such as a social security number. */
-  /* max 15 chars */ String nationalidnumber,
+  String nationalidnumber,
   /** Network login. */
-  /* max 256 chars */ String loginid,
+  String loginid,
   /** Work title such as Buyer or Sales Representative. */
-  /* max 50 chars */ String jobtitle,
+  String jobtitle,
   /** Date of birth.
     * Constraint CK_Employee_BirthDate affecting columns birthdate:  (((birthdate >= '1930-01-01'::date) AND (birthdate <= (now() - '18 years'::interval))))
     */
-  TypoLocalDate birthdate,
+  LocalDate birthdate,
   /** M = Married, S = Single
     * Constraint CK_Employee_MaritalStatus affecting columns maritalstatus:  ((upper((maritalstatus)::text) = ANY (ARRAY['M'::text, 'S'::text])))
     */
-  /* bpchar, max 1 chars */ String maritalstatus,
+  String maritalstatus,
   /** M = Male, F = Female
     * Constraint CK_Employee_Gender affecting columns gender:  ((upper((gender)::text) = ANY (ARRAY['M'::text, 'F'::text])))
     */
-  /* bpchar, max 1 chars */ String gender,
+  String gender,
   /** Employee hired on this date.
     * Constraint CK_Employee_HireDate affecting columns hiredate:  (((hiredate >= '1996-07-01'::date) AND (hiredate <= (now() + '1 day'::interval))))
     */
-  TypoLocalDate hiredate,
+  LocalDate hiredate,
   /** Default: true
     * Job classification. 0 = Hourly, not exempt from collective bargaining. 1 = Salaried, exempt from collective bargaining.
     */
@@ -53,20 +52,20 @@ public record EmployeeRowUnsaved(
     * Number of available vacation hours.
     * Constraint CK_Employee_VacationHours affecting columns vacationhours:  (((vacationhours >= '-40'::integer) AND (vacationhours <= 240)))
     */
-  Defaulted<TypoShort> vacationhours,
+  Defaulted<Short> vacationhours,
   /** Default: 0
     * Number of available sick leave hours.
     * Constraint CK_Employee_SickLeaveHours affecting columns sickleavehours:  (((sickleavehours >= 0) AND (sickleavehours <= 120)))
     */
-  Defaulted<TypoShort> sickleavehours,
+  Defaulted<Short> sickleavehours,
   /** Default: true
     * 0 = Inactive, 1 = Active
     */
   Defaulted<Flag> currentflag,
   /** Default: uuid_generate_v1() */
-  Defaulted<TypoUUID> rowguid,
+  Defaulted<UUID> rowguid,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate,
+  Defaulted<LocalDateTime> modifieddate,
   /** Default: '/'::character varying
     * Where the employee is located in corporate hierarchy.
     */
@@ -78,27 +77,27 @@ public record EmployeeRowUnsaved(
       */
     BusinessentityId businessentityid,
     /** Unique national identification number such as a social security number. */
-    /* max 15 chars */ String nationalidnumber,
+    String nationalidnumber,
     /** Network login. */
-    /* max 256 chars */ String loginid,
+    String loginid,
     /** Work title such as Buyer or Sales Representative. */
-    /* max 50 chars */ String jobtitle,
+    String jobtitle,
     /** Date of birth.
       * Constraint CK_Employee_BirthDate affecting columns birthdate:  (((birthdate >= '1930-01-01'::date) AND (birthdate <= (now() - '18 years'::interval))))
       */
-    TypoLocalDate birthdate,
+    LocalDate birthdate,
     /** M = Married, S = Single
       * Constraint CK_Employee_MaritalStatus affecting columns maritalstatus:  ((upper((maritalstatus)::text) = ANY (ARRAY['M'::text, 'S'::text])))
       */
-    /* bpchar, max 1 chars */ String maritalstatus,
+    String maritalstatus,
     /** M = Male, F = Female
       * Constraint CK_Employee_Gender affecting columns gender:  ((upper((gender)::text) = ANY (ARRAY['M'::text, 'F'::text])))
       */
-    /* bpchar, max 1 chars */ String gender,
+    String gender,
     /** Employee hired on this date.
       * Constraint CK_Employee_HireDate affecting columns hiredate:  (((hiredate >= '1996-07-01'::date) AND (hiredate <= (now() + '1 day'::interval))))
       */
-    TypoLocalDate hiredate
+    LocalDate hiredate
   ) {
     this(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
   };
@@ -111,45 +110,45 @@ public record EmployeeRowUnsaved(
   };
 
   /** Unique national identification number such as a social security number. */
-  public EmployeeRowUnsaved withNationalidnumber(/* max 15 chars */ String nationalidnumber) {
+  public EmployeeRowUnsaved withNationalidnumber(String nationalidnumber) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Network login. */
-  public EmployeeRowUnsaved withLoginid(/* max 256 chars */ String loginid) {
+  public EmployeeRowUnsaved withLoginid(String loginid) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Work title such as Buyer or Sales Representative. */
-  public EmployeeRowUnsaved withJobtitle(/* max 50 chars */ String jobtitle) {
+  public EmployeeRowUnsaved withJobtitle(String jobtitle) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Date of birth.
     * Constraint CK_Employee_BirthDate affecting columns birthdate:  (((birthdate >= '1930-01-01'::date) AND (birthdate <= (now() - '18 years'::interval))))
     */
-  public EmployeeRowUnsaved withBirthdate(TypoLocalDate birthdate) {
+  public EmployeeRowUnsaved withBirthdate(LocalDate birthdate) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** M = Married, S = Single
     * Constraint CK_Employee_MaritalStatus affecting columns maritalstatus:  ((upper((maritalstatus)::text) = ANY (ARRAY['M'::text, 'S'::text])))
     */
-  public EmployeeRowUnsaved withMaritalstatus(/* bpchar, max 1 chars */ String maritalstatus) {
+  public EmployeeRowUnsaved withMaritalstatus(String maritalstatus) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** M = Male, F = Female
     * Constraint CK_Employee_Gender affecting columns gender:  ((upper((gender)::text) = ANY (ARRAY['M'::text, 'F'::text])))
     */
-  public EmployeeRowUnsaved withGender(/* bpchar, max 1 chars */ String gender) {
+  public EmployeeRowUnsaved withGender(String gender) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Employee hired on this date.
     * Constraint CK_Employee_HireDate affecting columns hiredate:  (((hiredate >= '1996-07-01'::date) AND (hiredate <= (now() + '1 day'::interval))))
     */
-  public EmployeeRowUnsaved withHiredate(TypoLocalDate hiredate) {
+  public EmployeeRowUnsaved withHiredate(LocalDate hiredate) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
@@ -164,7 +163,7 @@ public record EmployeeRowUnsaved(
     * Number of available vacation hours.
     * Constraint CK_Employee_VacationHours affecting columns vacationhours:  (((vacationhours >= '-40'::integer) AND (vacationhours <= 240)))
     */
-  public EmployeeRowUnsaved withVacationhours(Defaulted<TypoShort> vacationhours) {
+  public EmployeeRowUnsaved withVacationhours(Defaulted<Short> vacationhours) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
@@ -172,7 +171,7 @@ public record EmployeeRowUnsaved(
     * Number of available sick leave hours.
     * Constraint CK_Employee_SickLeaveHours affecting columns sickleavehours:  (((sickleavehours >= 0) AND (sickleavehours <= 120)))
     */
-  public EmployeeRowUnsaved withSickleavehours(Defaulted<TypoShort> sickleavehours) {
+  public EmployeeRowUnsaved withSickleavehours(Defaulted<Short> sickleavehours) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
@@ -184,12 +183,12 @@ public record EmployeeRowUnsaved(
   };
 
   /** Default: uuid_generate_v1() */
-  public EmployeeRowUnsaved withRowguid(Defaulted<TypoUUID> rowguid) {
+  public EmployeeRowUnsaved withRowguid(Defaulted<UUID> rowguid) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
   /** Default: now() */
-  public EmployeeRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public EmployeeRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode);
   };
 
@@ -210,36 +209,36 @@ public record EmployeeRowUnsaved(
       sb.append(PgText.DELIMETER);
       PgTypes.text.pgText().unsafeEncode(row.jobtitle, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDate.pgType.pgText().unsafeEncode(row.birthdate, sb);
+      PgTypes.date.pgText().unsafeEncode(row.birthdate, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.bpchar.pgText().unsafeEncode(row.maritalstatus, sb);
       sb.append(PgText.DELIMETER);
       PgTypes.bpchar.pgText().unsafeEncode(row.gender, sb);
       sb.append(PgText.DELIMETER);
-      TypoLocalDate.pgType.pgText().unsafeEncode(row.hiredate, sb);
+      PgTypes.date.pgText().unsafeEncode(row.hiredate, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.salariedflag, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.vacationhours, sb);
+      Defaulted.pgText(PgTypes.int2.pgText()).unsafeEncode(row.vacationhours, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.sickleavehours, sb);
+      Defaulted.pgText(PgTypes.int2.pgText()).unsafeEncode(row.sickleavehours, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.currentflag, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb);
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
       sb.append(PgText.DELIMETER);
       Defaulted.pgText(PgTypes.text.opt().pgText()).unsafeEncode(row.organizationnode, sb);
     });
 
   public EmployeeRow toRow(
     java.util.function.Supplier<Flag> salariedflagDefault,
-    java.util.function.Supplier<TypoShort> vacationhoursDefault,
-    java.util.function.Supplier<TypoShort> sickleavehoursDefault,
+    java.util.function.Supplier<Short> vacationhoursDefault,
+    java.util.function.Supplier<Short> sickleavehoursDefault,
     java.util.function.Supplier<Flag> currentflagDefault,
-    java.util.function.Supplier<TypoUUID> rowguidDefault,
-    java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault,
+    java.util.function.Supplier<UUID> rowguidDefault,
+    java.util.function.Supplier<LocalDateTime> modifieddateDefault,
     java.util.function.Supplier<Optional<String>> organizationnodeDefault
   ) {
     return new EmployeeRow(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag.getOrElse(salariedflagDefault), vacationhours.getOrElse(vacationhoursDefault), sickleavehours.getOrElse(sickleavehoursDefault), currentflag.getOrElse(currentflagDefault), rowguid.getOrElse(rowguidDefault), modifieddate.getOrElse(modifieddateDefault), organizationnode.getOrElse(organizationnodeDefault));

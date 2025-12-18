@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.List;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
+import typo.runtime.Fragment;
 import static typo.runtime.Fragment.interpolate;
 
 public class VsalespersonViewRepoImpl implements VsalespersonViewRepo {
@@ -19,9 +20,6 @@ public class VsalespersonViewRepoImpl implements VsalespersonViewRepo {
 
   @Override
   public List<VsalespersonViewRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion", "addressline1", "addressline2", "city", "stateprovincename", "postalcode", "countryregionname", "territoryname", "territorygroup", "salesquota", "salesytd", "saleslastyear"
-       from "sales"."vsalesperson"
-    """)).query(VsalespersonViewRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"businessentityid\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"jobtitle\", \"phonenumber\", \"phonenumbertype\", \"emailaddress\", \"emailpromotion\", \"addressline1\", \"addressline2\", \"city\", \"stateprovincename\", \"postalcode\", \"countryregionname\", \"territoryname\", \"territorygroup\", \"salesquota\", \"salesytd\", \"saleslastyear\"\nfrom \"sales\".\"vsalesperson\"\n")).query(VsalespersonViewRow._rowParser.all()).runUnchecked(c);
   };
 }

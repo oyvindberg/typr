@@ -148,5 +148,5 @@ public record VProductCatalogViewRow(
     return new VProductCatalogViewRow(productId, sku, name, shortDescription, basePrice, status, tags, brandName, availableQuantity, avgRating, reviewCount);
   };
 
-  static RowParser<VProductCatalogViewRow> _rowParser = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.text, MariaTypes.set.opt(), MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.decimal, MariaTypes.bigint, VProductCatalogViewRow::new, row -> new Object[]{row.productId(), row.sku(), row.name(), row.shortDescription(), row.basePrice(), row.status(), row.tags(), row.brandName(), row.availableQuantity(), row.avgRating(), row.reviewCount()});;
+  static RowParser<VProductCatalogViewRow> _rowParser = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.numeric, MariaTypes.text, MariaTypes.set.opt(), MariaTypes.varchar.opt(), MariaTypes.numeric, MariaTypes.numeric, MariaTypes.bigint, VProductCatalogViewRow::new, row -> new Object[]{row.productId(), row.sku(), row.name(), row.shortDescription(), row.basePrice(), row.status(), row.tags(), row.brandName(), row.availableQuantity(), row.avgRating(), row.reviewCount()});;
 }

@@ -5,25 +5,25 @@
  */
 package adventureworks.pe.sp;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.person.stateprovince.StateprovinceId;
 import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
 import adventureworks.sales.salesterritory.SalesterritoryId;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface SpViewFields extends FieldsExpr<SpViewRow> {
-  record Impl(List<Path> _path) implements SpViewFields, Relation<SpViewFields, SpViewRow> {
+  record Impl(List<Path> _path) implements SpViewFields, RelationStructure<SpViewFields, SpViewRow> {
     @Override
     public Field<StateprovinceId, SpViewRow> id() {
       return new Field<StateprovinceId, SpViewRow>(_path, "id", SpViewRow::id, Optional.empty(), Optional.empty(), (row, value) -> row.withId(value), StateprovinceId.pgType);
@@ -35,8 +35,8 @@ public interface SpViewFields extends FieldsExpr<SpViewRow> {
     };
 
     @Override
-    public Field</* bpchar, max 3 chars */ String, SpViewRow> stateprovincecode() {
-      return new Field</* bpchar, max 3 chars */ String, SpViewRow>(_path, "stateprovincecode", SpViewRow::stateprovincecode, Optional.empty(), Optional.empty(), (row, value) -> row.withStateprovincecode(value), PgTypes.bpchar);
+    public Field<String, SpViewRow> stateprovincecode() {
+      return new Field<String, SpViewRow>(_path, "stateprovincecode", SpViewRow::stateprovincecode, Optional.empty(), Optional.empty(), (row, value) -> row.withStateprovincecode(value), PgTypes.bpchar);
     };
 
     @Override
@@ -60,35 +60,35 @@ public interface SpViewFields extends FieldsExpr<SpViewRow> {
     };
 
     @Override
-    public Field<TypoUUID, SpViewRow> rowguid() {
-      return new Field<TypoUUID, SpViewRow>(_path, "rowguid", SpViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), TypoUUID.pgType);
+    public Field<UUID, SpViewRow> rowguid() {
+      return new Field<UUID, SpViewRow>(_path, "rowguid", SpViewRow::rowguid, Optional.empty(), Optional.empty(), (row, value) -> row.withRowguid(value), PgTypes.uuid);
     };
 
     @Override
-    public Field<TypoLocalDateTime, SpViewRow> modifieddate() {
-      return new Field<TypoLocalDateTime, SpViewRow>(_path, "modifieddate", SpViewRow::modifieddate, Optional.of("text"), Optional.empty(), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, SpViewRow> modifieddate() {
+      return new Field<LocalDateTime, SpViewRow>(_path, "modifieddate", SpViewRow::modifieddate, Optional.empty(), Optional.empty(), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, SpViewRow>> columns() {
-      return List.of(this.id(), this.stateprovinceid(), this.stateprovincecode(), this.countryregioncode(), this.isonlystateprovinceflag(), this.name(), this.territoryid(), this.rowguid(), this.modifieddate());
+      return java.util.List.of(this.id(), this.stateprovinceid(), this.stateprovincecode(), this.countryregioncode(), this.isonlystateprovinceflag(), this.name(), this.territoryid(), this.rowguid(), this.modifieddate());
     };
 
     @Override
-    public Relation<SpViewFields, SpViewRow> copy(List<Path> _path) {
+    public RelationStructure<SpViewFields, SpViewRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   Field<StateprovinceId, SpViewRow> id();
 
   Field<StateprovinceId, SpViewRow> stateprovinceid();
 
-  Field</* bpchar, max 3 chars */ String, SpViewRow> stateprovincecode();
+  Field<String, SpViewRow> stateprovincecode();
 
   Field<CountryregionId, SpViewRow> countryregioncode();
 
@@ -98,9 +98,9 @@ public interface SpViewFields extends FieldsExpr<SpViewRow> {
 
   Field<SalesterritoryId, SpViewRow> territoryid();
 
-  Field<TypoUUID, SpViewRow> rowguid();
+  Field<UUID, SpViewRow> rowguid();
 
-  Field<TypoLocalDateTime, SpViewRow> modifieddate();
+  Field<LocalDateTime, SpViewRow> modifieddate();
 
   @Override
   List<FieldLike<?, SpViewRow>> columns();

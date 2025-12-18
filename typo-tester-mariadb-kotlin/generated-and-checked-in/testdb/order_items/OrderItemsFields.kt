@@ -6,7 +6,6 @@
 package testdb.order_items
 
 import java.math.BigDecimal
-import java.util.Optional
 import kotlin.collections.List
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
@@ -17,87 +16,90 @@ import testdb.products.ProductsRow
 import testdb.warehouses.WarehousesFields
 import testdb.warehouses.WarehousesId
 import testdb.warehouses.WarehousesRow
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
 
 interface OrderItemsFields : FieldsExpr<OrderItemsRow> {
-  override fun columns(): List<FieldLike<*, OrderItemsRow>>
+  abstract override fun columns(): List<FieldLike<*, OrderItemsRow>>
 
-  fun discountAmount(): Field<BigDecimal, OrderItemsRow>
+  abstract fun discountAmount(): Field<BigDecimal, OrderItemsRow>
 
-  fun fkOrders(): ForeignKey<OrdersFields, OrdersRow> = ForeignKey.of<OrdersFields, OrdersRow>("fk_oi_order").withColumnPair(orderId(), OrdersFields::orderId)
+  fun fkOrders(): ForeignKey<OrdersFields, OrdersRow> = ForeignKey.of<OrdersFields, OrdersRow>("fk_oi_order").withColumnPair<OrdersId>(orderId(), OrdersFields::orderId)
 
-  fun fkProducts(): ForeignKey<ProductsFields, ProductsRow> = ForeignKey.of<ProductsFields, ProductsRow>("fk_oi_product").withColumnPair(productId(), ProductsFields::productId)
+  fun fkProducts(): ForeignKey<ProductsFields, ProductsRow> = ForeignKey.of<ProductsFields, ProductsRow>("fk_oi_product").withColumnPair<ProductsId>(productId(), ProductsFields::productId)
 
-  fun fkWarehouses(): ForeignKey<WarehousesFields, WarehousesRow> = ForeignKey.of<WarehousesFields, WarehousesRow>("fk_oi_warehouse").withColumnPair(warehouseId(), WarehousesFields::warehouseId)
+  fun fkWarehouses(): ForeignKey<WarehousesFields, WarehousesRow> = ForeignKey.of<WarehousesFields, WarehousesRow>("fk_oi_warehouse").withColumnPair<WarehousesId>(warehouseId(), WarehousesFields::warehouseId)
 
-  fun fulfillmentStatus(): Field<String, OrderItemsRow>
+  abstract fun fulfillmentStatus(): Field<String, OrderItemsRow>
 
-  fun itemId(): IdField<OrderItemsId, OrderItemsRow>
+  abstract fun itemId(): IdField<OrderItemsId, OrderItemsRow>
 
-  fun lineTotal(): Field<BigDecimal, OrderItemsRow>
+  abstract fun lineTotal(): Field<BigDecimal, OrderItemsRow>
 
-  fun notes(): OptField<String, OrderItemsRow>
+  abstract fun notes(): OptField<String, OrderItemsRow>
 
-  fun orderId(): Field<OrdersId, OrderItemsRow>
+  abstract fun orderId(): Field<OrdersId, OrderItemsRow>
 
-  fun productId(): Field<ProductsId, OrderItemsRow>
+  abstract fun productId(): Field<ProductsId, OrderItemsRow>
 
-  fun productName(): Field<String, OrderItemsRow>
+  abstract fun productName(): Field<String, OrderItemsRow>
 
-  fun quantity(): Field<Int, OrderItemsRow>
+  abstract fun quantity(): Field<Int, OrderItemsRow>
 
-  override fun rowParser(): RowParser<OrderItemsRow> = OrderItemsRow._rowParser
+  override fun rowParser(): RowParser<OrderItemsRow> = OrderItemsRow._rowParser.underlying
 
-  fun sku(): Field<String, OrderItemsRow>
+  abstract fun sku(): Field<String, OrderItemsRow>
 
-  fun taxAmount(): Field<BigDecimal, OrderItemsRow>
+  abstract fun taxAmount(): Field<BigDecimal, OrderItemsRow>
 
-  fun unitPrice(): Field<BigDecimal, OrderItemsRow>
+  abstract fun unitPrice(): Field<BigDecimal, OrderItemsRow>
 
-  fun warehouseId(): OptField<WarehousesId, OrderItemsRow>
+  abstract fun warehouseId(): OptField<WarehousesId, OrderItemsRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : OrderItemsFields, Relation<OrderItemsFields, OrderItemsRow> {
-      override fun itemId(): IdField<OrderItemsId, OrderItemsRow> = IdField<OrderItemsId, OrderItemsRow>(_path, "item_id", OrderItemsRow::itemId, Optional.empty(), Optional.empty(), { row, value -> row.copy(itemId = value) }, OrderItemsId.pgType)
+    data class Impl(val _path: List<Path>) : OrderItemsFields, RelationStructure<OrderItemsFields, OrderItemsRow> {
+      override fun itemId(): IdField<OrderItemsId, OrderItemsRow> = IdField<OrderItemsId, OrderItemsRow>(_path, "item_id", OrderItemsRow::itemId, null, null, { row, value -> row.copy(itemId = value) }, OrderItemsId.pgType)
 
-      override fun orderId(): Field<OrdersId, OrderItemsRow> = Field<OrdersId, OrderItemsRow>(_path, "order_id", OrderItemsRow::orderId, Optional.empty(), Optional.empty(), { row, value -> row.copy(orderId = value) }, OrdersId.pgType)
+      override fun orderId(): Field<OrdersId, OrderItemsRow> = Field<OrdersId, OrderItemsRow>(_path, "order_id", OrderItemsRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, OrdersId.pgType)
 
-      override fun productId(): Field<ProductsId, OrderItemsRow> = Field<ProductsId, OrderItemsRow>(_path, "product_id", OrderItemsRow::productId, Optional.empty(), Optional.empty(), { row, value -> row.copy(productId = value) }, ProductsId.pgType)
+      override fun productId(): Field<ProductsId, OrderItemsRow> = Field<ProductsId, OrderItemsRow>(_path, "product_id", OrderItemsRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.pgType)
 
-      override fun sku(): Field<String, OrderItemsRow> = Field<String, OrderItemsRow>(_path, "sku", OrderItemsRow::sku, Optional.empty(), Optional.empty(), { row, value -> row.copy(sku = value) }, MariaTypes.varchar)
+      override fun sku(): Field<String, OrderItemsRow> = Field<String, OrderItemsRow>(_path, "sku", OrderItemsRow::sku, null, null, { row, value -> row.copy(sku = value) }, MariaTypes.varchar)
 
-      override fun productName(): Field<String, OrderItemsRow> = Field<String, OrderItemsRow>(_path, "product_name", OrderItemsRow::productName, Optional.empty(), Optional.empty(), { row, value -> row.copy(productName = value) }, MariaTypes.varchar)
+      override fun productName(): Field<String, OrderItemsRow> = Field<String, OrderItemsRow>(_path, "product_name", OrderItemsRow::productName, null, null, { row, value -> row.copy(productName = value) }, MariaTypes.varchar)
 
-      override fun quantity(): Field<Int, OrderItemsRow> = Field<Int, OrderItemsRow>(_path, "quantity", OrderItemsRow::quantity, Optional.empty(), Optional.empty(), { row, value -> row.copy(quantity = value) }, MariaTypes.smallintUnsigned)
+      override fun quantity(): Field<Int, OrderItemsRow> = Field<Int, OrderItemsRow>(_path, "quantity", OrderItemsRow::quantity, null, null, { row, value -> row.copy(quantity = value) }, KotlinDbTypes.MariaTypes.smallintUnsigned)
 
-      override fun unitPrice(): Field<BigDecimal, OrderItemsRow> = Field<BigDecimal, OrderItemsRow>(_path, "unit_price", OrderItemsRow::unitPrice, Optional.empty(), Optional.empty(), { row, value -> row.copy(unitPrice = value) }, MariaTypes.decimal)
+      override fun unitPrice(): Field<BigDecimal, OrderItemsRow> = Field<BigDecimal, OrderItemsRow>(_path, "unit_price", OrderItemsRow::unitPrice, null, null, { row, value -> row.copy(unitPrice = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-      override fun discountAmount(): Field<BigDecimal, OrderItemsRow> = Field<BigDecimal, OrderItemsRow>(_path, "discount_amount", OrderItemsRow::discountAmount, Optional.empty(), Optional.empty(), { row, value -> row.copy(discountAmount = value) }, MariaTypes.decimal)
+      override fun discountAmount(): Field<BigDecimal, OrderItemsRow> = Field<BigDecimal, OrderItemsRow>(_path, "discount_amount", OrderItemsRow::discountAmount, null, null, { row, value -> row.copy(discountAmount = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-      override fun taxAmount(): Field<BigDecimal, OrderItemsRow> = Field<BigDecimal, OrderItemsRow>(_path, "tax_amount", OrderItemsRow::taxAmount, Optional.empty(), Optional.empty(), { row, value -> row.copy(taxAmount = value) }, MariaTypes.decimal)
+      override fun taxAmount(): Field<BigDecimal, OrderItemsRow> = Field<BigDecimal, OrderItemsRow>(_path, "tax_amount", OrderItemsRow::taxAmount, null, null, { row, value -> row.copy(taxAmount = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-      override fun lineTotal(): Field<BigDecimal, OrderItemsRow> = Field<BigDecimal, OrderItemsRow>(_path, "line_total", OrderItemsRow::lineTotal, Optional.empty(), Optional.empty(), { row, value -> row.copy(lineTotal = value) }, MariaTypes.decimal)
+      override fun lineTotal(): Field<BigDecimal, OrderItemsRow> = Field<BigDecimal, OrderItemsRow>(_path, "line_total", OrderItemsRow::lineTotal, null, null, { row, value -> row.copy(lineTotal = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-      override fun fulfillmentStatus(): Field<String, OrderItemsRow> = Field<String, OrderItemsRow>(_path, "fulfillment_status", OrderItemsRow::fulfillmentStatus, Optional.empty(), Optional.empty(), { row, value -> row.copy(fulfillmentStatus = value) }, MariaTypes.text)
+      override fun fulfillmentStatus(): Field<String, OrderItemsRow> = Field<String, OrderItemsRow>(_path, "fulfillment_status", OrderItemsRow::fulfillmentStatus, null, null, { row, value -> row.copy(fulfillmentStatus = value) }, MariaTypes.text)
 
-      override fun warehouseId(): OptField<WarehousesId, OrderItemsRow> = OptField<WarehousesId, OrderItemsRow>(_path, "warehouse_id", OrderItemsRow::warehouseId, Optional.empty(), Optional.empty(), { row, value -> row.copy(warehouseId = value) }, WarehousesId.pgType)
+      override fun warehouseId(): OptField<WarehousesId, OrderItemsRow> = OptField<WarehousesId, OrderItemsRow>(_path, "warehouse_id", OrderItemsRow::warehouseId, null, null, { row, value -> row.copy(warehouseId = value) }, WarehousesId.pgType)
 
-      override fun notes(): OptField<String, OrderItemsRow> = OptField<String, OrderItemsRow>(_path, "notes", OrderItemsRow::notes, Optional.empty(), Optional.empty(), { row, value -> row.copy(notes = value) }, MariaTypes.tinytext)
+      override fun notes(): OptField<String, OrderItemsRow> = OptField<String, OrderItemsRow>(_path, "notes", OrderItemsRow::notes, null, null, { row, value -> row.copy(notes = value) }, MariaTypes.tinytext)
 
-      override fun columns(): List<FieldLike<*, OrderItemsRow>> = listOf(this.itemId(), this.orderId(), this.productId(), this.sku(), this.productName(), this.quantity(), this.unitPrice(), this.discountAmount(), this.taxAmount(), this.lineTotal(), this.fulfillmentStatus(), this.warehouseId(), this.notes())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<OrderItemsFields, OrderItemsRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, OrderItemsRow>> = listOf(this.itemId().underlying, this.orderId().underlying, this.productId().underlying, this.sku().underlying, this.productName().underlying, this.quantity().underlying, this.unitPrice().underlying, this.discountAmount().underlying, this.taxAmount().underlying, this.lineTotal().underlying, this.fulfillmentStatus().underlying, this.warehouseId().underlying, this.notes().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<OrderItemsFields, OrderItemsRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

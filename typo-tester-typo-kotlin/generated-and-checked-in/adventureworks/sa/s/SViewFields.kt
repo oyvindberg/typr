@@ -5,61 +5,62 @@
  */
 package adventureworks.sa.s
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
+import typo.data.Xml
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SViewFields : FieldsExpr<SViewRow> {
-  fun businessentityid(): Field<BusinessentityId, SViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, SViewRow>
 
-  override fun columns(): List<FieldLike<*, SViewRow>>
+  abstract override fun columns(): List<FieldLike<*, SViewRow>>
 
-  fun demographics(): OptField<TypoXml, SViewRow>
+  abstract fun demographics(): Field<Xml, SViewRow>
 
-  fun id(): Field<BusinessentityId, SViewRow>
+  abstract fun id(): Field<BusinessentityId, SViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, SViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SViewRow>
 
-  fun name(): Field<Name, SViewRow>
+  abstract fun name(): Field<Name, SViewRow>
 
-  override fun rowParser(): RowParser<SViewRow> = SViewRow._rowParser
+  override fun rowParser(): RowParser<SViewRow> = SViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, SViewRow>
+  abstract fun rowguid(): Field<UUID, SViewRow>
 
-  fun salespersonid(): OptField<BusinessentityId, SViewRow>
+  abstract fun salespersonid(): Field<BusinessentityId, SViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SViewFields, Relation<SViewFields, SViewRow> {
-      override fun id(): Field<BusinessentityId, SViewRow> = Field<BusinessentityId, SViewRow>(_path, "id", SViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : SViewFields, RelationStructure<SViewFields, SViewRow> {
+      override fun id(): Field<BusinessentityId, SViewRow> = Field<BusinessentityId, SViewRow>(_path, "id", SViewRow::id, null, null, { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
 
-      override fun businessentityid(): Field<BusinessentityId, SViewRow> = Field<BusinessentityId, SViewRow>(_path, "businessentityid", SViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, SViewRow> = Field<BusinessentityId, SViewRow>(_path, "businessentityid", SViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun name(): Field<Name, SViewRow> = Field<Name, SViewRow>(_path, "name", SViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, SViewRow> = Field<Name, SViewRow>(_path, "name", SViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun salespersonid(): OptField<BusinessentityId, SViewRow> = OptField<BusinessentityId, SViewRow>(_path, "salespersonid", SViewRow::salespersonid, Optional.empty(), Optional.empty(), { row, value -> row.copy(salespersonid = value) }, BusinessentityId.pgType)
+      override fun salespersonid(): Field<BusinessentityId, SViewRow> = Field<BusinessentityId, SViewRow>(_path, "salespersonid", SViewRow::salespersonid, null, null, { row, value -> row.copy(salespersonid = value) }, BusinessentityId.pgType)
 
-      override fun demographics(): OptField<TypoXml, SViewRow> = OptField<TypoXml, SViewRow>(_path, "demographics", SViewRow::demographics, Optional.empty(), Optional.empty(), { row, value -> row.copy(demographics = value) }, TypoXml.pgType)
+      override fun demographics(): Field<Xml, SViewRow> = Field<Xml, SViewRow>(_path, "demographics", SViewRow::demographics, null, null, { row, value -> row.copy(demographics = value) }, PgTypes.xml)
 
-      override fun rowguid(): Field<TypoUUID, SViewRow> = Field<TypoUUID, SViewRow>(_path, "rowguid", SViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, SViewRow> = Field<UUID, SViewRow>(_path, "rowguid", SViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SViewRow> = Field<TypoLocalDateTime, SViewRow>(_path, "modifieddate", SViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SViewRow> = Field<LocalDateTime, SViewRow>(_path, "modifieddate", SViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SViewRow>> = listOf(this.id(), this.businessentityid(), this.name(), this.salespersonid(), this.demographics(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SViewFields, SViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SViewRow>> = listOf(this.id().underlying, this.businessentityid().underlying, this.name().underlying, this.salespersonid().underlying, this.demographics().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SViewFields, SViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

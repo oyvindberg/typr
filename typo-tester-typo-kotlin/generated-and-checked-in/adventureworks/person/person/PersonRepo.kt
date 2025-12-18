@@ -7,88 +7,87 @@ package adventureworks.person.person
 
 import adventureworks.person.businessentity.BusinessentityId
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PersonRepo {
-  fun delete(): DeleteBuilder<PersonFields, PersonRow>
+  abstract fun delete(): DeleteBuilder<PersonFields, PersonRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     businessentityid: BusinessentityId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: PersonRow,
     c: Connection
   ): PersonRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: PersonRowUnsaved,
     c: Connection
   ): PersonRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<PersonRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<PersonRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<PersonFields, PersonRow>
+  abstract fun select(): SelectBuilder<PersonFields, PersonRow>
 
-  fun selectAll(c: Connection): List<PersonRow>
+  abstract fun selectAll(c: Connection): List<PersonRow>
 
-  fun selectById(
+  abstract fun selectById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Optional<PersonRow>
+  ): PersonRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
   ): List<PersonRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     businessentityids: Array<BusinessentityId>,
     c: Connection
   ): Map<BusinessentityId, PersonRow>
 
-  fun update(): UpdateBuilder<PersonFields, PersonRow>
+  abstract fun update(): UpdateBuilder<PersonFields, PersonRow>
 
-  fun update(
+  abstract fun update(
     row: PersonRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: PersonRow,
     c: Connection
   ): PersonRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<PersonRow>,
     c: Connection
   ): List<PersonRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<PersonRow>,
     batchSize: Int,
     c: Connection

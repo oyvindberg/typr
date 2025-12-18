@@ -15,16 +15,16 @@ import testdb.customers.CustomersRow;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
 import typo.dsl.SqlExpr.OptField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.MariaTypes;
 import typo.runtime.RowParser;
 
 public interface CustomerAddressesFields extends FieldsExpr<CustomerAddressesRow> {
-  record Impl(List<Path> _path) implements CustomerAddressesFields, Relation<CustomerAddressesFields, CustomerAddressesRow> {
+  record Impl(List<Path> _path) implements CustomerAddressesFields, RelationStructure<CustomerAddressesFields, CustomerAddressesRow> {
     @Override
     public IdField<CustomerAddressesId, CustomerAddressesRow> addressId() {
       return new IdField<CustomerAddressesId, CustomerAddressesRow>(_path, "address_id", CustomerAddressesRow::addressId, Optional.empty(), Optional.empty(), (row, value) -> row.withAddressId(value), CustomerAddressesId.pgType);
@@ -97,17 +97,17 @@ public interface CustomerAddressesFields extends FieldsExpr<CustomerAddressesRow
 
     @Override
     public List<FieldLike<?, CustomerAddressesRow>> columns() {
-      return List.of(this.addressId(), this.customerId(), this.addressType(), this.isDefault(), this.recipientName(), this.streetLine1(), this.streetLine2(), this.city(), this.stateProvince(), this.postalCode(), this.countryCode(), this.location(), this.deliveryNotes(), this.createdAt());
+      return java.util.List.of(this.addressId(), this.customerId(), this.addressType(), this.isDefault(), this.recipientName(), this.streetLine1(), this.streetLine2(), this.city(), this.stateProvince(), this.postalCode(), this.countryCode(), this.location(), this.deliveryNotes(), this.createdAt());
     };
 
     @Override
-    public Relation<CustomerAddressesFields, CustomerAddressesRow> copy(List<Path> _path) {
+    public RelationStructure<CustomerAddressesFields, CustomerAddressesRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<CustomerAddressesId, CustomerAddressesRow> addressId();
@@ -139,7 +139,7 @@ public interface CustomerAddressesFields extends FieldsExpr<CustomerAddressesRow
   Field<LocalDateTime, CustomerAddressesRow> createdAt();
 
   default ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
-    return ForeignKey.<CustomersFields, CustomersRow>of("fk_address_customer").withColumnPair(customerId(), CustomersFields::customerId);
+    return ForeignKey.<CustomersFields, CustomersRow>of("fk_address_customer").<CustomersId>withColumnPair(customerId(), CustomersFields::customerId);
   };
 
   @Override

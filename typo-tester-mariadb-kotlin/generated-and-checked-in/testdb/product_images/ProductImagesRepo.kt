@@ -6,69 +6,68 @@
 package testdb.product_images
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ProductImagesRepo {
-  fun delete(): DeleteBuilder<ProductImagesFields, ProductImagesRow>
+  abstract fun delete(): DeleteBuilder<ProductImagesFields, ProductImagesRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     imageId: ProductImagesId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     imageIds: Array<ProductImagesId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ProductImagesRow,
     c: Connection
   ): ProductImagesRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ProductImagesRowUnsaved,
     c: Connection
   ): ProductImagesRow
 
-  fun select(): SelectBuilder<ProductImagesFields, ProductImagesRow>
+  abstract fun select(): SelectBuilder<ProductImagesFields, ProductImagesRow>
 
-  fun selectAll(c: Connection): List<ProductImagesRow>
+  abstract fun selectAll(c: Connection): List<ProductImagesRow>
 
-  fun selectById(
+  abstract fun selectById(
     imageId: ProductImagesId,
     c: Connection
-  ): Optional<ProductImagesRow>
+  ): ProductImagesRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     imageIds: Array<ProductImagesId>,
     c: Connection
   ): List<ProductImagesRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     imageIds: Array<ProductImagesId>,
     c: Connection
   ): Map<ProductImagesId, ProductImagesRow>
 
-  fun update(): UpdateBuilder<ProductImagesFields, ProductImagesRow>
+  abstract fun update(): UpdateBuilder<ProductImagesFields, ProductImagesRow>
 
-  fun update(
+  abstract fun update(
     row: ProductImagesRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ProductImagesRow,
     c: Connection
   ): ProductImagesRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<ProductImagesRow>,
     c: Connection
   ): List<ProductImagesRow>

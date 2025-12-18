@@ -5,43 +5,45 @@
  */
 package adventureworks.public.only_pk_columns
 
-import java.util.Optional
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface OnlyPkColumnsFields : FieldsExpr<OnlyPkColumnsRow> {
-  override fun columns(): List<FieldLike<*, OnlyPkColumnsRow>>
+  abstract override fun columns(): List<FieldLike<*, OnlyPkColumnsRow>>
 
-  fun compositeIdIn(compositeIds: List<OnlyPkColumnsId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<String, OnlyPkColumnsId, OnlyPkColumnsRow>(keyColumn1(), OnlyPkColumnsId::keyColumn1, PgTypes.text), Part<Int, OnlyPkColumnsId, OnlyPkColumnsRow>(keyColumn2(), OnlyPkColumnsId::keyColumn2, PgTypes.int4)), compositeIds)
+  fun compositeIdIn(compositeIds: List<OnlyPkColumnsId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<String, OnlyPkColumnsId, OnlyPkColumnsRow>(keyColumn1(), OnlyPkColumnsId::keyColumn1, PgTypes.text), Part<Int, OnlyPkColumnsId, OnlyPkColumnsRow>(keyColumn2(), OnlyPkColumnsId::keyColumn2, KotlinDbTypes.PgTypes.int4)), compositeIds)
 
   fun compositeIdIs(compositeId: OnlyPkColumnsId): SqlExpr<Boolean> = SqlExpr.all(keyColumn1().isEqual(compositeId.keyColumn1), keyColumn2().isEqual(compositeId.keyColumn2))
 
-  fun keyColumn1(): IdField<String, OnlyPkColumnsRow>
+  abstract fun keyColumn1(): IdField<String, OnlyPkColumnsRow>
 
-  fun keyColumn2(): IdField<Int, OnlyPkColumnsRow>
+  abstract fun keyColumn2(): IdField<Int, OnlyPkColumnsRow>
 
-  override fun rowParser(): RowParser<OnlyPkColumnsRow> = OnlyPkColumnsRow._rowParser
+  override fun rowParser(): RowParser<OnlyPkColumnsRow> = OnlyPkColumnsRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : OnlyPkColumnsFields, Relation<OnlyPkColumnsFields, OnlyPkColumnsRow> {
-      override fun keyColumn1(): IdField<String, OnlyPkColumnsRow> = IdField<String, OnlyPkColumnsRow>(_path, "key_column_1", OnlyPkColumnsRow::keyColumn1, Optional.empty(), Optional.empty(), { row, value -> row.copy(keyColumn1 = value) }, PgTypes.text)
+    data class Impl(val _path: List<Path>) : OnlyPkColumnsFields, RelationStructure<OnlyPkColumnsFields, OnlyPkColumnsRow> {
+      override fun keyColumn1(): IdField<String, OnlyPkColumnsRow> = IdField<String, OnlyPkColumnsRow>(_path, "key_column_1", OnlyPkColumnsRow::keyColumn1, null, null, { row, value -> row.copy(keyColumn1 = value) }, PgTypes.text)
 
-      override fun keyColumn2(): IdField<Int, OnlyPkColumnsRow> = IdField<Int, OnlyPkColumnsRow>(_path, "key_column_2", OnlyPkColumnsRow::keyColumn2, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(keyColumn2 = value) }, PgTypes.int4)
+      override fun keyColumn2(): IdField<Int, OnlyPkColumnsRow> = IdField<Int, OnlyPkColumnsRow>(_path, "key_column_2", OnlyPkColumnsRow::keyColumn2, null, "int4", { row, value -> row.copy(keyColumn2 = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun columns(): List<FieldLike<*, OnlyPkColumnsRow>> = listOf(this.keyColumn1(), this.keyColumn2())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<OnlyPkColumnsFields, OnlyPkColumnsRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, OnlyPkColumnsRow>> = listOf(this.keyColumn1().underlying, this.keyColumn2().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<OnlyPkColumnsFields, OnlyPkColumnsRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

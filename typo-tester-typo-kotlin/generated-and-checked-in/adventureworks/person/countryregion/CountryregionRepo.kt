@@ -6,88 +6,87 @@
 package adventureworks.person.countryregion
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface CountryregionRepo {
-  fun delete(): DeleteBuilder<CountryregionFields, CountryregionRow>
+  abstract fun delete(): DeleteBuilder<CountryregionFields, CountryregionRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     countryregioncode: CountryregionId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     countryregioncodes: Array<CountryregionId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: CountryregionRow,
     c: Connection
   ): CountryregionRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: CountryregionRowUnsaved,
     c: Connection
   ): CountryregionRow
 
-  fun insertStreaming(
+  abstract fun insertStreaming(
     unsaved: MutableIterator<CountryregionRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
+  abstract fun insertUnsavedStreaming(
     unsaved: MutableIterator<CountryregionRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<CountryregionFields, CountryregionRow>
+  abstract fun select(): SelectBuilder<CountryregionFields, CountryregionRow>
 
-  fun selectAll(c: Connection): List<CountryregionRow>
+  abstract fun selectAll(c: Connection): List<CountryregionRow>
 
-  fun selectById(
+  abstract fun selectById(
     countryregioncode: CountryregionId,
     c: Connection
-  ): Optional<CountryregionRow>
+  ): CountryregionRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     countryregioncodes: Array<CountryregionId>,
     c: Connection
   ): List<CountryregionRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     countryregioncodes: Array<CountryregionId>,
     c: Connection
   ): Map<CountryregionId, CountryregionRow>
 
-  fun update(): UpdateBuilder<CountryregionFields, CountryregionRow>
+  abstract fun update(): UpdateBuilder<CountryregionFields, CountryregionRow>
 
-  fun update(
+  abstract fun update(
     row: CountryregionRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: CountryregionRow,
     c: Connection
   ): CountryregionRow
 
-  fun upsertBatch(
+  abstract fun upsertBatch(
     unsaved: MutableIterator<CountryregionRow>,
     c: Connection
   ): List<CountryregionRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
+  abstract fun upsertStreaming(
     unsaved: MutableIterator<CountryregionRow>,
     batchSize: Int,
     c: Connection

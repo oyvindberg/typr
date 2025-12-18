@@ -14,18 +14,18 @@ import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface TestSakSoknadsalternativFields extends FieldsExpr<TestSakSoknadsalternativRow> {
-  record Impl(List<Path> _path) implements TestSakSoknadsalternativFields, Relation<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow> {
+  record Impl(List<Path> _path) implements TestSakSoknadsalternativFields, RelationStructure<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow> {
     @Override
     public IdField<String, TestSakSoknadsalternativRow> organisasjonskodeSaksbehandler() {
       return new IdField<String, TestSakSoknadsalternativRow>(_path, "organisasjonskode_saksbehandler", TestSakSoknadsalternativRow::organisasjonskodeSaksbehandler, Optional.empty(), Optional.empty(), (row, value) -> row.withOrganisasjonskodeSaksbehandler(value), PgTypes.text);
@@ -43,17 +43,17 @@ public interface TestSakSoknadsalternativFields extends FieldsExpr<TestSakSoknad
 
     @Override
     public List<FieldLike<?, TestSakSoknadsalternativRow>> columns() {
-      return List.of(this.organisasjonskodeSaksbehandler(), this.utdanningsmulighetKode(), this.organisasjonskodeTilbyder());
+      return java.util.List.of(this.organisasjonskodeSaksbehandler(), this.utdanningsmulighetKode(), this.organisasjonskodeTilbyder());
     };
 
     @Override
-    public Relation<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow> copy(List<Path> _path) {
+    public RelationStructure<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<String, TestSakSoknadsalternativRow> organisasjonskodeSaksbehandler();
@@ -63,8 +63,7 @@ public interface TestSakSoknadsalternativFields extends FieldsExpr<TestSakSoknad
   Field<TestOrganisasjonId, TestSakSoknadsalternativRow> organisasjonskodeTilbyder();
 
   default ForeignKey<TestUtdanningstilbudFields, TestUtdanningstilbudRow> fkTestUtdanningstilbud() {
-    return ForeignKey.<TestUtdanningstilbudFields, TestUtdanningstilbudRow>of("public.test_sak_soknadsalternativ_organisasjonskode_tilbyder_utda_fkey").withColumnPair(organisasjonskodeTilbyder(), TestUtdanningstilbudFields::organisasjonskode)
-    .withColumnPair(utdanningsmulighetKode(), TestUtdanningstilbudFields::utdanningsmulighetKode);
+    return ForeignKey.<TestUtdanningstilbudFields, TestUtdanningstilbudRow>of("public.test_sak_soknadsalternativ_organisasjonskode_tilbyder_utda_fkey").<TestOrganisasjonId>withColumnPair(organisasjonskodeTilbyder(), TestUtdanningstilbudFields::organisasjonskode).<String>withColumnPair(utdanningsmulighetKode(), TestUtdanningstilbudFields::utdanningsmulighetKode);
   };
 
   default SqlExpr<Boolean> extractIdentTestUtdanningstilbudIdIs(TestUtdanningstilbudId id) {

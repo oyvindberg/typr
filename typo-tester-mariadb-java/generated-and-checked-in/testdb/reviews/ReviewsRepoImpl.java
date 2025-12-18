@@ -20,7 +20,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -35,11 +34,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     ReviewsId reviewId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `reviews` where `review_id` = "),
-      ReviewsId.pgType.encode(reviewId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `reviews` where `review_id` = "), Fragment.encode(ReviewsId.pgType, reviewId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -47,8 +42,8 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     ReviewsId[] reviewIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : reviewIds) { fragments.add(ReviewsId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : reviewIds) { fragments.add(Fragment.encode(ReviewsId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `reviews` where `review_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -57,48 +52,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     ReviewsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `reviews`(`product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`)
-         values ("""),
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit(", "),
-      CustomersId.pgType.encode(unsaved.customerId()),
-      typo.runtime.Fragment.lit(", "),
-      OrderItemsId.pgType.opt().encode(unsaved.orderItemId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.rating()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.title()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.content()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.pros()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.cons()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.images()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isVerifiedPurchase()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isApproved()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.encode(unsaved.helpfulVotes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.encode(unsaved.unhelpfulVotes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.adminResponse()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.respondedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.updatedAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `reviews`(`product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`)\nvalues ("), Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit(", "), Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit(", "), Fragment.encode(OrderItemsId.pgType.opt(), unsaved.orderItemId()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.rating()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.title()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.content()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.pros()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.cons()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.images()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isVerifiedPurchase()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isApproved()), Fragment.lit(", "), Fragment.encode(MariaTypes.intUnsigned, unsaved.helpfulVotes()), Fragment.lit(", "), Fragment.encode(MariaTypes.intUnsigned, unsaved.unhelpfulVotes()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.adminResponse()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.respondedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt()), Fragment.lit(")\nreturning `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`\n"))
       .updateReturning(ReviewsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -107,37 +61,21 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     ReviewsRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`product_id`"));
-    values.add(interpolate(
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit("")));
     columns.add(Fragment.lit("`customer_id`"));
-    values.add(interpolate(
-      CustomersId.pgType.encode(unsaved.customerId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit("")));
     columns.add(Fragment.lit("`rating`"));
-    values.add(interpolate(
-      MariaTypes.smallint.encode(unsaved.rating()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.rating()), Fragment.lit("")));
     unsaved.orderItemId().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`order_item_id`"));
-        values.add(interpolate(
-        OrderItemsId.pgType.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(OrderItemsId.pgType.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.title().visit(
@@ -146,11 +84,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`title`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.content().visit(
@@ -159,11 +93,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`content`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.pros().visit(
@@ -172,11 +102,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`pros`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.cons().visit(
@@ -185,11 +111,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`cons`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.images().visit(
@@ -198,11 +120,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`images`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.isVerifiedPurchase().visit(
@@ -211,11 +129,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`is_verified_purchase`"));
-        values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool, value), Fragment.lit("")));
       }
     );;
     unsaved.isApproved().visit(
@@ -224,11 +138,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`is_approved`"));
-        values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool, value), Fragment.lit("")));
       }
     );;
     unsaved.helpfulVotes().visit(
@@ -237,11 +147,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`helpful_votes`"));
-        values.add(interpolate(
-        MariaTypes.bigint.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.intUnsigned, value), Fragment.lit("")));
       }
     );;
     unsaved.unhelpfulVotes().visit(
@@ -250,11 +156,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`unhelpful_votes`"));
-        values.add(interpolate(
-        MariaTypes.bigint.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.intUnsigned, value), Fragment.lit("")));
       }
     );;
     unsaved.adminResponse().visit(
@@ -263,11 +165,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`admin_response`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.text.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.respondedAt().visit(
@@ -276,11 +174,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`responded_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.createdAt().visit(
@@ -289,11 +183,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`created_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
     unsaved.updatedAt().visit(
@@ -302,25 +192,10 @@ public class ReviewsRepoImpl implements ReviewsRepo {
       },
       value -> {
         columns.add(Fragment.lit("`updated_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `reviews`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `reviews`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`\n"));;
     return q.updateReturning(ReviewsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -331,10 +206,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
 
   @Override
   public List<ReviewsRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`
-       from `reviews`
-    """)).query(ReviewsRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`\nfrom `reviews`\n")).query(ReviewsRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -342,14 +214,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     ReviewsId reviewId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`
-         from `reviews`
-         where `review_id` = """),
-      ReviewsId.pgType.encode(reviewId),
-      typo.runtime.Fragment.lit("")
-    ).query(ReviewsRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`\nfrom `reviews`\nwhere `review_id` = "), Fragment.encode(ReviewsId.pgType, reviewId), Fragment.lit("")).query(ReviewsRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -357,8 +222,8 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     ReviewsId[] reviewIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : reviewIds) { fragments.add(ReviewsId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : reviewIds) { fragments.add(Fragment.encode(ReviewsId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at` from `reviews` where `review_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ReviewsRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -374,7 +239,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
 
   @Override
   public UpdateBuilder<ReviewsFields, ReviewsRow> update() {
-    return UpdateBuilder.of("`reviews`", ReviewsFields.structure(), ReviewsRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`reviews`", ReviewsFields.structure(), ReviewsRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -383,81 +248,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     Connection c
   ) {
     ReviewsId reviewId = row.reviewId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `reviews`
-         set `product_id` = """),
-      ProductsId.pgType.encode(row.productId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `customer_id` = """),
-      CustomersId.pgType.encode(row.customerId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `order_item_id` = """),
-      OrderItemsId.pgType.opt().encode(row.orderItemId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `rating` = """),
-      MariaTypes.smallint.encode(row.rating()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `title` = """),
-      MariaTypes.text.opt().encode(row.title()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `content` = """),
-      MariaTypes.text.opt().encode(row.content()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `pros` = """),
-      MariaTypes.text.opt().encode(row.pros()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `cons` = """),
-      MariaTypes.text.opt().encode(row.cons()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `images` = """),
-      MariaTypes.text.opt().encode(row.images()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `is_verified_purchase` = """),
-      MariaTypes.bool.encode(row.isVerifiedPurchase()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `is_approved` = """),
-      MariaTypes.bool.encode(row.isApproved()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `helpful_votes` = """),
-      MariaTypes.bigint.encode(row.helpfulVotes()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `unhelpful_votes` = """),
-      MariaTypes.bigint.encode(row.unhelpfulVotes()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `admin_response` = """),
-      MariaTypes.text.opt().encode(row.adminResponse()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `responded_at` = """),
-      MariaTypes.datetime.opt().encode(row.respondedAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `created_at` = """),
-      MariaTypes.datetime.encode(row.createdAt()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `updated_at` = """),
-      MariaTypes.datetime.encode(row.updatedAt()),
-      typo.runtime.Fragment.lit("""
-   
-         where `review_id` = """),
-      ReviewsId.pgType.encode(reviewId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `reviews`\nset `product_id` = "), Fragment.encode(ProductsId.pgType, row.productId()), Fragment.lit(",\n`customer_id` = "), Fragment.encode(CustomersId.pgType, row.customerId()), Fragment.lit(",\n`order_item_id` = "), Fragment.encode(OrderItemsId.pgType.opt(), row.orderItemId()), Fragment.lit(",\n`rating` = "), Fragment.encode(MariaTypes.tinyintUnsigned, row.rating()), Fragment.lit(",\n`title` = "), Fragment.encode(MariaTypes.varchar.opt(), row.title()), Fragment.lit(",\n`content` = "), Fragment.encode(MariaTypes.text.opt(), row.content()), Fragment.lit(",\n`pros` = "), Fragment.encode(MariaTypes.longtext.opt(), row.pros()), Fragment.lit(",\n`cons` = "), Fragment.encode(MariaTypes.longtext.opt(), row.cons()), Fragment.lit(",\n`images` = "), Fragment.encode(MariaTypes.longtext.opt(), row.images()), Fragment.lit(",\n`is_verified_purchase` = "), Fragment.encode(MariaTypes.bool, row.isVerifiedPurchase()), Fragment.lit(",\n`is_approved` = "), Fragment.encode(MariaTypes.bool, row.isApproved()), Fragment.lit(",\n`helpful_votes` = "), Fragment.encode(MariaTypes.intUnsigned, row.helpfulVotes()), Fragment.lit(",\n`unhelpful_votes` = "), Fragment.encode(MariaTypes.intUnsigned, row.unhelpfulVotes()), Fragment.lit(",\n`admin_response` = "), Fragment.encode(MariaTypes.text.opt(), row.adminResponse()), Fragment.lit(",\n`responded_at` = "), Fragment.encode(MariaTypes.datetime.opt(), row.respondedAt()), Fragment.lit(",\n`created_at` = "), Fragment.encode(MariaTypes.datetime, row.createdAt()), Fragment.lit(",\n`updated_at` = "), Fragment.encode(MariaTypes.datetime, row.updatedAt()), Fragment.lit("\nwhere `review_id` = "), Fragment.encode(ReviewsId.pgType, reviewId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -465,64 +256,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     ReviewsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `reviews`(`product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`)
-         VALUES ("""),
-      ProductsId.pgType.encode(unsaved.productId()),
-      typo.runtime.Fragment.lit(", "),
-      CustomersId.pgType.encode(unsaved.customerId()),
-      typo.runtime.Fragment.lit(", "),
-      OrderItemsId.pgType.opt().encode(unsaved.orderItemId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.smallint.encode(unsaved.rating()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.title()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.content()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.pros()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.cons()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.images()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isVerifiedPurchase()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isApproved()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.encode(unsaved.helpfulVotes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bigint.encode(unsaved.unhelpfulVotes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.adminResponse()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.opt().encode(unsaved.respondedAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.updatedAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-         `customer_id` = VALUES(`customer_id`),
-         `order_item_id` = VALUES(`order_item_id`),
-         `rating` = VALUES(`rating`),
-         `title` = VALUES(`title`),
-         `content` = VALUES(`content`),
-         `pros` = VALUES(`pros`),
-         `cons` = VALUES(`cons`),
-         `images` = VALUES(`images`),
-         `is_verified_purchase` = VALUES(`is_verified_purchase`),
-         `is_approved` = VALUES(`is_approved`),
-         `helpful_votes` = VALUES(`helpful_votes`),
-         `unhelpful_votes` = VALUES(`unhelpful_votes`),
-         `admin_response` = VALUES(`admin_response`),
-         `responded_at` = VALUES(`responded_at`),
-         `created_at` = VALUES(`created_at`),
-         `updated_at` = VALUES(`updated_at`)
-         RETURNING `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `reviews`(`product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`)\nVALUES ("), Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit(", "), Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit(", "), Fragment.encode(OrderItemsId.pgType.opt(), unsaved.orderItemId()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.rating()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.title()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.content()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.pros()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.cons()), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.opt(), unsaved.images()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isVerifiedPurchase()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isApproved()), Fragment.lit(", "), Fragment.encode(MariaTypes.intUnsigned, unsaved.helpfulVotes()), Fragment.lit(", "), Fragment.encode(MariaTypes.intUnsigned, unsaved.unhelpfulVotes()), Fragment.lit(", "), Fragment.encode(MariaTypes.text.opt(), unsaved.adminResponse()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.opt(), unsaved.respondedAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`customer_id` = VALUES(`customer_id`),\n`order_item_id` = VALUES(`order_item_id`),\n`rating` = VALUES(`rating`),\n`title` = VALUES(`title`),\n`content` = VALUES(`content`),\n`pros` = VALUES(`pros`),\n`cons` = VALUES(`cons`),\n`images` = VALUES(`images`),\n`is_verified_purchase` = VALUES(`is_verified_purchase`),\n`is_approved` = VALUES(`is_approved`),\n`helpful_votes` = VALUES(`helpful_votes`),\n`unhelpful_votes` = VALUES(`unhelpful_votes`),\n`admin_response` = VALUES(`admin_response`),\n`responded_at` = VALUES(`responded_at`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`)\nRETURNING `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`"))
       .updateReturning(ReviewsRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -532,28 +266,8 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     Iterator<ReviewsRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `reviews`(`review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-                `customer_id` = VALUES(`customer_id`),
-                `order_item_id` = VALUES(`order_item_id`),
-                `rating` = VALUES(`rating`),
-                `title` = VALUES(`title`),
-                `content` = VALUES(`content`),
-                `pros` = VALUES(`pros`),
-                `cons` = VALUES(`cons`),
-                `images` = VALUES(`images`),
-                `is_verified_purchase` = VALUES(`is_verified_purchase`),
-                `is_approved` = VALUES(`is_approved`),
-                `helpful_votes` = VALUES(`helpful_votes`),
-                `unhelpful_votes` = VALUES(`unhelpful_votes`),
-                `admin_response` = VALUES(`admin_response`),
-                `responded_at` = VALUES(`responded_at`),
-                `created_at` = VALUES(`created_at`),
-                `updated_at` = VALUES(`updated_at`)
-                RETURNING `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`"""))
+    return interpolate(Fragment.lit("INSERT INTO `reviews`(`review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`customer_id` = VALUES(`customer_id`),\n`order_item_id` = VALUES(`order_item_id`),\n`rating` = VALUES(`rating`),\n`title` = VALUES(`title`),\n`content` = VALUES(`content`),\n`pros` = VALUES(`pros`),\n`cons` = VALUES(`cons`),\n`images` = VALUES(`images`),\n`is_verified_purchase` = VALUES(`is_verified_purchase`),\n`is_approved` = VALUES(`is_approved`),\n`helpful_votes` = VALUES(`helpful_votes`),\n`unhelpful_votes` = VALUES(`unhelpful_votes`),\n`admin_response` = VALUES(`admin_response`),\n`responded_at` = VALUES(`responded_at`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`)\nRETURNING `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`"))
       .updateReturningEach(ReviewsRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

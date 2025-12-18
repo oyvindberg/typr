@@ -5,8 +5,6 @@
  */
 package adventureworks.person.addresstype;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.public_.Name;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -20,10 +18,9 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
+import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class AddresstypeRepoImpl implements AddresstypeRepo {
   @Override
@@ -36,13 +33,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     AddresstypeId addresstypeid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "person"."addresstype" where "addresstypeid" = 
-      """),
-      AddresstypeId.pgType.encode(addresstypeid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"person\".\"addresstype\" where \"addresstypeid\" = "), Fragment.encode(AddresstypeId.pgType, addresstypeid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -50,14 +41,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     AddresstypeId[] addresstypeids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "person"."addresstype"
-                  where "addresstypeid" = ANY("""),
-               AddresstypeId.pgTypeArray.encode(addresstypeids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"person\".\"addresstype\"\nwhere \"addresstypeid\" = ANY("), Fragment.encode(AddresstypeId.pgTypeArray, addresstypeids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -67,22 +51,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     AddresstypeRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate")
-         values ("""),
-      AddresstypeId.pgType.encode(unsaved.addresstypeid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "addresstypeid", "name", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(AddresstypeId.pgType, unsaved.addresstypeid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(AddresstypeRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -91,23 +60,17 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     AddresstypeRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"name\""));
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar")
-    ));
+    values.add(interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved.addresstypeid().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"addresstypeid\""));
-        values.add(interpolate(
-        AddresstypeId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      ));
+        values.add(interpolate(Fragment.encode(AddresstypeId.pgType, value), Fragment.lit("::int4")));
       }
     );;
     unsaved.rowguid().visit(
@@ -116,10 +79,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -128,26 +88,10 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "person"."addresstype"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "addresstypeid", "name", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"person\".\"addresstype\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(AddresstypeRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -157,9 +101,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, AddresstypeRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, AddresstypeRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -169,9 +111,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "person"."addresstype"("name", "addresstypeid", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, AddresstypeRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"person\".\"addresstype\"(\"name\", \"addresstypeid\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, AddresstypeRowUnsaved.pgText);
   };
 
   @Override
@@ -181,10 +121,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
 
   @Override
   public List<AddresstypeRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "addresstypeid", "name", "rowguid", "modifieddate"::text
-       from "person"."addresstype"
-    """)).query(AddresstypeRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"addresstype\"\n")).query(AddresstypeRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -192,14 +129,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     AddresstypeId addresstypeid,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "addresstypeid", "name", "rowguid", "modifieddate"::text
-         from "person"."addresstype"
-         where "addresstypeid" = """),
-      AddresstypeId.pgType.encode(addresstypeid),
-      typo.runtime.Fragment.lit("")
-    ).query(AddresstypeRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"addresstype\"\nwhere \"addresstypeid\" = "), Fragment.encode(AddresstypeId.pgType, addresstypeid), Fragment.lit("")).query(AddresstypeRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -207,14 +137,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     AddresstypeId[] addresstypeids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "addresstypeid", "name", "rowguid", "modifieddate"::text
-         from "person"."addresstype"
-         where "addresstypeid" = ANY("""),
-      AddresstypeId.pgTypeArray.encode(addresstypeids),
-      typo.runtime.Fragment.lit(")")
-    ).query(AddresstypeRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"addresstype\"\nwhere \"addresstypeid\" = ANY("), Fragment.encode(AddresstypeId.pgTypeArray, addresstypeids), Fragment.lit(")")).query(AddresstypeRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -229,7 +152,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
 
   @Override
   public UpdateBuilder<AddresstypeFields, AddresstypeRow> update() {
-    return UpdateBuilder.of("\"person\".\"addresstype\"", AddresstypeFields.structure(), AddresstypeRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"person\".\"addresstype\"", AddresstypeFields.structure(), AddresstypeRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -238,25 +161,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     Connection c
   ) {
     AddresstypeId addresstypeid = row.addresstypeid();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "person"."addresstype"
-         set "name" = """),
-      Name.pgType.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-         ::varchar,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "addresstypeid" = """),
-      AddresstypeId.pgType.encode(addresstypeid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"person\".\"addresstype\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name()), Fragment.lit("::varchar,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"addresstypeid\" = "), Fragment.encode(AddresstypeId.pgType, addresstypeid), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -264,26 +169,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     AddresstypeRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate")
-         values ("""),
-      AddresstypeId.pgType.encode(unsaved.addresstypeid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      Name.pgType.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("::varchar, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("addresstypeid")
-         do update set
-           "name" = EXCLUDED."name",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "addresstypeid", "name", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(AddresstypeId.pgType, unsaved.addresstypeid()), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"addresstypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\""))
       .updateReturning(AddresstypeRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -293,17 +179,9 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     Iterator<AddresstypeRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate")
-                values (?::int4, ?::varchar, ?::uuid, ?::timestamp)
-                on conflict ("addresstypeid")
-                do update set
-                  "name" = EXCLUDED."name",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "addresstypeid", "name", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::uuid, ?::timestamp)\non conflict (\"addresstypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(AddresstypeRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -313,21 +191,8 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table addresstype_TEMP (like "person"."addresstype") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy addresstype_TEMP("addresstypeid", "name", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, AddresstypeRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "person"."addresstype"("addresstypeid", "name", "rowguid", "modifieddate")
-       select * from addresstype_TEMP
-       on conflict ("addresstypeid")
-       do update set
-         "name" = EXCLUDED."name",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table addresstype_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table addresstype_TEMP (like \"person\".\"addresstype\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy addresstype_TEMP(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, AddresstypeRow.pgText);
+    return interpolate(Fragment.lit("insert into \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\")\nselect * from addresstype_TEMP\non conflict (\"addresstypeid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table addresstype_TEMP;")).update().runUnchecked(c);
   };
 }

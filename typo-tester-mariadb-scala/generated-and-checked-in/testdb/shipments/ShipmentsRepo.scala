@@ -6,17 +6,16 @@
 package testdb.shipments
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait ShipmentsRepo {
   def delete: DeleteBuilder[ShipmentsFields, ShipmentsRow]
 
-  def deleteById(shipmentId: ShipmentsId)(using c: Connection): java.lang.Boolean
+  def deleteById(shipmentId: ShipmentsId)(using c: Connection): Boolean
 
-  def deleteByIds(shipmentIds: Array[ShipmentsId])(using c: Connection): Integer
+  def deleteByIds(shipmentIds: Array[ShipmentsId])(using c: Connection): Int
 
   def insert(unsaved: ShipmentsRow)(using c: Connection): ShipmentsRow
 
@@ -24,19 +23,19 @@ trait ShipmentsRepo {
 
   def select: SelectBuilder[ShipmentsFields, ShipmentsRow]
 
-  def selectAll(using c: Connection): java.util.List[ShipmentsRow]
+  def selectAll(using c: Connection): List[ShipmentsRow]
 
-  def selectById(shipmentId: ShipmentsId)(using c: Connection): Optional[ShipmentsRow]
+  def selectById(shipmentId: ShipmentsId)(using c: Connection): Option[ShipmentsRow]
 
-  def selectByIds(shipmentIds: Array[ShipmentsId])(using c: Connection): java.util.List[ShipmentsRow]
+  def selectByIds(shipmentIds: Array[ShipmentsId])(using c: Connection): List[ShipmentsRow]
 
-  def selectByIdsTracked(shipmentIds: Array[ShipmentsId])(using c: Connection): java.util.Map[ShipmentsId, ShipmentsRow]
+  def selectByIdsTracked(shipmentIds: Array[ShipmentsId])(using c: Connection): Map[ShipmentsId, ShipmentsRow]
 
   def update: UpdateBuilder[ShipmentsFields, ShipmentsRow]
 
-  def update(row: ShipmentsRow)(using c: Connection): java.lang.Boolean
+  def update(row: ShipmentsRow)(using c: Connection): Boolean
 
   def upsert(unsaved: ShipmentsRow)(using c: Connection): ShipmentsRow
 
-  def upsertBatch(unsaved: java.util.Iterator[ShipmentsRow])(using c: Connection): java.util.List[ShipmentsRow]
+  def upsertBatch(unsaved: Iterator[ShipmentsRow])(using c: Connection): List[ShipmentsRow]
 }

@@ -7,10 +7,11 @@ package adventureworks.sales.countryregioncurrency;
 
 import adventureworks.customtypes.Defaulted;
 import adventureworks.customtypes.Defaulted.UseDefault;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.countryregion.CountryregionId;
 import adventureworks.sales.currency.CurrencyId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 
 /** This class corresponds to a row in table `sales.countryregioncurrency` which has not been persisted yet */
 public record CountryregioncurrencyRowUnsaved(
@@ -23,7 +24,7 @@ public record CountryregioncurrencyRowUnsaved(
     */
   CurrencyId currencycode,
   /** Default: now() */
-  Defaulted<TypoLocalDateTime> modifieddate
+  Defaulted<LocalDateTime> modifieddate
 ) {
   public CountryregioncurrencyRowUnsaved(
     /** ISO code for countries and regions. Foreign key to CountryRegion.CountryRegionCode.
@@ -53,7 +54,7 @@ public record CountryregioncurrencyRowUnsaved(
   };
 
   /** Default: now() */
-  public CountryregioncurrencyRowUnsaved withModifieddate(Defaulted<TypoLocalDateTime> modifieddate) {
+  public CountryregioncurrencyRowUnsaved withModifieddate(Defaulted<LocalDateTime> modifieddate) {
     return new CountryregioncurrencyRowUnsaved(countryregioncode, currencycode, modifieddate);
   };
 
@@ -63,10 +64,10 @@ public record CountryregioncurrencyRowUnsaved(
       sb.append(PgText.DELIMETER);
       CurrencyId.pgType.pgText().unsafeEncode(row.currencycode, sb);
       sb.append(PgText.DELIMETER);
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb);
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb);
     });
 
-  public CountryregioncurrencyRow toRow(java.util.function.Supplier<TypoLocalDateTime> modifieddateDefault) {
+  public CountryregioncurrencyRow toRow(java.util.function.Supplier<LocalDateTime> modifieddateDefault) {
     return new CountryregioncurrencyRow(countryregioncode, currencycode, modifieddate.getOrElse(modifieddateDefault));
   };
 }

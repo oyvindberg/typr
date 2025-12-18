@@ -5,9 +5,6 @@
  */
 package adventureworks.production.productinventory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoShort;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.production.location.LocationId;
 import adventureworks.production.product.ProductId;
 import java.sql.Connection;
@@ -22,12 +19,10 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class ProductinventoryRepoImpl implements ProductinventoryRepo {
   @Override
@@ -40,17 +35,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
     ProductinventoryId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "production"."productinventory" where "productid" = 
-      """),
-      ProductId.pgType.encode(compositeId.productid()),
-      typo.runtime.Fragment.lit("""
-       AND "locationid" = 
-      """),
-      LocationId.pgType.encode(compositeId.locationid()),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"production\".\"productinventory\" where \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid()), Fragment.lit(" AND \"locationid\" = "), Fragment.encode(LocationId.pgType, compositeId.locationid()), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -60,20 +45,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
   ) {
     ProductId[] productid = arrayMap.map(compositeIds, ProductinventoryId::productid, ProductId.class);;
     LocationId[] locationid = arrayMap.map(compositeIds, ProductinventoryId::locationid, LocationId.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         delete
-         from "production"."productinventory"
-         where ("productid", "locationid")
-         in (select unnest("""),
-      ProductId.pgTypeArray.encode(productid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      LocationId.pgTypeArray.encode(locationid),
-      typo.runtime.Fragment.lit("""
-      ::int2[]))
-
-      """)
-    ).update().runUnchecked(c);
+    return interpolate(Fragment.lit("delete\nfrom \"production\".\"productinventory\"\nwhere (\"productid\", \"locationid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(LocationId.pgTypeArray, locationid), Fragment.lit("::int2[]))\n")).update().runUnchecked(c);
   };
 
   @Override
@@ -81,28 +53,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
     ProductinventoryRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."productinventory"("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")
-         values ("""),
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      LocationId.pgType.encode(unsaved.locationid()),
-      typo.runtime.Fragment.lit("::int2, "),
-      PgTypes.text.encode(unsaved.shelf()),
-      typo.runtime.Fragment.lit(", "),
-      TypoShort.pgType.encode(unsaved.bin()),
-      typo.runtime.Fragment.lit("::int2, "),
-      TypoShort.pgType.encode(unsaved.quantity()),
-      typo.runtime.Fragment.lit("::int2, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         returning "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"::text
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"productinventory\"(\"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4, "), Fragment.encode(LocationId.pgType, unsaved.locationid()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.text, unsaved.shelf()), Fragment.lit(", "), Fragment.encode(PgTypes.int2, unsaved.bin()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.int2, unsaved.quantity()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\nreturning \"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\"\n"))
       .updateReturning(ProductinventoryRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -111,39 +62,23 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
     ProductinventoryRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("\"productid\""));
-    values.add(interpolate(
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4")
-    ));
+    values.add(interpolate(Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"locationid\""));
-    values.add(interpolate(
-      LocationId.pgType.encode(unsaved.locationid()),
-      typo.runtime.Fragment.lit("::int2")
-    ));
+    values.add(interpolate(Fragment.encode(LocationId.pgType, unsaved.locationid()), Fragment.lit("::int2")));
     columns.add(Fragment.lit("\"shelf\""));
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.shelf()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.shelf()), Fragment.lit("")));
     columns.add(Fragment.lit("\"bin\""));
-    values.add(interpolate(
-      TypoShort.pgType.encode(unsaved.bin()),
-      typo.runtime.Fragment.lit("::int2")
-    ));
+    values.add(interpolate(Fragment.encode(PgTypes.int2, unsaved.bin()), Fragment.lit("::int2")));
     unsaved.quantity().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("\"quantity\""));
-        values.add(interpolate(
-        TypoShort.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int2")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.int2, value), Fragment.lit("::int2")));
       }
     );;
     unsaved.rowguid().visit(
@@ -152,10 +87,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"rowguid\""));
-        values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid")));
       }
     );;
     unsaved.modifieddate().visit(
@@ -164,26 +96,10 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
       },
       value -> {
         columns.add(Fragment.lit("\"modifieddate\""));
-        values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      ));
+        values.add(interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."productinventory"(
-      """),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"::text
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into \"production\".\"productinventory\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\"\n"));;
     return q.updateReturning(ProductinventoryRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -193,9 +109,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."productinventory"("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate") FROM STDIN
-    """), batchSize, unsaved, c, ProductinventoryRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"productinventory\"(\"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, ProductinventoryRow.pgText);
   };
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
@@ -205,9 +119,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "production"."productinventory"("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-    """), batchSize, unsaved, c, ProductinventoryRowUnsaved.pgText);
+    return streamingInsert.insertUnchecked("COPY \"production\".\"productinventory\"(\"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ProductinventoryRowUnsaved.pgText);
   };
 
   @Override
@@ -217,10 +129,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
 
   @Override
   public List<ProductinventoryRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"::text
-       from "production"."productinventory"
-    """)).query(ProductinventoryRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productinventory\"\n")).query(ProductinventoryRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -228,18 +137,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
     ProductinventoryId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"::text
-         from "production"."productinventory"
-         where "productid" = """),
-      ProductId.pgType.encode(compositeId.productid()),
-      typo.runtime.Fragment.lit("""
-       AND "locationid" = 
-      """),
-      LocationId.pgType.encode(compositeId.locationid()),
-      typo.runtime.Fragment.lit("")
-    ).query(ProductinventoryRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productinventory\"\nwhere \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid()), Fragment.lit(" AND \"locationid\" = "), Fragment.encode(LocationId.pgType, compositeId.locationid()), Fragment.lit("")).query(ProductinventoryRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -249,20 +147,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
   ) {
     ProductId[] productid = arrayMap.map(compositeIds, ProductinventoryId::productid, ProductId.class);;
     LocationId[] locationid = arrayMap.map(compositeIds, ProductinventoryId::locationid, LocationId.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"::text
-         from "production"."productinventory"
-         where ("productid", "locationid")
-         in (select unnest("""),
-      ProductId.pgTypeArray.encode(productid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      LocationId.pgTypeArray.encode(locationid),
-      typo.runtime.Fragment.lit("""
-      ::int2[]))
-
-      """)
-    ).query(ProductinventoryRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productinventory\"\nwhere (\"productid\", \"locationid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(LocationId.pgTypeArray, locationid), Fragment.lit("::int2[]))\n")).query(ProductinventoryRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -277,7 +162,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
 
   @Override
   public UpdateBuilder<ProductinventoryFields, ProductinventoryRow> update() {
-    return UpdateBuilder.of("\"production\".\"productinventory\"", ProductinventoryFields.structure(), ProductinventoryRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"production\".\"productinventory\"", ProductinventoryFields.structure(), ProductinventoryRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -286,37 +171,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
     Connection c
   ) {
     ProductinventoryId compositeId = row.compositeId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "production"."productinventory"
-         set "shelf" = """),
-      PgTypes.text.encode(row.shelf()),
-      typo.runtime.Fragment.lit("""
-         ,
-         "bin" = """),
-      TypoShort.pgType.encode(row.bin()),
-      typo.runtime.Fragment.lit("""
-         ::int2,
-         "quantity" = """),
-      TypoShort.pgType.encode(row.quantity()),
-      typo.runtime.Fragment.lit("""
-         ::int2,
-         "rowguid" = """),
-      TypoUUID.pgType.encode(row.rowguid()),
-      typo.runtime.Fragment.lit("""
-         ::uuid,
-         "modifieddate" = """),
-      TypoLocalDateTime.pgType.encode(row.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp
-         where "productid" = """),
-      ProductId.pgType.encode(compositeId.productid()),
-      typo.runtime.Fragment.lit("""
-       AND "locationid" = 
-      """),
-      LocationId.pgType.encode(compositeId.locationid()),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"production\".\"productinventory\"\nset \"shelf\" = "), Fragment.encode(PgTypes.text, row.shelf()), Fragment.lit(",\n\"bin\" = "), Fragment.encode(PgTypes.int2, row.bin()), Fragment.lit("::int2,\n\"quantity\" = "), Fragment.encode(PgTypes.int2, row.quantity()), Fragment.lit("::int2,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid()), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate()), Fragment.lit("::timestamp\nwhere \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid()), Fragment.lit(" AND \"locationid\" = "), Fragment.encode(LocationId.pgType, compositeId.locationid()), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -324,34 +179,7 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
     ProductinventoryRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "production"."productinventory"("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")
-         values ("""),
-      ProductId.pgType.encode(unsaved.productid()),
-      typo.runtime.Fragment.lit("::int4, "),
-      LocationId.pgType.encode(unsaved.locationid()),
-      typo.runtime.Fragment.lit("::int2, "),
-      PgTypes.text.encode(unsaved.shelf()),
-      typo.runtime.Fragment.lit(", "),
-      TypoShort.pgType.encode(unsaved.bin()),
-      typo.runtime.Fragment.lit("::int2, "),
-      TypoShort.pgType.encode(unsaved.quantity()),
-      typo.runtime.Fragment.lit("::int2, "),
-      TypoUUID.pgType.encode(unsaved.rowguid()),
-      typo.runtime.Fragment.lit("::uuid, "),
-      TypoLocalDateTime.pgType.encode(unsaved.modifieddate()),
-      typo.runtime.Fragment.lit("""
-         ::timestamp)
-         on conflict ("productid", "locationid")
-         do update set
-           "shelf" = EXCLUDED."shelf",
-         "bin" = EXCLUDED."bin",
-         "quantity" = EXCLUDED."quantity",
-         "rowguid" = EXCLUDED."rowguid",
-         "modifieddate" = EXCLUDED."modifieddate"
-         returning "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"::text""")
-    )
+    return interpolate(Fragment.lit("insert into \"production\".\"productinventory\"(\"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4, "), Fragment.encode(LocationId.pgType, unsaved.locationid()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.text, unsaved.shelf()), Fragment.lit(", "), Fragment.encode(PgTypes.int2, unsaved.bin()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.int2, unsaved.quantity()), Fragment.lit("::int2, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid()), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()), Fragment.lit("::timestamp)\non conflict (\"productid\", \"locationid\")\ndo update set\n  \"shelf\" = EXCLUDED.\"shelf\",\n\"bin\" = EXCLUDED.\"bin\",\n\"quantity\" = EXCLUDED.\"quantity\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\""))
       .updateReturning(ProductinventoryRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -361,19 +189,9 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
     Iterator<ProductinventoryRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "production"."productinventory"("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")
-                values (?::int4, ?::int2, ?, ?::int2, ?::int2, ?::uuid, ?::timestamp)
-                on conflict ("productid", "locationid")
-                do update set
-                  "shelf" = EXCLUDED."shelf",
-                "bin" = EXCLUDED."bin",
-                "quantity" = EXCLUDED."quantity",
-                "rowguid" = EXCLUDED."rowguid",
-                "modifieddate" = EXCLUDED."modifieddate"
-                returning "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"::text"""))
+    return interpolate(Fragment.lit("insert into \"production\".\"productinventory\"(\"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::int2, ?, ?::int2, ?::int2, ?::uuid, ?::timestamp)\non conflict (\"productid\", \"locationid\")\ndo update set\n  \"shelf\" = EXCLUDED.\"shelf\",\n\"bin\" = EXCLUDED.\"bin\",\n\"quantity\" = EXCLUDED.\"quantity\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\""))
       .updateManyReturning(ProductinventoryRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -383,23 +201,8 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table productinventory_TEMP (like "production"."productinventory") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy productinventory_TEMP("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate") from stdin
-    """), batchSize, unsaved, c, ProductinventoryRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "production"."productinventory"("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")
-       select * from productinventory_TEMP
-       on conflict ("productid", "locationid")
-       do update set
-         "shelf" = EXCLUDED."shelf",
-       "bin" = EXCLUDED."bin",
-       "quantity" = EXCLUDED."quantity",
-       "rowguid" = EXCLUDED."rowguid",
-       "modifieddate" = EXCLUDED."modifieddate"
-       ;
-       drop table productinventory_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table productinventory_TEMP (like \"production\".\"productinventory\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy productinventory_TEMP(\"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, ProductinventoryRow.pgText);
+    return interpolate(Fragment.lit("insert into \"production\".\"productinventory\"(\"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\")\nselect * from productinventory_TEMP\non conflict (\"productid\", \"locationid\")\ndo update set\n  \"shelf\" = EXCLUDED.\"shelf\",\n\"bin\" = EXCLUDED.\"bin\",\n\"quantity\" = EXCLUDED.\"quantity\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table productinventory_TEMP;")).update().runUnchecked(c);
   };
 }

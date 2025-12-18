@@ -14,14 +14,14 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `person.countryregion` */
-case class CountryregionId(value: /* max 3 chars */ String) extends scala.AnyVal
+case class CountryregionId(value: String) extends scala.AnyVal
 
 object CountryregionId {
   implicit lazy val arrayColumn: Column[Array[CountryregionId]] = Column.columnToArray(column, implicitly)
 
   implicit lazy val arrayToStatement: ToStatement[Array[CountryregionId]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  implicit lazy val bijection: Bijection[CountryregionId, /* max 3 chars */ String] = Bijection.apply[CountryregionId, /* max 3 chars */ String](_.value)(CountryregionId.apply)
+  implicit lazy val bijection: Bijection[CountryregionId, String] = Bijection.apply[CountryregionId, String](_.value)(CountryregionId.apply)
 
   implicit lazy val column: Column[CountryregionId] = Column.columnToString.map(CountryregionId.apply)
 

@@ -5,9 +5,9 @@
  */
 package adventureworks.sa.sci;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.product.ProductId;
 import adventureworks.sales.shoppingcartitem.ShoppingcartitemId;
+import java.time.LocalDateTime;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -19,15 +19,15 @@ public record SciViewRow(
   /** Points to {@link adventureworks.sales.shoppingcartitem.ShoppingcartitemRow#shoppingcartitemid()} */
   ShoppingcartitemId shoppingcartitemid,
   /** Points to {@link adventureworks.sales.shoppingcartitem.ShoppingcartitemRow#shoppingcartid()} */
-  /* max 50 chars */ String shoppingcartid,
+  String shoppingcartid,
   /** Points to {@link adventureworks.sales.shoppingcartitem.ShoppingcartitemRow#quantity()} */
   Integer quantity,
   /** Points to {@link adventureworks.sales.shoppingcartitem.ShoppingcartitemRow#productid()} */
   ProductId productid,
   /** Points to {@link adventureworks.sales.shoppingcartitem.ShoppingcartitemRow#datecreated()} */
-  TypoLocalDateTime datecreated,
+  LocalDateTime datecreated,
   /** Points to {@link adventureworks.sales.shoppingcartitem.ShoppingcartitemRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.sales.shoppingcartitem.ShoppingcartitemRow#shoppingcartitemid()} */
   public SciViewRow withId(ShoppingcartitemId id) {
@@ -40,7 +40,7 @@ public record SciViewRow(
   };
 
   /** Points to {@link adventureworks.sales.shoppingcartitem.ShoppingcartitemRow#shoppingcartid()} */
-  public SciViewRow withShoppingcartid(/* max 50 chars */ String shoppingcartid) {
+  public SciViewRow withShoppingcartid(String shoppingcartid) {
     return new SciViewRow(id, shoppingcartitemid, shoppingcartid, quantity, productid, datecreated, modifieddate);
   };
 
@@ -55,14 +55,14 @@ public record SciViewRow(
   };
 
   /** Points to {@link adventureworks.sales.shoppingcartitem.ShoppingcartitemRow#datecreated()} */
-  public SciViewRow withDatecreated(TypoLocalDateTime datecreated) {
+  public SciViewRow withDatecreated(LocalDateTime datecreated) {
     return new SciViewRow(id, shoppingcartitemid, shoppingcartid, quantity, productid, datecreated, modifieddate);
   };
 
   /** Points to {@link adventureworks.sales.shoppingcartitem.ShoppingcartitemRow#modifieddate()} */
-  public SciViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SciViewRow withModifieddate(LocalDateTime modifieddate) {
     return new SciViewRow(id, shoppingcartitemid, shoppingcartid, quantity, productid, datecreated, modifieddate);
   };
 
-  static RowParser<SciViewRow> _rowParser = RowParsers.of(ShoppingcartitemId.pgType, ShoppingcartitemId.pgType, PgTypes.text, PgTypes.int4, ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, SciViewRow::new, row -> new Object[]{row.id(), row.shoppingcartitemid(), row.shoppingcartid(), row.quantity(), row.productid(), row.datecreated(), row.modifieddate()});;
+  static RowParser<SciViewRow> _rowParser = RowParsers.of(ShoppingcartitemId.pgType, ShoppingcartitemId.pgType, PgTypes.text, PgTypes.int4, ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp, SciViewRow::new, row -> new Object[]{row.id(), row.shoppingcartitemid(), row.shoppingcartid(), row.quantity(), row.productid(), row.datecreated(), row.modifieddate()});;
 }

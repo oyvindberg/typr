@@ -37,7 +37,7 @@ case class ProductRow(
   /** Name of the product. */
   name: Name,
   /** Unique product identification number. */
-  productnumber: /* max 25 chars */ String,
+  productnumber: String,
   /** 0 = Product is purchased, 1 = Product is manufactured in-house.
    * Default: true
    */
@@ -312,7 +312,7 @@ object ProductRow {
       ProductRow(
         productid = arr(0).asInstanceOf[ProductId],
             name = arr(1).asInstanceOf[Name],
-            productnumber = arr(2).asInstanceOf[/* max 25 chars */ String],
+            productnumber = arr(2).asInstanceOf[String],
             makeflag = arr(3).asInstanceOf[Flag],
             finishedgoodsflag = arr(4).asInstanceOf[Flag],
             color = arr(5).asInstanceOf[Option[/* max 15 chars */ String]],

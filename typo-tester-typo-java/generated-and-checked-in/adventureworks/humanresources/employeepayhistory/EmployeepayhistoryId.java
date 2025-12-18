@@ -5,19 +5,19 @@
  */
 package adventureworks.humanresources.employeepayhistory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
+import java.time.LocalDateTime;
 
 /** Type for the composite primary key of table `humanresources.employeepayhistory` */
 public record EmployeepayhistoryId(
   BusinessentityId businessentityid,
-  TypoLocalDateTime ratechangedate
+  LocalDateTime ratechangedate
 ) {
   public EmployeepayhistoryId withBusinessentityid(BusinessentityId businessentityid) {
     return new EmployeepayhistoryId(businessentityid, ratechangedate);
   };
 
-  public EmployeepayhistoryId withRatechangedate(TypoLocalDateTime ratechangedate) {
+  public EmployeepayhistoryId withRatechangedate(LocalDateTime ratechangedate) {
     return new EmployeepayhistoryId(businessentityid, ratechangedate);
   };
 }

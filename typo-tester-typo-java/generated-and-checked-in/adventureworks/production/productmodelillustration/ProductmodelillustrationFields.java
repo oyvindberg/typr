@@ -5,29 +5,30 @@
  */
 package adventureworks.production.productmodelillustration;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.production.illustration.IllustrationFields;
 import adventureworks.production.illustration.IllustrationId;
 import adventureworks.production.illustration.IllustrationRow;
 import adventureworks.production.productmodel.ProductmodelFields;
 import adventureworks.production.productmodel.ProductmodelId;
 import adventureworks.production.productmodel.ProductmodelRow;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.ForeignKey;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr;
 import typo.dsl.SqlExpr.CompositeIn;
 import typo.dsl.SqlExpr.CompositeIn.Part;
 import typo.dsl.SqlExpr.Field;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 
 public interface ProductmodelillustrationFields extends FieldsExpr<ProductmodelillustrationRow> {
-  record Impl(List<Path> _path) implements ProductmodelillustrationFields, Relation<ProductmodelillustrationFields, ProductmodelillustrationRow> {
+  record Impl(List<Path> _path) implements ProductmodelillustrationFields, RelationStructure<ProductmodelillustrationFields, ProductmodelillustrationRow> {
     @Override
     public IdField<ProductmodelId, ProductmodelillustrationRow> productmodelid() {
       return new IdField<ProductmodelId, ProductmodelillustrationRow>(_path, "productmodelid", ProductmodelillustrationRow::productmodelid, Optional.empty(), Optional.of("int4"), (row, value) -> row.withProductmodelid(value), ProductmodelId.pgType);
@@ -39,37 +40,37 @@ public interface ProductmodelillustrationFields extends FieldsExpr<Productmodeli
     };
 
     @Override
-    public Field<TypoLocalDateTime, ProductmodelillustrationRow> modifieddate() {
-      return new Field<TypoLocalDateTime, ProductmodelillustrationRow>(_path, "modifieddate", ProductmodelillustrationRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), TypoLocalDateTime.pgType);
+    public Field<LocalDateTime, ProductmodelillustrationRow> modifieddate() {
+      return new Field<LocalDateTime, ProductmodelillustrationRow>(_path, "modifieddate", ProductmodelillustrationRow::modifieddate, Optional.empty(), Optional.of("timestamp"), (row, value) -> row.withModifieddate(value), PgTypes.timestamp);
     };
 
     @Override
     public List<FieldLike<?, ProductmodelillustrationRow>> columns() {
-      return List.of(this.productmodelid(), this.illustrationid(), this.modifieddate());
+      return java.util.List.of(this.productmodelid(), this.illustrationid(), this.modifieddate());
     };
 
     @Override
-    public Relation<ProductmodelillustrationFields, ProductmodelillustrationRow> copy(List<Path> _path) {
+    public RelationStructure<ProductmodelillustrationFields, ProductmodelillustrationRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<ProductmodelId, ProductmodelillustrationRow> productmodelid();
 
   IdField<IllustrationId, ProductmodelillustrationRow> illustrationid();
 
-  Field<TypoLocalDateTime, ProductmodelillustrationRow> modifieddate();
+  Field<LocalDateTime, ProductmodelillustrationRow> modifieddate();
 
   default ForeignKey<IllustrationFields, IllustrationRow> fkIllustration() {
-    return ForeignKey.<IllustrationFields, IllustrationRow>of("production.FK_ProductModelIllustration_Illustration_IllustrationID").withColumnPair(illustrationid(), IllustrationFields::illustrationid);
+    return ForeignKey.<IllustrationFields, IllustrationRow>of("production.FK_ProductModelIllustration_Illustration_IllustrationID").<IllustrationId>withColumnPair(illustrationid(), IllustrationFields::illustrationid);
   };
 
   default ForeignKey<ProductmodelFields, ProductmodelRow> fkProductmodel() {
-    return ForeignKey.<ProductmodelFields, ProductmodelRow>of("production.FK_ProductModelIllustration_ProductModel_ProductModelID").withColumnPair(productmodelid(), ProductmodelFields::productmodelid);
+    return ForeignKey.<ProductmodelFields, ProductmodelRow>of("production.FK_ProductModelIllustration_ProductModel_ProductModelID").<ProductmodelId>withColumnPair(productmodelid(), ProductmodelFields::productmodelid);
   };
 
   default SqlExpr<Boolean> compositeIdIs(ProductmodelillustrationId compositeId) {

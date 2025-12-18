@@ -6,11 +6,11 @@
 package testdb.subquery_test
 
 import java.sql.Connection
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Fragment.sql
 
 class SubqueryTestSqlRepoImpl extends SubqueryTestSqlRepo {
-  override def apply(using c: Connection): java.util.List[SubqueryTestSqlRow] = {
-    interpolate"""-- Test subquery tracking (no CTE)
+  override def apply(using c: Connection): List[SubqueryTestSqlRow] = {
+    sql"""-- Test subquery tracking (no CTE)
     SELECT
         c.customer_id,
         c.email,

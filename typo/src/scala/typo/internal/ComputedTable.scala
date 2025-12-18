@@ -17,6 +17,14 @@ case class ComputedTable(
 ) extends HasSource {
   override val source: Source.Table = Source.Table(dbTable.name)
 
+  private def mkComputedColumn(pointsTo: List[(Source.Relation, db.ColName)], name: jvm.Ident, tpe: jvm.Type, dbCol: db.Col): ComputedColumn =
+    ComputedColumn(
+      pointsTo = pointsTo,
+      name = name,
+      dbCol = dbCol,
+      typoType = TypoType.fromJvmAndDb(tpe, dbCol.tpe, naming.pkg, lang)
+    )
+
   val deps: Map[db.ColName, List[(Source.Relation, db.ColName)]] = {
     val (fkSelf, fkOther) = dbTable.foreignKeys.partition { fk => fk.otherTable == dbTable.name }
 
@@ -46,7 +54,7 @@ case class ComputedTable(
     dbTable.cols.map(col => (col.name, col)).toMap
 
   /** Whether the database supports streaming insert (PostgreSQL COPY command) */
-  val hasStreamingSupport: Boolean = dbType.adapter.supportsCopyStreaming
+  val hasStreamingSupport: Boolean = dbType.adapter(scalaTypeMapper.needsTimestampCasts).supportsCopyStreaming
 
   val maybeId: Option[IdComputed] =
     dbTable.primaryKey.flatMap { pk =>
@@ -58,20 +66,20 @@ case class ComputedTable(
 
           val fromFk: Option[IdComputed.UnaryInherited] =
             findTypeFromFk(options.logger, source, dbCol.name, pointsTo, eval.asMaybe, options.lang)(_ => None).map { tpe =>
-              val col = ComputedColumn(pointsTo = pointsTo, name = naming.field(dbCol.name), tpe = tpe, dbCol = dbCol)
+              val col = mkComputedColumn(pointsTo, naming.field(dbCol.name), tpe, dbCol)
               IdComputed.UnaryInherited(col, tpe)
             }
 
           val fromOpenEnum: Option[IdComputed.UnaryOpenEnum] =
             openEnumsByTable.get(dbTable.name).map { values =>
               val tpe = jvm.Type.Qualified(naming.idName(source, List(dbCol)))
-              val col = ComputedColumn(pointsTo = pointsTo, name = naming.field(dbCol.name), tpe = tpe, dbCol = dbCol)
+              val col = mkComputedColumn(pointsTo, naming.field(dbCol.name), tpe, dbCol)
               IdComputed.UnaryOpenEnum(col, tpe, underlying, values)
             }
 
           fromFk.orElse(fromOpenEnum).orElse {
             val underlying = scalaTypeMapper.col(dbTable.name, dbCol, None)
-            val col = ComputedColumn(pointsTo = pointsTo, name = naming.field(dbCol.name), tpe = underlying, dbCol = dbCol)
+            val col = mkComputedColumn(pointsTo, naming.field(dbCol.name), underlying, dbCol)
             if (jvm.Type.containsUserDefined(underlying))
               Some(IdComputed.UnaryUserSpecified(col, underlying))
             else if (!options.enablePrimaryKeyType.include(dbTable.name))
@@ -85,12 +93,8 @@ case class ComputedTable(
         case colNames =>
           val cols: NonEmptyList[ComputedColumn] =
             colNames.map { colName =>
-              ComputedColumn(
-                pointsTo = Nil,
-                name = naming.field(colName),
-                tpe = deriveType(colName),
-                dbCol = dbColsByName(colName)
-              )
+              val dbCol = dbColsByName(colName)
+              mkComputedColumn(Nil, naming.field(colName), deriveType(colName), dbCol)
             }
           val tpe = jvm.Type.Qualified(naming.idName(source, cols.toList.map(_.dbCol)))
           Some(IdComputed.Composite(cols, tpe, paramName = jvm.Ident("compositeId")))
@@ -99,12 +103,7 @@ case class ComputedTable(
 
   val cols: NonEmptyList[ComputedColumn] =
     dbTable.cols.map { dbCol =>
-      ComputedColumn(
-        pointsTo = deps.getOrElse(dbCol.name, Nil),
-        name = naming.field(dbCol.name),
-        tpe = deriveType(dbCol.name),
-        dbCol = dbCol
-      )
+      mkComputedColumn(deps.getOrElse(dbCol.name, Nil), naming.field(dbCol.name), deriveType(dbCol.name), dbCol)
     }
 
   def deriveType(colName: db.ColName): jvm.Type = {

@@ -7,10 +7,10 @@ package adventureworks.pr.pc
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PcViewRepo {
-  fun select(): SelectBuilder<PcViewFields, PcViewRow>
+  abstract fun select(): SelectBuilder<PcViewFields, PcViewRow>
 
-  fun selectAll(c: Connection): List<PcViewRow>
+  abstract fun selectAll(c: Connection): List<PcViewRow>
 }

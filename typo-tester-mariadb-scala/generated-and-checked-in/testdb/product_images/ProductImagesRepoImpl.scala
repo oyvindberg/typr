@@ -6,67 +6,66 @@
 package testdb.product_images
 
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
+import scala.collection.mutable.ListBuffer
 import testdb.products.ProductsId
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.Dialect
+import typo.scaladsl.Fragment
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.Fragment.sql
 
 class ProductImagesRepoImpl extends ProductImagesRepo {
   override def delete: DeleteBuilder[ProductImagesFields, ProductImagesRow] = DeleteBuilder.of("`product_images`", ProductImagesFields.structure, Dialect.MARIADB)
 
-  override def deleteById(imageId: ProductImagesId)(using c: Connection): java.lang.Boolean = interpolate"delete from `product_images` where `image_id` = ${ProductImagesId.pgType.encode(imageId)}".update().runUnchecked(c) > 0
+  override def deleteById(imageId: ProductImagesId)(using c: Connection): Boolean = sql"delete from `product_images` where `image_id` = ${Fragment.encode(ProductImagesId.pgType, imageId)}".update().runUnchecked(c) > 0
 
-  override def deleteByIds(imageIds: Array[ProductImagesId])(using c: Connection): Integer = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    imageIds.foreach { id => fragments.add(ProductImagesId.pgType.encode(id)) }
+  override def deleteByIds(imageIds: Array[ProductImagesId])(using c: Connection): Int = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    imageIds.foreach { id => fragments.addOne(Fragment.encode(ProductImagesId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `product_images` where `image_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: ProductImagesRow)(using c: Connection): ProductImagesRow = {
-  interpolate"""insert into `product_images`(`product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)
-    values (${ProductsId.pgType.encode(unsaved.productId)}, ${MariaTypes.text.encode(unsaved.imageUrl)}, ${MariaTypes.text.opt().encode(unsaved.thumbnailUrl)}, ${MariaTypes.text.opt().encode(unsaved.altText)}, ${MariaTypes.smallint.encode(unsaved.sortOrder)}, ${MariaTypes.bool.encode(unsaved.isPrimary)}, ${MariaTypes.blob.opt().encode(unsaved.imageData)})
+  sql"""insert into `product_images`(`product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)
+    values (${Fragment.encode(ProductsId.pgType, unsaved.productId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.imageUrl)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.thumbnailUrl)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.altText)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned, unsaved.sortOrder)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isPrimary)}, ${Fragment.encode(MariaTypes.longblob.nullable, unsaved.imageData)})
     returning `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`
     """
     .updateReturning(ProductImagesRow.`_rowParser`.exactlyOne()).runUnchecked(c)
   }
 
   override def insert(unsaved: ProductImagesRowUnsaved)(using c: Connection): ProductImagesRow = {
-    val columns: ArrayList[Literal] = new ArrayList[Literal]()
-    val values: ArrayList[Fragment] = new ArrayList[Fragment]()
-    columns.add(Fragment.lit("`product_id`")): @scala.annotation.nowarn
-    values.add(interpolate"${ProductsId.pgType.encode(unsaved.productId)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`image_url`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.imageUrl)}"): @scala.annotation.nowarn
+    val columns: ListBuffer[Fragment] = ListBuffer()
+    val values: ListBuffer[Fragment] = ListBuffer()
+    columns.addOne(Fragment.lit("`product_id`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(ProductsId.pgType, unsaved.productId)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`image_url`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.imageUrl)}"): @scala.annotation.nowarn
     unsaved.thumbnailUrl.visit(
       {  },
-      value => { columns.add(Fragment.lit("`thumbnail_url`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`thumbnail_url`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.varchar.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.altText.visit(
       {  },
-      value => { columns.add(Fragment.lit("`alt_text`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`alt_text`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.varchar.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.sortOrder.visit(
       {  },
-      value => { columns.add(Fragment.lit("`sort_order`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.smallint.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`sort_order`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned, value)}"): @scala.annotation.nowarn }
     );
     unsaved.isPrimary.visit(
       {  },
-      value => { columns.add(Fragment.lit("`is_primary`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.bool.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`is_primary`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.bool, value)}"): @scala.annotation.nowarn }
     );
     unsaved.imageData.visit(
       {  },
-      value => { columns.add(Fragment.lit("`image_data`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.blob.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`image_data`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longblob.nullable, value)}"): @scala.annotation.nowarn }
     );
     val q: Fragment = {
-      interpolate"""insert into `product_images`(${Fragment.comma(columns)})
+      sql"""insert into `product_images`(${Fragment.comma(columns)})
       values (${Fragment.comma(values)})
       returning `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`
       """
@@ -76,48 +75,48 @@ class ProductImagesRepoImpl extends ProductImagesRepo {
 
   override def select: SelectBuilder[ProductImagesFields, ProductImagesRow] = SelectBuilder.of("`product_images`", ProductImagesFields.structure, ProductImagesRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[ProductImagesRow] = {
-    interpolate"""select `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`
+  override def selectAll(using c: Connection): List[ProductImagesRow] = {
+    sql"""select `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`
     from `product_images`
     """.query(ProductImagesRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectById(imageId: ProductImagesId)(using c: Connection): Optional[ProductImagesRow] = {
-    interpolate"""select `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`
+  override def selectById(imageId: ProductImagesId)(using c: Connection): Option[ProductImagesRow] = {
+    sql"""select `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`
     from `product_images`
-    where `image_id` = ${ProductImagesId.pgType.encode(imageId)}""".query(ProductImagesRow.`_rowParser`.first()).runUnchecked(c)
+    where `image_id` = ${Fragment.encode(ProductImagesId.pgType, imageId)}""".query(ProductImagesRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def selectByIds(imageIds: Array[ProductImagesId])(using c: Connection): java.util.List[ProductImagesRow] = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    imageIds.foreach { id => fragments.add(ProductImagesId.pgType.encode(id)) }
+  override def selectByIds(imageIds: Array[ProductImagesId])(using c: Connection): List[ProductImagesRow] = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    imageIds.foreach { id => fragments.addOne(Fragment.encode(ProductImagesId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data` from `product_images` where `image_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ProductImagesRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectByIdsTracked(imageIds: Array[ProductImagesId])(using c: Connection): java.util.Map[ProductImagesId, ProductImagesRow] = {
-    val ret: HashMap[ProductImagesId, ProductImagesRow] = new HashMap[ProductImagesId, ProductImagesRow]()
-    selectByIds(imageIds)(using c).forEach(row => ret.put(row.imageId, row): @scala.annotation.nowarn)
-    return ret
+  override def selectByIdsTracked(imageIds: Array[ProductImagesId])(using c: Connection): Map[ProductImagesId, ProductImagesRow] = {
+    val ret: scala.collection.mutable.Map[ProductImagesId, ProductImagesRow] = scala.collection.mutable.Map.empty[ProductImagesId, ProductImagesRow]
+    selectByIds(imageIds)(using c).foreach(row => ret.put(row.imageId, row): @scala.annotation.nowarn)
+    return ret.toMap
   }
 
-  override def update: UpdateBuilder[ProductImagesFields, ProductImagesRow] = UpdateBuilder.of("`product_images`", ProductImagesFields.structure, ProductImagesRow.`_rowParser`.all(), Dialect.MARIADB)
+  override def update: UpdateBuilder[ProductImagesFields, ProductImagesRow] = UpdateBuilder.of("`product_images`", ProductImagesFields.structure, ProductImagesRow.`_rowParser`, Dialect.MARIADB)
 
-  override def update(row: ProductImagesRow)(using c: Connection): java.lang.Boolean = {
+  override def update(row: ProductImagesRow)(using c: Connection): Boolean = {
     val imageId: ProductImagesId = row.imageId
-    return interpolate"""update `product_images`
-    set `product_id` = ${ProductsId.pgType.encode(row.productId)},
-    `image_url` = ${MariaTypes.text.encode(row.imageUrl)},
-    `thumbnail_url` = ${MariaTypes.text.opt().encode(row.thumbnailUrl)},
-    `alt_text` = ${MariaTypes.text.opt().encode(row.altText)},
-    `sort_order` = ${MariaTypes.smallint.encode(row.sortOrder)},
-    `is_primary` = ${MariaTypes.bool.encode(row.isPrimary)},
-    `image_data` = ${MariaTypes.blob.opt().encode(row.imageData)}
-    where `image_id` = ${ProductImagesId.pgType.encode(imageId)}""".update().runUnchecked(c) > 0
+    return sql"""update `product_images`
+    set `product_id` = ${Fragment.encode(ProductsId.pgType, row.productId)},
+    `image_url` = ${Fragment.encode(MariaTypes.varchar, row.imageUrl)},
+    `thumbnail_url` = ${Fragment.encode(MariaTypes.varchar.nullable, row.thumbnailUrl)},
+    `alt_text` = ${Fragment.encode(MariaTypes.varchar.nullable, row.altText)},
+    `sort_order` = ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned, row.sortOrder)},
+    `is_primary` = ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, row.isPrimary)},
+    `image_data` = ${Fragment.encode(MariaTypes.longblob.nullable, row.imageData)}
+    where `image_id` = ${Fragment.encode(ProductImagesId.pgType, imageId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: ProductImagesRow)(using c: Connection): ProductImagesRow = {
-  interpolate"""INSERT INTO `product_images`(`product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)
-    VALUES (${ProductsId.pgType.encode(unsaved.productId)}, ${MariaTypes.text.encode(unsaved.imageUrl)}, ${MariaTypes.text.opt().encode(unsaved.thumbnailUrl)}, ${MariaTypes.text.opt().encode(unsaved.altText)}, ${MariaTypes.smallint.encode(unsaved.sortOrder)}, ${MariaTypes.bool.encode(unsaved.isPrimary)}, ${MariaTypes.blob.opt().encode(unsaved.imageData)})
+  sql"""INSERT INTO `product_images`(`product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)
+    VALUES (${Fragment.encode(ProductsId.pgType, unsaved.productId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.imageUrl)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.thumbnailUrl)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.altText)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned, unsaved.sortOrder)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isPrimary)}, ${Fragment.encode(MariaTypes.longblob.nullable, unsaved.imageData)})
     ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
     `image_url` = VALUES(`image_url`),
     `thumbnail_url` = VALUES(`thumbnail_url`),
@@ -130,8 +129,8 @@ class ProductImagesRepoImpl extends ProductImagesRepo {
     .runUnchecked(c)
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[ProductImagesRow])(using c: Connection): java.util.List[ProductImagesRow] = {
-    interpolate"""INSERT INTO `product_images`(`image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)
+  override def upsertBatch(unsaved: Iterator[ProductImagesRow])(using c: Connection): List[ProductImagesRow] = {
+    sql"""INSERT INTO `product_images`(`image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
     `image_url` = VALUES(`image_url`),
@@ -142,6 +141,6 @@ class ProductImagesRepoImpl extends ProductImagesRepo {
     `image_data` = VALUES(`image_data`)
     RETURNING `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`"""
       .updateReturningEach(ProductImagesRow.`_rowParser`, unsaved)
-      .runUnchecked(c)
+    .runUnchecked(c)
   }
 }

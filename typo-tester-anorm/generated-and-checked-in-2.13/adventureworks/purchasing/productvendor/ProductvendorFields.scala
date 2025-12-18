@@ -18,6 +18,7 @@ import adventureworks.purchasing.vendor.VendorRow
 import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -26,7 +27,6 @@ import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait ProductvendorFields {
   def productid: IdField[ProductId, ProductvendorRow]
@@ -57,11 +57,11 @@ trait ProductvendorFields {
 }
 
 object ProductvendorFields {
-  lazy val structure: Relation[ProductvendorFields, ProductvendorRow] =
+  lazy val structure: RelationStructure[ProductvendorFields, ProductvendorRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductvendorFields, ProductvendorRow] {
+    extends RelationStructure[ProductvendorFields, ProductvendorRow] {
 
     override lazy val fields: ProductvendorFields = new ProductvendorFields {
       override def productid = IdField[ProductId, ProductvendorRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))

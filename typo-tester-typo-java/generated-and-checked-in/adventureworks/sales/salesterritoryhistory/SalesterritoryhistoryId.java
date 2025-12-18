@@ -5,21 +5,21 @@
  */
 package adventureworks.sales.salesterritoryhistory;
 
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.sales.salesterritory.SalesterritoryId;
+import java.time.LocalDateTime;
 
 /** Type for the composite primary key of table `sales.salesterritoryhistory` */
 public record SalesterritoryhistoryId(
   BusinessentityId businessentityid,
-  TypoLocalDateTime startdate,
+  LocalDateTime startdate,
   SalesterritoryId territoryid
 ) {
   public SalesterritoryhistoryId withBusinessentityid(BusinessentityId businessentityid) {
     return new SalesterritoryhistoryId(businessentityid, startdate, territoryid);
   };
 
-  public SalesterritoryhistoryId withStartdate(TypoLocalDateTime startdate) {
+  public SalesterritoryhistoryId withStartdate(LocalDateTime startdate) {
     return new SalesterritoryhistoryId(businessentityid, startdate, territoryid);
   };
 

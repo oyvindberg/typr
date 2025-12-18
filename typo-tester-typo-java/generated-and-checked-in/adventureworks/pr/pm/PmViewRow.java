@@ -5,12 +5,12 @@
  */
 package adventureworks.pr.pm;
 
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
-import adventureworks.customtypes.TypoXml;
 import adventureworks.production.productmodel.ProductmodelId;
 import adventureworks.public_.Name;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import typo.data.Xml;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -23,13 +23,13 @@ public record PmViewRow(
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#name()} */
   Name name,
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#catalogdescription()} */
-  Optional<TypoXml> catalogdescription,
+  Xml catalogdescription,
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#instructions()} */
-  Optional<TypoXml> instructions,
+  Xml instructions,
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#rowguid()} */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#modifieddate()} */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#productmodelid()} */
   public PmViewRow withId(ProductmodelId id) {
@@ -47,24 +47,24 @@ public record PmViewRow(
   };
 
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#catalogdescription()} */
-  public PmViewRow withCatalogdescription(Optional<TypoXml> catalogdescription) {
+  public PmViewRow withCatalogdescription(Xml catalogdescription) {
     return new PmViewRow(id, productmodelid, name, catalogdescription, instructions, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#instructions()} */
-  public PmViewRow withInstructions(Optional<TypoXml> instructions) {
+  public PmViewRow withInstructions(Xml instructions) {
     return new PmViewRow(id, productmodelid, name, catalogdescription, instructions, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#rowguid()} */
-  public PmViewRow withRowguid(TypoUUID rowguid) {
+  public PmViewRow withRowguid(UUID rowguid) {
     return new PmViewRow(id, productmodelid, name, catalogdescription, instructions, rowguid, modifieddate);
   };
 
   /** Points to {@link adventureworks.production.productmodel.ProductmodelRow#modifieddate()} */
-  public PmViewRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public PmViewRow withModifieddate(LocalDateTime modifieddate) {
     return new PmViewRow(id, productmodelid, name, catalogdescription, instructions, rowguid, modifieddate);
   };
 
-  static RowParser<PmViewRow> _rowParser = RowParsers.of(ProductmodelId.pgType, ProductmodelId.pgType, Name.pgType, TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, PmViewRow::new, row -> new Object[]{row.id(), row.productmodelid(), row.name(), row.catalogdescription(), row.instructions(), row.rowguid(), row.modifieddate()});;
+  static RowParser<PmViewRow> _rowParser = RowParsers.of(ProductmodelId.pgType, ProductmodelId.pgType, Name.pgType, PgTypes.xml, PgTypes.xml, PgTypes.uuid, PgTypes.timestamp, PmViewRow::new, row -> new Object[]{row.id(), row.productmodelid(), row.name(), row.catalogdescription(), row.instructions(), row.rowguid(), row.modifieddate()});;
 }

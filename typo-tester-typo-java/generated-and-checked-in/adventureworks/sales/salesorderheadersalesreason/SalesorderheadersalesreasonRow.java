@@ -6,10 +6,11 @@
 package adventureworks.sales.salesorderheadersalesreason;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
 import adventureworks.sales.salesorderheader.SalesorderheaderId;
 import adventureworks.sales.salesreason.SalesreasonId;
+import java.time.LocalDateTime;
 import typo.runtime.PgText;
+import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
 
@@ -27,7 +28,7 @@ public record SalesorderheadersalesreasonRow(
     */
   SalesreasonId salesreasonid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
     * Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#salesorderid()}
@@ -44,15 +45,15 @@ public record SalesorderheadersalesreasonRow(
   };
 
   /** Default: now() */
-  public SalesorderheadersalesreasonRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SalesorderheadersalesreasonRow withModifieddate(LocalDateTime modifieddate) {
     return new SalesorderheadersalesreasonRow(salesorderid, salesreasonid, modifieddate);
   };
 
-  static RowParser<SalesorderheadersalesreasonRow> _rowParser = RowParsers.of(SalesorderheaderId.pgType, SalesreasonId.pgType, TypoLocalDateTime.pgType, SalesorderheadersalesreasonRow::new, row -> new Object[]{row.salesorderid(), row.salesreasonid(), row.modifieddate()});;
+  static RowParser<SalesorderheadersalesreasonRow> _rowParser = RowParsers.of(SalesorderheaderId.pgType, SalesreasonId.pgType, PgTypes.timestamp, SalesorderheadersalesreasonRow::new, row -> new Object[]{row.salesorderid(), row.salesreasonid(), row.modifieddate()});;
 
   static public SalesorderheadersalesreasonRow apply(
     SalesorderheadersalesreasonId compositeId,
-    TypoLocalDateTime modifieddate
+    LocalDateTime modifieddate
   ) {
     return new SalesorderheadersalesreasonRow(compositeId.salesorderid(), compositeId.salesreasonid(), modifieddate);
   };
@@ -68,7 +69,7 @@ public record SalesorderheadersalesreasonRow(
     return this.compositeId();
   };
 
-  public SalesorderheadersalesreasonRowUnsaved toUnsavedRow(Defaulted<TypoLocalDateTime> modifieddate) {
+  public SalesorderheadersalesreasonRowUnsaved toUnsavedRow(Defaulted<LocalDateTime> modifieddate) {
     return new SalesorderheadersalesreasonRowUnsaved(salesorderid, salesreasonid, modifieddate);
   };
 }

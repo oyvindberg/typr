@@ -18,7 +18,6 @@ import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
 import typo.runtime.Fragment;
-import typo.runtime.Fragment.Literal;
 import typo.runtime.MariaTypes;
 import static typo.runtime.Fragment.interpolate;
 
@@ -33,11 +32,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     CustomerAddressesId addressId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("delete from `customer_addresses` where `address_id` = "),
-      CustomerAddressesId.pgType.encode(addressId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from `customer_addresses` where `address_id` = "), Fragment.encode(CustomerAddressesId.pgType, addressId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -45,8 +40,8 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     CustomerAddressesId[] addressIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : addressIds) { fragments.add(CustomerAddressesId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : addressIds) { fragments.add(Fragment.encode(CustomerAddressesId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("delete from `customer_addresses` where `address_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c);
   };
 
@@ -55,40 +50,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     CustomerAddressesRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into `customer_addresses`(`customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`)
-         values ("""),
-      CustomersId.pgType.encode(unsaved.customerId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.addressType()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isDefault()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.recipientName()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.streetLine1()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.streetLine2()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.city()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.stateProvince()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.postalCode()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.countryCode()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.point.opt().encode(unsaved.location()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.deliveryNotes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`
-      """)
-    )
+    return interpolate(Fragment.lit("insert into `customer_addresses`(`customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`)\nvalues ("), Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.addressType()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isDefault()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.recipientName()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.streetLine1()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.streetLine2()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.city()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.stateProvince()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.postalCode()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.countryCode()), Fragment.lit(", "), Fragment.encode(MariaTypes.point.opt(), unsaved.location()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinytext.opt(), unsaved.deliveryNotes()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(")\nreturning `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`\n"))
       .updateReturning(CustomerAddressesRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -97,61 +59,29 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     CustomerAddressesRowUnsaved unsaved,
     Connection c
   ) {
-    ArrayList<Literal> columns = new ArrayList<Literal>();;
-    ArrayList<Fragment> values = new ArrayList<Fragment>();;
+    ArrayList<Fragment> columns = new ArrayList<>();;
+    ArrayList<Fragment> values = new ArrayList<>();;
     columns.add(Fragment.lit("`customer_id`"));
-    values.add(interpolate(
-      CustomersId.pgType.encode(unsaved.customerId()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit("")));
     columns.add(Fragment.lit("`address_type`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.addressType()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.text, unsaved.addressType()), Fragment.lit("")));
     columns.add(Fragment.lit("`recipient_name`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.recipientName()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.recipientName()), Fragment.lit("")));
     columns.add(Fragment.lit("`street_line1`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.streetLine1()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.streetLine1()), Fragment.lit("")));
     columns.add(Fragment.lit("`city`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.city()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.city()), Fragment.lit("")));
     columns.add(Fragment.lit("`postal_code`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.postalCode()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.postalCode()), Fragment.lit("")));
     columns.add(Fragment.lit("`country_code`"));
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.countryCode()),
-      typo.runtime.Fragment.lit("""
-      """)
-    ));
+    values.add(interpolate(Fragment.encode(MariaTypes.char_, unsaved.countryCode()), Fragment.lit("")));
     unsaved.isDefault().visit(
       () -> {
   
       },
       value -> {
         columns.add(Fragment.lit("`is_default`"));
-        values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.bool, value), Fragment.lit("")));
       }
     );;
     unsaved.streetLine2().visit(
@@ -160,11 +90,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`street_line2`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.stateProvince().visit(
@@ -173,11 +99,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`state_province`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.varchar.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.location().visit(
@@ -186,11 +108,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`location`"));
-        values.add(interpolate(
-        MariaTypes.point.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.point.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.deliveryNotes().visit(
@@ -199,11 +117,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`delivery_notes`"));
-        values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.tinytext.opt(), value), Fragment.lit("")));
       }
     );;
     unsaved.createdAt().visit(
@@ -212,25 +126,10 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
       },
       value -> {
         columns.add(Fragment.lit("`created_at`"));
-        values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """)
-      ));
+        values.add(interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit("")));
       }
     );;
-    Fragment q = interpolate(
-      typo.runtime.Fragment.lit("insert into `customer_addresses`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-         )
-         values ("""),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-         )
-         returning `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`
-      """)
-    );;
+    Fragment q = interpolate(Fragment.lit("insert into `customer_addresses`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`\n"));;
     return q.updateReturning(CustomerAddressesRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -241,10 +140,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
 
   @Override
   public List<CustomerAddressesRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`
-       from `customer_addresses`
-    """)).query(CustomerAddressesRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`\nfrom `customer_addresses`\n")).query(CustomerAddressesRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -252,14 +148,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     CustomerAddressesId addressId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`
-         from `customer_addresses`
-         where `address_id` = """),
-      CustomerAddressesId.pgType.encode(addressId),
-      typo.runtime.Fragment.lit("")
-    ).query(CustomerAddressesRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`\nfrom `customer_addresses`\nwhere `address_id` = "), Fragment.encode(CustomerAddressesId.pgType, addressId), Fragment.lit("")).query(CustomerAddressesRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -267,8 +156,8 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     CustomerAddressesId[] addressIds,
     Connection c
   ) {
-    ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    for (var id : addressIds) { fragments.add(CustomerAddressesId.pgType.encode(id)); };
+    ArrayList<Fragment> fragments = new ArrayList<>();
+    for (var id : addressIds) { fragments.add(Fragment.encode(CustomerAddressesId.pgType, id)); };
     return Fragment.interpolate(Fragment.lit("select `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at` from `customer_addresses` where `address_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(CustomerAddressesRow._rowParser.all()).runUnchecked(c);
   };
 
@@ -284,7 +173,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
 
   @Override
   public UpdateBuilder<CustomerAddressesFields, CustomerAddressesRow> update() {
-    return UpdateBuilder.of("`customer_addresses`", CustomerAddressesFields.structure(), CustomerAddressesRow._rowParser.all(), Dialect.MARIADB);
+    return UpdateBuilder.of("`customer_addresses`", CustomerAddressesFields.structure(), CustomerAddressesRow._rowParser, Dialect.MARIADB);
   };
 
   @Override
@@ -293,65 +182,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     Connection c
   ) {
     CustomerAddressesId addressId = row.addressId();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update `customer_addresses`
-         set `customer_id` = """),
-      CustomersId.pgType.encode(row.customerId()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `address_type` = """),
-      MariaTypes.text.encode(row.addressType()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `is_default` = """),
-      MariaTypes.bool.encode(row.isDefault()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `recipient_name` = """),
-      MariaTypes.text.encode(row.recipientName()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `street_line1` = """),
-      MariaTypes.text.encode(row.streetLine1()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `street_line2` = """),
-      MariaTypes.text.opt().encode(row.streetLine2()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `city` = """),
-      MariaTypes.text.encode(row.city()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `state_province` = """),
-      MariaTypes.text.opt().encode(row.stateProvince()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `postal_code` = """),
-      MariaTypes.text.encode(row.postalCode()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `country_code` = """),
-      MariaTypes.text.encode(row.countryCode()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `location` = """),
-      MariaTypes.point.opt().encode(row.location()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `delivery_notes` = """),
-      MariaTypes.text.opt().encode(row.deliveryNotes()),
-      typo.runtime.Fragment.lit("""
-         ,
-         `created_at` = """),
-      MariaTypes.datetime.encode(row.createdAt()),
-      typo.runtime.Fragment.lit("""
-   
-         where `address_id` = """),
-      CustomerAddressesId.pgType.encode(addressId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update `customer_addresses`\nset `customer_id` = "), Fragment.encode(CustomersId.pgType, row.customerId()), Fragment.lit(",\n`address_type` = "), Fragment.encode(MariaTypes.text, row.addressType()), Fragment.lit(",\n`is_default` = "), Fragment.encode(MariaTypes.bool, row.isDefault()), Fragment.lit(",\n`recipient_name` = "), Fragment.encode(MariaTypes.varchar, row.recipientName()), Fragment.lit(",\n`street_line1` = "), Fragment.encode(MariaTypes.varchar, row.streetLine1()), Fragment.lit(",\n`street_line2` = "), Fragment.encode(MariaTypes.varchar.opt(), row.streetLine2()), Fragment.lit(",\n`city` = "), Fragment.encode(MariaTypes.varchar, row.city()), Fragment.lit(",\n`state_province` = "), Fragment.encode(MariaTypes.varchar.opt(), row.stateProvince()), Fragment.lit(",\n`postal_code` = "), Fragment.encode(MariaTypes.varchar, row.postalCode()), Fragment.lit(",\n`country_code` = "), Fragment.encode(MariaTypes.char_, row.countryCode()), Fragment.lit(",\n`location` = "), Fragment.encode(MariaTypes.point.opt(), row.location()), Fragment.lit(",\n`delivery_notes` = "), Fragment.encode(MariaTypes.tinytext.opt(), row.deliveryNotes()), Fragment.lit(",\n`created_at` = "), Fragment.encode(MariaTypes.datetime, row.createdAt()), Fragment.lit("\nwhere `address_id` = "), Fragment.encode(CustomerAddressesId.pgType, addressId), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -359,52 +190,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     CustomerAddressesRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         INSERT INTO `customer_addresses`(`customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`)
-         VALUES ("""),
-      CustomersId.pgType.encode(unsaved.customerId()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.addressType()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.bool.encode(unsaved.isDefault()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.recipientName()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.streetLine1()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.streetLine2()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.city()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.stateProvince()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.postalCode()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.encode(unsaved.countryCode()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.point.opt().encode(unsaved.location()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.text.opt().encode(unsaved.deliveryNotes()),
-      typo.runtime.Fragment.lit(", "),
-      MariaTypes.datetime.encode(unsaved.createdAt()),
-      typo.runtime.Fragment.lit("""
-         )
-         ON DUPLICATE KEY UPDATE `customer_id` = VALUES(`customer_id`),
-         `address_type` = VALUES(`address_type`),
-         `is_default` = VALUES(`is_default`),
-         `recipient_name` = VALUES(`recipient_name`),
-         `street_line1` = VALUES(`street_line1`),
-         `street_line2` = VALUES(`street_line2`),
-         `city` = VALUES(`city`),
-         `state_province` = VALUES(`state_province`),
-         `postal_code` = VALUES(`postal_code`),
-         `country_code` = VALUES(`country_code`),
-         `location` = VALUES(`location`),
-         `delivery_notes` = VALUES(`delivery_notes`),
-         `created_at` = VALUES(`created_at`)
-         RETURNING `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`""")
-    )
+    return interpolate(Fragment.lit("INSERT INTO `customer_addresses`(`customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`)\nVALUES ("), Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.addressType()), Fragment.lit(", "), Fragment.encode(MariaTypes.bool, unsaved.isDefault()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.recipientName()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.streetLine1()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.streetLine2()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.city()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.opt(), unsaved.stateProvince()), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.postalCode()), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.countryCode()), Fragment.lit(", "), Fragment.encode(MariaTypes.point.opt(), unsaved.location()), Fragment.lit(", "), Fragment.encode(MariaTypes.tinytext.opt(), unsaved.deliveryNotes()), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt()), Fragment.lit(")\nON DUPLICATE KEY UPDATE `customer_id` = VALUES(`customer_id`),\n`address_type` = VALUES(`address_type`),\n`is_default` = VALUES(`is_default`),\n`recipient_name` = VALUES(`recipient_name`),\n`street_line1` = VALUES(`street_line1`),\n`street_line2` = VALUES(`street_line2`),\n`city` = VALUES(`city`),\n`state_province` = VALUES(`state_province`),\n`postal_code` = VALUES(`postal_code`),\n`country_code` = VALUES(`country_code`),\n`location` = VALUES(`location`),\n`delivery_notes` = VALUES(`delivery_notes`),\n`created_at` = VALUES(`created_at`)\nRETURNING `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`"))
       .updateReturning(CustomerAddressesRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -414,24 +200,8 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     Iterator<CustomerAddressesRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                INSERT INTO `customer_addresses`(`address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE `customer_id` = VALUES(`customer_id`),
-                `address_type` = VALUES(`address_type`),
-                `is_default` = VALUES(`is_default`),
-                `recipient_name` = VALUES(`recipient_name`),
-                `street_line1` = VALUES(`street_line1`),
-                `street_line2` = VALUES(`street_line2`),
-                `city` = VALUES(`city`),
-                `state_province` = VALUES(`state_province`),
-                `postal_code` = VALUES(`postal_code`),
-                `country_code` = VALUES(`country_code`),
-                `location` = VALUES(`location`),
-                `delivery_notes` = VALUES(`delivery_notes`),
-                `created_at` = VALUES(`created_at`)
-                RETURNING `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`"""))
+    return interpolate(Fragment.lit("INSERT INTO `customer_addresses`(`address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `customer_id` = VALUES(`customer_id`),\n`address_type` = VALUES(`address_type`),\n`is_default` = VALUES(`is_default`),\n`recipient_name` = VALUES(`recipient_name`),\n`street_line1` = VALUES(`street_line1`),\n`street_line2` = VALUES(`street_line2`),\n`city` = VALUES(`city`),\n`state_province` = VALUES(`state_province`),\n`postal_code` = VALUES(`postal_code`),\n`country_code` = VALUES(`country_code`),\n`location` = VALUES(`location`),\n`delivery_notes` = VALUES(`delivery_notes`),\n`created_at` = VALUES(`created_at`)\nRETURNING `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`"))
       .updateReturningEach(CustomerAddressesRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 }

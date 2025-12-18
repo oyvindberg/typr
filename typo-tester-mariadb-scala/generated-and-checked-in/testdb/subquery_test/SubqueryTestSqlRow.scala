@@ -6,11 +6,12 @@
 package testdb.subquery_test
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customers.CustomersId
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** SQL file: subquery_test.sql */
 case class SubqueryTestSqlRow(
@@ -20,12 +21,12 @@ case class SubqueryTestSqlRow(
   email: String,
   /** Points to [[testdb.customers.CustomersRow.firstName]] */
   @JsonProperty("first_name") firstName: String,
-  @JsonProperty("order_count") orderCount: java.lang.Long,
-  @JsonProperty("total_spent") totalSpent: java.math.BigDecimal,
+  @JsonProperty("order_count") orderCount: Long,
+  @JsonProperty("total_spent") totalSpent: BigDecimal,
   /** Points to [[testdb.brands.BrandsRow.name]] */
-  @JsonProperty("favorite_brand") favoriteBrand: Optional[String]
+  @JsonProperty("favorite_brand") favoriteBrand: Option[String]
 )
 
 object SubqueryTestSqlRow {
-  val `_rowParser`: RowParser[SubqueryTestSqlRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.bigint, MariaTypes.decimal, MariaTypes.varchar.opt(), SubqueryTestSqlRow.apply, row => Array[Object](row.customerId.asInstanceOf[Object], row.email.asInstanceOf[Object], row.firstName.asInstanceOf[Object], row.orderCount.asInstanceOf[Object], row.totalSpent.asInstanceOf[Object], row.favoriteBrand.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[SubqueryTestSqlRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric, MariaTypes.varchar.nullable)(SubqueryTestSqlRow.apply)(row => Array[Any](row.customerId, row.email, row.firstName, row.orderCount, row.totalSpent, row.favoriteBrand))
 }

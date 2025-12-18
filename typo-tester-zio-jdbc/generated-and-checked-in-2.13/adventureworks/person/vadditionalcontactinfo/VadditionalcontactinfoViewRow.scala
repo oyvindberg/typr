@@ -25,20 +25,20 @@ case class VadditionalcontactinfoViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
-  telephonenumber: /* nullability unknown */ Option[TypoXml],
-  telephonespecialinstructions: /* nullability unknown */ Option[String],
-  street: /* nullability unknown */ Option[TypoXml],
-  city: /* nullability unknown */ Option[TypoXml],
-  stateprovince: /* nullability unknown */ Option[TypoXml],
-  postalcode: /* nullability unknown */ Option[TypoXml],
-  countryregion: /* nullability unknown */ Option[TypoXml],
-  homeaddressspecialinstructions: /* nullability unknown */ Option[TypoXml],
-  emailaddress: /* nullability unknown */ Option[TypoXml],
-  emailspecialinstructions: /* nullability unknown */ Option[String],
-  emailtelephonenumber: /* nullability unknown */ Option[TypoXml],
+  telephonenumber: Option[TypoXml],
+  telephonespecialinstructions: Option[String],
+  street: Option[TypoXml],
+  city: Option[TypoXml],
+  stateprovince: Option[TypoXml],
+  postalcode: Option[TypoXml],
+  countryregion: Option[TypoXml],
+  homeaddressspecialinstructions: Option[TypoXml],
+  emailaddress: Option[TypoXml],
+  emailspecialinstructions: Option[String],
+  emailtelephonenumber: Option[TypoXml],
   /** Points to [[adventureworks.person.person.PersonRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.person.person.PersonRow.modifieddate]] */
@@ -53,7 +53,7 @@ object VadditionalcontactinfoViewRow {
           VadditionalcontactinfoViewRow(
             businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             firstname = FirstName.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-            middlename = JdbcDecoder.optionDecoder(Name.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
+            middlename = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
             lastname = Name.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
             telephonenumber = JdbcDecoder.optionDecoder(TypoXml.jdbcDecoder).unsafeDecode(columIndex + 4, rs)._2,
             telephonespecialinstructions = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
@@ -76,7 +76,7 @@ object VadditionalcontactinfoViewRow {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
       val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
       val firstname = jsonObj.get("firstname").toRight("Missing field 'firstname'").flatMap(_.as(FirstName.jsonDecoder))
-      val middlename = jsonObj.get("middlename").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
+      val middlename = jsonObj.get("middlename").toRight("Missing field 'middlename'").flatMap(_.as(Name.jsonDecoder))
       val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(Name.jsonDecoder))
       val telephonenumber = jsonObj.get("telephonenumber").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
       val telephonespecialinstructions = jsonObj.get("telephonespecialinstructions").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
@@ -108,7 +108,7 @@ object VadditionalcontactinfoViewRow {
         FirstName.jsonEncoder.unsafeEncode(a.firstname, indent, out)
         out.write(",")
         out.write(""""middlename":""")
-        JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.middlename, indent, out)
+        Name.jsonEncoder.unsafeEncode(a.middlename, indent, out)
         out.write(",")
         out.write(""""lastname":""")
         Name.jsonEncoder.unsafeEncode(a.lastname, indent, out)

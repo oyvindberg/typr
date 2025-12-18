@@ -16,8 +16,8 @@ import org.mariadb.jdbc.`type`.Point
 import org.mariadb.jdbc.`type`.Polygon
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
 
 /** Table: mariatest_spatial
  * Primary key: id
@@ -59,7 +59,7 @@ case class MariatestSpatialRow(
 }
 
 object MariatestSpatialRow {
-  val `_rowParser`: RowParser[MariatestSpatialRow] = RowParsers.of(MariatestSpatialId.pgType, MariaTypes.geometry, MariaTypes.point, MariaTypes.linestring, MariaTypes.polygon, MariaTypes.multipoint, MariaTypes.multilinestring, MariaTypes.multipolygon, MariaTypes.geometrycollection, MariatestSpatialRow.apply, row => Array[Object](row.id.asInstanceOf[Object], row.geometryCol.asInstanceOf[Object], row.pointCol.asInstanceOf[Object], row.linestringCol.asInstanceOf[Object], row.polygonCol.asInstanceOf[Object], row.multipointCol.asInstanceOf[Object], row.multilinestringCol.asInstanceOf[Object], row.multipolygonCol.asInstanceOf[Object], row.geometrycollectionCol.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[MariatestSpatialRow] = RowParsers.of(MariatestSpatialId.pgType, MariaTypes.geometry, MariaTypes.point, MariaTypes.linestring, MariaTypes.polygon, MariaTypes.multipoint, MariaTypes.multilinestring, MariaTypes.multipolygon, MariaTypes.geometrycollection)(MariatestSpatialRow.apply)(row => Array[Any](row.id, row.geometryCol, row.pointCol, row.linestringCol, row.polygonCol, row.multipointCol, row.multilinestringCol, row.multipolygonCol, row.geometrycollectionCol))
 
-  given mariaText: MariaText[MariatestSpatialRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[MariatestSpatialRow] = MariaText.from(`_rowParser`.underlying)
 }

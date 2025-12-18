@@ -15,11 +15,11 @@ import typo.dsl.DeleteBuilder;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
   @Override
@@ -32,17 +32,7 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
     OnlyPkColumnsId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "public"."only_pk_columns" where "key_column_1" = 
-      """),
-      PgTypes.text.encode(compositeId.keyColumn1()),
-      typo.runtime.Fragment.lit("""
-       AND "key_column_2" = 
-      """),
-      PgTypes.int4.encode(compositeId.keyColumn2()),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"public\".\"only_pk_columns\" where \"key_column_1\" = "), Fragment.encode(PgTypes.text, compositeId.keyColumn1()), Fragment.lit(" AND \"key_column_2\" = "), Fragment.encode(PgTypes.int4, compositeId.keyColumn2()), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -52,20 +42,7 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
   ) {
     String[] keyColumn1 = arrayMap.map(compositeIds, OnlyPkColumnsId::keyColumn1, String.class);;
     Integer[] keyColumn2 = arrayMap.map(compositeIds, OnlyPkColumnsId::keyColumn2, Integer.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         delete
-         from "public"."only_pk_columns"
-         where ("key_column_1", "key_column_2")
-         in (select unnest("""),
-      PgTypes.textArray.encode(keyColumn1),
-      typo.runtime.Fragment.lit("::text[]), unnest("),
-      PgTypes.int4Array.encode(keyColumn2),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """)
-    ).update().runUnchecked(c);
+    return interpolate(Fragment.lit("delete\nfrom \"public\".\"only_pk_columns\"\nwhere (\"key_column_1\", \"key_column_2\")\nin (select unnest("), Fragment.encode(PgTypes.textArray, keyColumn1), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.int4Array, keyColumn2), Fragment.lit("::int4[]))\n")).update().runUnchecked(c);
   };
 
   @Override
@@ -73,18 +50,7 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
     OnlyPkColumnsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."only_pk_columns"("key_column_1", "key_column_2")
-         values ("""),
-      PgTypes.text.encode(unsaved.keyColumn1()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.int4.encode(unsaved.keyColumn2()),
-      typo.runtime.Fragment.lit("""
-         ::int4)
-         returning "key_column_1", "key_column_2"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"only_pk_columns\"(\"key_column_1\", \"key_column_2\")\nvalues ("), Fragment.encode(PgTypes.text, unsaved.keyColumn1()), Fragment.lit(", "), Fragment.encode(PgTypes.int4, unsaved.keyColumn2()), Fragment.lit("::int4)\nreturning \"key_column_1\", \"key_column_2\"\n"))
       .updateReturning(OnlyPkColumnsRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -94,9 +60,7 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "public"."only_pk_columns"("key_column_1", "key_column_2") FROM STDIN
-    """), batchSize, unsaved, c, OnlyPkColumnsRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"public\".\"only_pk_columns\"(\"key_column_1\", \"key_column_2\") FROM STDIN", batchSize, unsaved, c, OnlyPkColumnsRow.pgText);
   };
 
   @Override
@@ -106,10 +70,7 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
 
   @Override
   public List<OnlyPkColumnsRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "key_column_1", "key_column_2"
-       from "public"."only_pk_columns"
-    """)).query(OnlyPkColumnsRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"key_column_1\", \"key_column_2\"\nfrom \"public\".\"only_pk_columns\"\n")).query(OnlyPkColumnsRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -117,18 +78,7 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
     OnlyPkColumnsId compositeId,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "key_column_1", "key_column_2"
-         from "public"."only_pk_columns"
-         where "key_column_1" = """),
-      PgTypes.text.encode(compositeId.keyColumn1()),
-      typo.runtime.Fragment.lit("""
-       AND "key_column_2" = 
-      """),
-      PgTypes.int4.encode(compositeId.keyColumn2()),
-      typo.runtime.Fragment.lit("")
-    ).query(OnlyPkColumnsRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"key_column_1\", \"key_column_2\"\nfrom \"public\".\"only_pk_columns\"\nwhere \"key_column_1\" = "), Fragment.encode(PgTypes.text, compositeId.keyColumn1()), Fragment.lit(" AND \"key_column_2\" = "), Fragment.encode(PgTypes.int4, compositeId.keyColumn2()), Fragment.lit("")).query(OnlyPkColumnsRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -138,20 +88,7 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
   ) {
     String[] keyColumn1 = arrayMap.map(compositeIds, OnlyPkColumnsId::keyColumn1, String.class);;
     Integer[] keyColumn2 = arrayMap.map(compositeIds, OnlyPkColumnsId::keyColumn2, Integer.class);;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "key_column_1", "key_column_2"
-         from "public"."only_pk_columns"
-         where ("key_column_1", "key_column_2")
-         in (select unnest("""),
-      PgTypes.textArray.encode(keyColumn1),
-      typo.runtime.Fragment.lit("::text[]), unnest("),
-      PgTypes.int4Array.encode(keyColumn2),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """)
-    ).query(OnlyPkColumnsRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"key_column_1\", \"key_column_2\"\nfrom \"public\".\"only_pk_columns\"\nwhere (\"key_column_1\", \"key_column_2\")\nin (select unnest("), Fragment.encode(PgTypes.textArray, keyColumn1), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.int4Array, keyColumn2), Fragment.lit("::int4[]))\n")).query(OnlyPkColumnsRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -166,7 +103,7 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
 
   @Override
   public UpdateBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow> update() {
-    return UpdateBuilder.of("\"public\".\"only_pk_columns\"", OnlyPkColumnsFields.structure(), OnlyPkColumnsRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"public\".\"only_pk_columns\"", OnlyPkColumnsFields.structure(), OnlyPkColumnsRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -174,19 +111,7 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
     OnlyPkColumnsRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "public"."only_pk_columns"("key_column_1", "key_column_2")
-         values ("""),
-      PgTypes.text.encode(unsaved.keyColumn1()),
-      typo.runtime.Fragment.lit(", "),
-      PgTypes.int4.encode(unsaved.keyColumn2()),
-      typo.runtime.Fragment.lit("""
-         ::int4)
-         on conflict ("key_column_1", "key_column_2")
-         do update set "key_column_1" = EXCLUDED."key_column_1"
-         returning "key_column_1", "key_column_2\"""")
-    )
+    return interpolate(Fragment.lit("insert into \"public\".\"only_pk_columns\"(\"key_column_1\", \"key_column_2\")\nvalues ("), Fragment.encode(PgTypes.text, unsaved.keyColumn1()), Fragment.lit(", "), Fragment.encode(PgTypes.int4, unsaved.keyColumn2()), Fragment.lit("::int4)\non conflict (\"key_column_1\", \"key_column_2\")\ndo update set \"key_column_1\" = EXCLUDED.\"key_column_1\"\nreturning \"key_column_1\", \"key_column_2\""))
       .updateReturning(OnlyPkColumnsRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -196,14 +121,9 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
     Iterator<OnlyPkColumnsRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "public"."only_pk_columns"("key_column_1", "key_column_2")
-                values (?, ?::int4)
-                on conflict ("key_column_1", "key_column_2")
-                do update set "key_column_1" = EXCLUDED."key_column_1"
-                returning "key_column_1", "key_column_2\""""))
+    return interpolate(Fragment.lit("insert into \"public\".\"only_pk_columns\"(\"key_column_1\", \"key_column_2\")\nvalues (?, ?::int4)\non conflict (\"key_column_1\", \"key_column_2\")\ndo update set \"key_column_1\" = EXCLUDED.\"key_column_1\"\nreturning \"key_column_1\", \"key_column_2\""))
       .updateManyReturning(OnlyPkColumnsRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -213,18 +133,8 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table only_pk_columns_TEMP (like "public"."only_pk_columns") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy only_pk_columns_TEMP("key_column_1", "key_column_2") from stdin
-    """), batchSize, unsaved, c, OnlyPkColumnsRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "public"."only_pk_columns"("key_column_1", "key_column_2")
-       select * from only_pk_columns_TEMP
-       on conflict ("key_column_1", "key_column_2")
-       do nothing
-       ;
-       drop table only_pk_columns_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table only_pk_columns_TEMP (like \"public\".\"only_pk_columns\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy only_pk_columns_TEMP(\"key_column_1\", \"key_column_2\") from stdin", batchSize, unsaved, c, OnlyPkColumnsRow.pgText);
+    return interpolate(Fragment.lit("insert into \"public\".\"only_pk_columns\"(\"key_column_1\", \"key_column_2\")\nselect * from only_pk_columns_TEMP\non conflict (\"key_column_1\", \"key_column_2\")\ndo nothing\n;\ndrop table only_pk_columns_TEMP;")).update().runUnchecked(c);
   };
 }

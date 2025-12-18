@@ -12,8 +12,8 @@ import typo.runtime.PgTypes;
 import typo.runtime.internal.arrayMap;
 
 /** Type for the primary key of table `production.unitmeasure` */
-public record UnitmeasureId(@JsonValue /* bpchar, max 3 chars */ String value) {
-  public UnitmeasureId withValue(/* bpchar, max 3 chars */ String value) {
+public record UnitmeasureId(@JsonValue String value) {
+  public UnitmeasureId withValue(String value) {
     return new UnitmeasureId(value);
   };
 
@@ -22,12 +22,12 @@ public record UnitmeasureId(@JsonValue /* bpchar, max 3 chars */ String value) {
     return value.toString();
   };
 
-  static public Bijection<UnitmeasureId, /* bpchar, max 3 chars */ String> bijection =
+  static public Bijection<UnitmeasureId, String> bijection =
     Bijection.of(UnitmeasureId::value, UnitmeasureId::new);
 
   static public PgType<UnitmeasureId> pgType =
-    PgTypes.text.bimap(UnitmeasureId::new, UnitmeasureId::value);
+    PgTypes.bpchar.bimap(UnitmeasureId::new, UnitmeasureId::value);
 
   static public PgType<UnitmeasureId[]> pgTypeArray =
-    PgTypes.textArray.bimap(xs -> arrayMap.map(xs, UnitmeasureId::new, UnitmeasureId.class), xs -> arrayMap.map(xs, UnitmeasureId::value, /* bpchar, max 3 chars */ String.class));
+    PgTypes.bpcharArray.bimap(xs -> arrayMap.map(xs, UnitmeasureId::new, UnitmeasureId.class), xs -> arrayMap.map(xs, UnitmeasureId::value, String.class));
 }

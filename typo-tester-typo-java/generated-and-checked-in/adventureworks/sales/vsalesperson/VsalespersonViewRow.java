@@ -10,7 +10,6 @@ import adventureworks.public_.Name;
 import adventureworks.public_.Phone;
 import adventureworks.userdefined.FirstName;
 import java.math.BigDecimal;
-import java.util.Optional;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
 import typo.runtime.RowParsers;
@@ -20,43 +19,43 @@ public record VsalespersonViewRow(
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#businessentityid()} */
   BusinessentityId businessentityid,
   /** Points to {@link adventureworks.person.person.PersonRow#title()} */
-  Optional</* max 8 chars */ String> title,
+  String title,
   /** Points to {@link adventureworks.person.person.PersonRow#firstname()} */
   /* user-picked */ FirstName firstname,
   /** Points to {@link adventureworks.person.person.PersonRow#middlename()} */
-  Optional<Name> middlename,
+  Name middlename,
   /** Points to {@link adventureworks.person.person.PersonRow#lastname()} */
   Name lastname,
   /** Points to {@link adventureworks.person.person.PersonRow#suffix()} */
-  Optional</* max 10 chars */ String> suffix,
+  String suffix,
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#jobtitle()} */
-  /* max 50 chars */ String jobtitle,
+  String jobtitle,
   /** Points to {@link adventureworks.person.personphone.PersonphoneRow#phonenumber()} */
   Phone phonenumber,
   /** Points to {@link adventureworks.person.phonenumbertype.PhonenumbertypeRow#name()} */
   Name phonenumbertype,
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#emailaddress()} */
-  Optional</* max 50 chars */ String> emailaddress,
+  String emailaddress,
   /** Points to {@link adventureworks.person.person.PersonRow#emailpromotion()} */
   Integer emailpromotion,
   /** Points to {@link adventureworks.person.address.AddressRow#addressline1()} */
-  /* max 60 chars */ String addressline1,
+  String addressline1,
   /** Points to {@link adventureworks.person.address.AddressRow#addressline2()} */
-  Optional</* max 60 chars */ String> addressline2,
+  String addressline2,
   /** Points to {@link adventureworks.person.address.AddressRow#city()} */
-  /* max 30 chars */ String city,
+  String city,
   /** Points to {@link adventureworks.person.stateprovince.StateprovinceRow#name()} */
   Name stateprovincename,
   /** Points to {@link adventureworks.person.address.AddressRow#postalcode()} */
-  /* max 15 chars */ String postalcode,
+  String postalcode,
   /** Points to {@link adventureworks.person.countryregion.CountryregionRow#name()} */
   Name countryregionname,
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#name()} */
   Name territoryname,
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#group()} */
-  /* max 50 chars */ String territorygroup,
+  String territorygroup,
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#salesquota()} */
-  Optional<BigDecimal> salesquota,
+  BigDecimal salesquota,
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#salesytd()} */
   BigDecimal salesytd,
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#saleslastyear()} */
@@ -68,7 +67,7 @@ public record VsalespersonViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#title()} */
-  public VsalespersonViewRow withTitle(Optional</* max 8 chars */ String> title) {
+  public VsalespersonViewRow withTitle(String title) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
@@ -78,7 +77,7 @@ public record VsalespersonViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#middlename()} */
-  public VsalespersonViewRow withMiddlename(Optional<Name> middlename) {
+  public VsalespersonViewRow withMiddlename(Name middlename) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
@@ -88,12 +87,12 @@ public record VsalespersonViewRow(
   };
 
   /** Points to {@link adventureworks.person.person.PersonRow#suffix()} */
-  public VsalespersonViewRow withSuffix(Optional</* max 10 chars */ String> suffix) {
+  public VsalespersonViewRow withSuffix(String suffix) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#jobtitle()} */
-  public VsalespersonViewRow withJobtitle(/* max 50 chars */ String jobtitle) {
+  public VsalespersonViewRow withJobtitle(String jobtitle) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
@@ -108,7 +107,7 @@ public record VsalespersonViewRow(
   };
 
   /** Points to {@link adventureworks.person.emailaddress.EmailaddressRow#emailaddress()} */
-  public VsalespersonViewRow withEmailaddress(Optional</* max 50 chars */ String> emailaddress) {
+  public VsalespersonViewRow withEmailaddress(String emailaddress) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
@@ -118,17 +117,17 @@ public record VsalespersonViewRow(
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#addressline1()} */
-  public VsalespersonViewRow withAddressline1(/* max 60 chars */ String addressline1) {
+  public VsalespersonViewRow withAddressline1(String addressline1) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#addressline2()} */
-  public VsalespersonViewRow withAddressline2(Optional</* max 60 chars */ String> addressline2) {
+  public VsalespersonViewRow withAddressline2(String addressline2) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#city()} */
-  public VsalespersonViewRow withCity(/* max 30 chars */ String city) {
+  public VsalespersonViewRow withCity(String city) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
@@ -138,7 +137,7 @@ public record VsalespersonViewRow(
   };
 
   /** Points to {@link adventureworks.person.address.AddressRow#postalcode()} */
-  public VsalespersonViewRow withPostalcode(/* max 15 chars */ String postalcode) {
+  public VsalespersonViewRow withPostalcode(String postalcode) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
@@ -153,12 +152,12 @@ public record VsalespersonViewRow(
   };
 
   /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#group()} */
-  public VsalespersonViewRow withTerritorygroup(/* max 50 chars */ String territorygroup) {
+  public VsalespersonViewRow withTerritorygroup(String territorygroup) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#salesquota()} */
-  public VsalespersonViewRow withSalesquota(Optional<BigDecimal> salesquota) {
+  public VsalespersonViewRow withSalesquota(BigDecimal salesquota) {
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
@@ -172,5 +171,5 @@ public record VsalespersonViewRow(
     return new VsalespersonViewRow(businessentityid, title, firstname, middlename, lastname, suffix, jobtitle, phonenumber, phonenumbertype, emailaddress, emailpromotion, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, territoryname, territorygroup, salesquota, salesytd, saleslastyear);
   };
 
-  static RowParser<VsalespersonViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.text, Phone.pgType, Name.pgType, PgTypes.text.opt(), PgTypes.int4, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, Name.pgType, PgTypes.text, PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, VsalespersonViewRow::new, row -> new Object[]{row.businessentityid(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.jobtitle(), row.phonenumber(), row.phonenumbertype(), row.emailaddress(), row.emailpromotion(), row.addressline1(), row.addressline2(), row.city(), row.stateprovincename(), row.postalcode(), row.countryregionname(), row.territoryname(), row.territorygroup(), row.salesquota(), row.salesytd(), row.saleslastyear()});;
+  static RowParser<VsalespersonViewRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.text, FirstName.pgType, Name.pgType, Name.pgType, PgTypes.text, PgTypes.text, Phone.pgType, Name.pgType, PgTypes.text, PgTypes.int4, PgTypes.text, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, Name.pgType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, VsalespersonViewRow::new, row -> new Object[]{row.businessentityid(), row.title(), row.firstname(), row.middlename(), row.lastname(), row.suffix(), row.jobtitle(), row.phonenumber(), row.phonenumbertype(), row.emailaddress(), row.emailpromotion(), row.addressline1(), row.addressline2(), row.city(), row.stateprovincename(), row.postalcode(), row.countryregionname(), row.territoryname(), row.territorygroup(), row.salesquota(), row.salesytd(), row.saleslastyear()});;
 }

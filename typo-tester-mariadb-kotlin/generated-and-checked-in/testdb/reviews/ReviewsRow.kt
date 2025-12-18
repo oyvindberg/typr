@@ -7,15 +7,16 @@ package testdb.reviews
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
 import testdb.order_items.OrderItemsId
 import testdb.products.ProductsId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: reviews
   * Primary key: review_id
@@ -37,29 +38,29 @@ data class ReviewsRow(
     * Default: NULL
     * Points to [testdb.order_items.OrderItemsRow.itemId]
     */
-  @JsonProperty("order_item_id") val orderItemId: Optional<OrderItemsId>,
+  @JsonProperty("order_item_id") val orderItemId: OrderItemsId?,
   /**  */
   val rating: Short,
   /** 
     * Default: NULL
     */
-  val title: Optional<String>,
+  val title: String?,
   /** 
     * Default: NULL
     */
-  val content: Optional<String>,
+  val content: String?,
   /** 
     * Default: NULL
     */
-  val pros: Optional<String>,
+  val pros: String?,
   /** 
     * Default: NULL
     */
-  val cons: Optional<String>,
+  val cons: String?,
   /** Array of image URLs
     * Default: NULL
     */
-  val images: Optional<String>,
+  val images: String?,
   /** 
     * Default: 0
     */
@@ -79,11 +80,11 @@ data class ReviewsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("admin_response") val adminResponse: Optional<String>,
+  @JsonProperty("admin_response") val adminResponse: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("responded_at") val respondedAt: Optional<LocalDateTime>,
+  @JsonProperty("responded_at") val respondedAt: LocalDateTime?,
   /** 
     * Default: current_timestamp(6)
     */
@@ -96,26 +97,26 @@ data class ReviewsRow(
   fun id(): ReviewsId = reviewId
 
   fun toUnsavedRow(
-    orderItemId: Defaulted<Optional<OrderItemsId>>,
-    title: Defaulted<Optional<String>>,
-    content: Defaulted<Optional<String>>,
-    pros: Defaulted<Optional<String>>,
-    cons: Defaulted<Optional<String>>,
-    images: Defaulted<Optional<String>>,
+    orderItemId: Defaulted<OrderItemsId?>,
+    title: Defaulted<String?>,
+    content: Defaulted<String?>,
+    pros: Defaulted<String?>,
+    cons: Defaulted<String?>,
+    images: Defaulted<String?>,
     isVerifiedPurchase: Defaulted<Boolean>,
     isApproved: Defaulted<Boolean>,
     helpfulVotes: Defaulted<Long>,
     unhelpfulVotes: Defaulted<Long>,
-    adminResponse: Defaulted<Optional<String>>,
-    respondedAt: Defaulted<Optional<LocalDateTime>>,
+    adminResponse: Defaulted<String?>,
+    respondedAt: Defaulted<LocalDateTime?>,
     createdAt: Defaulted<LocalDateTime>,
     updatedAt: Defaulted<LocalDateTime>
   ): ReviewsRowUnsaved = ReviewsRowUnsaved(productId, customerId, rating, orderItemId, title, content, pros, cons, images, isVerifiedPurchase, isApproved, helpfulVotes, unhelpfulVotes, adminResponse, respondedAt, createdAt, updatedAt)
 
   companion object {
-    val _rowParser: RowParser<ReviewsRow> = RowParsers.of(ReviewsId.pgType, ProductsId.pgType, CustomersId.pgType, OrderItemsId.pgType.opt(), MariaTypes.tinyintUnsigned, MariaTypes.varchar.opt(), MariaTypes.text.opt(), MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.bool, MariaTypes.bool, MariaTypes.intUnsigned, MariaTypes.intUnsigned, MariaTypes.text.opt(), MariaTypes.datetime.opt(), MariaTypes.datetime, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> ReviewsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!) }, { row -> arrayOf<Any?>(row.reviewId, row.productId, row.customerId, row.orderItemId, row.rating, row.title, row.content, row.pros, row.cons, row.images, row.isVerifiedPurchase, row.isApproved, row.helpfulVotes, row.unhelpfulVotes, row.adminResponse, row.respondedAt, row.createdAt, row.updatedAt) })
+    val _rowParser: RowParser<ReviewsRow> = RowParsers.of(ReviewsId.pgType, ProductsId.pgType, CustomersId.pgType, OrderItemsId.pgType.nullable(), KotlinDbTypes.MariaTypes.tinyintUnsigned, MariaTypes.varchar.nullable(), MariaTypes.text.nullable(), MariaTypes.longtext.nullable(), MariaTypes.longtext.nullable(), MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.intUnsigned, KotlinDbTypes.MariaTypes.intUnsigned, MariaTypes.text.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> ReviewsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!) }, { row -> arrayOf<Any?>(row.reviewId, row.productId, row.customerId, row.orderItemId, row.rating, row.title, row.content, row.pros, row.cons, row.images, row.isVerifiedPurchase, row.isApproved, row.helpfulVotes, row.unhelpfulVotes, row.adminResponse, row.respondedAt, row.createdAt, row.updatedAt) })
 
     val mariaText: MariaText<ReviewsRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

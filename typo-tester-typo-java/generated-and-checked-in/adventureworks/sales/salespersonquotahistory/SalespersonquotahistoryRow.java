@@ -6,10 +6,10 @@
 package adventureworks.sales.salespersonquotahistory;
 
 import adventureworks.customtypes.Defaulted;
-import adventureworks.customtypes.TypoLocalDateTime;
-import adventureworks.customtypes.TypoUUID;
 import adventureworks.person.businessentity.BusinessentityId;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import typo.runtime.PgText;
 import typo.runtime.PgTypes;
 import typo.runtime.RowParser;
@@ -25,15 +25,15 @@ public record SalespersonquotahistoryRow(
     */
   BusinessentityId businessentityid,
   /** Sales quota date. */
-  TypoLocalDateTime quotadate,
+  LocalDateTime quotadate,
   /** Sales quota amount.
     * Constraint CK_SalesPersonQuotaHistory_SalesQuota affecting columns salesquota: ((salesquota > 0.00))
     */
   BigDecimal salesquota,
   /** Default: uuid_generate_v1() */
-  TypoUUID rowguid,
+  UUID rowguid,
   /** Default: now() */
-  TypoLocalDateTime modifieddate
+  LocalDateTime modifieddate
 ) {
   /** Sales person identification number. Foreign key to SalesPerson.BusinessEntityID.
     * Points to {@link adventureworks.sales.salesperson.SalespersonRow#businessentityid()}
@@ -43,7 +43,7 @@ public record SalespersonquotahistoryRow(
   };
 
   /** Sales quota date. */
-  public SalespersonquotahistoryRow withQuotadate(TypoLocalDateTime quotadate) {
+  public SalespersonquotahistoryRow withQuotadate(LocalDateTime quotadate) {
     return new SalespersonquotahistoryRow(businessentityid, quotadate, salesquota, rowguid, modifieddate);
   };
 
@@ -55,22 +55,22 @@ public record SalespersonquotahistoryRow(
   };
 
   /** Default: uuid_generate_v1() */
-  public SalespersonquotahistoryRow withRowguid(TypoUUID rowguid) {
+  public SalespersonquotahistoryRow withRowguid(UUID rowguid) {
     return new SalespersonquotahistoryRow(businessentityid, quotadate, salesquota, rowguid, modifieddate);
   };
 
   /** Default: now() */
-  public SalespersonquotahistoryRow withModifieddate(TypoLocalDateTime modifieddate) {
+  public SalespersonquotahistoryRow withModifieddate(LocalDateTime modifieddate) {
     return new SalespersonquotahistoryRow(businessentityid, quotadate, salesquota, rowguid, modifieddate);
   };
 
-  static RowParser<SalespersonquotahistoryRow> _rowParser = RowParsers.of(BusinessentityId.pgType, TypoLocalDateTime.pgType, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, SalespersonquotahistoryRow::new, row -> new Object[]{row.businessentityid(), row.quotadate(), row.salesquota(), row.rowguid(), row.modifieddate()});;
+  static RowParser<SalespersonquotahistoryRow> _rowParser = RowParsers.of(BusinessentityId.pgType, PgTypes.timestamp, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, SalespersonquotahistoryRow::new, row -> new Object[]{row.businessentityid(), row.quotadate(), row.salesquota(), row.rowguid(), row.modifieddate()});;
 
   static public SalespersonquotahistoryRow apply(
     SalespersonquotahistoryId compositeId,
     BigDecimal salesquota,
-    TypoUUID rowguid,
-    TypoLocalDateTime modifieddate
+    UUID rowguid,
+    LocalDateTime modifieddate
   ) {
     return new SalespersonquotahistoryRow(compositeId.businessentityid(), compositeId.quotadate(), salesquota, rowguid, modifieddate);
   };
@@ -87,8 +87,8 @@ public record SalespersonquotahistoryRow(
   };
 
   public SalespersonquotahistoryRowUnsaved toUnsavedRow(
-    Defaulted<TypoUUID> rowguid,
-    Defaulted<TypoLocalDateTime> modifieddate
+    Defaulted<UUID> rowguid,
+    Defaulted<LocalDateTime> modifieddate
   ) {
     return new SalespersonquotahistoryRowUnsaved(businessentityid, quotadate, salesquota, rowguid, modifieddate);
   };

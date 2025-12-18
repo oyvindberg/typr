@@ -7,13 +7,13 @@ package testdb.order_history
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.orders.OrdersId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
 
 /** Table: order_history
  * Primary key: history_id
@@ -30,21 +30,21 @@ case class OrderHistoryRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("previous_status") previousStatus: Optional[String],
+  @JsonProperty("previous_status") previousStatus: Option[String],
   /**  */
   @JsonProperty("new_status") newStatus: String,
   /** 
    * Default: NULL
    */
-  @JsonProperty("changed_by") changedBy: Optional[String],
+  @JsonProperty("changed_by") changedBy: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("change_reason") changeReason: Optional[String],
+  @JsonProperty("change_reason") changeReason: Option[String],
   /** 
    * Default: NULL
    */
-  metadata: Optional[String],
+  metadata: Option[String],
   /** 
    * Default: current_timestamp(6)
    */
@@ -53,10 +53,10 @@ case class OrderHistoryRow(
   def id: OrderHistoryId = historyId
 
   def toUnsavedRow(
-    previousStatus: Defaulted[Optional[String]] = Defaulted.Provided(this.previousStatus),
-    changedBy: Defaulted[Optional[String]] = Defaulted.Provided(this.changedBy),
-    changeReason: Defaulted[Optional[String]] = Defaulted.Provided(this.changeReason),
-    metadata: Defaulted[Optional[String]] = Defaulted.Provided(this.metadata),
+    previousStatus: Defaulted[Option[String]] = Defaulted.Provided(this.previousStatus),
+    changedBy: Defaulted[Option[String]] = Defaulted.Provided(this.changedBy),
+    changeReason: Defaulted[Option[String]] = Defaulted.Provided(this.changeReason),
+    metadata: Defaulted[Option[String]] = Defaulted.Provided(this.metadata),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt)
   ): OrderHistoryRowUnsaved = {
     new OrderHistoryRowUnsaved(
@@ -72,7 +72,7 @@ case class OrderHistoryRow(
 }
 
 object OrderHistoryRow {
-  val `_rowParser`: RowParser[OrderHistoryRow] = RowParsers.of(OrderHistoryId.pgType, OrdersId.pgType, MariaTypes.text.opt(), MariaTypes.text, MariaTypes.varchar.opt(), MariaTypes.varchar.opt(), MariaTypes.longtext.opt(), MariaTypes.datetime, OrderHistoryRow.apply, row => Array[Object](row.historyId.asInstanceOf[Object], row.orderId.asInstanceOf[Object], row.previousStatus.asInstanceOf[Object], row.newStatus.asInstanceOf[Object], row.changedBy.asInstanceOf[Object], row.changeReason.asInstanceOf[Object], row.metadata.asInstanceOf[Object], row.createdAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[OrderHistoryRow] = RowParsers.of(OrderHistoryId.pgType, OrdersId.pgType, MariaTypes.text.nullable, MariaTypes.text, MariaTypes.varchar.nullable, MariaTypes.varchar.nullable, MariaTypes.longtext.nullable, MariaTypes.datetime)(OrderHistoryRow.apply)(row => Array[Any](row.historyId, row.orderId, row.previousStatus, row.newStatus, row.changedBy, row.changeReason, row.metadata, row.createdAt))
 
-  given mariaText: MariaText[OrderHistoryRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[OrderHistoryRow] = MariaText.from(`_rowParser`.underlying)
 }

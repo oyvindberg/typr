@@ -5,38 +5,38 @@
  */
 package testdb.customer_status
 
-import java.util.Optional
-import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.FieldsExpr0
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
 
-trait CustomerStatusFields extends FieldsExpr[CustomerStatusRow] {
+trait CustomerStatusFields extends FieldsExpr0[CustomerStatusRow] {
   def statusCode: IdField[CustomerStatusId, CustomerStatusRow]
 
   def description: Field[String, CustomerStatusRow]
 
-  def isActive: Field[java.lang.Boolean, CustomerStatusRow]
+  def isActive: Field[Boolean, CustomerStatusRow]
 
   override def columns: java.util.List[FieldLike[?, CustomerStatusRow]]
 
-  override def rowParser: RowParser[CustomerStatusRow] = CustomerStatusRow._rowParser
+  override def rowParser: RowParser[CustomerStatusRow] = CustomerStatusRow._rowParser.underlying
 }
 
 object CustomerStatusFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CustomerStatusFields with Relation[CustomerStatusFields, CustomerStatusRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends CustomerStatusFields with RelationStructure[CustomerStatusFields, CustomerStatusRow] {
 
     override def statusCode: IdField[CustomerStatusId, CustomerStatusRow] = {
       new IdField[CustomerStatusId, CustomerStatusRow](
         _path,
         "status_code",
         _.statusCode,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(statusCode = value),
         CustomerStatusId.pgType
       )
@@ -47,29 +47,29 @@ object CustomerStatusFields {
         _path,
         "description",
         _.description,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(description = value),
         MariaTypes.varchar
       )
     }
 
-    override def isActive: Field[java.lang.Boolean, CustomerStatusRow] = {
-      new Field[java.lang.Boolean, CustomerStatusRow](
+    override def isActive: Field[Boolean, CustomerStatusRow] = {
+      new Field[Boolean, CustomerStatusRow](
         _path,
         "is_active",
         _.isActive,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isActive = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, CustomerStatusRow]] = java.util.List.of(this.statusCode, this.description, this.isActive)
+    override def columns: java.util.List[FieldLike[?, CustomerStatusRow]] = java.util.List.of(this.statusCode.underlying, this.description.underlying, this.isActive.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[CustomerStatusFields, CustomerStatusRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomerStatusFields, CustomerStatusRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

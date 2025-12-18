@@ -5,8 +5,6 @@
  */
 package adventureworks.production.workorderrouting
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.location.LocationFields
 import adventureworks.production.location.LocationId
 import adventureworks.production.location.LocationRow
@@ -14,90 +12,93 @@ import adventureworks.production.workorder.WorkorderFields
 import adventureworks.production.workorder.WorkorderId
 import adventureworks.production.workorder.WorkorderRow
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface WorkorderroutingFields : FieldsExpr<WorkorderroutingRow> {
-  fun actualcost(): OptField<BigDecimal, WorkorderroutingRow>
+  abstract fun actualcost(): OptField<BigDecimal, WorkorderroutingRow>
 
-  fun actualenddate(): OptField<TypoLocalDateTime, WorkorderroutingRow>
+  abstract fun actualenddate(): OptField<LocalDateTime, WorkorderroutingRow>
 
-  fun actualresourcehrs(): OptField<BigDecimal, WorkorderroutingRow>
+  abstract fun actualresourcehrs(): OptField<BigDecimal, WorkorderroutingRow>
 
-  fun actualstartdate(): OptField<TypoLocalDateTime, WorkorderroutingRow>
+  abstract fun actualstartdate(): OptField<LocalDateTime, WorkorderroutingRow>
 
-  override fun columns(): List<FieldLike<*, WorkorderroutingRow>>
+  abstract override fun columns(): List<FieldLike<*, WorkorderroutingRow>>
 
-  fun compositeIdIn(compositeIds: List<WorkorderroutingId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<WorkorderId, WorkorderroutingId, WorkorderroutingRow>(workorderid(), WorkorderroutingId::workorderid, WorkorderId.pgType), Part<Int, WorkorderroutingId, WorkorderroutingRow>(productid(), WorkorderroutingId::productid, PgTypes.int4), Part<TypoShort, WorkorderroutingId, WorkorderroutingRow>(operationsequence(), WorkorderroutingId::operationsequence, TypoShort.pgType)), compositeIds)
+  fun compositeIdIn(compositeIds: List<WorkorderroutingId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<WorkorderId, WorkorderroutingId, WorkorderroutingRow>(workorderid(), WorkorderroutingId::workorderid, WorkorderId.pgType), Part<Int, WorkorderroutingId, WorkorderroutingRow>(productid(), WorkorderroutingId::productid, KotlinDbTypes.PgTypes.int4), Part<Short, WorkorderroutingId, WorkorderroutingRow>(operationsequence(), WorkorderroutingId::operationsequence, KotlinDbTypes.PgTypes.int2)), compositeIds)
 
   fun compositeIdIs(compositeId: WorkorderroutingId): SqlExpr<Boolean> = SqlExpr.all(workorderid().isEqual(compositeId.workorderid), productid().isEqual(compositeId.productid), operationsequence().isEqual(compositeId.operationsequence))
 
-  fun fkLocation(): ForeignKey<LocationFields, LocationRow> = ForeignKey.of<LocationFields, LocationRow>("production.FK_WorkOrderRouting_Location_LocationID").withColumnPair(locationid(), LocationFields::locationid)
+  fun fkLocation(): ForeignKey<LocationFields, LocationRow> = ForeignKey.of<LocationFields, LocationRow>("production.FK_WorkOrderRouting_Location_LocationID").withColumnPair<LocationId>(locationid(), LocationFields::locationid)
 
-  fun fkWorkorder(): ForeignKey<WorkorderFields, WorkorderRow> = ForeignKey.of<WorkorderFields, WorkorderRow>("production.FK_WorkOrderRouting_WorkOrder_WorkOrderID").withColumnPair(workorderid(), WorkorderFields::workorderid)
+  fun fkWorkorder(): ForeignKey<WorkorderFields, WorkorderRow> = ForeignKey.of<WorkorderFields, WorkorderRow>("production.FK_WorkOrderRouting_WorkOrder_WorkOrderID").withColumnPair<WorkorderId>(workorderid(), WorkorderFields::workorderid)
 
-  fun locationid(): Field<LocationId, WorkorderroutingRow>
+  abstract fun locationid(): Field<LocationId, WorkorderroutingRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, WorkorderroutingRow>
+  abstract fun modifieddate(): Field<LocalDateTime, WorkorderroutingRow>
 
-  fun operationsequence(): IdField<TypoShort, WorkorderroutingRow>
+  abstract fun operationsequence(): IdField<Short, WorkorderroutingRow>
 
-  fun plannedcost(): Field<BigDecimal, WorkorderroutingRow>
+  abstract fun plannedcost(): Field<BigDecimal, WorkorderroutingRow>
 
-  fun productid(): IdField<Int, WorkorderroutingRow>
+  abstract fun productid(): IdField<Int, WorkorderroutingRow>
 
-  override fun rowParser(): RowParser<WorkorderroutingRow> = WorkorderroutingRow._rowParser
+  override fun rowParser(): RowParser<WorkorderroutingRow> = WorkorderroutingRow._rowParser.underlying
 
-  fun scheduledenddate(): Field<TypoLocalDateTime, WorkorderroutingRow>
+  abstract fun scheduledenddate(): Field<LocalDateTime, WorkorderroutingRow>
 
-  fun scheduledstartdate(): Field<TypoLocalDateTime, WorkorderroutingRow>
+  abstract fun scheduledstartdate(): Field<LocalDateTime, WorkorderroutingRow>
 
-  fun workorderid(): IdField<WorkorderId, WorkorderroutingRow>
+  abstract fun workorderid(): IdField<WorkorderId, WorkorderroutingRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : WorkorderroutingFields, Relation<WorkorderroutingFields, WorkorderroutingRow> {
-      override fun workorderid(): IdField<WorkorderId, WorkorderroutingRow> = IdField<WorkorderId, WorkorderroutingRow>(_path, "workorderid", WorkorderroutingRow::workorderid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(workorderid = value) }, WorkorderId.pgType)
+    data class Impl(val _path: List<Path>) : WorkorderroutingFields, RelationStructure<WorkorderroutingFields, WorkorderroutingRow> {
+      override fun workorderid(): IdField<WorkorderId, WorkorderroutingRow> = IdField<WorkorderId, WorkorderroutingRow>(_path, "workorderid", WorkorderroutingRow::workorderid, null, "int4", { row, value -> row.copy(workorderid = value) }, WorkorderId.pgType)
 
-      override fun productid(): IdField<Int, WorkorderroutingRow> = IdField<Int, WorkorderroutingRow>(_path, "productid", WorkorderroutingRow::productid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productid = value) }, PgTypes.int4)
+      override fun productid(): IdField<Int, WorkorderroutingRow> = IdField<Int, WorkorderroutingRow>(_path, "productid", WorkorderroutingRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun operationsequence(): IdField<TypoShort, WorkorderroutingRow> = IdField<TypoShort, WorkorderroutingRow>(_path, "operationsequence", WorkorderroutingRow::operationsequence, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(operationsequence = value) }, TypoShort.pgType)
+      override fun operationsequence(): IdField<Short, WorkorderroutingRow> = IdField<Short, WorkorderroutingRow>(_path, "operationsequence", WorkorderroutingRow::operationsequence, null, "int2", { row, value -> row.copy(operationsequence = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun locationid(): Field<LocationId, WorkorderroutingRow> = Field<LocationId, WorkorderroutingRow>(_path, "locationid", WorkorderroutingRow::locationid, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(locationid = value) }, LocationId.pgType)
+      override fun locationid(): Field<LocationId, WorkorderroutingRow> = Field<LocationId, WorkorderroutingRow>(_path, "locationid", WorkorderroutingRow::locationid, null, "int2", { row, value -> row.copy(locationid = value) }, LocationId.pgType)
 
-      override fun scheduledstartdate(): Field<TypoLocalDateTime, WorkorderroutingRow> = Field<TypoLocalDateTime, WorkorderroutingRow>(_path, "scheduledstartdate", WorkorderroutingRow::scheduledstartdate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(scheduledstartdate = value) }, TypoLocalDateTime.pgType)
+      override fun scheduledstartdate(): Field<LocalDateTime, WorkorderroutingRow> = Field<LocalDateTime, WorkorderroutingRow>(_path, "scheduledstartdate", WorkorderroutingRow::scheduledstartdate, null, "timestamp", { row, value -> row.copy(scheduledstartdate = value) }, PgTypes.timestamp)
 
-      override fun scheduledenddate(): Field<TypoLocalDateTime, WorkorderroutingRow> = Field<TypoLocalDateTime, WorkorderroutingRow>(_path, "scheduledenddate", WorkorderroutingRow::scheduledenddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(scheduledenddate = value) }, TypoLocalDateTime.pgType)
+      override fun scheduledenddate(): Field<LocalDateTime, WorkorderroutingRow> = Field<LocalDateTime, WorkorderroutingRow>(_path, "scheduledenddate", WorkorderroutingRow::scheduledenddate, null, "timestamp", { row, value -> row.copy(scheduledenddate = value) }, PgTypes.timestamp)
 
-      override fun actualstartdate(): OptField<TypoLocalDateTime, WorkorderroutingRow> = OptField<TypoLocalDateTime, WorkorderroutingRow>(_path, "actualstartdate", WorkorderroutingRow::actualstartdate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(actualstartdate = value) }, TypoLocalDateTime.pgType)
+      override fun actualstartdate(): OptField<LocalDateTime, WorkorderroutingRow> = OptField<LocalDateTime, WorkorderroutingRow>(_path, "actualstartdate", WorkorderroutingRow::actualstartdate, null, "timestamp", { row, value -> row.copy(actualstartdate = value) }, PgTypes.timestamp)
 
-      override fun actualenddate(): OptField<TypoLocalDateTime, WorkorderroutingRow> = OptField<TypoLocalDateTime, WorkorderroutingRow>(_path, "actualenddate", WorkorderroutingRow::actualenddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(actualenddate = value) }, TypoLocalDateTime.pgType)
+      override fun actualenddate(): OptField<LocalDateTime, WorkorderroutingRow> = OptField<LocalDateTime, WorkorderroutingRow>(_path, "actualenddate", WorkorderroutingRow::actualenddate, null, "timestamp", { row, value -> row.copy(actualenddate = value) }, PgTypes.timestamp)
 
-      override fun actualresourcehrs(): OptField<BigDecimal, WorkorderroutingRow> = OptField<BigDecimal, WorkorderroutingRow>(_path, "actualresourcehrs", WorkorderroutingRow::actualresourcehrs, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(actualresourcehrs = value) }, PgTypes.numeric)
+      override fun actualresourcehrs(): OptField<BigDecimal, WorkorderroutingRow> = OptField<BigDecimal, WorkorderroutingRow>(_path, "actualresourcehrs", WorkorderroutingRow::actualresourcehrs, null, "numeric", { row, value -> row.copy(actualresourcehrs = value) }, PgTypes.numeric)
 
-      override fun plannedcost(): Field<BigDecimal, WorkorderroutingRow> = Field<BigDecimal, WorkorderroutingRow>(_path, "plannedcost", WorkorderroutingRow::plannedcost, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(plannedcost = value) }, PgTypes.numeric)
+      override fun plannedcost(): Field<BigDecimal, WorkorderroutingRow> = Field<BigDecimal, WorkorderroutingRow>(_path, "plannedcost", WorkorderroutingRow::plannedcost, null, "numeric", { row, value -> row.copy(plannedcost = value) }, PgTypes.numeric)
 
-      override fun actualcost(): OptField<BigDecimal, WorkorderroutingRow> = OptField<BigDecimal, WorkorderroutingRow>(_path, "actualcost", WorkorderroutingRow::actualcost, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(actualcost = value) }, PgTypes.numeric)
+      override fun actualcost(): OptField<BigDecimal, WorkorderroutingRow> = OptField<BigDecimal, WorkorderroutingRow>(_path, "actualcost", WorkorderroutingRow::actualcost, null, "numeric", { row, value -> row.copy(actualcost = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, WorkorderroutingRow> = Field<TypoLocalDateTime, WorkorderroutingRow>(_path, "modifieddate", WorkorderroutingRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, WorkorderroutingRow> = Field<LocalDateTime, WorkorderroutingRow>(_path, "modifieddate", WorkorderroutingRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, WorkorderroutingRow>> = listOf(this.workorderid(), this.productid(), this.operationsequence(), this.locationid(), this.scheduledstartdate(), this.scheduledenddate(), this.actualstartdate(), this.actualenddate(), this.actualresourcehrs(), this.plannedcost(), this.actualcost(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<WorkorderroutingFields, WorkorderroutingRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, WorkorderroutingRow>> = listOf(this.workorderid().underlying, this.productid().underlying, this.operationsequence().underlying, this.locationid().underlying, this.scheduledstartdate().underlying, this.scheduledenddate().underlying, this.actualstartdate().underlying, this.actualenddate().underlying, this.actualresourcehrs().underlying, this.plannedcost().underlying, this.actualcost().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<WorkorderroutingFields, WorkorderroutingRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

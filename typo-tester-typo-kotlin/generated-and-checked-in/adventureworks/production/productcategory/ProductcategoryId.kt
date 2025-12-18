@@ -6,7 +6,8 @@
 package adventureworks.production.productcategory
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class ProductcategoryId(@JsonValue val value: Int) {
       Bijection.of(ProductcategoryId::value, ::ProductcategoryId)
 
     val pgType: PgType<ProductcategoryId> =
-      PgTypes.int4.bimap(::ProductcategoryId, ProductcategoryId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::ProductcategoryId, ProductcategoryId::value)
 
     val pgTypeArray: PgType<Array<ProductcategoryId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::ProductcategoryId, ProductcategoryId::class.java) }, { xs -> arrayMap.map(xs, ProductcategoryId::value, Int::class.javaObjectType) })

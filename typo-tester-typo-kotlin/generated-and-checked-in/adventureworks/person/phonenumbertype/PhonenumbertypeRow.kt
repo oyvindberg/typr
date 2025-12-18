@@ -6,11 +6,12 @@
 package adventureworks.person.phonenumbertype
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: person.phonenumbertype
   * Type of phone number of a person.
@@ -24,19 +25,19 @@ data class PhonenumbertypeRow(
   /** Name of the telephone number type */
   val name: Name,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): PhonenumbertypeId = phonenumbertypeid
 
   fun toUnsavedRow(
     phonenumbertypeid: Defaulted<PhonenumbertypeId>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): PhonenumbertypeRowUnsaved = PhonenumbertypeRowUnsaved(name, phonenumbertypeid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<PhonenumbertypeRow> = RowParsers.of(PhonenumbertypeId.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> PhonenumbertypeRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.phonenumbertypeid, row.name, row.modifieddate) })
+    val _rowParser: RowParser<PhonenumbertypeRow> = RowParsers.of(PhonenumbertypeId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2 -> PhonenumbertypeRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.phonenumbertypeid, row.name, row.modifieddate) })
 
     val pgText: PgText<PhonenumbertypeRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

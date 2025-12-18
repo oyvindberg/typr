@@ -9,29 +9,29 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productdescription.ProductdescriptionId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait PdViewFields {
   def id: Field[ProductdescriptionId, PdViewRow]
   def productdescriptionid: Field[ProductdescriptionId, PdViewRow]
-  def description: Field[/* max 400 chars */ String, PdViewRow]
+  def description: Field[String, PdViewRow]
   def rowguid: Field[TypoUUID, PdViewRow]
   def modifieddate: Field[TypoLocalDateTime, PdViewRow]
 }
 
 object PdViewFields {
-  lazy val structure: Relation[PdViewFields, PdViewRow] =
+  lazy val structure: RelationStructure[PdViewFields, PdViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PdViewFields, PdViewRow] {
+    extends RelationStructure[PdViewFields, PdViewRow] {
 
     override lazy val fields: PdViewFields = new PdViewFields {
       override def id = Field[ProductdescriptionId, PdViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def productdescriptionid = Field[ProductdescriptionId, PdViewRow](_path, "productdescriptionid", None, None, x => x.productdescriptionid, (row, value) => row.copy(productdescriptionid = value))
-      override def description = Field[/* max 400 chars */ String, PdViewRow](_path, "description", None, None, x => x.description, (row, value) => row.copy(description = value))
+      override def description = Field[String, PdViewRow](_path, "description", None, None, x => x.description, (row, value) => row.copy(description = value))
       override def rowguid = Field[TypoUUID, PdViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, PdViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }

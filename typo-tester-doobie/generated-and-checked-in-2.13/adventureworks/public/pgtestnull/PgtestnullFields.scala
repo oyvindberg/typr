@@ -32,9 +32,9 @@ import adventureworks.customtypes.TypoXml
 import adventureworks.public.Mydomain
 import adventureworks.public.Myenum
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PgtestnullFields {
   def bool: OptField[Boolean, PgtestnullRow]
@@ -110,11 +110,11 @@ trait PgtestnullFields {
 }
 
 object PgtestnullFields {
-  lazy val structure: Relation[PgtestnullFields, PgtestnullRow] =
+  lazy val structure: RelationStructure[PgtestnullFields, PgtestnullRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PgtestnullFields, PgtestnullRow] {
+    extends RelationStructure[PgtestnullFields, PgtestnullRow] {
 
     override lazy val fields: PgtestnullFields = new PgtestnullFields {
       override def bool = OptField[Boolean, PgtestnullRow](_path, "bool", None, None, x => x.bool, (row, value) => row.copy(bool = value))

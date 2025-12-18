@@ -6,11 +6,12 @@
 package adventureworks.humanresources.department
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: humanresources.department
   * Lookup table containing the departments within the Adventure Works Cycles company.
@@ -26,19 +27,19 @@ data class DepartmentRow(
   /** Name of the group to which the department belongs. */
   val groupname: Name,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): DepartmentId = departmentid
 
   fun toUnsavedRow(
     departmentid: Defaulted<DepartmentId>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): DepartmentRowUnsaved = DepartmentRowUnsaved(name, groupname, departmentid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<DepartmentRow> = RowParsers.of(DepartmentId.pgType, Name.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> DepartmentRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.departmentid, row.name, row.groupname, row.modifieddate) })
+    val _rowParser: RowParser<DepartmentRow> = RowParsers.of(DepartmentId.pgType, Name.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> DepartmentRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.departmentid, row.name, row.groupname, row.modifieddate) })
 
     val pgText: PgText<DepartmentRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

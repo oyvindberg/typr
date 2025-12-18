@@ -15,7 +15,7 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `sales.currency` */
-case class CurrencyId(value: /* bpchar, max 3 chars */ String) extends scala.AnyVal
+case class CurrencyId(value: String) extends scala.AnyVal
 
 object CurrencyId {
   given arrayJdbcDecoder: JdbcDecoder[Array[CurrencyId]] = adventureworks.StringArrayDecoder.map(_.map(CurrencyId.apply))
@@ -24,7 +24,7 @@ object CurrencyId {
 
   given arraySetter: Setter[Array[CurrencyId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
 
-  given bijection: Bijection[CurrencyId, /* bpchar, max 3 chars */ String] = Bijection.apply[CurrencyId, /* bpchar, max 3 chars */ String](_.value)(CurrencyId.apply)
+  given bijection: Bijection[CurrencyId, String] = Bijection.apply[CurrencyId, String](_.value)(CurrencyId.apply)
 
   given jdbcDecoder: JdbcDecoder[CurrencyId] = JdbcDecoder.stringDecoder.map(CurrencyId.apply)
 

@@ -5,59 +5,61 @@
  */
 package adventureworks.sales.salesorderheadersalesreason
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderFields
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesorderheader.SalesorderheaderRow
 import adventureworks.sales.salesreason.SalesreasonFields
 import adventureworks.sales.salesreason.SalesreasonId
 import adventureworks.sales.salesreason.SalesreasonRow
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.FieldsExpr
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SalesorderheadersalesreasonFields : FieldsExpr<SalesorderheadersalesreasonRow> {
-  override fun columns(): List<FieldLike<*, SalesorderheadersalesreasonRow>>
+  abstract override fun columns(): List<FieldLike<*, SalesorderheadersalesreasonRow>>
 
   fun compositeIdIn(compositeIds: List<SalesorderheadersalesreasonId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<SalesorderheaderId, SalesorderheadersalesreasonId, SalesorderheadersalesreasonRow>(salesorderid(), SalesorderheadersalesreasonId::salesorderid, SalesorderheaderId.pgType), Part<SalesreasonId, SalesorderheadersalesreasonId, SalesorderheadersalesreasonRow>(salesreasonid(), SalesorderheadersalesreasonId::salesreasonid, SalesreasonId.pgType)), compositeIds)
 
   fun compositeIdIs(compositeId: SalesorderheadersalesreasonId): SqlExpr<Boolean> = SqlExpr.all(salesorderid().isEqual(compositeId.salesorderid), salesreasonid().isEqual(compositeId.salesreasonid))
 
-  fun fkSalesorderheader(): ForeignKey<SalesorderheaderFields, SalesorderheaderRow> = ForeignKey.of<SalesorderheaderFields, SalesorderheaderRow>("sales.FK_SalesOrderHeaderSalesReason_SalesOrderHeader_SalesOrderID").withColumnPair(salesorderid(), SalesorderheaderFields::salesorderid)
+  fun fkSalesorderheader(): ForeignKey<SalesorderheaderFields, SalesorderheaderRow> = ForeignKey.of<SalesorderheaderFields, SalesorderheaderRow>("sales.FK_SalesOrderHeaderSalesReason_SalesOrderHeader_SalesOrderID").withColumnPair<SalesorderheaderId>(salesorderid(), SalesorderheaderFields::salesorderid)
 
-  fun fkSalesreason(): ForeignKey<SalesreasonFields, SalesreasonRow> = ForeignKey.of<SalesreasonFields, SalesreasonRow>("sales.FK_SalesOrderHeaderSalesReason_SalesReason_SalesReasonID").withColumnPair(salesreasonid(), SalesreasonFields::salesreasonid)
+  fun fkSalesreason(): ForeignKey<SalesreasonFields, SalesreasonRow> = ForeignKey.of<SalesreasonFields, SalesreasonRow>("sales.FK_SalesOrderHeaderSalesReason_SalesReason_SalesReasonID").withColumnPair<SalesreasonId>(salesreasonid(), SalesreasonFields::salesreasonid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, SalesorderheadersalesreasonRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SalesorderheadersalesreasonRow>
 
-  override fun rowParser(): RowParser<SalesorderheadersalesreasonRow> = SalesorderheadersalesreasonRow._rowParser
+  override fun rowParser(): RowParser<SalesorderheadersalesreasonRow> = SalesorderheadersalesreasonRow._rowParser.underlying
 
-  fun salesorderid(): IdField<SalesorderheaderId, SalesorderheadersalesreasonRow>
+  abstract fun salesorderid(): IdField<SalesorderheaderId, SalesorderheadersalesreasonRow>
 
-  fun salesreasonid(): IdField<SalesreasonId, SalesorderheadersalesreasonRow>
+  abstract fun salesreasonid(): IdField<SalesreasonId, SalesorderheadersalesreasonRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SalesorderheadersalesreasonFields, Relation<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow> {
-      override fun salesorderid(): IdField<SalesorderheaderId, SalesorderheadersalesreasonRow> = IdField<SalesorderheaderId, SalesorderheadersalesreasonRow>(_path, "salesorderid", SalesorderheadersalesreasonRow::salesorderid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(salesorderid = value) }, SalesorderheaderId.pgType)
+    data class Impl(val _path: List<Path>) : SalesorderheadersalesreasonFields, RelationStructure<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow> {
+      override fun salesorderid(): IdField<SalesorderheaderId, SalesorderheadersalesreasonRow> = IdField<SalesorderheaderId, SalesorderheadersalesreasonRow>(_path, "salesorderid", SalesorderheadersalesreasonRow::salesorderid, null, "int4", { row, value -> row.copy(salesorderid = value) }, SalesorderheaderId.pgType)
 
-      override fun salesreasonid(): IdField<SalesreasonId, SalesorderheadersalesreasonRow> = IdField<SalesreasonId, SalesorderheadersalesreasonRow>(_path, "salesreasonid", SalesorderheadersalesreasonRow::salesreasonid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(salesreasonid = value) }, SalesreasonId.pgType)
+      override fun salesreasonid(): IdField<SalesreasonId, SalesorderheadersalesreasonRow> = IdField<SalesreasonId, SalesorderheadersalesreasonRow>(_path, "salesreasonid", SalesorderheadersalesreasonRow::salesreasonid, null, "int4", { row, value -> row.copy(salesreasonid = value) }, SalesreasonId.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SalesorderheadersalesreasonRow> = Field<TypoLocalDateTime, SalesorderheadersalesreasonRow>(_path, "modifieddate", SalesorderheadersalesreasonRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SalesorderheadersalesreasonRow> = Field<LocalDateTime, SalesorderheadersalesreasonRow>(_path, "modifieddate", SalesorderheadersalesreasonRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SalesorderheadersalesreasonRow>> = listOf(this.salesorderid(), this.salesreasonid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SalesorderheadersalesreasonRow>> = listOf(this.salesorderid().underlying, this.salesreasonid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SalesorderheadersalesreasonFields, SalesorderheadersalesreasonRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }
