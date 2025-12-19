@@ -36,7 +36,7 @@ import typo.runtime.internal.arrayMap;
  *
  * Then you create derived instances with {@code map} and/or {@code opt}
  */
-public sealed interface PgRead<A> extends DbRead<A> permits PgRead.NonNullable, PgRead.Nullable {
+public sealed interface PgRead<A> extends DbRead<A> permits PgRead.NonNullable, PgRead.Nullable, KotlinNullablePgRead {
   A read(ResultSet rs, int col) throws SQLException;
 
   <B> PgRead<B> map(SqlFunction<A, B> f);

@@ -26,6 +26,6 @@ data class VsalespersonsalesbyfiscalyearsdataViewRow(
   val fiscalyear: BigDecimal
 ) {
   companion object {
-    val _rowParser: RowParser<VsalespersonsalesbyfiscalyearsdataViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.numeric.nullable(), PgTypes.numeric, { t0, t1, t2, t3, t4, t5 -> VsalespersonsalesbyfiscalyearsdataViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.salespersonid, row.fullname, row.jobtitle, row.salesterritory, row.salestotal, row.fiscalyear) })
+    val _rowParser: RowParser<VsalespersonsalesbyfiscalyearsdataViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.numeric.nullable(), PgTypes.numeric, { t0, t1, t2, t3, t4, t5 -> VsalespersonsalesbyfiscalyearsdataViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.salespersonid, row.fullname, row.jobtitle, row.salesterritory, row.salestotal, row.fiscalyear) })
   }
 }

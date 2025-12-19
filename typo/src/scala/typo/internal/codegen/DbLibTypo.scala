@@ -1434,11 +1434,11 @@ class DbLibTypo(
                 jvm.Param(jvm.Ident(s"t$i"), col.tpe)
               }
               val args = params.zip(cols.toList).map { case (p, col) =>
-                val notNull = jvm.NotNull(p.name).code
+                // Don't use NotNull (!!); parameter types already encode nullability from PgType
                 // Use base() to unwrap Commented/UserDefined wrappers
                 jvm.Type.base(col.tpe) match {
-                  case TypesJava.String => code"$notNull as ${col.tpe}"
-                  case _                => notNull
+                  case TypesJava.String => code"${p.name} as ${col.tpe}"
+                  case _                => p.name.code
                 }
               }
               // Use untyped params for SAM conversion compatibility

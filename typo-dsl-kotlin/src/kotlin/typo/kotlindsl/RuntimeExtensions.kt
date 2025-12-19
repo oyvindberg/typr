@@ -35,7 +35,9 @@ fun <A : Any> PgType<A>.nullable(): PgType<A?> {
     // Create wrapper components that convert Optional<A> to A? at boundaries
     val pgTypename = underlying.typename().to(optionalToNullable<A>())
 
-    val pgRead = PgRead.of<A?> { rs, col -> underlying.read().read(rs, col).orNull() }
+    // Use KotlinNullablePgRead which implements DbRead.Nullable marker interface
+    // This tells RowParser.opt() that this column is already nullable
+    val pgRead: PgRead<A?> = typo.runtime.KotlinNullablePgRead(underlying.read())
 
     val pgWrite = PgWrite.primitive<A?> { ps, index, value -> underlying.write().set(ps, index, value.toOptional()) }
 
