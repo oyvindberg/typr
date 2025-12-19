@@ -18,13 +18,13 @@ import io.circe.Encoder
  */
 case class FootballClubRow(
   id: FootballClubId,
-  name: /* max 100 chars */ String
+  name: String
 )
 
 object FootballClubRow {
-  implicit lazy val decoder: Decoder[FootballClubRow] = Decoder.forProduct2[FootballClubRow, FootballClubId, /* max 100 chars */ String]("id", "name")(FootballClubRow.apply)(FootballClubId.decoder, Decoder.decodeString)
+  implicit lazy val decoder: Decoder[FootballClubRow] = Decoder.forProduct2[FootballClubRow, FootballClubId, String]("id", "name")(FootballClubRow.apply)(FootballClubId.decoder, Decoder.decodeString)
 
-  implicit lazy val encoder: Encoder[FootballClubRow] = Encoder.forProduct2[FootballClubRow, FootballClubId, /* max 100 chars */ String]("id", "name")(x => (x.id, x.name))(FootballClubId.encoder, Encoder.encodeString)
+  implicit lazy val encoder: Encoder[FootballClubRow] = Encoder.forProduct2[FootballClubRow, FootballClubId, String]("id", "name")(x => (x.id, x.name))(FootballClubId.encoder, Encoder.encodeString)
 
   implicit lazy val pgText: Text[FootballClubRow] = {
     Text.instance[FootballClubRow]{ (row, sb) =>
@@ -41,7 +41,7 @@ object FootballClubRow {
     ))(scala.reflect.ClassTag.Any).map { arr =>
       FootballClubRow(
         id = arr(0).asInstanceOf[FootballClubId],
-            name = arr(1).asInstanceOf[/* max 100 chars */ String]
+            name = arr(1).asInstanceOf[String]
       )
     }
   }

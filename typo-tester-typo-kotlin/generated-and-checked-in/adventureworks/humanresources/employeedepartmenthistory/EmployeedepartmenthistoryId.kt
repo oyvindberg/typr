@@ -5,15 +5,15 @@
  */
 package adventureworks.humanresources.employeedepartmenthistory
 
-import adventureworks.customtypes.TypoLocalDate
 import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
+import java.time.LocalDate
 
 /** Type for the composite primary key of table `humanresources.employeedepartmenthistory` */
 data class EmployeedepartmenthistoryId(
   val businessentityid: BusinessentityId,
-  val startdate: TypoLocalDate,
+  val startdate: LocalDate,
   val departmentid: DepartmentId,
   val shiftid: ShiftId
 )

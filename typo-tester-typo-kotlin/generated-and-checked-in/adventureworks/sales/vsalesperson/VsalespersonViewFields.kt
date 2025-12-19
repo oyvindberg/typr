@@ -10,117 +10,118 @@ import adventureworks.public.Name
 import adventureworks.public.Phone
 import adventureworks.userdefined.FirstName
 import java.math.BigDecimal
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface VsalespersonViewFields : FieldsExpr<VsalespersonViewRow> {
-  fun addressline1(): Field</* max 60 chars */ String, VsalespersonViewRow>
+  abstract fun addressline1(): Field<String, VsalespersonViewRow>
 
-  fun addressline2(): OptField</* max 60 chars */ String, VsalespersonViewRow>
+  abstract fun addressline2(): Field<String, VsalespersonViewRow>
 
-  fun businessentityid(): Field<BusinessentityId, VsalespersonViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, VsalespersonViewRow>
 
-  fun city(): Field</* max 30 chars */ String, VsalespersonViewRow>
+  abstract fun city(): Field<String, VsalespersonViewRow>
 
-  override fun columns(): List<FieldLike<*, VsalespersonViewRow>>
+  abstract override fun columns(): List<FieldLike<*, VsalespersonViewRow>>
 
-  fun countryregionname(): Field<Name, VsalespersonViewRow>
+  abstract fun countryregionname(): Field<Name, VsalespersonViewRow>
 
-  fun emailaddress(): OptField</* max 50 chars */ String, VsalespersonViewRow>
+  abstract fun emailaddress(): Field<String, VsalespersonViewRow>
 
-  fun emailpromotion(): Field<Int, VsalespersonViewRow>
+  abstract fun emailpromotion(): Field<Int, VsalespersonViewRow>
 
-  fun firstname(): Field</* user-picked */ FirstName, VsalespersonViewRow>
+  abstract fun firstname(): Field</* user-picked */ FirstName, VsalespersonViewRow>
 
-  fun jobtitle(): Field</* max 50 chars */ String, VsalespersonViewRow>
+  abstract fun jobtitle(): Field<String, VsalespersonViewRow>
 
-  fun lastname(): Field<Name, VsalespersonViewRow>
+  abstract fun lastname(): Field<Name, VsalespersonViewRow>
 
-  fun middlename(): OptField<Name, VsalespersonViewRow>
+  abstract fun middlename(): Field<Name, VsalespersonViewRow>
 
-  fun phonenumber(): OptField<Phone, VsalespersonViewRow>
+  abstract fun phonenumber(): Field<Phone, VsalespersonViewRow>
 
-  fun phonenumbertype(): OptField<Name, VsalespersonViewRow>
+  abstract fun phonenumbertype(): Field<Name, VsalespersonViewRow>
 
-  fun postalcode(): Field</* max 15 chars */ String, VsalespersonViewRow>
+  abstract fun postalcode(): Field<String, VsalespersonViewRow>
 
-  override fun rowParser(): RowParser<VsalespersonViewRow> = VsalespersonViewRow._rowParser
+  override fun rowParser(): RowParser<VsalespersonViewRow> = VsalespersonViewRow._rowParser.underlying
 
-  fun saleslastyear(): Field<BigDecimal, VsalespersonViewRow>
+  abstract fun saleslastyear(): Field<BigDecimal, VsalespersonViewRow>
 
-  fun salesquota(): OptField<BigDecimal, VsalespersonViewRow>
+  abstract fun salesquota(): Field<BigDecimal, VsalespersonViewRow>
 
-  fun salesytd(): Field<BigDecimal, VsalespersonViewRow>
+  abstract fun salesytd(): Field<BigDecimal, VsalespersonViewRow>
 
-  fun stateprovincename(): Field<Name, VsalespersonViewRow>
+  abstract fun stateprovincename(): Field<Name, VsalespersonViewRow>
 
-  fun suffix(): OptField</* max 10 chars */ String, VsalespersonViewRow>
+  abstract fun suffix(): Field<String, VsalespersonViewRow>
 
-  fun territorygroup(): OptField</* max 50 chars */ String, VsalespersonViewRow>
+  abstract fun territorygroup(): Field<String, VsalespersonViewRow>
 
-  fun territoryname(): OptField<Name, VsalespersonViewRow>
+  abstract fun territoryname(): Field<Name, VsalespersonViewRow>
 
-  fun title(): OptField</* max 8 chars */ String, VsalespersonViewRow>
+  abstract fun title(): Field<String, VsalespersonViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : VsalespersonViewFields, Relation<VsalespersonViewFields, VsalespersonViewRow> {
-      override fun businessentityid(): Field<BusinessentityId, VsalespersonViewRow> = Field<BusinessentityId, VsalespersonViewRow>(_path, "businessentityid", VsalespersonViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : VsalespersonViewFields, RelationStructure<VsalespersonViewFields, VsalespersonViewRow> {
+      override fun businessentityid(): Field<BusinessentityId, VsalespersonViewRow> = Field<BusinessentityId, VsalespersonViewRow>(_path, "businessentityid", VsalespersonViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun title(): OptField</* max 8 chars */ String, VsalespersonViewRow> = OptField</* max 8 chars */ String, VsalespersonViewRow>(_path, "title", VsalespersonViewRow::title, Optional.empty(), Optional.empty(), { row, value -> row.copy(title = value) }, PgTypes.text)
+      override fun title(): Field<String, VsalespersonViewRow> = Field<String, VsalespersonViewRow>(_path, "title", VsalespersonViewRow::title, null, null, { row, value -> row.copy(title = value) }, PgTypes.text)
 
-      override fun firstname(): Field</* user-picked */ FirstName, VsalespersonViewRow> = Field</* user-picked */ FirstName, VsalespersonViewRow>(_path, "firstname", VsalespersonViewRow::firstname, Optional.empty(), Optional.empty(), { row, value -> row.copy(firstname = value) }, FirstName.pgType)
+      override fun firstname(): Field</* user-picked */ FirstName, VsalespersonViewRow> = Field</* user-picked */ FirstName, VsalespersonViewRow>(_path, "firstname", VsalespersonViewRow::firstname, null, null, { row, value -> row.copy(firstname = value) }, FirstName.pgType)
 
-      override fun middlename(): OptField<Name, VsalespersonViewRow> = OptField<Name, VsalespersonViewRow>(_path, "middlename", VsalespersonViewRow::middlename, Optional.empty(), Optional.empty(), { row, value -> row.copy(middlename = value) }, Name.pgType)
+      override fun middlename(): Field<Name, VsalespersonViewRow> = Field<Name, VsalespersonViewRow>(_path, "middlename", VsalespersonViewRow::middlename, null, null, { row, value -> row.copy(middlename = value) }, Name.pgType)
 
-      override fun lastname(): Field<Name, VsalespersonViewRow> = Field<Name, VsalespersonViewRow>(_path, "lastname", VsalespersonViewRow::lastname, Optional.empty(), Optional.empty(), { row, value -> row.copy(lastname = value) }, Name.pgType)
+      override fun lastname(): Field<Name, VsalespersonViewRow> = Field<Name, VsalespersonViewRow>(_path, "lastname", VsalespersonViewRow::lastname, null, null, { row, value -> row.copy(lastname = value) }, Name.pgType)
 
-      override fun suffix(): OptField</* max 10 chars */ String, VsalespersonViewRow> = OptField</* max 10 chars */ String, VsalespersonViewRow>(_path, "suffix", VsalespersonViewRow::suffix, Optional.empty(), Optional.empty(), { row, value -> row.copy(suffix = value) }, PgTypes.text)
+      override fun suffix(): Field<String, VsalespersonViewRow> = Field<String, VsalespersonViewRow>(_path, "suffix", VsalespersonViewRow::suffix, null, null, { row, value -> row.copy(suffix = value) }, PgTypes.text)
 
-      override fun jobtitle(): Field</* max 50 chars */ String, VsalespersonViewRow> = Field</* max 50 chars */ String, VsalespersonViewRow>(_path, "jobtitle", VsalespersonViewRow::jobtitle, Optional.empty(), Optional.empty(), { row, value -> row.copy(jobtitle = value) }, PgTypes.text)
+      override fun jobtitle(): Field<String, VsalespersonViewRow> = Field<String, VsalespersonViewRow>(_path, "jobtitle", VsalespersonViewRow::jobtitle, null, null, { row, value -> row.copy(jobtitle = value) }, PgTypes.text)
 
-      override fun phonenumber(): OptField<Phone, VsalespersonViewRow> = OptField<Phone, VsalespersonViewRow>(_path, "phonenumber", VsalespersonViewRow::phonenumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumber = value) }, Phone.pgType)
+      override fun phonenumber(): Field<Phone, VsalespersonViewRow> = Field<Phone, VsalespersonViewRow>(_path, "phonenumber", VsalespersonViewRow::phonenumber, null, null, { row, value -> row.copy(phonenumber = value) }, Phone.pgType)
 
-      override fun phonenumbertype(): OptField<Name, VsalespersonViewRow> = OptField<Name, VsalespersonViewRow>(_path, "phonenumbertype", VsalespersonViewRow::phonenumbertype, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumbertype = value) }, Name.pgType)
+      override fun phonenumbertype(): Field<Name, VsalespersonViewRow> = Field<Name, VsalespersonViewRow>(_path, "phonenumbertype", VsalespersonViewRow::phonenumbertype, null, null, { row, value -> row.copy(phonenumbertype = value) }, Name.pgType)
 
-      override fun emailaddress(): OptField</* max 50 chars */ String, VsalespersonViewRow> = OptField</* max 50 chars */ String, VsalespersonViewRow>(_path, "emailaddress", VsalespersonViewRow::emailaddress, Optional.empty(), Optional.empty(), { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
+      override fun emailaddress(): Field<String, VsalespersonViewRow> = Field<String, VsalespersonViewRow>(_path, "emailaddress", VsalespersonViewRow::emailaddress, null, null, { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
 
-      override fun emailpromotion(): Field<Int, VsalespersonViewRow> = Field<Int, VsalespersonViewRow>(_path, "emailpromotion", VsalespersonViewRow::emailpromotion, Optional.empty(), Optional.empty(), { row, value -> row.copy(emailpromotion = value) }, PgTypes.int4)
+      override fun emailpromotion(): Field<Int, VsalespersonViewRow> = Field<Int, VsalespersonViewRow>(_path, "emailpromotion", VsalespersonViewRow::emailpromotion, null, null, { row, value -> row.copy(emailpromotion = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun addressline1(): Field</* max 60 chars */ String, VsalespersonViewRow> = Field</* max 60 chars */ String, VsalespersonViewRow>(_path, "addressline1", VsalespersonViewRow::addressline1, Optional.empty(), Optional.empty(), { row, value -> row.copy(addressline1 = value) }, PgTypes.text)
+      override fun addressline1(): Field<String, VsalespersonViewRow> = Field<String, VsalespersonViewRow>(_path, "addressline1", VsalespersonViewRow::addressline1, null, null, { row, value -> row.copy(addressline1 = value) }, PgTypes.text)
 
-      override fun addressline2(): OptField</* max 60 chars */ String, VsalespersonViewRow> = OptField</* max 60 chars */ String, VsalespersonViewRow>(_path, "addressline2", VsalespersonViewRow::addressline2, Optional.empty(), Optional.empty(), { row, value -> row.copy(addressline2 = value) }, PgTypes.text)
+      override fun addressline2(): Field<String, VsalespersonViewRow> = Field<String, VsalespersonViewRow>(_path, "addressline2", VsalespersonViewRow::addressline2, null, null, { row, value -> row.copy(addressline2 = value) }, PgTypes.text)
 
-      override fun city(): Field</* max 30 chars */ String, VsalespersonViewRow> = Field</* max 30 chars */ String, VsalespersonViewRow>(_path, "city", VsalespersonViewRow::city, Optional.empty(), Optional.empty(), { row, value -> row.copy(city = value) }, PgTypes.text)
+      override fun city(): Field<String, VsalespersonViewRow> = Field<String, VsalespersonViewRow>(_path, "city", VsalespersonViewRow::city, null, null, { row, value -> row.copy(city = value) }, PgTypes.text)
 
-      override fun stateprovincename(): Field<Name, VsalespersonViewRow> = Field<Name, VsalespersonViewRow>(_path, "stateprovincename", VsalespersonViewRow::stateprovincename, Optional.empty(), Optional.empty(), { row, value -> row.copy(stateprovincename = value) }, Name.pgType)
+      override fun stateprovincename(): Field<Name, VsalespersonViewRow> = Field<Name, VsalespersonViewRow>(_path, "stateprovincename", VsalespersonViewRow::stateprovincename, null, null, { row, value -> row.copy(stateprovincename = value) }, Name.pgType)
 
-      override fun postalcode(): Field</* max 15 chars */ String, VsalespersonViewRow> = Field</* max 15 chars */ String, VsalespersonViewRow>(_path, "postalcode", VsalespersonViewRow::postalcode, Optional.empty(), Optional.empty(), { row, value -> row.copy(postalcode = value) }, PgTypes.text)
+      override fun postalcode(): Field<String, VsalespersonViewRow> = Field<String, VsalespersonViewRow>(_path, "postalcode", VsalespersonViewRow::postalcode, null, null, { row, value -> row.copy(postalcode = value) }, PgTypes.text)
 
-      override fun countryregionname(): Field<Name, VsalespersonViewRow> = Field<Name, VsalespersonViewRow>(_path, "countryregionname", VsalespersonViewRow::countryregionname, Optional.empty(), Optional.empty(), { row, value -> row.copy(countryregionname = value) }, Name.pgType)
+      override fun countryregionname(): Field<Name, VsalespersonViewRow> = Field<Name, VsalespersonViewRow>(_path, "countryregionname", VsalespersonViewRow::countryregionname, null, null, { row, value -> row.copy(countryregionname = value) }, Name.pgType)
 
-      override fun territoryname(): OptField<Name, VsalespersonViewRow> = OptField<Name, VsalespersonViewRow>(_path, "territoryname", VsalespersonViewRow::territoryname, Optional.empty(), Optional.empty(), { row, value -> row.copy(territoryname = value) }, Name.pgType)
+      override fun territoryname(): Field<Name, VsalespersonViewRow> = Field<Name, VsalespersonViewRow>(_path, "territoryname", VsalespersonViewRow::territoryname, null, null, { row, value -> row.copy(territoryname = value) }, Name.pgType)
 
-      override fun territorygroup(): OptField</* max 50 chars */ String, VsalespersonViewRow> = OptField</* max 50 chars */ String, VsalespersonViewRow>(_path, "territorygroup", VsalespersonViewRow::territorygroup, Optional.empty(), Optional.empty(), { row, value -> row.copy(territorygroup = value) }, PgTypes.text)
+      override fun territorygroup(): Field<String, VsalespersonViewRow> = Field<String, VsalespersonViewRow>(_path, "territorygroup", VsalespersonViewRow::territorygroup, null, null, { row, value -> row.copy(territorygroup = value) }, PgTypes.text)
 
-      override fun salesquota(): OptField<BigDecimal, VsalespersonViewRow> = OptField<BigDecimal, VsalespersonViewRow>(_path, "salesquota", VsalespersonViewRow::salesquota, Optional.empty(), Optional.empty(), { row, value -> row.copy(salesquota = value) }, PgTypes.numeric)
+      override fun salesquota(): Field<BigDecimal, VsalespersonViewRow> = Field<BigDecimal, VsalespersonViewRow>(_path, "salesquota", VsalespersonViewRow::salesquota, null, null, { row, value -> row.copy(salesquota = value) }, PgTypes.numeric)
 
-      override fun salesytd(): Field<BigDecimal, VsalespersonViewRow> = Field<BigDecimal, VsalespersonViewRow>(_path, "salesytd", VsalespersonViewRow::salesytd, Optional.empty(), Optional.empty(), { row, value -> row.copy(salesytd = value) }, PgTypes.numeric)
+      override fun salesytd(): Field<BigDecimal, VsalespersonViewRow> = Field<BigDecimal, VsalespersonViewRow>(_path, "salesytd", VsalespersonViewRow::salesytd, null, null, { row, value -> row.copy(salesytd = value) }, PgTypes.numeric)
 
-      override fun saleslastyear(): Field<BigDecimal, VsalespersonViewRow> = Field<BigDecimal, VsalespersonViewRow>(_path, "saleslastyear", VsalespersonViewRow::saleslastyear, Optional.empty(), Optional.empty(), { row, value -> row.copy(saleslastyear = value) }, PgTypes.numeric)
+      override fun saleslastyear(): Field<BigDecimal, VsalespersonViewRow> = Field<BigDecimal, VsalespersonViewRow>(_path, "saleslastyear", VsalespersonViewRow::saleslastyear, null, null, { row, value -> row.copy(saleslastyear = value) }, PgTypes.numeric)
 
-      override fun columns(): List<FieldLike<*, VsalespersonViewRow>> = listOf(this.businessentityid(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.jobtitle(), this.phonenumber(), this.phonenumbertype(), this.emailaddress(), this.emailpromotion(), this.addressline1(), this.addressline2(), this.city(), this.stateprovincename(), this.postalcode(), this.countryregionname(), this.territoryname(), this.territorygroup(), this.salesquota(), this.salesytd(), this.saleslastyear())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<VsalespersonViewFields, VsalespersonViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, VsalespersonViewRow>> = listOf(this.businessentityid().underlying, this.title().underlying, this.firstname().underlying, this.middlename().underlying, this.lastname().underlying, this.suffix().underlying, this.jobtitle().underlying, this.phonenumber().underlying, this.phonenumbertype().underlying, this.emailaddress().underlying, this.emailpromotion().underlying, this.addressline1().underlying, this.addressline2().underlying, this.city().underlying, this.stateprovincename().underlying, this.postalcode().underlying, this.countryregionname().underlying, this.territoryname().underlying, this.territorygroup().underlying, this.salesquota().underlying, this.salesytd().underlying, this.saleslastyear().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<VsalespersonViewFields, VsalespersonViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

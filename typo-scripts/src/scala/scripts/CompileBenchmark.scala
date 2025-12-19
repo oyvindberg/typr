@@ -5,6 +5,7 @@ import bleep.commands.SourceGen
 import bleep.model.{CrossProjectName, ProjectName}
 import typo.*
 import typo.internal.codegen.LangScala
+import typo.internal.external.{ExternalTools, ExternalToolsConfig}
 import typo.internal.generate
 import typo.internal.sqlfiles.SqlFileReader
 
@@ -28,8 +29,9 @@ object CompileBenchmark extends BleepScript("CompileBenchmark") {
 
   override def run(started: Started, commands: Commands, args: List[String]): Unit = {
     val ds = TypoDataSource.hikariPostgres(server = "localhost", port = 6432, databaseName = "Adventureworks", username = "postgres", password = "password")
-    val metadb = Await.result(MetaDb.fromDb(logger = TypoLogger.Noop, ds = ds, viewSelector = Selector.All, schemaMode = SchemaMode.MultiSchema), Duration.Inf)
-    val sqlFiles = Await.result(SqlFileReader(TypoLogger.Noop, buildDir.resolve("adventureworks_sql"), ds), Duration.Inf)
+    val externalTools = ExternalTools.init(TypoLogger.Noop, ExternalToolsConfig.default)
+    val metadb = Await.result(MetaDb.fromDb(logger = TypoLogger.Noop, ds = ds, viewSelector = Selector.All, schemaMode = SchemaMode.MultiSchema, externalTools = externalTools), Duration.Inf)
+    val sqlFiles = Await.result(SqlFileReader(TypoLogger.Noop, buildDir.resolve("adventureworks_sql"), ds, externalTools), Duration.Inf)
 
     val crossIds = List(
       "jvm212",
@@ -55,7 +57,7 @@ object CompileBenchmark extends BleepScript("CompileBenchmark") {
         List(false, true).flatMap { inlineImplicits =>
           val options = Options(
             pkg = "adventureworks",
-            lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
+            lang = LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala),
             dbLib = dbLib,
             jsonLibs = List(jsonLib),
             enableTestInserts = Selector.All,

@@ -6,26 +6,14 @@
 package adventureworks.person_dynamic
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
-import typo.runtime.Fragment.interpolate
 
 class PersonDynamicSqlRepoImpl() : PersonDynamicSqlRepo {
   override fun apply(
-    firstName: Optional<String>,
+    firstName: String?,
     c: Connection
-  ): List<PersonDynamicSqlRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      SELECT p.title, p.firstname, p.middlename, p.lastname
-      FROM person.person p
-      WHERE """.trimMargin()),
-    PgTypes.text.opt().encode(firstName),
-    typo.runtime.Fragment.lit("::text IS NULL OR p.firstname = "),
-    PgTypes.text.opt().encode(firstName),
-    typo.runtime.Fragment.lit("""
-
-
-    """.trimMargin())
-  ).query(PersonDynamicSqlRow._rowParser.all()).runUnchecked(c)
+  ): List<PersonDynamicSqlRow> = Fragment.interpolate(Fragment.lit("SELECT p.title, p.firstname, p.middlename, p.lastname\nFROM person.person p\nWHERE "), Fragment.encode(PgTypes.text.nullable(), firstName), Fragment.lit("::text IS NULL OR p.firstname = "), Fragment.encode(PgTypes.text.nullable(), firstName), Fragment.lit("\n")).query(PersonDynamicSqlRow._rowParser.all()).runUnchecked(c)
 }

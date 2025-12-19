@@ -13,13 +13,13 @@ import anorm.ToParameterValue
 import anorm.ToStatement
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait TestUtdanningstilbudFields {
   def organisasjonskode: IdField[TestOrganisasjonId, TestUtdanningstilbudRow]
@@ -35,11 +35,11 @@ trait TestUtdanningstilbudFields {
 }
 
 object TestUtdanningstilbudFields {
-  lazy val structure: Relation[TestUtdanningstilbudFields, TestUtdanningstilbudRow] =
+  lazy val structure: RelationStructure[TestUtdanningstilbudFields, TestUtdanningstilbudRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[TestUtdanningstilbudFields, TestUtdanningstilbudRow] {
+    extends RelationStructure[TestUtdanningstilbudFields, TestUtdanningstilbudRow] {
 
     override lazy val fields: TestUtdanningstilbudFields = new TestUtdanningstilbudFields {
       override def organisasjonskode = IdField[TestOrganisasjonId, TestUtdanningstilbudRow](_path, "organisasjonskode", None, None, x => x.organisasjonskode, (row, value) => row.copy(organisasjonskode = value))

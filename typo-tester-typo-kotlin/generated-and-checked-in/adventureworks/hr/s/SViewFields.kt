@@ -5,55 +5,57 @@
  */
 package adventureworks.hr.s
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoLocalTime
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.time.LocalTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SViewFields : FieldsExpr<SViewRow> {
-  override fun columns(): List<FieldLike<*, SViewRow>>
+  abstract override fun columns(): List<FieldLike<*, SViewRow>>
 
-  fun endtime(): Field<TypoLocalTime, SViewRow>
+  abstract fun endtime(): Field<LocalTime, SViewRow>
 
-  fun id(): Field<ShiftId, SViewRow>
+  abstract fun id(): Field<ShiftId, SViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, SViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SViewRow>
 
-  fun name(): Field<Name, SViewRow>
+  abstract fun name(): Field<Name, SViewRow>
 
-  override fun rowParser(): RowParser<SViewRow> = SViewRow._rowParser
+  override fun rowParser(): RowParser<SViewRow> = SViewRow._rowParser.underlying
 
-  fun shiftid(): Field<ShiftId, SViewRow>
+  abstract fun shiftid(): Field<ShiftId, SViewRow>
 
-  fun starttime(): Field<TypoLocalTime, SViewRow>
+  abstract fun starttime(): Field<LocalTime, SViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SViewFields, Relation<SViewFields, SViewRow> {
-      override fun id(): Field<ShiftId, SViewRow> = Field<ShiftId, SViewRow>(_path, "id", SViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, ShiftId.pgType)
+    data class Impl(val _path: List<Path>) : SViewFields, RelationStructure<SViewFields, SViewRow> {
+      override fun id(): Field<ShiftId, SViewRow> = Field<ShiftId, SViewRow>(_path, "id", SViewRow::id, null, null, { row, value -> row.copy(id = value) }, ShiftId.pgType)
 
-      override fun shiftid(): Field<ShiftId, SViewRow> = Field<ShiftId, SViewRow>(_path, "shiftid", SViewRow::shiftid, Optional.empty(), Optional.empty(), { row, value -> row.copy(shiftid = value) }, ShiftId.pgType)
+      override fun shiftid(): Field<ShiftId, SViewRow> = Field<ShiftId, SViewRow>(_path, "shiftid", SViewRow::shiftid, null, null, { row, value -> row.copy(shiftid = value) }, ShiftId.pgType)
 
-      override fun name(): Field<Name, SViewRow> = Field<Name, SViewRow>(_path, "name", SViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, SViewRow> = Field<Name, SViewRow>(_path, "name", SViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun starttime(): Field<TypoLocalTime, SViewRow> = Field<TypoLocalTime, SViewRow>(_path, "starttime", SViewRow::starttime, Optional.of("text"), Optional.empty(), { row, value -> row.copy(starttime = value) }, TypoLocalTime.pgType)
+      override fun starttime(): Field<LocalTime, SViewRow> = Field<LocalTime, SViewRow>(_path, "starttime", SViewRow::starttime, null, null, { row, value -> row.copy(starttime = value) }, PgTypes.time)
 
-      override fun endtime(): Field<TypoLocalTime, SViewRow> = Field<TypoLocalTime, SViewRow>(_path, "endtime", SViewRow::endtime, Optional.of("text"), Optional.empty(), { row, value -> row.copy(endtime = value) }, TypoLocalTime.pgType)
+      override fun endtime(): Field<LocalTime, SViewRow> = Field<LocalTime, SViewRow>(_path, "endtime", SViewRow::endtime, null, null, { row, value -> row.copy(endtime = value) }, PgTypes.time)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SViewRow> = Field<TypoLocalDateTime, SViewRow>(_path, "modifieddate", SViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SViewRow> = Field<LocalDateTime, SViewRow>(_path, "modifieddate", SViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SViewRow>> = listOf(this.id(), this.shiftid(), this.name(), this.starttime(), this.endtime(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SViewFields, SViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SViewRow>> = listOf(this.id().underlying, this.shiftid().underlying, this.name().underlying, this.starttime().underlying, this.endtime().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SViewFields, SViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

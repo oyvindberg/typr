@@ -7,21 +7,20 @@ package testdb.inventory
 
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
 
 class InventoryRepoImpl() : InventoryRepo {
   override fun delete(): DeleteBuilder<InventoryFields, InventoryRow> = DeleteBuilder.of("`inventory`", InventoryFields.structure, Dialect.MARIADB)
@@ -29,184 +28,92 @@ class InventoryRepoImpl() : InventoryRepo {
   override fun deleteById(
     inventoryId: InventoryId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("delete from `inventory` where `inventory_id` = "),
-    InventoryId.pgType.encode(inventoryId),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from `inventory` where `inventory_id` = "), Fragment.encode(InventoryId.pgType, inventoryId), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     inventoryIds: Array<InventoryId>,
     c: Connection
   ): Int {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in inventoryIds) { fragments.add(InventoryId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in inventoryIds) { fragments.add(Fragment.encode(InventoryId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("delete from `inventory` where `inventory_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: InventoryRow,
     c: Connection
-  ): InventoryRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into `inventory`(`product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)
-      values (""".trimMargin()),
-    ProductsId.pgType.encode(unsaved.productId),
-    typo.runtime.Fragment.lit(", "),
-    WarehousesId.pgType.encode(unsaved.warehouseId),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.int_.encode(unsaved.quantityOnHand),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.int_.encode(unsaved.quantityReserved),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.int_.encode(unsaved.quantityOnOrder),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.int_.encode(unsaved.reorderPoint),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.int_.encode(unsaved.reorderQuantity),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.binLocation),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.opt().encode(unsaved.lastCountedAt),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.updatedAt),
-    typo.runtime.Fragment.lit("""
-      )
-      returning `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`
-    """.trimMargin())
-  )
+  ): InventoryRow = Fragment.interpolate(Fragment.lit("insert into `inventory`(`product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)\nvalues ("), Fragment.encode(ProductsId.pgType, unsaved.productId), Fragment.lit(", "), Fragment.encode(WarehousesId.pgType, unsaved.warehouseId), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, unsaved.quantityOnHand), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, unsaved.quantityReserved), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, unsaved.quantityOnOrder), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, unsaved.reorderPoint), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, unsaved.reorderQuantity), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.binLocation), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.nullable(), unsaved.lastCountedAt), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt), Fragment.lit(")\nreturning `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\n"))
     .updateReturning(InventoryRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: InventoryRowUnsaved,
     c: Connection
   ): InventoryRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("`product_id`"))
-    values.add(interpolate(
-      ProductsId.pgType.encode(unsaved.productId),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId), Fragment.lit("")))
     columns.add(Fragment.lit("`warehouse_id`"))
-    values.add(interpolate(
-      WarehousesId.pgType.encode(unsaved.warehouseId),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(WarehousesId.pgType, unsaved.warehouseId), Fragment.lit("")))
     unsaved.quantityOnHand.visit(
       {  },
       { value -> columns.add(Fragment.lit("`quantity_on_hand`"))
-      values.add(interpolate(
-        MariaTypes.int_.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.int_, value), Fragment.lit(""))) }
     );
     unsaved.quantityReserved.visit(
       {  },
       { value -> columns.add(Fragment.lit("`quantity_reserved`"))
-      values.add(interpolate(
-        MariaTypes.int_.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.int_, value), Fragment.lit(""))) }
     );
     unsaved.quantityOnOrder.visit(
       {  },
       { value -> columns.add(Fragment.lit("`quantity_on_order`"))
-      values.add(interpolate(
-        MariaTypes.int_.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.int_, value), Fragment.lit(""))) }
     );
     unsaved.reorderPoint.visit(
       {  },
       { value -> columns.add(Fragment.lit("`reorder_point`"))
-      values.add(interpolate(
-        MariaTypes.int_.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.int_, value), Fragment.lit(""))) }
     );
     unsaved.reorderQuantity.visit(
       {  },
       { value -> columns.add(Fragment.lit("`reorder_quantity`"))
-      values.add(interpolate(
-        MariaTypes.int_.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.int_, value), Fragment.lit(""))) }
     );
     unsaved.binLocation.visit(
       {  },
       { value -> columns.add(Fragment.lit("`bin_location`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.lastCountedAt.visit(
       {  },
       { value -> columns.add(Fragment.lit("`last_counted_at`"))
-      values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.datetime.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.updatedAt.visit(
       {  },
       { value -> columns.add(Fragment.lit("`updated_at`"))
-      values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit(""))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("insert into `inventory`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into `inventory`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\n"))
     return q.updateReturning(InventoryRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun select(): SelectBuilder<InventoryFields, InventoryRow> = SelectBuilder.of("`inventory`", InventoryFields.structure, InventoryRow._rowParser, Dialect.MARIADB)
 
-  override fun selectAll(c: Connection): List<InventoryRow> = interpolate(typo.runtime.Fragment.lit("""
-    select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`
-    from `inventory`
-  """.trimMargin())).query(InventoryRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<InventoryRow> = Fragment.interpolate(Fragment.lit("select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\nfrom `inventory`\n")).query(InventoryRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     inventoryId: InventoryId,
     c: Connection
-  ): Optional<InventoryRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`
-      from `inventory`
-      where `inventory_id` = """.trimMargin()),
-    InventoryId.pgType.encode(inventoryId),
-    typo.runtime.Fragment.lit("")
-  ).query(InventoryRow._rowParser.first()).runUnchecked(c)
+  ): InventoryRow? = Fragment.interpolate(Fragment.lit("select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\nfrom `inventory`\nwhere `inventory_id` = "), Fragment.encode(InventoryId.pgType, inventoryId), Fragment.lit("")).query(InventoryRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     inventoryIds: Array<InventoryId>,
     c: Connection
   ): List<InventoryRow> {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in inventoryIds) { fragments.add(InventoryId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in inventoryIds) { fragments.add(Fragment.encode(InventoryId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at` from `inventory` where `inventory_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(InventoryRow._rowParser.all()).runUnchecked(c)
   }
 
@@ -216,143 +123,36 @@ class InventoryRepoImpl() : InventoryRepo {
   ): Map<InventoryId, InventoryRow> {
     val ret: MutableMap<InventoryId, InventoryRow> = mutableMapOf<InventoryId, InventoryRow>()
     selectByIds(inventoryIds, c).forEach({ row -> ret.put(row.inventoryId, row) })
-    return ret
+    return ret.toMap()
   }
 
   override fun selectByUniqueProductIdAndWarehouseId(
     productId: ProductsId,
     warehouseId: WarehousesId,
     c: Connection
-  ): Optional<InventoryRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`
-      from `inventory`
-      where `product_id` = """.trimMargin()),
-    ProductsId.pgType.encode(productId),
-    typo.runtime.Fragment.lit(" AND `warehouse_id` = "),
-    WarehousesId.pgType.encode(warehouseId),
-    typo.runtime.Fragment.lit("""
+  ): InventoryRow? = Fragment.interpolate(Fragment.lit("select `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\nfrom `inventory`\nwhere `product_id` = "), Fragment.encode(ProductsId.pgType, productId), Fragment.lit(" AND `warehouse_id` = "), Fragment.encode(WarehousesId.pgType, warehouseId), Fragment.lit("\n")).query(InventoryRow._rowParser.first()).runUnchecked(c)
 
-
-    """.trimMargin())
-  ).query(InventoryRow._rowParser.first()).runUnchecked(c)
-
-  override fun update(): UpdateBuilder<InventoryFields, InventoryRow> = UpdateBuilder.of("`inventory`", InventoryFields.structure, InventoryRow._rowParser.all(), Dialect.MARIADB)
+  override fun update(): UpdateBuilder<InventoryFields, InventoryRow> = UpdateBuilder.of("`inventory`", InventoryFields.structure, InventoryRow._rowParser, Dialect.MARIADB)
 
   override fun update(
     row: InventoryRow,
     c: Connection
   ): Boolean {
     val inventoryId: InventoryId = row.inventoryId
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update `inventory`
-        set `product_id` = """.trimMargin()),
-      ProductsId.pgType.encode(row.productId),
-      typo.runtime.Fragment.lit("""
-        ,
-        `warehouse_id` = """.trimMargin()),
-      WarehousesId.pgType.encode(row.warehouseId),
-      typo.runtime.Fragment.lit("""
-        ,
-        `quantity_on_hand` = """.trimMargin()),
-      MariaTypes.int_.encode(row.quantityOnHand),
-      typo.runtime.Fragment.lit("""
-        ,
-        `quantity_reserved` = """.trimMargin()),
-      MariaTypes.int_.encode(row.quantityReserved),
-      typo.runtime.Fragment.lit("""
-        ,
-        `quantity_on_order` = """.trimMargin()),
-      MariaTypes.int_.encode(row.quantityOnOrder),
-      typo.runtime.Fragment.lit("""
-        ,
-        `reorder_point` = """.trimMargin()),
-      MariaTypes.int_.encode(row.reorderPoint),
-      typo.runtime.Fragment.lit("""
-        ,
-        `reorder_quantity` = """.trimMargin()),
-      MariaTypes.int_.encode(row.reorderQuantity),
-      typo.runtime.Fragment.lit("""
-        ,
-        `bin_location` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.binLocation),
-      typo.runtime.Fragment.lit("""
-        ,
-        `last_counted_at` = """.trimMargin()),
-      MariaTypes.datetime.opt().encode(row.lastCountedAt),
-      typo.runtime.Fragment.lit("""
-        ,
-        `updated_at` = """.trimMargin()),
-      MariaTypes.datetime.encode(row.updatedAt),
-      typo.runtime.Fragment.lit("""
-  
-        where `inventory_id` = """.trimMargin()),
-      InventoryId.pgType.encode(inventoryId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update `inventory`\nset `product_id` = "), Fragment.encode(ProductsId.pgType, row.productId), Fragment.lit(",\n`warehouse_id` = "), Fragment.encode(WarehousesId.pgType, row.warehouseId), Fragment.lit(",\n`quantity_on_hand` = "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, row.quantityOnHand), Fragment.lit(",\n`quantity_reserved` = "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, row.quantityReserved), Fragment.lit(",\n`quantity_on_order` = "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, row.quantityOnOrder), Fragment.lit(",\n`reorder_point` = "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, row.reorderPoint), Fragment.lit(",\n`reorder_quantity` = "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, row.reorderQuantity), Fragment.lit(",\n`bin_location` = "), Fragment.encode(MariaTypes.varchar.nullable(), row.binLocation), Fragment.lit(",\n`last_counted_at` = "), Fragment.encode(MariaTypes.datetime.nullable(), row.lastCountedAt), Fragment.lit(",\n`updated_at` = "), Fragment.encode(MariaTypes.datetime, row.updatedAt), Fragment.lit("\nwhere `inventory_id` = "), Fragment.encode(InventoryId.pgType, inventoryId), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: InventoryRow,
     c: Connection
-  ): InventoryRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      INSERT INTO `inventory`(`product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)
-      VALUES (""".trimMargin()),
-    ProductsId.pgType.encode(unsaved.productId),
-    typo.runtime.Fragment.lit(", "),
-    WarehousesId.pgType.encode(unsaved.warehouseId),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.int_.encode(unsaved.quantityOnHand),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.int_.encode(unsaved.quantityReserved),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.int_.encode(unsaved.quantityOnOrder),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.int_.encode(unsaved.reorderPoint),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.int_.encode(unsaved.reorderQuantity),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.binLocation),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.opt().encode(unsaved.lastCountedAt),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.updatedAt),
-    typo.runtime.Fragment.lit("""
-      )
-      ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-      `warehouse_id` = VALUES(`warehouse_id`),
-      `quantity_on_hand` = VALUES(`quantity_on_hand`),
-      `quantity_reserved` = VALUES(`quantity_reserved`),
-      `quantity_on_order` = VALUES(`quantity_on_order`),
-      `reorder_point` = VALUES(`reorder_point`),
-      `reorder_quantity` = VALUES(`reorder_quantity`),
-      `bin_location` = VALUES(`bin_location`),
-      `last_counted_at` = VALUES(`last_counted_at`),
-      `updated_at` = VALUES(`updated_at`)
-      RETURNING `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`""".trimMargin())
-  )
+  ): InventoryRow = Fragment.interpolate(Fragment.lit("INSERT INTO `inventory`(`product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)\nVALUES ("), Fragment.encode(ProductsId.pgType, unsaved.productId), Fragment.lit(", "), Fragment.encode(WarehousesId.pgType, unsaved.warehouseId), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, unsaved.quantityOnHand), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, unsaved.quantityReserved), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, unsaved.quantityOnOrder), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, unsaved.reorderPoint), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.int_, unsaved.reorderQuantity), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.binLocation), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.nullable(), unsaved.lastCountedAt), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt), Fragment.lit(")\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`warehouse_id` = VALUES(`warehouse_id`),\n`quantity_on_hand` = VALUES(`quantity_on_hand`),\n`quantity_reserved` = VALUES(`quantity_reserved`),\n`quantity_on_order` = VALUES(`quantity_on_order`),\n`reorder_point` = VALUES(`reorder_point`),\n`reorder_quantity` = VALUES(`reorder_quantity`),\n`bin_location` = VALUES(`bin_location`),\n`last_counted_at` = VALUES(`last_counted_at`),\n`updated_at` = VALUES(`updated_at`)\nRETURNING `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`"))
     .updateReturning(InventoryRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<InventoryRow>,
+    unsaved: Iterator<InventoryRow>,
     c: Connection
-  ): List<InventoryRow> = interpolate(typo.runtime.Fragment.lit("""
-                            INSERT INTO `inventory`(`inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                            ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-                            `warehouse_id` = VALUES(`warehouse_id`),
-                            `quantity_on_hand` = VALUES(`quantity_on_hand`),
-                            `quantity_reserved` = VALUES(`quantity_reserved`),
-                            `quantity_on_order` = VALUES(`quantity_on_order`),
-                            `reorder_point` = VALUES(`reorder_point`),
-                            `reorder_quantity` = VALUES(`reorder_quantity`),
-                            `bin_location` = VALUES(`bin_location`),
-                            `last_counted_at` = VALUES(`last_counted_at`),
-                            `updated_at` = VALUES(`updated_at`)
-                            RETURNING `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`""".trimMargin()))
+  ): List<InventoryRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `inventory`(`inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`warehouse_id` = VALUES(`warehouse_id`),\n`quantity_on_hand` = VALUES(`quantity_on_hand`),\n`quantity_reserved` = VALUES(`quantity_reserved`),\n`quantity_on_order` = VALUES(`quantity_on_order`),\n`reorder_point` = VALUES(`reorder_point`),\n`reorder_quantity` = VALUES(`reorder_quantity`),\n`bin_location` = VALUES(`bin_location`),\n`last_counted_at` = VALUES(`last_counted_at`),\n`updated_at` = VALUES(`updated_at`)\nRETURNING `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`"))
     .updateReturningEach(InventoryRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 }

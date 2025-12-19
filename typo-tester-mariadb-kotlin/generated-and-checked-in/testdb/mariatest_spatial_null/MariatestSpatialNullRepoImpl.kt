@@ -7,19 +7,17 @@ package testdb.mariatest_spatial_null
 
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
 
 class MariatestSpatialNullRepoImpl() : MariatestSpatialNullRepo {
   override fun delete(): DeleteBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow> = DeleteBuilder.of("`mariatest_spatial_null`", MariatestSpatialNullFields.structure, Dialect.MARIADB)
@@ -27,171 +25,88 @@ class MariatestSpatialNullRepoImpl() : MariatestSpatialNullRepo {
   override fun deleteById(
     id: MariatestSpatialNullId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("delete from `mariatest_spatial_null` where `id` = "),
-    MariatestSpatialNullId.pgType.encode(id),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from `mariatest_spatial_null` where `id` = "), Fragment.encode(MariatestSpatialNullId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     ids: Array<MariatestSpatialNullId>,
     c: Connection
   ): Int {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in ids) { fragments.add(MariatestSpatialNullId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in ids) { fragments.add(Fragment.encode(MariatestSpatialNullId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("delete from `mariatest_spatial_null` where `id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: MariatestSpatialNullRow,
     c: Connection
-  ): MariatestSpatialNullRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into `mariatest_spatial_null`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
-      values (""".trimMargin()),
-    MariaTypes.geometry.opt().encode(unsaved.geometryCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.point.opt().encode(unsaved.pointCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.linestring.opt().encode(unsaved.linestringCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.polygon.opt().encode(unsaved.polygonCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.multipoint.opt().encode(unsaved.multipointCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.multilinestring.opt().encode(unsaved.multilinestringCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.multipolygon.opt().encode(unsaved.multipolygonCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.geometrycollection.opt().encode(unsaved.geometrycollectionCol),
-    typo.runtime.Fragment.lit("""
-      )
-      returning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
-    """.trimMargin())
-  )
+  ): MariatestSpatialNullRow = Fragment.interpolate(Fragment.lit("insert into `mariatest_spatial_null`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)\nvalues ("), Fragment.encode(MariaTypes.geometry.nullable(), unsaved.geometryCol), Fragment.lit(", "), Fragment.encode(MariaTypes.point.nullable(), unsaved.pointCol), Fragment.lit(", "), Fragment.encode(MariaTypes.linestring.nullable(), unsaved.linestringCol), Fragment.lit(", "), Fragment.encode(MariaTypes.polygon.nullable(), unsaved.polygonCol), Fragment.lit(", "), Fragment.encode(MariaTypes.multipoint.nullable(), unsaved.multipointCol), Fragment.lit(", "), Fragment.encode(MariaTypes.multilinestring.nullable(), unsaved.multilinestringCol), Fragment.lit(", "), Fragment.encode(MariaTypes.multipolygon.nullable(), unsaved.multipolygonCol), Fragment.lit(", "), Fragment.encode(MariaTypes.geometrycollection.nullable(), unsaved.geometrycollectionCol), Fragment.lit(")\nreturning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`\n"))
     .updateReturning(MariatestSpatialNullRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: MariatestSpatialNullRowUnsaved,
     c: Connection
   ): MariatestSpatialNullRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     unsaved.geometryCol.visit(
       {  },
       { value -> columns.add(Fragment.lit("`geometry_col`"))
-      values.add(interpolate(
-        MariaTypes.geometry.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.geometry.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.pointCol.visit(
       {  },
       { value -> columns.add(Fragment.lit("`point_col`"))
-      values.add(interpolate(
-        MariaTypes.point.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.point.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.linestringCol.visit(
       {  },
       { value -> columns.add(Fragment.lit("`linestring_col`"))
-      values.add(interpolate(
-        MariaTypes.linestring.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.linestring.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.polygonCol.visit(
       {  },
       { value -> columns.add(Fragment.lit("`polygon_col`"))
-      values.add(interpolate(
-        MariaTypes.polygon.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.polygon.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.multipointCol.visit(
       {  },
       { value -> columns.add(Fragment.lit("`multipoint_col`"))
-      values.add(interpolate(
-        MariaTypes.multipoint.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.multipoint.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.multilinestringCol.visit(
       {  },
       { value -> columns.add(Fragment.lit("`multilinestring_col`"))
-      values.add(interpolate(
-        MariaTypes.multilinestring.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.multilinestring.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.multipolygonCol.visit(
       {  },
       { value -> columns.add(Fragment.lit("`multipolygon_col`"))
-      values.add(interpolate(
-        MariaTypes.multipolygon.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.multipolygon.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.geometrycollectionCol.visit(
       {  },
       { value -> columns.add(Fragment.lit("`geometrycollection_col`"))
-      values.add(interpolate(
-        MariaTypes.geometrycollection.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.geometrycollection.nullable(), value), Fragment.lit(""))) }
     );
-    val q: Fragment = if (columns.isEmpty()) interpolate(typo.runtime.Fragment.lit("""
-      insert into `mariatest_spatial_null` default values
-      returning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
-    """.trimMargin())) else interpolate(
-      typo.runtime.Fragment.lit("insert into `mariatest_spatial_null`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
-      """.trimMargin())
-    )
+    val q: Fragment = (if (columns.isEmpty()) Fragment.interpolate(Fragment.lit("insert into `mariatest_spatial_null` default values\nreturning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`\n")) else Fragment.interpolate(Fragment.lit("insert into `mariatest_spatial_null`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`\n")))
     return q.updateReturning(MariatestSpatialNullRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun select(): SelectBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow> = SelectBuilder.of("`mariatest_spatial_null`", MariatestSpatialNullFields.structure, MariatestSpatialNullRow._rowParser, Dialect.MARIADB)
 
-  override fun selectAll(c: Connection): List<MariatestSpatialNullRow> = interpolate(typo.runtime.Fragment.lit("""
-    select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
-    from `mariatest_spatial_null`
-  """.trimMargin())).query(MariatestSpatialNullRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<MariatestSpatialNullRow> = Fragment.interpolate(Fragment.lit("select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`\nfrom `mariatest_spatial_null`\n")).query(MariatestSpatialNullRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     id: MariatestSpatialNullId,
     c: Connection
-  ): Optional<MariatestSpatialNullRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
-      from `mariatest_spatial_null`
-      where `id` = """.trimMargin()),
-    MariatestSpatialNullId.pgType.encode(id),
-    typo.runtime.Fragment.lit("")
-  ).query(MariatestSpatialNullRow._rowParser.first()).runUnchecked(c)
+  ): MariatestSpatialNullRow? = Fragment.interpolate(Fragment.lit("select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`\nfrom `mariatest_spatial_null`\nwhere `id` = "), Fragment.encode(MariatestSpatialNullId.pgType, id), Fragment.lit("")).query(MariatestSpatialNullRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     ids: Array<MariatestSpatialNullId>,
     c: Connection
   ): List<MariatestSpatialNullRow> {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in ids) { fragments.add(MariatestSpatialNullId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in ids) { fragments.add(Fragment.encode(MariatestSpatialNullId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col` from `mariatest_spatial_null` where `id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(MariatestSpatialNullRow._rowParser.all()).runUnchecked(c)
   }
 
@@ -201,109 +116,30 @@ class MariatestSpatialNullRepoImpl() : MariatestSpatialNullRepo {
   ): Map<MariatestSpatialNullId, MariatestSpatialNullRow> {
     val ret: MutableMap<MariatestSpatialNullId, MariatestSpatialNullRow> = mutableMapOf<MariatestSpatialNullId, MariatestSpatialNullRow>()
     selectByIds(ids, c).forEach({ row -> ret.put(row.id, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow> = UpdateBuilder.of("`mariatest_spatial_null`", MariatestSpatialNullFields.structure, MariatestSpatialNullRow._rowParser.all(), Dialect.MARIADB)
+  override fun update(): UpdateBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow> = UpdateBuilder.of("`mariatest_spatial_null`", MariatestSpatialNullFields.structure, MariatestSpatialNullRow._rowParser, Dialect.MARIADB)
 
   override fun update(
     row: MariatestSpatialNullRow,
     c: Connection
   ): Boolean {
     val id: MariatestSpatialNullId = row.id
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update `mariatest_spatial_null`
-        set `geometry_col` = """.trimMargin()),
-      MariaTypes.geometry.opt().encode(row.geometryCol),
-      typo.runtime.Fragment.lit("""
-        ,
-        `point_col` = """.trimMargin()),
-      MariaTypes.point.opt().encode(row.pointCol),
-      typo.runtime.Fragment.lit("""
-        ,
-        `linestring_col` = """.trimMargin()),
-      MariaTypes.linestring.opt().encode(row.linestringCol),
-      typo.runtime.Fragment.lit("""
-        ,
-        `polygon_col` = """.trimMargin()),
-      MariaTypes.polygon.opt().encode(row.polygonCol),
-      typo.runtime.Fragment.lit("""
-        ,
-        `multipoint_col` = """.trimMargin()),
-      MariaTypes.multipoint.opt().encode(row.multipointCol),
-      typo.runtime.Fragment.lit("""
-        ,
-        `multilinestring_col` = """.trimMargin()),
-      MariaTypes.multilinestring.opt().encode(row.multilinestringCol),
-      typo.runtime.Fragment.lit("""
-        ,
-        `multipolygon_col` = """.trimMargin()),
-      MariaTypes.multipolygon.opt().encode(row.multipolygonCol),
-      typo.runtime.Fragment.lit("""
-        ,
-        `geometrycollection_col` = """.trimMargin()),
-      MariaTypes.geometrycollection.opt().encode(row.geometrycollectionCol),
-      typo.runtime.Fragment.lit("""
-  
-        where `id` = """.trimMargin()),
-      MariatestSpatialNullId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update `mariatest_spatial_null`\nset `geometry_col` = "), Fragment.encode(MariaTypes.geometry.nullable(), row.geometryCol), Fragment.lit(",\n`point_col` = "), Fragment.encode(MariaTypes.point.nullable(), row.pointCol), Fragment.lit(",\n`linestring_col` = "), Fragment.encode(MariaTypes.linestring.nullable(), row.linestringCol), Fragment.lit(",\n`polygon_col` = "), Fragment.encode(MariaTypes.polygon.nullable(), row.polygonCol), Fragment.lit(",\n`multipoint_col` = "), Fragment.encode(MariaTypes.multipoint.nullable(), row.multipointCol), Fragment.lit(",\n`multilinestring_col` = "), Fragment.encode(MariaTypes.multilinestring.nullable(), row.multilinestringCol), Fragment.lit(",\n`multipolygon_col` = "), Fragment.encode(MariaTypes.multipolygon.nullable(), row.multipolygonCol), Fragment.lit(",\n`geometrycollection_col` = "), Fragment.encode(MariaTypes.geometrycollection.nullable(), row.geometrycollectionCol), Fragment.lit("\nwhere `id` = "), Fragment.encode(MariatestSpatialNullId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: MariatestSpatialNullRow,
     c: Connection
-  ): MariatestSpatialNullRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      INSERT INTO `mariatest_spatial_null`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
-      VALUES (""".trimMargin()),
-    MariaTypes.geometry.opt().encode(unsaved.geometryCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.point.opt().encode(unsaved.pointCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.linestring.opt().encode(unsaved.linestringCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.polygon.opt().encode(unsaved.polygonCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.multipoint.opt().encode(unsaved.multipointCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.multilinestring.opt().encode(unsaved.multilinestringCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.multipolygon.opt().encode(unsaved.multipolygonCol),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.geometrycollection.opt().encode(unsaved.geometrycollectionCol),
-    typo.runtime.Fragment.lit("""
-      )
-      ON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),
-      `point_col` = VALUES(`point_col`),
-      `linestring_col` = VALUES(`linestring_col`),
-      `polygon_col` = VALUES(`polygon_col`),
-      `multipoint_col` = VALUES(`multipoint_col`),
-      `multilinestring_col` = VALUES(`multilinestring_col`),
-      `multipolygon_col` = VALUES(`multipolygon_col`),
-      `geometrycollection_col` = VALUES(`geometrycollection_col`)
-      RETURNING `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`""".trimMargin())
-  )
+  ): MariatestSpatialNullRow = Fragment.interpolate(Fragment.lit("INSERT INTO `mariatest_spatial_null`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)\nVALUES ("), Fragment.encode(MariaTypes.geometry.nullable(), unsaved.geometryCol), Fragment.lit(", "), Fragment.encode(MariaTypes.point.nullable(), unsaved.pointCol), Fragment.lit(", "), Fragment.encode(MariaTypes.linestring.nullable(), unsaved.linestringCol), Fragment.lit(", "), Fragment.encode(MariaTypes.polygon.nullable(), unsaved.polygonCol), Fragment.lit(", "), Fragment.encode(MariaTypes.multipoint.nullable(), unsaved.multipointCol), Fragment.lit(", "), Fragment.encode(MariaTypes.multilinestring.nullable(), unsaved.multilinestringCol), Fragment.lit(", "), Fragment.encode(MariaTypes.multipolygon.nullable(), unsaved.multipolygonCol), Fragment.lit(", "), Fragment.encode(MariaTypes.geometrycollection.nullable(), unsaved.geometrycollectionCol), Fragment.lit(")\nON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),\n`point_col` = VALUES(`point_col`),\n`linestring_col` = VALUES(`linestring_col`),\n`polygon_col` = VALUES(`polygon_col`),\n`multipoint_col` = VALUES(`multipoint_col`),\n`multilinestring_col` = VALUES(`multilinestring_col`),\n`multipolygon_col` = VALUES(`multipolygon_col`),\n`geometrycollection_col` = VALUES(`geometrycollection_col`)\nRETURNING `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`"))
     .updateReturning(MariatestSpatialNullRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<MariatestSpatialNullRow>,
+    unsaved: Iterator<MariatestSpatialNullRow>,
     c: Connection
-  ): List<MariatestSpatialNullRow> = interpolate(typo.runtime.Fragment.lit("""
-                                       INSERT INTO `mariatest_spatial_null`(`id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
-                                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                       ON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),
-                                       `point_col` = VALUES(`point_col`),
-                                       `linestring_col` = VALUES(`linestring_col`),
-                                       `polygon_col` = VALUES(`polygon_col`),
-                                       `multipoint_col` = VALUES(`multipoint_col`),
-                                       `multilinestring_col` = VALUES(`multilinestring_col`),
-                                       `multipolygon_col` = VALUES(`multipolygon_col`),
-                                       `geometrycollection_col` = VALUES(`geometrycollection_col`)
-                                       RETURNING `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`""".trimMargin()))
+  ): List<MariatestSpatialNullRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `mariatest_spatial_null`(`id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),\n`point_col` = VALUES(`point_col`),\n`linestring_col` = VALUES(`linestring_col`),\n`polygon_col` = VALUES(`polygon_col`),\n`multipoint_col` = VALUES(`multipoint_col`),\n`multilinestring_col` = VALUES(`multilinestring_col`),\n`multipolygon_col` = VALUES(`multipolygon_col`),\n`geometrycollection_col` = VALUES(`geometrycollection_col`)\nRETURNING `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`"))
     .updateReturningEach(MariatestSpatialNullRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 }

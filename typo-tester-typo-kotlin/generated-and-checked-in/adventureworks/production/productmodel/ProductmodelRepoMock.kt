@@ -8,21 +8,19 @@ package adventureworks.production.productmodel
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ProductmodelRepoMock(
   val toRow: (ProductmodelRowUnsaved) -> ProductmodelRow,
@@ -33,7 +31,7 @@ data class ProductmodelRepoMock(
   override fun deleteById(
     productmodelid: ProductmodelId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(productmodelid)).isPresent()
+  ): Boolean = map.remove(productmodelid) != null
 
   override fun deleteByIds(
     productmodelids: Array<ProductmodelId>,
@@ -41,7 +39,7 @@ data class ProductmodelRepoMock(
   ): Int {
     var count = 0
     for (id in productmodelids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ProductmodelRepoMock(
     c: Connection
   ): ProductmodelRow {
     if (map.containsKey(unsaved.productmodelid)) {
-      throw RuntimeException(str("id $unsaved.productmodelid already exists"))
+      throw RuntimeException("id " + unsaved.productmodelid + " already exists")
     }
     map[unsaved.productmodelid] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class ProductmodelRepoMock(
   ): ProductmodelRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<ProductmodelRow>,
+    unsaved: Iterator<ProductmodelRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class ProductmodelRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ProductmodelRowUnsaved>,
+    unsaved: Iterator<ProductmodelRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class ProductmodelRepoMock(
   override fun selectById(
     productmodelid: ProductmodelId,
     c: Connection
-  ): Optional<ProductmodelRow> = Optional.ofNullable(map[productmodelid])
+  ): ProductmodelRow? = map[productmodelid]
 
   override fun selectByIds(
     productmodelids: Array<ProductmodelId>,
@@ -109,9 +107,9 @@ data class ProductmodelRepoMock(
   ): List<ProductmodelRow> {
     val result = ArrayList<ProductmodelRow>()
     for (id in productmodelids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class ProductmodelRepoMock(
     row: ProductmodelRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.productmodelid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.productmodelid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.productmodelid] = row
     }
@@ -144,7 +142,7 @@ data class ProductmodelRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductmodelRow>,
+    unsaved: Iterator<ProductmodelRow>,
     c: Connection
   ): List<ProductmodelRow> {
     val result = ArrayList<ProductmodelRow>()
@@ -158,7 +156,7 @@ data class ProductmodelRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<ProductmodelRow>,
+    unsaved: Iterator<ProductmodelRow>,
     batchSize: Int,
     c: Connection
   ): Int {

@@ -6,15 +6,15 @@
 package testdb.v_customer_summary
 
 import java.sql.Connection
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Dialect
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.Fragment.sql
 
 class VCustomerSummaryViewRepoImpl extends VCustomerSummaryViewRepo {
   override def select: SelectBuilder[VCustomerSummaryViewFields, VCustomerSummaryViewRow] = SelectBuilder.of("`v_customer_summary`", VCustomerSummaryViewFields.structure, VCustomerSummaryViewRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[VCustomerSummaryViewRow] = {
-    interpolate"""select `customer_id`, `email`, `full_name`, `tier`, `status`, `created_at`, `last_login_at`, `total_orders`, `lifetime_value`, `last_order_date`
+  override def selectAll(using c: Connection): List[VCustomerSummaryViewRow] = {
+    sql"""select `customer_id`, `email`, `full_name`, `tier`, `status`, `created_at`, `last_login_at`, `total_orders`, `lifetime_value`, `last_order_date`
     from `v_customer_summary`
     """.query(VCustomerSummaryViewRow.`_rowParser`.all()).runUnchecked(c)
   }

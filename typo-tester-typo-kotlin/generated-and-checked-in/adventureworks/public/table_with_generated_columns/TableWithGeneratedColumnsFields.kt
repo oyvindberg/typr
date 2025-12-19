@@ -5,37 +5,38 @@
  */
 package adventureworks.public.table_with_generated_columns
 
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface TableWithGeneratedColumnsFields : FieldsExpr<TableWithGeneratedColumnsRow> {
-  override fun columns(): List<FieldLike<*, TableWithGeneratedColumnsRow>>
+  abstract override fun columns(): List<FieldLike<*, TableWithGeneratedColumnsRow>>
 
-  fun name(): IdField<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow>
+  abstract fun name(): IdField<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow>
 
-  fun nameTypeAlways(): Field<String, TableWithGeneratedColumnsRow>
+  abstract fun nameTypeAlways(): Field<String, TableWithGeneratedColumnsRow>
 
-  override fun rowParser(): RowParser<TableWithGeneratedColumnsRow> = TableWithGeneratedColumnsRow._rowParser
+  override fun rowParser(): RowParser<TableWithGeneratedColumnsRow> = TableWithGeneratedColumnsRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : TableWithGeneratedColumnsFields, Relation<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> {
-      override fun name(): IdField<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow> = IdField<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow>(_path, "name", TableWithGeneratedColumnsRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, TableWithGeneratedColumnsId.pgType)
+    data class Impl(val _path: List<Path>) : TableWithGeneratedColumnsFields, RelationStructure<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> {
+      override fun name(): IdField<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow> = IdField<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow>(_path, "name", TableWithGeneratedColumnsRow::name, null, null, { row, value -> row.copy(name = value) }, TableWithGeneratedColumnsId.pgType)
 
-      override fun nameTypeAlways(): Field<String, TableWithGeneratedColumnsRow> = Field<String, TableWithGeneratedColumnsRow>(_path, "name-type-always", TableWithGeneratedColumnsRow::nameTypeAlways, Optional.empty(), Optional.empty(), { row, value -> row.copy(nameTypeAlways = value) }, PgTypes.text)
+      override fun nameTypeAlways(): Field<String, TableWithGeneratedColumnsRow> = Field<String, TableWithGeneratedColumnsRow>(_path, "name-type-always", TableWithGeneratedColumnsRow::nameTypeAlways, null, null, { row, value -> row.copy(nameTypeAlways = value) }, PgTypes.text)
 
-      override fun columns(): List<FieldLike<*, TableWithGeneratedColumnsRow>> = listOf(this.name(), this.nameTypeAlways())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, TableWithGeneratedColumnsRow>> = listOf(this.name().underlying, this.nameTypeAlways().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

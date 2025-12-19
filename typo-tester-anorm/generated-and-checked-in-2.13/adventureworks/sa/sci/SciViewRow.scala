@@ -27,7 +27,7 @@ case class SciViewRow(
   /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartitemid]] */
   shoppingcartitemid: ShoppingcartitemId,
   /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartid]] */
-  shoppingcartid: /* max 50 chars */ String,
+  shoppingcartid: String,
   /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.quantity]] */
   quantity: Int,
   /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.productid]] */

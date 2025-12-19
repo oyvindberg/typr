@@ -6,11 +6,12 @@
 package testdb.categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `categories` which has not been persisted yet */
 case class CategoriesRowUnsaved(
@@ -21,35 +22,35 @@ case class CategoriesRowUnsaved(
   /** Default: NULL
    * Points to [[testdb.categories.CategoriesRow.categoryId]]
    */
-  @JsonProperty("parent_id") parentId: Defaulted[Optional[CategoriesId]] = new UseDefault(),
+  @JsonProperty("parent_id") parentId: Defaulted[Option[CategoriesId]] = new UseDefault(),
   /** Default: NULL
 
    */
-  description: Defaulted[Optional[String]] = new UseDefault(),
+  description: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("image_url") imageUrl: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("image_url") imageUrl: Defaulted[Option[String]] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("sort_order") sortOrder: Defaulted[java.lang.Short] = new UseDefault(),
+  @JsonProperty("sort_order") sortOrder: Defaulted[Short] = new UseDefault(),
   /** Default: 1
 
    */
-  @JsonProperty("is_visible") isVisible: Defaulted[java.lang.Boolean] = new UseDefault(),
+  @JsonProperty("is_visible") isVisible: Defaulted[Boolean] = new UseDefault(),
   /** Default: NULL
 
    */
-  metadata: Defaulted[Optional[String]] = new UseDefault()
+  metadata: Defaulted[Option[String]] = new UseDefault()
 ) {
   def toRow(
-    parentIdDefault: => Optional[CategoriesId],
-    descriptionDefault: => Optional[String],
-    imageUrlDefault: => Optional[String],
-    sortOrderDefault: => java.lang.Short,
-    isVisibleDefault: => java.lang.Boolean,
-    metadataDefault: => Optional[String],
+    parentIdDefault: => Option[CategoriesId],
+    descriptionDefault: => Option[String],
+    imageUrlDefault: => Option[String],
+    sortOrderDefault: => Short,
+    isVisibleDefault: => Boolean,
+    metadataDefault: => Option[String],
     categoryIdDefault: => CategoriesId
   ): CategoriesRow = {
     new CategoriesRow(
@@ -67,5 +68,5 @@ case class CategoriesRowUnsaved(
 }
 
 object CategoriesRowUnsaved {
-  given mariaText: MariaText[CategoriesRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.slug, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using CategoriesId.pgType.opt().mariaText).unsafeEncode(row.parentId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumtext.opt().mariaText).unsafeEncode(row.description, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.imageUrl, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.smallint.mariaText).unsafeEncode(row.sortOrder, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isVisible, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.metadata, sb) })
+  given mariaText: MariaText[CategoriesRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.slug, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using CategoriesId.pgType.nullable.mariaText).unsafeEncode(row.parentId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumtext.nullable.mariaText).unsafeEncode(row.description, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.imageUrl, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.smallint.mariaText).unsafeEncode(row.sortOrder, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isVisible, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.metadata, sb) })
 }

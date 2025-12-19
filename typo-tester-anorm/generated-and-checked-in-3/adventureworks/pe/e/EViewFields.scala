@@ -9,32 +9,31 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait EViewFields {
   def id: Field[Int, EViewRow]
   def businessentityid: Field[BusinessentityId, EViewRow]
   def emailaddressid: Field[Int, EViewRow]
-  def emailaddress: OptField[/* max 50 chars */ String, EViewRow]
+  def emailaddress: Field[String, EViewRow]
   def rowguid: Field[TypoUUID, EViewRow]
   def modifieddate: Field[TypoLocalDateTime, EViewRow]
 }
 
 object EViewFields {
-  lazy val structure: Relation[EViewFields, EViewRow] =
+  lazy val structure: RelationStructure[EViewFields, EViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[EViewFields, EViewRow] {
+    extends RelationStructure[EViewFields, EViewRow] {
 
     override lazy val fields: EViewFields = new EViewFields {
       override def id = Field[Int, EViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def businessentityid = Field[BusinessentityId, EViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def emailaddressid = Field[Int, EViewRow](_path, "emailaddressid", None, None, x => x.emailaddressid, (row, value) => row.copy(emailaddressid = value))
-      override def emailaddress = OptField[/* max 50 chars */ String, EViewRow](_path, "emailaddress", None, None, x => x.emailaddress, (row, value) => row.copy(emailaddress = value))
+      override def emailaddress = Field[String, EViewRow](_path, "emailaddress", None, None, x => x.emailaddress, (row, value) => row.copy(emailaddress = value))
       override def rowguid = Field[TypoUUID, EViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, EViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }

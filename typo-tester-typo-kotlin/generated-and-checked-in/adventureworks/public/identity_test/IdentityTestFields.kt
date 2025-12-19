@@ -5,41 +5,42 @@
  */
 package adventureworks.public.identity_test
 
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
-import typo.runtime.PgTypes
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.RowParser
 
 interface IdentityTestFields : FieldsExpr<IdentityTestRow> {
-  fun alwaysGenerated(): Field<Int, IdentityTestRow>
+  abstract fun alwaysGenerated(): Field<Int, IdentityTestRow>
 
-  override fun columns(): List<FieldLike<*, IdentityTestRow>>
+  abstract override fun columns(): List<FieldLike<*, IdentityTestRow>>
 
-  fun defaultGenerated(): Field<Int, IdentityTestRow>
+  abstract fun defaultGenerated(): Field<Int, IdentityTestRow>
 
-  fun name(): IdField<IdentityTestId, IdentityTestRow>
+  abstract fun name(): IdField<IdentityTestId, IdentityTestRow>
 
-  override fun rowParser(): RowParser<IdentityTestRow> = IdentityTestRow._rowParser
+  override fun rowParser(): RowParser<IdentityTestRow> = IdentityTestRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : IdentityTestFields, Relation<IdentityTestFields, IdentityTestRow> {
-      override fun alwaysGenerated(): Field<Int, IdentityTestRow> = Field<Int, IdentityTestRow>(_path, "always_generated", IdentityTestRow::alwaysGenerated, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(alwaysGenerated = value) }, PgTypes.int4)
+    data class Impl(val _path: List<Path>) : IdentityTestFields, RelationStructure<IdentityTestFields, IdentityTestRow> {
+      override fun alwaysGenerated(): Field<Int, IdentityTestRow> = Field<Int, IdentityTestRow>(_path, "always_generated", IdentityTestRow::alwaysGenerated, null, "int4", { row, value -> row.copy(alwaysGenerated = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun defaultGenerated(): Field<Int, IdentityTestRow> = Field<Int, IdentityTestRow>(_path, "default_generated", IdentityTestRow::defaultGenerated, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(defaultGenerated = value) }, PgTypes.int4)
+      override fun defaultGenerated(): Field<Int, IdentityTestRow> = Field<Int, IdentityTestRow>(_path, "default_generated", IdentityTestRow::defaultGenerated, null, "int4", { row, value -> row.copy(defaultGenerated = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun name(): IdField<IdentityTestId, IdentityTestRow> = IdField<IdentityTestId, IdentityTestRow>(_path, "name", IdentityTestRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, IdentityTestId.pgType)
+      override fun name(): IdField<IdentityTestId, IdentityTestRow> = IdField<IdentityTestId, IdentityTestRow>(_path, "name", IdentityTestRow::name, null, null, { row, value -> row.copy(name = value) }, IdentityTestId.pgType)
 
-      override fun columns(): List<FieldLike<*, IdentityTestRow>> = listOf(this.alwaysGenerated(), this.defaultGenerated(), this.name())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<IdentityTestFields, IdentityTestRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, IdentityTestRow>> = listOf(this.alwaysGenerated().underlying, this.defaultGenerated().underlying, this.name().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<IdentityTestFields, IdentityTestRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

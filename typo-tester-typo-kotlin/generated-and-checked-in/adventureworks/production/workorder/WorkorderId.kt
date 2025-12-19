@@ -6,7 +6,8 @@
 package adventureworks.production.workorder
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class WorkorderId(@JsonValue val value: Int) {
       Bijection.of(WorkorderId::value, ::WorkorderId)
 
     val pgType: PgType<WorkorderId> =
-      PgTypes.int4.bimap(::WorkorderId, WorkorderId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::WorkorderId, WorkorderId::value)
 
     val pgTypeArray: PgType<Array<WorkorderId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::WorkorderId, WorkorderId::class.java) }, { xs -> arrayMap.map(xs, WorkorderId::value, Int::class.javaObjectType) })

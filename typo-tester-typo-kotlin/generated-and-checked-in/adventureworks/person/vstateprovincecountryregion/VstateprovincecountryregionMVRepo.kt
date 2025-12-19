@@ -7,10 +7,10 @@ package adventureworks.person.vstateprovincecountryregion
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VstateprovincecountryregionMVRepo {
-  fun select(): SelectBuilder<VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow>
+  abstract fun select(): SelectBuilder<VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow>
 
-  fun selectAll(c: Connection): List<VstateprovincecountryregionMVRow>
+  abstract fun selectAll(c: Connection): List<VstateprovincecountryregionMVRow>
 }

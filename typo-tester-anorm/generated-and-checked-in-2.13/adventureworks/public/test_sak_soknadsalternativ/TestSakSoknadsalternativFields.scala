@@ -14,6 +14,7 @@ import anorm.ToParameterValue
 import anorm.ToStatement
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -21,7 +22,6 @@ import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait TestSakSoknadsalternativFields {
   def organisasjonskodeSaksbehandler: IdField[String, TestSakSoknadsalternativRow]
@@ -44,11 +44,11 @@ trait TestSakSoknadsalternativFields {
 }
 
 object TestSakSoknadsalternativFields {
-  lazy val structure: Relation[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] =
+  lazy val structure: RelationStructure[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] {
+    extends RelationStructure[TestSakSoknadsalternativFields, TestSakSoknadsalternativRow] {
 
     override lazy val fields: TestSakSoknadsalternativFields = new TestSakSoknadsalternativFields {
       override def organisasjonskodeSaksbehandler = IdField[String, TestSakSoknadsalternativRow](_path, "organisasjonskode_saksbehandler", None, None, x => x.organisasjonskodeSaksbehandler, (row, value) => row.copy(organisasjonskodeSaksbehandler = value))

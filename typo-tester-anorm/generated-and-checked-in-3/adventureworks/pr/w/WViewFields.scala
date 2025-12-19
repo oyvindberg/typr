@@ -11,10 +11,9 @@ import adventureworks.production.product.ProductId
 import adventureworks.production.scrapreason.ScrapreasonId
 import adventureworks.production.workorder.WorkorderId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait WViewFields {
   def id: Field[WorkorderId, WViewRow]
@@ -23,18 +22,18 @@ trait WViewFields {
   def orderqty: Field[Int, WViewRow]
   def scrappedqty: Field[TypoShort, WViewRow]
   def startdate: Field[TypoLocalDateTime, WViewRow]
-  def enddate: OptField[TypoLocalDateTime, WViewRow]
+  def enddate: Field[TypoLocalDateTime, WViewRow]
   def duedate: Field[TypoLocalDateTime, WViewRow]
-  def scrapreasonid: OptField[ScrapreasonId, WViewRow]
+  def scrapreasonid: Field[ScrapreasonId, WViewRow]
   def modifieddate: Field[TypoLocalDateTime, WViewRow]
 }
 
 object WViewFields {
-  lazy val structure: Relation[WViewFields, WViewRow] =
+  lazy val structure: RelationStructure[WViewFields, WViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[WViewFields, WViewRow] {
+    extends RelationStructure[WViewFields, WViewRow] {
 
     override lazy val fields: WViewFields = new WViewFields {
       override def id = Field[WorkorderId, WViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
@@ -43,9 +42,9 @@ object WViewFields {
       override def orderqty = Field[Int, WViewRow](_path, "orderqty", None, None, x => x.orderqty, (row, value) => row.copy(orderqty = value))
       override def scrappedqty = Field[TypoShort, WViewRow](_path, "scrappedqty", None, None, x => x.scrappedqty, (row, value) => row.copy(scrappedqty = value))
       override def startdate = Field[TypoLocalDateTime, WViewRow](_path, "startdate", Some("text"), None, x => x.startdate, (row, value) => row.copy(startdate = value))
-      override def enddate = OptField[TypoLocalDateTime, WViewRow](_path, "enddate", Some("text"), None, x => x.enddate, (row, value) => row.copy(enddate = value))
+      override def enddate = Field[TypoLocalDateTime, WViewRow](_path, "enddate", Some("text"), None, x => x.enddate, (row, value) => row.copy(enddate = value))
       override def duedate = Field[TypoLocalDateTime, WViewRow](_path, "duedate", Some("text"), None, x => x.duedate, (row, value) => row.copy(duedate = value))
-      override def scrapreasonid = OptField[ScrapreasonId, WViewRow](_path, "scrapreasonid", None, None, x => x.scrapreasonid, (row, value) => row.copy(scrapreasonid = value))
+      override def scrapreasonid = Field[ScrapreasonId, WViewRow](_path, "scrapreasonid", None, None, x => x.scrapreasonid, (row, value) => row.copy(scrapreasonid = value))
       override def modifieddate = Field[TypoLocalDateTime, WViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
 

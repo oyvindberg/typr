@@ -27,9 +27,9 @@ case class PaViewRow(
   /** Points to [[adventureworks.person.password.PasswordRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.person.password.PasswordRow.passwordhash]] */
-  passwordhash: /* max 128 chars */ String,
+  passwordhash: String,
   /** Points to [[adventureworks.person.password.PasswordRow.passwordsalt]] */
-  passwordsalt: /* max 10 chars */ String,
+  passwordsalt: String,
   /** Points to [[adventureworks.person.password.PasswordRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.person.password.PasswordRow.modifieddate]] */

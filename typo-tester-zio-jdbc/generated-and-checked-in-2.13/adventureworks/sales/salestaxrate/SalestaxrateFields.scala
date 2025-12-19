@@ -14,10 +14,10 @@ import adventureworks.person.stateprovince.StateprovinceRow
 import adventureworks.public.Name
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait SalestaxrateFields {
   def salestaxrateid: IdField[SalestaxrateId, SalestaxrateRow]
@@ -33,11 +33,11 @@ trait SalestaxrateFields {
 }
 
 object SalestaxrateFields {
-  lazy val structure: Relation[SalestaxrateFields, SalestaxrateRow] =
+  lazy val structure: RelationStructure[SalestaxrateFields, SalestaxrateRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SalestaxrateFields, SalestaxrateRow] {
+    extends RelationStructure[SalestaxrateFields, SalestaxrateRow] {
 
     override lazy val fields: SalestaxrateFields = new SalestaxrateFields {
       override def salestaxrateid = IdField[SalestaxrateId, SalestaxrateRow](_path, "salestaxrateid", None, Some("int4"), x => x.salestaxrateid, (row, value) => row.copy(salestaxrateid = value))

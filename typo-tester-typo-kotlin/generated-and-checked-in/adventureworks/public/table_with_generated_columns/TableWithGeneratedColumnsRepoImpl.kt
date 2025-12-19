@@ -7,20 +7,16 @@ package adventureworks.public.table_with_generated_columns
 
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
 
 class TableWithGeneratedColumnsRepoImpl() : TableWithGeneratedColumnsRepo {
   override fun delete(): DeleteBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> = DeleteBuilder.of("\"public\".\"table-with-generated-columns\"", TableWithGeneratedColumnsFields.structure, Dialect.POSTGRESQL)
@@ -28,119 +24,59 @@ class TableWithGeneratedColumnsRepoImpl() : TableWithGeneratedColumnsRepo {
   override fun deleteById(
     name: TableWithGeneratedColumnsId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "public"."table-with-generated-columns" where "name" = 
-    """.trimMargin()),
-    TableWithGeneratedColumnsId.pgType.encode(name),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from \"public\".\"table-with-generated-columns\" where \"name\" = "), Fragment.encode(TableWithGeneratedColumnsId.pgType, name), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     names: Array<TableWithGeneratedColumnsId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "public"."table-with-generated-columns"
-               where "name" = ANY(""".trimMargin()),
-             TableWithGeneratedColumnsId.pgTypeArray.encode(names),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = Fragment.interpolate(Fragment.lit("delete\nfrom \"public\".\"table-with-generated-columns\"\nwhere \"name\" = ANY("), Fragment.encode(TableWithGeneratedColumnsId.pgTypeArray, names), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: TableWithGeneratedColumnsRow,
     c: Connection
-  ): TableWithGeneratedColumnsRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "public"."table-with-generated-columns"("name")
-      values (""".trimMargin()),
-    TableWithGeneratedColumnsId.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("""
-      )
-      returning "name", "name-type-always"
-    """.trimMargin())
-  )
+  ): TableWithGeneratedColumnsRow = Fragment.interpolate(Fragment.lit("insert into \"public\".\"table-with-generated-columns\"(\"name\")\nvalues ("), Fragment.encode(TableWithGeneratedColumnsId.pgType, unsaved.name), Fragment.lit(")\nreturning \"name\", \"name-type-always\"\n"))
     .updateReturning(TableWithGeneratedColumnsRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: TableWithGeneratedColumnsRowUnsaved,
     c: Connection
   ): TableWithGeneratedColumnsRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"name\""))
-    values.add(interpolate(
-      TableWithGeneratedColumnsId.pgType.encode(unsaved.name),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "public"."table-with-generated-columns"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "name", "name-type-always"
-      """.trimMargin())
-    )
+    values.add(Fragment.interpolate(Fragment.encode(TableWithGeneratedColumnsId.pgType, unsaved.name), Fragment.lit("")))
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into \"public\".\"table-with-generated-columns\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"name\", \"name-type-always\"\n"))
     return q.updateReturning(TableWithGeneratedColumnsRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<TableWithGeneratedColumnsRow>,
+    unsaved: Iterator<TableWithGeneratedColumnsRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "public"."table-with-generated-columns"("name") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, TableWithGeneratedColumnsRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"public\".\"table-with-generated-columns\"(\"name\") FROM STDIN", batchSize, unsaved, c, TableWithGeneratedColumnsRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<TableWithGeneratedColumnsRowUnsaved>,
+    unsaved: Iterator<TableWithGeneratedColumnsRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "public"."table-with-generated-columns"("name") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, TableWithGeneratedColumnsRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"public\".\"table-with-generated-columns\"(\"name\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, TableWithGeneratedColumnsRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> = SelectBuilder.of("\"public\".\"table-with-generated-columns\"", TableWithGeneratedColumnsFields.structure, TableWithGeneratedColumnsRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<TableWithGeneratedColumnsRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "name", "name-type-always"
-    from "public"."table-with-generated-columns"
-  """.trimMargin())).query(TableWithGeneratedColumnsRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<TableWithGeneratedColumnsRow> = Fragment.interpolate(Fragment.lit("select \"name\", \"name-type-always\"\nfrom \"public\".\"table-with-generated-columns\"\n")).query(TableWithGeneratedColumnsRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     name: TableWithGeneratedColumnsId,
     c: Connection
-  ): Optional<TableWithGeneratedColumnsRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "name", "name-type-always"
-      from "public"."table-with-generated-columns"
-      where "name" = """.trimMargin()),
-    TableWithGeneratedColumnsId.pgType.encode(name),
-    typo.runtime.Fragment.lit("")
-  ).query(TableWithGeneratedColumnsRow._rowParser.first()).runUnchecked(c)
+  ): TableWithGeneratedColumnsRow? = Fragment.interpolate(Fragment.lit("select \"name\", \"name-type-always\"\nfrom \"public\".\"table-with-generated-columns\"\nwhere \"name\" = "), Fragment.encode(TableWithGeneratedColumnsId.pgType, name), Fragment.lit("")).query(TableWithGeneratedColumnsRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     names: Array<TableWithGeneratedColumnsId>,
     c: Connection
-  ): List<TableWithGeneratedColumnsRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "name", "name-type-always"
-      from "public"."table-with-generated-columns"
-      where "name" = ANY(""".trimMargin()),
-    TableWithGeneratedColumnsId.pgTypeArray.encode(names),
-    typo.runtime.Fragment.lit(")")
-  ).query(TableWithGeneratedColumnsRow._rowParser.all()).runUnchecked(c)
+  ): List<TableWithGeneratedColumnsRow> = Fragment.interpolate(Fragment.lit("select \"name\", \"name-type-always\"\nfrom \"public\".\"table-with-generated-columns\"\nwhere \"name\" = ANY("), Fragment.encode(TableWithGeneratedColumnsId.pgTypeArray, names), Fragment.lit(")")).query(TableWithGeneratedColumnsRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     names: Array<TableWithGeneratedColumnsId>,
@@ -148,58 +84,33 @@ class TableWithGeneratedColumnsRepoImpl() : TableWithGeneratedColumnsRepo {
   ): Map<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow> {
     val ret: MutableMap<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow> = mutableMapOf<TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow>()
     selectByIds(names, c).forEach({ row -> ret.put(row.name, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> = UpdateBuilder.of("\"public\".\"table-with-generated-columns\"", TableWithGeneratedColumnsFields.structure, TableWithGeneratedColumnsRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<TableWithGeneratedColumnsFields, TableWithGeneratedColumnsRow> = UpdateBuilder.of("\"public\".\"table-with-generated-columns\"", TableWithGeneratedColumnsFields.structure, TableWithGeneratedColumnsRow._rowParser, Dialect.POSTGRESQL)
 
   override fun upsert(
     unsaved: TableWithGeneratedColumnsRow,
     c: Connection
-  ): TableWithGeneratedColumnsRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "public"."table-with-generated-columns"("name")
-      values (""".trimMargin()),
-    TableWithGeneratedColumnsId.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("""
-      )
-      on conflict ("name")
-      do update set "name" = EXCLUDED."name"
-      returning "name", "name-type-always"""".trimMargin())
-  )
+  ): TableWithGeneratedColumnsRow = Fragment.interpolate(Fragment.lit("insert into \"public\".\"table-with-generated-columns\"(\"name\")\nvalues ("), Fragment.encode(TableWithGeneratedColumnsId.pgType, unsaved.name), Fragment.lit(")\non conflict (\"name\")\ndo update set \"name\" = EXCLUDED.\"name\"\nreturning \"name\", \"name-type-always\""))
     .updateReturning(TableWithGeneratedColumnsRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<TableWithGeneratedColumnsRow>,
+    unsaved: Iterator<TableWithGeneratedColumnsRow>,
     c: Connection
-  ): List<TableWithGeneratedColumnsRow> = interpolate(typo.runtime.Fragment.lit("""
-                                            insert into "public"."table-with-generated-columns"("name")
-                                            values (?)
-                                            on conflict ("name")
-                                            do update set "name" = EXCLUDED."name"
-                                            returning "name", "name-type-always"""".trimMargin()))
+  ): List<TableWithGeneratedColumnsRow> = Fragment.interpolate(Fragment.lit("insert into \"public\".\"table-with-generated-columns\"(\"name\")\nvalues (?)\non conflict (\"name\")\ndo update set \"name\" = EXCLUDED.\"name\"\nreturning \"name\", \"name-type-always\""))
     .updateManyReturning(TableWithGeneratedColumnsRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<TableWithGeneratedColumnsRow>,
+    unsaved: Iterator<TableWithGeneratedColumnsRow>,
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table table-with-generated-columns_TEMP (like "public"."table-with-generated-columns") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy table-with-generated-columns_TEMP("name") from stdin
-    """.trimMargin()), batchSize, unsaved, c, TableWithGeneratedColumnsRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "public"."table-with-generated-columns"("name")
-      select * from table-with-generated-columns_TEMP
-      on conflict ("name")
-      do nothing
-      ;
-      drop table table-with-generated-columns_TEMP;""".trimMargin())).update().runUnchecked(c)
+    Fragment.interpolate(Fragment.lit("create temporary table table-with-generated-columns_TEMP (like \"public\".\"table-with-generated-columns\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy table-with-generated-columns_TEMP(\"name\") from stdin", batchSize, unsaved, c, TableWithGeneratedColumnsRow.pgText)
+    return Fragment.interpolate(Fragment.lit("insert into \"public\".\"table-with-generated-columns\"(\"name\")\nselect * from table-with-generated-columns_TEMP\non conflict (\"name\")\ndo nothing\n;\ndrop table table-with-generated-columns_TEMP;")).update().runUnchecked(c)
   }
 }

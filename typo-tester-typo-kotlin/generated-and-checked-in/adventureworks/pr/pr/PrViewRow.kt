@@ -5,14 +5,14 @@
  */
 package adventureworks.pr.pr
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.production.productreview.ProductreviewId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.pr */
 data class PrViewRow(
@@ -25,17 +25,17 @@ data class PrViewRow(
   /** Points to [adventureworks.production.productreview.ProductreviewRow.reviewername] */
   val reviewername: Name,
   /** Points to [adventureworks.production.productreview.ProductreviewRow.reviewdate] */
-  val reviewdate: TypoLocalDateTime,
+  val reviewdate: LocalDateTime,
   /** Points to [adventureworks.production.productreview.ProductreviewRow.emailaddress] */
-  val emailaddress: /* max 50 chars */ String,
+  val emailaddress: String,
   /** Points to [adventureworks.production.productreview.ProductreviewRow.rating] */
   val rating: Int,
   /** Points to [adventureworks.production.productreview.ProductreviewRow.comments] */
-  val comments: Optional</* max 3850 chars */ String>,
+  val comments: String,
   /** Points to [adventureworks.production.productreview.ProductreviewRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PrViewRow> = RowParsers.of(ProductreviewId.pgType, ProductreviewId.pgType, ProductId.pgType, Name.pgType, TypoLocalDateTime.pgType, PgTypes.text, PgTypes.int4, PgTypes.text.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> PrViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.id, row.productreviewid, row.productid, row.reviewername, row.reviewdate, row.emailaddress, row.rating, row.comments, row.modifieddate) })
+    val _rowParser: RowParser<PrViewRow> = RowParsers.of(ProductreviewId.pgType, ProductreviewId.pgType, ProductId.pgType, Name.pgType, PgTypes.timestamp, PgTypes.text, KotlinDbTypes.PgTypes.int4, PgTypes.text, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> PrViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.id, row.productreviewid, row.productid, row.reviewername, row.reviewdate, row.emailaddress, row.rating, row.comments, row.modifieddate) })
   }
 }

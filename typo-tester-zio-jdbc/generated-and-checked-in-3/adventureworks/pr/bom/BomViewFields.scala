@@ -10,18 +10,17 @@ import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait BomViewFields {
   def id: Field[Int, BomViewRow]
   def billofmaterialsid: Field[Int, BomViewRow]
-  def productassemblyid: OptField[ProductId, BomViewRow]
+  def productassemblyid: Field[ProductId, BomViewRow]
   def componentid: Field[ProductId, BomViewRow]
   def startdate: Field[TypoLocalDateTime, BomViewRow]
-  def enddate: OptField[TypoLocalDateTime, BomViewRow]
+  def enddate: Field[TypoLocalDateTime, BomViewRow]
   def unitmeasurecode: Field[UnitmeasureId, BomViewRow]
   def bomlevel: Field[TypoShort, BomViewRow]
   def perassemblyqty: Field[BigDecimal, BomViewRow]
@@ -29,19 +28,19 @@ trait BomViewFields {
 }
 
 object BomViewFields {
-  lazy val structure: Relation[BomViewFields, BomViewRow] =
+  lazy val structure: RelationStructure[BomViewFields, BomViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[BomViewFields, BomViewRow] {
+    extends RelationStructure[BomViewFields, BomViewRow] {
 
     override lazy val fields: BomViewFields = new BomViewFields {
       override def id = Field[Int, BomViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def billofmaterialsid = Field[Int, BomViewRow](_path, "billofmaterialsid", None, None, x => x.billofmaterialsid, (row, value) => row.copy(billofmaterialsid = value))
-      override def productassemblyid = OptField[ProductId, BomViewRow](_path, "productassemblyid", None, None, x => x.productassemblyid, (row, value) => row.copy(productassemblyid = value))
+      override def productassemblyid = Field[ProductId, BomViewRow](_path, "productassemblyid", None, None, x => x.productassemblyid, (row, value) => row.copy(productassemblyid = value))
       override def componentid = Field[ProductId, BomViewRow](_path, "componentid", None, None, x => x.componentid, (row, value) => row.copy(componentid = value))
       override def startdate = Field[TypoLocalDateTime, BomViewRow](_path, "startdate", Some("text"), None, x => x.startdate, (row, value) => row.copy(startdate = value))
-      override def enddate = OptField[TypoLocalDateTime, BomViewRow](_path, "enddate", Some("text"), None, x => x.enddate, (row, value) => row.copy(enddate = value))
+      override def enddate = Field[TypoLocalDateTime, BomViewRow](_path, "enddate", Some("text"), None, x => x.enddate, (row, value) => row.copy(enddate = value))
       override def unitmeasurecode = Field[UnitmeasureId, BomViewRow](_path, "unitmeasurecode", None, None, x => x.unitmeasurecode, (row, value) => row.copy(unitmeasurecode = value))
       override def bomlevel = Field[TypoShort, BomViewRow](_path, "bomlevel", None, None, x => x.bomlevel, (row, value) => row.copy(bomlevel = value))
       override def perassemblyqty = Field[BigDecimal, BomViewRow](_path, "perassemblyqty", None, None, x => x.perassemblyqty, (row, value) => row.copy(perassemblyqty = value))

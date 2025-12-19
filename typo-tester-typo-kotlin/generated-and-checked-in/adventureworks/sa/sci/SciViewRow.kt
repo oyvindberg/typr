@@ -5,12 +5,13 @@
  */
 package adventureworks.sa.sci
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.sales.shoppingcartitem.ShoppingcartitemId
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sa.sci */
 data class SciViewRow(
@@ -19,17 +20,17 @@ data class SciViewRow(
   /** Points to [adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartitemid] */
   val shoppingcartitemid: ShoppingcartitemId,
   /** Points to [adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartid] */
-  val shoppingcartid: /* max 50 chars */ String,
+  val shoppingcartid: String,
   /** Points to [adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.quantity] */
   val quantity: Int,
   /** Points to [adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.productid] */
   val productid: ProductId,
   /** Points to [adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.datecreated] */
-  val datecreated: TypoLocalDateTime,
+  val datecreated: LocalDateTime,
   /** Points to [adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SciViewRow> = RowParsers.of(ShoppingcartitemId.pgType, ShoppingcartitemId.pgType, PgTypes.text, PgTypes.int4, ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> SciViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.shoppingcartitemid, row.shoppingcartid, row.quantity, row.productid, row.datecreated, row.modifieddate) })
+    val _rowParser: RowParser<SciViewRow> = RowParsers.of(ShoppingcartitemId.pgType, ShoppingcartitemId.pgType, PgTypes.text, KotlinDbTypes.PgTypes.int4, ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> SciViewRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.id, row.shoppingcartitemid, row.shoppingcartid, row.quantity, row.productid, row.datecreated, row.modifieddate) })
   }
 }

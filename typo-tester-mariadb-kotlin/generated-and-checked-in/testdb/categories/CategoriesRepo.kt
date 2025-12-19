@@ -6,75 +6,74 @@
 package testdb.categories
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface CategoriesRepo {
-  fun delete(): DeleteBuilder<CategoriesFields, CategoriesRow>
+  abstract fun delete(): DeleteBuilder<CategoriesFields, CategoriesRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     categoryId: CategoriesId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     categoryIds: Array<CategoriesId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: CategoriesRow,
     c: Connection
   ): CategoriesRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: CategoriesRowUnsaved,
     c: Connection
   ): CategoriesRow
 
-  fun select(): SelectBuilder<CategoriesFields, CategoriesRow>
+  abstract fun select(): SelectBuilder<CategoriesFields, CategoriesRow>
 
-  fun selectAll(c: Connection): List<CategoriesRow>
+  abstract fun selectAll(c: Connection): List<CategoriesRow>
 
-  fun selectById(
+  abstract fun selectById(
     categoryId: CategoriesId,
     c: Connection
-  ): Optional<CategoriesRow>
+  ): CategoriesRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     categoryIds: Array<CategoriesId>,
     c: Connection
   ): List<CategoriesRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     categoryIds: Array<CategoriesId>,
     c: Connection
   ): Map<CategoriesId, CategoriesRow>
 
-  fun selectByUniqueSlug(
+  abstract fun selectByUniqueSlug(
     slug: String,
     c: Connection
-  ): Optional<CategoriesRow>
+  ): CategoriesRow?
 
-  fun update(): UpdateBuilder<CategoriesFields, CategoriesRow>
+  abstract fun update(): UpdateBuilder<CategoriesFields, CategoriesRow>
 
-  fun update(
+  abstract fun update(
     row: CategoriesRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: CategoriesRow,
     c: Connection
   ): CategoriesRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<CategoriesRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<CategoriesRow>,
     c: Connection
   ): List<CategoriesRow>
 }

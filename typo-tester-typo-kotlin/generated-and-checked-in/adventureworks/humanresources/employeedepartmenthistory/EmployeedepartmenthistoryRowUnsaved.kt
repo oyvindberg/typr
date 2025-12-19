@@ -7,13 +7,14 @@ package adventureworks.humanresources.employeedepartmenthistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDate
+import java.time.LocalDateTime
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `humanresources.employeedepartmenthistory` which has not been persisted yet */
 data class EmployeedepartmenthistoryRowUnsaved(
@@ -32,15 +33,15 @@ data class EmployeedepartmenthistoryRowUnsaved(
   /** Date the employee started work in the department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val startdate: TypoLocalDate,
+  val startdate: LocalDate,
   /** Date the employee left the department. NULL = Current department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val enddate: Optional<TypoLocalDate> = Optional.empty(),
+  val enddate: LocalDate? = null,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
-  fun toRow(modifieddateDefault: () -> TypoLocalDateTime): EmployeedepartmenthistoryRow = EmployeedepartmenthistoryRow(businessentityid = businessentityid, departmentid = departmentid, shiftid = shiftid, startdate = startdate, enddate = enddate, modifieddate = modifieddate.getOrElse(modifieddateDefault))
+  fun toRow(modifieddateDefault: () -> LocalDateTime): EmployeedepartmenthistoryRow = EmployeedepartmenthistoryRow(businessentityid = businessentityid, departmentid = departmentid, shiftid = shiftid, startdate = startdate, enddate = enddate, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<EmployeedepartmenthistoryRowUnsaved> =
@@ -50,10 +51,10 @@ data class EmployeedepartmenthistoryRowUnsaved(
       sb.append(PgText.DELIMETER)
       ShiftId.pgType.pgText().unsafeEncode(row.shiftid, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDate.pgType.pgText().unsafeEncode(row.startdate, sb)
+      PgTypes.date.pgText().unsafeEncode(row.startdate, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDate.pgType.opt().pgText().unsafeEncode(row.enddate, sb)
+      PgTypes.date.nullable().pgText().unsafeEncode(row.enddate, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

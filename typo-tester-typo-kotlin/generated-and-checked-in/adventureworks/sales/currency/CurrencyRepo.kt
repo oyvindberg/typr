@@ -6,89 +6,88 @@
 package adventureworks.sales.currency
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface CurrencyRepo {
-  fun delete(): DeleteBuilder<CurrencyFields, CurrencyRow>
+  abstract fun delete(): DeleteBuilder<CurrencyFields, CurrencyRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     currencycode: CurrencyId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     currencycodes: Array<CurrencyId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: CurrencyRow,
     c: Connection
   ): CurrencyRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: CurrencyRowUnsaved,
     c: Connection
   ): CurrencyRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<CurrencyRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<CurrencyRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<CurrencyRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<CurrencyRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<CurrencyFields, CurrencyRow>
+  abstract fun select(): SelectBuilder<CurrencyFields, CurrencyRow>
 
-  fun selectAll(c: Connection): List<CurrencyRow>
+  abstract fun selectAll(c: Connection): List<CurrencyRow>
 
-  fun selectById(
+  abstract fun selectById(
     currencycode: CurrencyId,
     c: Connection
-  ): Optional<CurrencyRow>
+  ): CurrencyRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     currencycodes: Array<CurrencyId>,
     c: Connection
   ): List<CurrencyRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     currencycodes: Array<CurrencyId>,
     c: Connection
   ): Map<CurrencyId, CurrencyRow>
 
-  fun update(): UpdateBuilder<CurrencyFields, CurrencyRow>
+  abstract fun update(): UpdateBuilder<CurrencyFields, CurrencyRow>
 
-  fun update(
+  abstract fun update(
     row: CurrencyRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: CurrencyRow,
     c: Connection
   ): CurrencyRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<CurrencyRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<CurrencyRow>,
     c: Connection
   ): List<CurrencyRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<CurrencyRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<CurrencyRow>,
     batchSize: Int,
     c: Connection
   ): Int

@@ -8,34 +8,35 @@ package adventureworks.public.issue142_2
 import adventureworks.public.issue142.Issue142Fields
 import adventureworks.public.issue142.Issue142Id
 import adventureworks.public.issue142.Issue142Row
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.RowParser
 
 interface Issue1422Fields : FieldsExpr<Issue1422Row> {
-  override fun columns(): List<FieldLike<*, Issue1422Row>>
+  abstract override fun columns(): List<FieldLike<*, Issue1422Row>>
 
-  fun fkIssue142(): ForeignKey<Issue142Fields, Issue142Row> = ForeignKey.of<Issue142Fields, Issue142Row>("public.tabell2_tabell_fk").withColumnPair(tabellkode(), Issue142Fields::tabellkode)
+  fun fkIssue142(): ForeignKey<Issue142Fields, Issue142Row> = ForeignKey.of<Issue142Fields, Issue142Row>("public.tabell2_tabell_fk").withColumnPair<Issue142Id>(tabellkode(), Issue142Fields::tabellkode)
 
-  override fun rowParser(): RowParser<Issue1422Row> = Issue1422Row._rowParser
+  override fun rowParser(): RowParser<Issue1422Row> = Issue1422Row._rowParser.underlying
 
-  fun tabellkode(): IdField<Issue142Id, Issue1422Row>
+  abstract fun tabellkode(): IdField<Issue142Id, Issue1422Row>
 
   companion object {
-    data class Impl(val _path: List<Path>) : Issue1422Fields, Relation<Issue1422Fields, Issue1422Row> {
-      override fun tabellkode(): IdField<Issue142Id, Issue1422Row> = IdField<Issue142Id, Issue1422Row>(_path, "tabellkode", Issue1422Row::tabellkode, Optional.empty(), Optional.empty(), { row, value -> row.copy(tabellkode = value) }, Issue142Id.pgType)
+    data class Impl(val _path: List<Path>) : Issue1422Fields, RelationStructure<Issue1422Fields, Issue1422Row> {
+      override fun tabellkode(): IdField<Issue142Id, Issue1422Row> = IdField<Issue142Id, Issue1422Row>(_path, "tabellkode", Issue1422Row::tabellkode, null, null, { row, value -> row.copy(tabellkode = value) }, Issue142Id.pgType)
 
-      override fun columns(): List<FieldLike<*, Issue1422Row>> = listOf(this.tabellkode())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<Issue1422Fields, Issue1422Row> = Impl(_path)
+      override fun columns(): List<FieldLike<*, Issue1422Row>> = listOf(this.tabellkode().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<Issue1422Fields, Issue1422Row> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

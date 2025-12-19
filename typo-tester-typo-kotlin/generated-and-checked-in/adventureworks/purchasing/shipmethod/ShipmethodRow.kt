@@ -6,14 +6,14 @@
 package adventureworks.purchasing.shipmethod
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: purchasing.shipmethod
   * Shipping company lookup table.
@@ -37,9 +37,9 @@ data class ShipmethodRow(
     */
   val shiprate: BigDecimal,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): ShipmethodId = shipmethodid
 
@@ -47,14 +47,14 @@ data class ShipmethodRow(
     shipmethodid: Defaulted<ShipmethodId>,
     shipbase: Defaulted<BigDecimal>,
     shiprate: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): ShipmethodRowUnsaved = ShipmethodRowUnsaved(name, shipmethodid, shipbase, shiprate, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ShipmethodRow> = RowParsers.of(ShipmethodId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> ShipmethodRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.shipmethodid, row.name, row.shipbase, row.shiprate, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<ShipmethodRow> = RowParsers.of(ShipmethodId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> ShipmethodRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.shipmethodid, row.name, row.shipbase, row.shiprate, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<ShipmethodRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

@@ -12,11 +12,11 @@ import adventureworks.humanresources.employee.EmployeeRow
 import adventureworks.person.businessentity.BusinessentityId
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait JobcandidateFields {
   def jobcandidateid: IdField[JobcandidateId, JobcandidateRow]
@@ -29,11 +29,11 @@ trait JobcandidateFields {
 }
 
 object JobcandidateFields {
-  lazy val structure: Relation[JobcandidateFields, JobcandidateRow] =
+  lazy val structure: RelationStructure[JobcandidateFields, JobcandidateRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[JobcandidateFields, JobcandidateRow] {
+    extends RelationStructure[JobcandidateFields, JobcandidateRow] {
 
     override lazy val fields: JobcandidateFields = new JobcandidateFields {
       override def jobcandidateid = IdField[JobcandidateId, JobcandidateRow](_path, "jobcandidateid", None, Some("int4"), x => x.jobcandidateid, (row, value) => row.copy(jobcandidateid = value))

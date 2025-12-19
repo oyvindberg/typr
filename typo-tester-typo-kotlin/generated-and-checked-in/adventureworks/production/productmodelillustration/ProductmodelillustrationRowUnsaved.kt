@@ -7,10 +7,11 @@ package adventureworks.production.productmodelillustration
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.illustration.IllustrationId
 import adventureworks.production.productmodel.ProductmodelId
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `production.productmodelillustration` which has not been persisted yet */
 data class ProductmodelillustrationRowUnsaved(
@@ -23,9 +24,9 @@ data class ProductmodelillustrationRowUnsaved(
     */
   val illustrationid: IllustrationId,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
-  fun toRow(modifieddateDefault: () -> TypoLocalDateTime): ProductmodelillustrationRow = ProductmodelillustrationRow(productmodelid = productmodelid, illustrationid = illustrationid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
+  fun toRow(modifieddateDefault: () -> LocalDateTime): ProductmodelillustrationRow = ProductmodelillustrationRow(productmodelid = productmodelid, illustrationid = illustrationid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<ProductmodelillustrationRowUnsaved> =
@@ -33,6 +34,6 @@ data class ProductmodelillustrationRowUnsaved(
       sb.append(PgText.DELIMETER)
       IllustrationId.pgType.pgText().unsafeEncode(row.illustrationid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

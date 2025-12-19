@@ -6,22 +6,21 @@
 package testdb.order_history
 
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
 import testdb.orders.OrdersRow
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait OrderHistoryFields extends FieldsExpr[OrderHistoryRow] {
+trait OrderHistoryFields extends FieldsExpr0[OrderHistoryRow] {
   def historyId: IdField[OrderHistoryId, OrderHistoryRow]
 
   def orderId: Field[OrdersId, OrderHistoryRow]
@@ -38,23 +37,23 @@ trait OrderHistoryFields extends FieldsExpr[OrderHistoryRow] {
 
   def createdAt: Field[LocalDateTime, OrderHistoryRow]
 
-  def fkOrders: ForeignKey[OrdersFields, OrdersRow] = ForeignKey.of[OrdersFields, OrdersRow]("fk_oh_order").withColumnPair(orderId, _.orderId)
+  def fkOrders: ForeignKey[OrdersFields, OrdersRow] = ForeignKey.of[OrdersFields, OrdersRow]("fk_oh_order").withColumnPair[OrdersId](orderId, _.orderId)
 
   override def columns: java.util.List[FieldLike[?, OrderHistoryRow]]
 
-  override def rowParser: RowParser[OrderHistoryRow] = OrderHistoryRow._rowParser
+  override def rowParser: RowParser[OrderHistoryRow] = OrderHistoryRow._rowParser.underlying
 }
 
 object OrderHistoryFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OrderHistoryFields with Relation[OrderHistoryFields, OrderHistoryRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends OrderHistoryFields with RelationStructure[OrderHistoryFields, OrderHistoryRow] {
 
     override def historyId: IdField[OrderHistoryId, OrderHistoryRow] = {
       new IdField[OrderHistoryId, OrderHistoryRow](
         _path,
         "history_id",
         _.historyId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(historyId = value),
         OrderHistoryId.pgType
       )
@@ -65,8 +64,8 @@ object OrderHistoryFields {
         _path,
         "order_id",
         _.orderId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderId = value),
         OrdersId.pgType
       )
@@ -77,8 +76,8 @@ object OrderHistoryFields {
         _path,
         "previous_status",
         _.previousStatus,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(previousStatus = value),
         MariaTypes.text
       )
@@ -89,8 +88,8 @@ object OrderHistoryFields {
         _path,
         "new_status",
         _.newStatus,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(newStatus = value),
         MariaTypes.text
       )
@@ -101,8 +100,8 @@ object OrderHistoryFields {
         _path,
         "changed_by",
         _.changedBy,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(changedBy = value),
         MariaTypes.varchar
       )
@@ -113,8 +112,8 @@ object OrderHistoryFields {
         _path,
         "change_reason",
         _.changeReason,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(changeReason = value),
         MariaTypes.varchar
       )
@@ -125,8 +124,8 @@ object OrderHistoryFields {
         _path,
         "metadata",
         _.metadata,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(metadata = value),
         MariaTypes.longtext
       )
@@ -137,17 +136,17 @@ object OrderHistoryFields {
         _path,
         "created_at",
         _.createdAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(createdAt = value),
         MariaTypes.datetime
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, OrderHistoryRow]] = java.util.List.of(this.historyId, this.orderId, this.previousStatus, this.newStatus, this.changedBy, this.changeReason, this.metadata, this.createdAt)
+    override def columns: java.util.List[FieldLike[?, OrderHistoryRow]] = java.util.List.of(this.historyId.underlying, this.orderId.underlying, this.previousStatus.underlying, this.newStatus.underlying, this.changedBy.underlying, this.changeReason.underlying, this.metadata.underlying, this.createdAt.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[OrderHistoryFields, OrderHistoryRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrderHistoryFields, OrderHistoryRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

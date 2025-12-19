@@ -19,9 +19,9 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `sales.creditcard` which has not been persisted yet */
 case class CreditcardRowUnsaved(
   /** Credit card name. */
-  cardtype: /* max 50 chars */ String,
+  cardtype: String,
   /** Credit card number. */
-  cardnumber: /* max 25 chars */ String,
+  cardnumber: String,
   /** Credit card expiration month. */
   expmonth: TypoShort,
   /** Credit card expiration year. */

@@ -6,75 +6,74 @@
 package testdb.shipping_carriers
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ShippingCarriersRepo {
-  fun delete(): DeleteBuilder<ShippingCarriersFields, ShippingCarriersRow>
+  abstract fun delete(): DeleteBuilder<ShippingCarriersFields, ShippingCarriersRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     carrierId: ShippingCarriersId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     carrierIds: Array<ShippingCarriersId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ShippingCarriersRow,
     c: Connection
   ): ShippingCarriersRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ShippingCarriersRowUnsaved,
     c: Connection
   ): ShippingCarriersRow
 
-  fun select(): SelectBuilder<ShippingCarriersFields, ShippingCarriersRow>
+  abstract fun select(): SelectBuilder<ShippingCarriersFields, ShippingCarriersRow>
 
-  fun selectAll(c: Connection): List<ShippingCarriersRow>
+  abstract fun selectAll(c: Connection): List<ShippingCarriersRow>
 
-  fun selectById(
+  abstract fun selectById(
     carrierId: ShippingCarriersId,
     c: Connection
-  ): Optional<ShippingCarriersRow>
+  ): ShippingCarriersRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     carrierIds: Array<ShippingCarriersId>,
     c: Connection
   ): List<ShippingCarriersRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     carrierIds: Array<ShippingCarriersId>,
     c: Connection
   ): Map<ShippingCarriersId, ShippingCarriersRow>
 
-  fun selectByUniqueCode(
+  abstract fun selectByUniqueCode(
     code: String,
     c: Connection
-  ): Optional<ShippingCarriersRow>
+  ): ShippingCarriersRow?
 
-  fun update(): UpdateBuilder<ShippingCarriersFields, ShippingCarriersRow>
+  abstract fun update(): UpdateBuilder<ShippingCarriersFields, ShippingCarriersRow>
 
-  fun update(
+  abstract fun update(
     row: ShippingCarriersRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ShippingCarriersRow,
     c: Connection
   ): ShippingCarriersRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<ShippingCarriersRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<ShippingCarriersRow>,
     c: Connection
   ): List<ShippingCarriersRow>
 }

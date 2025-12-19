@@ -13,16 +13,16 @@ import adventureworks.person.countryregion.CountryregionRow
 import adventureworks.public.Name
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait SalesterritoryFields {
   def territoryid: IdField[SalesterritoryId, SalesterritoryRow]
   def name: Field[Name, SalesterritoryRow]
   def countryregioncode: Field[CountryregionId, SalesterritoryRow]
-  def group: Field[/* max 50 chars */ String, SalesterritoryRow]
+  def group: Field[String, SalesterritoryRow]
   def salesytd: Field[BigDecimal, SalesterritoryRow]
   def saleslastyear: Field[BigDecimal, SalesterritoryRow]
   def costytd: Field[BigDecimal, SalesterritoryRow]
@@ -35,17 +35,17 @@ trait SalesterritoryFields {
 }
 
 object SalesterritoryFields {
-  lazy val structure: Relation[SalesterritoryFields, SalesterritoryRow] =
+  lazy val structure: RelationStructure[SalesterritoryFields, SalesterritoryRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SalesterritoryFields, SalesterritoryRow] {
+    extends RelationStructure[SalesterritoryFields, SalesterritoryRow] {
 
     override lazy val fields: SalesterritoryFields = new SalesterritoryFields {
       override def territoryid = IdField[SalesterritoryId, SalesterritoryRow](_path, "territoryid", None, Some("int4"), x => x.territoryid, (row, value) => row.copy(territoryid = value))
       override def name = Field[Name, SalesterritoryRow](_path, "name", None, Some("varchar"), x => x.name, (row, value) => row.copy(name = value))
       override def countryregioncode = Field[CountryregionId, SalesterritoryRow](_path, "countryregioncode", None, None, x => x.countryregioncode, (row, value) => row.copy(countryregioncode = value))
-      override def group = Field[/* max 50 chars */ String, SalesterritoryRow](_path, "group", None, None, x => x.group, (row, value) => row.copy(group = value))
+      override def group = Field[String, SalesterritoryRow](_path, "group", None, None, x => x.group, (row, value) => row.copy(group = value))
       override def salesytd = Field[BigDecimal, SalesterritoryRow](_path, "salesytd", None, Some("numeric"), x => x.salesytd, (row, value) => row.copy(salesytd = value))
       override def saleslastyear = Field[BigDecimal, SalesterritoryRow](_path, "saleslastyear", None, Some("numeric"), x => x.saleslastyear, (row, value) => row.copy(saleslastyear = value))
       override def costytd = Field[BigDecimal, SalesterritoryRow](_path, "costytd", None, Some("numeric"), x => x.costytd, (row, value) => row.copy(costytd = value))

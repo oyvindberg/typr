@@ -5,56 +5,56 @@
  */
 package adventureworks.pr.plph
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PlphViewFields : FieldsExpr<PlphViewRow> {
-  override fun columns(): List<FieldLike<*, PlphViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PlphViewRow>>
 
-  fun enddate(): OptField<TypoLocalDateTime, PlphViewRow>
+  abstract fun enddate(): Field<LocalDateTime, PlphViewRow>
 
-  fun id(): Field<ProductId, PlphViewRow>
+  abstract fun id(): Field<ProductId, PlphViewRow>
 
-  fun listprice(): Field<BigDecimal, PlphViewRow>
+  abstract fun listprice(): Field<BigDecimal, PlphViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PlphViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PlphViewRow>
 
-  fun productid(): Field<ProductId, PlphViewRow>
+  abstract fun productid(): Field<ProductId, PlphViewRow>
 
-  override fun rowParser(): RowParser<PlphViewRow> = PlphViewRow._rowParser
+  override fun rowParser(): RowParser<PlphViewRow> = PlphViewRow._rowParser.underlying
 
-  fun startdate(): Field<TypoLocalDateTime, PlphViewRow>
+  abstract fun startdate(): Field<LocalDateTime, PlphViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PlphViewFields, Relation<PlphViewFields, PlphViewRow> {
-      override fun id(): Field<ProductId, PlphViewRow> = Field<ProductId, PlphViewRow>(_path, "id", PlphViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, ProductId.pgType)
+    data class Impl(val _path: List<Path>) : PlphViewFields, RelationStructure<PlphViewFields, PlphViewRow> {
+      override fun id(): Field<ProductId, PlphViewRow> = Field<ProductId, PlphViewRow>(_path, "id", PlphViewRow::id, null, null, { row, value -> row.copy(id = value) }, ProductId.pgType)
 
-      override fun productid(): Field<ProductId, PlphViewRow> = Field<ProductId, PlphViewRow>(_path, "productid", PlphViewRow::productid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+      override fun productid(): Field<ProductId, PlphViewRow> = Field<ProductId, PlphViewRow>(_path, "productid", PlphViewRow::productid, null, null, { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun startdate(): Field<TypoLocalDateTime, PlphViewRow> = Field<TypoLocalDateTime, PlphViewRow>(_path, "startdate", PlphViewRow::startdate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(startdate = value) }, TypoLocalDateTime.pgType)
+      override fun startdate(): Field<LocalDateTime, PlphViewRow> = Field<LocalDateTime, PlphViewRow>(_path, "startdate", PlphViewRow::startdate, null, null, { row, value -> row.copy(startdate = value) }, PgTypes.timestamp)
 
-      override fun enddate(): OptField<TypoLocalDateTime, PlphViewRow> = OptField<TypoLocalDateTime, PlphViewRow>(_path, "enddate", PlphViewRow::enddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(enddate = value) }, TypoLocalDateTime.pgType)
+      override fun enddate(): Field<LocalDateTime, PlphViewRow> = Field<LocalDateTime, PlphViewRow>(_path, "enddate", PlphViewRow::enddate, null, null, { row, value -> row.copy(enddate = value) }, PgTypes.timestamp)
 
-      override fun listprice(): Field<BigDecimal, PlphViewRow> = Field<BigDecimal, PlphViewRow>(_path, "listprice", PlphViewRow::listprice, Optional.empty(), Optional.empty(), { row, value -> row.copy(listprice = value) }, PgTypes.numeric)
+      override fun listprice(): Field<BigDecimal, PlphViewRow> = Field<BigDecimal, PlphViewRow>(_path, "listprice", PlphViewRow::listprice, null, null, { row, value -> row.copy(listprice = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PlphViewRow> = Field<TypoLocalDateTime, PlphViewRow>(_path, "modifieddate", PlphViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PlphViewRow> = Field<LocalDateTime, PlphViewRow>(_path, "modifieddate", PlphViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PlphViewRow>> = listOf(this.id(), this.productid(), this.startdate(), this.enddate(), this.listprice(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PlphViewFields, PlphViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PlphViewRow>> = listOf(this.id().underlying, this.productid().underlying, this.startdate().underlying, this.enddate().underlying, this.listprice().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PlphViewFields, PlphViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

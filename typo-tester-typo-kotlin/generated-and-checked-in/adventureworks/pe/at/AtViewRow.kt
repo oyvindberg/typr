@@ -5,12 +5,13 @@
  */
 package adventureworks.pe.at
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.addresstype.AddresstypeId
 import adventureworks.public.Name
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pe.at */
 data class AtViewRow(
@@ -21,11 +22,11 @@ data class AtViewRow(
   /** Points to [adventureworks.person.addresstype.AddresstypeRow.name] */
   val name: Name,
   /** Points to [adventureworks.person.addresstype.AddresstypeRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.person.addresstype.AddresstypeRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<AtViewRow> = RowParsers.of(AddresstypeId.pgType, AddresstypeId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> AtViewRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.id, row.addresstypeid, row.name, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<AtViewRow> = RowParsers.of(AddresstypeId.pgType, AddresstypeId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> AtViewRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.id, row.addresstypeid, row.name, row.rowguid, row.modifieddate) })
   }
 }

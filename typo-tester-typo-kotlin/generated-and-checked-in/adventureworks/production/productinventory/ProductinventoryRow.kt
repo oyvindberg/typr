@@ -6,15 +6,15 @@
 package adventureworks.production.productinventory
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.location.LocationId
 import adventureworks.production.product.ProductId
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.productinventory
   * Product inventory information.
@@ -30,43 +30,43 @@ data class ProductinventoryRow(
     */
   val locationid: LocationId,
   /** Storage compartment within an inventory location. */
-  val shelf: /* max 10 chars */ String,
+  val shelf: String,
   /** Storage container on a shelf in an inventory location.
     * Constraint CK_ProductInventory_Bin affecting columns bin: (((bin >= 0) AND (bin <= 100)))
     */
-  val bin: TypoShort,
+  val bin: Short,
   /** Quantity of products in the inventory location.
     * Default: 0
     */
-  val quantity: TypoShort,
+  val quantity: Short,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): ProductinventoryId = ProductinventoryId(productid, locationid)
 
   fun id(): ProductinventoryId = this.compositeId()
 
   fun toUnsavedRow(
-    quantity: Defaulted<TypoShort>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    quantity: Defaulted<Short>,
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): ProductinventoryRowUnsaved = ProductinventoryRowUnsaved(productid, locationid, shelf, bin, quantity, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductinventoryRow> = RowParsers.of(ProductId.pgType, LocationId.pgType, PgTypes.text, TypoShort.pgType, TypoShort.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> ProductinventoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.productid, row.locationid, row.shelf, row.bin, row.quantity, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<ProductinventoryRow> = RowParsers.of(ProductId.pgType, LocationId.pgType, PgTypes.text, KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> ProductinventoryRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.productid, row.locationid, row.shelf, row.bin, row.quantity, row.rowguid, row.modifieddate) })
 
     fun apply(
       compositeId: ProductinventoryId,
-      shelf: /* max 10 chars */ String,
-      bin: TypoShort,
-      quantity: TypoShort,
-      rowguid: TypoUUID,
-      modifieddate: TypoLocalDateTime
+      shelf: String,
+      bin: Short,
+      quantity: Short,
+      rowguid: UUID,
+      modifieddate: LocalDateTime
     ): ProductinventoryRow = ProductinventoryRow(compositeId.productid, compositeId.locationid, shelf, bin, quantity, rowguid, modifieddate)
 
     val pgText: PgText<ProductinventoryRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

@@ -5,42 +5,44 @@
  */
 package adventureworks.sa.sohsr
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesreason.SalesreasonId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SohsrViewFields : FieldsExpr<SohsrViewRow> {
-  override fun columns(): List<FieldLike<*, SohsrViewRow>>
+  abstract override fun columns(): List<FieldLike<*, SohsrViewRow>>
 
-  fun modifieddate(): Field<TypoLocalDateTime, SohsrViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SohsrViewRow>
 
-  override fun rowParser(): RowParser<SohsrViewRow> = SohsrViewRow._rowParser
+  override fun rowParser(): RowParser<SohsrViewRow> = SohsrViewRow._rowParser.underlying
 
-  fun salesorderid(): Field<SalesorderheaderId, SohsrViewRow>
+  abstract fun salesorderid(): Field<SalesorderheaderId, SohsrViewRow>
 
-  fun salesreasonid(): Field<SalesreasonId, SohsrViewRow>
+  abstract fun salesreasonid(): Field<SalesreasonId, SohsrViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SohsrViewFields, Relation<SohsrViewFields, SohsrViewRow> {
-      override fun salesorderid(): Field<SalesorderheaderId, SohsrViewRow> = Field<SalesorderheaderId, SohsrViewRow>(_path, "salesorderid", SohsrViewRow::salesorderid, Optional.empty(), Optional.empty(), { row, value -> row.copy(salesorderid = value) }, SalesorderheaderId.pgType)
+    data class Impl(val _path: List<Path>) : SohsrViewFields, RelationStructure<SohsrViewFields, SohsrViewRow> {
+      override fun salesorderid(): Field<SalesorderheaderId, SohsrViewRow> = Field<SalesorderheaderId, SohsrViewRow>(_path, "salesorderid", SohsrViewRow::salesorderid, null, null, { row, value -> row.copy(salesorderid = value) }, SalesorderheaderId.pgType)
 
-      override fun salesreasonid(): Field<SalesreasonId, SohsrViewRow> = Field<SalesreasonId, SohsrViewRow>(_path, "salesreasonid", SohsrViewRow::salesreasonid, Optional.empty(), Optional.empty(), { row, value -> row.copy(salesreasonid = value) }, SalesreasonId.pgType)
+      override fun salesreasonid(): Field<SalesreasonId, SohsrViewRow> = Field<SalesreasonId, SohsrViewRow>(_path, "salesreasonid", SohsrViewRow::salesreasonid, null, null, { row, value -> row.copy(salesreasonid = value) }, SalesreasonId.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SohsrViewRow> = Field<TypoLocalDateTime, SohsrViewRow>(_path, "modifieddate", SohsrViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SohsrViewRow> = Field<LocalDateTime, SohsrViewRow>(_path, "modifieddate", SohsrViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SohsrViewRow>> = listOf(this.salesorderid(), this.salesreasonid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SohsrViewFields, SohsrViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SohsrViewRow>> = listOf(this.salesorderid().underlying, this.salesreasonid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SohsrViewFields, SohsrViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

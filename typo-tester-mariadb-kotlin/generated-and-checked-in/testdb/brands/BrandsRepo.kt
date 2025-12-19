@@ -6,75 +6,74 @@
 package testdb.brands
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface BrandsRepo {
-  fun delete(): DeleteBuilder<BrandsFields, BrandsRow>
+  abstract fun delete(): DeleteBuilder<BrandsFields, BrandsRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     brandId: BrandsId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     brandIds: Array<BrandsId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: BrandsRow,
     c: Connection
   ): BrandsRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: BrandsRowUnsaved,
     c: Connection
   ): BrandsRow
 
-  fun select(): SelectBuilder<BrandsFields, BrandsRow>
+  abstract fun select(): SelectBuilder<BrandsFields, BrandsRow>
 
-  fun selectAll(c: Connection): List<BrandsRow>
+  abstract fun selectAll(c: Connection): List<BrandsRow>
 
-  fun selectById(
+  abstract fun selectById(
     brandId: BrandsId,
     c: Connection
-  ): Optional<BrandsRow>
+  ): BrandsRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     brandIds: Array<BrandsId>,
     c: Connection
   ): List<BrandsRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     brandIds: Array<BrandsId>,
     c: Connection
   ): Map<BrandsId, BrandsRow>
 
-  fun selectByUniqueSlug(
+  abstract fun selectByUniqueSlug(
     slug: String,
     c: Connection
-  ): Optional<BrandsRow>
+  ): BrandsRow?
 
-  fun update(): UpdateBuilder<BrandsFields, BrandsRow>
+  abstract fun update(): UpdateBuilder<BrandsFields, BrandsRow>
 
-  fun update(
+  abstract fun update(
     row: BrandsRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: BrandsRow,
     c: Connection
   ): BrandsRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<BrandsRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<BrandsRow>,
     c: Connection
   ): List<BrandsRow>
 }

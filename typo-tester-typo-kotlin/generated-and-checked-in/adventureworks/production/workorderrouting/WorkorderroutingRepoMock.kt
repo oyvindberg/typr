@@ -8,21 +8,19 @@ package adventureworks.production.workorderrouting
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class WorkorderroutingRepoMock(
   val toRow: (WorkorderroutingRowUnsaved) -> WorkorderroutingRow,
@@ -33,7 +31,7 @@ data class WorkorderroutingRepoMock(
   override fun deleteById(
     compositeId: WorkorderroutingId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(compositeId)).isPresent()
+  ): Boolean = map.remove(compositeId) != null
 
   override fun deleteByIds(
     compositeIds: Array<WorkorderroutingId>,
@@ -41,7 +39,7 @@ data class WorkorderroutingRepoMock(
   ): Int {
     var count = 0
     for (id in compositeIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class WorkorderroutingRepoMock(
     c: Connection
   ): WorkorderroutingRow {
     if (map.containsKey(unsaved.compositeId())) {
-      throw RuntimeException(str("id $unsaved.compositeId() already exists"))
+      throw RuntimeException("id " + unsaved.compositeId() + " already exists")
     }
     map[unsaved.compositeId()] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class WorkorderroutingRepoMock(
   ): WorkorderroutingRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<WorkorderroutingRow>,
+    unsaved: Iterator<WorkorderroutingRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class WorkorderroutingRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<WorkorderroutingRowUnsaved>,
+    unsaved: Iterator<WorkorderroutingRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class WorkorderroutingRepoMock(
   override fun selectById(
     compositeId: WorkorderroutingId,
     c: Connection
-  ): Optional<WorkorderroutingRow> = Optional.ofNullable(map[compositeId])
+  ): WorkorderroutingRow? = map[compositeId]
 
   override fun selectByIds(
     compositeIds: Array<WorkorderroutingId>,
@@ -109,9 +107,9 @@ data class WorkorderroutingRepoMock(
   ): List<WorkorderroutingRow> {
     val result = ArrayList<WorkorderroutingRow>()
     for (id in compositeIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class WorkorderroutingRepoMock(
     row: WorkorderroutingRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.compositeId()]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.compositeId()]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.compositeId()] = row
     }
@@ -144,7 +142,7 @@ data class WorkorderroutingRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<WorkorderroutingRow>,
+    unsaved: Iterator<WorkorderroutingRow>,
     c: Connection
   ): List<WorkorderroutingRow> {
     val result = ArrayList<WorkorderroutingRow>()
@@ -158,7 +156,7 @@ data class WorkorderroutingRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<WorkorderroutingRow>,
+    unsaved: Iterator<WorkorderroutingRow>,
     batchSize: Int,
     c: Connection
   ): Int {

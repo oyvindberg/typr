@@ -5,17 +5,16 @@
  */
 package adventureworks.sa.sod
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.specialoffer.SpecialofferId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sa.sod */
 data class SodViewRow(
@@ -26,9 +25,9 @@ data class SodViewRow(
   /** Points to [adventureworks.sales.salesorderdetail.SalesorderdetailRow.salesorderdetailid] */
   val salesorderdetailid: Int,
   /** Points to [adventureworks.sales.salesorderdetail.SalesorderdetailRow.carriertrackingnumber] */
-  val carriertrackingnumber: Optional</* max 25 chars */ String>,
+  val carriertrackingnumber: String,
   /** Points to [adventureworks.sales.salesorderdetail.SalesorderdetailRow.orderqty] */
-  val orderqty: TypoShort,
+  val orderqty: Short,
   /** Points to [adventureworks.sales.salesorderdetail.SalesorderdetailRow.productid] */
   val productid: ProductId,
   /** Points to [adventureworks.sales.salesorderdetail.SalesorderdetailRow.specialofferid] */
@@ -38,11 +37,11 @@ data class SodViewRow(
   /** Points to [adventureworks.sales.salesorderdetail.SalesorderdetailRow.unitpricediscount] */
   val unitpricediscount: BigDecimal,
   /** Points to [adventureworks.sales.salesorderdetail.SalesorderdetailRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.sales.salesorderdetail.SalesorderdetailRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SodViewRow> = RowParsers.of(PgTypes.int4, SalesorderheaderId.pgType, PgTypes.int4, PgTypes.text.opt(), TypoShort.pgType, ProductId.pgType, SpecialofferId.pgType, PgTypes.numeric, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> SodViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.id, row.salesorderid, row.salesorderdetailid, row.carriertrackingnumber, row.orderqty, row.productid, row.specialofferid, row.unitprice, row.unitpricediscount, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SodViewRow> = RowParsers.of(KotlinDbTypes.PgTypes.int4, SalesorderheaderId.pgType, KotlinDbTypes.PgTypes.int4, PgTypes.text, KotlinDbTypes.PgTypes.int2, ProductId.pgType, SpecialofferId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> SodViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) }, { row -> arrayOf<Any?>(row.id, row.salesorderid, row.salesorderdetailid, row.carriertrackingnumber, row.orderqty, row.productid, row.specialofferid, row.unitprice, row.unitpricediscount, row.rowguid, row.modifieddate) })
   }
 }

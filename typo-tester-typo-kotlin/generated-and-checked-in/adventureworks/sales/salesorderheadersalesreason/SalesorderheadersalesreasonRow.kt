@@ -6,12 +6,13 @@
 package adventureworks.sales.salesorderheadersalesreason
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesreason.SalesreasonId
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: sales.salesorderheadersalesreason
   * Cross-reference table mapping sales orders to sales reason codes.
@@ -27,23 +28,23 @@ data class SalesorderheadersalesreasonRow(
     */
   val salesreasonid: SalesreasonId,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): SalesorderheadersalesreasonId = SalesorderheadersalesreasonId(salesorderid, salesreasonid)
 
   fun id(): SalesorderheadersalesreasonId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): SalesorderheadersalesreasonRowUnsaved = SalesorderheadersalesreasonRowUnsaved(salesorderid, salesreasonid, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): SalesorderheadersalesreasonRowUnsaved = SalesorderheadersalesreasonRowUnsaved(salesorderid, salesreasonid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SalesorderheadersalesreasonRow> = RowParsers.of(SalesorderheaderId.pgType, SalesreasonId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> SalesorderheadersalesreasonRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.salesorderid, row.salesreasonid, row.modifieddate) })
+    val _rowParser: RowParser<SalesorderheadersalesreasonRow> = RowParsers.of(SalesorderheaderId.pgType, SalesreasonId.pgType, PgTypes.timestamp, { t0, t1, t2 -> SalesorderheadersalesreasonRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.salesorderid, row.salesreasonid, row.modifieddate) })
 
     fun apply(
       compositeId: SalesorderheadersalesreasonId,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): SalesorderheadersalesreasonRow = SalesorderheadersalesreasonRow(compositeId.salesorderid, compositeId.salesreasonid, modifieddate)
 
     val pgText: PgText<SalesorderheadersalesreasonRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

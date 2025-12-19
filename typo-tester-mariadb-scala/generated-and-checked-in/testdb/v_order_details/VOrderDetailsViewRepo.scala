@@ -6,10 +6,10 @@
 package testdb.v_order_details
 
 import java.sql.Connection
-import typo.dsl.SelectBuilder
+import typo.scaladsl.SelectBuilder
 
 trait VOrderDetailsViewRepo {
   def select: SelectBuilder[VOrderDetailsViewFields, VOrderDetailsViewRow]
 
-  def selectAll(using c: Connection): java.util.List[VOrderDetailsViewRow]
+  def selectAll(using c: Connection): List[VOrderDetailsViewRow]
 }

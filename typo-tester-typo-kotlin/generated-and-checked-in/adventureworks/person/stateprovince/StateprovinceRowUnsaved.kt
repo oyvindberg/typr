@@ -7,19 +7,19 @@ package adventureworks.person.stateprovince
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Flag
 import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
+import java.time.LocalDateTime
+import java.util.UUID
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `person.stateprovince` which has not been persisted yet */
 data class StateprovinceRowUnsaved(
   /** ISO standard state or province code. */
-  val stateprovincecode: /* bpchar, max 3 chars */ String,
+  val stateprovincecode: String,
   /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
     * Points to [adventureworks.person.countryregion.CountryregionRow.countryregioncode]
     */
@@ -39,15 +39,15 @@ data class StateprovinceRowUnsaved(
     */
   val isonlystateprovinceflag: Defaulted<Flag> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     stateprovinceidDefault: () -> StateprovinceId,
     isonlystateprovinceflagDefault: () -> Flag,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): StateprovinceRow = StateprovinceRow(stateprovinceid = stateprovinceid.getOrElse(stateprovinceidDefault), stateprovincecode = stateprovincecode, countryregioncode = countryregioncode, isonlystateprovinceflag = isonlystateprovinceflag.getOrElse(isonlystateprovinceflagDefault), name = name, territoryid = territoryid, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -64,8 +64,8 @@ data class StateprovinceRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.isonlystateprovinceflag, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

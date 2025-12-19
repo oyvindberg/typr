@@ -8,21 +8,19 @@ package testdb.mariatest_unique
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class MariatestUniqueRepoMock(
   val toRow: (MariatestUniqueRowUnsaved) -> MariatestUniqueRow,
@@ -33,7 +31,7 @@ data class MariatestUniqueRepoMock(
   override fun deleteById(
     id: MariatestUniqueId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(id)).isPresent()
+  ): Boolean = map.remove(id) != null
 
   override fun deleteByIds(
     ids: Array<MariatestUniqueId>,
@@ -41,7 +39,7 @@ data class MariatestUniqueRepoMock(
   ): Int {
     var count = 0
     for (id in ids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class MariatestUniqueRepoMock(
     c: Connection
   ): MariatestUniqueRow {
     if (map.containsKey(unsaved.id)) {
-      throw RuntimeException(str("id $unsaved.id already exists"))
+      throw RuntimeException("id " + unsaved.id + " already exists")
     }
     map[unsaved.id] = unsaved
     return unsaved
@@ -71,7 +69,7 @@ data class MariatestUniqueRepoMock(
   override fun selectById(
     id: MariatestUniqueId,
     c: Connection
-  ): Optional<MariatestUniqueRow> = Optional.ofNullable(map[id])
+  ): MariatestUniqueRow? = map[id]
 
   override fun selectByIds(
     ids: Array<MariatestUniqueId>,
@@ -79,9 +77,9 @@ data class MariatestUniqueRepoMock(
   ): List<MariatestUniqueRow> {
     val result = ArrayList<MariatestUniqueRow>()
     for (id in ids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -96,12 +94,12 @@ data class MariatestUniqueRepoMock(
     code: String,
     category: String,
     c: Connection
-  ): Optional<MariatestUniqueRow> = Optional.ofNullable(map.values.toList().find({ v -> (code == v.code) && (category == v.category) }))
+  ): MariatestUniqueRow? = map.values.toList().find({ v -> (code == v.code) && (category == v.category) })
 
   override fun selectByUniqueEmail(
     email: String,
     c: Connection
-  ): Optional<MariatestUniqueRow> = Optional.ofNullable(map.values.toList().find({ v -> (email == v.email) }))
+  ): MariatestUniqueRow? = map.values.toList().find({ v -> (email == v.email) })
 
   override fun update(): UpdateBuilder<MariatestUniqueFields, MariatestUniqueRow> = UpdateBuilderMock(MariatestUniqueFields.structure, { map.values.toList() }, UpdateParams.empty(), { row -> row })
 
@@ -109,7 +107,7 @@ data class MariatestUniqueRepoMock(
     row: MariatestUniqueRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.id]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.id]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.id] = row
     }
@@ -125,7 +123,7 @@ data class MariatestUniqueRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<MariatestUniqueRow>,
+    unsaved: Iterator<MariatestUniqueRow>,
     c: Connection
   ): List<MariatestUniqueRow> {
     val result = ArrayList<MariatestUniqueRow>()

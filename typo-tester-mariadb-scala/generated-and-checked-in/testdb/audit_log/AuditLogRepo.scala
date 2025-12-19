@@ -6,17 +6,16 @@
 package testdb.audit_log
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait AuditLogRepo {
   def delete: DeleteBuilder[AuditLogFields, AuditLogRow]
 
-  def deleteById(logId: AuditLogId)(using c: Connection): java.lang.Boolean
+  def deleteById(logId: AuditLogId)(using c: Connection): Boolean
 
-  def deleteByIds(logIds: Array[AuditLogId])(using c: Connection): Integer
+  def deleteByIds(logIds: Array[AuditLogId])(using c: Connection): Int
 
   def insert(unsaved: AuditLogRow)(using c: Connection): AuditLogRow
 
@@ -24,19 +23,19 @@ trait AuditLogRepo {
 
   def select: SelectBuilder[AuditLogFields, AuditLogRow]
 
-  def selectAll(using c: Connection): java.util.List[AuditLogRow]
+  def selectAll(using c: Connection): List[AuditLogRow]
 
-  def selectById(logId: AuditLogId)(using c: Connection): Optional[AuditLogRow]
+  def selectById(logId: AuditLogId)(using c: Connection): Option[AuditLogRow]
 
-  def selectByIds(logIds: Array[AuditLogId])(using c: Connection): java.util.List[AuditLogRow]
+  def selectByIds(logIds: Array[AuditLogId])(using c: Connection): List[AuditLogRow]
 
-  def selectByIdsTracked(logIds: Array[AuditLogId])(using c: Connection): java.util.Map[AuditLogId, AuditLogRow]
+  def selectByIdsTracked(logIds: Array[AuditLogId])(using c: Connection): Map[AuditLogId, AuditLogRow]
 
   def update: UpdateBuilder[AuditLogFields, AuditLogRow]
 
-  def update(row: AuditLogRow)(using c: Connection): java.lang.Boolean
+  def update(row: AuditLogRow)(using c: Connection): Boolean
 
   def upsert(unsaved: AuditLogRow)(using c: Connection): AuditLogRow
 
-  def upsertBatch(unsaved: java.util.Iterator[AuditLogRow])(using c: Connection): java.util.List[AuditLogRow]
+  def upsertBatch(unsaved: Iterator[AuditLogRow])(using c: Connection): List[AuditLogRow]
 }

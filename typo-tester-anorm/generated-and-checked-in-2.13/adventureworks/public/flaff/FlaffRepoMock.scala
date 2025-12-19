@@ -8,13 +8,13 @@ package adventureworks.public.flaff
 import java.sql.Connection
 import scala.annotation.nowarn
 import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
+import typo.dsl.DeleteBuilderMock
 import typo.dsl.DeleteParams
 import typo.dsl.SelectBuilder
 import typo.dsl.SelectBuilderMock
 import typo.dsl.SelectParams
 import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
+import typo.dsl.UpdateBuilderMock
 import typo.dsl.UpdateParams
 
 case class FlaffRepoMock(map: scala.collection.mutable.Map[FlaffId, FlaffRow] = scala.collection.mutable.Map.empty[FlaffId, FlaffRow]) extends FlaffRepo {

@@ -7,13 +7,13 @@ package adventureworks.purchasing.vendor
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.AccountNumber
 import adventureworks.public.Flag
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -30,9 +30,9 @@ data class VendorRowUnsaved(
   /** 1 = Superior, 2 = Excellent, 3 = Above average, 4 = Average, 5 = Below average
     * Constraint CK_Vendor_CreditRating affecting columns creditrating:  (((creditrating >= 1) AND (creditrating <= 5)))
     */
-  val creditrating: TypoShort,
+  val creditrating: Short,
   /** Vendor URL. */
-  val purchasingwebserviceurl: Optional</* max 1024 chars */ String> = Optional.empty(),
+  val purchasingwebserviceurl: /* max 1024 chars */ String? = null,
   /** Default: true
     * 0 = Do not use if another vendor is available. 1 = Preferred over other vendors supplying the same product.
     */
@@ -42,12 +42,12 @@ data class VendorRowUnsaved(
     */
   val activeflag: Defaulted<Flag> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     preferredvendorstatusDefault: () -> Flag,
     activeflagDefault: () -> Flag,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): VendorRow = VendorRow(businessentityid = businessentityid, accountnumber = accountnumber, name = name, creditrating = creditrating, preferredvendorstatus = preferredvendorstatus.getOrElse(preferredvendorstatusDefault), activeflag = activeflag.getOrElse(activeflagDefault), purchasingwebserviceurl = purchasingwebserviceurl, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -58,14 +58,14 @@ data class VendorRowUnsaved(
       sb.append(PgText.DELIMETER)
       Name.pgType.pgText().unsafeEncode(row.name, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.creditrating, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.creditrating, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.purchasingwebserviceurl, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.purchasingwebserviceurl, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.preferredvendorstatus, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.activeflag, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

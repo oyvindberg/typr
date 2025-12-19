@@ -6,89 +6,88 @@
 package adventureworks.sales.salesterritory
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface SalesterritoryRepo {
-  fun delete(): DeleteBuilder<SalesterritoryFields, SalesterritoryRow>
+  abstract fun delete(): DeleteBuilder<SalesterritoryFields, SalesterritoryRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     territoryid: SalesterritoryId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     territoryids: Array<SalesterritoryId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: SalesterritoryRow,
     c: Connection
   ): SalesterritoryRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: SalesterritoryRowUnsaved,
     c: Connection
   ): SalesterritoryRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<SalesterritoryRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<SalesterritoryRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<SalesterritoryRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<SalesterritoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<SalesterritoryFields, SalesterritoryRow>
+  abstract fun select(): SelectBuilder<SalesterritoryFields, SalesterritoryRow>
 
-  fun selectAll(c: Connection): List<SalesterritoryRow>
+  abstract fun selectAll(c: Connection): List<SalesterritoryRow>
 
-  fun selectById(
+  abstract fun selectById(
     territoryid: SalesterritoryId,
     c: Connection
-  ): Optional<SalesterritoryRow>
+  ): SalesterritoryRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     territoryids: Array<SalesterritoryId>,
     c: Connection
   ): List<SalesterritoryRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     territoryids: Array<SalesterritoryId>,
     c: Connection
   ): Map<SalesterritoryId, SalesterritoryRow>
 
-  fun update(): UpdateBuilder<SalesterritoryFields, SalesterritoryRow>
+  abstract fun update(): UpdateBuilder<SalesterritoryFields, SalesterritoryRow>
 
-  fun update(
+  abstract fun update(
     row: SalesterritoryRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: SalesterritoryRow,
     c: Connection
   ): SalesterritoryRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<SalesterritoryRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<SalesterritoryRow>,
     c: Connection
   ): List<SalesterritoryRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<SalesterritoryRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<SalesterritoryRow>,
     batchSize: Int,
     c: Connection
   ): Int

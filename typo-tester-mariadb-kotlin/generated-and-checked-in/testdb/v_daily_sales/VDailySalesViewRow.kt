@@ -8,10 +8,11 @@ package testdb.v_daily_sales
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.Optional
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: v_daily_sales
   * VIEW
@@ -20,7 +21,7 @@ data class VDailySalesViewRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("order_date") val orderDate: Optional<LocalDate>,
+  @JsonProperty("order_date") val orderDate: LocalDate?,
   /** 
     * Default: 0
     */
@@ -32,33 +33,33 @@ data class VDailySalesViewRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("items_sold") val itemsSold: Optional<BigDecimal>,
+  @JsonProperty("items_sold") val itemsSold: BigDecimal?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("gross_sales") val grossSales: Optional<BigDecimal>,
+  @JsonProperty("gross_sales") val grossSales: BigDecimal?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("total_discounts") val totalDiscounts: Optional<BigDecimal>,
+  @JsonProperty("total_discounts") val totalDiscounts: BigDecimal?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("total_shipping") val totalShipping: Optional<BigDecimal>,
+  @JsonProperty("total_shipping") val totalShipping: BigDecimal?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("total_tax") val totalTax: Optional<BigDecimal>,
+  @JsonProperty("total_tax") val totalTax: BigDecimal?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("net_sales") val netSales: Optional<BigDecimal>,
+  @JsonProperty("net_sales") val netSales: BigDecimal?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("avg_order_value") val avgOrderValue: Optional<BigDecimal>
+  @JsonProperty("avg_order_value") val avgOrderValue: BigDecimal?
 ) {
   companion object {
-    val _rowParser: RowParser<VDailySalesViewRow> = RowParsers.of(MariaTypes.date.opt(), MariaTypes.bigint, MariaTypes.bigint, MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VDailySalesViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.orderDate, row.orderCount, row.uniqueCustomers, row.itemsSold, row.grossSales, row.totalDiscounts, row.totalShipping, row.totalTax, row.netSales, row.avgOrderValue) })
+    val _rowParser: RowParser<VDailySalesViewRow> = RowParsers.of(MariaTypes.date.nullable(), KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VDailySalesViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.orderDate, row.orderCount, row.uniqueCustomers, row.itemsSold, row.grossSales, row.totalDiscounts, row.totalShipping, row.totalTax, row.netSales, row.avgOrderValue) })
   }
 }

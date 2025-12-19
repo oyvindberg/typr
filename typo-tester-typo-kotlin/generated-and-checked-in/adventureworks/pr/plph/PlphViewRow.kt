@@ -5,13 +5,12 @@
  */
 package adventureworks.pr.plph
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.plph */
 data class PlphViewRow(
@@ -20,15 +19,15 @@ data class PlphViewRow(
   /** Points to [adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.productid] */
   val productid: ProductId,
   /** Points to [adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.startdate] */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Points to [adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.enddate] */
-  val enddate: Optional<TypoLocalDateTime>,
+  val enddate: LocalDateTime,
   /** Points to [adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.listprice] */
   val listprice: BigDecimal,
   /** Points to [adventureworks.production.productlistpricehistory.ProductlistpricehistoryRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PlphViewRow> = RowParsers.of(ProductId.pgType, ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> PlphViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.productid, row.startdate, row.enddate, row.listprice, row.modifieddate) })
+    val _rowParser: RowParser<PlphViewRow> = RowParsers.of(ProductId.pgType, ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> PlphViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.id, row.productid, row.startdate, row.enddate, row.listprice, row.modifieddate) })
   }
 }

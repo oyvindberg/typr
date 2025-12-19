@@ -6,89 +6,88 @@
 package adventureworks.person.personphone
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PersonphoneRepo {
-  fun delete(): DeleteBuilder<PersonphoneFields, PersonphoneRow>
+  abstract fun delete(): DeleteBuilder<PersonphoneFields, PersonphoneRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: PersonphoneId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<PersonphoneId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: PersonphoneRow,
     c: Connection
   ): PersonphoneRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: PersonphoneRowUnsaved,
     c: Connection
   ): PersonphoneRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<PersonphoneRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<PersonphoneRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<PersonphoneRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<PersonphoneRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<PersonphoneFields, PersonphoneRow>
+  abstract fun select(): SelectBuilder<PersonphoneFields, PersonphoneRow>
 
-  fun selectAll(c: Connection): List<PersonphoneRow>
+  abstract fun selectAll(c: Connection): List<PersonphoneRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: PersonphoneId,
     c: Connection
-  ): Optional<PersonphoneRow>
+  ): PersonphoneRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<PersonphoneId>,
     c: Connection
   ): List<PersonphoneRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<PersonphoneId>,
     c: Connection
   ): Map<PersonphoneId, PersonphoneRow>
 
-  fun update(): UpdateBuilder<PersonphoneFields, PersonphoneRow>
+  abstract fun update(): UpdateBuilder<PersonphoneFields, PersonphoneRow>
 
-  fun update(
+  abstract fun update(
     row: PersonphoneRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: PersonphoneRow,
     c: Connection
   ): PersonphoneRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<PersonphoneRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<PersonphoneRow>,
     c: Connection
   ): List<PersonphoneRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<PersonphoneRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<PersonphoneRow>,
     batchSize: Int,
     c: Connection
   ): Int

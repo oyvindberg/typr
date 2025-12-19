@@ -6,13 +6,14 @@
 package adventureworks.production.productmodelproductdescriptionculture
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
 import adventureworks.production.productdescription.ProductdescriptionId
 import adventureworks.production.productmodel.ProductmodelId
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: production.productmodelproductdescriptionculture
   * Cross-reference table mapping product descriptions and the language the description is written in.
@@ -32,23 +33,23 @@ data class ProductmodelproductdescriptioncultureRow(
     */
   val cultureid: CultureId,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): ProductmodelproductdescriptioncultureId = ProductmodelproductdescriptioncultureId(productmodelid, productdescriptionid, cultureid)
 
   fun id(): ProductmodelproductdescriptioncultureId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): ProductmodelproductdescriptioncultureRowUnsaved = ProductmodelproductdescriptioncultureRowUnsaved(productmodelid, productdescriptionid, cultureid, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): ProductmodelproductdescriptioncultureRowUnsaved = ProductmodelproductdescriptioncultureRowUnsaved(productmodelid, productdescriptionid, cultureid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductmodelproductdescriptioncultureRow> = RowParsers.of(ProductmodelId.pgType, ProductdescriptionId.pgType, CultureId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> ProductmodelproductdescriptioncultureRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.productdescriptionid, row.cultureid, row.modifieddate) })
+    val _rowParser: RowParser<ProductmodelproductdescriptioncultureRow> = RowParsers.of(ProductmodelId.pgType, ProductdescriptionId.pgType, CultureId.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> ProductmodelproductdescriptioncultureRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.productmodelid, row.productdescriptionid, row.cultureid, row.modifieddate) })
 
     fun apply(
       compositeId: ProductmodelproductdescriptioncultureId,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): ProductmodelproductdescriptioncultureRow = ProductmodelproductdescriptioncultureRow(compositeId.productmodelid, compositeId.productdescriptionid, compositeId.cultureid, modifieddate)
 
     val pgText: PgText<ProductmodelproductdescriptioncultureRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

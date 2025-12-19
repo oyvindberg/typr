@@ -5,15 +5,14 @@
  */
 package adventureworks.pr.bom
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.bom */
 data class BomViewRow(
@@ -22,23 +21,23 @@ data class BomViewRow(
   /** Points to [adventureworks.production.billofmaterials.BillofmaterialsRow.billofmaterialsid] */
   val billofmaterialsid: Int,
   /** Points to [adventureworks.production.billofmaterials.BillofmaterialsRow.productassemblyid] */
-  val productassemblyid: Optional<ProductId>,
+  val productassemblyid: ProductId,
   /** Points to [adventureworks.production.billofmaterials.BillofmaterialsRow.componentid] */
   val componentid: ProductId,
   /** Points to [adventureworks.production.billofmaterials.BillofmaterialsRow.startdate] */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Points to [adventureworks.production.billofmaterials.BillofmaterialsRow.enddate] */
-  val enddate: Optional<TypoLocalDateTime>,
+  val enddate: LocalDateTime,
   /** Points to [adventureworks.production.billofmaterials.BillofmaterialsRow.unitmeasurecode] */
   val unitmeasurecode: UnitmeasureId,
   /** Points to [adventureworks.production.billofmaterials.BillofmaterialsRow.bomlevel] */
-  val bomlevel: TypoShort,
+  val bomlevel: Short,
   /** Points to [adventureworks.production.billofmaterials.BillofmaterialsRow.perassemblyqty] */
   val perassemblyqty: BigDecimal,
   /** Points to [adventureworks.production.billofmaterials.BillofmaterialsRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<BomViewRow> = RowParsers.of(PgTypes.int4, PgTypes.int4, ProductId.pgType.opt(), ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), UnitmeasureId.pgType, TypoShort.pgType, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> BomViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.id, row.billofmaterialsid, row.productassemblyid, row.componentid, row.startdate, row.enddate, row.unitmeasurecode, row.bomlevel, row.perassemblyqty, row.modifieddate) })
+    val _rowParser: RowParser<BomViewRow> = RowParsers.of(KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, ProductId.pgType, ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp, UnitmeasureId.pgType, KotlinDbTypes.PgTypes.int2, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> BomViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.id, row.billofmaterialsid, row.productassemblyid, row.componentid, row.startdate, row.enddate, row.unitmeasurecode, row.bomlevel, row.perassemblyqty, row.modifieddate) })
   }
 }

@@ -7,10 +7,10 @@ package adventureworks.pe.bec
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface BecViewRepo {
-  fun select(): SelectBuilder<BecViewFields, BecViewRow>
+  abstract fun select(): SelectBuilder<BecViewFields, BecViewRow>
 
-  fun selectAll(c: Connection): List<BecViewRow>
+  abstract fun selectAll(c: Connection): List<BecViewRow>
 }

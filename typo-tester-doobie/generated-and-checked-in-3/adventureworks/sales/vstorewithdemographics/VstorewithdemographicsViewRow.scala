@@ -19,51 +19,51 @@ case class VstorewithdemographicsViewRow(
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.sales.store.StoreRow.name]] */
   name: Name,
-  annualSales: /* nullability unknown */ Option[TypoMoney],
-  annualRevenue: /* nullability unknown */ Option[TypoMoney],
-  bankName: /* nullability unknown */ Option[/* max 50 chars */ String],
-  businessType: /* nullability unknown */ Option[/* max 5 chars */ String],
-  yearOpened: /* nullability unknown */ Option[Int],
-  specialty: /* nullability unknown */ Option[/* max 50 chars */ String],
-  squareFeet: /* nullability unknown */ Option[Int],
-  brands: /* nullability unknown */ Option[/* max 30 chars */ String],
-  internet: /* nullability unknown */ Option[/* max 30 chars */ String],
-  numberEmployees: /* nullability unknown */ Option[Int]
+  annualSales: TypoMoney,
+  annualRevenue: TypoMoney,
+  bankName: String,
+  businessType: String,
+  yearOpened: Int,
+  specialty: String,
+  squareFeet: Int,
+  brands: String,
+  internet: String,
+  numberEmployees: Int
 )
 
 object VstorewithdemographicsViewRow {
-  given decoder: Decoder[VstorewithdemographicsViewRow] = Decoder.forProduct12[VstorewithdemographicsViewRow, BusinessentityId, Name, /* nullability unknown */ Option[TypoMoney], /* nullability unknown */ Option[TypoMoney], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 5 chars */ String], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[Int]]("businessentityid", "name", "AnnualSales", "AnnualRevenue", "BankName", "BusinessType", "YearOpened", "Specialty", "SquareFeet", "Brands", "Internet", "NumberEmployees")(VstorewithdemographicsViewRow.apply)(using BusinessentityId.decoder, Name.decoder, Decoder.decodeOption(using TypoMoney.decoder), Decoder.decodeOption(using TypoMoney.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeInt), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeInt), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeInt))
+  given decoder: Decoder[VstorewithdemographicsViewRow] = Decoder.forProduct12[VstorewithdemographicsViewRow, BusinessentityId, Name, TypoMoney, TypoMoney, String, String, Int, String, Int, String, String, Int]("businessentityid", "name", "AnnualSales", "AnnualRevenue", "BankName", "BusinessType", "YearOpened", "Specialty", "SquareFeet", "Brands", "Internet", "NumberEmployees")(VstorewithdemographicsViewRow.apply)(using BusinessentityId.decoder, Name.decoder, TypoMoney.decoder, TypoMoney.decoder, Decoder.decodeString, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeString, Decoder.decodeInt)
 
-  given encoder: Encoder[VstorewithdemographicsViewRow] = Encoder.forProduct12[VstorewithdemographicsViewRow, BusinessentityId, Name, /* nullability unknown */ Option[TypoMoney], /* nullability unknown */ Option[TypoMoney], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 5 chars */ String], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[Int]]("businessentityid", "name", "AnnualSales", "AnnualRevenue", "BankName", "BusinessType", "YearOpened", "Specialty", "SquareFeet", "Brands", "Internet", "NumberEmployees")(x => (x.businessentityid, x.name, x.annualSales, x.annualRevenue, x.bankName, x.businessType, x.yearOpened, x.specialty, x.squareFeet, x.brands, x.internet, x.numberEmployees))(using BusinessentityId.encoder, Name.encoder, Encoder.encodeOption(using TypoMoney.encoder), Encoder.encodeOption(using TypoMoney.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeInt), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeInt), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeInt))
+  given encoder: Encoder[VstorewithdemographicsViewRow] = Encoder.forProduct12[VstorewithdemographicsViewRow, BusinessentityId, Name, TypoMoney, TypoMoney, String, String, Int, String, Int, String, String, Int]("businessentityid", "name", "AnnualSales", "AnnualRevenue", "BankName", "BusinessType", "YearOpened", "Specialty", "SquareFeet", "Brands", "Internet", "NumberEmployees")(x => (x.businessentityid, x.name, x.annualSales, x.annualRevenue, x.bankName, x.businessType, x.yearOpened, x.specialty, x.squareFeet, x.brands, x.internet, x.numberEmployees))(using BusinessentityId.encoder, Name.encoder, TypoMoney.encoder, TypoMoney.encoder, Encoder.encodeString, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeString, Encoder.encodeInt)
 
   given read: Read[VstorewithdemographicsViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoMoney.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoMoney.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]]
+        new Read.Single(TypoMoney.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoMoney.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       VstorewithdemographicsViewRow(
         businessentityid = arr(0).asInstanceOf[BusinessentityId],
             name = arr(1).asInstanceOf[Name],
-            annualSales = arr(2).asInstanceOf[/* nullability unknown */ Option[TypoMoney]],
-            annualRevenue = arr(3).asInstanceOf[/* nullability unknown */ Option[TypoMoney]],
-            bankName = arr(4).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
-            businessType = arr(5).asInstanceOf[/* nullability unknown */ Option[/* max 5 chars */ String]],
-            yearOpened = arr(6).asInstanceOf[/* nullability unknown */ Option[Int]],
-            specialty = arr(7).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
-            squareFeet = arr(8).asInstanceOf[/* nullability unknown */ Option[Int]],
-            brands = arr(9).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-            internet = arr(10).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-            numberEmployees = arr(11).asInstanceOf[/* nullability unknown */ Option[Int]]
+            annualSales = arr(2).asInstanceOf[TypoMoney],
+            annualRevenue = arr(3).asInstanceOf[TypoMoney],
+            bankName = arr(4).asInstanceOf[String],
+            businessType = arr(5).asInstanceOf[String],
+            yearOpened = arr(6).asInstanceOf[Int],
+            specialty = arr(7).asInstanceOf[String],
+            squareFeet = arr(8).asInstanceOf[Int],
+            brands = arr(9).asInstanceOf[String],
+            internet = arr(10).asInstanceOf[String],
+            numberEmployees = arr(11).asInstanceOf[Int]
       )
     }
   }

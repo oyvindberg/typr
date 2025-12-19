@@ -6,16 +6,16 @@
 package adventureworks.sales.salestaxrate
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.public.Name
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: sales.salestaxrate
   * Tax rate lookup table.
@@ -33,7 +33,7 @@ data class SalestaxrateRow(
   /** 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
     * Constraint CK_SalesTaxRate_TaxType affecting columns taxtype: (((taxtype >= 1) AND (taxtype <= 3)))
     */
-  val taxtype: TypoShort,
+  val taxtype: Short,
   /** Tax rate amount.
     * Default: 0.00
     */
@@ -41,23 +41,23 @@ data class SalestaxrateRow(
   /** Tax rate description. */
   val name: Name,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): SalestaxrateId = salestaxrateid
 
   fun toUnsavedRow(
     salestaxrateid: Defaulted<SalestaxrateId>,
     taxrate: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): SalestaxrateRowUnsaved = SalestaxrateRowUnsaved(stateprovinceid, taxtype, name, salestaxrateid, taxrate, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SalestaxrateRow> = RowParsers.of(SalestaxrateId.pgType, StateprovinceId.pgType, TypoShort.pgType, PgTypes.numeric, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> SalestaxrateRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.salestaxrateid, row.stateprovinceid, row.taxtype, row.taxrate, row.name, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SalestaxrateRow> = RowParsers.of(SalestaxrateId.pgType, StateprovinceId.pgType, KotlinDbTypes.PgTypes.int2, PgTypes.numeric, Name.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> SalestaxrateRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.salestaxrateid, row.stateprovinceid, row.taxtype, row.taxrate, row.name, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<SalestaxrateRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

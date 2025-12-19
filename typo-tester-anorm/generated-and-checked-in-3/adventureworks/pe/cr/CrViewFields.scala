@@ -9,9 +9,9 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait CrViewFields {
   def countryregioncode: Field[CountryregionId, CrViewRow]
@@ -20,11 +20,11 @@ trait CrViewFields {
 }
 
 object CrViewFields {
-  lazy val structure: Relation[CrViewFields, CrViewRow] =
+  lazy val structure: RelationStructure[CrViewFields, CrViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[CrViewFields, CrViewRow] {
+    extends RelationStructure[CrViewFields, CrViewRow] {
 
     override lazy val fields: CrViewFields = new CrViewFields {
       override def countryregioncode = Field[CountryregionId, CrViewRow](_path, "countryregioncode", None, None, x => x.countryregioncode, (row, value) => row.copy(countryregioncode = value))

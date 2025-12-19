@@ -5,12 +5,13 @@
  */
 package adventureworks.sa.sop
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
 import adventureworks.sales.specialoffer.SpecialofferId
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: sa.sop */
 data class SopViewRow(
@@ -21,11 +22,11 @@ data class SopViewRow(
   /** Points to [adventureworks.sales.specialofferproduct.SpecialofferproductRow.productid] */
   val productid: ProductId,
   /** Points to [adventureworks.sales.specialofferproduct.SpecialofferproductRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.sales.specialofferproduct.SpecialofferproductRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SopViewRow> = RowParsers.of(SpecialofferId.pgType, SpecialofferId.pgType, ProductId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> SopViewRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.id, row.specialofferid, row.productid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SopViewRow> = RowParsers.of(SpecialofferId.pgType, SpecialofferId.pgType, ProductId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> SopViewRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.id, row.specialofferid, row.productid, row.rowguid, row.modifieddate) })
   }
 }

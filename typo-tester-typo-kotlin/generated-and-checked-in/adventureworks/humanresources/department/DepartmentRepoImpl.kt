@@ -5,24 +5,20 @@
  */
 package adventureworks.humanresources.department
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
 
 class DepartmentRepoImpl() : DepartmentRepo {
   override fun delete(): DeleteBuilder<DepartmentFields, DepartmentRow> = DeleteBuilder.of("\"humanresources\".\"department\"", DepartmentFields.structure, Dialect.POSTGRESQL)
@@ -30,145 +26,71 @@ class DepartmentRepoImpl() : DepartmentRepo {
   override fun deleteById(
     departmentid: DepartmentId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "humanresources"."department" where "departmentid" = 
-    """.trimMargin()),
-    DepartmentId.pgType.encode(departmentid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from \"humanresources\".\"department\" where \"departmentid\" = "), Fragment.encode(DepartmentId.pgType, departmentid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     departmentids: Array<DepartmentId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "humanresources"."department"
-               where "departmentid" = ANY(""".trimMargin()),
-             DepartmentId.pgTypeArray.encode(departmentids),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = Fragment.interpolate(Fragment.lit("delete\nfrom \"humanresources\".\"department\"\nwhere \"departmentid\" = ANY("), Fragment.encode(DepartmentId.pgTypeArray, departmentids), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: DepartmentRow,
     c: Connection
-  ): DepartmentRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "humanresources"."department"("departmentid", "name", "groupname", "modifieddate")
-      values (""".trimMargin()),
-    DepartmentId.pgType.encode(unsaved.departmentid),
-    typo.runtime.Fragment.lit("::int4, "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    Name.pgType.encode(unsaved.groupname),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "departmentid", "name", "groupname", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): DepartmentRow = Fragment.interpolate(Fragment.lit("insert into \"humanresources\".\"department\"(\"departmentid\", \"name\", \"groupname\", \"modifieddate\")\nvalues ("), Fragment.encode(DepartmentId.pgType, unsaved.departmentid), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(Name.pgType, unsaved.groupname), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"departmentid\", \"name\", \"groupname\", \"modifieddate\"\n"))
     .updateReturning(DepartmentRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: DepartmentRowUnsaved,
     c: Connection
   ): DepartmentRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"name\""))
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.name),
-      typo.runtime.Fragment.lit("::varchar")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar")))
     columns.add(Fragment.lit("\"groupname\""))
-    values.add(interpolate(
-      Name.pgType.encode(unsaved.groupname),
-      typo.runtime.Fragment.lit("::varchar")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(Name.pgType, unsaved.groupname), Fragment.lit("::varchar")))
     unsaved.departmentid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"departmentid\""))
-      values.add(interpolate(
-        DepartmentId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(DepartmentId.pgType, value), Fragment.lit("::int4"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "humanresources"."department"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "departmentid", "name", "groupname", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into \"humanresources\".\"department\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"departmentid\", \"name\", \"groupname\", \"modifieddate\"\n"))
     return q.updateReturning(DepartmentRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<DepartmentRow>,
+    unsaved: Iterator<DepartmentRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "humanresources"."department"("departmentid", "name", "groupname", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, DepartmentRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"humanresources\".\"department\"(\"departmentid\", \"name\", \"groupname\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, DepartmentRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<DepartmentRowUnsaved>,
+    unsaved: Iterator<DepartmentRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "humanresources"."department"("name", "groupname", "departmentid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, DepartmentRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"humanresources\".\"department\"(\"name\", \"groupname\", \"departmentid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, DepartmentRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<DepartmentFields, DepartmentRow> = SelectBuilder.of("\"humanresources\".\"department\"", DepartmentFields.structure, DepartmentRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<DepartmentRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "departmentid", "name", "groupname", "modifieddate"::text
-    from "humanresources"."department"
-  """.trimMargin())).query(DepartmentRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<DepartmentRow> = Fragment.interpolate(Fragment.lit("select \"departmentid\", \"name\", \"groupname\", \"modifieddate\"\nfrom \"humanresources\".\"department\"\n")).query(DepartmentRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     departmentid: DepartmentId,
     c: Connection
-  ): Optional<DepartmentRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "departmentid", "name", "groupname", "modifieddate"::text
-      from "humanresources"."department"
-      where "departmentid" = """.trimMargin()),
-    DepartmentId.pgType.encode(departmentid),
-    typo.runtime.Fragment.lit("")
-  ).query(DepartmentRow._rowParser.first()).runUnchecked(c)
+  ): DepartmentRow? = Fragment.interpolate(Fragment.lit("select \"departmentid\", \"name\", \"groupname\", \"modifieddate\"\nfrom \"humanresources\".\"department\"\nwhere \"departmentid\" = "), Fragment.encode(DepartmentId.pgType, departmentid), Fragment.lit("")).query(DepartmentRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     departmentids: Array<DepartmentId>,
     c: Connection
-  ): List<DepartmentRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "departmentid", "name", "groupname", "modifieddate"::text
-      from "humanresources"."department"
-      where "departmentid" = ANY(""".trimMargin()),
-    DepartmentId.pgTypeArray.encode(departmentids),
-    typo.runtime.Fragment.lit(")")
-  ).query(DepartmentRow._rowParser.all()).runUnchecked(c)
+  ): List<DepartmentRow> = Fragment.interpolate(Fragment.lit("select \"departmentid\", \"name\", \"groupname\", \"modifieddate\"\nfrom \"humanresources\".\"department\"\nwhere \"departmentid\" = ANY("), Fragment.encode(DepartmentId.pgTypeArray, departmentids), Fragment.lit(")")).query(DepartmentRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     departmentids: Array<DepartmentId>,
@@ -176,99 +98,41 @@ class DepartmentRepoImpl() : DepartmentRepo {
   ): Map<DepartmentId, DepartmentRow> {
     val ret: MutableMap<DepartmentId, DepartmentRow> = mutableMapOf<DepartmentId, DepartmentRow>()
     selectByIds(departmentids, c).forEach({ row -> ret.put(row.departmentid, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<DepartmentFields, DepartmentRow> = UpdateBuilder.of("\"humanresources\".\"department\"", DepartmentFields.structure, DepartmentRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<DepartmentFields, DepartmentRow> = UpdateBuilder.of("\"humanresources\".\"department\"", DepartmentFields.structure, DepartmentRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: DepartmentRow,
     c: Connection
   ): Boolean {
     val departmentid: DepartmentId = row.departmentid
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "humanresources"."department"
-        set "name" = """.trimMargin()),
-      Name.pgType.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ::varchar,
-        "groupname" = """.trimMargin()),
-      Name.pgType.encode(row.groupname),
-      typo.runtime.Fragment.lit("""
-        ::varchar,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "departmentid" = """.trimMargin()),
-      DepartmentId.pgType.encode(departmentid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update \"humanresources\".\"department\"\nset \"name\" = "), Fragment.encode(Name.pgType, row.name), Fragment.lit("::varchar,\n\"groupname\" = "), Fragment.encode(Name.pgType, row.groupname), Fragment.lit("::varchar,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"departmentid\" = "), Fragment.encode(DepartmentId.pgType, departmentid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: DepartmentRow,
     c: Connection
-  ): DepartmentRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "humanresources"."department"("departmentid", "name", "groupname", "modifieddate")
-      values (""".trimMargin()),
-    DepartmentId.pgType.encode(unsaved.departmentid),
-    typo.runtime.Fragment.lit("::int4, "),
-    Name.pgType.encode(unsaved.name),
-    typo.runtime.Fragment.lit("::varchar, "),
-    Name.pgType.encode(unsaved.groupname),
-    typo.runtime.Fragment.lit("::varchar, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("departmentid")
-      do update set
-        "name" = EXCLUDED."name",
-      "groupname" = EXCLUDED."groupname",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "departmentid", "name", "groupname", "modifieddate"::text""".trimMargin())
-  )
+  ): DepartmentRow = Fragment.interpolate(Fragment.lit("insert into \"humanresources\".\"department\"(\"departmentid\", \"name\", \"groupname\", \"modifieddate\")\nvalues ("), Fragment.encode(DepartmentId.pgType, unsaved.departmentid), Fragment.lit("::int4, "), Fragment.encode(Name.pgType, unsaved.name), Fragment.lit("::varchar, "), Fragment.encode(Name.pgType, unsaved.groupname), Fragment.lit("::varchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"departmentid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"groupname\" = EXCLUDED.\"groupname\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"departmentid\", \"name\", \"groupname\", \"modifieddate\""))
     .updateReturning(DepartmentRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<DepartmentRow>,
+    unsaved: Iterator<DepartmentRow>,
     c: Connection
-  ): List<DepartmentRow> = interpolate(typo.runtime.Fragment.lit("""
-                             insert into "humanresources"."department"("departmentid", "name", "groupname", "modifieddate")
-                             values (?::int4, ?::varchar, ?::varchar, ?::timestamp)
-                             on conflict ("departmentid")
-                             do update set
-                               "name" = EXCLUDED."name",
-                             "groupname" = EXCLUDED."groupname",
-                             "modifieddate" = EXCLUDED."modifieddate"
-                             returning "departmentid", "name", "groupname", "modifieddate"::text""".trimMargin()))
+  ): List<DepartmentRow> = Fragment.interpolate(Fragment.lit("insert into \"humanresources\".\"department\"(\"departmentid\", \"name\", \"groupname\", \"modifieddate\")\nvalues (?::int4, ?::varchar, ?::varchar, ?::timestamp)\non conflict (\"departmentid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"groupname\" = EXCLUDED.\"groupname\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"departmentid\", \"name\", \"groupname\", \"modifieddate\""))
     .updateManyReturning(DepartmentRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<DepartmentRow>,
+    unsaved: Iterator<DepartmentRow>,
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table department_TEMP (like "humanresources"."department") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy department_TEMP("departmentid", "name", "groupname", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, DepartmentRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "humanresources"."department"("departmentid", "name", "groupname", "modifieddate")
-      select * from department_TEMP
-      on conflict ("departmentid")
-      do update set
-        "name" = EXCLUDED."name",
-      "groupname" = EXCLUDED."groupname",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table department_TEMP;""".trimMargin())).update().runUnchecked(c)
+    Fragment.interpolate(Fragment.lit("create temporary table department_TEMP (like \"humanresources\".\"department\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy department_TEMP(\"departmentid\", \"name\", \"groupname\", \"modifieddate\") from stdin", batchSize, unsaved, c, DepartmentRow.pgText)
+    return Fragment.interpolate(Fragment.lit("insert into \"humanresources\".\"department\"(\"departmentid\", \"name\", \"groupname\", \"modifieddate\")\nselect * from department_TEMP\non conflict (\"departmentid\")\ndo update set\n  \"name\" = EXCLUDED.\"name\",\n\"groupname\" = EXCLUDED.\"groupname\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table department_TEMP;")).update().runUnchecked(c)
   }
 }

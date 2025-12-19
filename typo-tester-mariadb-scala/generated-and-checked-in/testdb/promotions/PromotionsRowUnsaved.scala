@@ -7,12 +7,13 @@ package testdb.promotions
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.MariaSet
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `promotions` which has not been persisted yet */
 case class PromotionsRowUnsaved(
@@ -23,7 +24,7 @@ case class PromotionsRowUnsaved(
   /**  */
   @JsonProperty("discount_type") discountType: String,
   /**  */
-  @JsonProperty("discount_value") discountValue: java.math.BigDecimal,
+  @JsonProperty("discount_value") discountValue: BigDecimal,
   /**  */
   @JsonProperty("valid_from") validFrom: LocalDateTime,
   /**  */
@@ -31,49 +32,49 @@ case class PromotionsRowUnsaved(
   /** Default: NULL
 
    */
-  description: Defaulted[Optional[String]] = new UseDefault(),
+  description: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("min_order_amount") minOrderAmount: Defaulted[Optional[java.math.BigDecimal]] = new UseDefault(),
+  @JsonProperty("min_order_amount") minOrderAmount: Defaulted[Option[BigDecimal]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("max_uses") maxUses: Defaulted[Optional[java.lang.Long]] = new UseDefault(),
+  @JsonProperty("max_uses") maxUses: Defaulted[Option[Long]] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("uses_count") usesCount: Defaulted[java.lang.Long] = new UseDefault(),
+  @JsonProperty("uses_count") usesCount: Defaulted[Long] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("max_uses_per_customer") maxUsesPerCustomer: Defaulted[Optional[java.lang.Short]] = new UseDefault(),
+  @JsonProperty("max_uses_per_customer") maxUsesPerCustomer: Defaulted[Option[Short]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("applicable_to") applicableTo: Defaulted[Optional[MariaSet]] = new UseDefault(),
+  @JsonProperty("applicable_to") applicableTo: Defaulted[Option[MariaSet]] = new UseDefault(),
   /** Default: NULL
    * Complex eligibility rules
    */
-  @JsonProperty("rules_json") rulesJson: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("rules_json") rulesJson: Defaulted[Option[String]] = new UseDefault(),
   /** Default: 1
 
    */
-  @JsonProperty("is_active") isActive: Defaulted[java.lang.Boolean] = new UseDefault(),
+  @JsonProperty("is_active") isActive: Defaulted[Boolean] = new UseDefault(),
   /** Default: current_timestamp()
 
    */
   @JsonProperty("created_at") createdAt: Defaulted[LocalDateTime] = new UseDefault()
 ) {
   def toRow(
-    descriptionDefault: => Optional[String],
-    minOrderAmountDefault: => Optional[java.math.BigDecimal],
-    maxUsesDefault: => Optional[java.lang.Long],
-    usesCountDefault: => java.lang.Long,
-    maxUsesPerCustomerDefault: => Optional[java.lang.Short],
-    applicableToDefault: => Optional[MariaSet],
-    rulesJsonDefault: => Optional[String],
-    isActiveDefault: => java.lang.Boolean,
+    descriptionDefault: => Option[String],
+    minOrderAmountDefault: => Option[BigDecimal],
+    maxUsesDefault: => Option[Long],
+    usesCountDefault: => Long,
+    maxUsesPerCustomerDefault: => Option[Short],
+    applicableToDefault: => Option[MariaSet],
+    rulesJsonDefault: => Option[String],
+    isActiveDefault: => Boolean,
     createdAtDefault: => LocalDateTime,
     promotionIdDefault: => PromotionsId
   ): PromotionsRow = {
@@ -99,5 +100,5 @@ case class PromotionsRowUnsaved(
 }
 
 object PromotionsRowUnsaved {
-  given mariaText: MariaText[PromotionsRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.code, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.discountType, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.discountValue, sb); sb.append(MariaText.DELIMETER); MariaTypes.datetime.mariaText.unsafeEncode(row.validFrom, sb); sb.append(MariaText.DELIMETER); MariaTypes.datetime.mariaText.unsafeEncode(row.validTo, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.opt().mariaText).unsafeEncode(row.description, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.opt().mariaText).unsafeEncode(row.minOrderAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.intUnsigned.opt().mariaText).unsafeEncode(row.maxUses, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.intUnsigned.mariaText).unsafeEncode(row.usesCount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinyintUnsigned.opt().mariaText).unsafeEncode(row.maxUsesPerCustomer, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.set.opt().mariaText).unsafeEncode(row.applicableTo, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.rulesJson, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isActive, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb) })
+  given mariaText: MariaText[PromotionsRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.code, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.discountType, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.discountValue, sb); sb.append(MariaText.DELIMETER); MariaTypes.datetime.mariaText.unsafeEncode(row.validFrom, sb); sb.append(MariaText.DELIMETER); MariaTypes.datetime.mariaText.unsafeEncode(row.validTo, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.nullable.mariaText).unsafeEncode(row.description, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.nullable.mariaText).unsafeEncode(row.minOrderAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.intUnsigned.nullable.mariaText).unsafeEncode(row.maxUses, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.intUnsigned.mariaText).unsafeEncode(row.usesCount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.tinyintUnsigned.nullable.mariaText).unsafeEncode(row.maxUsesPerCustomer, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.set.nullable.mariaText).unsafeEncode(row.applicableTo, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.rulesJson, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isActive, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb) })
 }

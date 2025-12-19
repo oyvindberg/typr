@@ -33,7 +33,7 @@ case class PersonRow(
   /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
    * Constraint CK_Person_PersonType affecting columns persontype: (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
    */
-  persontype: /* bpchar, max 2 chars */ String,
+  persontype: String,
   /** 0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order.
    * Default: false
    */

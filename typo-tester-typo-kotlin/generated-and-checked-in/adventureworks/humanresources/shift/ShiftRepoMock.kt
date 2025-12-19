@@ -8,21 +8,19 @@ package adventureworks.humanresources.shift
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ShiftRepoMock(
   val toRow: (ShiftRowUnsaved) -> ShiftRow,
@@ -33,7 +31,7 @@ data class ShiftRepoMock(
   override fun deleteById(
     shiftid: ShiftId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(shiftid)).isPresent()
+  ): Boolean = map.remove(shiftid) != null
 
   override fun deleteByIds(
     shiftids: Array<ShiftId>,
@@ -41,7 +39,7 @@ data class ShiftRepoMock(
   ): Int {
     var count = 0
     for (id in shiftids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ShiftRepoMock(
     c: Connection
   ): ShiftRow {
     if (map.containsKey(unsaved.shiftid)) {
-      throw RuntimeException(str("id $unsaved.shiftid already exists"))
+      throw RuntimeException("id " + unsaved.shiftid + " already exists")
     }
     map[unsaved.shiftid] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class ShiftRepoMock(
   ): ShiftRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<ShiftRow>,
+    unsaved: Iterator<ShiftRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class ShiftRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ShiftRowUnsaved>,
+    unsaved: Iterator<ShiftRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class ShiftRepoMock(
   override fun selectById(
     shiftid: ShiftId,
     c: Connection
-  ): Optional<ShiftRow> = Optional.ofNullable(map[shiftid])
+  ): ShiftRow? = map[shiftid]
 
   override fun selectByIds(
     shiftids: Array<ShiftId>,
@@ -109,9 +107,9 @@ data class ShiftRepoMock(
   ): List<ShiftRow> {
     val result = ArrayList<ShiftRow>()
     for (id in shiftids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class ShiftRepoMock(
     row: ShiftRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.shiftid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.shiftid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.shiftid] = row
     }
@@ -144,7 +142,7 @@ data class ShiftRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ShiftRow>,
+    unsaved: Iterator<ShiftRow>,
     c: Connection
   ): List<ShiftRow> {
     val result = ArrayList<ShiftRow>()
@@ -158,7 +156,7 @@ data class ShiftRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<ShiftRow>,
+    unsaved: Iterator<ShiftRow>,
     batchSize: Int,
     c: Connection
   ): Int {

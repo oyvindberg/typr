@@ -7,15 +7,12 @@ package adventureworks.humanresources.vemployeedepartment
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class VemployeedepartmentViewRepoImpl() : VemployeedepartmentViewRepo {
   override fun select(): SelectBuilder<VemployeedepartmentViewFields, VemployeedepartmentViewRow> = SelectBuilder.of("\"humanresources\".\"vemployeedepartment\"", VemployeedepartmentViewFields.structure, VemployeedepartmentViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<VemployeedepartmentViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "jobtitle", "department", "groupname", "startdate"::text
-    from "humanresources"."vemployeedepartment"
-  """.trimMargin())).query(VemployeedepartmentViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<VemployeedepartmentViewRow> = Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"jobtitle\", \"department\", \"groupname\", \"startdate\"\nfrom \"humanresources\".\"vemployeedepartment\"\n")).query(VemployeedepartmentViewRow._rowParser.all()).runUnchecked(c)
 }

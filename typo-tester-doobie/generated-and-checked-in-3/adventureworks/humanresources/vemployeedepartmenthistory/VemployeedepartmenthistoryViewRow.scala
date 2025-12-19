@@ -19,15 +19,15 @@ case class VemployeedepartmenthistoryViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.person.person.PersonRow.title]] */
-  title: Option[/* max 8 chars */ String],
+  title: String,
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: String,
   /** Points to [[adventureworks.humanresources.shift.ShiftRow.name]] */
   shift: Name,
   /** Points to [[adventureworks.humanresources.department.DepartmentRow.name]] */
@@ -37,40 +37,40 @@ case class VemployeedepartmenthistoryViewRow(
   /** Points to [[adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.startdate]] */
   startdate: TypoLocalDate,
   /** Points to [[adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.enddate]] */
-  enddate: Option[TypoLocalDate]
+  enddate: TypoLocalDate
 )
 
 object VemployeedepartmenthistoryViewRow {
-  given decoder: Decoder[VemployeedepartmenthistoryViewRow] = Decoder.forProduct11[VemployeedepartmenthistoryViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Name, Name, Name, TypoLocalDate, Option[TypoLocalDate]]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "shift", "department", "groupname", "startdate", "enddate")(VemployeedepartmenthistoryViewRow.apply)(using BusinessentityId.decoder, Decoder.decodeOption(using Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(using Name.decoder), Name.decoder, Decoder.decodeOption(using Decoder.decodeString), Name.decoder, Name.decoder, Name.decoder, TypoLocalDate.decoder, Decoder.decodeOption(using TypoLocalDate.decoder))
+  given decoder: Decoder[VemployeedepartmenthistoryViewRow] = Decoder.forProduct11[VemployeedepartmenthistoryViewRow, BusinessentityId, String, /* user-picked */ FirstName, Name, Name, String, Name, Name, Name, TypoLocalDate, TypoLocalDate]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "shift", "department", "groupname", "startdate", "enddate")(VemployeedepartmenthistoryViewRow.apply)(using BusinessentityId.decoder, Decoder.decodeString, FirstName.decoder, Name.decoder, Name.decoder, Decoder.decodeString, Name.decoder, Name.decoder, Name.decoder, TypoLocalDate.decoder, TypoLocalDate.decoder)
 
-  given encoder: Encoder[VemployeedepartmenthistoryViewRow] = Encoder.forProduct11[VemployeedepartmenthistoryViewRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Name, Name, Name, TypoLocalDate, Option[TypoLocalDate]]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "shift", "department", "groupname", "startdate", "enddate")(x => (x.businessentityid, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.shift, x.department, x.groupname, x.startdate, x.enddate))(using BusinessentityId.encoder, Encoder.encodeOption(using Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(using Name.encoder), Name.encoder, Encoder.encodeOption(using Encoder.encodeString), Name.encoder, Name.encoder, Name.encoder, TypoLocalDate.encoder, Encoder.encodeOption(using TypoLocalDate.encoder))
+  given encoder: Encoder[VemployeedepartmenthistoryViewRow] = Encoder.forProduct11[VemployeedepartmenthistoryViewRow, BusinessentityId, String, /* user-picked */ FirstName, Name, Name, String, Name, Name, Name, TypoLocalDate, TypoLocalDate]("businessentityid", "title", "firstname", "middlename", "lastname", "suffix", "shift", "department", "groupname", "startdate", "enddate")(x => (x.businessentityid, x.title, x.firstname, x.middlename, x.lastname, x.suffix, x.shift, x.department, x.groupname, x.startdate, x.enddate))(using BusinessentityId.encoder, Encoder.encodeString, FirstName.encoder, Name.encoder, Name.encoder, Encoder.encodeString, Name.encoder, Name.encoder, Name.encoder, TypoLocalDate.encoder, TypoLocalDate.encoder)
 
   given read: Read[VemployeedepartmenthistoryViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(/* user-picked */ FirstName.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Name.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Name.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]]
+        new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       VemployeedepartmenthistoryViewRow(
         businessentityid = arr(0).asInstanceOf[BusinessentityId],
-            title = arr(1).asInstanceOf[Option[/* max 8 chars */ String]],
+            title = arr(1).asInstanceOf[String],
             firstname = arr(2).asInstanceOf[/* user-picked */ FirstName],
-            middlename = arr(3).asInstanceOf[Option[Name]],
+            middlename = arr(3).asInstanceOf[Name],
             lastname = arr(4).asInstanceOf[Name],
-            suffix = arr(5).asInstanceOf[Option[/* max 10 chars */ String]],
+            suffix = arr(5).asInstanceOf[String],
             shift = arr(6).asInstanceOf[Name],
             department = arr(7).asInstanceOf[Name],
             groupname = arr(8).asInstanceOf[Name],
             startdate = arr(9).asInstanceOf[TypoLocalDate],
-            enddate = arr(10).asInstanceOf[Option[TypoLocalDate]]
+            enddate = arr(10).asInstanceOf[TypoLocalDate]
       )
     }
   }

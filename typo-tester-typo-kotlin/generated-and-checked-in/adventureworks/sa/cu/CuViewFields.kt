@@ -5,46 +5,48 @@
  */
 package adventureworks.sa.cu
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import adventureworks.sales.currency.CurrencyId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface CuViewFields : FieldsExpr<CuViewRow> {
-  override fun columns(): List<FieldLike<*, CuViewRow>>
+  abstract override fun columns(): List<FieldLike<*, CuViewRow>>
 
-  fun currencycode(): Field<CurrencyId, CuViewRow>
+  abstract fun currencycode(): Field<CurrencyId, CuViewRow>
 
-  fun id(): Field<CurrencyId, CuViewRow>
+  abstract fun id(): Field<CurrencyId, CuViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, CuViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, CuViewRow>
 
-  fun name(): Field<Name, CuViewRow>
+  abstract fun name(): Field<Name, CuViewRow>
 
-  override fun rowParser(): RowParser<CuViewRow> = CuViewRow._rowParser
+  override fun rowParser(): RowParser<CuViewRow> = CuViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : CuViewFields, Relation<CuViewFields, CuViewRow> {
-      override fun id(): Field<CurrencyId, CuViewRow> = Field<CurrencyId, CuViewRow>(_path, "id", CuViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, CurrencyId.pgType)
+    data class Impl(val _path: List<Path>) : CuViewFields, RelationStructure<CuViewFields, CuViewRow> {
+      override fun id(): Field<CurrencyId, CuViewRow> = Field<CurrencyId, CuViewRow>(_path, "id", CuViewRow::id, null, null, { row, value -> row.copy(id = value) }, CurrencyId.pgType)
 
-      override fun currencycode(): Field<CurrencyId, CuViewRow> = Field<CurrencyId, CuViewRow>(_path, "currencycode", CuViewRow::currencycode, Optional.empty(), Optional.empty(), { row, value -> row.copy(currencycode = value) }, CurrencyId.pgType)
+      override fun currencycode(): Field<CurrencyId, CuViewRow> = Field<CurrencyId, CuViewRow>(_path, "currencycode", CuViewRow::currencycode, null, null, { row, value -> row.copy(currencycode = value) }, CurrencyId.pgType)
 
-      override fun name(): Field<Name, CuViewRow> = Field<Name, CuViewRow>(_path, "name", CuViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, CuViewRow> = Field<Name, CuViewRow>(_path, "name", CuViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, CuViewRow> = Field<TypoLocalDateTime, CuViewRow>(_path, "modifieddate", CuViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, CuViewRow> = Field<LocalDateTime, CuViewRow>(_path, "modifieddate", CuViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, CuViewRow>> = listOf(this.id(), this.currencycode(), this.name(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<CuViewFields, CuViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, CuViewRow>> = listOf(this.id().underlying, this.currencycode().underlying, this.name().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<CuViewFields, CuViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

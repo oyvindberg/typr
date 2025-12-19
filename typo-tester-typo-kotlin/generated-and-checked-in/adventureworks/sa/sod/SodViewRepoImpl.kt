@@ -7,15 +7,12 @@ package adventureworks.sa.sod
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class SodViewRepoImpl() : SodViewRepo {
   override fun select(): SelectBuilder<SodViewFields, SodViewRow> = SelectBuilder.of("\"sa\".\"sod\"", SodViewFields.structure, SodViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<SodViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate"::text
-    from "sa"."sod"
-  """.trimMargin())).query(SodViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<SodViewRow> = Fragment.interpolate(Fragment.lit("select \"id\", \"salesorderid\", \"salesorderdetailid\", \"carriertrackingnumber\", \"orderqty\", \"productid\", \"specialofferid\", \"unitprice\", \"unitpricediscount\", \"rowguid\", \"modifieddate\"\nfrom \"sa\".\"sod\"\n")).query(SodViewRow._rowParser.all()).runUnchecked(c)
 }

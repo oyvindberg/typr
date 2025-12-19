@@ -5,16 +5,16 @@
  */
 package adventureworks.person.vadditionalcontactinfo
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.data.Xml
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: person.vadditionalcontactinfo */
 data class VadditionalcontactinfoViewRow(
@@ -23,26 +23,26 @@ data class VadditionalcontactinfoViewRow(
   /** Points to [adventureworks.person.person.PersonRow.firstname] */
   val firstname: /* user-picked */ FirstName,
   /** Points to [adventureworks.person.person.PersonRow.middlename] */
-  val middlename: Optional<Name>,
+  val middlename: Name,
   /** Points to [adventureworks.person.person.PersonRow.lastname] */
   val lastname: Name,
-  val telephonenumber: /* nullability unknown */ Optional<TypoXml>,
-  val telephonespecialinstructions: /* nullability unknown */ Optional<String>,
-  val street: /* nullability unknown */ Optional<TypoXml>,
-  val city: /* nullability unknown */ Optional<TypoXml>,
-  val stateprovince: /* nullability unknown */ Optional<TypoXml>,
-  val postalcode: /* nullability unknown */ Optional<TypoXml>,
-  val countryregion: /* nullability unknown */ Optional<TypoXml>,
-  val homeaddressspecialinstructions: /* nullability unknown */ Optional<TypoXml>,
-  val emailaddress: /* nullability unknown */ Optional<TypoXml>,
-  val emailspecialinstructions: /* nullability unknown */ Optional<String>,
-  val emailtelephonenumber: /* nullability unknown */ Optional<TypoXml>,
+  val telephonenumber: Xml?,
+  val telephonespecialinstructions: String?,
+  val street: Xml?,
+  val city: Xml?,
+  val stateprovince: Xml?,
+  val postalcode: Xml?,
+  val countryregion: Xml?,
+  val homeaddressspecialinstructions: Xml?,
+  val emailaddress: Xml?,
+  val emailspecialinstructions: String?,
+  val emailtelephonenumber: Xml?,
   /** Points to [adventureworks.person.person.PersonRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.person.person.PersonRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<VadditionalcontactinfoViewRow> = RowParsers.of(BusinessentityId.pgType, FirstName.pgType, Name.pgType.opt(), Name.pgType, TypoXml.pgType.opt(), PgTypes.text.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoXml.pgType.opt(), PgTypes.text.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16 -> VadditionalcontactinfoViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.firstname, row.middlename, row.lastname, row.telephonenumber, row.telephonespecialinstructions, row.street, row.city, row.stateprovince, row.postalcode, row.countryregion, row.homeaddressspecialinstructions, row.emailaddress, row.emailspecialinstructions, row.emailtelephonenumber, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<VadditionalcontactinfoViewRow> = RowParsers.of(BusinessentityId.pgType, FirstName.pgType, Name.pgType, Name.pgType, PgTypes.xml.nullable(), PgTypes.text.nullable(), PgTypes.xml.nullable(), PgTypes.xml.nullable(), PgTypes.xml.nullable(), PgTypes.xml.nullable(), PgTypes.xml.nullable(), PgTypes.xml.nullable(), PgTypes.xml.nullable(), PgTypes.text.nullable(), PgTypes.xml.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16 -> VadditionalcontactinfoViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) }, { row -> arrayOf<Any?>(row.businessentityid, row.firstname, row.middlename, row.lastname, row.telephonenumber, row.telephonespecialinstructions, row.street, row.city, row.stateprovince, row.postalcode, row.countryregion, row.homeaddressspecialinstructions, row.emailaddress, row.emailspecialinstructions, row.emailtelephonenumber, row.rowguid, row.modifieddate) })
   }
 }

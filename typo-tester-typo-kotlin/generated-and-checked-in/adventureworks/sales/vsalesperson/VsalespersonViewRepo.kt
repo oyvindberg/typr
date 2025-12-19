@@ -7,10 +7,10 @@ package adventureworks.sales.vsalesperson
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VsalespersonViewRepo {
-  fun select(): SelectBuilder<VsalespersonViewFields, VsalespersonViewRow>
+  abstract fun select(): SelectBuilder<VsalespersonViewFields, VsalespersonViewRow>
 
-  fun selectAll(c: Connection): List<VsalespersonViewRow>
+  abstract fun selectAll(c: Connection): List<VsalespersonViewRow>
 }

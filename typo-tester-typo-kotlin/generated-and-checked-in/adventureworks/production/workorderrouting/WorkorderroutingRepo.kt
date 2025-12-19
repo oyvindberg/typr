@@ -6,89 +6,88 @@
 package adventureworks.production.workorderrouting
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface WorkorderroutingRepo {
-  fun delete(): DeleteBuilder<WorkorderroutingFields, WorkorderroutingRow>
+  abstract fun delete(): DeleteBuilder<WorkorderroutingFields, WorkorderroutingRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: WorkorderroutingId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<WorkorderroutingId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: WorkorderroutingRow,
     c: Connection
   ): WorkorderroutingRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: WorkorderroutingRowUnsaved,
     c: Connection
   ): WorkorderroutingRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<WorkorderroutingRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<WorkorderroutingRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<WorkorderroutingRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<WorkorderroutingRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<WorkorderroutingFields, WorkorderroutingRow>
+  abstract fun select(): SelectBuilder<WorkorderroutingFields, WorkorderroutingRow>
 
-  fun selectAll(c: Connection): List<WorkorderroutingRow>
+  abstract fun selectAll(c: Connection): List<WorkorderroutingRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: WorkorderroutingId,
     c: Connection
-  ): Optional<WorkorderroutingRow>
+  ): WorkorderroutingRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<WorkorderroutingId>,
     c: Connection
   ): List<WorkorderroutingRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<WorkorderroutingId>,
     c: Connection
   ): Map<WorkorderroutingId, WorkorderroutingRow>
 
-  fun update(): UpdateBuilder<WorkorderroutingFields, WorkorderroutingRow>
+  abstract fun update(): UpdateBuilder<WorkorderroutingFields, WorkorderroutingRow>
 
-  fun update(
+  abstract fun update(
     row: WorkorderroutingRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: WorkorderroutingRow,
     c: Connection
   ): WorkorderroutingRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<WorkorderroutingRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<WorkorderroutingRow>,
     c: Connection
   ): List<WorkorderroutingRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<WorkorderroutingRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<WorkorderroutingRow>,
     batchSize: Int,
     c: Connection
   ): Int

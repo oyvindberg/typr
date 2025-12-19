@@ -5,60 +5,61 @@
  */
 package adventureworks.public.users
 
-import adventureworks.customtypes.TypoInstant
-import adventureworks.customtypes.TypoUnknownCitext
-import java.util.Optional
+import java.time.Instant
 import kotlin.collections.List
+import typo.data.Unknown
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface UsersFields : FieldsExpr<UsersRow> {
-  override fun columns(): List<FieldLike<*, UsersRow>>
+  abstract override fun columns(): List<FieldLike<*, UsersRow>>
 
-  fun createdAt(): Field<TypoInstant, UsersRow>
+  abstract fun createdAt(): Field<Instant, UsersRow>
 
-  fun email(): Field<TypoUnknownCitext, UsersRow>
+  abstract fun email(): Field<Unknown, UsersRow>
 
-  fun lastName(): OptField<String, UsersRow>
+  abstract fun lastName(): OptField<String, UsersRow>
 
-  fun name(): Field<String, UsersRow>
+  abstract fun name(): Field<String, UsersRow>
 
-  fun password(): Field<String, UsersRow>
+  abstract fun password(): Field<String, UsersRow>
 
-  override fun rowParser(): RowParser<UsersRow> = UsersRow._rowParser
+  override fun rowParser(): RowParser<UsersRow> = UsersRow._rowParser.underlying
 
-  fun userId(): IdField<UsersId, UsersRow>
+  abstract fun userId(): IdField<UsersId, UsersRow>
 
-  fun verifiedOn(): OptField<TypoInstant, UsersRow>
+  abstract fun verifiedOn(): OptField<Instant, UsersRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : UsersFields, Relation<UsersFields, UsersRow> {
-      override fun userId(): IdField<UsersId, UsersRow> = IdField<UsersId, UsersRow>(_path, "user_id", UsersRow::userId, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(userId = value) }, UsersId.pgType)
+    data class Impl(val _path: List<Path>) : UsersFields, RelationStructure<UsersFields, UsersRow> {
+      override fun userId(): IdField<UsersId, UsersRow> = IdField<UsersId, UsersRow>(_path, "user_id", UsersRow::userId, null, "uuid", { row, value -> row.copy(userId = value) }, UsersId.pgType)
 
-      override fun name(): Field<String, UsersRow> = Field<String, UsersRow>(_path, "name", UsersRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, PgTypes.text)
+      override fun name(): Field<String, UsersRow> = Field<String, UsersRow>(_path, "name", UsersRow::name, null, null, { row, value -> row.copy(name = value) }, PgTypes.text)
 
-      override fun lastName(): OptField<String, UsersRow> = OptField<String, UsersRow>(_path, "last_name", UsersRow::lastName, Optional.empty(), Optional.empty(), { row, value -> row.copy(lastName = value) }, PgTypes.text)
+      override fun lastName(): OptField<String, UsersRow> = OptField<String, UsersRow>(_path, "last_name", UsersRow::lastName, null, null, { row, value -> row.copy(lastName = value) }, PgTypes.text)
 
-      override fun email(): Field<TypoUnknownCitext, UsersRow> = Field<TypoUnknownCitext, UsersRow>(_path, "email", UsersRow::email, Optional.of("text"), Optional.of("citext"), { row, value -> row.copy(email = value) }, TypoUnknownCitext.pgType)
+      override fun email(): Field<Unknown, UsersRow> = Field<Unknown, UsersRow>(_path, "email", UsersRow::email, "text", "citext", { row, value -> row.copy(email = value) }, PgTypes.unknown)
 
-      override fun password(): Field<String, UsersRow> = Field<String, UsersRow>(_path, "password", UsersRow::password, Optional.empty(), Optional.empty(), { row, value -> row.copy(password = value) }, PgTypes.text)
+      override fun password(): Field<String, UsersRow> = Field<String, UsersRow>(_path, "password", UsersRow::password, null, null, { row, value -> row.copy(password = value) }, PgTypes.text)
 
-      override fun createdAt(): Field<TypoInstant, UsersRow> = Field<TypoInstant, UsersRow>(_path, "created_at", UsersRow::createdAt, Optional.of("text"), Optional.of("timestamptz"), { row, value -> row.copy(createdAt = value) }, TypoInstant.pgType)
+      override fun createdAt(): Field<Instant, UsersRow> = Field<Instant, UsersRow>(_path, "created_at", UsersRow::createdAt, null, "timestamptz", { row, value -> row.copy(createdAt = value) }, PgTypes.timestamptz)
 
-      override fun verifiedOn(): OptField<TypoInstant, UsersRow> = OptField<TypoInstant, UsersRow>(_path, "verified_on", UsersRow::verifiedOn, Optional.of("text"), Optional.of("timestamptz"), { row, value -> row.copy(verifiedOn = value) }, TypoInstant.pgType)
+      override fun verifiedOn(): OptField<Instant, UsersRow> = OptField<Instant, UsersRow>(_path, "verified_on", UsersRow::verifiedOn, null, "timestamptz", { row, value -> row.copy(verifiedOn = value) }, PgTypes.timestamptz)
 
-      override fun columns(): List<FieldLike<*, UsersRow>> = listOf(this.userId(), this.name(), this.lastName(), this.email(), this.password(), this.createdAt(), this.verifiedOn())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<UsersFields, UsersRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, UsersRow>> = listOf(this.userId().underlying, this.name().underlying, this.lastName().underlying, this.email().underlying, this.password().underlying, this.createdAt().underlying, this.verifiedOn().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<UsersFields, UsersRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

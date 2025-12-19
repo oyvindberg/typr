@@ -5,19 +5,20 @@
  */
 package adventureworks.update_person_returning
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.userdefined.FirstName
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** SQL file: update_person_returning.sql */
 data class UpdatePersonReturningSqlRow(
   /** Points to [adventureworks.person.person.PersonRow.firstname] */
   val firstname: /* user-picked */ FirstName,
   /** Points to [adventureworks.person.person.PersonRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<UpdatePersonReturningSqlRow> = RowParsers.of(FirstName.pgType, TypoLocalDateTime.pgType, { t0, t1 -> UpdatePersonReturningSqlRow(t0!!, t1!!) }, { row -> arrayOf<Any?>(row.firstname, row.modifieddate) })
+    val _rowParser: RowParser<UpdatePersonReturningSqlRow> = RowParsers.of(FirstName.pgType, PgTypes.timestamp, { t0, t1 -> UpdatePersonReturningSqlRow(t0, t1) }, { row -> arrayOf<Any?>(row.firstname, row.modifieddate) })
   }
 }

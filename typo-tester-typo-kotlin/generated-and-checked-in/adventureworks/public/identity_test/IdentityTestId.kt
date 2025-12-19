@@ -6,25 +6,25 @@
 package adventureworks.public.identity_test
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 
 /** Type for the primary key of table `public.identity-test` */
-data class IdentityTestId(@JsonValue val value: /* max 250 chars */ String) {
+data class IdentityTestId(@JsonValue val value: String) {
   override fun toString(): kotlin.String {
     return value.toString()
   }
 
   companion object {
-    val bijection: Bijection<IdentityTestId, /* max 250 chars */ String> =
+    val bijection: Bijection<IdentityTestId, String> =
       Bijection.of(IdentityTestId::value, ::IdentityTestId)
 
     val pgType: PgType<IdentityTestId> =
       PgTypes.text.bimap(::IdentityTestId, IdentityTestId::value)
 
     val pgTypeArray: PgType<Array<IdentityTestId>> =
-      PgTypes.textArray.bimap({ xs -> arrayMap.map(xs, ::IdentityTestId, IdentityTestId::class.java) }, { xs -> arrayMap.map(xs, IdentityTestId::value, /* max 250 chars */ String::class.java) })
+      PgTypes.textArray.bimap({ xs -> arrayMap.map(xs, ::IdentityTestId, IdentityTestId::class.java) }, { xs -> arrayMap.map(xs, IdentityTestId::value, String::class.java) })
   }
 }

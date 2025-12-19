@@ -6,89 +6,88 @@
 package adventureworks.sales.salestaxrate
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface SalestaxrateRepo {
-  fun delete(): DeleteBuilder<SalestaxrateFields, SalestaxrateRow>
+  abstract fun delete(): DeleteBuilder<SalestaxrateFields, SalestaxrateRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     salestaxrateid: SalestaxrateId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     salestaxrateids: Array<SalestaxrateId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: SalestaxrateRow,
     c: Connection
   ): SalestaxrateRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: SalestaxrateRowUnsaved,
     c: Connection
   ): SalestaxrateRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<SalestaxrateRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<SalestaxrateRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<SalestaxrateRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<SalestaxrateRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<SalestaxrateFields, SalestaxrateRow>
+  abstract fun select(): SelectBuilder<SalestaxrateFields, SalestaxrateRow>
 
-  fun selectAll(c: Connection): List<SalestaxrateRow>
+  abstract fun selectAll(c: Connection): List<SalestaxrateRow>
 
-  fun selectById(
+  abstract fun selectById(
     salestaxrateid: SalestaxrateId,
     c: Connection
-  ): Optional<SalestaxrateRow>
+  ): SalestaxrateRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     salestaxrateids: Array<SalestaxrateId>,
     c: Connection
   ): List<SalestaxrateRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     salestaxrateids: Array<SalestaxrateId>,
     c: Connection
   ): Map<SalestaxrateId, SalestaxrateRow>
 
-  fun update(): UpdateBuilder<SalestaxrateFields, SalestaxrateRow>
+  abstract fun update(): UpdateBuilder<SalestaxrateFields, SalestaxrateRow>
 
-  fun update(
+  abstract fun update(
     row: SalestaxrateRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: SalestaxrateRow,
     c: Connection
   ): SalestaxrateRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<SalestaxrateRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<SalestaxrateRow>,
     c: Connection
   ): List<SalestaxrateRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<SalestaxrateRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<SalestaxrateRow>,
     batchSize: Int,
     c: Connection
   ): Int

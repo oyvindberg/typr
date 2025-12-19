@@ -5,16 +5,16 @@
  */
 package adventureworks.pe.sp
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.public.Flag
 import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pe.sp */
 data class SpViewRow(
@@ -23,7 +23,7 @@ data class SpViewRow(
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid] */
   val stateprovinceid: StateprovinceId,
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.stateprovincecode] */
-  val stateprovincecode: /* bpchar, max 3 chars */ String,
+  val stateprovincecode: String,
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.countryregioncode] */
   val countryregioncode: CountryregionId,
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.isonlystateprovinceflag] */
@@ -33,11 +33,11 @@ data class SpViewRow(
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.territoryid] */
   val territoryid: SalesterritoryId,
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SpViewRow> = RowParsers.of(StateprovinceId.pgType, StateprovinceId.pgType, PgTypes.bpchar, CountryregionId.pgType, Flag.pgType, Name.pgType, SalesterritoryId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> SpViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.id, row.stateprovinceid, row.stateprovincecode, row.countryregioncode, row.isonlystateprovinceflag, row.name, row.territoryid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SpViewRow> = RowParsers.of(StateprovinceId.pgType, StateprovinceId.pgType, PgTypes.bpchar, CountryregionId.pgType, Flag.pgType, Name.pgType, SalesterritoryId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> SpViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.id, row.stateprovinceid, row.stateprovincecode, row.countryregioncode, row.isonlystateprovinceflag, row.name, row.territoryid, row.rowguid, row.modifieddate) })
   }
 }

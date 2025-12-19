@@ -5,59 +5,61 @@
  */
 package adventureworks.production.productdocument
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentFields
 import adventureworks.production.document.DocumentId
 import adventureworks.production.document.DocumentRow
 import adventureworks.production.product.ProductFields
 import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface ProductdocumentFields : FieldsExpr<ProductdocumentRow> {
-  override fun columns(): List<FieldLike<*, ProductdocumentRow>>
+  abstract override fun columns(): List<FieldLike<*, ProductdocumentRow>>
 
   fun compositeIdIn(compositeIds: List<ProductdocumentId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<ProductId, ProductdocumentId, ProductdocumentRow>(productid(), ProductdocumentId::productid, ProductId.pgType), Part<DocumentId, ProductdocumentId, ProductdocumentRow>(documentnode(), ProductdocumentId::documentnode, DocumentId.pgType)), compositeIds)
 
   fun compositeIdIs(compositeId: ProductdocumentId): SqlExpr<Boolean> = SqlExpr.all(productid().isEqual(compositeId.productid), documentnode().isEqual(compositeId.documentnode))
 
-  fun documentnode(): IdField<DocumentId, ProductdocumentRow>
+  abstract fun documentnode(): IdField<DocumentId, ProductdocumentRow>
 
-  fun fkDocument(): ForeignKey<DocumentFields, DocumentRow> = ForeignKey.of<DocumentFields, DocumentRow>("production.FK_ProductDocument_Document_DocumentNode").withColumnPair(documentnode(), DocumentFields::documentnode)
+  fun fkDocument(): ForeignKey<DocumentFields, DocumentRow> = ForeignKey.of<DocumentFields, DocumentRow>("production.FK_ProductDocument_Document_DocumentNode").withColumnPair<DocumentId>(documentnode(), DocumentFields::documentnode)
 
-  fun fkProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("production.FK_ProductDocument_Product_ProductID").withColumnPair(productid(), ProductFields::productid)
+  fun fkProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("production.FK_ProductDocument_Product_ProductID").withColumnPair<ProductId>(productid(), ProductFields::productid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, ProductdocumentRow>
+  abstract fun modifieddate(): Field<LocalDateTime, ProductdocumentRow>
 
-  fun productid(): IdField<ProductId, ProductdocumentRow>
+  abstract fun productid(): IdField<ProductId, ProductdocumentRow>
 
-  override fun rowParser(): RowParser<ProductdocumentRow> = ProductdocumentRow._rowParser
+  override fun rowParser(): RowParser<ProductdocumentRow> = ProductdocumentRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductdocumentFields, Relation<ProductdocumentFields, ProductdocumentRow> {
-      override fun productid(): IdField<ProductId, ProductdocumentRow> = IdField<ProductId, ProductdocumentRow>(_path, "productid", ProductdocumentRow::productid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+    data class Impl(val _path: List<Path>) : ProductdocumentFields, RelationStructure<ProductdocumentFields, ProductdocumentRow> {
+      override fun productid(): IdField<ProductId, ProductdocumentRow> = IdField<ProductId, ProductdocumentRow>(_path, "productid", ProductdocumentRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, ProductdocumentRow> = Field<TypoLocalDateTime, ProductdocumentRow>(_path, "modifieddate", ProductdocumentRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, ProductdocumentRow> = Field<LocalDateTime, ProductdocumentRow>(_path, "modifieddate", ProductdocumentRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun documentnode(): IdField<DocumentId, ProductdocumentRow> = IdField<DocumentId, ProductdocumentRow>(_path, "documentnode", ProductdocumentRow::documentnode, Optional.empty(), Optional.empty(), { row, value -> row.copy(documentnode = value) }, DocumentId.pgType)
+      override fun documentnode(): IdField<DocumentId, ProductdocumentRow> = IdField<DocumentId, ProductdocumentRow>(_path, "documentnode", ProductdocumentRow::documentnode, null, null, { row, value -> row.copy(documentnode = value) }, DocumentId.pgType)
 
-      override fun columns(): List<FieldLike<*, ProductdocumentRow>> = listOf(this.productid(), this.modifieddate(), this.documentnode())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ProductdocumentFields, ProductdocumentRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ProductdocumentRow>> = listOf(this.productid().underlying, this.modifieddate().underlying, this.documentnode().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ProductdocumentFields, ProductdocumentRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

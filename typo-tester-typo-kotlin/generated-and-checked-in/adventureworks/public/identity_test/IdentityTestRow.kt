@@ -7,10 +7,10 @@ package adventureworks.public.identity_test
 
 import adventureworks.customtypes.Defaulted
 import com.fasterxml.jackson.annotation.JsonProperty
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: public.identity-test
   * Primary key: name
@@ -27,9 +27,9 @@ data class IdentityTestRow(
   fun toUnsavedRow(defaultGenerated: Defaulted<Int>): IdentityTestRowUnsaved = IdentityTestRowUnsaved(name, defaultGenerated)
 
   companion object {
-    val _rowParser: RowParser<IdentityTestRow> = RowParsers.of(PgTypes.int4, PgTypes.int4, IdentityTestId.pgType, { t0, t1, t2 -> IdentityTestRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.alwaysGenerated, row.defaultGenerated, row.name) })
+    val _rowParser: RowParser<IdentityTestRow> = RowParsers.of(KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, IdentityTestId.pgType, { t0, t1, t2 -> IdentityTestRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.alwaysGenerated, row.defaultGenerated, row.name) })
 
     val pgText: PgText<IdentityTestRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

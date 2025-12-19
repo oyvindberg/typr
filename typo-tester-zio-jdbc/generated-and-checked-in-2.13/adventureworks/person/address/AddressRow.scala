@@ -28,17 +28,17 @@ case class AddressRow(
    */
   addressid: AddressId,
   /** First street address line. */
-  addressline1: /* max 60 chars */ String,
+  addressline1: String,
   /** Second street address line. */
   addressline2: Option[/* max 60 chars */ String],
   /** Name of the city. */
-  city: /* max 30 chars */ String,
+  city: String,
   /** Unique identification number for the state or province. Foreign key to StateProvince table.
    * Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]]
    */
   stateprovinceid: StateprovinceId,
   /** Postal code for the street address. */
-  postalcode: /* max 15 chars */ String,
+  postalcode: String,
   /** Latitude and longitude of this address. */
   spatiallocation: Option[TypoBytea],
   /** Default: uuid_generate_v1() */

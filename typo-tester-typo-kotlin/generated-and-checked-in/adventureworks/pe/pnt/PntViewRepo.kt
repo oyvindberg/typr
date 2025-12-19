@@ -7,10 +7,10 @@ package adventureworks.pe.pnt
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PntViewRepo {
-  fun select(): SelectBuilder<PntViewFields, PntViewRow>
+  abstract fun select(): SelectBuilder<PntViewFields, PntViewRow>
 
-  fun selectAll(c: Connection): List<PntViewRow>
+  abstract fun selectAll(c: Connection): List<PntViewRow>
 }

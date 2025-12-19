@@ -6,70 +6,69 @@
 package testdb.order_items
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface OrderItemsRepo {
-  fun delete(): DeleteBuilder<OrderItemsFields, OrderItemsRow>
+  abstract fun delete(): DeleteBuilder<OrderItemsFields, OrderItemsRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     itemId: OrderItemsId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     itemIds: Array<OrderItemsId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: OrderItemsRow,
     c: Connection
   ): OrderItemsRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: OrderItemsRowUnsaved,
     c: Connection
   ): OrderItemsRow
 
-  fun select(): SelectBuilder<OrderItemsFields, OrderItemsRow>
+  abstract fun select(): SelectBuilder<OrderItemsFields, OrderItemsRow>
 
-  fun selectAll(c: Connection): List<OrderItemsRow>
+  abstract fun selectAll(c: Connection): List<OrderItemsRow>
 
-  fun selectById(
+  abstract fun selectById(
     itemId: OrderItemsId,
     c: Connection
-  ): Optional<OrderItemsRow>
+  ): OrderItemsRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     itemIds: Array<OrderItemsId>,
     c: Connection
   ): List<OrderItemsRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     itemIds: Array<OrderItemsId>,
     c: Connection
   ): Map<OrderItemsId, OrderItemsRow>
 
-  fun update(): UpdateBuilder<OrderItemsFields, OrderItemsRow>
+  abstract fun update(): UpdateBuilder<OrderItemsFields, OrderItemsRow>
 
-  fun update(
+  abstract fun update(
     row: OrderItemsRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: OrderItemsRow,
     c: Connection
   ): OrderItemsRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<OrderItemsRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<OrderItemsRow>,
     c: Connection
   ): List<OrderItemsRow>
 }

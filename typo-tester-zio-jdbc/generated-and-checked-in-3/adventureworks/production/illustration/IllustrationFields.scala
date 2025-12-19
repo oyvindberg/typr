@@ -8,11 +8,11 @@ package adventureworks.production.illustration
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoXml
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait IllustrationFields {
   def illustrationid: IdField[IllustrationId, IllustrationRow]
@@ -21,11 +21,11 @@ trait IllustrationFields {
 }
 
 object IllustrationFields {
-  lazy val structure: Relation[IllustrationFields, IllustrationRow] =
+  lazy val structure: RelationStructure[IllustrationFields, IllustrationRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[IllustrationFields, IllustrationRow] {
+    extends RelationStructure[IllustrationFields, IllustrationRow] {
 
     override lazy val fields: IllustrationFields = new IllustrationFields {
       override def illustrationid = IdField[IllustrationId, IllustrationRow](_path, "illustrationid", None, Some("int4"), x => x.illustrationid, (row, value) => row.copy(illustrationid = value))

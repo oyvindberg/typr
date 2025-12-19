@@ -9,21 +9,19 @@ import adventureworks.person.businessentity.BusinessentityId
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class PasswordRepoMock(
   val toRow: (PasswordRowUnsaved) -> PasswordRow,
@@ -34,7 +32,7 @@ data class PasswordRepoMock(
   override fun deleteById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(businessentityid)).isPresent()
+  ): Boolean = map.remove(businessentityid) != null
 
   override fun deleteByIds(
     businessentityids: Array<BusinessentityId>,
@@ -42,7 +40,7 @@ data class PasswordRepoMock(
   ): Int {
     var count = 0
     for (id in businessentityids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -54,7 +52,7 @@ data class PasswordRepoMock(
     c: Connection
   ): PasswordRow {
     if (map.containsKey(unsaved.businessentityid)) {
-      throw RuntimeException(str("id $unsaved.businessentityid already exists"))
+      throw RuntimeException("id " + unsaved.businessentityid + " already exists")
     }
     map[unsaved.businessentityid] = unsaved
     return unsaved
@@ -66,7 +64,7 @@ data class PasswordRepoMock(
   ): PasswordRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<PasswordRow>,
+    unsaved: Iterator<PasswordRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -81,7 +79,7 @@ data class PasswordRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<PasswordRowUnsaved>,
+    unsaved: Iterator<PasswordRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -102,7 +100,7 @@ data class PasswordRepoMock(
   override fun selectById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Optional<PasswordRow> = Optional.ofNullable(map[businessentityid])
+  ): PasswordRow? = map[businessentityid]
 
   override fun selectByIds(
     businessentityids: Array<BusinessentityId>,
@@ -110,9 +108,9 @@ data class PasswordRepoMock(
   ): List<PasswordRow> {
     val result = ArrayList<PasswordRow>()
     for (id in businessentityids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -129,7 +127,7 @@ data class PasswordRepoMock(
     row: PasswordRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.businessentityid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.businessentityid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.businessentityid] = row
     }
@@ -145,7 +143,7 @@ data class PasswordRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<PasswordRow>,
+    unsaved: Iterator<PasswordRow>,
     c: Connection
   ): List<PasswordRow> {
     val result = ArrayList<PasswordRow>()
@@ -159,7 +157,7 @@ data class PasswordRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<PasswordRow>,
+    unsaved: Iterator<PasswordRow>,
     batchSize: Int,
     c: Connection
   ): Int {

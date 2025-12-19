@@ -13,10 +13,10 @@ import adventureworks.production.productcategory.ProductcategoryRow
 import adventureworks.public.Name
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait ProductsubcategoryFields {
   def productsubcategoryid: IdField[ProductsubcategoryId, ProductsubcategoryRow]
@@ -30,11 +30,11 @@ trait ProductsubcategoryFields {
 }
 
 object ProductsubcategoryFields {
-  lazy val structure: Relation[ProductsubcategoryFields, ProductsubcategoryRow] =
+  lazy val structure: RelationStructure[ProductsubcategoryFields, ProductsubcategoryRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductsubcategoryFields, ProductsubcategoryRow] {
+    extends RelationStructure[ProductsubcategoryFields, ProductsubcategoryRow] {
 
     override lazy val fields: ProductsubcategoryFields = new ProductsubcategoryFields {
       override def productsubcategoryid = IdField[ProductsubcategoryId, ProductsubcategoryRow](_path, "productsubcategoryid", None, Some("int4"), x => x.productsubcategoryid, (row, value) => row.copy(productsubcategoryid = value))

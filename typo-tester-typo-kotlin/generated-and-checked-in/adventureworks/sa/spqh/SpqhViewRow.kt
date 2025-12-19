@@ -5,13 +5,13 @@
  */
 package adventureworks.sa.spqh
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sa.spqh */
 data class SpqhViewRow(
@@ -20,15 +20,15 @@ data class SpqhViewRow(
   /** Points to [adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Points to [adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.quotadate] */
-  val quotadate: TypoLocalDateTime,
+  val quotadate: LocalDateTime,
   /** Points to [adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.salesquota] */
   val salesquota: BigDecimal,
   /** Points to [adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.sales.salespersonquotahistory.SalespersonquotahistoryRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SpqhViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, TypoLocalDateTime.pgType, PgTypes.numeric, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> SpqhViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.quotadate, row.salesquota, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SpqhViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.timestamp, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> SpqhViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.quotadate, row.salesquota, row.rowguid, row.modifieddate) })
   }
 }

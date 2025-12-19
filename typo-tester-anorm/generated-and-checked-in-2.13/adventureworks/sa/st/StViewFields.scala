@@ -11,16 +11,16 @@ import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait StViewFields {
   def id: Field[SalesterritoryId, StViewRow]
   def territoryid: Field[SalesterritoryId, StViewRow]
   def name: Field[Name, StViewRow]
   def countryregioncode: Field[CountryregionId, StViewRow]
-  def group: Field[/* max 50 chars */ String, StViewRow]
+  def group: Field[String, StViewRow]
   def salesytd: Field[BigDecimal, StViewRow]
   def saleslastyear: Field[BigDecimal, StViewRow]
   def costytd: Field[BigDecimal, StViewRow]
@@ -30,18 +30,18 @@ trait StViewFields {
 }
 
 object StViewFields {
-  lazy val structure: Relation[StViewFields, StViewRow] =
+  lazy val structure: RelationStructure[StViewFields, StViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[StViewFields, StViewRow] {
+    extends RelationStructure[StViewFields, StViewRow] {
 
     override lazy val fields: StViewFields = new StViewFields {
       override def id = Field[SalesterritoryId, StViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def territoryid = Field[SalesterritoryId, StViewRow](_path, "territoryid", None, None, x => x.territoryid, (row, value) => row.copy(territoryid = value))
       override def name = Field[Name, StViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
       override def countryregioncode = Field[CountryregionId, StViewRow](_path, "countryregioncode", None, None, x => x.countryregioncode, (row, value) => row.copy(countryregioncode = value))
-      override def group = Field[/* max 50 chars */ String, StViewRow](_path, "group", None, None, x => x.group, (row, value) => row.copy(group = value))
+      override def group = Field[String, StViewRow](_path, "group", None, None, x => x.group, (row, value) => row.copy(group = value))
       override def salesytd = Field[BigDecimal, StViewRow](_path, "salesytd", None, None, x => x.salesytd, (row, value) => row.copy(salesytd = value))
       override def saleslastyear = Field[BigDecimal, StViewRow](_path, "saleslastyear", None, None, x => x.saleslastyear, (row, value) => row.copy(saleslastyear = value))
       override def costytd = Field[BigDecimal, StViewRow](_path, "costytd", None, None, x => x.costytd, (row, value) => row.copy(costytd = value))

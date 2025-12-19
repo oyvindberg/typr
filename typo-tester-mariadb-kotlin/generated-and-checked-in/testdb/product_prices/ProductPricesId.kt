@@ -7,12 +7,16 @@ package testdb.product_prices
 
 import com.fasterxml.jackson.annotation.JsonValue
 import java.math.BigInteger
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
 import typo.runtime.MariaType
 import typo.runtime.MariaTypes
 
 /** Type for the primary key of table `product_prices` */
 data class ProductPricesId(@JsonValue val value: BigInteger) {
+  override fun toString(): kotlin.String {
+    return value.toString()
+  }
+
   companion object {
     val bijection: Bijection<ProductPricesId, BigInteger> =
       Bijection.of(ProductPricesId::value, ::ProductPricesId)

@@ -6,7 +6,6 @@
 package testdb.orders
 
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_addresses.CustomerAddressesFields
 import testdb.customer_addresses.CustomerAddressesId
 import testdb.customer_addresses.CustomerAddressesRow
@@ -17,18 +16,19 @@ import testdb.promotions.PromotionsFields
 import testdb.promotions.PromotionsId
 import testdb.promotions.PromotionsRow
 import typo.data.maria.Inet6
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait OrdersFields extends FieldsExpr[OrdersRow] {
+trait OrdersFields extends FieldsExpr0[OrdersRow] {
   def orderId: IdField[OrdersId, OrdersRow]
 
   def orderNumber: Field[String, OrdersRow]
@@ -43,15 +43,15 @@ trait OrdersFields extends FieldsExpr[OrdersRow] {
 
   def billingAddressId: OptField[CustomerAddressesId, OrdersRow]
 
-  def subtotal: Field[java.math.BigDecimal, OrdersRow]
+  def subtotal: Field[BigDecimal, OrdersRow]
 
-  def shippingCost: Field[java.math.BigDecimal, OrdersRow]
+  def shippingCost: Field[BigDecimal, OrdersRow]
 
-  def taxAmount: Field[java.math.BigDecimal, OrdersRow]
+  def taxAmount: Field[BigDecimal, OrdersRow]
 
-  def discountAmount: Field[java.math.BigDecimal, OrdersRow]
+  def discountAmount: Field[BigDecimal, OrdersRow]
 
-  def totalAmount: Field[java.math.BigDecimal, OrdersRow]
+  def totalAmount: Field[BigDecimal, OrdersRow]
 
   def currencyCode: Field[String, OrdersRow]
 
@@ -73,29 +73,29 @@ trait OrdersFields extends FieldsExpr[OrdersRow] {
 
   def deliveredAt: OptField[LocalDateTime, OrdersRow]
 
-  def fkCustomerAddressesBillingAddressId: ForeignKey[CustomerAddressesFields, CustomerAddressesRow] = ForeignKey.of[CustomerAddressesFields, CustomerAddressesRow]("fk_order_billing_addr").withColumnPair(billingAddressId, _.addressId)
+  def fkCustomerAddressesBillingAddressId: ForeignKey[CustomerAddressesFields, CustomerAddressesRow] = ForeignKey.of[CustomerAddressesFields, CustomerAddressesRow]("fk_order_billing_addr").withColumnPair[CustomerAddressesId](billingAddressId, _.addressId)
 
-  def fkCustomers: ForeignKey[CustomersFields, CustomersRow] = ForeignKey.of[CustomersFields, CustomersRow]("fk_order_customer").withColumnPair(customerId, _.customerId)
+  def fkCustomers: ForeignKey[CustomersFields, CustomersRow] = ForeignKey.of[CustomersFields, CustomersRow]("fk_order_customer").withColumnPair[CustomersId](customerId, _.customerId)
 
-  def fkPromotions: ForeignKey[PromotionsFields, PromotionsRow] = ForeignKey.of[PromotionsFields, PromotionsRow]("fk_order_promotion").withColumnPair(promotionId, _.promotionId)
+  def fkPromotions: ForeignKey[PromotionsFields, PromotionsRow] = ForeignKey.of[PromotionsFields, PromotionsRow]("fk_order_promotion").withColumnPair[PromotionsId](promotionId, _.promotionId)
 
-  def fkCustomerAddressesShippingAddressId: ForeignKey[CustomerAddressesFields, CustomerAddressesRow] = ForeignKey.of[CustomerAddressesFields, CustomerAddressesRow]("fk_order_shipping_addr").withColumnPair(shippingAddressId, _.addressId)
+  def fkCustomerAddressesShippingAddressId: ForeignKey[CustomerAddressesFields, CustomerAddressesRow] = ForeignKey.of[CustomerAddressesFields, CustomerAddressesRow]("fk_order_shipping_addr").withColumnPair[CustomerAddressesId](shippingAddressId, _.addressId)
 
   override def columns: java.util.List[FieldLike[?, OrdersRow]]
 
-  override def rowParser: RowParser[OrdersRow] = OrdersRow._rowParser
+  override def rowParser: RowParser[OrdersRow] = OrdersRow._rowParser.underlying
 }
 
 object OrdersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OrdersFields with Relation[OrdersFields, OrdersRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends OrdersFields with RelationStructure[OrdersFields, OrdersRow] {
 
     override def orderId: IdField[OrdersId, OrdersRow] = {
       new IdField[OrdersId, OrdersRow](
         _path,
         "order_id",
         _.orderId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderId = value),
         OrdersId.pgType
       )
@@ -106,8 +106,8 @@ object OrdersFields {
         _path,
         "order_number",
         _.orderNumber,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderNumber = value),
         MariaTypes.varchar
       )
@@ -118,8 +118,8 @@ object OrdersFields {
         _path,
         "customer_id",
         _.customerId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(customerId = value),
         CustomersId.pgType
       )
@@ -130,8 +130,8 @@ object OrdersFields {
         _path,
         "order_status",
         _.orderStatus,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderStatus = value),
         MariaTypes.text
       )
@@ -142,8 +142,8 @@ object OrdersFields {
         _path,
         "payment_status",
         _.paymentStatus,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(paymentStatus = value),
         MariaTypes.text
       )
@@ -154,8 +154,8 @@ object OrdersFields {
         _path,
         "shipping_address_id",
         _.shippingAddressId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(shippingAddressId = value),
         CustomerAddressesId.pgType
       )
@@ -166,70 +166,70 @@ object OrdersFields {
         _path,
         "billing_address_id",
         _.billingAddressId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(billingAddressId = value),
         CustomerAddressesId.pgType
       )
     }
 
-    override def subtotal: Field[java.math.BigDecimal, OrdersRow] = {
-      new Field[java.math.BigDecimal, OrdersRow](
+    override def subtotal: Field[BigDecimal, OrdersRow] = {
+      new Field[BigDecimal, OrdersRow](
         _path,
         "subtotal",
         _.subtotal,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(subtotal = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def shippingCost: Field[java.math.BigDecimal, OrdersRow] = {
-      new Field[java.math.BigDecimal, OrdersRow](
+    override def shippingCost: Field[BigDecimal, OrdersRow] = {
+      new Field[BigDecimal, OrdersRow](
         _path,
         "shipping_cost",
         _.shippingCost,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(shippingCost = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def taxAmount: Field[java.math.BigDecimal, OrdersRow] = {
-      new Field[java.math.BigDecimal, OrdersRow](
+    override def taxAmount: Field[BigDecimal, OrdersRow] = {
+      new Field[BigDecimal, OrdersRow](
         _path,
         "tax_amount",
         _.taxAmount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(taxAmount = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def discountAmount: Field[java.math.BigDecimal, OrdersRow] = {
-      new Field[java.math.BigDecimal, OrdersRow](
+    override def discountAmount: Field[BigDecimal, OrdersRow] = {
+      new Field[BigDecimal, OrdersRow](
         _path,
         "discount_amount",
         _.discountAmount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(discountAmount = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def totalAmount: Field[java.math.BigDecimal, OrdersRow] = {
-      new Field[java.math.BigDecimal, OrdersRow](
+    override def totalAmount: Field[BigDecimal, OrdersRow] = {
+      new Field[BigDecimal, OrdersRow](
         _path,
         "total_amount",
         _.totalAmount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(totalAmount = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
@@ -238,8 +238,8 @@ object OrdersFields {
         _path,
         "currency_code",
         _.currencyCode,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(currencyCode = value),
         MariaTypes.char_
       )
@@ -250,8 +250,8 @@ object OrdersFields {
         _path,
         "promotion_id",
         _.promotionId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(promotionId = value),
         PromotionsId.pgType
       )
@@ -262,8 +262,8 @@ object OrdersFields {
         _path,
         "notes",
         _.notes,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(notes = value),
         MariaTypes.text
       )
@@ -274,8 +274,8 @@ object OrdersFields {
         _path,
         "internal_notes",
         _.internalNotes,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(internalNotes = value),
         MariaTypes.mediumtext
       )
@@ -286,8 +286,8 @@ object OrdersFields {
         _path,
         "ip_address",
         _.ipAddress,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(ipAddress = value),
         MariaTypes.inet6
       )
@@ -298,8 +298,8 @@ object OrdersFields {
         _path,
         "user_agent",
         _.userAgent,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(userAgent = value),
         MariaTypes.varchar
       )
@@ -310,8 +310,8 @@ object OrdersFields {
         _path,
         "ordered_at",
         _.orderedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderedAt = value),
         MariaTypes.datetime
       )
@@ -322,8 +322,8 @@ object OrdersFields {
         _path,
         "confirmed_at",
         _.confirmedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(confirmedAt = value),
         MariaTypes.datetime
       )
@@ -334,8 +334,8 @@ object OrdersFields {
         _path,
         "shipped_at",
         _.shippedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(shippedAt = value),
         MariaTypes.datetime
       )
@@ -346,17 +346,17 @@ object OrdersFields {
         _path,
         "delivered_at",
         _.deliveredAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(deliveredAt = value),
         MariaTypes.datetime
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, OrdersRow]] = java.util.List.of(this.orderId, this.orderNumber, this.customerId, this.orderStatus, this.paymentStatus, this.shippingAddressId, this.billingAddressId, this.subtotal, this.shippingCost, this.taxAmount, this.discountAmount, this.totalAmount, this.currencyCode, this.promotionId, this.notes, this.internalNotes, this.ipAddress, this.userAgent, this.orderedAt, this.confirmedAt, this.shippedAt, this.deliveredAt)
+    override def columns: java.util.List[FieldLike[?, OrdersRow]] = java.util.List.of(this.orderId.underlying, this.orderNumber.underlying, this.customerId.underlying, this.orderStatus.underlying, this.paymentStatus.underlying, this.shippingAddressId.underlying, this.billingAddressId.underlying, this.subtotal.underlying, this.shippingCost.underlying, this.taxAmount.underlying, this.discountAmount.underlying, this.totalAmount.underlying, this.currencyCode.underlying, this.promotionId.underlying, this.notes.underlying, this.internalNotes.underlying, this.ipAddress.underlying, this.userAgent.underlying, this.orderedAt.underlying, this.confirmedAt.underlying, this.shippedAt.underlying, this.deliveredAt.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[OrdersFields, OrdersRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrdersFields, OrdersRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

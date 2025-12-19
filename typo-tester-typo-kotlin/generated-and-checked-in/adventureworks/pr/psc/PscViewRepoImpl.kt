@@ -7,15 +7,12 @@ package adventureworks.pr.psc
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class PscViewRepoImpl() : PscViewRepo {
   override fun select(): SelectBuilder<PscViewFields, PscViewRow> = SelectBuilder.of("\"pr\".\"psc\"", PscViewFields.structure, PscViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<PscViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "productsubcategoryid", "productcategoryid", "name", "rowguid", "modifieddate"::text
-    from "pr"."psc"
-  """.trimMargin())).query(PscViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<PscViewRow> = Fragment.interpolate(Fragment.lit("select \"id\", \"productsubcategoryid\", \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\"\nfrom \"pr\".\"psc\"\n")).query(PscViewRow._rowParser.all()).runUnchecked(c)
 }

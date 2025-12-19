@@ -5,71 +5,73 @@
  */
 package adventureworks.pr.tha
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface ThaViewFields : FieldsExpr<ThaViewRow> {
-  fun actualcost(): Field<BigDecimal, ThaViewRow>
+  abstract fun actualcost(): Field<BigDecimal, ThaViewRow>
 
-  override fun columns(): List<FieldLike<*, ThaViewRow>>
+  abstract override fun columns(): List<FieldLike<*, ThaViewRow>>
 
-  fun id(): Field<TransactionhistoryarchiveId, ThaViewRow>
+  abstract fun id(): Field<TransactionhistoryarchiveId, ThaViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, ThaViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, ThaViewRow>
 
-  fun productid(): Field<Int, ThaViewRow>
+  abstract fun productid(): Field<Int, ThaViewRow>
 
-  fun quantity(): Field<Int, ThaViewRow>
+  abstract fun quantity(): Field<Int, ThaViewRow>
 
-  fun referenceorderid(): Field<Int, ThaViewRow>
+  abstract fun referenceorderid(): Field<Int, ThaViewRow>
 
-  fun referenceorderlineid(): Field<Int, ThaViewRow>
+  abstract fun referenceorderlineid(): Field<Int, ThaViewRow>
 
-  override fun rowParser(): RowParser<ThaViewRow> = ThaViewRow._rowParser
+  override fun rowParser(): RowParser<ThaViewRow> = ThaViewRow._rowParser.underlying
 
-  fun transactiondate(): Field<TypoLocalDateTime, ThaViewRow>
+  abstract fun transactiondate(): Field<LocalDateTime, ThaViewRow>
 
-  fun transactionid(): Field<TransactionhistoryarchiveId, ThaViewRow>
+  abstract fun transactionid(): Field<TransactionhistoryarchiveId, ThaViewRow>
 
-  fun transactiontype(): Field</* bpchar, max 1 chars */ String, ThaViewRow>
+  abstract fun transactiontype(): Field<String, ThaViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : ThaViewFields, Relation<ThaViewFields, ThaViewRow> {
-      override fun id(): Field<TransactionhistoryarchiveId, ThaViewRow> = Field<TransactionhistoryarchiveId, ThaViewRow>(_path, "id", ThaViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, TransactionhistoryarchiveId.pgType)
+    data class Impl(val _path: List<Path>) : ThaViewFields, RelationStructure<ThaViewFields, ThaViewRow> {
+      override fun id(): Field<TransactionhistoryarchiveId, ThaViewRow> = Field<TransactionhistoryarchiveId, ThaViewRow>(_path, "id", ThaViewRow::id, null, null, { row, value -> row.copy(id = value) }, TransactionhistoryarchiveId.pgType)
 
-      override fun transactionid(): Field<TransactionhistoryarchiveId, ThaViewRow> = Field<TransactionhistoryarchiveId, ThaViewRow>(_path, "transactionid", ThaViewRow::transactionid, Optional.empty(), Optional.empty(), { row, value -> row.copy(transactionid = value) }, TransactionhistoryarchiveId.pgType)
+      override fun transactionid(): Field<TransactionhistoryarchiveId, ThaViewRow> = Field<TransactionhistoryarchiveId, ThaViewRow>(_path, "transactionid", ThaViewRow::transactionid, null, null, { row, value -> row.copy(transactionid = value) }, TransactionhistoryarchiveId.pgType)
 
-      override fun productid(): Field<Int, ThaViewRow> = Field<Int, ThaViewRow>(_path, "productid", ThaViewRow::productid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productid = value) }, PgTypes.int4)
+      override fun productid(): Field<Int, ThaViewRow> = Field<Int, ThaViewRow>(_path, "productid", ThaViewRow::productid, null, null, { row, value -> row.copy(productid = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun referenceorderid(): Field<Int, ThaViewRow> = Field<Int, ThaViewRow>(_path, "referenceorderid", ThaViewRow::referenceorderid, Optional.empty(), Optional.empty(), { row, value -> row.copy(referenceorderid = value) }, PgTypes.int4)
+      override fun referenceorderid(): Field<Int, ThaViewRow> = Field<Int, ThaViewRow>(_path, "referenceorderid", ThaViewRow::referenceorderid, null, null, { row, value -> row.copy(referenceorderid = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun referenceorderlineid(): Field<Int, ThaViewRow> = Field<Int, ThaViewRow>(_path, "referenceorderlineid", ThaViewRow::referenceorderlineid, Optional.empty(), Optional.empty(), { row, value -> row.copy(referenceorderlineid = value) }, PgTypes.int4)
+      override fun referenceorderlineid(): Field<Int, ThaViewRow> = Field<Int, ThaViewRow>(_path, "referenceorderlineid", ThaViewRow::referenceorderlineid, null, null, { row, value -> row.copy(referenceorderlineid = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun transactiondate(): Field<TypoLocalDateTime, ThaViewRow> = Field<TypoLocalDateTime, ThaViewRow>(_path, "transactiondate", ThaViewRow::transactiondate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(transactiondate = value) }, TypoLocalDateTime.pgType)
+      override fun transactiondate(): Field<LocalDateTime, ThaViewRow> = Field<LocalDateTime, ThaViewRow>(_path, "transactiondate", ThaViewRow::transactiondate, null, null, { row, value -> row.copy(transactiondate = value) }, PgTypes.timestamp)
 
-      override fun transactiontype(): Field</* bpchar, max 1 chars */ String, ThaViewRow> = Field</* bpchar, max 1 chars */ String, ThaViewRow>(_path, "transactiontype", ThaViewRow::transactiontype, Optional.empty(), Optional.empty(), { row, value -> row.copy(transactiontype = value) }, PgTypes.bpchar)
+      override fun transactiontype(): Field<String, ThaViewRow> = Field<String, ThaViewRow>(_path, "transactiontype", ThaViewRow::transactiontype, null, null, { row, value -> row.copy(transactiontype = value) }, PgTypes.bpchar)
 
-      override fun quantity(): Field<Int, ThaViewRow> = Field<Int, ThaViewRow>(_path, "quantity", ThaViewRow::quantity, Optional.empty(), Optional.empty(), { row, value -> row.copy(quantity = value) }, PgTypes.int4)
+      override fun quantity(): Field<Int, ThaViewRow> = Field<Int, ThaViewRow>(_path, "quantity", ThaViewRow::quantity, null, null, { row, value -> row.copy(quantity = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun actualcost(): Field<BigDecimal, ThaViewRow> = Field<BigDecimal, ThaViewRow>(_path, "actualcost", ThaViewRow::actualcost, Optional.empty(), Optional.empty(), { row, value -> row.copy(actualcost = value) }, PgTypes.numeric)
+      override fun actualcost(): Field<BigDecimal, ThaViewRow> = Field<BigDecimal, ThaViewRow>(_path, "actualcost", ThaViewRow::actualcost, null, null, { row, value -> row.copy(actualcost = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, ThaViewRow> = Field<TypoLocalDateTime, ThaViewRow>(_path, "modifieddate", ThaViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, ThaViewRow> = Field<LocalDateTime, ThaViewRow>(_path, "modifieddate", ThaViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, ThaViewRow>> = listOf(this.id(), this.transactionid(), this.productid(), this.referenceorderid(), this.referenceorderlineid(), this.transactiondate(), this.transactiontype(), this.quantity(), this.actualcost(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ThaViewFields, ThaViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ThaViewRow>> = listOf(this.id().underlying, this.transactionid().underlying, this.productid().underlying, this.referenceorderid().underlying, this.referenceorderlineid().underlying, this.transactiondate().underlying, this.transactiontype().underlying, this.quantity().underlying, this.actualcost().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ThaViewFields, ThaViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

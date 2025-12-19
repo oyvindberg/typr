@@ -5,65 +5,66 @@
  */
 package adventureworks.production.productcosthistory
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductFields
 import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface ProductcosthistoryFields : FieldsExpr<ProductcosthistoryRow> {
-  override fun columns(): List<FieldLike<*, ProductcosthistoryRow>>
+  abstract override fun columns(): List<FieldLike<*, ProductcosthistoryRow>>
 
-  fun compositeIdIn(compositeIds: List<ProductcosthistoryId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<ProductId, ProductcosthistoryId, ProductcosthistoryRow>(productid(), ProductcosthistoryId::productid, ProductId.pgType), Part<TypoLocalDateTime, ProductcosthistoryId, ProductcosthistoryRow>(startdate(), ProductcosthistoryId::startdate, TypoLocalDateTime.pgType)), compositeIds)
+  fun compositeIdIn(compositeIds: List<ProductcosthistoryId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<ProductId, ProductcosthistoryId, ProductcosthistoryRow>(productid(), ProductcosthistoryId::productid, ProductId.pgType), Part<LocalDateTime, ProductcosthistoryId, ProductcosthistoryRow>(startdate(), ProductcosthistoryId::startdate, PgTypes.timestamp)), compositeIds)
 
   fun compositeIdIs(compositeId: ProductcosthistoryId): SqlExpr<Boolean> = SqlExpr.all(productid().isEqual(compositeId.productid), startdate().isEqual(compositeId.startdate))
 
-  fun enddate(): OptField<TypoLocalDateTime, ProductcosthistoryRow>
+  abstract fun enddate(): OptField<LocalDateTime, ProductcosthistoryRow>
 
-  fun fkProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("production.FK_ProductCostHistory_Product_ProductID").withColumnPair(productid(), ProductFields::productid)
+  fun fkProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("production.FK_ProductCostHistory_Product_ProductID").withColumnPair<ProductId>(productid(), ProductFields::productid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, ProductcosthistoryRow>
+  abstract fun modifieddate(): Field<LocalDateTime, ProductcosthistoryRow>
 
-  fun productid(): IdField<ProductId, ProductcosthistoryRow>
+  abstract fun productid(): IdField<ProductId, ProductcosthistoryRow>
 
-  override fun rowParser(): RowParser<ProductcosthistoryRow> = ProductcosthistoryRow._rowParser
+  override fun rowParser(): RowParser<ProductcosthistoryRow> = ProductcosthistoryRow._rowParser.underlying
 
-  fun standardcost(): Field<BigDecimal, ProductcosthistoryRow>
+  abstract fun standardcost(): Field<BigDecimal, ProductcosthistoryRow>
 
-  fun startdate(): IdField<TypoLocalDateTime, ProductcosthistoryRow>
+  abstract fun startdate(): IdField<LocalDateTime, ProductcosthistoryRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductcosthistoryFields, Relation<ProductcosthistoryFields, ProductcosthistoryRow> {
-      override fun productid(): IdField<ProductId, ProductcosthistoryRow> = IdField<ProductId, ProductcosthistoryRow>(_path, "productid", ProductcosthistoryRow::productid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+    data class Impl(val _path: List<Path>) : ProductcosthistoryFields, RelationStructure<ProductcosthistoryFields, ProductcosthistoryRow> {
+      override fun productid(): IdField<ProductId, ProductcosthistoryRow> = IdField<ProductId, ProductcosthistoryRow>(_path, "productid", ProductcosthistoryRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun startdate(): IdField<TypoLocalDateTime, ProductcosthistoryRow> = IdField<TypoLocalDateTime, ProductcosthistoryRow>(_path, "startdate", ProductcosthistoryRow::startdate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(startdate = value) }, TypoLocalDateTime.pgType)
+      override fun startdate(): IdField<LocalDateTime, ProductcosthistoryRow> = IdField<LocalDateTime, ProductcosthistoryRow>(_path, "startdate", ProductcosthistoryRow::startdate, null, "timestamp", { row, value -> row.copy(startdate = value) }, PgTypes.timestamp)
 
-      override fun enddate(): OptField<TypoLocalDateTime, ProductcosthistoryRow> = OptField<TypoLocalDateTime, ProductcosthistoryRow>(_path, "enddate", ProductcosthistoryRow::enddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(enddate = value) }, TypoLocalDateTime.pgType)
+      override fun enddate(): OptField<LocalDateTime, ProductcosthistoryRow> = OptField<LocalDateTime, ProductcosthistoryRow>(_path, "enddate", ProductcosthistoryRow::enddate, null, "timestamp", { row, value -> row.copy(enddate = value) }, PgTypes.timestamp)
 
-      override fun standardcost(): Field<BigDecimal, ProductcosthistoryRow> = Field<BigDecimal, ProductcosthistoryRow>(_path, "standardcost", ProductcosthistoryRow::standardcost, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(standardcost = value) }, PgTypes.numeric)
+      override fun standardcost(): Field<BigDecimal, ProductcosthistoryRow> = Field<BigDecimal, ProductcosthistoryRow>(_path, "standardcost", ProductcosthistoryRow::standardcost, null, "numeric", { row, value -> row.copy(standardcost = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, ProductcosthistoryRow> = Field<TypoLocalDateTime, ProductcosthistoryRow>(_path, "modifieddate", ProductcosthistoryRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, ProductcosthistoryRow> = Field<LocalDateTime, ProductcosthistoryRow>(_path, "modifieddate", ProductcosthistoryRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, ProductcosthistoryRow>> = listOf(this.productid(), this.startdate(), this.enddate(), this.standardcost(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ProductcosthistoryFields, ProductcosthistoryRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ProductcosthistoryRow>> = listOf(this.productid().underlying, this.startdate().underlying, this.enddate().underlying, this.standardcost().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ProductcosthistoryFields, ProductcosthistoryRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

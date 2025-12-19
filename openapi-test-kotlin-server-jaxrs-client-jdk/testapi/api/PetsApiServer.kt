@@ -11,7 +11,6 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import java.lang.IllegalStateException
-import java.util.Optional
 import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
@@ -20,7 +19,7 @@ import testapi.model.PetId
 
 interface PetsApiServer : PetsApi {
   /** Create a pet */
-  override fun createPet(body: PetCreate): Response201400<Pet, Error>
+  abstract override fun createPet(body: PetCreate): Response201400<Pet, Error>
 
   /** Endpoint wrapper for createPet - handles response status codes */
   @POST
@@ -38,13 +37,13 @@ interface PetsApiServer : PetsApi {
   /** Delete a pet */
   @DELETE
   @Path("/{petId}")
-  override fun deletePet(
+  abstract override fun deletePet(
     /** The pet ID */
     petId: PetId
   ): Unit
 
   /** Get a pet by ID */
-  override fun getPet(
+  abstract override fun getPet(
     /** The pet ID */
     petId: PetId
   ): Response200404<Pet, Error>
@@ -66,7 +65,7 @@ interface PetsApiServer : PetsApi {
   @GET
   @Path("/{petId}/photo")
   @Produces(value = [MediaType.APPLICATION_OCTET_STREAM])
-  override fun getPetPhoto(
+  abstract override fun getPetPhoto(
     /** The pet ID */
     petId: PetId
   ): Unit
@@ -75,11 +74,11 @@ interface PetsApiServer : PetsApi {
   @GET
   @Path("")
   @Produces(value = [MediaType.APPLICATION_JSON])
-  override fun listPets(
+  abstract override fun listPets(
     /** Maximum number of pets to return */
-    limit: Optional<Integer>,
+    limit: Int?,
     /** Filter by status */
-    status: Optional<String>
+    status: String?
   ): List<Pet>
 
   /** Upload a pet photo */
@@ -87,7 +86,7 @@ interface PetsApiServer : PetsApi {
   @Path("/{petId}/photo")
   @Consumes(value = [MediaType.MULTIPART_FORM_DATA])
   @Produces(value = [MediaType.APPLICATION_JSON])
-  override fun uploadPetPhoto(
+  abstract override fun uploadPetPhoto(
     /** The pet ID */
     petId: PetId,
     /** Optional caption for the photo */

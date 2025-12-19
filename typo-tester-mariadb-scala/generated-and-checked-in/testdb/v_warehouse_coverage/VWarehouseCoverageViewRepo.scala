@@ -6,10 +6,10 @@
 package testdb.v_warehouse_coverage
 
 import java.sql.Connection
-import typo.dsl.SelectBuilder
+import typo.scaladsl.SelectBuilder
 
 trait VWarehouseCoverageViewRepo {
   def select: SelectBuilder[VWarehouseCoverageViewFields, VWarehouseCoverageViewRow]
 
-  def selectAll(using c: Connection): java.util.List[VWarehouseCoverageViewRow]
+  def selectAll(using c: Connection): List[VWarehouseCoverageViewRow]
 }

@@ -5,46 +5,48 @@
  */
 package adventureworks.sa.pcc
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PccViewFields : FieldsExpr<PccViewRow> {
-  fun businessentityid(): Field<BusinessentityId, PccViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, PccViewRow>
 
-  override fun columns(): List<FieldLike<*, PccViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PccViewRow>>
 
-  fun creditcardid(): Field</* user-picked */ CustomCreditcardId, PccViewRow>
+  abstract fun creditcardid(): Field</* user-picked */ CustomCreditcardId, PccViewRow>
 
-  fun id(): Field<BusinessentityId, PccViewRow>
+  abstract fun id(): Field<BusinessentityId, PccViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PccViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PccViewRow>
 
-  override fun rowParser(): RowParser<PccViewRow> = PccViewRow._rowParser
+  override fun rowParser(): RowParser<PccViewRow> = PccViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : PccViewFields, Relation<PccViewFields, PccViewRow> {
-      override fun id(): Field<BusinessentityId, PccViewRow> = Field<BusinessentityId, PccViewRow>(_path, "id", PccViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : PccViewFields, RelationStructure<PccViewFields, PccViewRow> {
+      override fun id(): Field<BusinessentityId, PccViewRow> = Field<BusinessentityId, PccViewRow>(_path, "id", PccViewRow::id, null, null, { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
 
-      override fun businessentityid(): Field<BusinessentityId, PccViewRow> = Field<BusinessentityId, PccViewRow>(_path, "businessentityid", PccViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, PccViewRow> = Field<BusinessentityId, PccViewRow>(_path, "businessentityid", PccViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun creditcardid(): Field</* user-picked */ CustomCreditcardId, PccViewRow> = Field</* user-picked */ CustomCreditcardId, PccViewRow>(_path, "creditcardid", PccViewRow::creditcardid, Optional.empty(), Optional.empty(), { row, value -> row.copy(creditcardid = value) }, CustomCreditcardId.pgType)
+      override fun creditcardid(): Field</* user-picked */ CustomCreditcardId, PccViewRow> = Field</* user-picked */ CustomCreditcardId, PccViewRow>(_path, "creditcardid", PccViewRow::creditcardid, null, null, { row, value -> row.copy(creditcardid = value) }, CustomCreditcardId.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PccViewRow> = Field<TypoLocalDateTime, PccViewRow>(_path, "modifieddate", PccViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PccViewRow> = Field<LocalDateTime, PccViewRow>(_path, "modifieddate", PccViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PccViewRow>> = listOf(this.id(), this.businessentityid(), this.creditcardid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PccViewFields, PccViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PccViewRow>> = listOf(this.id().underlying, this.businessentityid().underlying, this.creditcardid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PccViewFields, PccViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

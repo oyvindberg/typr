@@ -8,21 +8,19 @@ package testdb.payments
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class PaymentsRepoMock(
   val toRow: (PaymentsRowUnsaved) -> PaymentsRow,
@@ -33,7 +31,7 @@ data class PaymentsRepoMock(
   override fun deleteById(
     paymentId: PaymentsId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(paymentId)).isPresent()
+  ): Boolean = map.remove(paymentId) != null
 
   override fun deleteByIds(
     paymentIds: Array<PaymentsId>,
@@ -41,7 +39,7 @@ data class PaymentsRepoMock(
   ): Int {
     var count = 0
     for (id in paymentIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class PaymentsRepoMock(
     c: Connection
   ): PaymentsRow {
     if (map.containsKey(unsaved.paymentId)) {
-      throw RuntimeException(str("id $unsaved.paymentId already exists"))
+      throw RuntimeException("id " + unsaved.paymentId + " already exists")
     }
     map[unsaved.paymentId] = unsaved
     return unsaved
@@ -71,7 +69,7 @@ data class PaymentsRepoMock(
   override fun selectById(
     paymentId: PaymentsId,
     c: Connection
-  ): Optional<PaymentsRow> = Optional.ofNullable(map[paymentId])
+  ): PaymentsRow? = map[paymentId]
 
   override fun selectByIds(
     paymentIds: Array<PaymentsId>,
@@ -79,9 +77,9 @@ data class PaymentsRepoMock(
   ): List<PaymentsRow> {
     val result = ArrayList<PaymentsRow>()
     for (id in paymentIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -98,7 +96,7 @@ data class PaymentsRepoMock(
     row: PaymentsRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.paymentId]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.paymentId]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.paymentId] = row
     }
@@ -114,7 +112,7 @@ data class PaymentsRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<PaymentsRow>,
+    unsaved: Iterator<PaymentsRow>,
     c: Connection
   ): List<PaymentsRow> {
     val result = ArrayList<PaymentsRow>()

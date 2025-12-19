@@ -17,55 +17,55 @@ import io.circe.Encoder
 case class VpersondemographicsViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  totalpurchaseytd: /* nullability unknown */ Option[TypoMoney],
-  datefirstpurchase: /* nullability unknown */ Option[TypoLocalDate],
-  birthdate: /* nullability unknown */ Option[TypoLocalDate],
-  maritalstatus: /* nullability unknown */ Option[/* max 1 chars */ String],
-  yearlyincome: /* nullability unknown */ Option[/* max 30 chars */ String],
-  gender: /* nullability unknown */ Option[/* max 1 chars */ String],
-  totalchildren: /* nullability unknown */ Option[Int],
-  numberchildrenathome: /* nullability unknown */ Option[Int],
-  education: /* nullability unknown */ Option[/* max 30 chars */ String],
-  occupation: /* nullability unknown */ Option[/* max 30 chars */ String],
-  homeownerflag: /* nullability unknown */ Option[Boolean],
-  numbercarsowned: /* nullability unknown */ Option[Int]
+  totalpurchaseytd: TypoMoney,
+  datefirstpurchase: TypoLocalDate,
+  birthdate: TypoLocalDate,
+  maritalstatus: String,
+  yearlyincome: String,
+  gender: String,
+  totalchildren: Int,
+  numberchildrenathome: Int,
+  education: String,
+  occupation: String,
+  homeownerflag: Boolean,
+  numbercarsowned: Int
 )
 
 object VpersondemographicsViewRow {
-  given decoder: Decoder[VpersondemographicsViewRow] = Decoder.forProduct13[VpersondemographicsViewRow, BusinessentityId, /* nullability unknown */ Option[TypoMoney], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[/* max 1 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 1 chars */ String], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[Boolean], /* nullability unknown */ Option[Int]]("businessentityid", "totalpurchaseytd", "datefirstpurchase", "birthdate", "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned")(VpersondemographicsViewRow.apply)(using BusinessentityId.decoder, Decoder.decodeOption(using TypoMoney.decoder), Decoder.decodeOption(using TypoLocalDate.decoder), Decoder.decodeOption(using TypoLocalDate.decoder), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeInt), Decoder.decodeOption(using Decoder.decodeInt), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using Decoder.decodeBoolean), Decoder.decodeOption(using Decoder.decodeInt))
+  given decoder: Decoder[VpersondemographicsViewRow] = Decoder.forProduct13[VpersondemographicsViewRow, BusinessentityId, TypoMoney, TypoLocalDate, TypoLocalDate, String, String, String, Int, Int, String, String, Boolean, Int]("businessentityid", "totalpurchaseytd", "datefirstpurchase", "birthdate", "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned")(VpersondemographicsViewRow.apply)(using BusinessentityId.decoder, TypoMoney.decoder, TypoLocalDate.decoder, TypoLocalDate.decoder, Decoder.decodeString, Decoder.decodeString, Decoder.decodeString, Decoder.decodeInt, Decoder.decodeInt, Decoder.decodeString, Decoder.decodeString, Decoder.decodeBoolean, Decoder.decodeInt)
 
-  given encoder: Encoder[VpersondemographicsViewRow] = Encoder.forProduct13[VpersondemographicsViewRow, BusinessentityId, /* nullability unknown */ Option[TypoMoney], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[/* max 1 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 1 chars */ String], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[Int], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[/* max 30 chars */ String], /* nullability unknown */ Option[Boolean], /* nullability unknown */ Option[Int]]("businessentityid", "totalpurchaseytd", "datefirstpurchase", "birthdate", "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned")(x => (x.businessentityid, x.totalpurchaseytd, x.datefirstpurchase, x.birthdate, x.maritalstatus, x.yearlyincome, x.gender, x.totalchildren, x.numberchildrenathome, x.education, x.occupation, x.homeownerflag, x.numbercarsowned))(using BusinessentityId.encoder, Encoder.encodeOption(using TypoMoney.encoder), Encoder.encodeOption(using TypoLocalDate.encoder), Encoder.encodeOption(using TypoLocalDate.encoder), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeInt), Encoder.encodeOption(using Encoder.encodeInt), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using Encoder.encodeBoolean), Encoder.encodeOption(using Encoder.encodeInt))
+  given encoder: Encoder[VpersondemographicsViewRow] = Encoder.forProduct13[VpersondemographicsViewRow, BusinessentityId, TypoMoney, TypoLocalDate, TypoLocalDate, String, String, String, Int, Int, String, String, Boolean, Int]("businessentityid", "totalpurchaseytd", "datefirstpurchase", "birthdate", "maritalstatus", "yearlyincome", "gender", "totalchildren", "numberchildrenathome", "education", "occupation", "homeownerflag", "numbercarsowned")(x => (x.businessentityid, x.totalpurchaseytd, x.datefirstpurchase, x.birthdate, x.maritalstatus, x.yearlyincome, x.gender, x.totalchildren, x.numberchildrenathome, x.education, x.occupation, x.homeownerflag, x.numbercarsowned))(using BusinessentityId.encoder, TypoMoney.encoder, TypoLocalDate.encoder, TypoLocalDate.encoder, Encoder.encodeString, Encoder.encodeString, Encoder.encodeString, Encoder.encodeInt, Encoder.encodeInt, Encoder.encodeString, Encoder.encodeString, Encoder.encodeBoolean, Encoder.encodeInt)
 
   given read: Read[VpersondemographicsViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoMoney.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoLocalDate.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.BooleanMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.IntMeta.get).asInstanceOf[Read[Any]]
+        new Read.Single(TypoMoney.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDate.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.BooleanMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.IntMeta.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       VpersondemographicsViewRow(
         businessentityid = arr(0).asInstanceOf[BusinessentityId],
-            totalpurchaseytd = arr(1).asInstanceOf[/* nullability unknown */ Option[TypoMoney]],
-            datefirstpurchase = arr(2).asInstanceOf[/* nullability unknown */ Option[TypoLocalDate]],
-            birthdate = arr(3).asInstanceOf[/* nullability unknown */ Option[TypoLocalDate]],
-            maritalstatus = arr(4).asInstanceOf[/* nullability unknown */ Option[/* max 1 chars */ String]],
-            yearlyincome = arr(5).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-            gender = arr(6).asInstanceOf[/* nullability unknown */ Option[/* max 1 chars */ String]],
-            totalchildren = arr(7).asInstanceOf[/* nullability unknown */ Option[Int]],
-            numberchildrenathome = arr(8).asInstanceOf[/* nullability unknown */ Option[Int]],
-            education = arr(9).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-            occupation = arr(10).asInstanceOf[/* nullability unknown */ Option[/* max 30 chars */ String]],
-            homeownerflag = arr(11).asInstanceOf[/* nullability unknown */ Option[Boolean]],
-            numbercarsowned = arr(12).asInstanceOf[/* nullability unknown */ Option[Int]]
+            totalpurchaseytd = arr(1).asInstanceOf[TypoMoney],
+            datefirstpurchase = arr(2).asInstanceOf[TypoLocalDate],
+            birthdate = arr(3).asInstanceOf[TypoLocalDate],
+            maritalstatus = arr(4).asInstanceOf[String],
+            yearlyincome = arr(5).asInstanceOf[String],
+            gender = arr(6).asInstanceOf[String],
+            totalchildren = arr(7).asInstanceOf[Int],
+            numberchildrenathome = arr(8).asInstanceOf[Int],
+            education = arr(9).asInstanceOf[String],
+            occupation = arr(10).asInstanceOf[String],
+            homeownerflag = arr(11).asInstanceOf[Boolean],
+            numbercarsowned = arr(12).asInstanceOf[Int]
       )
     }
   }

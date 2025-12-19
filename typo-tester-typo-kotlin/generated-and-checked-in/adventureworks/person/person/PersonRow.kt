@@ -6,18 +6,19 @@
 package adventureworks.person.person
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.public.NameStyle
 import adventureworks.userdefined.FirstName
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.data.Xml
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: person.person
   * Human beings involved with AdventureWorks: employees, customer contacts, and vendor contacts.
@@ -31,48 +32,48 @@ data class PersonRow(
   /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
     * Constraint CK_Person_PersonType affecting columns persontype: (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
     */
-  val persontype: /* bpchar, max 2 chars */ String,
+  val persontype: String,
   /** 0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order.
     * Default: false
     */
   val namestyle: NameStyle,
   /** A courtesy title. For example, Mr. or Ms. */
-  val title: Optional</* max 8 chars */ String>,
+  val title: /* max 8 chars */ String?,
   /** First name of the person. */
   val firstname: /* user-picked */ FirstName,
   /** Middle name or middle initial of the person. */
-  val middlename: Optional<Name>,
+  val middlename: Name?,
   /** Last name of the person. */
   val lastname: Name,
   /** Surname suffix. For example, Sr. or Jr. */
-  val suffix: Optional</* max 10 chars */ String>,
+  val suffix: /* max 10 chars */ String?,
   /** 0 = Contact does not wish to receive e-mail promotions, 1 = Contact does wish to receive e-mail promotions from AdventureWorks, 2 = Contact does wish to receive e-mail promotions from AdventureWorks and selected partners.
     * Default: 0
     * Constraint CK_Person_EmailPromotion affecting columns emailpromotion: (((emailpromotion >= 0) AND (emailpromotion <= 2)))
     */
   val emailpromotion: Int,
   /** Additional contact information about the person stored in xml format. */
-  val additionalcontactinfo: Optional<TypoXml>,
+  val additionalcontactinfo: Xml?,
   /** Personal information such as hobbies, and income collected from online shoppers. Used for sales analysis. */
-  val demographics: Optional<TypoXml>,
+  val demographics: Xml?,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): BusinessentityId = businessentityid
 
   fun toUnsavedRow(
     namestyle: Defaulted<NameStyle>,
     emailpromotion: Defaulted<Int>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): PersonRowUnsaved = PersonRowUnsaved(businessentityid, persontype, title, firstname, middlename, lastname, suffix, additionalcontactinfo, demographics, namestyle, emailpromotion, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<PersonRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.bpchar, NameStyle.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text.opt(), PgTypes.int4, TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> PersonRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.persontype, row.namestyle, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.emailpromotion, row.additionalcontactinfo, row.demographics, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<PersonRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.bpchar, NameStyle.pgType, PgTypes.text.nullable(), FirstName.pgType, Name.pgType.nullable(), Name.pgType, PgTypes.text.nullable(), KotlinDbTypes.PgTypes.int4, PgTypes.xml.nullable(), PgTypes.xml.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> PersonRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) }, { row -> arrayOf<Any?>(row.businessentityid, row.persontype, row.namestyle, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.emailpromotion, row.additionalcontactinfo, row.demographics, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<PersonRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

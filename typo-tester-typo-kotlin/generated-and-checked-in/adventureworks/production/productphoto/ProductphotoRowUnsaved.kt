@@ -7,46 +7,45 @@ package adventureworks.production.productphoto
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoLocalDateTime
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `production.productphoto` which has not been persisted yet */
 data class ProductphotoRowUnsaved(
   /** Small image of the product. */
-  val thumbnailphoto: Optional<TypoBytea> = Optional.empty(),
+  val thumbnailphoto: ByteArray? = null,
   /** Small image file name. */
-  val thumbnailphotofilename: Optional</* max 50 chars */ String> = Optional.empty(),
+  val thumbnailphotofilename: /* max 50 chars */ String? = null,
   /** Large image of the product. */
-  val largephoto: Optional<TypoBytea> = Optional.empty(),
+  val largephoto: ByteArray? = null,
   /** Large image file name. */
-  val largephotofilename: Optional</* max 50 chars */ String> = Optional.empty(),
+  val largephotofilename: /* max 50 chars */ String? = null,
   /** Default: nextval('production.productphoto_productphotoid_seq'::regclass)
     * Primary key for ProductPhoto records.
     */
   val productphotoid: Defaulted<ProductphotoId> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     productphotoidDefault: () -> ProductphotoId,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): ProductphotoRow = ProductphotoRow(productphotoid = productphotoid.getOrElse(productphotoidDefault), thumbnailphoto = thumbnailphoto, thumbnailphotofilename = thumbnailphotofilename, largephoto = largephoto, largephotofilename = largephotofilename, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<ProductphotoRowUnsaved> =
-      PgText.instance({ row, sb -> TypoBytea.pgType.opt().pgText().unsafeEncode(row.thumbnailphoto, sb)
+      PgText.instance({ row, sb -> PgTypes.bytea.nullable().pgText().unsafeEncode(row.thumbnailphoto, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.thumbnailphotofilename, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.thumbnailphotofilename, sb)
       sb.append(PgText.DELIMETER)
-      TypoBytea.pgType.opt().pgText().unsafeEncode(row.largephoto, sb)
+      PgTypes.bytea.nullable().pgText().unsafeEncode(row.largephoto, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.largephotofilename, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.largephotofilename, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(ProductphotoId.pgType.pgText()).unsafeEncode(row.productphotoid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

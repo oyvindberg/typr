@@ -7,10 +7,10 @@ package adventureworks.production.vproductmodelinstructions
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VproductmodelinstructionsViewRepo {
-  fun select(): SelectBuilder<VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow>
+  abstract fun select(): SelectBuilder<VproductmodelinstructionsViewFields, VproductmodelinstructionsViewRow>
 
-  fun selectAll(c: Connection): List<VproductmodelinstructionsViewRow>
+  abstract fun selectAll(c: Connection): List<VproductmodelinstructionsViewRow>
 }

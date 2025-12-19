@@ -6,89 +6,88 @@
 package adventureworks.humanresources.employeepayhistory
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface EmployeepayhistoryRepo {
-  fun delete(): DeleteBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow>
+  abstract fun delete(): DeleteBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: EmployeepayhistoryId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<EmployeepayhistoryId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: EmployeepayhistoryRow,
     c: Connection
   ): EmployeepayhistoryRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: EmployeepayhistoryRowUnsaved,
     c: Connection
   ): EmployeepayhistoryRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<EmployeepayhistoryRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<EmployeepayhistoryRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<EmployeepayhistoryRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<EmployeepayhistoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow>
+  abstract fun select(): SelectBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow>
 
-  fun selectAll(c: Connection): List<EmployeepayhistoryRow>
+  abstract fun selectAll(c: Connection): List<EmployeepayhistoryRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: EmployeepayhistoryId,
     c: Connection
-  ): Optional<EmployeepayhistoryRow>
+  ): EmployeepayhistoryRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<EmployeepayhistoryId>,
     c: Connection
   ): List<EmployeepayhistoryRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<EmployeepayhistoryId>,
     c: Connection
   ): Map<EmployeepayhistoryId, EmployeepayhistoryRow>
 
-  fun update(): UpdateBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow>
+  abstract fun update(): UpdateBuilder<EmployeepayhistoryFields, EmployeepayhistoryRow>
 
-  fun update(
+  abstract fun update(
     row: EmployeepayhistoryRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: EmployeepayhistoryRow,
     c: Connection
   ): EmployeepayhistoryRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<EmployeepayhistoryRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<EmployeepayhistoryRow>,
     c: Connection
   ): List<EmployeepayhistoryRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<EmployeepayhistoryRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<EmployeepayhistoryRow>,
     batchSize: Int,
     c: Connection
   ): Int

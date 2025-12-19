@@ -6,14 +6,15 @@
 package adventureworks.person.emailaddress
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: person.emailaddress
   * Where to send a person email.
@@ -29,11 +30,11 @@ data class EmailaddressRow(
     */
   val emailaddressid: Int,
   /** E-mail address for the person. */
-  val emailaddress: Optional</* max 50 chars */ String>,
+  val emailaddress: /* max 50 chars */ String?,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): EmailaddressId = EmailaddressId(businessentityid, emailaddressid)
 
@@ -41,21 +42,21 @@ data class EmailaddressRow(
 
   fun toUnsavedRow(
     emailaddressid: Defaulted<Int>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): EmailaddressRowUnsaved = EmailaddressRowUnsaved(businessentityid, emailaddress, emailaddressid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<EmailaddressRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.int4, PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> EmailaddressRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.emailaddressid, row.emailaddress, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<EmailaddressRow> = RowParsers.of(BusinessentityId.pgType, KotlinDbTypes.PgTypes.int4, PgTypes.text.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> EmailaddressRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.businessentityid, row.emailaddressid, row.emailaddress, row.rowguid, row.modifieddate) })
 
     fun apply(
       compositeId: EmailaddressId,
-      emailaddress: Optional</* max 50 chars */ String>,
-      rowguid: TypoUUID,
-      modifieddate: TypoLocalDateTime
+      emailaddress: /* max 50 chars */ String?,
+      rowguid: UUID,
+      modifieddate: LocalDateTime
     ): EmailaddressRow = EmailaddressRow(compositeId.businessentityid, compositeId.emailaddressid, emailaddress, rowguid, modifieddate)
 
     val pgText: PgText<EmailaddressRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

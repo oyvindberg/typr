@@ -30,18 +30,18 @@ case class TestInsert(random: Random) {
 
   def myschemaFootballClub(
     id: FootballClubId = FootballClubId(random.nextLong()),
-    name: /* max 100 chars */ String = random.alphanumeric.take(20).mkString
+    name: String = random.alphanumeric.take(20).mkString
   )(implicit c: Connection): FootballClubRow = (new FootballClubRepoImpl).insert(new FootballClubRow(id = id, name = name))
 
   def myschemaMaritalStatus(id: MaritalStatusId = MaritalStatusId(random.nextLong()))(implicit c: Connection): MaritalStatusRow = (new MaritalStatusRepoImpl).insert(new MaritalStatusRow(id = id))
 
   def myschemaPerson(
     favouriteFootballClubId: FootballClubId,
-    name: /* max 100 chars */ String = random.alphanumeric.take(20).mkString,
+    name: String = random.alphanumeric.take(20).mkString,
     nickName: Option[/* max 30 chars */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
     blogUrl: Option[/* max 100 chars */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    email: /* max 254 chars */ String = random.alphanumeric.take(20).mkString,
-    phone: /* max 8 chars */ String = random.alphanumeric.take(8).mkString,
+    email: String = random.alphanumeric.take(20).mkString,
+    phone: String = random.alphanumeric.take(8).mkString,
     likesPizza: Boolean = random.nextBoolean(),
     workEmail: Option[/* max 254 chars */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
     id: Defaulted[PersonId] = Defaulted.UseDefault(),

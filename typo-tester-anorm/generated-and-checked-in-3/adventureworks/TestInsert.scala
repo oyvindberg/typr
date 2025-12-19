@@ -345,12 +345,12 @@ case class TestInsert(
   def humanresourcesEmployee(
     businessentityid: BusinessentityId,
     birthdate: TypoLocalDate,
-    maritalstatus: /* bpchar, max 1 chars */ String,
-    gender: /* bpchar, max 1 chars */ String,
+    maritalstatus: String,
+    gender: String,
     hiredate: TypoLocalDate,
-    nationalidnumber: /* max 15 chars */ String = random.alphanumeric.take(15).mkString,
-    loginid: /* max 256 chars */ String = random.alphanumeric.take(20).mkString,
-    jobtitle: /* max 50 chars */ String = random.alphanumeric.take(20).mkString,
+    nationalidnumber: String = random.alphanumeric.take(15).mkString,
+    loginid: String = random.alphanumeric.take(20).mkString,
+    jobtitle: String = random.alphanumeric.take(20).mkString,
     salariedflag: Defaulted[Flag] = Defaulted.UseDefault(),
     vacationhours: Defaulted[TypoShort] = Defaulted.UseDefault(),
     sickleavehours: Defaulted[TypoShort] = Defaulted.UseDefault(),
@@ -394,10 +394,10 @@ case class TestInsert(
 
   def personAddress(
     stateprovinceid: StateprovinceId,
-    addressline1: /* max 60 chars */ String = random.alphanumeric.take(20).mkString,
+    addressline1: String = random.alphanumeric.take(20).mkString,
     addressline2: Option[/* max 60 chars */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    city: /* max 30 chars */ String = random.alphanumeric.take(20).mkString,
-    postalcode: /* max 15 chars */ String = random.alphanumeric.take(15).mkString,
+    city: String = random.alphanumeric.take(20).mkString,
+    postalcode: String = random.alphanumeric.take(15).mkString,
     spatiallocation: Option[TypoBytea] = None,
     addressid: Defaulted[AddressId] = Defaulted.UseDefault(),
     rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault(),
@@ -440,7 +440,7 @@ case class TestInsert(
   )(using c: Connection): ContacttypeRow = (new ContacttypeRepoImpl).insert(new ContacttypeRowUnsaved(name = name, contacttypeid = contacttypeid, modifieddate = modifieddate))
 
   def personCountryregion(
-    countryregioncode: CountryregionId,
+    countryregioncode: CountryregionId = CountryregionId(random.alphanumeric.take(3).mkString),
     name: Name = domainInsert.publicName(random),
     modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): CountryregionRow = (new CountryregionRepoImpl).insert(new CountryregionRowUnsaved(countryregioncode = countryregioncode, name = name, modifieddate = modifieddate))
@@ -455,15 +455,15 @@ case class TestInsert(
 
   def personPassword(
     businessentityid: BusinessentityId,
-    passwordhash: /* max 128 chars */ String = random.alphanumeric.take(20).mkString,
-    passwordsalt: /* max 10 chars */ String = random.alphanumeric.take(10).mkString,
+    passwordhash: String = random.alphanumeric.take(20).mkString,
+    passwordsalt: String = random.alphanumeric.take(10).mkString,
     rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault(),
     modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): PasswordRow = (new PasswordRepoImpl).insert(new PasswordRowUnsaved(businessentityid = businessentityid, passwordhash = passwordhash, passwordsalt = passwordsalt, rowguid = rowguid, modifieddate = modifieddate))
 
   def personPerson(
     businessentityid: BusinessentityId,
-    persontype: /* bpchar, max 2 chars */ String,
+    persontype: String,
     firstname: /* user-picked */ FirstName,
     title: Option[/* max 8 chars */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(8).mkString),
     middlename: Option[Name] = if (random.nextBoolean()) None else Some(domainInsert.publicName(random)),
@@ -493,7 +493,7 @@ case class TestInsert(
   def personStateprovince(
     countryregioncode: CountryregionId,
     territoryid: SalesterritoryId,
-    stateprovincecode: /* bpchar, max 3 chars */ String = random.alphanumeric.take(3).mkString,
+    stateprovincecode: String = random.alphanumeric.take(3).mkString,
     name: Name = domainInsert.publicName(random),
     stateprovinceid: Defaulted[StateprovinceId] = Defaulted.UseDefault(),
     isonlystateprovinceflag: Defaulted[Flag] = Defaulted.UseDefault(),
@@ -514,7 +514,7 @@ case class TestInsert(
   )(using c: Connection): BillofmaterialsRow = (new BillofmaterialsRepoImpl).insert(new BillofmaterialsRowUnsaved(productassemblyid = productassemblyid, componentid = componentid, enddate = enddate, unitmeasurecode = unitmeasurecode, bomlevel = bomlevel, billofmaterialsid = billofmaterialsid, startdate = startdate, perassemblyqty = perassemblyqty, modifieddate = modifieddate))
 
   def productionCulture(
-    cultureid: CultureId,
+    cultureid: CultureId = CultureId(random.alphanumeric.take(6).mkString),
     name: Name = domainInsert.publicName(random),
     modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): CultureRow = (new CultureRepoImpl).insert(new CultureRowUnsaved(cultureid = cultureid, name = name, modifieddate = modifieddate))
@@ -522,10 +522,10 @@ case class TestInsert(
   def productionDocument(
     owner: BusinessentityId,
     status: TypoShort,
-    title: /* max 50 chars */ String = random.alphanumeric.take(20).mkString,
-    filename: /* max 400 chars */ String = random.alphanumeric.take(20).mkString,
+    title: String = random.alphanumeric.take(20).mkString,
+    filename: String = random.alphanumeric.take(20).mkString,
     fileextension: Option[/* max 8 chars */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(8).mkString),
-    revision: /* bpchar, max 5 chars */ String = random.alphanumeric.take(5).mkString,
+    revision: String = random.alphanumeric.take(5).mkString,
     documentsummary: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
     document: Option[TypoBytea] = None,
     folderflag: Defaulted[Flag] = Defaulted.UseDefault(),
@@ -557,7 +557,7 @@ case class TestInsert(
     daystomanufacture: Int,
     sellstartdate: TypoLocalDateTime,
     name: Name = domainInsert.publicName(random),
-    productnumber: /* max 25 chars */ String = random.alphanumeric.take(20).mkString,
+    productnumber: String = random.alphanumeric.take(20).mkString,
     color: Option[/* max 15 chars */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(15).mkString),
     size: Option[/* max 5 chars */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(5).mkString),
     sizeunitmeasurecode: Option[UnitmeasureId] = None,
@@ -593,7 +593,7 @@ case class TestInsert(
   )(using c: Connection): ProductcosthistoryRow = (new ProductcosthistoryRepoImpl).insert(new ProductcosthistoryRowUnsaved(productid = productid, startdate = startdate, enddate = enddate, standardcost = standardcost, modifieddate = modifieddate))
 
   def productionProductdescription(
-    description: /* max 400 chars */ String = random.alphanumeric.take(20).mkString,
+    description: String = random.alphanumeric.take(20).mkString,
     productdescriptionid: Defaulted[ProductdescriptionId] = Defaulted.UseDefault(),
     rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault(),
     modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault()
@@ -609,7 +609,7 @@ case class TestInsert(
     productid: ProductId,
     locationid: LocationId,
     bin: TypoShort,
-    shelf: /* max 10 chars */ String = random.alphanumeric.take(10).mkString,
+    shelf: String = random.alphanumeric.take(10).mkString,
     quantity: Defaulted[TypoShort] = Defaulted.UseDefault(),
     rowguid: Defaulted[TypoUUID] = Defaulted.UseDefault(),
     modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault()
@@ -665,7 +665,7 @@ case class TestInsert(
     productid: ProductId,
     rating: Int,
     reviewername: Name = domainInsert.publicName(random),
-    emailaddress: /* max 50 chars */ String = random.alphanumeric.take(20).mkString,
+    emailaddress: String = random.alphanumeric.take(20).mkString,
     comments: Option[/* max 3850 chars */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
     productreviewid: Defaulted[ProductreviewId] = Defaulted.UseDefault(),
     reviewdate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault(),
@@ -688,7 +688,7 @@ case class TestInsert(
 
   def productionTransactionhistory(
     productid: ProductId,
-    transactiontype: /* bpchar, max 1 chars */ String,
+    transactiontype: String,
     referenceorderid: Int = random.nextInt(),
     quantity: Int = random.nextInt(),
     actualcost: BigDecimal = BigDecimal.decimal(random.nextDouble()),
@@ -699,7 +699,7 @@ case class TestInsert(
   )(using c: Connection): TransactionhistoryRow = (new TransactionhistoryRepoImpl).insert(new TransactionhistoryRowUnsaved(productid = productid, referenceorderid = referenceorderid, transactiontype = transactiontype, quantity = quantity, actualcost = actualcost, transactionid = transactionid, referenceorderlineid = referenceorderlineid, transactiondate = transactiondate, modifieddate = modifieddate))
 
   def productionTransactionhistoryarchive(
-    transactiontype: /* bpchar, max 1 chars */ String,
+    transactiontype: String,
     transactionid: TransactionhistoryarchiveId = TransactionhistoryarchiveId(random.nextInt()),
     productid: Int = random.nextInt(),
     referenceorderid: Int = random.nextInt(),
@@ -711,7 +711,7 @@ case class TestInsert(
   )(using c: Connection): TransactionhistoryarchiveRow = (new TransactionhistoryarchiveRepoImpl).insert(new TransactionhistoryarchiveRowUnsaved(transactionid = transactionid, productid = productid, referenceorderid = referenceorderid, transactiontype = transactiontype, quantity = quantity, actualcost = actualcost, referenceorderlineid = referenceorderlineid, transactiondate = transactiondate, modifieddate = modifieddate))
 
   def productionUnitmeasure(
-    unitmeasurecode: UnitmeasureId,
+    unitmeasurecode: UnitmeasureId = UnitmeasureId(random.alphanumeric.take(3).mkString),
     name: Name = domainInsert.publicName(random),
     modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): UnitmeasureRow = (new UnitmeasureRepoImpl).insert(new UnitmeasureRowUnsaved(unitmeasurecode = unitmeasurecode, name = name, modifieddate = modifieddate))
@@ -745,14 +745,14 @@ case class TestInsert(
 
   def publicFlaff(
     code: ShortText = domainInsert.publicShortText(random),
-    anotherCode: /* max 20 chars */ String = random.alphanumeric.take(20).mkString,
+    anotherCode: String = random.alphanumeric.take(20).mkString,
     someNumber: Int = random.nextInt(),
     specifier: ShortText = domainInsert.publicShortText(random),
     parentspecifier: Option[ShortText] = None
   )(using c: Connection): FlaffRow = (new FlaffRepoImpl).insert(new FlaffRow(code = code, anotherCode = anotherCode, someNumber = someNumber, specifier = specifier, parentspecifier = parentspecifier))
 
   def publicIdentityTest(
-    name: IdentityTestId,
+    name: IdentityTestId = IdentityTestId(random.alphanumeric.take(20).mkString),
     defaultGenerated: Defaulted[Int] = Defaulted.UseDefault()
   )(using c: Connection): IdentityTestRow = (new IdentityTestRepoImpl).insert(new IdentityTestRowUnsaved(name = name, defaultGenerated = defaultGenerated))
 
@@ -798,8 +798,8 @@ case class TestInsert(
     polygones: Array[TypoPolygon],
     xmles: Array[TypoXml],
     bool: Boolean = random.nextBoolean(),
-    bpchar: /* bpchar, max 3 chars */ String = random.alphanumeric.take(3).mkString,
-    char: /* bpchar, max 1 chars */ String = random.alphanumeric.take(1).mkString,
+    bpchar: String = random.alphanumeric.take(3).mkString,
+    char: String = random.alphanumeric.take(1).mkString,
     date: TypoLocalDate = TypoLocalDate(LocalDate.ofEpochDay(random.nextInt(30000).toLong)),
     float4: Float = random.nextFloat(),
     float8: Double = random.nextDouble(),
@@ -1001,8 +1001,8 @@ case class TestInsert(
   )(using c: Connection): CountryregioncurrencyRow = (new CountryregioncurrencyRepoImpl).insert(new CountryregioncurrencyRowUnsaved(countryregioncode = countryregioncode, currencycode = currencycode, modifieddate = modifieddate))
 
   def salesCreditcard(
-    cardtype: /* max 50 chars */ String = random.alphanumeric.take(20).mkString,
-    cardnumber: /* max 25 chars */ String = random.alphanumeric.take(20).mkString,
+    cardtype: String = random.alphanumeric.take(20).mkString,
+    cardnumber: String = random.alphanumeric.take(20).mkString,
     expmonth: TypoShort = TypoShort(random.nextInt(Short.MaxValue).toShort),
     expyear: TypoShort = TypoShort(random.nextInt(Short.MaxValue).toShort),
     creditcardid: Defaulted[/* user-picked */ CustomCreditcardId] = Defaulted.UseDefault(),
@@ -1010,7 +1010,7 @@ case class TestInsert(
   )(using c: Connection): CreditcardRow = (new CreditcardRepoImpl).insert(new CreditcardRowUnsaved(cardtype = cardtype, cardnumber = cardnumber, expmonth = expmonth, expyear = expyear, creditcardid = creditcardid, modifieddate = modifieddate))
 
   def salesCurrency(
-    currencycode: CurrencyId,
+    currencycode: CurrencyId = CurrencyId(random.alphanumeric.take(3).mkString),
     name: Name = domainInsert.publicName(random),
     modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): CurrencyRow = (new CurrencyRepoImpl).insert(new CurrencyRowUnsaved(currencycode = currencycode, name = name, modifieddate = modifieddate))
@@ -1126,7 +1126,7 @@ case class TestInsert(
   def salesSalesterritory(
     countryregioncode: CountryregionId,
     name: Name = domainInsert.publicName(random),
-    group: /* max 50 chars */ String = random.alphanumeric.take(20).mkString,
+    group: String = random.alphanumeric.take(20).mkString,
     territoryid: Defaulted[SalesterritoryId] = Defaulted.UseDefault(),
     salesytd: Defaulted[BigDecimal] = Defaulted.UseDefault(),
     saleslastyear: Defaulted[BigDecimal] = Defaulted.UseDefault(),
@@ -1147,7 +1147,7 @@ case class TestInsert(
 
   def salesShoppingcartitem(
     productid: ProductId,
-    shoppingcartid: /* max 50 chars */ String = random.alphanumeric.take(20).mkString,
+    shoppingcartid: String = random.alphanumeric.take(20).mkString,
     shoppingcartitemid: Defaulted[ShoppingcartitemId] = Defaulted.UseDefault(),
     quantity: Defaulted[Int] = Defaulted.UseDefault(),
     datecreated: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault(),
@@ -1157,9 +1157,9 @@ case class TestInsert(
   def salesSpecialoffer(
     startdate: TypoLocalDateTime,
     enddate: TypoLocalDateTime,
-    description: /* max 255 chars */ String = random.alphanumeric.take(20).mkString,
-    `type`: /* max 50 chars */ String = random.alphanumeric.take(20).mkString,
-    category: /* max 50 chars */ String = random.alphanumeric.take(20).mkString,
+    description: String = random.alphanumeric.take(20).mkString,
+    `type`: String = random.alphanumeric.take(20).mkString,
+    category: String = random.alphanumeric.take(20).mkString,
     maxqty: Option[Int] = None,
     specialofferid: Defaulted[SpecialofferId] = Defaulted.UseDefault(),
     discountpct: Defaulted[BigDecimal] = Defaulted.UseDefault(),

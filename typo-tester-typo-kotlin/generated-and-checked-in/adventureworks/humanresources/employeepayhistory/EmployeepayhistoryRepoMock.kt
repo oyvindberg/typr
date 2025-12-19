@@ -8,21 +8,19 @@ package adventureworks.humanresources.employeepayhistory
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class EmployeepayhistoryRepoMock(
   val toRow: (EmployeepayhistoryRowUnsaved) -> EmployeepayhistoryRow,
@@ -33,7 +31,7 @@ data class EmployeepayhistoryRepoMock(
   override fun deleteById(
     compositeId: EmployeepayhistoryId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(compositeId)).isPresent()
+  ): Boolean = map.remove(compositeId) != null
 
   override fun deleteByIds(
     compositeIds: Array<EmployeepayhistoryId>,
@@ -41,7 +39,7 @@ data class EmployeepayhistoryRepoMock(
   ): Int {
     var count = 0
     for (id in compositeIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class EmployeepayhistoryRepoMock(
     c: Connection
   ): EmployeepayhistoryRow {
     if (map.containsKey(unsaved.compositeId())) {
-      throw RuntimeException(str("id $unsaved.compositeId() already exists"))
+      throw RuntimeException("id " + unsaved.compositeId() + " already exists")
     }
     map[unsaved.compositeId()] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class EmployeepayhistoryRepoMock(
   ): EmployeepayhistoryRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<EmployeepayhistoryRow>,
+    unsaved: Iterator<EmployeepayhistoryRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class EmployeepayhistoryRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<EmployeepayhistoryRowUnsaved>,
+    unsaved: Iterator<EmployeepayhistoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class EmployeepayhistoryRepoMock(
   override fun selectById(
     compositeId: EmployeepayhistoryId,
     c: Connection
-  ): Optional<EmployeepayhistoryRow> = Optional.ofNullable(map[compositeId])
+  ): EmployeepayhistoryRow? = map[compositeId]
 
   override fun selectByIds(
     compositeIds: Array<EmployeepayhistoryId>,
@@ -109,9 +107,9 @@ data class EmployeepayhistoryRepoMock(
   ): List<EmployeepayhistoryRow> {
     val result = ArrayList<EmployeepayhistoryRow>()
     for (id in compositeIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class EmployeepayhistoryRepoMock(
     row: EmployeepayhistoryRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.compositeId()]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.compositeId()]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.compositeId()] = row
     }
@@ -144,7 +142,7 @@ data class EmployeepayhistoryRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<EmployeepayhistoryRow>,
+    unsaved: Iterator<EmployeepayhistoryRow>,
     c: Connection
   ): List<EmployeepayhistoryRow> {
     val result = ArrayList<EmployeepayhistoryRow>()
@@ -158,7 +156,7 @@ data class EmployeepayhistoryRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<EmployeepayhistoryRow>,
+    unsaved: Iterator<EmployeepayhistoryRow>,
     batchSize: Int,
     c: Connection
   ): Int {

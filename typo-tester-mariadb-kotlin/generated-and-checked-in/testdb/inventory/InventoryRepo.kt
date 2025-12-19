@@ -6,78 +6,77 @@
 package testdb.inventory
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface InventoryRepo {
-  fun delete(): DeleteBuilder<InventoryFields, InventoryRow>
+  abstract fun delete(): DeleteBuilder<InventoryFields, InventoryRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     inventoryId: InventoryId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     inventoryIds: Array<InventoryId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: InventoryRow,
     c: Connection
   ): InventoryRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: InventoryRowUnsaved,
     c: Connection
   ): InventoryRow
 
-  fun select(): SelectBuilder<InventoryFields, InventoryRow>
+  abstract fun select(): SelectBuilder<InventoryFields, InventoryRow>
 
-  fun selectAll(c: Connection): List<InventoryRow>
+  abstract fun selectAll(c: Connection): List<InventoryRow>
 
-  fun selectById(
+  abstract fun selectById(
     inventoryId: InventoryId,
     c: Connection
-  ): Optional<InventoryRow>
+  ): InventoryRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     inventoryIds: Array<InventoryId>,
     c: Connection
   ): List<InventoryRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     inventoryIds: Array<InventoryId>,
     c: Connection
   ): Map<InventoryId, InventoryRow>
 
-  fun selectByUniqueProductIdAndWarehouseId(
+  abstract fun selectByUniqueProductIdAndWarehouseId(
     productId: ProductsId,
     warehouseId: WarehousesId,
     c: Connection
-  ): Optional<InventoryRow>
+  ): InventoryRow?
 
-  fun update(): UpdateBuilder<InventoryFields, InventoryRow>
+  abstract fun update(): UpdateBuilder<InventoryFields, InventoryRow>
 
-  fun update(
+  abstract fun update(
     row: InventoryRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: InventoryRow,
     c: Connection
   ): InventoryRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<InventoryRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<InventoryRow>,
     c: Connection
   ): List<InventoryRow>
 }

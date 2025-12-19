@@ -21,19 +21,8 @@ class ApiCodegen(
   private val effectType: Option[jvm.Type.Qualified] = effectTypeWithOps.map(_._1)
   private val effectOps: Option[EffectTypeOps] = effectTypeWithOps.map(_._2)
 
-  /** The "Nothing" type for this language - represents an impossible value in type parameters */
-  private val nothingType: jvm.Type = (lang: @unchecked) match {
-    case _: LangScala => jvm.Type.Qualified("scala.Nothing")
-    case LangKotlin   => jvm.Type.Qualified("kotlin.Nothing")
-    case LangJava     => jvm.Type.Qualified("java.lang.Void")
-  }
-
-  /** The "Void" type for this language - represents no return value */
-  private val voidType: jvm.Type = (lang: @unchecked) match {
-    case _: LangScala => jvm.Type.Qualified("scala.Unit")
-    case LangKotlin   => jvm.Type.Qualified("kotlin.Unit")
-    case LangJava     => jvm.Type.Qualified("java.lang.Void")
-  }
+  private val nothingType: jvm.Type = lang.nothingType
+  private val voidType: jvm.Type = lang.voidType
 
   /** Whether this language uses explicit return statements for void methods */
   private val needsVoidReturn: Boolean = lang match {
@@ -573,9 +562,9 @@ class ApiCodegen(
       // In Kotlin lambdas, we can't use `return` - the last expression is implicitly returned.
       // In Java, we need explicit return statements.
       val returnExpr = (lang: @unchecked) match {
-        case _: LangScala => readCode // Scala: expression-based
-        case LangKotlin   => readCode // Kotlin lambda: implicit return
-        case LangJava     => jvm.Return(readCode).code // Java: explicit return
+        case _: LangScala  => readCode // Scala: expression-based
+        case _: LangKotlin => readCode // Kotlin lambda: implicit return
+        case LangJava      => jvm.Return(readCode).code // Java: explicit return
       }
       val tryCatch = jvm.TryCatch(
         tryBlock = List(returnExpr),
@@ -609,9 +598,9 @@ class ApiCodegen(
         if (singleResponseType == voidType) {
           // For void, just map to null (Java Void) or Unit (Kotlin/Scala)
           val voidValue = (lang: @unchecked) match {
-            case LangJava     => code"null"
-            case LangKotlin   => code"Unit"
-            case _: LangScala => code"()"
+            case LangJava      => code"null"
+            case _: LangKotlin => code"Unit"
+            case _: LangScala  => code"()"
           }
           val mapToVoid = jvm.Lambda(jvm.Ident("response"), voidValue).code
           (code"var ${requestIdent.code} = $requestCode", ops.map(effectWrapped, mapToVoid))
@@ -688,9 +677,9 @@ class ApiCodegen(
       // In Kotlin lambdas inside try-catch, we can't use `return` - the last expression is implicitly returned.
       // In Java, we need explicit return statements.
       val resultExpr = (lang: @unchecked) match {
-        case _: LangScala => constructorExpr // Scala: expression-based
-        case LangKotlin   => constructorExpr // Kotlin lambda: implicit return
-        case LangJava     => jvm.Return(constructorExpr).code // Java: explicit return
+        case _: LangScala  => constructorExpr // Scala: expression-based
+        case _: LangKotlin => constructorExpr // Kotlin lambda: implicit return
+        case LangJava      => jvm.Return(constructorExpr).code // Java: explicit return
       }
 
       (condition, resultExpr, variant.statusCode.toLowerCase == "default")
@@ -1351,7 +1340,7 @@ $ifElseCode"""
         case _        => !isRangeType // Scala/Kotlin: only non-range types are generic
       }
 
-      if (isGenericType && (lang.isInstanceOf[LangScala] || lang == LangKotlin)) {
+      if (isGenericType && (lang.isInstanceOf[LangScala] || lang.isInstanceOf[LangKotlin])) {
         // Use wildcard for pattern matching to avoid type erasure warnings in Scala/Kotlin
         jvm.Type.TApply(baseTpe, List(jvm.Type.Wildcard))
       } else {
@@ -1796,22 +1785,22 @@ $ifElseCode"""
 
         // Declare response variable before try-catch (will be assigned in try or catch)
         val responseDecl = (lang: @unchecked) match {
-          case _: LangScala => code"var ${responseIdent.code}: $rawResponseType = null"
-          case LangKotlin   => code"var ${responseIdent.code}: $rawResponseType"
-          case LangJava     => code"$rawResponseType ${responseIdent.code}"
+          case _: LangScala  => code"var ${responseIdent.code}: $rawResponseType = null"
+          case _: LangKotlin => code"var ${responseIdent.code}: $rawResponseType"
+          case LangJava      => code"$rawResponseType ${responseIdent.code}"
         }
 
         // In try block: call the raw method and assign to response
         val assignResponse = (lang: @unchecked) match {
-          case _: LangScala | LangKotlin => code"${responseIdent.code} = $rawMethodCall"
-          case LangJava                  => code"${responseIdent.code} = $rawMethodCall"
+          case _: LangScala | _: LangKotlin => code"${responseIdent.code} = $rawMethodCall"
+          case LangJava                     => code"${responseIdent.code} = $rawMethodCall"
         }
 
         // In catch block: extract response from exception and assign
         val exceptionResponseCode = clientSupport.getResponseFromException(exceptionIdent.code)
         val assignFromException = (lang: @unchecked) match {
-          case _: LangScala | LangKotlin => code"${responseIdent.code} = $exceptionResponseCode"
-          case LangJava                  => code"${responseIdent.code} = $exceptionResponseCode"
+          case _: LangScala | _: LangKotlin => code"${responseIdent.code} = $exceptionResponseCode"
+          case LangJava                     => code"${responseIdent.code} = $exceptionResponseCode"
         }
 
         // Generate try-catch block (just assigns response, doesn't handle status)
@@ -1907,9 +1896,9 @@ $ifElseCode"""
       // - Java: always needs return in block contexts
       // - Kotlin: needs return in try-catch blocks, but NOT in lambdas (last expression is implicit return)
       val resultExpr = lang match {
-        case _: LangScala                  => constructorCall // Scala: expression-based
-        case LangKotlin if inLambdaContext => constructorCall // Kotlin lambdas: implicit return of last expression
-        case _                             => jvm.Return(constructorCall).code // Java and Kotlin try-catch: explicit return
+        case _: LangScala                     => constructorCall // Scala: expression-based
+        case _: LangKotlin if inLambdaContext => constructorCall // Kotlin lambdas: implicit return of last expression
+        case _                                => jvm.Return(constructorCall).code // Java and Kotlin try-catch: explicit return
       }
 
       (condition, resultExpr, variant.statusCode.toLowerCase == "default")
@@ -2197,7 +2186,7 @@ $ifElseCode"""
     val baseResponseTpe = jvm.Type.Qualified(apiPkg / jvm.Ident(responseName))
     // For Scala/Kotlin, add wildcards for the type parameters in lambda types
     // Java doesn't need this because the type is inferred
-    val responseTpe: jvm.Type = if (numTypeParams > 0 && (lang.isInstanceOf[LangScala] || lang == LangKotlin)) {
+    val responseTpe: jvm.Type = if (numTypeParams > 0 && (lang.isInstanceOf[LangScala] || lang.isInstanceOf[LangKotlin])) {
       jvm.Type.TApply(baseResponseTpe, List.fill(numTypeParams)(jvm.Type.Wildcard))
     } else {
       baseResponseTpe

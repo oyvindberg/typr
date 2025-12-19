@@ -6,89 +6,88 @@
 package adventureworks.humanresources.jobcandidate
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface JobcandidateRepo {
-  fun delete(): DeleteBuilder<JobcandidateFields, JobcandidateRow>
+  abstract fun delete(): DeleteBuilder<JobcandidateFields, JobcandidateRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     jobcandidateid: JobcandidateId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     jobcandidateids: Array<JobcandidateId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: JobcandidateRow,
     c: Connection
   ): JobcandidateRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: JobcandidateRowUnsaved,
     c: Connection
   ): JobcandidateRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<JobcandidateRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<JobcandidateRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<JobcandidateRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<JobcandidateRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<JobcandidateFields, JobcandidateRow>
+  abstract fun select(): SelectBuilder<JobcandidateFields, JobcandidateRow>
 
-  fun selectAll(c: Connection): List<JobcandidateRow>
+  abstract fun selectAll(c: Connection): List<JobcandidateRow>
 
-  fun selectById(
+  abstract fun selectById(
     jobcandidateid: JobcandidateId,
     c: Connection
-  ): Optional<JobcandidateRow>
+  ): JobcandidateRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     jobcandidateids: Array<JobcandidateId>,
     c: Connection
   ): List<JobcandidateRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     jobcandidateids: Array<JobcandidateId>,
     c: Connection
   ): Map<JobcandidateId, JobcandidateRow>
 
-  fun update(): UpdateBuilder<JobcandidateFields, JobcandidateRow>
+  abstract fun update(): UpdateBuilder<JobcandidateFields, JobcandidateRow>
 
-  fun update(
+  abstract fun update(
     row: JobcandidateRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: JobcandidateRow,
     c: Connection
   ): JobcandidateRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<JobcandidateRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<JobcandidateRow>,
     c: Connection
   ): List<JobcandidateRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<JobcandidateRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<JobcandidateRow>,
     batchSize: Int,
     c: Connection
   ): Int

@@ -10,13 +10,11 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
-import java.util.Optional
 import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
 import testapi.model.PetId
-import typo.runtime.internal.stringInterpolator.str
 
 /** JDK HTTP Client implementation for PetsApi */
 data class PetsApiClient(
@@ -35,7 +33,7 @@ data class PetsApiClient(
     var statusCode = response.statusCode()
     if (statusCode == 201) { return Created(objectMapper.readValue(response.body(), Pet::class.java)) }
     else if (statusCode == 400) { return BadRequest(objectMapper.readValue(response.body(), Error::class.java)) }
-    else { throw IllegalStateException(str("Unexpected status code: ", statusCode.toString(), "")) }
+    else { throw IllegalStateException("Unexpected status code: " + statusCode) }
   }
 
   /** Delete a pet */
@@ -59,7 +57,7 @@ data class PetsApiClient(
     var statusCode = response.statusCode()
     if (statusCode == 200) { return Ok(objectMapper.readValue(response.body(), Pet::class.java)) }
     else if (statusCode == 404) { return NotFound(objectMapper.readValue(response.body(), Error::class.java)) }
-    else { throw IllegalStateException(str("Unexpected status code: ", statusCode.toString(), "")) }
+    else { throw IllegalStateException("Unexpected status code: " + statusCode) }
   }
 
   /** Get pet photo */
@@ -76,11 +74,11 @@ data class PetsApiClient(
   @Throws(Exception::class)
   override fun listPets(
     /** Maximum number of pets to return */
-    limit: Optional<Integer>,
+    limit: Int?,
     /** Filter by status */
-    status: Optional<String>
+    status: String?
   ): List<Pet> {
-    var request = HttpRequest.newBuilder(URI.create(baseUri.toString() + "/" + "pets" + (if (limit.isPresent()) "?limit=" + limit.get().toString() else "") + (if (status.isPresent()) "&status=" + status.get().toString() else ""))).method("GET", BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
+    var request = HttpRequest.newBuilder(URI.create(baseUri.toString() + "/" + "pets" + (if (limit != null) "?limit=" + limit!!.toString() else "") + (if (status != null) "&status=" + status!!.toString() else ""))).method("GET", BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
     var response = httpClient.send(request, BodyHandlers.ofString())
     return objectMapper.readValue(response.body(), object : TypeReference<List<Pet>>() {})
   }

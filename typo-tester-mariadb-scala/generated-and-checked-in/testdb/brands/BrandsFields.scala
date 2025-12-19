@@ -5,18 +5,18 @@
  */
 package testdb.brands
 
-import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait BrandsFields extends FieldsExpr[BrandsRow] {
+trait BrandsFields extends FieldsExpr0[BrandsRow] {
   def brandId: IdField[BrandsId, BrandsRow]
 
   def name: Field[String, BrandsRow]
@@ -29,23 +29,23 @@ trait BrandsFields extends FieldsExpr[BrandsRow] {
 
   def countryOfOrigin: OptField[String, BrandsRow]
 
-  def isActive: Field[java.lang.Boolean, BrandsRow]
+  def isActive: Field[Boolean, BrandsRow]
 
   override def columns: java.util.List[FieldLike[?, BrandsRow]]
 
-  override def rowParser: RowParser[BrandsRow] = BrandsRow._rowParser
+  override def rowParser: RowParser[BrandsRow] = BrandsRow._rowParser.underlying
 }
 
 object BrandsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends BrandsFields with Relation[BrandsFields, BrandsRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends BrandsFields with RelationStructure[BrandsFields, BrandsRow] {
 
     override def brandId: IdField[BrandsId, BrandsRow] = {
       new IdField[BrandsId, BrandsRow](
         _path,
         "brand_id",
         _.brandId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(brandId = value),
         BrandsId.pgType
       )
@@ -56,8 +56,8 @@ object BrandsFields {
         _path,
         "name",
         _.name,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(name = value),
         MariaTypes.varchar
       )
@@ -68,8 +68,8 @@ object BrandsFields {
         _path,
         "slug",
         _.slug,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(slug = value),
         MariaTypes.varchar
       )
@@ -80,8 +80,8 @@ object BrandsFields {
         _path,
         "logo_blob",
         _.logoBlob,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(logoBlob = value),
         MariaTypes.mediumblob
       )
@@ -92,8 +92,8 @@ object BrandsFields {
         _path,
         "website_url",
         _.websiteUrl,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(websiteUrl = value),
         MariaTypes.varchar
       )
@@ -104,29 +104,29 @@ object BrandsFields {
         _path,
         "country_of_origin",
         _.countryOfOrigin,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(countryOfOrigin = value),
         MariaTypes.char_
       )
     }
 
-    override def isActive: Field[java.lang.Boolean, BrandsRow] = {
-      new Field[java.lang.Boolean, BrandsRow](
+    override def isActive: Field[Boolean, BrandsRow] = {
+      new Field[Boolean, BrandsRow](
         _path,
         "is_active",
         _.isActive,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isActive = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, BrandsRow]] = java.util.List.of(this.brandId, this.name, this.slug, this.logoBlob, this.websiteUrl, this.countryOfOrigin, this.isActive)
+    override def columns: java.util.List[FieldLike[?, BrandsRow]] = java.util.List.of(this.brandId.underlying, this.name.underlying, this.slug.underlying, this.logoBlob.underlying, this.websiteUrl.underlying, this.countryOfOrigin.underlying, this.isActive.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[BrandsFields, BrandsRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[BrandsFields, BrandsRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

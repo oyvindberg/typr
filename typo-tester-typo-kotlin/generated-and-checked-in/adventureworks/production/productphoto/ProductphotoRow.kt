@@ -6,13 +6,12 @@
 package adventureworks.production.productphoto
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoLocalDateTime
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.productphoto
   * Product images.
@@ -24,27 +23,27 @@ data class ProductphotoRow(
     */
   val productphotoid: ProductphotoId,
   /** Small image of the product. */
-  val thumbnailphoto: Optional<TypoBytea>,
+  val thumbnailphoto: ByteArray?,
   /** Small image file name. */
-  val thumbnailphotofilename: Optional</* max 50 chars */ String>,
+  val thumbnailphotofilename: /* max 50 chars */ String?,
   /** Large image of the product. */
-  val largephoto: Optional<TypoBytea>,
+  val largephoto: ByteArray?,
   /** Large image file name. */
-  val largephotofilename: Optional</* max 50 chars */ String>,
+  val largephotofilename: /* max 50 chars */ String?,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): ProductphotoId = productphotoid
 
   fun toUnsavedRow(
     productphotoid: Defaulted<ProductphotoId>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): ProductphotoRowUnsaved = ProductphotoRowUnsaved(thumbnailphoto, thumbnailphotofilename, largephoto, largephotofilename, productphotoid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductphotoRow> = RowParsers.of(ProductphotoId.pgType, TypoBytea.pgType.opt(), PgTypes.text.opt(), TypoBytea.pgType.opt(), PgTypes.text.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> ProductphotoRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.productphotoid, row.thumbnailphoto, row.thumbnailphotofilename, row.largephoto, row.largephotofilename, row.modifieddate) })
+    val _rowParser: RowParser<ProductphotoRow> = RowParsers.of(ProductphotoId.pgType, PgTypes.bytea.nullable(), PgTypes.text.nullable(), PgTypes.bytea.nullable(), PgTypes.text.nullable(), PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> ProductphotoRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.productphotoid, row.thumbnailphoto, row.thumbnailphotofilename, row.largephoto, row.largephotofilename, row.modifieddate) })
 
     val pgText: PgText<ProductphotoRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

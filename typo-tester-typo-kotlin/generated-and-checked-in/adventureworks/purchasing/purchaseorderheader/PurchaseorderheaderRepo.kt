@@ -6,89 +6,88 @@
 package adventureworks.purchasing.purchaseorderheader
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PurchaseorderheaderRepo {
-  fun delete(): DeleteBuilder<PurchaseorderheaderFields, PurchaseorderheaderRow>
+  abstract fun delete(): DeleteBuilder<PurchaseorderheaderFields, PurchaseorderheaderRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     purchaseorderid: PurchaseorderheaderId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     purchaseorderids: Array<PurchaseorderheaderId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: PurchaseorderheaderRow,
     c: Connection
   ): PurchaseorderheaderRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: PurchaseorderheaderRowUnsaved,
     c: Connection
   ): PurchaseorderheaderRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<PurchaseorderheaderRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<PurchaseorderheaderRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<PurchaseorderheaderRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<PurchaseorderheaderRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<PurchaseorderheaderFields, PurchaseorderheaderRow>
+  abstract fun select(): SelectBuilder<PurchaseorderheaderFields, PurchaseorderheaderRow>
 
-  fun selectAll(c: Connection): List<PurchaseorderheaderRow>
+  abstract fun selectAll(c: Connection): List<PurchaseorderheaderRow>
 
-  fun selectById(
+  abstract fun selectById(
     purchaseorderid: PurchaseorderheaderId,
     c: Connection
-  ): Optional<PurchaseorderheaderRow>
+  ): PurchaseorderheaderRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     purchaseorderids: Array<PurchaseorderheaderId>,
     c: Connection
   ): List<PurchaseorderheaderRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     purchaseorderids: Array<PurchaseorderheaderId>,
     c: Connection
   ): Map<PurchaseorderheaderId, PurchaseorderheaderRow>
 
-  fun update(): UpdateBuilder<PurchaseorderheaderFields, PurchaseorderheaderRow>
+  abstract fun update(): UpdateBuilder<PurchaseorderheaderFields, PurchaseorderheaderRow>
 
-  fun update(
+  abstract fun update(
     row: PurchaseorderheaderRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: PurchaseorderheaderRow,
     c: Connection
   ): PurchaseorderheaderRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<PurchaseorderheaderRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<PurchaseorderheaderRow>,
     c: Connection
   ): List<PurchaseorderheaderRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<PurchaseorderheaderRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<PurchaseorderheaderRow>,
     batchSize: Int,
     c: Connection
   ): Int

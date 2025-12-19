@@ -7,9 +7,10 @@ package adventureworks.production.scrapreason
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `production.scrapreason` which has not been persisted yet */
 data class ScrapreasonRowUnsaved(
@@ -20,11 +21,11 @@ data class ScrapreasonRowUnsaved(
     */
   val scrapreasonid: Defaulted<ScrapreasonId> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     scrapreasonidDefault: () -> ScrapreasonId,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): ScrapreasonRow = ScrapreasonRow(scrapreasonid = scrapreasonid.getOrElse(scrapreasonidDefault), name = name, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -33,6 +34,6 @@ data class ScrapreasonRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(ScrapreasonId.pgType.pgText()).unsafeEncode(row.scrapreasonid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

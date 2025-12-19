@@ -7,9 +7,9 @@ package adventureworks.production.location
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -32,13 +32,13 @@ data class LocationRowUnsaved(
     */
   val availability: Defaulted<BigDecimal> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     locationidDefault: () -> LocationId,
     costrateDefault: () -> BigDecimal,
     availabilityDefault: () -> BigDecimal,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): LocationRow = LocationRow(locationid = locationid.getOrElse(locationidDefault), name = name, costrate = costrate.getOrElse(costrateDefault), availability = availability.getOrElse(availabilityDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -51,6 +51,6 @@ data class LocationRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.availability, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

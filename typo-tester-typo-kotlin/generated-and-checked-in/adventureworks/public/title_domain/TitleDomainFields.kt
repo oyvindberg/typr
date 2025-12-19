@@ -5,31 +5,32 @@
  */
 package adventureworks.public.title_domain
 
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.RowParser
 
 interface TitleDomainFields : FieldsExpr<TitleDomainRow> {
-  fun code(): IdField<TitleDomainId, TitleDomainRow>
+  abstract fun code(): IdField<TitleDomainId, TitleDomainRow>
 
-  override fun columns(): List<FieldLike<*, TitleDomainRow>>
+  abstract override fun columns(): List<FieldLike<*, TitleDomainRow>>
 
-  override fun rowParser(): RowParser<TitleDomainRow> = TitleDomainRow._rowParser
+  override fun rowParser(): RowParser<TitleDomainRow> = TitleDomainRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : TitleDomainFields, Relation<TitleDomainFields, TitleDomainRow> {
-      override fun code(): IdField<TitleDomainId, TitleDomainRow> = IdField<TitleDomainId, TitleDomainRow>(_path, "code", TitleDomainRow::code, Optional.empty(), Optional.of("text"), { row, value -> row.copy(code = value) }, TitleDomainId.pgType)
+    data class Impl(val _path: List<Path>) : TitleDomainFields, RelationStructure<TitleDomainFields, TitleDomainRow> {
+      override fun code(): IdField<TitleDomainId, TitleDomainRow> = IdField<TitleDomainId, TitleDomainRow>(_path, "code", TitleDomainRow::code, null, "text", { row, value -> row.copy(code = value) }, TitleDomainId.pgType)
 
-      override fun columns(): List<FieldLike<*, TitleDomainRow>> = listOf(this.code())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<TitleDomainFields, TitleDomainRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, TitleDomainRow>> = listOf(this.code().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<TitleDomainFields, TitleDomainRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

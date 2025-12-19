@@ -21,8 +21,9 @@ val rewriteColumnTypes = TypeOverride.relation {
 
 Options(
   pkg = "org.foo",
-  lang = LangScala(Dialect.Scala3, TypeSupportScala),
+  lang = LangScala.scalaDsl(Dialect.Scala3, TypeSupportScala),
   dbLib = None,
+  jsonLibs = Nil,
   typeOverride = rewriteColumnTypes
 )
 ```

@@ -5,15 +5,15 @@
  */
 package adventureworks.person_detail
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import java.sql.Connection
+import java.time.LocalDateTime
 import kotlin.collections.List
 
 interface PersonDetailSqlRepo {
-  fun apply(
+  abstract fun apply(
     businessentityid: /* user-picked */ BusinessentityId,
-    modifiedAfter: TypoLocalDateTime,
+    modifiedAfter: LocalDateTime,
     c: Connection
   ): List<PersonDetailSqlRow>
 }

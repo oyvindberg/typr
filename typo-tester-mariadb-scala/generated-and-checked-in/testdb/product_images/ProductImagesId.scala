@@ -6,15 +6,15 @@
 package testdb.product_images
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
 import typo.runtime.MariaType
-import typo.runtime.MariaTypes
+import typo.scaladsl.Bijection
+import typo.scaladsl.ScalaDbTypes
 
 /** Type for the primary key of table `product_images` */
-case class ProductImagesId(@JsonValue value: java.lang.Long) extends scala.AnyVal
+case class ProductImagesId(@JsonValue value: Long) extends scala.AnyVal
 
 object ProductImagesId {
-  given bijection: Bijection[ProductImagesId, java.lang.Long] = Bijection.apply[ProductImagesId, java.lang.Long](_.value)(ProductImagesId.apply)
+  given bijection: Bijection[ProductImagesId, Long] = Bijection.apply[ProductImagesId, Long](_.value)(ProductImagesId.apply)
 
-  given pgType: MariaType[ProductImagesId] = MariaTypes.bigint.bimap(ProductImagesId.apply, _.value)
+  given pgType: MariaType[ProductImagesId] = ScalaDbTypes.MariaTypes.intUnsigned.bimap(ProductImagesId.apply, _.value)
 }

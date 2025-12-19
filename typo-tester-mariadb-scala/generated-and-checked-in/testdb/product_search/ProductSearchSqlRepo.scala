@@ -6,14 +6,13 @@
 package testdb.product_search
 
 import java.sql.Connection
-import java.util.Optional
 
 trait ProductSearchSqlRepo {
   def apply(
-    brandId: Optional[Integer],
-    minPrice: Optional[java.math.BigDecimal],
-    maxPrice: Optional[java.math.BigDecimal],
-    status: Optional[String],
-    limit: java.lang.Long
-  )(using c: Connection): java.util.List[ProductSearchSqlRow]
+    brandId: Option[Int],
+    minPrice: Option[BigDecimal],
+    maxPrice: Option[BigDecimal],
+    status: Option[String],
+    limit: Long
+  )(using c: Connection): List[ProductSearchSqlRow]
 }

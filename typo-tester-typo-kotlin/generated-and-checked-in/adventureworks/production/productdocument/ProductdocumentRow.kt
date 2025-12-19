@@ -6,12 +6,13 @@
 package adventureworks.production.productdocument
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: production.productdocument
   * Cross-reference table mapping products to related product documents.
@@ -23,7 +24,7 @@ data class ProductdocumentRow(
     */
   val productid: ProductId,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime,
+  val modifieddate: LocalDateTime,
   /** Document identification number. Foreign key to Document.DocumentNode.
     * Default: '/'::character varying
     * Points to [adventureworks.production.document.DocumentRow.documentnode]
@@ -36,18 +37,18 @@ data class ProductdocumentRow(
 
   fun toUnsavedRow(
     documentnode: Defaulted<DocumentId>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): ProductdocumentRowUnsaved = ProductdocumentRowUnsaved(productid, modifieddate, documentnode)
 
   companion object {
-    val _rowParser: RowParser<ProductdocumentRow> = RowParsers.of(ProductId.pgType, TypoLocalDateTime.pgType, DocumentId.pgType, { t0, t1, t2 -> ProductdocumentRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.productid, row.modifieddate, row.documentnode) })
+    val _rowParser: RowParser<ProductdocumentRow> = RowParsers.of(ProductId.pgType, PgTypes.timestamp, DocumentId.pgType, { t0, t1, t2 -> ProductdocumentRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.productid, row.modifieddate, row.documentnode) })
 
     fun apply(
       compositeId: ProductdocumentId,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): ProductdocumentRow = ProductdocumentRow(compositeId.productid, modifieddate, compositeId.documentnode)
 
     val pgText: PgText<ProductdocumentRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

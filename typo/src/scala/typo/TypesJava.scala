@@ -37,7 +37,6 @@ object TypesJava {
     val Inet4 = Qualified("typo.data.maria.Inet4")
     val Inet6 = Qualified("typo.data.maria.Inet6")
     val MariaSet = Qualified("typo.data.maria.MariaSet")
-    // Spatial types from MariaDB Connector/J
     val Geometry = Qualified("org.mariadb.jdbc.type.Geometry")
     val Point = Qualified("org.mariadb.jdbc.type.Point")
     val LineString = Qualified("org.mariadb.jdbc.type.LineString")
@@ -56,6 +55,7 @@ object TypesJava {
   val Boolean = Qualified("java.lang.Boolean")
   val Byte = Qualified("java.lang.Byte")
   val BytePrimitive = jvm.Type.Primitive("byte") // Java primitive byte
+  val FloatPrimitive = jvm.Type.Primitive("float") // Java primitive float
   val ByteArrays = Qualified("typo.runtime.ByteArrays")
   val Character = Qualified("java.lang.Character")
   val ChronoField = jvm.Type.Qualified("java.time.temporal.ChronoField")
@@ -111,6 +111,7 @@ object TypesJava {
   val Supplier = Qualified("java.util.function.Supplier")
   val Throwable = jvm.Type.Qualified("java.lang.Throwable")
   val UUID = Qualified("java.util.UUID")
+  val Void = Qualified("java.lang.Void")
   val Year = Qualified("java.time.Year")
   val ZoneOffset = Qualified("java.time.ZoneOffset")
 }

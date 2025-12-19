@@ -8,6 +8,7 @@ package testdb.customer_status
 import com.fasterxml.jackson.annotation.JsonProperty
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -30,6 +31,6 @@ data class CustomerStatusRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.varchar.mariaText().unsafeEncode(row.description, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb) })
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isActive, sb) })
   }
 }

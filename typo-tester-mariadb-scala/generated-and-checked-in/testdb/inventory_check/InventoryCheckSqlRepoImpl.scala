@@ -7,17 +7,19 @@ package testdb.inventory_check
 
 import java.math.BigInteger
 import java.sql.Connection
-import java.util.Optional
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Fragment
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.Fragment.sql
 
 class InventoryCheckSqlRepoImpl extends InventoryCheckSqlRepo {
   override def apply(
-    warehouseId: Optional[java.lang.Short],
-    productId: Optional[BigInteger],
-    lowStockOnly: Optional[/* user-picked */ java.lang.Boolean]
-  )(using c: Connection): java.util.List[InventoryCheckSqlRow] = {
-    interpolate"""-- Check inventory levels across warehouses
+    warehouseId: Option[Short],
+    productId: Option[BigInteger],
+    lowStockOnly: Option[Boolean]
+  )(using c: Connection): List[InventoryCheckSqlRow] = {
+    sql"""-- Check inventory levels across warehouses
     SELECT i.inventory_id,
            p.product_id,
            p.sku,
@@ -33,9 +35,9 @@ class InventoryCheckSqlRepoImpl extends InventoryCheckSqlRepo {
     FROM inventory i
     JOIN products p ON i.product_id = p.product_id
     JOIN warehouses w ON i.warehouse_id = w.warehouse_id
-    WHERE (${MariaTypes.smallint.opt().encode(warehouseId)} IS NULL OR i.warehouse_id = ${MariaTypes.smallint.opt().encode(warehouseId)})
-      AND (${MariaTypes.bigintUnsigned.opt().encode(productId)} IS NULL OR i.product_id = ${MariaTypes.bigintUnsigned.opt().encode(productId)})
-      AND (${MariaTypes.bool.opt().encode(lowStockOnly)} IS NULL OR (i.quantity_on_hand - i.quantity_reserved) <= i.reorder_point)
+    WHERE (${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned.nullable, warehouseId)} IS NULL OR i.warehouse_id = ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned.nullable, warehouseId)})
+      AND (${Fragment.encode(MariaTypes.bigintUnsigned.nullable, productId)} IS NULL OR i.product_id = ${Fragment.encode(MariaTypes.bigintUnsigned.nullable, productId)})
+      AND (${Fragment.encode(ScalaDbTypes.MariaTypes.bool.nullable, lowStockOnly)} IS NULL OR (i.quantity_on_hand - i.quantity_reserved) <= i.reorder_point)
     """.query(InventoryCheckSqlRow.`_rowParser`.all()).runUnchecked(c)
   }
 }

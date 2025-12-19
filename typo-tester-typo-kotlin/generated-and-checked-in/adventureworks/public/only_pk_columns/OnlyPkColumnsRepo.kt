@@ -6,72 +6,71 @@
 package adventureworks.public.only_pk_columns
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface OnlyPkColumnsRepo {
-  fun delete(): DeleteBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow>
+  abstract fun delete(): DeleteBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: OnlyPkColumnsId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<OnlyPkColumnsId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: OnlyPkColumnsRow,
     c: Connection
   ): OnlyPkColumnsRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<OnlyPkColumnsRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<OnlyPkColumnsRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow>
+  abstract fun select(): SelectBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow>
 
-  fun selectAll(c: Connection): List<OnlyPkColumnsRow>
+  abstract fun selectAll(c: Connection): List<OnlyPkColumnsRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: OnlyPkColumnsId,
     c: Connection
-  ): Optional<OnlyPkColumnsRow>
+  ): OnlyPkColumnsRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<OnlyPkColumnsId>,
     c: Connection
   ): List<OnlyPkColumnsRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<OnlyPkColumnsId>,
     c: Connection
   ): Map<OnlyPkColumnsId, OnlyPkColumnsRow>
 
-  fun update(): UpdateBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow>
+  abstract fun update(): UpdateBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow>
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: OnlyPkColumnsRow,
     c: Connection
   ): OnlyPkColumnsRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<OnlyPkColumnsRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<OnlyPkColumnsRow>,
     c: Connection
   ): List<OnlyPkColumnsRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<OnlyPkColumnsRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<OnlyPkColumnsRow>,
     batchSize: Int,
     c: Connection
   ): Int

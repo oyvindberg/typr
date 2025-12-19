@@ -5,16 +5,15 @@
  */
 package adventureworks.pu.v
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.AccountNumber
 import adventureworks.public.Flag
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pu.v */
 data class VViewRow(
@@ -27,17 +26,17 @@ data class VViewRow(
   /** Points to [adventureworks.purchasing.vendor.VendorRow.name] */
   val name: Name,
   /** Points to [adventureworks.purchasing.vendor.VendorRow.creditrating] */
-  val creditrating: TypoShort,
+  val creditrating: Short,
   /** Points to [adventureworks.purchasing.vendor.VendorRow.preferredvendorstatus] */
   val preferredvendorstatus: Flag,
   /** Points to [adventureworks.purchasing.vendor.VendorRow.activeflag] */
   val activeflag: Flag,
   /** Points to [adventureworks.purchasing.vendor.VendorRow.purchasingwebserviceurl] */
-  val purchasingwebserviceurl: Optional</* max 1024 chars */ String>,
+  val purchasingwebserviceurl: String,
   /** Points to [adventureworks.purchasing.vendor.VendorRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<VViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, AccountNumber.pgType, Name.pgType, TypoShort.pgType, Flag.pgType, Flag.pgType, PgTypes.text.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> VViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.accountnumber, row.name, row.creditrating, row.preferredvendorstatus, row.activeflag, row.purchasingwebserviceurl, row.modifieddate) })
+    val _rowParser: RowParser<VViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, AccountNumber.pgType, Name.pgType, KotlinDbTypes.PgTypes.int2, Flag.pgType, Flag.pgType, PgTypes.text, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> VViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.accountnumber, row.name, row.creditrating, row.preferredvendorstatus, row.activeflag, row.purchasingwebserviceurl, row.modifieddate) })
   }
 }

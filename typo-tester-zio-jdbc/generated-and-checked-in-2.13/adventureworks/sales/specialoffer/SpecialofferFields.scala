@@ -8,18 +8,18 @@ package adventureworks.sales.specialoffer
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait SpecialofferFields {
   def specialofferid: IdField[SpecialofferId, SpecialofferRow]
-  def description: Field[/* max 255 chars */ String, SpecialofferRow]
+  def description: Field[String, SpecialofferRow]
   def discountpct: Field[BigDecimal, SpecialofferRow]
-  def `type`: Field[/* max 50 chars */ String, SpecialofferRow]
-  def category: Field[/* max 50 chars */ String, SpecialofferRow]
+  def `type`: Field[String, SpecialofferRow]
+  def category: Field[String, SpecialofferRow]
   def startdate: Field[TypoLocalDateTime, SpecialofferRow]
   def enddate: Field[TypoLocalDateTime, SpecialofferRow]
   def minqty: Field[Int, SpecialofferRow]
@@ -29,18 +29,18 @@ trait SpecialofferFields {
 }
 
 object SpecialofferFields {
-  lazy val structure: Relation[SpecialofferFields, SpecialofferRow] =
+  lazy val structure: RelationStructure[SpecialofferFields, SpecialofferRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SpecialofferFields, SpecialofferRow] {
+    extends RelationStructure[SpecialofferFields, SpecialofferRow] {
 
     override lazy val fields: SpecialofferFields = new SpecialofferFields {
       override def specialofferid = IdField[SpecialofferId, SpecialofferRow](_path, "specialofferid", None, Some("int4"), x => x.specialofferid, (row, value) => row.copy(specialofferid = value))
-      override def description = Field[/* max 255 chars */ String, SpecialofferRow](_path, "description", None, None, x => x.description, (row, value) => row.copy(description = value))
+      override def description = Field[String, SpecialofferRow](_path, "description", None, None, x => x.description, (row, value) => row.copy(description = value))
       override def discountpct = Field[BigDecimal, SpecialofferRow](_path, "discountpct", None, Some("numeric"), x => x.discountpct, (row, value) => row.copy(discountpct = value))
-      override def `type` = Field[/* max 50 chars */ String, SpecialofferRow](_path, "type", None, None, x => x.`type`, (row, value) => row.copy(`type` = value))
-      override def category = Field[/* max 50 chars */ String, SpecialofferRow](_path, "category", None, None, x => x.category, (row, value) => row.copy(category = value))
+      override def `type` = Field[String, SpecialofferRow](_path, "type", None, None, x => x.`type`, (row, value) => row.copy(`type` = value))
+      override def category = Field[String, SpecialofferRow](_path, "category", None, None, x => x.category, (row, value) => row.copy(category = value))
       override def startdate = Field[TypoLocalDateTime, SpecialofferRow](_path, "startdate", Some("text"), Some("timestamp"), x => x.startdate, (row, value) => row.copy(startdate = value))
       override def enddate = Field[TypoLocalDateTime, SpecialofferRow](_path, "enddate", Some("text"), Some("timestamp"), x => x.enddate, (row, value) => row.copy(enddate = value))
       override def minqty = Field[Int, SpecialofferRow](_path, "minqty", None, Some("int4"), x => x.minqty, (row, value) => row.copy(minqty = value))

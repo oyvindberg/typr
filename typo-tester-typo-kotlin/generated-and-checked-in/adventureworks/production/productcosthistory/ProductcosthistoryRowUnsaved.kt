@@ -7,10 +7,10 @@ package adventureworks.production.productcosthistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -23,30 +23,30 @@ data class ProductcosthistoryRowUnsaved(
   /** Product cost start date.
     * Constraint CK_ProductCostHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Product cost end date.
     * Constraint CK_ProductCostHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val enddate: Optional<TypoLocalDateTime> = Optional.empty(),
+  val enddate: LocalDateTime? = null,
   /** Standard cost of the product.
     * Constraint CK_ProductCostHistory_StandardCost affecting columns standardcost:  ((standardcost >= 0.00))
     */
   val standardcost: BigDecimal,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
-  fun toRow(modifieddateDefault: () -> TypoLocalDateTime): ProductcosthistoryRow = ProductcosthistoryRow(productid = productid, startdate = startdate, enddate = enddate, standardcost = standardcost, modifieddate = modifieddate.getOrElse(modifieddateDefault))
+  fun toRow(modifieddateDefault: () -> LocalDateTime): ProductcosthistoryRow = ProductcosthistoryRow(productid = productid, startdate = startdate, enddate = enddate, standardcost = standardcost, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<ProductcosthistoryRowUnsaved> =
       PgText.instance({ row, sb -> ProductId.pgType.pgText().unsafeEncode(row.productid, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.startdate, sb)
+      PgTypes.timestamp.pgText().unsafeEncode(row.startdate, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.enddate, sb)
+      PgTypes.timestamp.nullable().pgText().unsafeEncode(row.enddate, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.numeric.pgText().unsafeEncode(row.standardcost, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

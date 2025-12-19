@@ -5,57 +5,59 @@
  */
 package adventureworks.production.productsubcategory
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryFields
 import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.production.productcategory.ProductcategoryRow
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface ProductsubcategoryFields : FieldsExpr<ProductsubcategoryRow> {
-  override fun columns(): List<FieldLike<*, ProductsubcategoryRow>>
+  abstract override fun columns(): List<FieldLike<*, ProductsubcategoryRow>>
 
-  fun fkProductcategory(): ForeignKey<ProductcategoryFields, ProductcategoryRow> = ForeignKey.of<ProductcategoryFields, ProductcategoryRow>("production.FK_ProductSubcategory_ProductCategory_ProductCategoryID").withColumnPair(productcategoryid(), ProductcategoryFields::productcategoryid)
+  fun fkProductcategory(): ForeignKey<ProductcategoryFields, ProductcategoryRow> = ForeignKey.of<ProductcategoryFields, ProductcategoryRow>("production.FK_ProductSubcategory_ProductCategory_ProductCategoryID").withColumnPair<ProductcategoryId>(productcategoryid(), ProductcategoryFields::productcategoryid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, ProductsubcategoryRow>
+  abstract fun modifieddate(): Field<LocalDateTime, ProductsubcategoryRow>
 
-  fun name(): Field<Name, ProductsubcategoryRow>
+  abstract fun name(): Field<Name, ProductsubcategoryRow>
 
-  fun productcategoryid(): Field<ProductcategoryId, ProductsubcategoryRow>
+  abstract fun productcategoryid(): Field<ProductcategoryId, ProductsubcategoryRow>
 
-  fun productsubcategoryid(): IdField<ProductsubcategoryId, ProductsubcategoryRow>
+  abstract fun productsubcategoryid(): IdField<ProductsubcategoryId, ProductsubcategoryRow>
 
-  override fun rowParser(): RowParser<ProductsubcategoryRow> = ProductsubcategoryRow._rowParser
+  override fun rowParser(): RowParser<ProductsubcategoryRow> = ProductsubcategoryRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, ProductsubcategoryRow>
+  abstract fun rowguid(): Field<UUID, ProductsubcategoryRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductsubcategoryFields, Relation<ProductsubcategoryFields, ProductsubcategoryRow> {
-      override fun productsubcategoryid(): IdField<ProductsubcategoryId, ProductsubcategoryRow> = IdField<ProductsubcategoryId, ProductsubcategoryRow>(_path, "productsubcategoryid", ProductsubcategoryRow::productsubcategoryid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productsubcategoryid = value) }, ProductsubcategoryId.pgType)
+    data class Impl(val _path: List<Path>) : ProductsubcategoryFields, RelationStructure<ProductsubcategoryFields, ProductsubcategoryRow> {
+      override fun productsubcategoryid(): IdField<ProductsubcategoryId, ProductsubcategoryRow> = IdField<ProductsubcategoryId, ProductsubcategoryRow>(_path, "productsubcategoryid", ProductsubcategoryRow::productsubcategoryid, null, "int4", { row, value -> row.copy(productsubcategoryid = value) }, ProductsubcategoryId.pgType)
 
-      override fun productcategoryid(): Field<ProductcategoryId, ProductsubcategoryRow> = Field<ProductcategoryId, ProductsubcategoryRow>(_path, "productcategoryid", ProductsubcategoryRow::productcategoryid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productcategoryid = value) }, ProductcategoryId.pgType)
+      override fun productcategoryid(): Field<ProductcategoryId, ProductsubcategoryRow> = Field<ProductcategoryId, ProductsubcategoryRow>(_path, "productcategoryid", ProductsubcategoryRow::productcategoryid, null, "int4", { row, value -> row.copy(productcategoryid = value) }, ProductcategoryId.pgType)
 
-      override fun name(): Field<Name, ProductsubcategoryRow> = Field<Name, ProductsubcategoryRow>(_path, "name", ProductsubcategoryRow::name, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, ProductsubcategoryRow> = Field<Name, ProductsubcategoryRow>(_path, "name", ProductsubcategoryRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun rowguid(): Field<TypoUUID, ProductsubcategoryRow> = Field<TypoUUID, ProductsubcategoryRow>(_path, "rowguid", ProductsubcategoryRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, ProductsubcategoryRow> = Field<UUID, ProductsubcategoryRow>(_path, "rowguid", ProductsubcategoryRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, ProductsubcategoryRow> = Field<TypoLocalDateTime, ProductsubcategoryRow>(_path, "modifieddate", ProductsubcategoryRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, ProductsubcategoryRow> = Field<LocalDateTime, ProductsubcategoryRow>(_path, "modifieddate", ProductsubcategoryRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, ProductsubcategoryRow>> = listOf(this.productsubcategoryid(), this.productcategoryid(), this.name(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ProductsubcategoryFields, ProductsubcategoryRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ProductsubcategoryRow>> = listOf(this.productsubcategoryid().underlying, this.productcategoryid().underlying, this.name().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ProductsubcategoryFields, ProductsubcategoryRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

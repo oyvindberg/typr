@@ -36,7 +36,7 @@ case class PohViewRow(
   /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.orderdate]] */
   orderdate: TypoLocalDateTime,
   /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.shipdate]] */
-  shipdate: Option[TypoLocalDateTime],
+  shipdate: TypoLocalDateTime,
   /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.subtotal]] */
   subtotal: BigDecimal,
   /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.taxamt]] */
@@ -61,7 +61,7 @@ object PohViewRow {
             vendorid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             shipmethodid = ShipmethodId.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
             orderdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
-            shipdate = JdbcDecoder.optionDecoder(using TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 8, rs)._2,
+            shipdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2,
             subtotal = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 9, rs)._2,
             taxamt = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 10, rs)._2,
             freight = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 11, rs)._2,
@@ -80,7 +80,7 @@ object PohViewRow {
       val vendorid = jsonObj.get("vendorid").toRight("Missing field 'vendorid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
       val shipmethodid = jsonObj.get("shipmethodid").toRight("Missing field 'shipmethodid'").flatMap(_.as(using ShipmethodId.jsonDecoder))
       val orderdate = jsonObj.get("orderdate").toRight("Missing field 'orderdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
-      val shipdate = jsonObj.get("shipdate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDateTime.jsonDecoder)))
+      val shipdate = jsonObj.get("shipdate").toRight("Missing field 'shipdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       val subtotal = jsonObj.get("subtotal").toRight("Missing field 'subtotal'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
       val taxamt = jsonObj.get("taxamt").toRight("Missing field 'taxamt'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
       val freight = jsonObj.get("freight").toRight("Missing field 'freight'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
@@ -120,7 +120,7 @@ object PohViewRow {
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.orderdate, indent, out)
         out.write(",")
         out.write(""""shipdate":""")
-        JsonEncoder.option(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.shipdate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.shipdate, indent, out)
         out.write(",")
         out.write(""""subtotal":""")
         JsonEncoder.scalaBigDecimal.unsafeEncode(a.subtotal, indent, out)

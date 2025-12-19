@@ -1,4 +1,3 @@
 package typo.data;
 
-public record Record(String value) {
-}
+public record Record(String value) {}

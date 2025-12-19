@@ -122,7 +122,7 @@ trait SelectBuilder[Fields, Row] {
 object SelectBuilder {
   def of[Fields, Row](
       name: String,
-      structure: Structure.Relation[Fields, Row],
+      structure: RelationStructure[Fields, Row],
       rowParser: JdbcDecoder[Row]
   ): SelectBuilderSql[Fields, Row] =
     SelectBuilderSql.Relation(name, structure, rowParser, SelectParams.empty)

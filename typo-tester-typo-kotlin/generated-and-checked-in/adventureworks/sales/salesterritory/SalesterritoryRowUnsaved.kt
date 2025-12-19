@@ -7,11 +7,11 @@ package adventureworks.sales.salesterritory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Name
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.UUID
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -24,7 +24,7 @@ data class SalesterritoryRowUnsaved(
     */
   val countryregioncode: CountryregionId,
   /** Geographic area to which the sales territory belong. */
-  val group: /* max 50 chars */ String,
+  val group: String,
   /** Default: nextval('sales.salesterritory_territoryid_seq'::regclass)
     * Primary key for SalesTerritory records.
     */
@@ -50,9 +50,9 @@ data class SalesterritoryRowUnsaved(
     */
   val costlastyear: Defaulted<BigDecimal> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     territoryidDefault: () -> SalesterritoryId,
@@ -60,8 +60,8 @@ data class SalesterritoryRowUnsaved(
     saleslastyearDefault: () -> BigDecimal,
     costytdDefault: () -> BigDecimal,
     costlastyearDefault: () -> BigDecimal,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): SalesterritoryRow = SalesterritoryRow(territoryid = territoryid.getOrElse(territoryidDefault), name = name, countryregioncode = countryregioncode, group = group, salesytd = salesytd.getOrElse(salesytdDefault), saleslastyear = saleslastyear.getOrElse(saleslastyearDefault), costytd = costytd.getOrElse(costytdDefault), costlastyear = costlastyear.getOrElse(costlastyearDefault), rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -82,8 +82,8 @@ data class SalesterritoryRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.costlastyear, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

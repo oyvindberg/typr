@@ -5,37 +5,38 @@
  */
 package testdb.mariatest_identity
 
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
 
 interface MariatestIdentityFields : FieldsExpr<MariatestIdentityRow> {
-  override fun columns(): List<FieldLike<*, MariatestIdentityRow>>
+  abstract override fun columns(): List<FieldLike<*, MariatestIdentityRow>>
 
-  fun id(): IdField<MariatestIdentityId, MariatestIdentityRow>
+  abstract fun id(): IdField<MariatestIdentityId, MariatestIdentityRow>
 
-  fun name(): Field<String, MariatestIdentityRow>
+  abstract fun name(): Field<String, MariatestIdentityRow>
 
-  override fun rowParser(): RowParser<MariatestIdentityRow> = MariatestIdentityRow._rowParser
+  override fun rowParser(): RowParser<MariatestIdentityRow> = MariatestIdentityRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : MariatestIdentityFields, Relation<MariatestIdentityFields, MariatestIdentityRow> {
-      override fun id(): IdField<MariatestIdentityId, MariatestIdentityRow> = IdField<MariatestIdentityId, MariatestIdentityRow>(_path, "id", MariatestIdentityRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, MariatestIdentityId.pgType)
+    data class Impl(val _path: List<Path>) : MariatestIdentityFields, RelationStructure<MariatestIdentityFields, MariatestIdentityRow> {
+      override fun id(): IdField<MariatestIdentityId, MariatestIdentityRow> = IdField<MariatestIdentityId, MariatestIdentityRow>(_path, "id", MariatestIdentityRow::id, null, null, { row, value -> row.copy(id = value) }, MariatestIdentityId.pgType)
 
-      override fun name(): Field<String, MariatestIdentityRow> = Field<String, MariatestIdentityRow>(_path, "name", MariatestIdentityRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, MariaTypes.varchar)
+      override fun name(): Field<String, MariatestIdentityRow> = Field<String, MariatestIdentityRow>(_path, "name", MariatestIdentityRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
 
-      override fun columns(): List<FieldLike<*, MariatestIdentityRow>> = listOf(this.id(), this.name())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<MariatestIdentityFields, MariatestIdentityRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, MariatestIdentityRow>> = listOf(this.id().underlying, this.name().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<MariatestIdentityFields, MariatestIdentityRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

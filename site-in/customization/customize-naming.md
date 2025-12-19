@@ -14,7 +14,7 @@ This is how it can be prettified in the generated scala code
 import typo.*
 import typo.internal.codegen.LangScala
 
-val lang = LangScala(Dialect.Scala3, TypeSupportScala)
+val lang = LangScala.scalaDsl(Dialect.Scala3, TypeSupportScala)
 
 val optsCustomId = Options(
   pkg = "org.foo",

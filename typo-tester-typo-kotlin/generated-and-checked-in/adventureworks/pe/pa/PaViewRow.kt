@@ -5,12 +5,12 @@
  */
 package adventureworks.pe.pa
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pe.pa */
 data class PaViewRow(
@@ -19,15 +19,15 @@ data class PaViewRow(
   /** Points to [adventureworks.person.password.PasswordRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Points to [adventureworks.person.password.PasswordRow.passwordhash] */
-  val passwordhash: /* max 128 chars */ String,
+  val passwordhash: String,
   /** Points to [adventureworks.person.password.PasswordRow.passwordsalt] */
-  val passwordsalt: /* max 10 chars */ String,
+  val passwordsalt: String,
   /** Points to [adventureworks.person.password.PasswordRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.person.password.PasswordRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PaViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.text, PgTypes.text, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> PaViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.passwordhash, row.passwordsalt, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<PaViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> PaViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.passwordhash, row.passwordsalt, row.rowguid, row.modifieddate) })
   }
 }

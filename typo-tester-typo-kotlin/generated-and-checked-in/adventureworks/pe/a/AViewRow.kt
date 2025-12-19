@@ -5,15 +5,13 @@
  */
 package adventureworks.pe.a
 
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.address.AddressId
 import adventureworks.person.stateprovince.StateprovinceId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pe.a */
 data class AViewRow(
@@ -22,23 +20,23 @@ data class AViewRow(
   /** Points to [adventureworks.person.address.AddressRow.addressid] */
   val addressid: AddressId,
   /** Points to [adventureworks.person.address.AddressRow.addressline1] */
-  val addressline1: /* max 60 chars */ String,
+  val addressline1: String,
   /** Points to [adventureworks.person.address.AddressRow.addressline2] */
-  val addressline2: Optional</* max 60 chars */ String>,
+  val addressline2: String,
   /** Points to [adventureworks.person.address.AddressRow.city] */
-  val city: /* max 30 chars */ String,
+  val city: String,
   /** Points to [adventureworks.person.address.AddressRow.stateprovinceid] */
   val stateprovinceid: StateprovinceId,
   /** Points to [adventureworks.person.address.AddressRow.postalcode] */
-  val postalcode: /* max 15 chars */ String,
+  val postalcode: String,
   /** Points to [adventureworks.person.address.AddressRow.spatiallocation] */
-  val spatiallocation: Optional<TypoBytea>,
+  val spatiallocation: ByteArray,
   /** Points to [adventureworks.person.address.AddressRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.person.address.AddressRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<AViewRow> = RowParsers.of(AddressId.pgType, AddressId.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, StateprovinceId.pgType, PgTypes.text, TypoBytea.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> AViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.id, row.addressid, row.addressline1, row.addressline2, row.city, row.stateprovinceid, row.postalcode, row.spatiallocation, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<AViewRow> = RowParsers.of(AddressId.pgType, AddressId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, StateprovinceId.pgType, PgTypes.text, PgTypes.bytea, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> AViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.id, row.addressid, row.addressline1, row.addressline2, row.city, row.stateprovinceid, row.postalcode, row.spatiallocation, row.rowguid, row.modifieddate) })
   }
 }

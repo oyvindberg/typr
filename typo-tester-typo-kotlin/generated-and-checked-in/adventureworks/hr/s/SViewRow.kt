@@ -5,12 +5,13 @@
  */
 package adventureworks.hr.s
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoLocalTime
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.public.Name
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import java.time.LocalTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: hr.s */
 data class SViewRow(
@@ -21,13 +22,13 @@ data class SViewRow(
   /** Points to [adventureworks.humanresources.shift.ShiftRow.name] */
   val name: Name,
   /** Points to [adventureworks.humanresources.shift.ShiftRow.starttime] */
-  val starttime: TypoLocalTime,
+  val starttime: LocalTime,
   /** Points to [adventureworks.humanresources.shift.ShiftRow.endtime] */
-  val endtime: TypoLocalTime,
+  val endtime: LocalTime,
   /** Points to [adventureworks.humanresources.shift.ShiftRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SViewRow> = RowParsers.of(ShiftId.pgType, ShiftId.pgType, Name.pgType, TypoLocalTime.pgType, TypoLocalTime.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> SViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.shiftid, row.name, row.starttime, row.endtime, row.modifieddate) })
+    val _rowParser: RowParser<SViewRow> = RowParsers.of(ShiftId.pgType, ShiftId.pgType, Name.pgType, PgTypes.time, PgTypes.time, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> SViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.id, row.shiftid, row.name, row.starttime, row.endtime, row.modifieddate) })
   }
 }

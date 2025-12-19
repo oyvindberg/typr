@@ -41,7 +41,7 @@ case class PohViewRow(
   /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.orderdate]] */
   orderdate: TypoLocalDateTime,
   /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.shipdate]] */
-  shipdate: Option[TypoLocalDateTime],
+  shipdate: TypoLocalDateTime,
   /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.subtotal]] */
   subtotal: BigDecimal,
   /** Points to [[adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.taxamt]] */
@@ -65,7 +65,7 @@ object PohViewRow {
             vendorid = json.\("vendorid").as(BusinessentityId.reads),
             shipmethodid = json.\("shipmethodid").as(ShipmethodId.reads),
             orderdate = json.\("orderdate").as(TypoLocalDateTime.reads),
-            shipdate = json.\("shipdate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            shipdate = json.\("shipdate").as(TypoLocalDateTime.reads),
             subtotal = json.\("subtotal").as(Reads.bigDecReads),
             taxamt = json.\("taxamt").as(Reads.bigDecReads),
             freight = json.\("freight").as(Reads.bigDecReads),
@@ -88,7 +88,7 @@ object PohViewRow {
           vendorid = row(idx + 5)(using BusinessentityId.column),
           shipmethodid = row(idx + 6)(using ShipmethodId.column),
           orderdate = row(idx + 7)(using TypoLocalDateTime.column),
-          shipdate = row(idx + 8)(using Column.columnToOption(using TypoLocalDateTime.column)),
+          shipdate = row(idx + 8)(using TypoLocalDateTime.column),
           subtotal = row(idx + 9)(using Column.columnToScalaBigDecimal),
           taxamt = row(idx + 10)(using Column.columnToScalaBigDecimal),
           freight = row(idx + 11)(using Column.columnToScalaBigDecimal),
@@ -109,7 +109,7 @@ object PohViewRow {
         "vendorid" -> BusinessentityId.writes.writes(o.vendorid),
         "shipmethodid" -> ShipmethodId.writes.writes(o.shipmethodid),
         "orderdate" -> TypoLocalDateTime.writes.writes(o.orderdate),
-        "shipdate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.shipdate),
+        "shipdate" -> TypoLocalDateTime.writes.writes(o.shipdate),
         "subtotal" -> Writes.BigDecimalWrites.writes(o.subtotal),
         "taxamt" -> Writes.BigDecimalWrites.writes(o.taxamt),
         "freight" -> Writes.BigDecimalWrites.writes(o.freight),

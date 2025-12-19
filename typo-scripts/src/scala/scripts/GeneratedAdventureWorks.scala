@@ -3,8 +3,9 @@ package scripts
 import bleep.{FileWatching, cli}
 import ryddig.{Formatter, LogLevel, LogPatterns, Loggers}
 import typo.*
-import typo.internal.pg.OpenEnum
 import typo.internal.codegen.*
+import typo.internal.external.{ExternalTools, ExternalToolsConfig}
+import typo.internal.pg.OpenEnum
 import typo.internal.sqlfiles.SqlFileReader
 import typo.internal.{FileSync, generate}
 
@@ -28,7 +29,8 @@ object GeneratedAdventureWorks {
         val scriptsPath = buildDir.resolve("adventureworks_sql")
         val selector = Selector.ExcludePostgresInternal and !Selector.schemas("frontpage")
         val typoLogger = TypoLogger.Console
-        val metadb = Await.result(MetaDb.fromDb(typoLogger, ds, selector, schemaMode = SchemaMode.MultiSchema), Duration.Inf)
+        val externalTools = ExternalTools.init(typoLogger, ExternalToolsConfig.default)
+        val metadb = Await.result(MetaDb.fromDb(typoLogger, ds, selector, schemaMode = SchemaMode.MultiSchema, externalTools), Duration.Inf)
         val openEnumSelector = Selector.relationNames("title", "title_domain", "issue142")
         val relationNameToOpenEnum = Await.result(
           OpenEnum.find(
@@ -41,19 +43,20 @@ object GeneratedAdventureWorks {
           Duration.Inf
         )
         val variants: Seq[(Lang, DbLibName, JsonLibName, String, String)] = List(
-          (LangScala(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.Anorm, JsonLibName.PlayJson, "typo-tester-anorm", "-2.13"),
-          (LangScala(Dialect.Scala3, TypeSupportScala), DbLibName.Anorm, JsonLibName.PlayJson, "typo-tester-anorm", "-3"),
-          (LangScala(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.Doobie, JsonLibName.Circe, "typo-tester-doobie", "-2.13"),
-          (LangScala(Dialect.Scala3, TypeSupportScala), DbLibName.Doobie, JsonLibName.Circe, "typo-tester-doobie", "-3"),
-          (LangScala(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.ZioJdbc, JsonLibName.ZioJson, "typo-tester-zio-jdbc", "-2.13"),
-          (LangScala(Dialect.Scala3, TypeSupportScala), DbLibName.ZioJdbc, JsonLibName.ZioJson, "typo-tester-zio-jdbc", "-3"),
+          (LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.Anorm, JsonLibName.PlayJson, "typo-tester-anorm", "-2.13"),
+          (LangScala.javaDsl(Dialect.Scala3, TypeSupportScala), DbLibName.Anorm, JsonLibName.PlayJson, "typo-tester-anorm", "-3"),
+          (LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.Doobie, JsonLibName.Circe, "typo-tester-doobie", "-2.13"),
+          (LangScala.javaDsl(Dialect.Scala3, TypeSupportScala), DbLibName.Doobie, JsonLibName.Circe, "typo-tester-doobie", "-3"),
+          (LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala), DbLibName.ZioJdbc, JsonLibName.ZioJson, "typo-tester-zio-jdbc", "-2.13"),
+          (LangScala.javaDsl(Dialect.Scala3, TypeSupportScala), DbLibName.ZioJdbc, JsonLibName.ZioJson, "typo-tester-zio-jdbc", "-3"),
           (LangJava, DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-java", ""),
-          (LangScala(Dialect.Scala3, TypeSupportJava), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-scala", ""),
-          (LangKotlin, DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-kotlin", "")
+          (LangScala.javaDsl(Dialect.Scala3, TypeSupportJava), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-scala-old", ""),
+          (LangScala.scalaDsl(Dialect.Scala3, TypeSupportScala), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-scala-new", ""),
+          (LangKotlin(TypeSupportKotlin), DbLibName.Typo, JsonLibName.Jackson, "typo-tester-typo-kotlin", "")
         )
 
         def go(): Unit = {
-          val newSqlScripts = Await.result(SqlFileReader(typoLogger, scriptsPath, ds), Duration.Inf)
+          val newSqlScripts = Await.result(SqlFileReader(typoLogger, scriptsPath, ds, externalTools), Duration.Inf)
 
           variants.foreach { case (lang, dbLib, jsonLib, projectPath, suffix) =>
             val options = Options(

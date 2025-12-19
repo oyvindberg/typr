@@ -6,30 +6,30 @@
 package testdb.customer_addresses
 
 import java.time.LocalDateTime
-import java.util.Optional
 import org.mariadb.jdbc.`type`.Point
 import testdb.customers.CustomersFields
 import testdb.customers.CustomersId
 import testdb.customers.CustomersRow
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait CustomerAddressesFields extends FieldsExpr[CustomerAddressesRow] {
+trait CustomerAddressesFields extends FieldsExpr0[CustomerAddressesRow] {
   def addressId: IdField[CustomerAddressesId, CustomerAddressesRow]
 
   def customerId: Field[CustomersId, CustomerAddressesRow]
 
   def addressType: Field[String, CustomerAddressesRow]
 
-  def isDefault: Field[java.lang.Boolean, CustomerAddressesRow]
+  def isDefault: Field[Boolean, CustomerAddressesRow]
 
   def recipientName: Field[String, CustomerAddressesRow]
 
@@ -51,23 +51,23 @@ trait CustomerAddressesFields extends FieldsExpr[CustomerAddressesRow] {
 
   def createdAt: Field[LocalDateTime, CustomerAddressesRow]
 
-  def fkCustomers: ForeignKey[CustomersFields, CustomersRow] = ForeignKey.of[CustomersFields, CustomersRow]("fk_address_customer").withColumnPair(customerId, _.customerId)
+  def fkCustomers: ForeignKey[CustomersFields, CustomersRow] = ForeignKey.of[CustomersFields, CustomersRow]("fk_address_customer").withColumnPair[CustomersId](customerId, _.customerId)
 
   override def columns: java.util.List[FieldLike[?, CustomerAddressesRow]]
 
-  override def rowParser: RowParser[CustomerAddressesRow] = CustomerAddressesRow._rowParser
+  override def rowParser: RowParser[CustomerAddressesRow] = CustomerAddressesRow._rowParser.underlying
 }
 
 object CustomerAddressesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CustomerAddressesFields with Relation[CustomerAddressesFields, CustomerAddressesRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends CustomerAddressesFields with RelationStructure[CustomerAddressesFields, CustomerAddressesRow] {
 
     override def addressId: IdField[CustomerAddressesId, CustomerAddressesRow] = {
       new IdField[CustomerAddressesId, CustomerAddressesRow](
         _path,
         "address_id",
         _.addressId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(addressId = value),
         CustomerAddressesId.pgType
       )
@@ -78,8 +78,8 @@ object CustomerAddressesFields {
         _path,
         "customer_id",
         _.customerId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(customerId = value),
         CustomersId.pgType
       )
@@ -90,22 +90,22 @@ object CustomerAddressesFields {
         _path,
         "address_type",
         _.addressType,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(addressType = value),
         MariaTypes.text
       )
     }
 
-    override def isDefault: Field[java.lang.Boolean, CustomerAddressesRow] = {
-      new Field[java.lang.Boolean, CustomerAddressesRow](
+    override def isDefault: Field[Boolean, CustomerAddressesRow] = {
+      new Field[Boolean, CustomerAddressesRow](
         _path,
         "is_default",
         _.isDefault,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isDefault = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
@@ -114,8 +114,8 @@ object CustomerAddressesFields {
         _path,
         "recipient_name",
         _.recipientName,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(recipientName = value),
         MariaTypes.varchar
       )
@@ -126,8 +126,8 @@ object CustomerAddressesFields {
         _path,
         "street_line1",
         _.streetLine1,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(streetLine1 = value),
         MariaTypes.varchar
       )
@@ -138,8 +138,8 @@ object CustomerAddressesFields {
         _path,
         "street_line2",
         _.streetLine2,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(streetLine2 = value),
         MariaTypes.varchar
       )
@@ -150,8 +150,8 @@ object CustomerAddressesFields {
         _path,
         "city",
         _.city,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(city = value),
         MariaTypes.varchar
       )
@@ -162,8 +162,8 @@ object CustomerAddressesFields {
         _path,
         "state_province",
         _.stateProvince,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(stateProvince = value),
         MariaTypes.varchar
       )
@@ -174,8 +174,8 @@ object CustomerAddressesFields {
         _path,
         "postal_code",
         _.postalCode,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(postalCode = value),
         MariaTypes.varchar
       )
@@ -186,8 +186,8 @@ object CustomerAddressesFields {
         _path,
         "country_code",
         _.countryCode,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(countryCode = value),
         MariaTypes.char_
       )
@@ -198,8 +198,8 @@ object CustomerAddressesFields {
         _path,
         "location",
         _.location,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(location = value),
         MariaTypes.point
       )
@@ -210,8 +210,8 @@ object CustomerAddressesFields {
         _path,
         "delivery_notes",
         _.deliveryNotes,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(deliveryNotes = value),
         MariaTypes.tinytext
       )
@@ -222,17 +222,17 @@ object CustomerAddressesFields {
         _path,
         "created_at",
         _.createdAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(createdAt = value),
         MariaTypes.datetime
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, CustomerAddressesRow]] = java.util.List.of(this.addressId, this.customerId, this.addressType, this.isDefault, this.recipientName, this.streetLine1, this.streetLine2, this.city, this.stateProvince, this.postalCode, this.countryCode, this.location, this.deliveryNotes, this.createdAt)
+    override def columns: java.util.List[FieldLike[?, CustomerAddressesRow]] = java.util.List.of(this.addressId.underlying, this.customerId.underlying, this.addressType.underlying, this.isDefault.underlying, this.recipientName.underlying, this.streetLine1.underlying, this.streetLine2.underlying, this.city.underlying, this.stateProvince.underlying, this.postalCode.underlying, this.countryCode.underlying, this.location.underlying, this.deliveryNotes.underlying, this.createdAt.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[CustomerAddressesFields, CustomerAddressesRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomerAddressesFields, CustomerAddressesRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

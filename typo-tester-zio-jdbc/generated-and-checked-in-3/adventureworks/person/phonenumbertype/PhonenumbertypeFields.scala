@@ -8,10 +8,10 @@ package adventureworks.person.phonenumbertype
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait PhonenumbertypeFields {
   def phonenumbertypeid: IdField[PhonenumbertypeId, PhonenumbertypeRow]
@@ -20,11 +20,11 @@ trait PhonenumbertypeFields {
 }
 
 object PhonenumbertypeFields {
-  lazy val structure: Relation[PhonenumbertypeFields, PhonenumbertypeRow] =
+  lazy val structure: RelationStructure[PhonenumbertypeFields, PhonenumbertypeRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PhonenumbertypeFields, PhonenumbertypeRow] {
+    extends RelationStructure[PhonenumbertypeFields, PhonenumbertypeRow] {
 
     override lazy val fields: PhonenumbertypeFields = new PhonenumbertypeFields {
       override def phonenumbertypeid = IdField[PhonenumbertypeId, PhonenumbertypeRow](_path, "phonenumbertypeid", None, Some("int4"), x => x.phonenumbertypeid, (row, value) => row.copy(phonenumbertypeid = value))

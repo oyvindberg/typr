@@ -5,7 +5,6 @@
  */
 package testdb.product_categories
 
-import java.util.Optional
 import kotlin.collections.List
 import testdb.categories.CategoriesFields
 import testdb.categories.CategoriesId
@@ -14,54 +13,56 @@ import testdb.products.ProductsFields
 import testdb.products.ProductsId
 import testdb.products.ProductsRow
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
-import typo.runtime.MariaTypes
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.RowParser
 
 interface ProductCategoriesFields : FieldsExpr<ProductCategoriesRow> {
-  fun categoryId(): IdField<CategoriesId, ProductCategoriesRow>
+  abstract fun categoryId(): IdField<CategoriesId, ProductCategoriesRow>
 
-  override fun columns(): List<FieldLike<*, ProductCategoriesRow>>
+  abstract override fun columns(): List<FieldLike<*, ProductCategoriesRow>>
 
   fun compositeIdIn(compositeIds: List<ProductCategoriesId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<ProductsId, ProductCategoriesId, ProductCategoriesRow>(productId(), ProductCategoriesId::productId, ProductsId.pgType), Part<CategoriesId, ProductCategoriesId, ProductCategoriesRow>(categoryId(), ProductCategoriesId::categoryId, CategoriesId.pgType)), compositeIds)
 
   fun compositeIdIs(compositeId: ProductCategoriesId): SqlExpr<Boolean> = SqlExpr.all(productId().isEqual(compositeId.productId), categoryId().isEqual(compositeId.categoryId))
 
-  fun fkCategories(): ForeignKey<CategoriesFields, CategoriesRow> = ForeignKey.of<CategoriesFields, CategoriesRow>("fk_pc_category").withColumnPair(categoryId(), CategoriesFields::categoryId)
+  fun fkCategories(): ForeignKey<CategoriesFields, CategoriesRow> = ForeignKey.of<CategoriesFields, CategoriesRow>("fk_pc_category").withColumnPair<CategoriesId>(categoryId(), CategoriesFields::categoryId)
 
-  fun fkProducts(): ForeignKey<ProductsFields, ProductsRow> = ForeignKey.of<ProductsFields, ProductsRow>("fk_pc_product").withColumnPair(productId(), ProductsFields::productId)
+  fun fkProducts(): ForeignKey<ProductsFields, ProductsRow> = ForeignKey.of<ProductsFields, ProductsRow>("fk_pc_product").withColumnPair<ProductsId>(productId(), ProductsFields::productId)
 
-  fun isPrimary(): Field<Boolean, ProductCategoriesRow>
+  abstract fun isPrimary(): Field<Boolean, ProductCategoriesRow>
 
-  fun productId(): IdField<ProductsId, ProductCategoriesRow>
+  abstract fun productId(): IdField<ProductsId, ProductCategoriesRow>
 
-  override fun rowParser(): RowParser<ProductCategoriesRow> = ProductCategoriesRow._rowParser
+  override fun rowParser(): RowParser<ProductCategoriesRow> = ProductCategoriesRow._rowParser.underlying
 
-  fun sortOrder(): Field<Short, ProductCategoriesRow>
+  abstract fun sortOrder(): Field<Short, ProductCategoriesRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductCategoriesFields, Relation<ProductCategoriesFields, ProductCategoriesRow> {
-      override fun productId(): IdField<ProductsId, ProductCategoriesRow> = IdField<ProductsId, ProductCategoriesRow>(_path, "product_id", ProductCategoriesRow::productId, Optional.empty(), Optional.empty(), { row, value -> row.copy(productId = value) }, ProductsId.pgType)
+    data class Impl(val _path: List<Path>) : ProductCategoriesFields, RelationStructure<ProductCategoriesFields, ProductCategoriesRow> {
+      override fun productId(): IdField<ProductsId, ProductCategoriesRow> = IdField<ProductsId, ProductCategoriesRow>(_path, "product_id", ProductCategoriesRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.pgType)
 
-      override fun categoryId(): IdField<CategoriesId, ProductCategoriesRow> = IdField<CategoriesId, ProductCategoriesRow>(_path, "category_id", ProductCategoriesRow::categoryId, Optional.empty(), Optional.empty(), { row, value -> row.copy(categoryId = value) }, CategoriesId.pgType)
+      override fun categoryId(): IdField<CategoriesId, ProductCategoriesRow> = IdField<CategoriesId, ProductCategoriesRow>(_path, "category_id", ProductCategoriesRow::categoryId, null, null, { row, value -> row.copy(categoryId = value) }, CategoriesId.pgType)
 
-      override fun isPrimary(): Field<Boolean, ProductCategoriesRow> = Field<Boolean, ProductCategoriesRow>(_path, "is_primary", ProductCategoriesRow::isPrimary, Optional.empty(), Optional.empty(), { row, value -> row.copy(isPrimary = value) }, MariaTypes.bool)
+      override fun isPrimary(): Field<Boolean, ProductCategoriesRow> = Field<Boolean, ProductCategoriesRow>(_path, "is_primary", ProductCategoriesRow::isPrimary, null, null, { row, value -> row.copy(isPrimary = value) }, KotlinDbTypes.MariaTypes.bool)
 
-      override fun sortOrder(): Field<Short, ProductCategoriesRow> = Field<Short, ProductCategoriesRow>(_path, "sort_order", ProductCategoriesRow::sortOrder, Optional.empty(), Optional.empty(), { row, value -> row.copy(sortOrder = value) }, MariaTypes.smallint)
+      override fun sortOrder(): Field<Short, ProductCategoriesRow> = Field<Short, ProductCategoriesRow>(_path, "sort_order", ProductCategoriesRow::sortOrder, null, null, { row, value -> row.copy(sortOrder = value) }, KotlinDbTypes.MariaTypes.smallint)
 
-      override fun columns(): List<FieldLike<*, ProductCategoriesRow>> = listOf(this.productId(), this.categoryId(), this.isPrimary(), this.sortOrder())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ProductCategoriesFields, ProductCategoriesRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ProductCategoriesRow>> = listOf(this.productId().underlying, this.categoryId().underlying, this.isPrimary().underlying, this.sortOrder().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ProductCategoriesFields, ProductCategoriesRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

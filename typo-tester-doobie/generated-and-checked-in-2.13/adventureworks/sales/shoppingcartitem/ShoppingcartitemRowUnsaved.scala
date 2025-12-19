@@ -16,7 +16,7 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.shoppingcartitem` which has not been persisted yet */
 case class ShoppingcartitemRowUnsaved(
   /** Shopping cart identification number. */
-  shoppingcartid: /* max 50 chars */ String,
+  shoppingcartid: String,
   /** Product ordered. Foreign key to Product.ProductID.
    * Points to [[adventureworks.production.product.ProductRow.productid]]
    */
@@ -55,9 +55,9 @@ case class ShoppingcartitemRowUnsaved(
 }
 
 object ShoppingcartitemRowUnsaved {
-  implicit lazy val decoder: Decoder[ShoppingcartitemRowUnsaved] = Decoder.forProduct6[ShoppingcartitemRowUnsaved, /* max 50 chars */ String, ProductId, Defaulted[ShoppingcartitemId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate")(ShoppingcartitemRowUnsaved.apply)(Decoder.decodeString, ProductId.decoder, Defaulted.decoder(ShoppingcartitemId.decoder), Defaulted.decoder(Decoder.decodeInt), Defaulted.decoder(TypoLocalDateTime.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
+  implicit lazy val decoder: Decoder[ShoppingcartitemRowUnsaved] = Decoder.forProduct6[ShoppingcartitemRowUnsaved, String, ProductId, Defaulted[ShoppingcartitemId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate")(ShoppingcartitemRowUnsaved.apply)(Decoder.decodeString, ProductId.decoder, Defaulted.decoder(ShoppingcartitemId.decoder), Defaulted.decoder(Decoder.decodeInt), Defaulted.decoder(TypoLocalDateTime.decoder), Defaulted.decoder(TypoLocalDateTime.decoder))
 
-  implicit lazy val encoder: Encoder[ShoppingcartitemRowUnsaved] = Encoder.forProduct6[ShoppingcartitemRowUnsaved, /* max 50 chars */ String, ProductId, Defaulted[ShoppingcartitemId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate")(x => (x.shoppingcartid, x.productid, x.shoppingcartitemid, x.quantity, x.datecreated, x.modifieddate))(Encoder.encodeString, ProductId.encoder, Defaulted.encoder(ShoppingcartitemId.encoder), Defaulted.encoder(Encoder.encodeInt), Defaulted.encoder(TypoLocalDateTime.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
+  implicit lazy val encoder: Encoder[ShoppingcartitemRowUnsaved] = Encoder.forProduct6[ShoppingcartitemRowUnsaved, String, ProductId, Defaulted[ShoppingcartitemId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate")(x => (x.shoppingcartid, x.productid, x.shoppingcartitemid, x.quantity, x.datecreated, x.modifieddate))(Encoder.encodeString, ProductId.encoder, Defaulted.encoder(ShoppingcartitemId.encoder), Defaulted.encoder(Encoder.encodeInt), Defaulted.encoder(TypoLocalDateTime.encoder), Defaulted.encoder(TypoLocalDateTime.encoder))
 
   implicit lazy val pgText: Text[ShoppingcartitemRowUnsaved] = {
     Text.instance[ShoppingcartitemRowUnsaved]{ (row, sb) =>

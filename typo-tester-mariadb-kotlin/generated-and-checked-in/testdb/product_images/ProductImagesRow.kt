@@ -6,13 +6,14 @@
 package testdb.product_images
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.products.ProductsId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: product_images
   * Primary key: image_id
@@ -31,11 +32,11 @@ data class ProductImagesRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("thumbnail_url") val thumbnailUrl: Optional<String>,
+  @JsonProperty("thumbnail_url") val thumbnailUrl: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("alt_text") val altText: Optional<String>,
+  @JsonProperty("alt_text") val altText: String?,
   /** 
     * Default: 0
     */
@@ -47,22 +48,22 @@ data class ProductImagesRow(
   /** Optional embedded image data
     * Default: NULL
     */
-  @JsonProperty("image_data") val imageData: Optional<ByteArray>
+  @JsonProperty("image_data") val imageData: ByteArray?
 ) {
   fun id(): ProductImagesId = imageId
 
   fun toUnsavedRow(
-    thumbnailUrl: Defaulted<Optional<String>>,
-    altText: Defaulted<Optional<String>>,
+    thumbnailUrl: Defaulted<String?>,
+    altText: Defaulted<String?>,
     sortOrder: Defaulted<Short>,
     isPrimary: Defaulted<Boolean>,
-    imageData: Defaulted<Optional<ByteArray>>
+    imageData: Defaulted<ByteArray?>
   ): ProductImagesRowUnsaved = ProductImagesRowUnsaved(productId, imageUrl, thumbnailUrl, altText, sortOrder, isPrimary, imageData)
 
   companion object {
-    val _rowParser: RowParser<ProductImagesRow> = RowParsers.of(ProductImagesId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.varchar.opt(), MariaTypes.tinyintUnsigned, MariaTypes.bool, MariaTypes.longblob.opt(), { t0, t1, t2, t3, t4, t5, t6, t7 -> ProductImagesRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!) }, { row -> arrayOf<Any?>(row.imageId, row.productId, row.imageUrl, row.thumbnailUrl, row.altText, row.sortOrder, row.isPrimary, row.imageData) })
+    val _rowParser: RowParser<ProductImagesRow> = RowParsers.of(ProductImagesId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.tinyintUnsigned, KotlinDbTypes.MariaTypes.bool, MariaTypes.longblob.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7 -> ProductImagesRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.imageId, row.productId, row.imageUrl, row.thumbnailUrl, row.altText, row.sortOrder, row.isPrimary, row.imageData) })
 
     val mariaText: MariaText<ProductImagesRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

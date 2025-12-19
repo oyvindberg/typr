@@ -9,8 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import testdb.customtypes.Defaulted
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: customer_status
  * Primary key: status_code
@@ -23,15 +24,15 @@ case class CustomerStatusRow(
   /** 
    * Default: 1
    */
-  @JsonProperty("is_active") isActive: java.lang.Boolean
+  @JsonProperty("is_active") isActive: Boolean
 ) {
   def id: CustomerStatusId = statusCode
 
-  def toUnsavedRow(isActive: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isActive)): CustomerStatusRowUnsaved = new CustomerStatusRowUnsaved(statusCode, description, isActive)
+  def toUnsavedRow(isActive: Defaulted[Boolean] = Defaulted.Provided(this.isActive)): CustomerStatusRowUnsaved = new CustomerStatusRowUnsaved(statusCode, description, isActive)
 }
 
 object CustomerStatusRow {
-  val `_rowParser`: RowParser[CustomerStatusRow] = RowParsers.of(CustomerStatusId.pgType, MariaTypes.varchar, MariaTypes.bool, CustomerStatusRow.apply, row => Array[Object](row.statusCode.asInstanceOf[Object], row.description.asInstanceOf[Object], row.isActive.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[CustomerStatusRow] = RowParsers.of(CustomerStatusId.pgType, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bool)(CustomerStatusRow.apply)(row => Array[Any](row.statusCode, row.description, row.isActive))
 
-  given mariaText: MariaText[CustomerStatusRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[CustomerStatusRow] = MariaText.from(`_rowParser`.underlying)
 }

@@ -7,15 +7,12 @@ package adventureworks.production.vproductmodelcatalogdescription
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class VproductmodelcatalogdescriptionViewRepoImpl() : VproductmodelcatalogdescriptionViewRepo {
   override fun select(): SelectBuilder<VproductmodelcatalogdescriptionViewFields, VproductmodelcatalogdescriptionViewRow> = SelectBuilder.of("\"production\".\"vproductmodelcatalogdescription\"", VproductmodelcatalogdescriptionViewFields.structure, VproductmodelcatalogdescriptionViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<VproductmodelcatalogdescriptionViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "productmodelid", "name", "Summary", "manufacturer", "copyright", "producturl", "warrantyperiod", "warrantydescription", "noofyears", "maintenancedescription", "wheel", "saddle", "pedal", "bikeframe", "crankset", "pictureangle", "picturesize", "productphotoid", "material", "color", "productline", "style", "riderexperience", "rowguid", "modifieddate"::text
-    from "production"."vproductmodelcatalogdescription"
-  """.trimMargin())).query(VproductmodelcatalogdescriptionViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<VproductmodelcatalogdescriptionViewRow> = Fragment.interpolate(Fragment.lit("select \"productmodelid\", \"name\", \"Summary\", \"manufacturer\", \"copyright\", \"producturl\", \"warrantyperiod\", \"warrantydescription\", \"noofyears\", \"maintenancedescription\", \"wheel\", \"saddle\", \"pedal\", \"bikeframe\", \"crankset\", \"pictureangle\", \"picturesize\", \"productphotoid\", \"material\", \"color\", \"productline\", \"style\", \"riderexperience\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"vproductmodelcatalogdescription\"\n")).query(VproductmodelcatalogdescriptionViewRow._rowParser.all()).runUnchecked(c)
 }

@@ -6,7 +6,7 @@
 package adventureworks.public.table_with_generated_columns
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap

@@ -6,89 +6,88 @@
 package adventureworks.person.stateprovince
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface StateprovinceRepo {
-  fun delete(): DeleteBuilder<StateprovinceFields, StateprovinceRow>
+  abstract fun delete(): DeleteBuilder<StateprovinceFields, StateprovinceRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     stateprovinceid: StateprovinceId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     stateprovinceids: Array<StateprovinceId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: StateprovinceRow,
     c: Connection
   ): StateprovinceRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: StateprovinceRowUnsaved,
     c: Connection
   ): StateprovinceRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<StateprovinceRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<StateprovinceRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<StateprovinceRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<StateprovinceRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<StateprovinceFields, StateprovinceRow>
+  abstract fun select(): SelectBuilder<StateprovinceFields, StateprovinceRow>
 
-  fun selectAll(c: Connection): List<StateprovinceRow>
+  abstract fun selectAll(c: Connection): List<StateprovinceRow>
 
-  fun selectById(
+  abstract fun selectById(
     stateprovinceid: StateprovinceId,
     c: Connection
-  ): Optional<StateprovinceRow>
+  ): StateprovinceRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     stateprovinceids: Array<StateprovinceId>,
     c: Connection
   ): List<StateprovinceRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     stateprovinceids: Array<StateprovinceId>,
     c: Connection
   ): Map<StateprovinceId, StateprovinceRow>
 
-  fun update(): UpdateBuilder<StateprovinceFields, StateprovinceRow>
+  abstract fun update(): UpdateBuilder<StateprovinceFields, StateprovinceRow>
 
-  fun update(
+  abstract fun update(
     row: StateprovinceRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: StateprovinceRow,
     c: Connection
   ): StateprovinceRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<StateprovinceRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<StateprovinceRow>,
     c: Connection
   ): List<StateprovinceRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<StateprovinceRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<StateprovinceRow>,
     batchSize: Int,
     c: Connection
   ): Int

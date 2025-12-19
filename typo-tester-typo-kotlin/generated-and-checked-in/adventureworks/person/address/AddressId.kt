@@ -6,7 +6,8 @@
 package adventureworks.person.address
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class AddressId(@JsonValue val value: Int) {
       Bijection.of(AddressId::value, ::AddressId)
 
     val pgType: PgType<AddressId> =
-      PgTypes.int4.bimap(::AddressId, AddressId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::AddressId, AddressId::value)
 
     val pgTypeArray: PgType<Array<AddressId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::AddressId, AddressId::class.java) }, { xs -> arrayMap.map(xs, AddressId::value, Int::class.javaObjectType) })

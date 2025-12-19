@@ -34,11 +34,11 @@ import adventureworks.sales.salesterritory.SalesterritoryRow
 import adventureworks.userdefined.CustomCreditcardId
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait SalesorderheaderFields {
   def salesorderid: IdField[SalesorderheaderId, SalesorderheaderRow]
@@ -93,11 +93,11 @@ trait SalesorderheaderFields {
 }
 
 object SalesorderheaderFields {
-  lazy val structure: Relation[SalesorderheaderFields, SalesorderheaderRow] =
+  lazy val structure: RelationStructure[SalesorderheaderFields, SalesorderheaderRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SalesorderheaderFields, SalesorderheaderRow] {
+    extends RelationStructure[SalesorderheaderFields, SalesorderheaderRow] {
 
     override lazy val fields: SalesorderheaderFields = new SalesorderheaderFields {
       override def salesorderid = IdField[SalesorderheaderId, SalesorderheaderRow](_path, "salesorderid", None, Some("int4"), x => x.salesorderid, (row, value) => row.copy(salesorderid = value))

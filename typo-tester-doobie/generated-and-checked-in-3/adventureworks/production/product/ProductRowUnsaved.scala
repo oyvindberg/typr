@@ -28,7 +28,7 @@ case class ProductRowUnsaved(
   /** Name of the product. */
   name: Name,
   /** Unique product identification number. */
-  productnumber: /* max 25 chars */ String,
+  productnumber: String,
   /** Product color. */
   color: Option[/* max 15 chars */ String] = None,
   /** Minimum inventory quantity.

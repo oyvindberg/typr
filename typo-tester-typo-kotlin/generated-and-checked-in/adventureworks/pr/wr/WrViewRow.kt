@@ -5,15 +5,14 @@
  */
 package adventureworks.pr.wr
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.location.LocationId
 import adventureworks.production.workorder.WorkorderId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.wr */
 data class WrViewRow(
@@ -24,27 +23,27 @@ data class WrViewRow(
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.productid] */
   val productid: Int,
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.operationsequence] */
-  val operationsequence: TypoShort,
+  val operationsequence: Short,
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.locationid] */
   val locationid: LocationId,
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.scheduledstartdate] */
-  val scheduledstartdate: TypoLocalDateTime,
+  val scheduledstartdate: LocalDateTime,
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.scheduledenddate] */
-  val scheduledenddate: TypoLocalDateTime,
+  val scheduledenddate: LocalDateTime,
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.actualstartdate] */
-  val actualstartdate: Optional<TypoLocalDateTime>,
+  val actualstartdate: LocalDateTime,
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.actualenddate] */
-  val actualenddate: Optional<TypoLocalDateTime>,
+  val actualenddate: LocalDateTime,
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.actualresourcehrs] */
-  val actualresourcehrs: Optional<BigDecimal>,
+  val actualresourcehrs: BigDecimal,
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.plannedcost] */
   val plannedcost: BigDecimal,
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.actualcost] */
-  val actualcost: Optional<BigDecimal>,
+  val actualcost: BigDecimal,
   /** Points to [adventureworks.production.workorderrouting.WorkorderroutingRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<WrViewRow> = RowParsers.of(WorkorderId.pgType, WorkorderId.pgType, PgTypes.int4, TypoShort.pgType, LocationId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> WrViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.id, row.workorderid, row.productid, row.operationsequence, row.locationid, row.scheduledstartdate, row.scheduledenddate, row.actualstartdate, row.actualenddate, row.actualresourcehrs, row.plannedcost, row.actualcost, row.modifieddate) })
+    val _rowParser: RowParser<WrViewRow> = RowParsers.of(WorkorderId.pgType, WorkorderId.pgType, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int2, LocationId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> WrViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) }, { row -> arrayOf<Any?>(row.id, row.workorderid, row.productid, row.operationsequence, row.locationid, row.scheduledstartdate, row.scheduledenddate, row.actualstartdate, row.actualenddate, row.actualresourcehrs, row.plannedcost, row.actualcost, row.modifieddate) })
   }
 }

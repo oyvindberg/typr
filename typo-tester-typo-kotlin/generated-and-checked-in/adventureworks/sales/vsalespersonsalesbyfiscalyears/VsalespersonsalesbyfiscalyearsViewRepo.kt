@@ -7,10 +7,10 @@ package adventureworks.sales.vsalespersonsalesbyfiscalyears
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VsalespersonsalesbyfiscalyearsViewRepo {
-  fun select(): SelectBuilder<VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow>
+  abstract fun select(): SelectBuilder<VsalespersonsalesbyfiscalyearsViewFields, VsalespersonsalesbyfiscalyearsViewRow>
 
-  fun selectAll(c: Connection): List<VsalespersonsalesbyfiscalyearsViewRow>
+  abstract fun selectAll(c: Connection): List<VsalespersonsalesbyfiscalyearsViewRow>
 }

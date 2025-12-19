@@ -5,51 +5,53 @@
  */
 package adventureworks.pe.at
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.addresstype.AddresstypeId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface AtViewFields : FieldsExpr<AtViewRow> {
-  fun addresstypeid(): Field<AddresstypeId, AtViewRow>
+  abstract fun addresstypeid(): Field<AddresstypeId, AtViewRow>
 
-  override fun columns(): List<FieldLike<*, AtViewRow>>
+  abstract override fun columns(): List<FieldLike<*, AtViewRow>>
 
-  fun id(): Field<AddresstypeId, AtViewRow>
+  abstract fun id(): Field<AddresstypeId, AtViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, AtViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, AtViewRow>
 
-  fun name(): Field<Name, AtViewRow>
+  abstract fun name(): Field<Name, AtViewRow>
 
-  override fun rowParser(): RowParser<AtViewRow> = AtViewRow._rowParser
+  override fun rowParser(): RowParser<AtViewRow> = AtViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, AtViewRow>
+  abstract fun rowguid(): Field<UUID, AtViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : AtViewFields, Relation<AtViewFields, AtViewRow> {
-      override fun id(): Field<AddresstypeId, AtViewRow> = Field<AddresstypeId, AtViewRow>(_path, "id", AtViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, AddresstypeId.pgType)
+    data class Impl(val _path: List<Path>) : AtViewFields, RelationStructure<AtViewFields, AtViewRow> {
+      override fun id(): Field<AddresstypeId, AtViewRow> = Field<AddresstypeId, AtViewRow>(_path, "id", AtViewRow::id, null, null, { row, value -> row.copy(id = value) }, AddresstypeId.pgType)
 
-      override fun addresstypeid(): Field<AddresstypeId, AtViewRow> = Field<AddresstypeId, AtViewRow>(_path, "addresstypeid", AtViewRow::addresstypeid, Optional.empty(), Optional.empty(), { row, value -> row.copy(addresstypeid = value) }, AddresstypeId.pgType)
+      override fun addresstypeid(): Field<AddresstypeId, AtViewRow> = Field<AddresstypeId, AtViewRow>(_path, "addresstypeid", AtViewRow::addresstypeid, null, null, { row, value -> row.copy(addresstypeid = value) }, AddresstypeId.pgType)
 
-      override fun name(): Field<Name, AtViewRow> = Field<Name, AtViewRow>(_path, "name", AtViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, AtViewRow> = Field<Name, AtViewRow>(_path, "name", AtViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun rowguid(): Field<TypoUUID, AtViewRow> = Field<TypoUUID, AtViewRow>(_path, "rowguid", AtViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, AtViewRow> = Field<UUID, AtViewRow>(_path, "rowguid", AtViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, AtViewRow> = Field<TypoLocalDateTime, AtViewRow>(_path, "modifieddate", AtViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, AtViewRow> = Field<LocalDateTime, AtViewRow>(_path, "modifieddate", AtViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, AtViewRow>> = listOf(this.id(), this.addresstypeid(), this.name(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<AtViewFields, AtViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, AtViewRow>> = listOf(this.id().underlying, this.addresstypeid().underlying, this.name().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<AtViewFields, AtViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

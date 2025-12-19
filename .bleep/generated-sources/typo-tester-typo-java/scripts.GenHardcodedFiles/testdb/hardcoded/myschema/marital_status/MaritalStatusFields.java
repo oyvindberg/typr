@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Optional;
 import typo.dsl.FieldsExpr;
 import typo.dsl.Path;
+import typo.dsl.RelationStructure;
 import typo.dsl.SqlExpr.FieldLike;
 import typo.dsl.SqlExpr.IdField;
-import typo.dsl.Structure.Relation;
 import typo.runtime.RowParser;
 
 public interface MaritalStatusFields extends FieldsExpr<MaritalStatusRow> {
-  record Impl(List<Path> _path) implements MaritalStatusFields, Relation<MaritalStatusFields, MaritalStatusRow> {
+  record Impl(List<Path> _path) implements MaritalStatusFields, RelationStructure<MaritalStatusFields, MaritalStatusRow> {
     @Override
     public IdField<MaritalStatusId, MaritalStatusRow> id() {
       return new IdField<MaritalStatusId, MaritalStatusRow>(_path, "id", MaritalStatusRow::id, Optional.empty(), Optional.of("int8"), (row, value) -> row.withId(value), MaritalStatusId.pgType);
@@ -23,17 +23,17 @@ public interface MaritalStatusFields extends FieldsExpr<MaritalStatusRow> {
 
     @Override
     public List<FieldLike<?, MaritalStatusRow>> columns() {
-      return List.of(this.id());
+      return java.util.List.of(this.id());
     };
 
     @Override
-    public Relation<MaritalStatusFields, MaritalStatusRow> copy(List<Path> _path) {
+    public RelationStructure<MaritalStatusFields, MaritalStatusRow> withPaths(List<Path> _path) {
       return new Impl(_path);
     };
   };
 
   static Impl structure() {
-    return new Impl(List.of());
+    return new Impl(java.util.Collections.emptyList());
   };
 
   IdField<MaritalStatusId, MaritalStatusRow> id();

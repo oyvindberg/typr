@@ -6,27 +6,26 @@
 package adventureworks.purchasing.purchaseorderdetail
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import kotlin.collections.Map
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PurchaseorderdetailRepo {
-  fun select(): SelectBuilder<PurchaseorderdetailFields, PurchaseorderdetailRow>
+  abstract fun select(): SelectBuilder<PurchaseorderdetailFields, PurchaseorderdetailRow>
 
-  fun selectAll(c: Connection): List<PurchaseorderdetailRow>
+  abstract fun selectAll(c: Connection): List<PurchaseorderdetailRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: PurchaseorderdetailId,
     c: Connection
-  ): Optional<PurchaseorderdetailRow>
+  ): PurchaseorderdetailRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<PurchaseorderdetailId>,
     c: Connection
   ): List<PurchaseorderdetailRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<PurchaseorderdetailId>,
     c: Connection
   ): Map<PurchaseorderdetailId, PurchaseorderdetailRow>

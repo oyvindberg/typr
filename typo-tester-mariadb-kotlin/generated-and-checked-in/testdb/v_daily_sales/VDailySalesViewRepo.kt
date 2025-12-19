@@ -7,10 +7,10 @@ package testdb.v_daily_sales
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VDailySalesViewRepo {
-  fun select(): SelectBuilder<VDailySalesViewFields, VDailySalesViewRow>
+  abstract fun select(): SelectBuilder<VDailySalesViewFields, VDailySalesViewRow>
 
-  fun selectAll(c: Connection): List<VDailySalesViewRow>
+  abstract fun selectAll(c: Connection): List<VDailySalesViewRow>
 }

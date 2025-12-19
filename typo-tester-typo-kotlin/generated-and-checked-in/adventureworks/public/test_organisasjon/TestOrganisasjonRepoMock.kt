@@ -8,21 +8,19 @@ package adventureworks.public.test_organisasjon
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class TestOrganisasjonRepoMock(val map: MutableMap<TestOrganisasjonId, TestOrganisasjonRow> = mutableMapOf<TestOrganisasjonId, TestOrganisasjonRow>()) : TestOrganisasjonRepo {
   override fun delete(): DeleteBuilder<TestOrganisasjonFields, TestOrganisasjonRow> = DeleteBuilderMock(TestOrganisasjonFields.structure, { map.values.toList() }, DeleteParams.empty(), { row -> row.organisasjonskode }, { id -> map.remove(id) })
@@ -30,7 +28,7 @@ data class TestOrganisasjonRepoMock(val map: MutableMap<TestOrganisasjonId, Test
   override fun deleteById(
     organisasjonskode: TestOrganisasjonId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(organisasjonskode)).isPresent()
+  ): Boolean = map.remove(organisasjonskode) != null
 
   override fun deleteByIds(
     organisasjonskodes: Array<TestOrganisasjonId>,
@@ -38,7 +36,7 @@ data class TestOrganisasjonRepoMock(val map: MutableMap<TestOrganisasjonId, Test
   ): Int {
     var count = 0
     for (id in organisasjonskodes) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -50,14 +48,14 @@ data class TestOrganisasjonRepoMock(val map: MutableMap<TestOrganisasjonId, Test
     c: Connection
   ): TestOrganisasjonRow {
     if (map.containsKey(unsaved.organisasjonskode)) {
-      throw RuntimeException(str("id $unsaved.organisasjonskode already exists"))
+      throw RuntimeException("id " + unsaved.organisasjonskode + " already exists")
     }
     map[unsaved.organisasjonskode] = unsaved
     return unsaved
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<TestOrganisasjonRow>,
+    unsaved: Iterator<TestOrganisasjonRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -77,7 +75,7 @@ data class TestOrganisasjonRepoMock(val map: MutableMap<TestOrganisasjonId, Test
   override fun selectById(
     organisasjonskode: TestOrganisasjonId,
     c: Connection
-  ): Optional<TestOrganisasjonRow> = Optional.ofNullable(map[organisasjonskode])
+  ): TestOrganisasjonRow? = map[organisasjonskode]
 
   override fun selectByIds(
     organisasjonskodes: Array<TestOrganisasjonId>,
@@ -85,9 +83,9 @@ data class TestOrganisasjonRepoMock(val map: MutableMap<TestOrganisasjonId, Test
   ): List<TestOrganisasjonRow> {
     val result = ArrayList<TestOrganisasjonRow>()
     for (id in organisasjonskodes) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -109,7 +107,7 @@ data class TestOrganisasjonRepoMock(val map: MutableMap<TestOrganisasjonId, Test
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<TestOrganisasjonRow>,
+    unsaved: Iterator<TestOrganisasjonRow>,
     c: Connection
   ): List<TestOrganisasjonRow> {
     val result = ArrayList<TestOrganisasjonRow>()
@@ -123,7 +121,7 @@ data class TestOrganisasjonRepoMock(val map: MutableMap<TestOrganisasjonId, Test
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<TestOrganisasjonRow>,
+    unsaved: Iterator<TestOrganisasjonRow>,
     batchSize: Int,
     c: Connection
   ): Int {

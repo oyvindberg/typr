@@ -6,72 +6,71 @@
 package adventureworks.public.issue142
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface Issue142Repo {
-  fun delete(): DeleteBuilder<Issue142Fields, Issue142Row>
+  abstract fun delete(): DeleteBuilder<Issue142Fields, Issue142Row>
 
-  fun deleteById(
+  abstract fun deleteById(
     tabellkode: Issue142Id,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     tabellkodes: Array<Issue142Id>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: Issue142Row,
     c: Connection
   ): Issue142Row
 
-  fun insertStreaming(
-    unsaved: MutableIterator<Issue142Row>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<Issue142Row>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<Issue142Fields, Issue142Row>
+  abstract fun select(): SelectBuilder<Issue142Fields, Issue142Row>
 
-  fun selectAll(c: Connection): List<Issue142Row>
+  abstract fun selectAll(c: Connection): List<Issue142Row>
 
-  fun selectById(
+  abstract fun selectById(
     tabellkode: Issue142Id,
     c: Connection
-  ): Optional<Issue142Row>
+  ): Issue142Row?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     tabellkodes: Array<Issue142Id>,
     c: Connection
   ): List<Issue142Row>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     tabellkodes: Array<Issue142Id>,
     c: Connection
   ): Map<Issue142Id, Issue142Row>
 
-  fun update(): UpdateBuilder<Issue142Fields, Issue142Row>
+  abstract fun update(): UpdateBuilder<Issue142Fields, Issue142Row>
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: Issue142Row,
     c: Connection
   ): Issue142Row
 
-  fun upsertBatch(
-    unsaved: MutableIterator<Issue142Row>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<Issue142Row>,
     c: Connection
   ): List<Issue142Row>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<Issue142Row>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<Issue142Row>,
     batchSize: Int,
     c: Connection
   ): Int

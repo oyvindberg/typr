@@ -15,19 +15,19 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait DocumentFields {
-  def title: Field[/* max 50 chars */ String, DocumentRow]
+  def title: Field[String, DocumentRow]
   def owner: Field[BusinessentityId, DocumentRow]
   def folderflag: Field[Flag, DocumentRow]
-  def filename: Field[/* max 400 chars */ String, DocumentRow]
+  def filename: Field[String, DocumentRow]
   def fileextension: OptField[/* max 8 chars */ String, DocumentRow]
-  def revision: Field[/* bpchar, max 5 chars */ String, DocumentRow]
+  def revision: Field[String, DocumentRow]
   def changenumber: Field[Int, DocumentRow]
   def status: Field[TypoShort, DocumentRow]
   def documentsummary: OptField[String, DocumentRow]
@@ -41,19 +41,19 @@ trait DocumentFields {
 }
 
 object DocumentFields {
-  lazy val structure: Relation[DocumentFields, DocumentRow] =
+  lazy val structure: RelationStructure[DocumentFields, DocumentRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[DocumentFields, DocumentRow] {
+    extends RelationStructure[DocumentFields, DocumentRow] {
 
     override lazy val fields: DocumentFields = new DocumentFields {
-      override def title = Field[/* max 50 chars */ String, DocumentRow](_path, "title", None, None, x => x.title, (row, value) => row.copy(title = value))
+      override def title = Field[String, DocumentRow](_path, "title", None, None, x => x.title, (row, value) => row.copy(title = value))
       override def owner = Field[BusinessentityId, DocumentRow](_path, "owner", None, Some("int4"), x => x.owner, (row, value) => row.copy(owner = value))
       override def folderflag = Field[Flag, DocumentRow](_path, "folderflag", None, Some("bool"), x => x.folderflag, (row, value) => row.copy(folderflag = value))
-      override def filename = Field[/* max 400 chars */ String, DocumentRow](_path, "filename", None, None, x => x.filename, (row, value) => row.copy(filename = value))
+      override def filename = Field[String, DocumentRow](_path, "filename", None, None, x => x.filename, (row, value) => row.copy(filename = value))
       override def fileextension = OptField[/* max 8 chars */ String, DocumentRow](_path, "fileextension", None, None, x => x.fileextension, (row, value) => row.copy(fileextension = value))
-      override def revision = Field[/* bpchar, max 5 chars */ String, DocumentRow](_path, "revision", None, Some("bpchar"), x => x.revision, (row, value) => row.copy(revision = value))
+      override def revision = Field[String, DocumentRow](_path, "revision", None, Some("bpchar"), x => x.revision, (row, value) => row.copy(revision = value))
       override def changenumber = Field[Int, DocumentRow](_path, "changenumber", None, Some("int4"), x => x.changenumber, (row, value) => row.copy(changenumber = value))
       override def status = Field[TypoShort, DocumentRow](_path, "status", None, Some("int2"), x => x.status, (row, value) => row.copy(status = value))
       override def documentsummary = OptField[String, DocumentRow](_path, "documentsummary", None, None, x => x.documentsummary, (row, value) => row.copy(documentsummary = value))

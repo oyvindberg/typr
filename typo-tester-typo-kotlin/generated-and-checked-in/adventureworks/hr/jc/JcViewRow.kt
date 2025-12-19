@@ -5,13 +5,13 @@
  */
 package adventureworks.hr.jc
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoXml
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.data.Xml
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: hr.jc */
 data class JcViewRow(
@@ -20,13 +20,13 @@ data class JcViewRow(
   /** Points to [adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid] */
   val jobcandidateid: JobcandidateId,
   /** Points to [adventureworks.humanresources.jobcandidate.JobcandidateRow.businessentityid] */
-  val businessentityid: Optional<BusinessentityId>,
+  val businessentityid: BusinessentityId,
   /** Points to [adventureworks.humanresources.jobcandidate.JobcandidateRow.resume] */
-  val resume: Optional<TypoXml>,
+  val resume: Xml,
   /** Points to [adventureworks.humanresources.jobcandidate.JobcandidateRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<JcViewRow> = RowParsers.of(JobcandidateId.pgType, JobcandidateId.pgType, BusinessentityId.pgType.opt(), TypoXml.pgType.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> JcViewRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.id, row.jobcandidateid, row.businessentityid, row.resume, row.modifieddate) })
+    val _rowParser: RowParser<JcViewRow> = RowParsers.of(JobcandidateId.pgType, JobcandidateId.pgType, BusinessentityId.pgType, PgTypes.xml, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> JcViewRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.id, row.jobcandidateid, row.businessentityid, row.resume, row.modifieddate) })
   }
 }

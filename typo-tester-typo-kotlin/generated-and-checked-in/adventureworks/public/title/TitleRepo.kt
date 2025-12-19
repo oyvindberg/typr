@@ -6,72 +6,71 @@
 package adventureworks.public.title
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface TitleRepo {
-  fun delete(): DeleteBuilder<TitleFields, TitleRow>
+  abstract fun delete(): DeleteBuilder<TitleFields, TitleRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     code: TitleId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     codes: Array<TitleId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: TitleRow,
     c: Connection
   ): TitleRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<TitleRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<TitleRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<TitleFields, TitleRow>
+  abstract fun select(): SelectBuilder<TitleFields, TitleRow>
 
-  fun selectAll(c: Connection): List<TitleRow>
+  abstract fun selectAll(c: Connection): List<TitleRow>
 
-  fun selectById(
+  abstract fun selectById(
     code: TitleId,
     c: Connection
-  ): Optional<TitleRow>
+  ): TitleRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     codes: Array<TitleId>,
     c: Connection
   ): List<TitleRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     codes: Array<TitleId>,
     c: Connection
   ): Map<TitleId, TitleRow>
 
-  fun update(): UpdateBuilder<TitleFields, TitleRow>
+  abstract fun update(): UpdateBuilder<TitleFields, TitleRow>
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: TitleRow,
     c: Connection
   ): TitleRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<TitleRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<TitleRow>,
     c: Connection
   ): List<TitleRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<TitleRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<TitleRow>,
     batchSize: Int,
     c: Connection
   ): Int

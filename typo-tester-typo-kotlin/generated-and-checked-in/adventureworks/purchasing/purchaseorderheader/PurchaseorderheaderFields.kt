@@ -5,8 +5,6 @@
  */
 package adventureworks.purchasing.purchaseorderheader
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.humanresources.employee.EmployeeFields
 import adventureworks.humanresources.employee.EmployeeRow
 import adventureworks.person.businessentity.BusinessentityId
@@ -16,85 +14,88 @@ import adventureworks.purchasing.shipmethod.ShipmethodRow
 import adventureworks.purchasing.vendor.VendorFields
 import adventureworks.purchasing.vendor.VendorRow
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PurchaseorderheaderFields : FieldsExpr<PurchaseorderheaderRow> {
-  override fun columns(): List<FieldLike<*, PurchaseorderheaderRow>>
+  abstract override fun columns(): List<FieldLike<*, PurchaseorderheaderRow>>
 
-  fun employeeid(): Field<BusinessentityId, PurchaseorderheaderRow>
+  abstract fun employeeid(): Field<BusinessentityId, PurchaseorderheaderRow>
 
-  fun fkHumanresourcesEmployee(): ForeignKey<EmployeeFields, EmployeeRow> = ForeignKey.of<EmployeeFields, EmployeeRow>("purchasing.FK_PurchaseOrderHeader_Employee_EmployeeID").withColumnPair(employeeid(), EmployeeFields::businessentityid)
+  fun fkHumanresourcesEmployee(): ForeignKey<EmployeeFields, EmployeeRow> = ForeignKey.of<EmployeeFields, EmployeeRow>("purchasing.FK_PurchaseOrderHeader_Employee_EmployeeID").withColumnPair<BusinessentityId>(employeeid(), EmployeeFields::businessentityid)
 
-  fun fkShipmethod(): ForeignKey<ShipmethodFields, ShipmethodRow> = ForeignKey.of<ShipmethodFields, ShipmethodRow>("purchasing.FK_PurchaseOrderHeader_ShipMethod_ShipMethodID").withColumnPair(shipmethodid(), ShipmethodFields::shipmethodid)
+  fun fkShipmethod(): ForeignKey<ShipmethodFields, ShipmethodRow> = ForeignKey.of<ShipmethodFields, ShipmethodRow>("purchasing.FK_PurchaseOrderHeader_ShipMethod_ShipMethodID").withColumnPair<ShipmethodId>(shipmethodid(), ShipmethodFields::shipmethodid)
 
-  fun fkVendor(): ForeignKey<VendorFields, VendorRow> = ForeignKey.of<VendorFields, VendorRow>("purchasing.FK_PurchaseOrderHeader_Vendor_VendorID").withColumnPair(vendorid(), VendorFields::businessentityid)
+  fun fkVendor(): ForeignKey<VendorFields, VendorRow> = ForeignKey.of<VendorFields, VendorRow>("purchasing.FK_PurchaseOrderHeader_Vendor_VendorID").withColumnPair<BusinessentityId>(vendorid(), VendorFields::businessentityid)
 
-  fun freight(): Field<BigDecimal, PurchaseorderheaderRow>
+  abstract fun freight(): Field<BigDecimal, PurchaseorderheaderRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PurchaseorderheaderRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PurchaseorderheaderRow>
 
-  fun orderdate(): Field<TypoLocalDateTime, PurchaseorderheaderRow>
+  abstract fun orderdate(): Field<LocalDateTime, PurchaseorderheaderRow>
 
-  fun purchaseorderid(): IdField<PurchaseorderheaderId, PurchaseorderheaderRow>
+  abstract fun purchaseorderid(): IdField<PurchaseorderheaderId, PurchaseorderheaderRow>
 
-  fun revisionnumber(): Field<TypoShort, PurchaseorderheaderRow>
+  abstract fun revisionnumber(): Field<Short, PurchaseorderheaderRow>
 
-  override fun rowParser(): RowParser<PurchaseorderheaderRow> = PurchaseorderheaderRow._rowParser
+  override fun rowParser(): RowParser<PurchaseorderheaderRow> = PurchaseorderheaderRow._rowParser.underlying
 
-  fun shipdate(): OptField<TypoLocalDateTime, PurchaseorderheaderRow>
+  abstract fun shipdate(): OptField<LocalDateTime, PurchaseorderheaderRow>
 
-  fun shipmethodid(): Field<ShipmethodId, PurchaseorderheaderRow>
+  abstract fun shipmethodid(): Field<ShipmethodId, PurchaseorderheaderRow>
 
-  fun status(): Field<TypoShort, PurchaseorderheaderRow>
+  abstract fun status(): Field<Short, PurchaseorderheaderRow>
 
-  fun subtotal(): Field<BigDecimal, PurchaseorderheaderRow>
+  abstract fun subtotal(): Field<BigDecimal, PurchaseorderheaderRow>
 
-  fun taxamt(): Field<BigDecimal, PurchaseorderheaderRow>
+  abstract fun taxamt(): Field<BigDecimal, PurchaseorderheaderRow>
 
-  fun vendorid(): Field<BusinessentityId, PurchaseorderheaderRow>
+  abstract fun vendorid(): Field<BusinessentityId, PurchaseorderheaderRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PurchaseorderheaderFields, Relation<PurchaseorderheaderFields, PurchaseorderheaderRow> {
-      override fun purchaseorderid(): IdField<PurchaseorderheaderId, PurchaseorderheaderRow> = IdField<PurchaseorderheaderId, PurchaseorderheaderRow>(_path, "purchaseorderid", PurchaseorderheaderRow::purchaseorderid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(purchaseorderid = value) }, PurchaseorderheaderId.pgType)
+    data class Impl(val _path: List<Path>) : PurchaseorderheaderFields, RelationStructure<PurchaseorderheaderFields, PurchaseorderheaderRow> {
+      override fun purchaseorderid(): IdField<PurchaseorderheaderId, PurchaseorderheaderRow> = IdField<PurchaseorderheaderId, PurchaseorderheaderRow>(_path, "purchaseorderid", PurchaseorderheaderRow::purchaseorderid, null, "int4", { row, value -> row.copy(purchaseorderid = value) }, PurchaseorderheaderId.pgType)
 
-      override fun revisionnumber(): Field<TypoShort, PurchaseorderheaderRow> = Field<TypoShort, PurchaseorderheaderRow>(_path, "revisionnumber", PurchaseorderheaderRow::revisionnumber, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(revisionnumber = value) }, TypoShort.pgType)
+      override fun revisionnumber(): Field<Short, PurchaseorderheaderRow> = Field<Short, PurchaseorderheaderRow>(_path, "revisionnumber", PurchaseorderheaderRow::revisionnumber, null, "int2", { row, value -> row.copy(revisionnumber = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun status(): Field<TypoShort, PurchaseorderheaderRow> = Field<TypoShort, PurchaseorderheaderRow>(_path, "status", PurchaseorderheaderRow::status, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(status = value) }, TypoShort.pgType)
+      override fun status(): Field<Short, PurchaseorderheaderRow> = Field<Short, PurchaseorderheaderRow>(_path, "status", PurchaseorderheaderRow::status, null, "int2", { row, value -> row.copy(status = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun employeeid(): Field<BusinessentityId, PurchaseorderheaderRow> = Field<BusinessentityId, PurchaseorderheaderRow>(_path, "employeeid", PurchaseorderheaderRow::employeeid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(employeeid = value) }, BusinessentityId.pgType)
+      override fun employeeid(): Field<BusinessentityId, PurchaseorderheaderRow> = Field<BusinessentityId, PurchaseorderheaderRow>(_path, "employeeid", PurchaseorderheaderRow::employeeid, null, "int4", { row, value -> row.copy(employeeid = value) }, BusinessentityId.pgType)
 
-      override fun vendorid(): Field<BusinessentityId, PurchaseorderheaderRow> = Field<BusinessentityId, PurchaseorderheaderRow>(_path, "vendorid", PurchaseorderheaderRow::vendorid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(vendorid = value) }, BusinessentityId.pgType)
+      override fun vendorid(): Field<BusinessentityId, PurchaseorderheaderRow> = Field<BusinessentityId, PurchaseorderheaderRow>(_path, "vendorid", PurchaseorderheaderRow::vendorid, null, "int4", { row, value -> row.copy(vendorid = value) }, BusinessentityId.pgType)
 
-      override fun shipmethodid(): Field<ShipmethodId, PurchaseorderheaderRow> = Field<ShipmethodId, PurchaseorderheaderRow>(_path, "shipmethodid", PurchaseorderheaderRow::shipmethodid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(shipmethodid = value) }, ShipmethodId.pgType)
+      override fun shipmethodid(): Field<ShipmethodId, PurchaseorderheaderRow> = Field<ShipmethodId, PurchaseorderheaderRow>(_path, "shipmethodid", PurchaseorderheaderRow::shipmethodid, null, "int4", { row, value -> row.copy(shipmethodid = value) }, ShipmethodId.pgType)
 
-      override fun orderdate(): Field<TypoLocalDateTime, PurchaseorderheaderRow> = Field<TypoLocalDateTime, PurchaseorderheaderRow>(_path, "orderdate", PurchaseorderheaderRow::orderdate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(orderdate = value) }, TypoLocalDateTime.pgType)
+      override fun orderdate(): Field<LocalDateTime, PurchaseorderheaderRow> = Field<LocalDateTime, PurchaseorderheaderRow>(_path, "orderdate", PurchaseorderheaderRow::orderdate, null, "timestamp", { row, value -> row.copy(orderdate = value) }, PgTypes.timestamp)
 
-      override fun shipdate(): OptField<TypoLocalDateTime, PurchaseorderheaderRow> = OptField<TypoLocalDateTime, PurchaseorderheaderRow>(_path, "shipdate", PurchaseorderheaderRow::shipdate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(shipdate = value) }, TypoLocalDateTime.pgType)
+      override fun shipdate(): OptField<LocalDateTime, PurchaseorderheaderRow> = OptField<LocalDateTime, PurchaseorderheaderRow>(_path, "shipdate", PurchaseorderheaderRow::shipdate, null, "timestamp", { row, value -> row.copy(shipdate = value) }, PgTypes.timestamp)
 
-      override fun subtotal(): Field<BigDecimal, PurchaseorderheaderRow> = Field<BigDecimal, PurchaseorderheaderRow>(_path, "subtotal", PurchaseorderheaderRow::subtotal, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(subtotal = value) }, PgTypes.numeric)
+      override fun subtotal(): Field<BigDecimal, PurchaseorderheaderRow> = Field<BigDecimal, PurchaseorderheaderRow>(_path, "subtotal", PurchaseorderheaderRow::subtotal, null, "numeric", { row, value -> row.copy(subtotal = value) }, PgTypes.numeric)
 
-      override fun taxamt(): Field<BigDecimal, PurchaseorderheaderRow> = Field<BigDecimal, PurchaseorderheaderRow>(_path, "taxamt", PurchaseorderheaderRow::taxamt, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(taxamt = value) }, PgTypes.numeric)
+      override fun taxamt(): Field<BigDecimal, PurchaseorderheaderRow> = Field<BigDecimal, PurchaseorderheaderRow>(_path, "taxamt", PurchaseorderheaderRow::taxamt, null, "numeric", { row, value -> row.copy(taxamt = value) }, PgTypes.numeric)
 
-      override fun freight(): Field<BigDecimal, PurchaseorderheaderRow> = Field<BigDecimal, PurchaseorderheaderRow>(_path, "freight", PurchaseorderheaderRow::freight, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(freight = value) }, PgTypes.numeric)
+      override fun freight(): Field<BigDecimal, PurchaseorderheaderRow> = Field<BigDecimal, PurchaseorderheaderRow>(_path, "freight", PurchaseorderheaderRow::freight, null, "numeric", { row, value -> row.copy(freight = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PurchaseorderheaderRow> = Field<TypoLocalDateTime, PurchaseorderheaderRow>(_path, "modifieddate", PurchaseorderheaderRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PurchaseorderheaderRow> = Field<LocalDateTime, PurchaseorderheaderRow>(_path, "modifieddate", PurchaseorderheaderRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PurchaseorderheaderRow>> = listOf(this.purchaseorderid(), this.revisionnumber(), this.status(), this.employeeid(), this.vendorid(), this.shipmethodid(), this.orderdate(), this.shipdate(), this.subtotal(), this.taxamt(), this.freight(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PurchaseorderheaderFields, PurchaseorderheaderRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PurchaseorderheaderRow>> = listOf(this.purchaseorderid().underlying, this.revisionnumber().underlying, this.status().underlying, this.employeeid().underlying, this.vendorid().underlying, this.shipmethodid().underlying, this.orderdate().underlying, this.shipdate().underlying, this.subtotal().underlying, this.taxamt().underlying, this.freight().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PurchaseorderheaderFields, PurchaseorderheaderRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

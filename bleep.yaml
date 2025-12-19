@@ -1,5 +1,5 @@
 $schema: https://raw.githubusercontent.com/oyvindberg/bleep/master/schema.json
-$version: 0.0.13
+$version: 0.0.14
 jvm:
   name: graalvm-community:25.0.0
 projects:
@@ -24,6 +24,8 @@ projects:
     - org.slf4j:slf4j-nop:2.0.13
     - io.swagger.parser.v3:swagger-parser:2.1.24
     - org.scala-lang.modules::scala-collection-compat:2.12.0
+    - for3Use213: true
+      module: io.get-coursier::coursier:2.1.24
     extends: template-cross
     platform:
       mainClass: com.foo.App
@@ -41,6 +43,13 @@ projects:
     sourcegen:
       project: typo-scripts
       main: scripts.GeneratedTuples
+  typo-dsl-kotlin:
+    dependsOn: typo-dsl-java
+    sourcegen:
+      project: typo-scripts
+      main: scripts.GeneratedRowParsers
+    platform:
+      name: jvm
   typo-dsl-doobie:
     dependsOn: typo-runtime-doobie
     extends: template-cross
@@ -70,9 +79,12 @@ projects:
       - org.jetbrains:annotations:26.0.1
     platform:
       name: jvm
-  typo-runtime-scala:
-    dependsOn: typo-runtime-java
-    extends: template-scala-3-stable
+  typo-dsl-scala:
+    dependsOn: typo-dsl-java
+    sourcegen:
+      project: typo-scripts
+      main: scripts.GeneratedRowParsers
+    extends: template-scala-3-newest
   typo-runtime-zio-jdbc:
     dependencies: dev.zio::zio-jdbc:0.1.2
     dependsOn: typo-runtime-java
@@ -144,8 +156,10 @@ projects:
     sourcegen:
       main: scripts.GenHardcodedFiles
       project: typo-scripts
-  typo-tester-typo-scala:
+  typo-tester-typo-scala-old:
     dependencies:
+    - junit:junit:4.13.2
+    - com.novocode:junit-interface:0.11
     - org.scalatest::scalatest:3.2.18
     - com.fasterxml.jackson.core:jackson-annotations:2.17.2
     - com.fasterxml.jackson.core:jackson-databind:2.17.2
@@ -153,13 +167,25 @@ projects:
     - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
     dependsOn:
     - typo-dsl-java
-    - typo-runtime-scala
-    extends: template-scala-3-stable
+    extends: template-scala-3-newest
     isTestProject: true
     sources: ./generated-and-checked-in
-    sourcegen:
-      main: scripts.GenHardcodedFiles
-      project: typo-scripts
+
+  typo-tester-typo-scala-new:
+    dependencies:
+    - junit:junit:4.13.2
+    - com.novocode:junit-interface:0.11
+    - org.scalatest::scalatest:3.2.18
+    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    dependsOn:
+    - typo-dsl-java
+    - typo-dsl-scala
+    extends: template-scala-3-newest
+    isTestProject: true
+    sources: ./generated-and-checked-in
   typo-tester-none:
     extends: template-cross-scala-3-newest
     sources: ./generated-and-checked-in
@@ -202,9 +228,8 @@ projects:
     - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
     - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
     dependsOn:
-    - typo-dsl-java
-    - typo-runtime-scala
-    extends: template-scala-3-stable
+    - typo-dsl-scala
+    extends: template-scala-3-newest
     isTestProject: true
     sources: ./generated-and-checked-in
   openapi-test-scala-http4s:
@@ -261,7 +286,7 @@ projects:
     folder: ./openapi-test-java-server-spring-client-jdk
     sources: ./testapi
     java:
-      options: -proc:none --release 24
+      options: -proc:none --release 21
     platform:
       name: jvm
   openapi-test-java-jaxrs-client-jdk:
@@ -283,7 +308,7 @@ projects:
     folder: ./openapi-test-java-server-jaxrs-client-jdk
     sources: ./testapi
     java:
-      options: -proc:none --release 24
+      options: -proc:none --release 21
     platform:
       name: jvm
   openapi-test-java-quarkus:
@@ -307,7 +332,7 @@ projects:
     folder: ./openapi-test-java-server-quarkus-reactive-client-jdk
     sources: ./testapi
     java:
-      options: -proc:none --release 24
+      options: -proc:none --release 21
     platform:
       name: jvm
   openapi-test-kotlin-jaxrs:
@@ -384,6 +409,9 @@ scripts:
     main: scripts.GeneratedAdventureWorks
     project: typo-scripts
     sourceGlobs: ../adventureworks_sql
+  generate-all:
+    main: scripts.GenerateAll
+    project: typo-scripts
   generate-docs:
     main: scripts.GenDocumentation
     project: typo-scripts-doc
@@ -432,14 +460,14 @@ templates:
   template-scala-3-stable:
     extends: template-common
     scala:
-      options: -source 3.3
+      options: -source 3.3 -release 21
       version: 3.3.6
   template-scala-2:
     scala:
-      options: -Xsource:3
+      options: -Xsource:3 -release:21
       version: 2.13.12
   template-scala-3-newest:
     extends: template-common
     scala:
-      options: -source 3.7
+      options: -source 3.7 -release 24
       version: 3.7.3

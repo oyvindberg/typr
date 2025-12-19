@@ -7,15 +7,12 @@ package adventureworks.pr.pmi
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class PmiViewRepoImpl() : PmiViewRepo {
   override fun select(): SelectBuilder<PmiViewFields, PmiViewRow> = SelectBuilder.of("\"pr\".\"pmi\"", PmiViewFields.structure, PmiViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<PmiViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "productmodelid", "illustrationid", "modifieddate"::text
-    from "pr"."pmi"
-  """.trimMargin())).query(PmiViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<PmiViewRow> = Fragment.interpolate(Fragment.lit("select \"productmodelid\", \"illustrationid\", \"modifieddate\"\nfrom \"pr\".\"pmi\"\n")).query(PmiViewRow._rowParser.all()).runUnchecked(c)
 }

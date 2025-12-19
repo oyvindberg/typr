@@ -16,13 +16,13 @@ import typo.runtime.RowParsers;
   */
 public record FootballClubRow(
   FootballClubId id,
-  /* max 100 chars */ String name
+  String name
 ) {
   public FootballClubRow withId(FootballClubId id) {
     return new FootballClubRow(id, name);
   };
 
-  public FootballClubRow withName(/* max 100 chars */ String name) {
+  public FootballClubRow withName(String name) {
     return new FootballClubRow(id, name);
   };
 

@@ -6,17 +6,21 @@
 package testdb.product_images
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.MariaType
-import typo.runtime.MariaTypes
 
 /** Type for the primary key of table `product_images` */
 data class ProductImagesId(@JsonValue val value: Long) {
+  override fun toString(): kotlin.String {
+    return value.toString()
+  }
+
   companion object {
     val bijection: Bijection<ProductImagesId, Long> =
       Bijection.of(ProductImagesId::value, ::ProductImagesId)
 
     val pgType: MariaType<ProductImagesId> =
-      MariaTypes.bigint.bimap(::ProductImagesId, ProductImagesId::value)
+      KotlinDbTypes.MariaTypes.intUnsigned.bimap(::ProductImagesId, ProductImagesId::value)
   }
 }

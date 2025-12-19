@@ -30,21 +30,21 @@ case class VstorewithcontactsViewRow(
   /** Points to [[adventureworks.person.contacttype.ContacttypeRow.name]] */
   contacttype: Name,
   /** Points to [[adventureworks.person.person.PersonRow.title]] */
-  title: Option[/* max 8 chars */ String],
+  title: String,
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: String,
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Option[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Option[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
-  emailaddress: Option[/* max 50 chars */ String],
+  emailaddress: String,
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
   emailpromotion: Int
 )
@@ -57,14 +57,14 @@ object VstorewithcontactsViewRow {
             businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
             name = json.\("name").as(Name.reads),
             contacttype = json.\("contacttype").as(Name.reads),
-            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            title = json.\("title").as(Reads.StringReads),
             firstname = json.\("firstname").as(FirstName.reads),
-            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            middlename = json.\("middlename").as(Name.reads),
             lastname = json.\("lastname").as(Name.reads),
-            suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
-            phonenumber = json.\("phonenumber").toOption.map(_.as(Phone.reads)),
-            phonenumbertype = json.\("phonenumbertype").toOption.map(_.as(Name.reads)),
-            emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
+            suffix = json.\("suffix").as(Reads.StringReads),
+            phonenumber = json.\("phonenumber").as(Phone.reads),
+            phonenumbertype = json.\("phonenumbertype").as(Name.reads),
+            emailaddress = json.\("emailaddress").as(Reads.StringReads),
             emailpromotion = json.\("emailpromotion").as(Reads.IntReads)
           )
         )
@@ -79,14 +79,14 @@ object VstorewithcontactsViewRow {
           businessentityid = row(idx + 0)(using BusinessentityId.column),
           name = row(idx + 1)(using Name.column),
           contacttype = row(idx + 2)(using Name.column),
-          title = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
+          title = row(idx + 3)(using Column.columnToString),
           firstname = row(idx + 4)(using /* user-picked */ FirstName.column),
-          middlename = row(idx + 5)(using Column.columnToOption(using Name.column)),
+          middlename = row(idx + 5)(using Name.column),
           lastname = row(idx + 6)(using Name.column),
-          suffix = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
-          phonenumber = row(idx + 8)(using Column.columnToOption(using Phone.column)),
-          phonenumbertype = row(idx + 9)(using Column.columnToOption(using Name.column)),
-          emailaddress = row(idx + 10)(using Column.columnToOption(using Column.columnToString)),
+          suffix = row(idx + 7)(using Column.columnToString),
+          phonenumber = row(idx + 8)(using Phone.column),
+          phonenumbertype = row(idx + 9)(using Name.column),
+          emailaddress = row(idx + 10)(using Column.columnToString),
           emailpromotion = row(idx + 11)(using Column.columnToInt)
         )
       )
@@ -99,14 +99,14 @@ object VstorewithcontactsViewRow {
         "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
         "name" -> Name.writes.writes(o.name),
         "contacttype" -> Name.writes.writes(o.contacttype),
-        "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
+        "title" -> Writes.StringWrites.writes(o.title),
         "firstname" -> FirstName.writes.writes(o.firstname),
-        "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
+        "middlename" -> Name.writes.writes(o.middlename),
         "lastname" -> Name.writes.writes(o.lastname),
-        "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
-        "phonenumber" -> Writes.OptionWrites(using Phone.writes).writes(o.phonenumber),
-        "phonenumbertype" -> Writes.OptionWrites(using Name.writes).writes(o.phonenumbertype),
-        "emailaddress" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.emailaddress),
+        "suffix" -> Writes.StringWrites.writes(o.suffix),
+        "phonenumber" -> Phone.writes.writes(o.phonenumber),
+        "phonenumbertype" -> Name.writes.writes(o.phonenumbertype),
+        "emailaddress" -> Writes.StringWrites.writes(o.emailaddress),
         "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion)
       ))
     )

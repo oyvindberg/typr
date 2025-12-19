@@ -7,12 +7,13 @@ package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.orders.OrdersId
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -51,18 +52,18 @@ data class OrderItemsRowUnsaved(
   /** Default: NULL
     * Points to [testdb.warehouses.WarehousesRow.warehouseId]
     */
-  @JsonProperty("warehouse_id") val warehouseId: Defaulted<Optional<WarehousesId>> = UseDefault(),
+  @JsonProperty("warehouse_id") val warehouseId: Defaulted<WarehousesId?> = UseDefault(),
   /** Default: NULL
 
     */
-  val notes: Defaulted<Optional<String>> = UseDefault()
+  val notes: Defaulted<String?> = UseDefault()
 ) {
   fun toRow(
     discountAmountDefault: () -> BigDecimal,
     taxAmountDefault: () -> BigDecimal,
     fulfillmentStatusDefault: () -> String,
-    warehouseIdDefault: () -> Optional<WarehousesId>,
-    notesDefault: () -> Optional<String>,
+    warehouseIdDefault: () -> WarehousesId?,
+    notesDefault: () -> String?,
     itemIdDefault: () -> OrderItemsId
   ): OrderItemsRow = OrderItemsRow(itemId = itemIdDefault(), orderId = orderId, productId = productId, sku = sku, productName = productName, quantity = quantity, unitPrice = unitPrice, discountAmount = discountAmount.getOrElse(discountAmountDefault), taxAmount = taxAmount.getOrElse(taxAmountDefault), lineTotal = lineTotal, fulfillmentStatus = fulfillmentStatus.getOrElse(fulfillmentStatusDefault), warehouseId = warehouseId.getOrElse(warehouseIdDefault), notes = notes.getOrElse(notesDefault))
 
@@ -76,20 +77,20 @@ data class OrderItemsRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.varchar.mariaText().unsafeEncode(row.productName, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.smallintUnsigned.mariaText().unsafeEncode(row.quantity, sb)
+      KotlinDbTypes.MariaTypes.smallintUnsigned.mariaText().unsafeEncode(row.quantity, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.unitPrice, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.unitPrice, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.lineTotal, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.lineTotal, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.mariaText()).unsafeEncode(row.discountAmount, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.mariaText()).unsafeEncode(row.discountAmount, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.mariaText()).unsafeEncode(row.taxAmount, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.mariaText()).unsafeEncode(row.taxAmount, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.text.mariaText()).unsafeEncode(row.fulfillmentStatus, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(WarehousesId.pgType.opt().mariaText()).unsafeEncode(row.warehouseId, sb)
+      Defaulted.mariaText(WarehousesId.pgType.nullable().mariaText()).unsafeEncode(row.warehouseId, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.tinytext.opt().mariaText()).unsafeEncode(row.notes, sb) })
+      Defaulted.mariaText(MariaTypes.tinytext.nullable().mariaText()).unsafeEncode(row.notes, sb) })
   }
 }

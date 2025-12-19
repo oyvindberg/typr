@@ -18,13 +18,13 @@ import io.circe.Encoder
  */
 case class FootballClubRow(
   id: FootballClubId,
-  name: /* max 100 chars */ String
+  name: String
 )
 
 object FootballClubRow {
-  given decoder: Decoder[FootballClubRow] = Decoder.forProduct2[FootballClubRow, FootballClubId, /* max 100 chars */ String]("id", "name")(FootballClubRow.apply)(using FootballClubId.decoder, Decoder.decodeString)
+  given decoder: Decoder[FootballClubRow] = Decoder.forProduct2[FootballClubRow, FootballClubId, String]("id", "name")(FootballClubRow.apply)(using FootballClubId.decoder, Decoder.decodeString)
 
-  given encoder: Encoder[FootballClubRow] = Encoder.forProduct2[FootballClubRow, FootballClubId, /* max 100 chars */ String]("id", "name")(x => (x.id, x.name))(using FootballClubId.encoder, Encoder.encodeString)
+  given encoder: Encoder[FootballClubRow] = Encoder.forProduct2[FootballClubRow, FootballClubId, String]("id", "name")(x => (x.id, x.name))(using FootballClubId.encoder, Encoder.encodeString)
 
   given pgText: Text[FootballClubRow] = {
     Text.instance[FootballClubRow]{ (row, sb) =>
@@ -41,7 +41,7 @@ object FootballClubRow {
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       FootballClubRow(
         id = arr(0).asInstanceOf[FootballClubId],
-            name = arr(1).asInstanceOf[/* max 100 chars */ String]
+            name = arr(1).asInstanceOf[String]
       )
     }
   }

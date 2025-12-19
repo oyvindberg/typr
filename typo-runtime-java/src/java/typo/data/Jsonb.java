@@ -1,4 +1,3 @@
 package typo.data;
 
-public record Jsonb(String value) {
-}
+public record Jsonb(String value) {}

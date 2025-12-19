@@ -7,13 +7,14 @@ package testdb.product_prices
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.price_tiers.PriceTiersId
 import testdb.products.ProductsId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `product_prices` which has not been persisted yet */
 case class ProductPricesRowUnsaved(
@@ -22,13 +23,13 @@ case class ProductPricesRowUnsaved(
    */
   @JsonProperty("product_id") productId: ProductsId,
   /**  */
-  price: java.math.BigDecimal,
+  price: BigDecimal,
   /**  */
   @JsonProperty("valid_from") validFrom: LocalDate,
   /** Default: NULL
    * Points to [[testdb.price_tiers.PriceTiersRow.tierId]]
    */
-  @JsonProperty("tier_id") tierId: Defaulted[Optional[PriceTiersId]] = new UseDefault(),
+  @JsonProperty("tier_id") tierId: Defaulted[Option[PriceTiersId]] = new UseDefault(),
   /** Default: 'USD'
 
    */
@@ -36,12 +37,12 @@ case class ProductPricesRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("valid_to") validTo: Defaulted[Optional[LocalDate]] = new UseDefault()
+  @JsonProperty("valid_to") validTo: Defaulted[Option[LocalDate]] = new UseDefault()
 ) {
   def toRow(
-    tierIdDefault: => Optional[PriceTiersId],
+    tierIdDefault: => Option[PriceTiersId],
     currencyCodeDefault: => String,
-    validToDefault: => Optional[LocalDate],
+    validToDefault: => Option[LocalDate],
     priceIdDefault: => ProductPricesId
   ): ProductPricesRow = {
     new ProductPricesRow(
@@ -57,5 +58,5 @@ case class ProductPricesRowUnsaved(
 }
 
 object ProductPricesRowUnsaved {
-  given mariaText: MariaText[ProductPricesRowUnsaved] = MariaText.instance((row, sb) => { ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.price, sb); sb.append(MariaText.DELIMETER); MariaTypes.date.mariaText.unsafeEncode(row.validFrom, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using PriceTiersId.pgType.opt().mariaText).unsafeEncode(row.tierId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.char_.mariaText).unsafeEncode(row.currencyCode, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.date.opt().mariaText).unsafeEncode(row.validTo, sb) })
+  given mariaText: MariaText[ProductPricesRowUnsaved] = MariaText.instance((row, sb) => { ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.price, sb); sb.append(MariaText.DELIMETER); MariaTypes.date.mariaText.unsafeEncode(row.validFrom, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using PriceTiersId.pgType.nullable.mariaText).unsafeEncode(row.tierId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.char_.mariaText).unsafeEncode(row.currencyCode, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.date.nullable.mariaText).unsafeEncode(row.validTo, sb) })
 }

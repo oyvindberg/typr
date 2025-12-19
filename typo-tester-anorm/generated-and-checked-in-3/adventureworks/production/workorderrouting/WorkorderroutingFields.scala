@@ -17,6 +17,7 @@ import anorm.ParameterMetaData
 import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -25,7 +26,6 @@ import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait WorkorderroutingFields {
   def workorderid: IdField[WorkorderId, WorkorderroutingRow]
@@ -54,11 +54,11 @@ trait WorkorderroutingFields {
 }
 
 object WorkorderroutingFields {
-  lazy val structure: Relation[WorkorderroutingFields, WorkorderroutingRow] =
+  lazy val structure: RelationStructure[WorkorderroutingFields, WorkorderroutingRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[WorkorderroutingFields, WorkorderroutingRow] {
+    extends RelationStructure[WorkorderroutingFields, WorkorderroutingRow] {
 
     override lazy val fields: WorkorderroutingFields = new WorkorderroutingFields {
       override def workorderid = IdField[WorkorderId, WorkorderroutingRow](_path, "workorderid", None, Some("int4"), x => x.workorderid, (row, value) => row.copy(workorderid = value))

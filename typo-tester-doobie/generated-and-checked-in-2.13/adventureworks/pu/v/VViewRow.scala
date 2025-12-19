@@ -33,15 +33,15 @@ case class VViewRow(
   /** Points to [[adventureworks.purchasing.vendor.VendorRow.activeflag]] */
   activeflag: Flag,
   /** Points to [[adventureworks.purchasing.vendor.VendorRow.purchasingwebserviceurl]] */
-  purchasingwebserviceurl: Option[/* max 1024 chars */ String],
+  purchasingwebserviceurl: String,
   /** Points to [[adventureworks.purchasing.vendor.VendorRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 
 object VViewRow {
-  implicit lazy val decoder: Decoder[VViewRow] = Decoder.forProduct9[VViewRow, BusinessentityId, BusinessentityId, AccountNumber, Name, TypoShort, Flag, Flag, Option[/* max 1024 chars */ String], TypoLocalDateTime]("id", "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")(VViewRow.apply)(BusinessentityId.decoder, BusinessentityId.decoder, AccountNumber.decoder, Name.decoder, TypoShort.decoder, Flag.decoder, Flag.decoder, Decoder.decodeOption(Decoder.decodeString), TypoLocalDateTime.decoder)
+  implicit lazy val decoder: Decoder[VViewRow] = Decoder.forProduct9[VViewRow, BusinessentityId, BusinessentityId, AccountNumber, Name, TypoShort, Flag, Flag, String, TypoLocalDateTime]("id", "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")(VViewRow.apply)(BusinessentityId.decoder, BusinessentityId.decoder, AccountNumber.decoder, Name.decoder, TypoShort.decoder, Flag.decoder, Flag.decoder, Decoder.decodeString, TypoLocalDateTime.decoder)
 
-  implicit lazy val encoder: Encoder[VViewRow] = Encoder.forProduct9[VViewRow, BusinessentityId, BusinessentityId, AccountNumber, Name, TypoShort, Flag, Flag, Option[/* max 1024 chars */ String], TypoLocalDateTime]("id", "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")(x => (x.id, x.businessentityid, x.accountnumber, x.name, x.creditrating, x.preferredvendorstatus, x.activeflag, x.purchasingwebserviceurl, x.modifieddate))(BusinessentityId.encoder, BusinessentityId.encoder, AccountNumber.encoder, Name.encoder, TypoShort.encoder, Flag.encoder, Flag.encoder, Encoder.encodeOption(Encoder.encodeString), TypoLocalDateTime.encoder)
+  implicit lazy val encoder: Encoder[VViewRow] = Encoder.forProduct9[VViewRow, BusinessentityId, BusinessentityId, AccountNumber, Name, TypoShort, Flag, Flag, String, TypoLocalDateTime]("id", "businessentityid", "accountnumber", "name", "creditrating", "preferredvendorstatus", "activeflag", "purchasingwebserviceurl", "modifieddate")(x => (x.id, x.businessentityid, x.accountnumber, x.name, x.creditrating, x.preferredvendorstatus, x.activeflag, x.purchasingwebserviceurl, x.modifieddate))(BusinessentityId.encoder, BusinessentityId.encoder, AccountNumber.encoder, Name.encoder, TypoShort.encoder, Flag.encoder, Flag.encoder, Encoder.encodeString, TypoLocalDateTime.encoder)
 
   implicit lazy val read: Read[VViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -52,7 +52,7 @@ object VViewRow {
         new Read.Single(TypoShort.get).asInstanceOf[Read[Any]],
         new Read.Single(Flag.get).asInstanceOf[Read[Any]],
         new Read.Single(Flag.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
     ))(scala.reflect.ClassTag.Any).map { arr =>
       VViewRow(
@@ -63,7 +63,7 @@ object VViewRow {
             creditrating = arr(4).asInstanceOf[TypoShort],
             preferredvendorstatus = arr(5).asInstanceOf[Flag],
             activeflag = arr(6).asInstanceOf[Flag],
-            purchasingwebserviceurl = arr(7).asInstanceOf[Option[/* max 1024 chars */ String]],
+            purchasingwebserviceurl = arr(7).asInstanceOf[String],
             modifieddate = arr(8).asInstanceOf[TypoLocalDateTime]
       )
     }

@@ -7,11 +7,12 @@ package testdb.inventory
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -48,11 +49,11 @@ data class InventoryRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("bin_location") val binLocation: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("bin_location") val binLocation: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("last_counted_at") val lastCountedAt: Defaulted<Optional<LocalDateTime>> = UseDefault(),
+  @JsonProperty("last_counted_at") val lastCountedAt: Defaulted<LocalDateTime?> = UseDefault(),
   /** Default: current_timestamp(6)
 
     */
@@ -64,8 +65,8 @@ data class InventoryRowUnsaved(
     quantityOnOrderDefault: () -> Int,
     reorderPointDefault: () -> Int,
     reorderQuantityDefault: () -> Int,
-    binLocationDefault: () -> Optional<String>,
-    lastCountedAtDefault: () -> Optional<LocalDateTime>,
+    binLocationDefault: () -> String?,
+    lastCountedAtDefault: () -> LocalDateTime?,
     updatedAtDefault: () -> LocalDateTime,
     inventoryIdDefault: () -> InventoryId
   ): InventoryRow = InventoryRow(inventoryId = inventoryIdDefault(), productId = productId, warehouseId = warehouseId, quantityOnHand = quantityOnHand.getOrElse(quantityOnHandDefault), quantityReserved = quantityReserved.getOrElse(quantityReservedDefault), quantityOnOrder = quantityOnOrder.getOrElse(quantityOnOrderDefault), reorderPoint = reorderPoint.getOrElse(reorderPointDefault), reorderQuantity = reorderQuantity.getOrElse(reorderQuantityDefault), binLocation = binLocation.getOrElse(binLocationDefault), lastCountedAt = lastCountedAt.getOrElse(lastCountedAtDefault), updatedAt = updatedAt.getOrElse(updatedAtDefault))
@@ -76,19 +77,19 @@ data class InventoryRowUnsaved(
       sb.append(MariaText.DELIMETER)
       WarehousesId.pgType.mariaText().unsafeEncode(row.warehouseId, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.int_.mariaText()).unsafeEncode(row.quantityOnHand, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.int_.mariaText()).unsafeEncode(row.quantityOnHand, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.int_.mariaText()).unsafeEncode(row.quantityReserved, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.int_.mariaText()).unsafeEncode(row.quantityReserved, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.int_.mariaText()).unsafeEncode(row.quantityOnOrder, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.int_.mariaText()).unsafeEncode(row.quantityOnOrder, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.int_.mariaText()).unsafeEncode(row.reorderPoint, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.int_.mariaText()).unsafeEncode(row.reorderPoint, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.int_.mariaText()).unsafeEncode(row.reorderQuantity, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.int_.mariaText()).unsafeEncode(row.reorderQuantity, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.binLocation, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.binLocation, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.lastCountedAt, sb)
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.lastCountedAt, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.updatedAt, sb) })
   }

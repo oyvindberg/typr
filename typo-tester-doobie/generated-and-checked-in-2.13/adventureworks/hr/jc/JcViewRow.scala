@@ -20,31 +20,31 @@ case class JcViewRow(
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.businessentityid]] */
-  businessentityid: Option[BusinessentityId],
+  businessentityid: BusinessentityId,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.resume]] */
-  resume: Option[TypoXml],
+  resume: TypoXml,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 
 object JcViewRow {
-  implicit lazy val decoder: Decoder[JcViewRow] = Decoder.forProduct5[JcViewRow, JobcandidateId, JobcandidateId, Option[BusinessentityId], Option[TypoXml], TypoLocalDateTime]("id", "jobcandidateid", "businessentityid", "resume", "modifieddate")(JcViewRow.apply)(JobcandidateId.decoder, JobcandidateId.decoder, Decoder.decodeOption(BusinessentityId.decoder), Decoder.decodeOption(TypoXml.decoder), TypoLocalDateTime.decoder)
+  implicit lazy val decoder: Decoder[JcViewRow] = Decoder.forProduct5[JcViewRow, JobcandidateId, JobcandidateId, BusinessentityId, TypoXml, TypoLocalDateTime]("id", "jobcandidateid", "businessentityid", "resume", "modifieddate")(JcViewRow.apply)(JobcandidateId.decoder, JobcandidateId.decoder, BusinessentityId.decoder, TypoXml.decoder, TypoLocalDateTime.decoder)
 
-  implicit lazy val encoder: Encoder[JcViewRow] = Encoder.forProduct5[JcViewRow, JobcandidateId, JobcandidateId, Option[BusinessentityId], Option[TypoXml], TypoLocalDateTime]("id", "jobcandidateid", "businessentityid", "resume", "modifieddate")(x => (x.id, x.jobcandidateid, x.businessentityid, x.resume, x.modifieddate))(JobcandidateId.encoder, JobcandidateId.encoder, Encoder.encodeOption(BusinessentityId.encoder), Encoder.encodeOption(TypoXml.encoder), TypoLocalDateTime.encoder)
+  implicit lazy val encoder: Encoder[JcViewRow] = Encoder.forProduct5[JcViewRow, JobcandidateId, JobcandidateId, BusinessentityId, TypoXml, TypoLocalDateTime]("id", "jobcandidateid", "businessentityid", "resume", "modifieddate")(x => (x.id, x.jobcandidateid, x.businessentityid, x.resume, x.modifieddate))(JobcandidateId.encoder, JobcandidateId.encoder, BusinessentityId.encoder, TypoXml.encoder, TypoLocalDateTime.encoder)
 
   implicit lazy val read: Read[JcViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.Single(JobcandidateId.get).asInstanceOf[Read[Any]],
         new Read.Single(JobcandidateId.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(BusinessentityId.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoXml.get).asInstanceOf[Read[Any]],
+        new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoXml.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
     ))(scala.reflect.ClassTag.Any).map { arr =>
       JcViewRow(
         id = arr(0).asInstanceOf[JobcandidateId],
             jobcandidateid = arr(1).asInstanceOf[JobcandidateId],
-            businessentityid = arr(2).asInstanceOf[Option[BusinessentityId]],
-            resume = arr(3).asInstanceOf[Option[TypoXml]],
+            businessentityid = arr(2).asInstanceOf[BusinessentityId],
+            resume = arr(3).asInstanceOf[TypoXml],
             modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
       )
     }

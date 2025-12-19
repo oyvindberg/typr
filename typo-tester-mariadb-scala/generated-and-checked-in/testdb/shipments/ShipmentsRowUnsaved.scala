@@ -8,7 +8,6 @@ package testdb.shipments
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.orders.OrdersId
@@ -16,6 +15,8 @@ import testdb.shipping_carriers.ShippingCarriersId
 import testdb.warehouses.WarehousesId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `shipments` which has not been persisted yet */
 case class ShipmentsRowUnsaved(
@@ -30,23 +31,23 @@ case class ShipmentsRowUnsaved(
   /**  */
   @JsonProperty("shipping_method") shippingMethod: String,
   /**  */
-  @JsonProperty("shipping_cost") shippingCost: java.math.BigDecimal,
+  @JsonProperty("shipping_cost") shippingCost: BigDecimal,
   /** Default: NULL
 
    */
-  @JsonProperty("tracking_number") trackingNumber: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("tracking_number") trackingNumber: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("weight_kg") weightKg: Defaulted[Optional[java.math.BigDecimal]] = new UseDefault(),
+  @JsonProperty("weight_kg") weightKg: Defaulted[Option[BigDecimal]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("dimensions_json") dimensionsJson: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("dimensions_json") dimensionsJson: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("label_data") labelData: Defaulted[Optional[Array[Byte]]] = new UseDefault(),
+  @JsonProperty("label_data") labelData: Defaulted[Option[Array[Byte]]] = new UseDefault(),
   /** Default: 'pending'
 
    */
@@ -54,23 +55,23 @@ case class ShipmentsRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("estimated_delivery_date") estimatedDeliveryDate: Defaulted[Optional[LocalDate]] = new UseDefault(),
+  @JsonProperty("estimated_delivery_date") estimatedDeliveryDate: Defaulted[Option[LocalDate]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("actual_delivery_at") actualDeliveryAt: Defaulted[Optional[LocalDateTime]] = new UseDefault(),
+  @JsonProperty("actual_delivery_at") actualDeliveryAt: Defaulted[Option[LocalDateTime]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("insurance_amount") insuranceAmount: Defaulted[Optional[java.math.BigDecimal]] = new UseDefault(),
+  @JsonProperty("insurance_amount") insuranceAmount: Defaulted[Option[BigDecimal]] = new UseDefault(),
   /** Default: NULL
    * Points to [[testdb.warehouses.WarehousesRow.warehouseId]]
    */
-  @JsonProperty("origin_warehouse_id") originWarehouseId: Defaulted[Optional[WarehousesId]] = new UseDefault(),
+  @JsonProperty("origin_warehouse_id") originWarehouseId: Defaulted[Option[WarehousesId]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("shipped_at") shippedAt: Defaulted[Optional[LocalDateTime]] = new UseDefault(),
+  @JsonProperty("shipped_at") shippedAt: Defaulted[Option[LocalDateTime]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
@@ -81,16 +82,16 @@ case class ShipmentsRowUnsaved(
   @JsonProperty("updated_at") updatedAt: Defaulted[LocalDateTime] = new UseDefault()
 ) {
   def toRow(
-    trackingNumberDefault: => Optional[String],
-    weightKgDefault: => Optional[java.math.BigDecimal],
-    dimensionsJsonDefault: => Optional[String],
-    labelDataDefault: => Optional[Array[Byte]],
+    trackingNumberDefault: => Option[String],
+    weightKgDefault: => Option[BigDecimal],
+    dimensionsJsonDefault: => Option[String],
+    labelDataDefault: => Option[Array[Byte]],
     statusDefault: => String,
-    estimatedDeliveryDateDefault: => Optional[LocalDate],
-    actualDeliveryAtDefault: => Optional[LocalDateTime],
-    insuranceAmountDefault: => Optional[java.math.BigDecimal],
-    originWarehouseIdDefault: => Optional[WarehousesId],
-    shippedAtDefault: => Optional[LocalDateTime],
+    estimatedDeliveryDateDefault: => Option[LocalDate],
+    actualDeliveryAtDefault: => Option[LocalDateTime],
+    insuranceAmountDefault: => Option[BigDecimal],
+    originWarehouseIdDefault: => Option[WarehousesId],
+    shippedAtDefault: => Option[LocalDateTime],
     createdAtDefault: => LocalDateTime,
     updatedAtDefault: => LocalDateTime,
     shipmentIdDefault: => ShipmentsId
@@ -118,5 +119,5 @@ case class ShipmentsRowUnsaved(
 }
 
 object ShipmentsRowUnsaved {
-  given mariaText: MariaText[ShipmentsRowUnsaved] = MariaText.instance((row, sb) => { OrdersId.pgType.mariaText.unsafeEncode(row.orderId, sb); sb.append(MariaText.DELIMETER); ShippingCarriersId.pgType.mariaText.unsafeEncode(row.carrierId, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.shippingMethod, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.shippingCost, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.trackingNumber, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.opt().mariaText).unsafeEncode(row.weightKg, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.dimensionsJson, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longblob.opt().mariaText).unsafeEncode(row.labelData, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.status, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.date.opt().mariaText).unsafeEncode(row.estimatedDeliveryDate, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.actualDeliveryAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.opt().mariaText).unsafeEncode(row.insuranceAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using WarehousesId.pgType.opt().mariaText).unsafeEncode(row.originWarehouseId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.shippedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.updatedAt, sb) })
+  given mariaText: MariaText[ShipmentsRowUnsaved] = MariaText.instance((row, sb) => { OrdersId.pgType.mariaText.unsafeEncode(row.orderId, sb); sb.append(MariaText.DELIMETER); ShippingCarriersId.pgType.mariaText.unsafeEncode(row.carrierId, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.shippingMethod, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.shippingCost, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.trackingNumber, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.nullable.mariaText).unsafeEncode(row.weightKg, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.dimensionsJson, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longblob.nullable.mariaText).unsafeEncode(row.labelData, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.status, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.date.nullable.mariaText).unsafeEncode(row.estimatedDeliveryDate, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.actualDeliveryAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.nullable.mariaText).unsafeEncode(row.insuranceAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using WarehousesId.pgType.nullable.mariaText).unsafeEncode(row.originWarehouseId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.shippedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.updatedAt, sb) })
 }

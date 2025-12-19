@@ -6,14 +6,15 @@
 package testdb.warehouses
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import org.mariadb.jdbc.type.Point
 import org.mariadb.jdbc.type.Polygon
 import testdb.customtypes.Defaulted
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: warehouses
   * Primary key: warehouse_id
@@ -34,7 +35,7 @@ data class WarehousesRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("service_area") val serviceArea: Optional<Polygon>,
+  @JsonProperty("service_area") val serviceArea: Polygon?,
   /** 
     * Default: 'UTC'
     */
@@ -46,26 +47,26 @@ data class WarehousesRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("contact_email") val contactEmail: Optional<String>,
+  @JsonProperty("contact_email") val contactEmail: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("contact_phone") val contactPhone: Optional<String>
+  @JsonProperty("contact_phone") val contactPhone: String?
 ) {
   fun id(): WarehousesId = warehouseId
 
   fun toUnsavedRow(
-    serviceArea: Defaulted<Optional<Polygon>>,
+    serviceArea: Defaulted<Polygon?>,
     timezone: Defaulted<String>,
     isActive: Defaulted<Boolean>,
-    contactEmail: Defaulted<Optional<String>>,
-    contactPhone: Defaulted<Optional<String>>
+    contactEmail: Defaulted<String?>,
+    contactPhone: Defaulted<String?>
   ): WarehousesRowUnsaved = WarehousesRowUnsaved(code, name, address, location, serviceArea, timezone, isActive, contactEmail, contactPhone)
 
   companion object {
-    val _rowParser: RowParser<WarehousesRow> = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.point, MariaTypes.polygon.opt(), MariaTypes.varchar, MariaTypes.bool, MariaTypes.varchar.opt(), MariaTypes.varchar.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> WarehousesRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.warehouseId, row.code, row.name, row.address, row.location, row.serviceArea, row.timezone, row.isActive, row.contactEmail, row.contactPhone) })
+    val _rowParser: RowParser<WarehousesRow> = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.point, MariaTypes.polygon.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> WarehousesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.warehouseId, row.code, row.name, row.address, row.location, row.serviceArea, row.timezone, row.isActive, row.contactEmail, row.contactPhone) })
 
     val mariaText: MariaText<WarehousesRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

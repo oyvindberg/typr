@@ -16,24 +16,24 @@ import io.circe.Encoder
 case class VjobcandidateeducationViewRow(
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
-  eduLevel: /* nullability unknown */ Option[/* max 50 chars */ String],
-  eduStartDate: /* nullability unknown */ Option[TypoLocalDate],
-  eduEndDate: /* nullability unknown */ Option[TypoLocalDate],
-  eduDegree: /* nullability unknown */ Option[/* max 50 chars */ String],
-  eduMajor: /* nullability unknown */ Option[/* max 50 chars */ String],
-  eduMinor: /* nullability unknown */ Option[/* max 50 chars */ String],
-  eduGPA: /* nullability unknown */ Option[/* max 5 chars */ String],
-  eduGPAScale: /* nullability unknown */ Option[/* max 5 chars */ String],
-  eduSchool: /* nullability unknown */ Option[/* max 100 chars */ String],
-  eduLocCountryRegion: /* nullability unknown */ Option[/* max 100 chars */ String],
-  eduLocState: /* nullability unknown */ Option[/* max 100 chars */ String],
-  eduLocCity: /* nullability unknown */ Option[/* max 100 chars */ String]
+  eduLevel: Option[/* max 50 chars */ String],
+  eduStartDate: Option[TypoLocalDate],
+  eduEndDate: Option[TypoLocalDate],
+  eduDegree: Option[/* max 50 chars */ String],
+  eduMajor: Option[/* max 50 chars */ String],
+  eduMinor: Option[/* max 50 chars */ String],
+  eduGPA: Option[/* max 5 chars */ String],
+  eduGPAScale: Option[/* max 5 chars */ String],
+  eduSchool: Option[/* max 100 chars */ String],
+  eduLocCountryRegion: Option[/* max 100 chars */ String],
+  eduLocState: Option[/* max 100 chars */ String],
+  eduLocCity: Option[/* max 100 chars */ String]
 )
 
 object VjobcandidateeducationViewRow {
-  implicit lazy val decoder: Decoder[VjobcandidateeducationViewRow] = Decoder.forProduct13[VjobcandidateeducationViewRow, JobcandidateId, /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 5 chars */ String], /* nullability unknown */ Option[/* max 5 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String]]("jobcandidateid", "Edu.Level", "Edu.StartDate", "Edu.EndDate", "Edu.Degree", "Edu.Major", "Edu.Minor", "Edu.GPA", "Edu.GPAScale", "Edu.School", "Edu.Loc.CountryRegion", "Edu.Loc.State", "Edu.Loc.City")(VjobcandidateeducationViewRow.apply)(JobcandidateId.decoder, Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(TypoLocalDate.decoder), Decoder.decodeOption(TypoLocalDate.decoder), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString))
+  implicit lazy val decoder: Decoder[VjobcandidateeducationViewRow] = Decoder.forProduct13[VjobcandidateeducationViewRow, JobcandidateId, Option[/* max 50 chars */ String], Option[TypoLocalDate], Option[TypoLocalDate], Option[/* max 50 chars */ String], Option[/* max 50 chars */ String], Option[/* max 50 chars */ String], Option[/* max 5 chars */ String], Option[/* max 5 chars */ String], Option[/* max 100 chars */ String], Option[/* max 100 chars */ String], Option[/* max 100 chars */ String], Option[/* max 100 chars */ String]]("jobcandidateid", "Edu.Level", "Edu.StartDate", "Edu.EndDate", "Edu.Degree", "Edu.Major", "Edu.Minor", "Edu.GPA", "Edu.GPAScale", "Edu.School", "Edu.Loc.CountryRegion", "Edu.Loc.State", "Edu.Loc.City")(VjobcandidateeducationViewRow.apply)(JobcandidateId.decoder, Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(TypoLocalDate.decoder), Decoder.decodeOption(TypoLocalDate.decoder), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString))
 
-  implicit lazy val encoder: Encoder[VjobcandidateeducationViewRow] = Encoder.forProduct13[VjobcandidateeducationViewRow, JobcandidateId, /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[TypoLocalDate], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 50 chars */ String], /* nullability unknown */ Option[/* max 5 chars */ String], /* nullability unknown */ Option[/* max 5 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String], /* nullability unknown */ Option[/* max 100 chars */ String]]("jobcandidateid", "Edu.Level", "Edu.StartDate", "Edu.EndDate", "Edu.Degree", "Edu.Major", "Edu.Minor", "Edu.GPA", "Edu.GPAScale", "Edu.School", "Edu.Loc.CountryRegion", "Edu.Loc.State", "Edu.Loc.City")(x => (x.jobcandidateid, x.eduLevel, x.eduStartDate, x.eduEndDate, x.eduDegree, x.eduMajor, x.eduMinor, x.eduGPA, x.eduGPAScale, x.eduSchool, x.eduLocCountryRegion, x.eduLocState, x.eduLocCity))(JobcandidateId.encoder, Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(TypoLocalDate.encoder), Encoder.encodeOption(TypoLocalDate.encoder), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString))
+  implicit lazy val encoder: Encoder[VjobcandidateeducationViewRow] = Encoder.forProduct13[VjobcandidateeducationViewRow, JobcandidateId, Option[/* max 50 chars */ String], Option[TypoLocalDate], Option[TypoLocalDate], Option[/* max 50 chars */ String], Option[/* max 50 chars */ String], Option[/* max 50 chars */ String], Option[/* max 5 chars */ String], Option[/* max 5 chars */ String], Option[/* max 100 chars */ String], Option[/* max 100 chars */ String], Option[/* max 100 chars */ String], Option[/* max 100 chars */ String]]("jobcandidateid", "Edu.Level", "Edu.StartDate", "Edu.EndDate", "Edu.Degree", "Edu.Major", "Edu.Minor", "Edu.GPA", "Edu.GPAScale", "Edu.School", "Edu.Loc.CountryRegion", "Edu.Loc.State", "Edu.Loc.City")(x => (x.jobcandidateid, x.eduLevel, x.eduStartDate, x.eduEndDate, x.eduDegree, x.eduMajor, x.eduMinor, x.eduGPA, x.eduGPAScale, x.eduSchool, x.eduLocCountryRegion, x.eduLocState, x.eduLocCity))(JobcandidateId.encoder, Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(TypoLocalDate.encoder), Encoder.encodeOption(TypoLocalDate.encoder), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString))
 
   implicit lazy val read: Read[VjobcandidateeducationViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -53,18 +53,18 @@ object VjobcandidateeducationViewRow {
     ))(scala.reflect.ClassTag.Any).map { arr =>
       VjobcandidateeducationViewRow(
         jobcandidateid = arr(0).asInstanceOf[JobcandidateId],
-            eduLevel = arr(1).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
-            eduStartDate = arr(2).asInstanceOf[/* nullability unknown */ Option[TypoLocalDate]],
-            eduEndDate = arr(3).asInstanceOf[/* nullability unknown */ Option[TypoLocalDate]],
-            eduDegree = arr(4).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
-            eduMajor = arr(5).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
-            eduMinor = arr(6).asInstanceOf[/* nullability unknown */ Option[/* max 50 chars */ String]],
-            eduGPA = arr(7).asInstanceOf[/* nullability unknown */ Option[/* max 5 chars */ String]],
-            eduGPAScale = arr(8).asInstanceOf[/* nullability unknown */ Option[/* max 5 chars */ String]],
-            eduSchool = arr(9).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
-            eduLocCountryRegion = arr(10).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
-            eduLocState = arr(11).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]],
-            eduLocCity = arr(12).asInstanceOf[/* nullability unknown */ Option[/* max 100 chars */ String]]
+            eduLevel = arr(1).asInstanceOf[Option[/* max 50 chars */ String]],
+            eduStartDate = arr(2).asInstanceOf[Option[TypoLocalDate]],
+            eduEndDate = arr(3).asInstanceOf[Option[TypoLocalDate]],
+            eduDegree = arr(4).asInstanceOf[Option[/* max 50 chars */ String]],
+            eduMajor = arr(5).asInstanceOf[Option[/* max 50 chars */ String]],
+            eduMinor = arr(6).asInstanceOf[Option[/* max 50 chars */ String]],
+            eduGPA = arr(7).asInstanceOf[Option[/* max 5 chars */ String]],
+            eduGPAScale = arr(8).asInstanceOf[Option[/* max 5 chars */ String]],
+            eduSchool = arr(9).asInstanceOf[Option[/* max 100 chars */ String]],
+            eduLocCountryRegion = arr(10).asInstanceOf[Option[/* max 100 chars */ String]],
+            eduLocState = arr(11).asInstanceOf[Option[/* max 100 chars */ String]],
+            eduLocCity = arr(12).asInstanceOf[Option[/* max 100 chars */ String]]
       )
     }
   }

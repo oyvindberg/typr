@@ -8,21 +8,19 @@ package adventureworks.person.businessentity
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class BusinessentityRepoMock(
   val toRow: (BusinessentityRowUnsaved) -> BusinessentityRow,
@@ -33,7 +31,7 @@ data class BusinessentityRepoMock(
   override fun deleteById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(businessentityid)).isPresent()
+  ): Boolean = map.remove(businessentityid) != null
 
   override fun deleteByIds(
     businessentityids: Array<BusinessentityId>,
@@ -41,7 +39,7 @@ data class BusinessentityRepoMock(
   ): Int {
     var count = 0
     for (id in businessentityids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class BusinessentityRepoMock(
     c: Connection
   ): BusinessentityRow {
     if (map.containsKey(unsaved.businessentityid)) {
-      throw RuntimeException(str("id $unsaved.businessentityid already exists"))
+      throw RuntimeException("id " + unsaved.businessentityid + " already exists")
     }
     map[unsaved.businessentityid] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class BusinessentityRepoMock(
   ): BusinessentityRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<BusinessentityRow>,
+    unsaved: Iterator<BusinessentityRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class BusinessentityRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<BusinessentityRowUnsaved>,
+    unsaved: Iterator<BusinessentityRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class BusinessentityRepoMock(
   override fun selectById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Optional<BusinessentityRow> = Optional.ofNullable(map[businessentityid])
+  ): BusinessentityRow? = map[businessentityid]
 
   override fun selectByIds(
     businessentityids: Array<BusinessentityId>,
@@ -109,9 +107,9 @@ data class BusinessentityRepoMock(
   ): List<BusinessentityRow> {
     val result = ArrayList<BusinessentityRow>()
     for (id in businessentityids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class BusinessentityRepoMock(
     row: BusinessentityRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.businessentityid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.businessentityid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.businessentityid] = row
     }
@@ -144,7 +142,7 @@ data class BusinessentityRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<BusinessentityRow>,
+    unsaved: Iterator<BusinessentityRow>,
     c: Connection
   ): List<BusinessentityRow> {
     val result = ArrayList<BusinessentityRow>()
@@ -158,7 +156,7 @@ data class BusinessentityRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<BusinessentityRow>,
+    unsaved: Iterator<BusinessentityRow>,
     batchSize: Int,
     c: Connection
   ): Int {

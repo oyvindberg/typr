@@ -9,7 +9,6 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
-import anorm.Column
 import anorm.RowParser
 import anorm.Success
 import play.api.libs.json.JsObject
@@ -17,7 +16,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -32,7 +30,7 @@ case class SthViewRow(
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.modifieddate]] */
@@ -48,7 +46,7 @@ object SthViewRow {
             businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
             territoryid = json.\("territoryid").as(SalesterritoryId.reads),
             startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-            enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            enddate = json.\("enddate").as(TypoLocalDateTime.reads),
             rowguid = json.\("rowguid").as(TypoUUID.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
@@ -65,7 +63,7 @@ object SthViewRow {
           businessentityid = row(idx + 1)(BusinessentityId.column),
           territoryid = row(idx + 2)(SalesterritoryId.column),
           startdate = row(idx + 3)(TypoLocalDateTime.column),
-          enddate = row(idx + 4)(Column.columnToOption(TypoLocalDateTime.column)),
+          enddate = row(idx + 4)(TypoLocalDateTime.column),
           rowguid = row(idx + 5)(TypoUUID.column),
           modifieddate = row(idx + 6)(TypoLocalDateTime.column)
         )
@@ -80,7 +78,7 @@ object SthViewRow {
         "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
         "territoryid" -> SalesterritoryId.writes.writes(o.territoryid),
         "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-        "enddate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.enddate),
+        "enddate" -> TypoLocalDateTime.writes.writes(o.enddate),
         "rowguid" -> TypoUUID.writes.writes(o.rowguid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))

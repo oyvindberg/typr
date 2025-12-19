@@ -14,14 +14,14 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.unitmeasure` */
-case class UnitmeasureId(value: /* bpchar, max 3 chars */ String) extends scala.AnyVal
+case class UnitmeasureId(value: String) extends scala.AnyVal
 
 object UnitmeasureId {
   given arrayGet: Get[Array[UnitmeasureId]] = adventureworks.StringArrayMeta.get.map(_.map(UnitmeasureId.apply))
 
   given arrayPut: Put[Array[UnitmeasureId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
 
-  given bijection: Bijection[UnitmeasureId, /* bpchar, max 3 chars */ String] = Bijection.apply[UnitmeasureId, /* bpchar, max 3 chars */ String](_.value)(UnitmeasureId.apply)
+  given bijection: Bijection[UnitmeasureId, String] = Bijection.apply[UnitmeasureId, String](_.value)(UnitmeasureId.apply)
 
   given decoder: Decoder[UnitmeasureId] = Decoder.decodeString.map(UnitmeasureId.apply)
 

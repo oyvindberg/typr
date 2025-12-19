@@ -5,12 +5,13 @@
  */
 package adventureworks.pr.pc
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.public.Name
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pr.pc */
 data class PcViewRow(
@@ -21,11 +22,11 @@ data class PcViewRow(
   /** Points to [adventureworks.production.productcategory.ProductcategoryRow.name] */
   val name: Name,
   /** Points to [adventureworks.production.productcategory.ProductcategoryRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.production.productcategory.ProductcategoryRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PcViewRow> = RowParsers.of(ProductcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> PcViewRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.id, row.productcategoryid, row.name, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<PcViewRow> = RowParsers.of(ProductcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> PcViewRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.id, row.productcategoryid, row.name, row.rowguid, row.modifieddate) })
   }
 }

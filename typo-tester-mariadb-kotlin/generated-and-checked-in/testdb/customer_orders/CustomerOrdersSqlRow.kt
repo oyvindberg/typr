@@ -8,12 +8,13 @@ package testdb.customer_orders
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customers.CustomersId
 import testdb.orders.OrdersId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** SQL file: customer_orders.sql */
 data class CustomerOrdersSqlRow(
@@ -28,17 +29,17 @@ data class CustomerOrdersSqlRow(
   /** Points to [testdb.customers.CustomersRow.tier] */
   val tier: String,
   /** Points to [testdb.orders.OrdersRow.orderId] */
-  @JsonProperty("order_id") val orderId: Optional<OrdersId>,
+  @JsonProperty("order_id") val orderId: OrdersId?,
   /** Points to [testdb.orders.OrdersRow.orderNumber] */
-  @JsonProperty("order_number") val orderNumber: Optional<String>,
+  @JsonProperty("order_number") val orderNumber: String?,
   /** Points to [testdb.orders.OrdersRow.orderStatus] */
-  @JsonProperty("order_status") val orderStatus: Optional<String>,
+  @JsonProperty("order_status") val orderStatus: String?,
   /** Points to [testdb.orders.OrdersRow.totalAmount] */
-  @JsonProperty("total_amount") val totalAmount: Optional<BigDecimal>,
+  @JsonProperty("total_amount") val totalAmount: BigDecimal?,
   /** Points to [testdb.orders.OrdersRow.orderedAt] */
-  @JsonProperty("ordered_at") val orderedAt: Optional<LocalDateTime>
+  @JsonProperty("ordered_at") val orderedAt: LocalDateTime?
 ) {
   companion object {
-    val _rowParser: RowParser<CustomerOrdersSqlRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, OrdersId.pgType.opt(), MariaTypes.varchar.opt(), MariaTypes.text.opt(), MariaTypes.decimal.opt(), MariaTypes.datetime.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> CustomerOrdersSqlRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.firstName, row.lastName, row.tier, row.orderId, row.orderNumber, row.orderStatus, row.totalAmount, row.orderedAt) })
+    val _rowParser: RowParser<CustomerOrdersSqlRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, OrdersId.pgType.nullable(), MariaTypes.varchar.nullable(), MariaTypes.text.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> CustomerOrdersSqlRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.firstName, row.lastName, row.tier, row.orderId, row.orderNumber, row.orderStatus, row.totalAmount, row.orderedAt) })
   }
 }

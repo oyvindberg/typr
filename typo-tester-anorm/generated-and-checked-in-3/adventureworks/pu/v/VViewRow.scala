@@ -40,7 +40,7 @@ case class VViewRow(
   /** Points to [[adventureworks.purchasing.vendor.VendorRow.activeflag]] */
   activeflag: Flag,
   /** Points to [[adventureworks.purchasing.vendor.VendorRow.purchasingwebserviceurl]] */
-  purchasingwebserviceurl: Option[/* max 1024 chars */ String],
+  purchasingwebserviceurl: String,
   /** Points to [[adventureworks.purchasing.vendor.VendorRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -57,7 +57,7 @@ object VViewRow {
             creditrating = json.\("creditrating").as(TypoShort.reads),
             preferredvendorstatus = json.\("preferredvendorstatus").as(Flag.reads),
             activeflag = json.\("activeflag").as(Flag.reads),
-            purchasingwebserviceurl = json.\("purchasingwebserviceurl").toOption.map(_.as(Reads.StringReads)),
+            purchasingwebserviceurl = json.\("purchasingwebserviceurl").as(Reads.StringReads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
         )
@@ -76,7 +76,7 @@ object VViewRow {
           creditrating = row(idx + 4)(using TypoShort.column),
           preferredvendorstatus = row(idx + 5)(using Flag.column),
           activeflag = row(idx + 6)(using Flag.column),
-          purchasingwebserviceurl = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
+          purchasingwebserviceurl = row(idx + 7)(using Column.columnToString),
           modifieddate = row(idx + 8)(using TypoLocalDateTime.column)
         )
       )
@@ -93,7 +93,7 @@ object VViewRow {
         "creditrating" -> TypoShort.writes.writes(o.creditrating),
         "preferredvendorstatus" -> Flag.writes.writes(o.preferredvendorstatus),
         "activeflag" -> Flag.writes.writes(o.activeflag),
-        "purchasingwebserviceurl" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.purchasingwebserviceurl),
+        "purchasingwebserviceurl" -> Writes.StringWrites.writes(o.purchasingwebserviceurl),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))
     )

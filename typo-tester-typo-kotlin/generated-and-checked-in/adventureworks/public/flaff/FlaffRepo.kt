@@ -6,77 +6,76 @@
 package adventureworks.public.flaff
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface FlaffRepo {
-  fun delete(): DeleteBuilder<FlaffFields, FlaffRow>
+  abstract fun delete(): DeleteBuilder<FlaffFields, FlaffRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: FlaffId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<FlaffId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: FlaffRow,
     c: Connection
   ): FlaffRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<FlaffRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<FlaffRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<FlaffFields, FlaffRow>
+  abstract fun select(): SelectBuilder<FlaffFields, FlaffRow>
 
-  fun selectAll(c: Connection): List<FlaffRow>
+  abstract fun selectAll(c: Connection): List<FlaffRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: FlaffId,
     c: Connection
-  ): Optional<FlaffRow>
+  ): FlaffRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<FlaffId>,
     c: Connection
   ): List<FlaffRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<FlaffId>,
     c: Connection
   ): Map<FlaffId, FlaffRow>
 
-  fun update(): UpdateBuilder<FlaffFields, FlaffRow>
+  abstract fun update(): UpdateBuilder<FlaffFields, FlaffRow>
 
-  fun update(
+  abstract fun update(
     row: FlaffRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: FlaffRow,
     c: Connection
   ): FlaffRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<FlaffRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<FlaffRow>,
     c: Connection
   ): List<FlaffRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<FlaffRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<FlaffRow>,
     batchSize: Int,
     c: Connection
   ): Int

@@ -25,9 +25,9 @@ case class PasswordRow(
   /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Password for the e-mail account. */
-  passwordhash: /* max 128 chars */ String,
+  passwordhash: String,
   /** Random value concatenated with the password string before the password is hashed. */
-  passwordsalt: /* max 10 chars */ String,
+  passwordsalt: String,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */

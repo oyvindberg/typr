@@ -6,89 +6,88 @@
 package adventureworks.humanresources.department
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface DepartmentRepo {
-  fun delete(): DeleteBuilder<DepartmentFields, DepartmentRow>
+  abstract fun delete(): DeleteBuilder<DepartmentFields, DepartmentRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     departmentid: DepartmentId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     departmentids: Array<DepartmentId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: DepartmentRow,
     c: Connection
   ): DepartmentRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: DepartmentRowUnsaved,
     c: Connection
   ): DepartmentRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<DepartmentRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<DepartmentRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<DepartmentRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<DepartmentRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<DepartmentFields, DepartmentRow>
+  abstract fun select(): SelectBuilder<DepartmentFields, DepartmentRow>
 
-  fun selectAll(c: Connection): List<DepartmentRow>
+  abstract fun selectAll(c: Connection): List<DepartmentRow>
 
-  fun selectById(
+  abstract fun selectById(
     departmentid: DepartmentId,
     c: Connection
-  ): Optional<DepartmentRow>
+  ): DepartmentRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     departmentids: Array<DepartmentId>,
     c: Connection
   ): List<DepartmentRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     departmentids: Array<DepartmentId>,
     c: Connection
   ): Map<DepartmentId, DepartmentRow>
 
-  fun update(): UpdateBuilder<DepartmentFields, DepartmentRow>
+  abstract fun update(): UpdateBuilder<DepartmentFields, DepartmentRow>
 
-  fun update(
+  abstract fun update(
     row: DepartmentRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: DepartmentRow,
     c: Connection
   ): DepartmentRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<DepartmentRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<DepartmentRow>,
     c: Connection
   ): List<DepartmentRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<DepartmentRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<DepartmentRow>,
     batchSize: Int,
     c: Connection
   ): Int

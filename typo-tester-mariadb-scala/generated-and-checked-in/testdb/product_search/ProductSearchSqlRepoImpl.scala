@@ -6,19 +6,21 @@
 package testdb.product_search
 
 import java.sql.Connection
-import java.util.Optional
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Fragment
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.Fragment.sql
 
 class ProductSearchSqlRepoImpl extends ProductSearchSqlRepo {
   override def apply(
-    brandId: Optional[Integer],
-    minPrice: Optional[java.math.BigDecimal],
-    maxPrice: Optional[java.math.BigDecimal],
-    status: Optional[String],
-    limit: java.lang.Long
-  )(using c: Connection): java.util.List[ProductSearchSqlRow] = {
-    interpolate"""-- Search products with optional filters
+    brandId: Option[Int],
+    minPrice: Option[BigDecimal],
+    maxPrice: Option[BigDecimal],
+    status: Option[String],
+    limit: Long
+  )(using c: Connection): List[ProductSearchSqlRow] = {
+    sql"""-- Search products with optional filters
     SELECT p.product_id,
            p.sku,
            p.name,
@@ -28,12 +30,12 @@ class ProductSearchSqlRepoImpl extends ProductSearchSqlRepo {
            b.name AS brand_name
     FROM products p
     LEFT JOIN brands b ON p.brand_id = b.brand_id
-    WHERE (${MariaTypes.int_.opt().encode(brandId)} IS NULL OR p.brand_id = ${MariaTypes.int_.opt().encode(brandId)})
-      AND (${MariaTypes.numeric.opt().encode(minPrice)} IS NULL OR p.base_price >= ${MariaTypes.numeric.opt().encode(minPrice)})
-      AND (${MariaTypes.numeric.opt().encode(maxPrice)} IS NULL OR p.base_price <= ${MariaTypes.numeric.opt().encode(maxPrice)})
-      AND (${MariaTypes.text.opt().encode(status)} IS NULL OR p.status = ${MariaTypes.text.opt().encode(status)})
+    WHERE (${Fragment.encode(ScalaDbTypes.MariaTypes.smallintUnsigned.nullable, brandId)} IS NULL OR p.brand_id = ${Fragment.encode(ScalaDbTypes.MariaTypes.smallintUnsigned.nullable, brandId)})
+      AND (${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, minPrice)} IS NULL OR p.base_price >= ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, minPrice)})
+      AND (${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, maxPrice)} IS NULL OR p.base_price <= ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, maxPrice)})
+      AND (${Fragment.encode(MariaTypes.text.nullable, status)} IS NULL OR p.status = ${Fragment.encode(MariaTypes.text.nullable, status)})
     ORDER BY p.name
-    LIMIT ${MariaTypes.bigint.encode(limit)}
+    LIMIT ${Fragment.encode(ScalaDbTypes.MariaTypes.bigint, limit)}
     """.query(ProductSearchSqlRow.`_rowParser`.all()).runUnchecked(c)
   }
 }

@@ -25,7 +25,7 @@ case class ProductdescriptionRow(
    */
   productdescriptionid: ProductdescriptionId,
   /** Description of the product. */
-  description: /* max 400 chars */ String,
+  description: String,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */
@@ -48,9 +48,9 @@ case class ProductdescriptionRow(
 }
 
 object ProductdescriptionRow {
-  given decoder: Decoder[ProductdescriptionRow] = Decoder.forProduct4[ProductdescriptionRow, ProductdescriptionId, /* max 400 chars */ String, TypoUUID, TypoLocalDateTime]("productdescriptionid", "description", "rowguid", "modifieddate")(ProductdescriptionRow.apply)(using ProductdescriptionId.decoder, Decoder.decodeString, TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[ProductdescriptionRow] = Decoder.forProduct4[ProductdescriptionRow, ProductdescriptionId, String, TypoUUID, TypoLocalDateTime]("productdescriptionid", "description", "rowguid", "modifieddate")(ProductdescriptionRow.apply)(using ProductdescriptionId.decoder, Decoder.decodeString, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[ProductdescriptionRow] = Encoder.forProduct4[ProductdescriptionRow, ProductdescriptionId, /* max 400 chars */ String, TypoUUID, TypoLocalDateTime]("productdescriptionid", "description", "rowguid", "modifieddate")(x => (x.productdescriptionid, x.description, x.rowguid, x.modifieddate))(using ProductdescriptionId.encoder, Encoder.encodeString, TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[ProductdescriptionRow] = Encoder.forProduct4[ProductdescriptionRow, ProductdescriptionId, String, TypoUUID, TypoLocalDateTime]("productdescriptionid", "description", "rowguid", "modifieddate")(x => (x.productdescriptionid, x.description, x.rowguid, x.modifieddate))(using ProductdescriptionId.encoder, Encoder.encodeString, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given pgText: Text[ProductdescriptionRow] = {
     Text.instance[ProductdescriptionRow]{ (row, sb) =>
@@ -73,7 +73,7 @@ object ProductdescriptionRow {
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       ProductdescriptionRow(
         productdescriptionid = arr(0).asInstanceOf[ProductdescriptionId],
-            description = arr(1).asInstanceOf[/* max 400 chars */ String],
+            description = arr(1).asInstanceOf[String],
             rowguid = arr(2).asInstanceOf[TypoUUID],
             modifieddate = arr(3).asInstanceOf[TypoLocalDateTime]
       )

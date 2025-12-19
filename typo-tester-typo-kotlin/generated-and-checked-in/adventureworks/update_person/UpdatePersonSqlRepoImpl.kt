@@ -5,26 +5,16 @@
  */
 package adventureworks.update_person
 
-import adventureworks.customtypes.TypoLocalDateTime
 import java.sql.Connection
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
-import typo.runtime.Fragment.interpolate
 
 class UpdatePersonSqlRepoImpl() : UpdatePersonSqlRepo {
   override fun apply(
     suffix: String,
-    cutoff: Optional<TypoLocalDateTime>,
+    cutoff: LocalDateTime?,
     c: Connection
-  ): Int = interpolate(
-    typo.runtime.Fragment.lit("""
-      update person.person
-      set firstname = firstname || '-' || """.trimMargin()),
-    PgTypes.text.encode(suffix),
-    typo.runtime.Fragment.lit("""
-  
-      where modifieddate < """.trimMargin()),
-    TypoLocalDateTime.pgType.opt().encode(cutoff),
-    typo.runtime.Fragment.lit("::timestamp")
-  ).update().runUnchecked(c)
+  ): Int = Fragment.interpolate(Fragment.lit("update person.person\nset firstname = firstname || '-' || "), Fragment.encode(PgTypes.text, suffix), Fragment.lit("\nwhere modifieddate < "), Fragment.encode(PgTypes.timestamp.nullable(), cutoff), Fragment.lit("::timestamp")).update().runUnchecked(c)
 }

@@ -13,9 +13,9 @@ import adventureworks.public.title_domain.TitleDomainId
 import adventureworks.public.title_domain.TitleDomainRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait TitledpersonFields {
   def titleShort: Field[TitleDomainId, TitledpersonRow]
@@ -30,11 +30,11 @@ trait TitledpersonFields {
 }
 
 object TitledpersonFields {
-  lazy val structure: Relation[TitledpersonFields, TitledpersonRow] =
+  lazy val structure: RelationStructure[TitledpersonFields, TitledpersonRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[TitledpersonFields, TitledpersonRow] {
+    extends RelationStructure[TitledpersonFields, TitledpersonRow] {
 
     override lazy val fields: TitledpersonFields = new TitledpersonFields {
       override def titleShort = Field[TitleDomainId, TitledpersonRow](_path, "title_short", None, Some("text"), x => x.titleShort, (row, value) => row.copy(titleShort = value))

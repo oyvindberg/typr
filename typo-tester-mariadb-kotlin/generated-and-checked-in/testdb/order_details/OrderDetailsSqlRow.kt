@@ -11,9 +11,10 @@ import java.time.LocalDateTime
 import testdb.order_items.OrderItemsId
 import testdb.orders.OrdersId
 import testdb.products.ProductsId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** SQL file: order_details.sql */
 data class OrderDetailsSqlRow(
@@ -53,6 +54,6 @@ data class OrderDetailsSqlRow(
   @JsonProperty("line_total") val lineTotal: BigDecimal
 ) {
   companion object {
-    val _rowParser: RowParser<OrderDetailsSqlRow> = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.datetime, OrderItemsId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.smallintUnsigned, MariaTypes.decimal, MariaTypes.decimal, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16 -> OrderDetailsSqlRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!) }, { row -> arrayOf<Any?>(row.orderId, row.orderNumber, row.orderStatus, row.paymentStatus, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.orderedAt, row.itemId, row.productId, row.sku, row.productName, row.quantity, row.unitPrice, row.lineTotal) })
+    val _rowParser: RowParser<OrderDetailsSqlRow> = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, MariaTypes.datetime, OrderItemsId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, KotlinDbTypes.MariaTypes.smallintUnsigned, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16 -> OrderDetailsSqlRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) }, { row -> arrayOf<Any?>(row.orderId, row.orderNumber, row.orderStatus, row.paymentStatus, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.orderedAt, row.itemId, row.productId, row.sku, row.productName, row.quantity, row.unitPrice, row.lineTotal) })
   }
 }

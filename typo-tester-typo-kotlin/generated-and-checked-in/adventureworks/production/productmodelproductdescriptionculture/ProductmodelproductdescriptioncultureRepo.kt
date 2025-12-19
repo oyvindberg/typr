@@ -6,89 +6,88 @@
 package adventureworks.production.productmodelproductdescriptionculture
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ProductmodelproductdescriptioncultureRepo {
-  fun delete(): DeleteBuilder<ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow>
+  abstract fun delete(): DeleteBuilder<ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: ProductmodelproductdescriptioncultureId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<ProductmodelproductdescriptioncultureId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ProductmodelproductdescriptioncultureRow,
     c: Connection
   ): ProductmodelproductdescriptioncultureRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ProductmodelproductdescriptioncultureRowUnsaved,
     c: Connection
   ): ProductmodelproductdescriptioncultureRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<ProductmodelproductdescriptioncultureRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<ProductmodelproductdescriptioncultureRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ProductmodelproductdescriptioncultureRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<ProductmodelproductdescriptioncultureRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow>
+  abstract fun select(): SelectBuilder<ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow>
 
-  fun selectAll(c: Connection): List<ProductmodelproductdescriptioncultureRow>
+  abstract fun selectAll(c: Connection): List<ProductmodelproductdescriptioncultureRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: ProductmodelproductdescriptioncultureId,
     c: Connection
-  ): Optional<ProductmodelproductdescriptioncultureRow>
+  ): ProductmodelproductdescriptioncultureRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<ProductmodelproductdescriptioncultureId>,
     c: Connection
   ): List<ProductmodelproductdescriptioncultureRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<ProductmodelproductdescriptioncultureId>,
     c: Connection
   ): Map<ProductmodelproductdescriptioncultureId, ProductmodelproductdescriptioncultureRow>
 
-  fun update(): UpdateBuilder<ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow>
+  abstract fun update(): UpdateBuilder<ProductmodelproductdescriptioncultureFields, ProductmodelproductdescriptioncultureRow>
 
-  fun update(
+  abstract fun update(
     row: ProductmodelproductdescriptioncultureRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ProductmodelproductdescriptioncultureRow,
     c: Connection
   ): ProductmodelproductdescriptioncultureRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<ProductmodelproductdescriptioncultureRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<ProductmodelproductdescriptioncultureRow>,
     c: Connection
   ): List<ProductmodelproductdescriptioncultureRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<ProductmodelproductdescriptioncultureRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<ProductmodelproductdescriptioncultureRow>,
     batchSize: Int,
     c: Connection
   ): Int

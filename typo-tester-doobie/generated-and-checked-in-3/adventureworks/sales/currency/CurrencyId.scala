@@ -14,14 +14,14 @@ import io.circe.Encoder
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.currency` */
-case class CurrencyId(value: /* bpchar, max 3 chars */ String) extends scala.AnyVal
+case class CurrencyId(value: String) extends scala.AnyVal
 
 object CurrencyId {
   given arrayGet: Get[Array[CurrencyId]] = adventureworks.StringArrayMeta.get.map(_.map(CurrencyId.apply))
 
   given arrayPut: Put[Array[CurrencyId]] = adventureworks.StringArrayMeta.put.contramap(_.map(_.value))
 
-  given bijection: Bijection[CurrencyId, /* bpchar, max 3 chars */ String] = Bijection.apply[CurrencyId, /* bpchar, max 3 chars */ String](_.value)(CurrencyId.apply)
+  given bijection: Bijection[CurrencyId, String] = Bijection.apply[CurrencyId, String](_.value)(CurrencyId.apply)
 
   given decoder: Decoder[CurrencyId] = Decoder.decodeString.map(CurrencyId.apply)
 

@@ -28,9 +28,9 @@ case class SpViewRow(
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.territoryid]] */
-  territoryid: Option[SalesterritoryId],
+  territoryid: SalesterritoryId,
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.salesquota]] */
-  salesquota: Option[BigDecimal],
+  salesquota: BigDecimal,
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.bonus]] */
   bonus: BigDecimal,
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.commissionpct]] */
@@ -52,8 +52,8 @@ object SpViewRow {
           SpViewRow(
             id = json.\("id").as(BusinessentityId.reads),
             businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-            territoryid = json.\("territoryid").toOption.map(_.as(SalesterritoryId.reads)),
-            salesquota = json.\("salesquota").toOption.map(_.as(Reads.bigDecReads)),
+            territoryid = json.\("territoryid").as(SalesterritoryId.reads),
+            salesquota = json.\("salesquota").as(Reads.bigDecReads),
             bonus = json.\("bonus").as(Reads.bigDecReads),
             commissionpct = json.\("commissionpct").as(Reads.bigDecReads),
             salesytd = json.\("salesytd").as(Reads.bigDecReads),
@@ -72,8 +72,8 @@ object SpViewRow {
         SpViewRow(
           id = row(idx + 0)(using BusinessentityId.column),
           businessentityid = row(idx + 1)(using BusinessentityId.column),
-          territoryid = row(idx + 2)(using Column.columnToOption(using SalesterritoryId.column)),
-          salesquota = row(idx + 3)(using Column.columnToOption(using Column.columnToScalaBigDecimal)),
+          territoryid = row(idx + 2)(using SalesterritoryId.column),
+          salesquota = row(idx + 3)(using Column.columnToScalaBigDecimal),
           bonus = row(idx + 4)(using Column.columnToScalaBigDecimal),
           commissionpct = row(idx + 5)(using Column.columnToScalaBigDecimal),
           salesytd = row(idx + 6)(using Column.columnToScalaBigDecimal),
@@ -90,8 +90,8 @@ object SpViewRow {
       new JsObject(ListMap[String, JsValue](
         "id" -> BusinessentityId.writes.writes(o.id),
         "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-        "territoryid" -> Writes.OptionWrites(using SalesterritoryId.writes).writes(o.territoryid),
-        "salesquota" -> Writes.OptionWrites(using Writes.BigDecimalWrites).writes(o.salesquota),
+        "territoryid" -> SalesterritoryId.writes.writes(o.territoryid),
+        "salesquota" -> Writes.BigDecimalWrites.writes(o.salesquota),
         "bonus" -> Writes.BigDecimalWrites.writes(o.bonus),
         "commissionpct" -> Writes.BigDecimalWrites.writes(o.commissionpct),
         "salesytd" -> Writes.BigDecimalWrites.writes(o.salesytd),

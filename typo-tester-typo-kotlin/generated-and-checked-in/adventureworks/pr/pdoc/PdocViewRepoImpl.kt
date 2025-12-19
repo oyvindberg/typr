@@ -7,15 +7,12 @@ package adventureworks.pr.pdoc
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class PdocViewRepoImpl() : PdocViewRepo {
   override fun select(): SelectBuilder<PdocViewFields, PdocViewRow> = SelectBuilder.of("\"pr\".\"pdoc\"", PdocViewFields.structure, PdocViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<PdocViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "productid", "modifieddate"::text, "documentnode"
-    from "pr"."pdoc"
-  """.trimMargin())).query(PdocViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<PdocViewRow> = Fragment.interpolate(Fragment.lit("select \"id\", \"productid\", \"modifieddate\", \"documentnode\"\nfrom \"pr\".\"pdoc\"\n")).query(PdocViewRow._rowParser.all()).runUnchecked(c)
 }

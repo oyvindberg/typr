@@ -15,11 +15,11 @@ import adventureworks.production.unitmeasure.UnitmeasureId
 import adventureworks.production.unitmeasure.UnitmeasureRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait BillofmaterialsFields {
   def billofmaterialsid: IdField[Int, BillofmaterialsRow]
@@ -43,11 +43,11 @@ trait BillofmaterialsFields {
 }
 
 object BillofmaterialsFields {
-  lazy val structure: Relation[BillofmaterialsFields, BillofmaterialsRow] =
+  lazy val structure: RelationStructure[BillofmaterialsFields, BillofmaterialsRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[BillofmaterialsFields, BillofmaterialsRow] {
+    extends RelationStructure[BillofmaterialsFields, BillofmaterialsRow] {
 
     override lazy val fields: BillofmaterialsFields = new BillofmaterialsFields {
       override def billofmaterialsid = IdField[Int, BillofmaterialsRow](_path, "billofmaterialsid", None, Some("int4"), x => x.billofmaterialsid, (row, value) => row.copy(billofmaterialsid = value))

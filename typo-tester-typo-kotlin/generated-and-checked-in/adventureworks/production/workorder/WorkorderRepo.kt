@@ -6,89 +6,88 @@
 package adventureworks.production.workorder
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface WorkorderRepo {
-  fun delete(): DeleteBuilder<WorkorderFields, WorkorderRow>
+  abstract fun delete(): DeleteBuilder<WorkorderFields, WorkorderRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     workorderid: WorkorderId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     workorderids: Array<WorkorderId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: WorkorderRow,
     c: Connection
   ): WorkorderRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: WorkorderRowUnsaved,
     c: Connection
   ): WorkorderRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<WorkorderRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<WorkorderRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<WorkorderRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<WorkorderRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<WorkorderFields, WorkorderRow>
+  abstract fun select(): SelectBuilder<WorkorderFields, WorkorderRow>
 
-  fun selectAll(c: Connection): List<WorkorderRow>
+  abstract fun selectAll(c: Connection): List<WorkorderRow>
 
-  fun selectById(
+  abstract fun selectById(
     workorderid: WorkorderId,
     c: Connection
-  ): Optional<WorkorderRow>
+  ): WorkorderRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     workorderids: Array<WorkorderId>,
     c: Connection
   ): List<WorkorderRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     workorderids: Array<WorkorderId>,
     c: Connection
   ): Map<WorkorderId, WorkorderRow>
 
-  fun update(): UpdateBuilder<WorkorderFields, WorkorderRow>
+  abstract fun update(): UpdateBuilder<WorkorderFields, WorkorderRow>
 
-  fun update(
+  abstract fun update(
     row: WorkorderRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: WorkorderRow,
     c: Connection
   ): WorkorderRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<WorkorderRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<WorkorderRow>,
     c: Connection
   ): List<WorkorderRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<WorkorderRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<WorkorderRow>,
     batchSize: Int,
     c: Connection
   ): Int

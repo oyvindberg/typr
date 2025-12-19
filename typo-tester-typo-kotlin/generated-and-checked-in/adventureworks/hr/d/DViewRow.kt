@@ -5,11 +5,12 @@
  */
 package adventureworks.hr.d
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.department.DepartmentId
 import adventureworks.public.Name
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: hr.d */
 data class DViewRow(
@@ -22,9 +23,9 @@ data class DViewRow(
   /** Points to [adventureworks.humanresources.department.DepartmentRow.groupname] */
   val groupname: Name,
   /** Points to [adventureworks.humanresources.department.DepartmentRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<DViewRow> = RowParsers.of(DepartmentId.pgType, DepartmentId.pgType, Name.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> DViewRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.id, row.departmentid, row.name, row.groupname, row.modifieddate) })
+    val _rowParser: RowParser<DViewRow> = RowParsers.of(DepartmentId.pgType, DepartmentId.pgType, Name.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> DViewRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.id, row.departmentid, row.name, row.groupname, row.modifieddate) })
   }
 }

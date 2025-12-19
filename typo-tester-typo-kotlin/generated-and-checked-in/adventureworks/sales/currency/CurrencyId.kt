@@ -6,25 +6,25 @@
 package adventureworks.sales.currency
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 
 /** Type for the primary key of table `sales.currency` */
-data class CurrencyId(@JsonValue val value: /* bpchar, max 3 chars */ String) {
+data class CurrencyId(@JsonValue val value: String) {
   override fun toString(): kotlin.String {
     return value.toString()
   }
 
   companion object {
-    val bijection: Bijection<CurrencyId, /* bpchar, max 3 chars */ String> =
+    val bijection: Bijection<CurrencyId, String> =
       Bijection.of(CurrencyId::value, ::CurrencyId)
 
     val pgType: PgType<CurrencyId> =
-      PgTypes.text.bimap(::CurrencyId, CurrencyId::value)
+      PgTypes.bpchar.bimap(::CurrencyId, CurrencyId::value)
 
     val pgTypeArray: PgType<Array<CurrencyId>> =
-      PgTypes.textArray.bimap({ xs -> arrayMap.map(xs, ::CurrencyId, CurrencyId::class.java) }, { xs -> arrayMap.map(xs, CurrencyId::value, /* bpchar, max 3 chars */ String::class.java) })
+      PgTypes.bpcharArray.bimap({ xs -> arrayMap.map(xs, ::CurrencyId, CurrencyId::class.java) }, { xs -> arrayMap.map(xs, CurrencyId::value, String::class.java) })
   }
 }

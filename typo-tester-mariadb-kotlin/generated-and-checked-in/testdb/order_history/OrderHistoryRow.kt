@@ -7,13 +7,13 @@ package testdb.order_history
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.orders.OrdersId
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: order_history
   * Primary key: history_id
@@ -30,21 +30,21 @@ data class OrderHistoryRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("previous_status") val previousStatus: Optional<String>,
+  @JsonProperty("previous_status") val previousStatus: String?,
   /**  */
   @JsonProperty("new_status") val newStatus: String,
   /** 
     * Default: NULL
     */
-  @JsonProperty("changed_by") val changedBy: Optional<String>,
+  @JsonProperty("changed_by") val changedBy: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("change_reason") val changeReason: Optional<String>,
+  @JsonProperty("change_reason") val changeReason: String?,
   /** 
     * Default: NULL
     */
-  val metadata: Optional<String>,
+  val metadata: String?,
   /** 
     * Default: current_timestamp(6)
     */
@@ -53,17 +53,17 @@ data class OrderHistoryRow(
   fun id(): OrderHistoryId = historyId
 
   fun toUnsavedRow(
-    previousStatus: Defaulted<Optional<String>>,
-    changedBy: Defaulted<Optional<String>>,
-    changeReason: Defaulted<Optional<String>>,
-    metadata: Defaulted<Optional<String>>,
+    previousStatus: Defaulted<String?>,
+    changedBy: Defaulted<String?>,
+    changeReason: Defaulted<String?>,
+    metadata: Defaulted<String?>,
     createdAt: Defaulted<LocalDateTime>
   ): OrderHistoryRowUnsaved = OrderHistoryRowUnsaved(orderId, newStatus, previousStatus, changedBy, changeReason, metadata, createdAt)
 
   companion object {
-    val _rowParser: RowParser<OrderHistoryRow> = RowParsers.of(OrderHistoryId.pgType, OrdersId.pgType, MariaTypes.text.opt(), MariaTypes.text, MariaTypes.varchar.opt(), MariaTypes.varchar.opt(), MariaTypes.longtext.opt(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7 -> OrderHistoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!) }, { row -> arrayOf<Any?>(row.historyId, row.orderId, row.previousStatus, row.newStatus, row.changedBy, row.changeReason, row.metadata, row.createdAt) })
+    val _rowParser: RowParser<OrderHistoryRow> = RowParsers.of(OrderHistoryId.pgType, OrdersId.pgType, MariaTypes.text.nullable(), MariaTypes.text, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), MariaTypes.longtext.nullable(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7 -> OrderHistoryRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.historyId, row.orderId, row.previousStatus, row.newStatus, row.changedBy, row.changeReason, row.metadata, row.createdAt) })
 
     val mariaText: MariaText<OrderHistoryRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

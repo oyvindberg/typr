@@ -5,9 +5,9 @@
  */
 package adventureworks.public.title_domain
 
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: public.title_domain
   * Primary key: code
@@ -16,9 +16,9 @@ data class TitleDomainRow(val code: TitleDomainId) {
   fun id(): TitleDomainId = code
 
   companion object {
-    val _rowParser: RowParser<TitleDomainRow> = RowParsers.of(TitleDomainId.pgType, { t0 -> TitleDomainRow(t0!!) }, { row -> arrayOf<Any?>(row.code) })
+    val _rowParser: RowParser<TitleDomainRow> = RowParsers.of(TitleDomainId.pgType, { t0 -> TitleDomainRow(t0) }, { row -> arrayOf<Any?>(row.code) })
 
     val pgText: PgText<TitleDomainRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

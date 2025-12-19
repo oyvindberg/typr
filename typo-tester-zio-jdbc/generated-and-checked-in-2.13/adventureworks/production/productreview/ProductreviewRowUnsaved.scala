@@ -25,7 +25,7 @@ case class ProductreviewRowUnsaved(
   /** Name of the reviewer. */
   reviewername: Name,
   /** Reviewer's e-mail address. */
-  emailaddress: /* max 50 chars */ String,
+  emailaddress: String,
   /** Product rating given by the reviewer. Scale is 1 to 5 with 5 as the highest rating.
    * Constraint CK_ProductReview_Rating affecting columns rating:  (((rating >= 1) AND (rating <= 5)))
    */

@@ -5,18 +5,18 @@
  */
 package testdb.shipping_carriers
 
-import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait ShippingCarriersFields extends FieldsExpr[ShippingCarriersRow] {
+trait ShippingCarriersFields extends FieldsExpr0[ShippingCarriersRow] {
   def carrierId: IdField[ShippingCarriersId, ShippingCarriersRow]
 
   def code: Field[String, ShippingCarriersRow]
@@ -27,23 +27,23 @@ trait ShippingCarriersFields extends FieldsExpr[ShippingCarriersRow] {
 
   def apiConfig: OptField[String, ShippingCarriersRow]
 
-  def isActive: Field[java.lang.Boolean, ShippingCarriersRow]
+  def isActive: Field[Boolean, ShippingCarriersRow]
 
   override def columns: java.util.List[FieldLike[?, ShippingCarriersRow]]
 
-  override def rowParser: RowParser[ShippingCarriersRow] = ShippingCarriersRow._rowParser
+  override def rowParser: RowParser[ShippingCarriersRow] = ShippingCarriersRow._rowParser.underlying
 }
 
 object ShippingCarriersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ShippingCarriersFields with Relation[ShippingCarriersFields, ShippingCarriersRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends ShippingCarriersFields with RelationStructure[ShippingCarriersFields, ShippingCarriersRow] {
 
     override def carrierId: IdField[ShippingCarriersId, ShippingCarriersRow] = {
       new IdField[ShippingCarriersId, ShippingCarriersRow](
         _path,
         "carrier_id",
         _.carrierId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(carrierId = value),
         ShippingCarriersId.pgType
       )
@@ -54,8 +54,8 @@ object ShippingCarriersFields {
         _path,
         "code",
         _.code,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(code = value),
         MariaTypes.varchar
       )
@@ -66,8 +66,8 @@ object ShippingCarriersFields {
         _path,
         "name",
         _.name,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(name = value),
         MariaTypes.varchar
       )
@@ -78,8 +78,8 @@ object ShippingCarriersFields {
         _path,
         "tracking_url_template",
         _.trackingUrlTemplate,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(trackingUrlTemplate = value),
         MariaTypes.varchar
       )
@@ -90,29 +90,29 @@ object ShippingCarriersFields {
         _path,
         "api_config",
         _.apiConfig,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(apiConfig = value),
         MariaTypes.longtext
       )
     }
 
-    override def isActive: Field[java.lang.Boolean, ShippingCarriersRow] = {
-      new Field[java.lang.Boolean, ShippingCarriersRow](
+    override def isActive: Field[Boolean, ShippingCarriersRow] = {
+      new Field[Boolean, ShippingCarriersRow](
         _path,
         "is_active",
         _.isActive,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isActive = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, ShippingCarriersRow]] = java.util.List.of(this.carrierId, this.code, this.name, this.trackingUrlTemplate, this.apiConfig, this.isActive)
+    override def columns: java.util.List[FieldLike[?, ShippingCarriersRow]] = java.util.List.of(this.carrierId.underlying, this.code.underlying, this.name.underlying, this.trackingUrlTemplate.underlying, this.apiConfig.underlying, this.isActive.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[ShippingCarriersFields, ShippingCarriersRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ShippingCarriersFields, ShippingCarriersRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

@@ -20,11 +20,11 @@ import typo.runtime.PgTypes;
 public record PersonRowUnsaved(
   /** Points to {@link testdb.hardcoded.myschema.football_club.FootballClubRow#id()} */
   @JsonProperty("favourite_football_club_id") FootballClubId favouriteFootballClubId,
-  /* max 100 chars */ String name,
+  String name,
   @JsonProperty("nick_name") Optional</* max 30 chars */ String> nickName,
   @JsonProperty("blog_url") Optional</* max 100 chars */ String> blogUrl,
-  /* max 254 chars */ String email,
-  /* max 8 chars */ String phone,
+  String email,
+  String phone,
   @JsonProperty("likes_pizza") Boolean likesPizza,
   @JsonProperty("work_email") Optional</* max 254 chars */ String> workEmail,
   /** Default: auto-increment */
@@ -39,9 +39,9 @@ public record PersonRowUnsaved(
   public PersonRowUnsaved(
     /** Points to {@link testdb.hardcoded.myschema.football_club.FootballClubRow#id()} */
     @JsonProperty("favourite_football_club_id") FootballClubId favouriteFootballClubId,
-    /* max 100 chars */ String name,
-    /* max 254 chars */ String email,
-    /* max 8 chars */ String phone,
+    String name,
+    String email,
+    String phone,
     @JsonProperty("likes_pizza") Boolean likesPizza
   ) {
     this(favouriteFootballClubId, name, Optional.empty(), Optional.empty(), email, phone, likesPizza, Optional.empty(), new UseDefault<>(), new UseDefault<>(), new UseDefault<>());
@@ -52,7 +52,7 @@ public record PersonRowUnsaved(
     return new PersonRowUnsaved(favouriteFootballClubId, name, nickName, blogUrl, email, phone, likesPizza, workEmail, id, maritalStatusId, favoriteNumber);
   };
 
-  public PersonRowUnsaved withName(/* max 100 chars */ String name) {
+  public PersonRowUnsaved withName(String name) {
     return new PersonRowUnsaved(favouriteFootballClubId, name, nickName, blogUrl, email, phone, likesPizza, workEmail, id, maritalStatusId, favoriteNumber);
   };
 
@@ -64,11 +64,11 @@ public record PersonRowUnsaved(
     return new PersonRowUnsaved(favouriteFootballClubId, name, nickName, blogUrl, email, phone, likesPizza, workEmail, id, maritalStatusId, favoriteNumber);
   };
 
-  public PersonRowUnsaved withEmail(/* max 254 chars */ String email) {
+  public PersonRowUnsaved withEmail(String email) {
     return new PersonRowUnsaved(favouriteFootballClubId, name, nickName, blogUrl, email, phone, likesPizza, workEmail, id, maritalStatusId, favoriteNumber);
   };
 
-  public PersonRowUnsaved withPhone(/* max 8 chars */ String phone) {
+  public PersonRowUnsaved withPhone(String phone) {
     return new PersonRowUnsaved(favouriteFootballClubId, name, nickName, blogUrl, email, phone, likesPizza, workEmail, id, maritalStatusId, favoriteNumber);
   };
 

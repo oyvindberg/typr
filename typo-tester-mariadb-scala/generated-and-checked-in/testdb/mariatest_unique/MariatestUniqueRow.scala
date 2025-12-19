@@ -7,8 +7,8 @@ package testdb.mariatest_unique
 
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
 
 /** Table: mariatest_unique
  * Primary key: id
@@ -29,7 +29,7 @@ case class MariatestUniqueRow(
 }
 
 object MariatestUniqueRow {
-  val `_rowParser`: RowParser[MariatestUniqueRow] = RowParsers.of(MariatestUniqueId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariatestUniqueRow.apply, row => Array[Object](row.id.asInstanceOf[Object], row.email.asInstanceOf[Object], row.code.asInstanceOf[Object], row.category.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[MariatestUniqueRow] = RowParsers.of(MariatestUniqueId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar)(MariatestUniqueRow.apply)(row => Array[Any](row.id, row.email, row.code, row.category))
 
-  given mariaText: MariaText[MariatestUniqueRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[MariatestUniqueRow] = MariaText.from(`_rowParser`.underlying)
 }

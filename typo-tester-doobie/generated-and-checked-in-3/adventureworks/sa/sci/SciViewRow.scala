@@ -20,7 +20,7 @@ case class SciViewRow(
   /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartitemid]] */
   shoppingcartitemid: ShoppingcartitemId,
   /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.shoppingcartid]] */
-  shoppingcartid: /* max 50 chars */ String,
+  shoppingcartid: String,
   /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.quantity]] */
   quantity: Int,
   /** Points to [[adventureworks.sales.shoppingcartitem.ShoppingcartitemRow.productid]] */
@@ -32,9 +32,9 @@ case class SciViewRow(
 )
 
 object SciViewRow {
-  given decoder: Decoder[SciViewRow] = Decoder.forProduct7[SciViewRow, ShoppingcartitemId, ShoppingcartitemId, /* max 50 chars */ String, Int, ProductId, TypoLocalDateTime, TypoLocalDateTime]("id", "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")(SciViewRow.apply)(using ShoppingcartitemId.decoder, ShoppingcartitemId.decoder, Decoder.decodeString, Decoder.decodeInt, ProductId.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[SciViewRow] = Decoder.forProduct7[SciViewRow, ShoppingcartitemId, ShoppingcartitemId, String, Int, ProductId, TypoLocalDateTime, TypoLocalDateTime]("id", "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")(SciViewRow.apply)(using ShoppingcartitemId.decoder, ShoppingcartitemId.decoder, Decoder.decodeString, Decoder.decodeInt, ProductId.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[SciViewRow] = Encoder.forProduct7[SciViewRow, ShoppingcartitemId, ShoppingcartitemId, /* max 50 chars */ String, Int, ProductId, TypoLocalDateTime, TypoLocalDateTime]("id", "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")(x => (x.id, x.shoppingcartitemid, x.shoppingcartid, x.quantity, x.productid, x.datecreated, x.modifieddate))(using ShoppingcartitemId.encoder, ShoppingcartitemId.encoder, Encoder.encodeString, Encoder.encodeInt, ProductId.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[SciViewRow] = Encoder.forProduct7[SciViewRow, ShoppingcartitemId, ShoppingcartitemId, String, Int, ProductId, TypoLocalDateTime, TypoLocalDateTime]("id", "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")(x => (x.id, x.shoppingcartitemid, x.shoppingcartid, x.quantity, x.productid, x.datecreated, x.modifieddate))(using ShoppingcartitemId.encoder, ShoppingcartitemId.encoder, Encoder.encodeString, Encoder.encodeInt, ProductId.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder)
 
   given read: Read[SciViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -49,7 +49,7 @@ object SciViewRow {
       SciViewRow(
         id = arr(0).asInstanceOf[ShoppingcartitemId],
             shoppingcartitemid = arr(1).asInstanceOf[ShoppingcartitemId],
-            shoppingcartid = arr(2).asInstanceOf[/* max 50 chars */ String],
+            shoppingcartid = arr(2).asInstanceOf[String],
             quantity = arr(3).asInstanceOf[Int],
             productid = arr(4).asInstanceOf[ProductId],
             datecreated = arr(5).asInstanceOf[TypoLocalDateTime],

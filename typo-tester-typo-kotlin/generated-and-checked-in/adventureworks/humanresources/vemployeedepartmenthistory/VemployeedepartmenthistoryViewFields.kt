@@ -5,77 +5,77 @@
  */
 package adventureworks.humanresources.vemployeedepartmenthistory
 
-import adventureworks.customtypes.TypoLocalDate
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
-import java.util.Optional
+import java.time.LocalDate
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface VemployeedepartmenthistoryViewFields : FieldsExpr<VemployeedepartmenthistoryViewRow> {
-  fun businessentityid(): Field<BusinessentityId, VemployeedepartmenthistoryViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, VemployeedepartmenthistoryViewRow>
 
-  override fun columns(): List<FieldLike<*, VemployeedepartmenthistoryViewRow>>
+  abstract override fun columns(): List<FieldLike<*, VemployeedepartmenthistoryViewRow>>
 
-  fun department(): Field<Name, VemployeedepartmenthistoryViewRow>
+  abstract fun department(): Field<Name, VemployeedepartmenthistoryViewRow>
 
-  fun enddate(): OptField<TypoLocalDate, VemployeedepartmenthistoryViewRow>
+  abstract fun enddate(): Field<LocalDate, VemployeedepartmenthistoryViewRow>
 
-  fun firstname(): Field</* user-picked */ FirstName, VemployeedepartmenthistoryViewRow>
+  abstract fun firstname(): Field</* user-picked */ FirstName, VemployeedepartmenthistoryViewRow>
 
-  fun groupname(): Field<Name, VemployeedepartmenthistoryViewRow>
+  abstract fun groupname(): Field<Name, VemployeedepartmenthistoryViewRow>
 
-  fun lastname(): Field<Name, VemployeedepartmenthistoryViewRow>
+  abstract fun lastname(): Field<Name, VemployeedepartmenthistoryViewRow>
 
-  fun middlename(): OptField<Name, VemployeedepartmenthistoryViewRow>
+  abstract fun middlename(): Field<Name, VemployeedepartmenthistoryViewRow>
 
-  override fun rowParser(): RowParser<VemployeedepartmenthistoryViewRow> = VemployeedepartmenthistoryViewRow._rowParser
+  override fun rowParser(): RowParser<VemployeedepartmenthistoryViewRow> = VemployeedepartmenthistoryViewRow._rowParser.underlying
 
-  fun shift(): Field<Name, VemployeedepartmenthistoryViewRow>
+  abstract fun shift(): Field<Name, VemployeedepartmenthistoryViewRow>
 
-  fun startdate(): Field<TypoLocalDate, VemployeedepartmenthistoryViewRow>
+  abstract fun startdate(): Field<LocalDate, VemployeedepartmenthistoryViewRow>
 
-  fun suffix(): OptField</* max 10 chars */ String, VemployeedepartmenthistoryViewRow>
+  abstract fun suffix(): Field<String, VemployeedepartmenthistoryViewRow>
 
-  fun title(): OptField</* max 8 chars */ String, VemployeedepartmenthistoryViewRow>
+  abstract fun title(): Field<String, VemployeedepartmenthistoryViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : VemployeedepartmenthistoryViewFields, Relation<VemployeedepartmenthistoryViewFields, VemployeedepartmenthistoryViewRow> {
-      override fun businessentityid(): Field<BusinessentityId, VemployeedepartmenthistoryViewRow> = Field<BusinessentityId, VemployeedepartmenthistoryViewRow>(_path, "businessentityid", VemployeedepartmenthistoryViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : VemployeedepartmenthistoryViewFields, RelationStructure<VemployeedepartmenthistoryViewFields, VemployeedepartmenthistoryViewRow> {
+      override fun businessentityid(): Field<BusinessentityId, VemployeedepartmenthistoryViewRow> = Field<BusinessentityId, VemployeedepartmenthistoryViewRow>(_path, "businessentityid", VemployeedepartmenthistoryViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun title(): OptField</* max 8 chars */ String, VemployeedepartmenthistoryViewRow> = OptField</* max 8 chars */ String, VemployeedepartmenthistoryViewRow>(_path, "title", VemployeedepartmenthistoryViewRow::title, Optional.empty(), Optional.empty(), { row, value -> row.copy(title = value) }, PgTypes.text)
+      override fun title(): Field<String, VemployeedepartmenthistoryViewRow> = Field<String, VemployeedepartmenthistoryViewRow>(_path, "title", VemployeedepartmenthistoryViewRow::title, null, null, { row, value -> row.copy(title = value) }, PgTypes.text)
 
-      override fun firstname(): Field</* user-picked */ FirstName, VemployeedepartmenthistoryViewRow> = Field</* user-picked */ FirstName, VemployeedepartmenthistoryViewRow>(_path, "firstname", VemployeedepartmenthistoryViewRow::firstname, Optional.empty(), Optional.empty(), { row, value -> row.copy(firstname = value) }, FirstName.pgType)
+      override fun firstname(): Field</* user-picked */ FirstName, VemployeedepartmenthistoryViewRow> = Field</* user-picked */ FirstName, VemployeedepartmenthistoryViewRow>(_path, "firstname", VemployeedepartmenthistoryViewRow::firstname, null, null, { row, value -> row.copy(firstname = value) }, FirstName.pgType)
 
-      override fun middlename(): OptField<Name, VemployeedepartmenthistoryViewRow> = OptField<Name, VemployeedepartmenthistoryViewRow>(_path, "middlename", VemployeedepartmenthistoryViewRow::middlename, Optional.empty(), Optional.empty(), { row, value -> row.copy(middlename = value) }, Name.pgType)
+      override fun middlename(): Field<Name, VemployeedepartmenthistoryViewRow> = Field<Name, VemployeedepartmenthistoryViewRow>(_path, "middlename", VemployeedepartmenthistoryViewRow::middlename, null, null, { row, value -> row.copy(middlename = value) }, Name.pgType)
 
-      override fun lastname(): Field<Name, VemployeedepartmenthistoryViewRow> = Field<Name, VemployeedepartmenthistoryViewRow>(_path, "lastname", VemployeedepartmenthistoryViewRow::lastname, Optional.empty(), Optional.empty(), { row, value -> row.copy(lastname = value) }, Name.pgType)
+      override fun lastname(): Field<Name, VemployeedepartmenthistoryViewRow> = Field<Name, VemployeedepartmenthistoryViewRow>(_path, "lastname", VemployeedepartmenthistoryViewRow::lastname, null, null, { row, value -> row.copy(lastname = value) }, Name.pgType)
 
-      override fun suffix(): OptField</* max 10 chars */ String, VemployeedepartmenthistoryViewRow> = OptField</* max 10 chars */ String, VemployeedepartmenthistoryViewRow>(_path, "suffix", VemployeedepartmenthistoryViewRow::suffix, Optional.empty(), Optional.empty(), { row, value -> row.copy(suffix = value) }, PgTypes.text)
+      override fun suffix(): Field<String, VemployeedepartmenthistoryViewRow> = Field<String, VemployeedepartmenthistoryViewRow>(_path, "suffix", VemployeedepartmenthistoryViewRow::suffix, null, null, { row, value -> row.copy(suffix = value) }, PgTypes.text)
 
-      override fun shift(): Field<Name, VemployeedepartmenthistoryViewRow> = Field<Name, VemployeedepartmenthistoryViewRow>(_path, "shift", VemployeedepartmenthistoryViewRow::shift, Optional.empty(), Optional.empty(), { row, value -> row.copy(shift = value) }, Name.pgType)
+      override fun shift(): Field<Name, VemployeedepartmenthistoryViewRow> = Field<Name, VemployeedepartmenthistoryViewRow>(_path, "shift", VemployeedepartmenthistoryViewRow::shift, null, null, { row, value -> row.copy(shift = value) }, Name.pgType)
 
-      override fun department(): Field<Name, VemployeedepartmenthistoryViewRow> = Field<Name, VemployeedepartmenthistoryViewRow>(_path, "department", VemployeedepartmenthistoryViewRow::department, Optional.empty(), Optional.empty(), { row, value -> row.copy(department = value) }, Name.pgType)
+      override fun department(): Field<Name, VemployeedepartmenthistoryViewRow> = Field<Name, VemployeedepartmenthistoryViewRow>(_path, "department", VemployeedepartmenthistoryViewRow::department, null, null, { row, value -> row.copy(department = value) }, Name.pgType)
 
-      override fun groupname(): Field<Name, VemployeedepartmenthistoryViewRow> = Field<Name, VemployeedepartmenthistoryViewRow>(_path, "groupname", VemployeedepartmenthistoryViewRow::groupname, Optional.empty(), Optional.empty(), { row, value -> row.copy(groupname = value) }, Name.pgType)
+      override fun groupname(): Field<Name, VemployeedepartmenthistoryViewRow> = Field<Name, VemployeedepartmenthistoryViewRow>(_path, "groupname", VemployeedepartmenthistoryViewRow::groupname, null, null, { row, value -> row.copy(groupname = value) }, Name.pgType)
 
-      override fun startdate(): Field<TypoLocalDate, VemployeedepartmenthistoryViewRow> = Field<TypoLocalDate, VemployeedepartmenthistoryViewRow>(_path, "startdate", VemployeedepartmenthistoryViewRow::startdate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(startdate = value) }, TypoLocalDate.pgType)
+      override fun startdate(): Field<LocalDate, VemployeedepartmenthistoryViewRow> = Field<LocalDate, VemployeedepartmenthistoryViewRow>(_path, "startdate", VemployeedepartmenthistoryViewRow::startdate, null, null, { row, value -> row.copy(startdate = value) }, PgTypes.date)
 
-      override fun enddate(): OptField<TypoLocalDate, VemployeedepartmenthistoryViewRow> = OptField<TypoLocalDate, VemployeedepartmenthistoryViewRow>(_path, "enddate", VemployeedepartmenthistoryViewRow::enddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(enddate = value) }, TypoLocalDate.pgType)
+      override fun enddate(): Field<LocalDate, VemployeedepartmenthistoryViewRow> = Field<LocalDate, VemployeedepartmenthistoryViewRow>(_path, "enddate", VemployeedepartmenthistoryViewRow::enddate, null, null, { row, value -> row.copy(enddate = value) }, PgTypes.date)
 
-      override fun columns(): List<FieldLike<*, VemployeedepartmenthistoryViewRow>> = listOf(this.businessentityid(), this.title(), this.firstname(), this.middlename(), this.lastname(), this.suffix(), this.shift(), this.department(), this.groupname(), this.startdate(), this.enddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<VemployeedepartmenthistoryViewFields, VemployeedepartmenthistoryViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, VemployeedepartmenthistoryViewRow>> = listOf(this.businessentityid().underlying, this.title().underlying, this.firstname().underlying, this.middlename().underlying, this.lastname().underlying, this.suffix().underlying, this.shift().underlying, this.department().underlying, this.groupname().underlying, this.startdate().underlying, this.enddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<VemployeedepartmenthistoryViewFields, VemployeedepartmenthistoryViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

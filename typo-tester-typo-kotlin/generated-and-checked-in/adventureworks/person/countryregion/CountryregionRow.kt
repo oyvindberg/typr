@@ -6,11 +6,12 @@
 package adventureworks.person.countryregion
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: person.countryregion
   * Lookup table containing the ISO standard codes for countries and regions.
@@ -22,16 +23,16 @@ data class CountryregionRow(
   /** Country or region name. */
   val name: Name,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): CountryregionId = countryregioncode
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): CountryregionRowUnsaved = CountryregionRowUnsaved(countryregioncode, name, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): CountryregionRowUnsaved = CountryregionRowUnsaved(countryregioncode, name, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<CountryregionRow> = RowParsers.of(CountryregionId.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> CountryregionRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.countryregioncode, row.name, row.modifieddate) })
+    val _rowParser: RowParser<CountryregionRow> = RowParsers.of(CountryregionId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2 -> CountryregionRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.countryregioncode, row.name, row.modifieddate) })
 
     val pgText: PgText<CountryregionRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

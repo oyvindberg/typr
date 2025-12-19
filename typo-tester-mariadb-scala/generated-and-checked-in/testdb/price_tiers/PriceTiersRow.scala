@@ -9,8 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import testdb.customtypes.Defaulted
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: price_tiers
  * Primary key: tier_id
@@ -25,15 +26,15 @@ case class PriceTiersRow(
   /** 
    * Default: 1
    */
-  @JsonProperty("min_quantity") minQuantity: java.lang.Long,
+  @JsonProperty("min_quantity") minQuantity: Long,
   /**  */
   @JsonProperty("discount_type") discountType: String,
   /**  */
-  @JsonProperty("discount_value") discountValue: java.math.BigDecimal
+  @JsonProperty("discount_value") discountValue: BigDecimal
 ) {
   def id: PriceTiersId = tierId
 
-  def toUnsavedRow(minQuantity: Defaulted[java.lang.Long] = Defaulted.Provided(this.minQuantity)): PriceTiersRowUnsaved = {
+  def toUnsavedRow(minQuantity: Defaulted[Long] = Defaulted.Provided(this.minQuantity)): PriceTiersRowUnsaved = {
     new PriceTiersRowUnsaved(
       name,
       discountType,
@@ -44,7 +45,7 @@ case class PriceTiersRow(
 }
 
 object PriceTiersRow {
-  val `_rowParser`: RowParser[PriceTiersRow] = RowParsers.of(PriceTiersId.pgType, MariaTypes.varchar, MariaTypes.intUnsigned, MariaTypes.text, MariaTypes.decimal, PriceTiersRow.apply, row => Array[Object](row.tierId.asInstanceOf[Object], row.name.asInstanceOf[Object], row.minQuantity.asInstanceOf[Object], row.discountType.asInstanceOf[Object], row.discountValue.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[PriceTiersRow] = RowParsers.of(PriceTiersId.pgType, MariaTypes.varchar, ScalaDbTypes.MariaTypes.intUnsigned, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric)(PriceTiersRow.apply)(row => Array[Any](row.tierId, row.name, row.minQuantity, row.discountType, row.discountValue))
 
-  given mariaText: MariaText[PriceTiersRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[PriceTiersRow] = MariaText.from(`_rowParser`.underlying)
 }

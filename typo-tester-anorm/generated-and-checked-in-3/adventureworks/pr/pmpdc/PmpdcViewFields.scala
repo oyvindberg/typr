@@ -10,9 +10,9 @@ import adventureworks.production.culture.CultureId
 import adventureworks.production.productdescription.ProductdescriptionId
 import adventureworks.production.productmodel.ProductmodelId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait PmpdcViewFields {
   def productmodelid: Field[ProductmodelId, PmpdcViewRow]
@@ -22,11 +22,11 @@ trait PmpdcViewFields {
 }
 
 object PmpdcViewFields {
-  lazy val structure: Relation[PmpdcViewFields, PmpdcViewRow] =
+  lazy val structure: RelationStructure[PmpdcViewFields, PmpdcViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PmpdcViewFields, PmpdcViewRow] {
+    extends RelationStructure[PmpdcViewFields, PmpdcViewRow] {
 
     override lazy val fields: PmpdcViewFields = new PmpdcViewFields {
       override def productmodelid = Field[ProductmodelId, PmpdcViewRow](_path, "productmodelid", None, None, x => x.productmodelid, (row, value) => row.copy(productmodelid = value))

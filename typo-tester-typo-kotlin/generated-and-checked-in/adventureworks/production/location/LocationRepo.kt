@@ -6,89 +6,88 @@
 package adventureworks.production.location
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface LocationRepo {
-  fun delete(): DeleteBuilder<LocationFields, LocationRow>
+  abstract fun delete(): DeleteBuilder<LocationFields, LocationRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     locationid: LocationId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     locationids: Array<LocationId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: LocationRow,
     c: Connection
   ): LocationRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: LocationRowUnsaved,
     c: Connection
   ): LocationRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<LocationRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<LocationRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<LocationRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<LocationRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<LocationFields, LocationRow>
+  abstract fun select(): SelectBuilder<LocationFields, LocationRow>
 
-  fun selectAll(c: Connection): List<LocationRow>
+  abstract fun selectAll(c: Connection): List<LocationRow>
 
-  fun selectById(
+  abstract fun selectById(
     locationid: LocationId,
     c: Connection
-  ): Optional<LocationRow>
+  ): LocationRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     locationids: Array<LocationId>,
     c: Connection
   ): List<LocationRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     locationids: Array<LocationId>,
     c: Connection
   ): Map<LocationId, LocationRow>
 
-  fun update(): UpdateBuilder<LocationFields, LocationRow>
+  abstract fun update(): UpdateBuilder<LocationFields, LocationRow>
 
-  fun update(
+  abstract fun update(
     row: LocationRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: LocationRow,
     c: Connection
   ): LocationRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<LocationRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<LocationRow>,
     c: Connection
   ): List<LocationRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<LocationRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<LocationRow>,
     batchSize: Int,
     c: Connection
   ): Int

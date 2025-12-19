@@ -7,12 +7,12 @@ package adventureworks.purchasing.purchaseorderheader
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.purchasing.shipmethod.ShipmethodId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -33,7 +33,7 @@ data class PurchaseorderheaderRowUnsaved(
   /** Estimated shipment date from the vendor.
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  val shipdate: Optional<TypoLocalDateTime> = Optional.empty(),
+  val shipdate: LocalDateTime? = null,
   /** Default: nextval('purchasing.purchaseorderheader_purchaseorderid_seq'::regclass)
     * Primary key.
     */
@@ -41,17 +41,17 @@ data class PurchaseorderheaderRowUnsaved(
   /** Default: 0
     * Incremental number to track changes to the purchase order over time.
     */
-  val revisionnumber: Defaulted<TypoShort> = UseDefault(),
+  val revisionnumber: Defaulted<Short> = UseDefault(),
   /** Default: 1
     * Order current status. 1 = Pending; 2 = Approved; 3 = Rejected; 4 = Complete
     * Constraint CK_PurchaseOrderHeader_Status affecting columns status:  (((status >= 1) AND (status <= 4)))
     */
-  val status: Defaulted<TypoShort> = UseDefault(),
+  val status: Defaulted<Short> = UseDefault(),
   /** Default: now()
     * Purchase order creation date.
     * Constraint CK_PurchaseOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  val orderdate: Defaulted<TypoLocalDateTime> = UseDefault(),
+  val orderdate: Defaulted<LocalDateTime> = UseDefault(),
   /** Default: 0.00
     * Purchase order subtotal. Computed as SUM(PurchaseOrderDetail.LineTotal)for the appropriate PurchaseOrderID.
     * Constraint CK_PurchaseOrderHeader_SubTotal affecting columns subtotal:  ((subtotal >= 0.00))
@@ -68,17 +68,17 @@ data class PurchaseorderheaderRowUnsaved(
     */
   val freight: Defaulted<BigDecimal> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     purchaseorderidDefault: () -> PurchaseorderheaderId,
-    revisionnumberDefault: () -> TypoShort,
-    statusDefault: () -> TypoShort,
-    orderdateDefault: () -> TypoLocalDateTime,
+    revisionnumberDefault: () -> Short,
+    statusDefault: () -> Short,
+    orderdateDefault: () -> LocalDateTime,
     subtotalDefault: () -> BigDecimal,
     taxamtDefault: () -> BigDecimal,
     freightDefault: () -> BigDecimal,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): PurchaseorderheaderRow = PurchaseorderheaderRow(purchaseorderid = purchaseorderid.getOrElse(purchaseorderidDefault), revisionnumber = revisionnumber.getOrElse(revisionnumberDefault), status = status.getOrElse(statusDefault), employeeid = employeeid, vendorid = vendorid, shipmethodid = shipmethodid, orderdate = orderdate.getOrElse(orderdateDefault), shipdate = shipdate, subtotal = subtotal.getOrElse(subtotalDefault), taxamt = taxamt.getOrElse(taxamtDefault), freight = freight.getOrElse(freightDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -89,15 +89,15 @@ data class PurchaseorderheaderRowUnsaved(
       sb.append(PgText.DELIMETER)
       ShipmethodId.pgType.pgText().unsafeEncode(row.shipmethodid, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.shipdate, sb)
+      PgTypes.timestamp.nullable().pgText().unsafeEncode(row.shipdate, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PurchaseorderheaderId.pgType.pgText()).unsafeEncode(row.purchaseorderid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.revisionnumber, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int2.pgText()).unsafeEncode(row.revisionnumber, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.status, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int2.pgText()).unsafeEncode(row.status, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.orderdate, sb)
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.orderdate, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.subtotal, sb)
       sb.append(PgText.DELIMETER)
@@ -105,6 +105,6 @@ data class PurchaseorderheaderRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.freight, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

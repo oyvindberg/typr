@@ -46,9 +46,9 @@ import scala.util.Try
 case class PgtestRow(
   bool: Boolean,
   box: TypoBox,
-  bpchar: /* bpchar, max 3 chars */ String,
+  bpchar: String,
   bytea: TypoBytea,
-  char: /* bpchar, max 1 chars */ String,
+  char: String,
   circle: TypoCircle,
   date: TypoLocalDate,
   float4: Float,
@@ -497,9 +497,9 @@ object PgtestRow {
       PgtestRow(
         bool = arr(0).asInstanceOf[Boolean],
             box = arr(1).asInstanceOf[TypoBox],
-            bpchar = arr(2).asInstanceOf[/* bpchar, max 3 chars */ String],
+            bpchar = arr(2).asInstanceOf[String],
             bytea = arr(3).asInstanceOf[TypoBytea],
-            char = arr(4).asInstanceOf[/* bpchar, max 1 chars */ String],
+            char = arr(4).asInstanceOf[String],
             circle = arr(5).asInstanceOf[TypoCircle],
             date = arr(6).asInstanceOf[TypoLocalDate],
             float4 = arr(7).asInstanceOf[Float],

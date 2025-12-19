@@ -29,7 +29,7 @@ case class ProductinventoryRowUnsaved(
    */
   locationid: LocationId,
   /** Storage compartment within an inventory location. */
-  shelf: /* max 10 chars */ String,
+  shelf: String,
   /** Storage container on a shelf in an inventory location.
    * Constraint CK_ProductInventory_Bin affecting columns bin:  (((bin >= 0) AND (bin <= 100)))
    */

@@ -10,7 +10,7 @@ import kotlin.collections.List
 import testdb.orders.OrdersId
 
 interface OrderDetailsSqlRepo {
-  fun apply(
+  abstract fun apply(
     orderId: /* user-picked */ OrdersId,
     c: Connection
   ): List<OrderDetailsSqlRow>

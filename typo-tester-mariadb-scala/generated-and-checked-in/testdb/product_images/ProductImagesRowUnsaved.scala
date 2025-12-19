@@ -6,12 +6,13 @@
 package testdb.product_images
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.products.ProductsId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `product_images` which has not been persisted yet */
 case class ProductImagesRowUnsaved(
@@ -24,30 +25,30 @@ case class ProductImagesRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("thumbnail_url") thumbnailUrl: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("thumbnail_url") thumbnailUrl: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("alt_text") altText: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("alt_text") altText: Defaulted[Option[String]] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("sort_order") sortOrder: Defaulted[java.lang.Short] = new UseDefault(),
+  @JsonProperty("sort_order") sortOrder: Defaulted[Short] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("is_primary") isPrimary: Defaulted[java.lang.Boolean] = new UseDefault(),
+  @JsonProperty("is_primary") isPrimary: Defaulted[Boolean] = new UseDefault(),
   /** Default: NULL
    * Optional embedded image data
    */
-  @JsonProperty("image_data") imageData: Defaulted[Optional[Array[Byte]]] = new UseDefault()
+  @JsonProperty("image_data") imageData: Defaulted[Option[Array[Byte]]] = new UseDefault()
 ) {
   def toRow(
-    thumbnailUrlDefault: => Optional[String],
-    altTextDefault: => Optional[String],
-    sortOrderDefault: => java.lang.Short,
-    isPrimaryDefault: => java.lang.Boolean,
-    imageDataDefault: => Optional[Array[Byte]],
+    thumbnailUrlDefault: => Option[String],
+    altTextDefault: => Option[String],
+    sortOrderDefault: => Short,
+    isPrimaryDefault: => Boolean,
+    imageDataDefault: => Option[Array[Byte]],
     imageIdDefault: => ProductImagesId
   ): ProductImagesRow = {
     new ProductImagesRow(
@@ -64,5 +65,5 @@ case class ProductImagesRowUnsaved(
 }
 
 object ProductImagesRowUnsaved {
-  given mariaText: MariaText[ProductImagesRowUnsaved] = MariaText.instance((row, sb) => { ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.imageUrl, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.thumbnailUrl, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.altText, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinyintUnsigned.mariaText).unsafeEncode(row.sortOrder, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isPrimary, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longblob.opt().mariaText).unsafeEncode(row.imageData, sb) })
+  given mariaText: MariaText[ProductImagesRowUnsaved] = MariaText.instance((row, sb) => { ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.imageUrl, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.thumbnailUrl, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.altText, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.tinyintUnsigned.mariaText).unsafeEncode(row.sortOrder, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isPrimary, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longblob.nullable.mariaText).unsafeEncode(row.imageData, sb) })
 }

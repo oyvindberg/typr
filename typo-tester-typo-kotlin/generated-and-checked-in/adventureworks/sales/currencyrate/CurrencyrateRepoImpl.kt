@@ -5,25 +5,20 @@
  */
 package adventureworks.sales.currencyrate
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyId
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
 
 class CurrencyrateRepoImpl() : CurrencyrateRepo {
   override fun delete(): DeleteBuilder<CurrencyrateFields, CurrencyrateRow> = DeleteBuilder.of("\"sales\".\"currencyrate\"", CurrencyrateFields.structure, Dialect.POSTGRESQL)
@@ -31,166 +26,77 @@ class CurrencyrateRepoImpl() : CurrencyrateRepo {
   override fun deleteById(
     currencyrateid: CurrencyrateId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "sales"."currencyrate" where "currencyrateid" = 
-    """.trimMargin()),
-    CurrencyrateId.pgType.encode(currencyrateid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from \"sales\".\"currencyrate\" where \"currencyrateid\" = "), Fragment.encode(CurrencyrateId.pgType, currencyrateid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     currencyrateids: Array<CurrencyrateId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "sales"."currencyrate"
-               where "currencyrateid" = ANY(""".trimMargin()),
-             CurrencyrateId.pgTypeArray.encode(currencyrateids),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"currencyrate\"\nwhere \"currencyrateid\" = ANY("), Fragment.encode(CurrencyrateId.pgTypeArray, currencyrateids), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: CurrencyrateRow,
     c: Connection
-  ): CurrencyrateRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")
-      values (""".trimMargin()),
-    CurrencyrateId.pgType.encode(unsaved.currencyrateid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.currencyratedate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    CurrencyId.pgType.encode(unsaved.fromcurrencycode),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    CurrencyId.pgType.encode(unsaved.tocurrencycode),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    PgTypes.numeric.encode(unsaved.averagerate),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.endofdayrate),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): CurrencyrateRow = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"currencyrate\"(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\")\nvalues ("), Fragment.encode(CurrencyrateId.pgType, unsaved.currencyrateid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.currencyratedate), Fragment.lit("::timestamp, "), Fragment.encode(CurrencyId.pgType, unsaved.fromcurrencycode), Fragment.lit("::bpchar, "), Fragment.encode(CurrencyId.pgType, unsaved.tocurrencycode), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.numeric, unsaved.averagerate), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.endofdayrate), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\n"))
     .updateReturning(CurrencyrateRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: CurrencyrateRowUnsaved,
     c: Connection
   ): CurrencyrateRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"currencyratedate\""))
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.encode(unsaved.currencyratedate),
-      typo.runtime.Fragment.lit("::timestamp")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, unsaved.currencyratedate), Fragment.lit("::timestamp")))
     columns.add(Fragment.lit("\"fromcurrencycode\""))
-    values.add(interpolate(
-      CurrencyId.pgType.encode(unsaved.fromcurrencycode),
-      typo.runtime.Fragment.lit("::bpchar")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(CurrencyId.pgType, unsaved.fromcurrencycode), Fragment.lit("::bpchar")))
     columns.add(Fragment.lit("\"tocurrencycode\""))
-    values.add(interpolate(
-      CurrencyId.pgType.encode(unsaved.tocurrencycode),
-      typo.runtime.Fragment.lit("::bpchar")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(CurrencyId.pgType, unsaved.tocurrencycode), Fragment.lit("::bpchar")))
     columns.add(Fragment.lit("\"averagerate\""))
-    values.add(interpolate(
-      PgTypes.numeric.encode(unsaved.averagerate),
-      typo.runtime.Fragment.lit("::numeric")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric, unsaved.averagerate), Fragment.lit("::numeric")))
     columns.add(Fragment.lit("\"endofdayrate\""))
-    values.add(interpolate(
-      PgTypes.numeric.encode(unsaved.endofdayrate),
-      typo.runtime.Fragment.lit("::numeric")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric, unsaved.endofdayrate), Fragment.lit("::numeric")))
     unsaved.currencyrateid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"currencyrateid\""))
-      values.add(interpolate(
-        CurrencyrateId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(CurrencyrateId.pgType, value), Fragment.lit("::int4"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "sales"."currencyrate"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"currencyrate\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\n"))
     return q.updateReturning(CurrencyrateRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<CurrencyrateRow>,
+    unsaved: Iterator<CurrencyrateRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, CurrencyrateRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"sales\".\"currencyrate\"(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, CurrencyrateRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<CurrencyrateRowUnsaved>,
+    unsaved: Iterator<CurrencyrateRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "sales"."currencyrate"("currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "currencyrateid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, CurrencyrateRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"sales\".\"currencyrate\"(\"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"currencyrateid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, CurrencyrateRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<CurrencyrateFields, CurrencyrateRow> = SelectBuilder.of("\"sales\".\"currencyrate\"", CurrencyrateFields.structure, CurrencyrateRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<CurrencyrateRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-    from "sales"."currencyrate"
-  """.trimMargin())).query(CurrencyrateRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<CurrencyrateRow> = Fragment.interpolate(Fragment.lit("select \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\nfrom \"sales\".\"currencyrate\"\n")).query(CurrencyrateRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     currencyrateid: CurrencyrateId,
     c: Connection
-  ): Optional<CurrencyrateRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-      from "sales"."currencyrate"
-      where "currencyrateid" = """.trimMargin()),
-    CurrencyrateId.pgType.encode(currencyrateid),
-    typo.runtime.Fragment.lit("")
-  ).query(CurrencyrateRow._rowParser.first()).runUnchecked(c)
+  ): CurrencyrateRow? = Fragment.interpolate(Fragment.lit("select \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\nfrom \"sales\".\"currencyrate\"\nwhere \"currencyrateid\" = "), Fragment.encode(CurrencyrateId.pgType, currencyrateid), Fragment.lit("")).query(CurrencyrateRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     currencyrateids: Array<CurrencyrateId>,
     c: Connection
-  ): List<CurrencyrateRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text
-      from "sales"."currencyrate"
-      where "currencyrateid" = ANY(""".trimMargin()),
-    CurrencyrateId.pgTypeArray.encode(currencyrateids),
-    typo.runtime.Fragment.lit(")")
-  ).query(CurrencyrateRow._rowParser.all()).runUnchecked(c)
+  ): List<CurrencyrateRow> = Fragment.interpolate(Fragment.lit("select \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\"\nfrom \"sales\".\"currencyrate\"\nwhere \"currencyrateid\" = ANY("), Fragment.encode(CurrencyrateId.pgTypeArray, currencyrateids), Fragment.lit(")")).query(CurrencyrateRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     currencyrateids: Array<CurrencyrateId>,
@@ -198,126 +104,41 @@ class CurrencyrateRepoImpl() : CurrencyrateRepo {
   ): Map<CurrencyrateId, CurrencyrateRow> {
     val ret: MutableMap<CurrencyrateId, CurrencyrateRow> = mutableMapOf<CurrencyrateId, CurrencyrateRow>()
     selectByIds(currencyrateids, c).forEach({ row -> ret.put(row.currencyrateid, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<CurrencyrateFields, CurrencyrateRow> = UpdateBuilder.of("\"sales\".\"currencyrate\"", CurrencyrateFields.structure, CurrencyrateRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<CurrencyrateFields, CurrencyrateRow> = UpdateBuilder.of("\"sales\".\"currencyrate\"", CurrencyrateFields.structure, CurrencyrateRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: CurrencyrateRow,
     c: Connection
   ): Boolean {
     val currencyrateid: CurrencyrateId = row.currencyrateid
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "sales"."currencyrate"
-        set "currencyratedate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.currencyratedate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp,
-        "fromcurrencycode" = """.trimMargin()),
-      CurrencyId.pgType.encode(row.fromcurrencycode),
-      typo.runtime.Fragment.lit("""
-        ::bpchar,
-        "tocurrencycode" = """.trimMargin()),
-      CurrencyId.pgType.encode(row.tocurrencycode),
-      typo.runtime.Fragment.lit("""
-        ::bpchar,
-        "averagerate" = """.trimMargin()),
-      PgTypes.numeric.encode(row.averagerate),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "endofdayrate" = """.trimMargin()),
-      PgTypes.numeric.encode(row.endofdayrate),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "currencyrateid" = """.trimMargin()),
-      CurrencyrateId.pgType.encode(currencyrateid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update \"sales\".\"currencyrate\"\nset \"currencyratedate\" = "), Fragment.encode(PgTypes.timestamp, row.currencyratedate), Fragment.lit("::timestamp,\n\"fromcurrencycode\" = "), Fragment.encode(CurrencyId.pgType, row.fromcurrencycode), Fragment.lit("::bpchar,\n\"tocurrencycode\" = "), Fragment.encode(CurrencyId.pgType, row.tocurrencycode), Fragment.lit("::bpchar,\n\"averagerate\" = "), Fragment.encode(PgTypes.numeric, row.averagerate), Fragment.lit("::numeric,\n\"endofdayrate\" = "), Fragment.encode(PgTypes.numeric, row.endofdayrate), Fragment.lit("::numeric,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"currencyrateid\" = "), Fragment.encode(CurrencyrateId.pgType, currencyrateid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: CurrencyrateRow,
     c: Connection
-  ): CurrencyrateRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")
-      values (""".trimMargin()),
-    CurrencyrateId.pgType.encode(unsaved.currencyrateid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.currencyratedate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    CurrencyId.pgType.encode(unsaved.fromcurrencycode),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    CurrencyId.pgType.encode(unsaved.tocurrencycode),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    PgTypes.numeric.encode(unsaved.averagerate),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.endofdayrate),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("currencyrateid")
-      do update set
-        "currencyratedate" = EXCLUDED."currencyratedate",
-      "fromcurrencycode" = EXCLUDED."fromcurrencycode",
-      "tocurrencycode" = EXCLUDED."tocurrencycode",
-      "averagerate" = EXCLUDED."averagerate",
-      "endofdayrate" = EXCLUDED."endofdayrate",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text""".trimMargin())
-  )
+  ): CurrencyrateRow = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"currencyrate\"(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\")\nvalues ("), Fragment.encode(CurrencyrateId.pgType, unsaved.currencyrateid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.currencyratedate), Fragment.lit("::timestamp, "), Fragment.encode(CurrencyId.pgType, unsaved.fromcurrencycode), Fragment.lit("::bpchar, "), Fragment.encode(CurrencyId.pgType, unsaved.tocurrencycode), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.numeric, unsaved.averagerate), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.endofdayrate), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"currencyrateid\")\ndo update set\n  \"currencyratedate\" = EXCLUDED.\"currencyratedate\",\n\"fromcurrencycode\" = EXCLUDED.\"fromcurrencycode\",\n\"tocurrencycode\" = EXCLUDED.\"tocurrencycode\",\n\"averagerate\" = EXCLUDED.\"averagerate\",\n\"endofdayrate\" = EXCLUDED.\"endofdayrate\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\""))
     .updateReturning(CurrencyrateRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<CurrencyrateRow>,
+    unsaved: Iterator<CurrencyrateRow>,
     c: Connection
-  ): List<CurrencyrateRow> = interpolate(typo.runtime.Fragment.lit("""
-                               insert into "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")
-                               values (?::int4, ?::timestamp, ?::bpchar, ?::bpchar, ?::numeric, ?::numeric, ?::timestamp)
-                               on conflict ("currencyrateid")
-                               do update set
-                                 "currencyratedate" = EXCLUDED."currencyratedate",
-                               "fromcurrencycode" = EXCLUDED."fromcurrencycode",
-                               "tocurrencycode" = EXCLUDED."tocurrencycode",
-                               "averagerate" = EXCLUDED."averagerate",
-                               "endofdayrate" = EXCLUDED."endofdayrate",
-                               "modifieddate" = EXCLUDED."modifieddate"
-                               returning "currencyrateid", "currencyratedate"::text, "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate"::text""".trimMargin()))
+  ): List<CurrencyrateRow> = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"currencyrate\"(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\")\nvalues (?::int4, ?::timestamp, ?::bpchar, ?::bpchar, ?::numeric, ?::numeric, ?::timestamp)\non conflict (\"currencyrateid\")\ndo update set\n  \"currencyratedate\" = EXCLUDED.\"currencyratedate\",\n\"fromcurrencycode\" = EXCLUDED.\"fromcurrencycode\",\n\"tocurrencycode\" = EXCLUDED.\"tocurrencycode\",\n\"averagerate\" = EXCLUDED.\"averagerate\",\n\"endofdayrate\" = EXCLUDED.\"endofdayrate\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\""))
     .updateManyReturning(CurrencyrateRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<CurrencyrateRow>,
+    unsaved: Iterator<CurrencyrateRow>,
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table currencyrate_TEMP (like "sales"."currencyrate") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy currencyrate_TEMP("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, CurrencyrateRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "sales"."currencyrate"("currencyrateid", "currencyratedate", "fromcurrencycode", "tocurrencycode", "averagerate", "endofdayrate", "modifieddate")
-      select * from currencyrate_TEMP
-      on conflict ("currencyrateid")
-      do update set
-        "currencyratedate" = EXCLUDED."currencyratedate",
-      "fromcurrencycode" = EXCLUDED."fromcurrencycode",
-      "tocurrencycode" = EXCLUDED."tocurrencycode",
-      "averagerate" = EXCLUDED."averagerate",
-      "endofdayrate" = EXCLUDED."endofdayrate",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table currencyrate_TEMP;""".trimMargin())).update().runUnchecked(c)
+    Fragment.interpolate(Fragment.lit("create temporary table currencyrate_TEMP (like \"sales\".\"currencyrate\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy currencyrate_TEMP(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\") from stdin", batchSize, unsaved, c, CurrencyrateRow.pgText)
+    return Fragment.interpolate(Fragment.lit("insert into \"sales\".\"currencyrate\"(\"currencyrateid\", \"currencyratedate\", \"fromcurrencycode\", \"tocurrencycode\", \"averagerate\", \"endofdayrate\", \"modifieddate\")\nselect * from currencyrate_TEMP\non conflict (\"currencyrateid\")\ndo update set\n  \"currencyratedate\" = EXCLUDED.\"currencyratedate\",\n\"fromcurrencycode\" = EXCLUDED.\"fromcurrencycode\",\n\"tocurrencycode\" = EXCLUDED.\"tocurrencycode\",\n\"averagerate\" = EXCLUDED.\"averagerate\",\n\"endofdayrate\" = EXCLUDED.\"endofdayrate\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table currencyrate_TEMP;")).update().runUnchecked(c)
   }
 }

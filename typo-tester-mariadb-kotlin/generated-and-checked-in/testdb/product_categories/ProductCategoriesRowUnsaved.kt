@@ -10,8 +10,8 @@ import testdb.categories.CategoriesId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.products.ProductsId
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.MariaText
-import typo.runtime.MariaTypes
 
 /** This class corresponds to a row in table `product_categories` which has not been persisted yet */
 data class ProductCategoriesRowUnsaved(
@@ -43,8 +43,8 @@ data class ProductCategoriesRowUnsaved(
       sb.append(MariaText.DELIMETER)
       CategoriesId.pgType.mariaText().unsafeEncode(row.categoryId, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isPrimary, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isPrimary, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.smallint.mariaText()).unsafeEncode(row.sortOrder, sb) })
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.smallint.mariaText()).unsafeEncode(row.sortOrder, sb) })
   }
 }

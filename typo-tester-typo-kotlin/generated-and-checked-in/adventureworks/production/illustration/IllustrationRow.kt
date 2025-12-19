@@ -6,12 +6,13 @@
 package adventureworks.production.illustration
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoXml
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.data.Xml
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: production.illustration
   * Bicycle assembly diagrams.
@@ -23,21 +24,21 @@ data class IllustrationRow(
     */
   val illustrationid: IllustrationId,
   /** Illustrations used in manufacturing instructions. Stored as XML. */
-  val diagram: Optional<TypoXml>,
+  val diagram: Xml?,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): IllustrationId = illustrationid
 
   fun toUnsavedRow(
     illustrationid: Defaulted<IllustrationId>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): IllustrationRowUnsaved = IllustrationRowUnsaved(diagram, illustrationid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<IllustrationRow> = RowParsers.of(IllustrationId.pgType, TypoXml.pgType.opt(), TypoLocalDateTime.pgType, { t0, t1, t2 -> IllustrationRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.illustrationid, row.diagram, row.modifieddate) })
+    val _rowParser: RowParser<IllustrationRow> = RowParsers.of(IllustrationId.pgType, PgTypes.xml.nullable(), PgTypes.timestamp, { t0, t1, t2 -> IllustrationRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.illustrationid, row.diagram, row.modifieddate) })
 
     val pgText: PgText<IllustrationRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

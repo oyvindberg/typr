@@ -6,62 +6,61 @@
 package testdb.product_prices
 
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
+import scala.collection.mutable.ListBuffer
 import testdb.price_tiers.PriceTiersId
 import testdb.products.ProductsId
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.Dialect
+import typo.scaladsl.Fragment
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.Fragment.sql
 
 class ProductPricesRepoImpl extends ProductPricesRepo {
   override def delete: DeleteBuilder[ProductPricesFields, ProductPricesRow] = DeleteBuilder.of("`product_prices`", ProductPricesFields.structure, Dialect.MARIADB)
 
-  override def deleteById(priceId: ProductPricesId)(using c: Connection): java.lang.Boolean = interpolate"delete from `product_prices` where `price_id` = ${ProductPricesId.pgType.encode(priceId)}".update().runUnchecked(c) > 0
+  override def deleteById(priceId: ProductPricesId)(using c: Connection): Boolean = sql"delete from `product_prices` where `price_id` = ${Fragment.encode(ProductPricesId.pgType, priceId)}".update().runUnchecked(c) > 0
 
-  override def deleteByIds(priceIds: Array[ProductPricesId])(using c: Connection): Integer = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    priceIds.foreach { id => fragments.add(ProductPricesId.pgType.encode(id)) }
+  override def deleteByIds(priceIds: Array[ProductPricesId])(using c: Connection): Int = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    priceIds.foreach { id => fragments.addOne(Fragment.encode(ProductPricesId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `product_prices` where `price_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: ProductPricesRow)(using c: Connection): ProductPricesRow = {
-  interpolate"""insert into `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
-    values (${ProductsId.pgType.encode(unsaved.productId)}, ${PriceTiersId.pgType.opt().encode(unsaved.tierId)}, ${MariaTypes.numeric.encode(unsaved.price)}, ${MariaTypes.text.encode(unsaved.currencyCode)}, ${MariaTypes.date.encode(unsaved.validFrom)}, ${MariaTypes.date.opt().encode(unsaved.validTo)})
+  sql"""insert into `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
+    values (${Fragment.encode(ProductsId.pgType, unsaved.productId)}, ${Fragment.encode(PriceTiersId.pgType.nullable, unsaved.tierId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.price)}, ${Fragment.encode(MariaTypes.char_, unsaved.currencyCode)}, ${Fragment.encode(MariaTypes.date, unsaved.validFrom)}, ${Fragment.encode(MariaTypes.date.nullable, unsaved.validTo)})
     returning `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
     """
     .updateReturning(ProductPricesRow.`_rowParser`.exactlyOne()).runUnchecked(c)
   }
 
   override def insert(unsaved: ProductPricesRowUnsaved)(using c: Connection): ProductPricesRow = {
-    val columns: ArrayList[Literal] = new ArrayList[Literal]()
-    val values: ArrayList[Fragment] = new ArrayList[Fragment]()
-    columns.add(Fragment.lit("`product_id`")): @scala.annotation.nowarn
-    values.add(interpolate"${ProductsId.pgType.encode(unsaved.productId)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`price`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.numeric.encode(unsaved.price)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`valid_from`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.date.encode(unsaved.validFrom)}"): @scala.annotation.nowarn
+    val columns: ListBuffer[Fragment] = ListBuffer()
+    val values: ListBuffer[Fragment] = ListBuffer()
+    columns.addOne(Fragment.lit("`product_id`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(ProductsId.pgType, unsaved.productId)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`price`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.price)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`valid_from`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.date, unsaved.validFrom)}"): @scala.annotation.nowarn
     unsaved.tierId.visit(
       {  },
-      value => { columns.add(Fragment.lit("`tier_id`")): @scala.annotation.nowarn; values.add(interpolate"${PriceTiersId.pgType.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`tier_id`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(PriceTiersId.pgType.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.currencyCode.visit(
       {  },
-      value => { columns.add(Fragment.lit("`currency_code`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`currency_code`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.char_, value)}"): @scala.annotation.nowarn }
     );
     unsaved.validTo.visit(
       {  },
-      value => { columns.add(Fragment.lit("`valid_to`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.date.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`valid_to`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.date.nullable, value)}"): @scala.annotation.nowarn }
     );
     val q: Fragment = {
-      interpolate"""insert into `product_prices`(${Fragment.comma(columns)})
+      sql"""insert into `product_prices`(${Fragment.comma(columns)})
       values (${Fragment.comma(values)})
       returning `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
       """
@@ -71,47 +70,47 @@ class ProductPricesRepoImpl extends ProductPricesRepo {
 
   override def select: SelectBuilder[ProductPricesFields, ProductPricesRow] = SelectBuilder.of("`product_prices`", ProductPricesFields.structure, ProductPricesRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[ProductPricesRow] = {
-    interpolate"""select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
+  override def selectAll(using c: Connection): List[ProductPricesRow] = {
+    sql"""select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
     from `product_prices`
     """.query(ProductPricesRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectById(priceId: ProductPricesId)(using c: Connection): Optional[ProductPricesRow] = {
-    interpolate"""select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
+  override def selectById(priceId: ProductPricesId)(using c: Connection): Option[ProductPricesRow] = {
+    sql"""select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
     from `product_prices`
-    where `price_id` = ${ProductPricesId.pgType.encode(priceId)}""".query(ProductPricesRow.`_rowParser`.first()).runUnchecked(c)
+    where `price_id` = ${Fragment.encode(ProductPricesId.pgType, priceId)}""".query(ProductPricesRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def selectByIds(priceIds: Array[ProductPricesId])(using c: Connection): java.util.List[ProductPricesRow] = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    priceIds.foreach { id => fragments.add(ProductPricesId.pgType.encode(id)) }
+  override def selectByIds(priceIds: Array[ProductPricesId])(using c: Connection): List[ProductPricesRow] = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    priceIds.foreach { id => fragments.addOne(Fragment.encode(ProductPricesId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to` from `product_prices` where `price_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ProductPricesRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectByIdsTracked(priceIds: Array[ProductPricesId])(using c: Connection): java.util.Map[ProductPricesId, ProductPricesRow] = {
-    val ret: HashMap[ProductPricesId, ProductPricesRow] = new HashMap[ProductPricesId, ProductPricesRow]()
-    selectByIds(priceIds)(using c).forEach(row => ret.put(row.priceId, row): @scala.annotation.nowarn)
-    return ret
+  override def selectByIdsTracked(priceIds: Array[ProductPricesId])(using c: Connection): Map[ProductPricesId, ProductPricesRow] = {
+    val ret: scala.collection.mutable.Map[ProductPricesId, ProductPricesRow] = scala.collection.mutable.Map.empty[ProductPricesId, ProductPricesRow]
+    selectByIds(priceIds)(using c).foreach(row => ret.put(row.priceId, row): @scala.annotation.nowarn)
+    return ret.toMap
   }
 
-  override def update: UpdateBuilder[ProductPricesFields, ProductPricesRow] = UpdateBuilder.of("`product_prices`", ProductPricesFields.structure, ProductPricesRow.`_rowParser`.all(), Dialect.MARIADB)
+  override def update: UpdateBuilder[ProductPricesFields, ProductPricesRow] = UpdateBuilder.of("`product_prices`", ProductPricesFields.structure, ProductPricesRow.`_rowParser`, Dialect.MARIADB)
 
-  override def update(row: ProductPricesRow)(using c: Connection): java.lang.Boolean = {
+  override def update(row: ProductPricesRow)(using c: Connection): Boolean = {
     val priceId: ProductPricesId = row.priceId
-    return interpolate"""update `product_prices`
-    set `product_id` = ${ProductsId.pgType.encode(row.productId)},
-    `tier_id` = ${PriceTiersId.pgType.opt().encode(row.tierId)},
-    `price` = ${MariaTypes.numeric.encode(row.price)},
-    `currency_code` = ${MariaTypes.text.encode(row.currencyCode)},
-    `valid_from` = ${MariaTypes.date.encode(row.validFrom)},
-    `valid_to` = ${MariaTypes.date.opt().encode(row.validTo)}
-    where `price_id` = ${ProductPricesId.pgType.encode(priceId)}""".update().runUnchecked(c) > 0
+    return sql"""update `product_prices`
+    set `product_id` = ${Fragment.encode(ProductsId.pgType, row.productId)},
+    `tier_id` = ${Fragment.encode(PriceTiersId.pgType.nullable, row.tierId)},
+    `price` = ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, row.price)},
+    `currency_code` = ${Fragment.encode(MariaTypes.char_, row.currencyCode)},
+    `valid_from` = ${Fragment.encode(MariaTypes.date, row.validFrom)},
+    `valid_to` = ${Fragment.encode(MariaTypes.date.nullable, row.validTo)}
+    where `price_id` = ${Fragment.encode(ProductPricesId.pgType, priceId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: ProductPricesRow)(using c: Connection): ProductPricesRow = {
-  interpolate"""INSERT INTO `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
-    VALUES (${ProductsId.pgType.encode(unsaved.productId)}, ${PriceTiersId.pgType.opt().encode(unsaved.tierId)}, ${MariaTypes.numeric.encode(unsaved.price)}, ${MariaTypes.text.encode(unsaved.currencyCode)}, ${MariaTypes.date.encode(unsaved.validFrom)}, ${MariaTypes.date.opt().encode(unsaved.validTo)})
+  sql"""INSERT INTO `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
+    VALUES (${Fragment.encode(ProductsId.pgType, unsaved.productId)}, ${Fragment.encode(PriceTiersId.pgType.nullable, unsaved.tierId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.price)}, ${Fragment.encode(MariaTypes.char_, unsaved.currencyCode)}, ${Fragment.encode(MariaTypes.date, unsaved.validFrom)}, ${Fragment.encode(MariaTypes.date.nullable, unsaved.validTo)})
     ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
     `tier_id` = VALUES(`tier_id`),
     `price` = VALUES(`price`),
@@ -123,8 +122,8 @@ class ProductPricesRepoImpl extends ProductPricesRepo {
     .runUnchecked(c)
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[ProductPricesRow])(using c: Connection): java.util.List[ProductPricesRow] = {
-    interpolate"""INSERT INTO `product_prices`(`price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
+  override def upsertBatch(unsaved: Iterator[ProductPricesRow])(using c: Connection): List[ProductPricesRow] = {
+    sql"""INSERT INTO `product_prices`(`price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
     VALUES (?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
     `tier_id` = VALUES(`tier_id`),
@@ -134,6 +133,6 @@ class ProductPricesRepoImpl extends ProductPricesRepo {
     `valid_to` = VALUES(`valid_to`)
     RETURNING `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`"""
       .updateReturningEach(ProductPricesRow.`_rowParser`, unsaved)
-      .runUnchecked(c)
+    .runUnchecked(c)
   }
 }

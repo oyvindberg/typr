@@ -7,10 +7,11 @@ package adventureworks.sales.countryregioncurrency
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.sales.currency.CurrencyId
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `sales.countryregioncurrency` which has not been persisted yet */
 data class CountryregioncurrencyRowUnsaved(
@@ -23,9 +24,9 @@ data class CountryregioncurrencyRowUnsaved(
     */
   val currencycode: CurrencyId,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
-  fun toRow(modifieddateDefault: () -> TypoLocalDateTime): CountryregioncurrencyRow = CountryregioncurrencyRow(countryregioncode = countryregioncode, currencycode = currencycode, modifieddate = modifieddate.getOrElse(modifieddateDefault))
+  fun toRow(modifieddateDefault: () -> LocalDateTime): CountryregioncurrencyRow = CountryregioncurrencyRow(countryregioncode = countryregioncode, currencycode = currencycode, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<CountryregioncurrencyRowUnsaved> =
@@ -33,6 +34,6 @@ data class CountryregioncurrencyRowUnsaved(
       sb.append(PgText.DELIMETER)
       CurrencyId.pgType.pgText().unsafeEncode(row.currencycode, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

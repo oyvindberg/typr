@@ -17,9 +17,9 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.creditcard` which has not been persisted yet */
 case class CreditcardRowUnsaved(
   /** Credit card name. */
-  cardtype: /* max 50 chars */ String,
+  cardtype: String,
   /** Credit card number. */
-  cardnumber: /* max 25 chars */ String,
+  cardnumber: String,
   /** Credit card expiration month. */
   expmonth: TypoShort,
   /** Credit card expiration year. */
@@ -47,9 +47,9 @@ case class CreditcardRowUnsaved(
 }
 
 object CreditcardRowUnsaved {
-  given decoder: Decoder[CreditcardRowUnsaved] = Decoder.forProduct6[CreditcardRowUnsaved, /* max 50 chars */ String, /* max 25 chars */ String, TypoShort, TypoShort, Defaulted[/* user-picked */ CustomCreditcardId], Defaulted[TypoLocalDateTime]]("cardtype", "cardnumber", "expmonth", "expyear", "creditcardid", "modifieddate")(CreditcardRowUnsaved.apply)(using Decoder.decodeString, Decoder.decodeString, TypoShort.decoder, TypoShort.decoder, Defaulted.decoder(using CustomCreditcardId.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+  given decoder: Decoder[CreditcardRowUnsaved] = Decoder.forProduct6[CreditcardRowUnsaved, String, String, TypoShort, TypoShort, Defaulted[/* user-picked */ CustomCreditcardId], Defaulted[TypoLocalDateTime]]("cardtype", "cardnumber", "expmonth", "expyear", "creditcardid", "modifieddate")(CreditcardRowUnsaved.apply)(using Decoder.decodeString, Decoder.decodeString, TypoShort.decoder, TypoShort.decoder, Defaulted.decoder(using CustomCreditcardId.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
 
-  given encoder: Encoder[CreditcardRowUnsaved] = Encoder.forProduct6[CreditcardRowUnsaved, /* max 50 chars */ String, /* max 25 chars */ String, TypoShort, TypoShort, Defaulted[/* user-picked */ CustomCreditcardId], Defaulted[TypoLocalDateTime]]("cardtype", "cardnumber", "expmonth", "expyear", "creditcardid", "modifieddate")(x => (x.cardtype, x.cardnumber, x.expmonth, x.expyear, x.creditcardid, x.modifieddate))(using Encoder.encodeString, Encoder.encodeString, TypoShort.encoder, TypoShort.encoder, Defaulted.encoder(using CustomCreditcardId.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
+  given encoder: Encoder[CreditcardRowUnsaved] = Encoder.forProduct6[CreditcardRowUnsaved, String, String, TypoShort, TypoShort, Defaulted[/* user-picked */ CustomCreditcardId], Defaulted[TypoLocalDateTime]]("cardtype", "cardnumber", "expmonth", "expyear", "creditcardid", "modifieddate")(x => (x.cardtype, x.cardnumber, x.expmonth, x.expyear, x.creditcardid, x.modifieddate))(using Encoder.encodeString, Encoder.encodeString, TypoShort.encoder, TypoShort.encoder, Defaulted.encoder(using CustomCreditcardId.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
 
   given pgText: Text[CreditcardRowUnsaved] = {
     Text.instance[CreditcardRowUnsaved]{ (row, sb) =>

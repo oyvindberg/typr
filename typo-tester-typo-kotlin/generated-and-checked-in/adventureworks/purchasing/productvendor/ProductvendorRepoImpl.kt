@@ -5,28 +5,25 @@
  */
 package adventureworks.purchasing.productvendor
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
 
 class ProductvendorRepoImpl() : ProductvendorRepo {
   override fun delete(): DeleteBuilder<ProductvendorFields, ProductvendorRow> = DeleteBuilder.of("\"purchasing\".\"productvendor\"", ProductvendorFields.structure, Dialect.POSTGRESQL)
@@ -34,17 +31,7 @@ class ProductvendorRepoImpl() : ProductvendorRepo {
   override fun deleteById(
     compositeId: ProductvendorId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "purchasing"."productvendor" where "productid" = 
-    """.trimMargin()),
-    ProductId.pgType.encode(compositeId.productid),
-    typo.runtime.Fragment.lit("""
-     AND "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from \"purchasing\".\"productvendor\" where \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid), Fragment.lit(" AND \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     compositeIds: Array<ProductvendorId>,
@@ -52,177 +39,71 @@ class ProductvendorRepoImpl() : ProductvendorRepo {
   ): Int {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductvendorId::productid, ProductId::class.java)
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, ProductvendorId::businessentityid, BusinessentityId::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        delete
-        from "purchasing"."productvendor"
-        where ("productid", "businessentityid")
-        in (select unnest(""".trimMargin()),
-      ProductId.pgTypeArray.encode(productid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """.trimMargin())
-    ).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"purchasing\".\"productvendor\"\nwhere (\"productid\", \"businessentityid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: ProductvendorRow,
     c: Connection
-  ): ProductvendorRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "purchasing"."productvendor"("productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate")
-      values (""".trimMargin()),
-    ProductId.pgType.encode(unsaved.productid),
-    typo.runtime.Fragment.lit("::int4, "),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.int4.encode(unsaved.averageleadtime),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.numeric.encode(unsaved.standardprice),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.opt().encode(unsaved.lastreceiptcost),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoLocalDateTime.pgType.opt().encode(unsaved.lastreceiptdate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    PgTypes.int4.encode(unsaved.minorderqty),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.int4.encode(unsaved.maxorderqty),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.int4.opt().encode(unsaved.onorderqty),
-    typo.runtime.Fragment.lit("::int4, "),
-    UnitmeasureId.pgType.encode(unsaved.unitmeasurecode),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): ProductvendorRow = Fragment.interpolate(Fragment.lit("insert into \"purchasing\".\"productvendor\"(\"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductId.pgType, unsaved.productid), Fragment.lit("::int4, "), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.averageleadtime), Fragment.lit("::int4, "), Fragment.encode(PgTypes.numeric, unsaved.standardprice), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric.nullable(), unsaved.lastreceiptcost), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.timestamp.nullable(), unsaved.lastreceiptdate), Fragment.lit("::timestamp, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.minorderqty), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.maxorderqty), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int4.nullable(), unsaved.onorderqty), Fragment.lit("::int4, "), Fragment.encode(UnitmeasureId.pgType, unsaved.unitmeasurecode), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\"\n"))
     .updateReturning(ProductvendorRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: ProductvendorRowUnsaved,
     c: Connection
   ): ProductvendorRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"productid\""))
-    values.add(interpolate(
-      ProductId.pgType.encode(unsaved.productid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(ProductId.pgType, unsaved.productid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"businessentityid\""))
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"averageleadtime\""))
-    values.add(interpolate(
-      PgTypes.int4.encode(unsaved.averageleadtime),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.averageleadtime), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"standardprice\""))
-    values.add(interpolate(
-      PgTypes.numeric.encode(unsaved.standardprice),
-      typo.runtime.Fragment.lit("::numeric")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric, unsaved.standardprice), Fragment.lit("::numeric")))
     columns.add(Fragment.lit("\"lastreceiptcost\""))
-    values.add(interpolate(
-      PgTypes.numeric.opt().encode(unsaved.lastreceiptcost),
-      typo.runtime.Fragment.lit("::numeric")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric.nullable(), unsaved.lastreceiptcost), Fragment.lit("::numeric")))
     columns.add(Fragment.lit("\"lastreceiptdate\""))
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.opt().encode(unsaved.lastreceiptdate),
-      typo.runtime.Fragment.lit("::timestamp")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp.nullable(), unsaved.lastreceiptdate), Fragment.lit("::timestamp")))
     columns.add(Fragment.lit("\"minorderqty\""))
-    values.add(interpolate(
-      PgTypes.int4.encode(unsaved.minorderqty),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.minorderqty), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"maxorderqty\""))
-    values.add(interpolate(
-      PgTypes.int4.encode(unsaved.maxorderqty),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.maxorderqty), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"onorderqty\""))
-    values.add(interpolate(
-      PgTypes.int4.opt().encode(unsaved.onorderqty),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int4.nullable(), unsaved.onorderqty), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"unitmeasurecode\""))
-    values.add(interpolate(
-      UnitmeasureId.pgType.encode(unsaved.unitmeasurecode),
-      typo.runtime.Fragment.lit("::bpchar")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(UnitmeasureId.pgType, unsaved.unitmeasurecode), Fragment.lit("::bpchar")))
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "purchasing"."productvendor"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into \"purchasing\".\"productvendor\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\"\n"))
     return q.updateReturning(ProductvendorRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<ProductvendorRow>,
+    unsaved: Iterator<ProductvendorRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "purchasing"."productvendor"("productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, ProductvendorRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"purchasing\".\"productvendor\"(\"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, ProductvendorRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ProductvendorRowUnsaved>,
+    unsaved: Iterator<ProductvendorRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "purchasing"."productvendor"("productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, ProductvendorRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"purchasing\".\"productvendor\"(\"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ProductvendorRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<ProductvendorFields, ProductvendorRow> = SelectBuilder.of("\"purchasing\".\"productvendor\"", ProductvendorFields.structure, ProductvendorRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<ProductvendorRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text
-    from "purchasing"."productvendor"
-  """.trimMargin())).query(ProductvendorRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<ProductvendorRow> = Fragment.interpolate(Fragment.lit("select \"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\"\nfrom \"purchasing\".\"productvendor\"\n")).query(ProductvendorRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     compositeId: ProductvendorId,
     c: Connection
-  ): Optional<ProductvendorRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text
-      from "purchasing"."productvendor"
-      where "productid" = """.trimMargin()),
-    ProductId.pgType.encode(compositeId.productid),
-    typo.runtime.Fragment.lit("""
-     AND "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("")
-  ).query(ProductvendorRow._rowParser.first()).runUnchecked(c)
+  ): ProductvendorRow? = Fragment.interpolate(Fragment.lit("select \"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\"\nfrom \"purchasing\".\"productvendor\"\nwhere \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid), Fragment.lit(" AND \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit("")).query(ProductvendorRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     compositeIds: Array<ProductvendorId>,
@@ -230,20 +111,7 @@ class ProductvendorRepoImpl() : ProductvendorRepo {
   ): List<ProductvendorRow> {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductvendorId::productid, ProductId::class.java)
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, ProductvendorId::businessentityid, BusinessentityId::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        select "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text
-        from "purchasing"."productvendor"
-        where ("productid", "businessentityid")
-        in (select unnest(""".trimMargin()),
-      ProductId.pgTypeArray.encode(productid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """.trimMargin())
-    ).query(ProductvendorRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\"\nfrom \"purchasing\".\"productvendor\"\nwhere (\"productid\", \"businessentityid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]))\n")).query(ProductvendorRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(
@@ -252,159 +120,41 @@ class ProductvendorRepoImpl() : ProductvendorRepo {
   ): Map<ProductvendorId, ProductvendorRow> {
     val ret: MutableMap<ProductvendorId, ProductvendorRow> = mutableMapOf<ProductvendorId, ProductvendorRow>()
     selectByIds(compositeIds, c).forEach({ row -> ret.put(row.compositeId(), row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<ProductvendorFields, ProductvendorRow> = UpdateBuilder.of("\"purchasing\".\"productvendor\"", ProductvendorFields.structure, ProductvendorRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<ProductvendorFields, ProductvendorRow> = UpdateBuilder.of("\"purchasing\".\"productvendor\"", ProductvendorFields.structure, ProductvendorRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: ProductvendorRow,
     c: Connection
   ): Boolean {
     val compositeId: ProductvendorId = row.compositeId()
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "purchasing"."productvendor"
-        set "averageleadtime" = """.trimMargin()),
-      PgTypes.int4.encode(row.averageleadtime),
-      typo.runtime.Fragment.lit("""
-        ::int4,
-        "standardprice" = """.trimMargin()),
-      PgTypes.numeric.encode(row.standardprice),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "lastreceiptcost" = """.trimMargin()),
-      PgTypes.numeric.opt().encode(row.lastreceiptcost),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "lastreceiptdate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.opt().encode(row.lastreceiptdate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp,
-        "minorderqty" = """.trimMargin()),
-      PgTypes.int4.encode(row.minorderqty),
-      typo.runtime.Fragment.lit("""
-        ::int4,
-        "maxorderqty" = """.trimMargin()),
-      PgTypes.int4.encode(row.maxorderqty),
-      typo.runtime.Fragment.lit("""
-        ::int4,
-        "onorderqty" = """.trimMargin()),
-      PgTypes.int4.opt().encode(row.onorderqty),
-      typo.runtime.Fragment.lit("""
-        ::int4,
-        "unitmeasurecode" = """.trimMargin()),
-      UnitmeasureId.pgType.encode(row.unitmeasurecode),
-      typo.runtime.Fragment.lit("""
-        ::bpchar,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "productid" = """.trimMargin()),
-      ProductId.pgType.encode(compositeId.productid),
-      typo.runtime.Fragment.lit("""
-       AND "businessentityid" = 
-      """.trimMargin()),
-      BusinessentityId.pgType.encode(compositeId.businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update \"purchasing\".\"productvendor\"\nset \"averageleadtime\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, row.averageleadtime), Fragment.lit("::int4,\n\"standardprice\" = "), Fragment.encode(PgTypes.numeric, row.standardprice), Fragment.lit("::numeric,\n\"lastreceiptcost\" = "), Fragment.encode(PgTypes.numeric.nullable(), row.lastreceiptcost), Fragment.lit("::numeric,\n\"lastreceiptdate\" = "), Fragment.encode(PgTypes.timestamp.nullable(), row.lastreceiptdate), Fragment.lit("::timestamp,\n\"minorderqty\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, row.minorderqty), Fragment.lit("::int4,\n\"maxorderqty\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, row.maxorderqty), Fragment.lit("::int4,\n\"onorderqty\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4.nullable(), row.onorderqty), Fragment.lit("::int4,\n\"unitmeasurecode\" = "), Fragment.encode(UnitmeasureId.pgType, row.unitmeasurecode), Fragment.lit("::bpchar,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"productid\" = "), Fragment.encode(ProductId.pgType, compositeId.productid), Fragment.lit(" AND \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: ProductvendorRow,
     c: Connection
-  ): ProductvendorRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "purchasing"."productvendor"("productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate")
-      values (""".trimMargin()),
-    ProductId.pgType.encode(unsaved.productid),
-    typo.runtime.Fragment.lit("::int4, "),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.int4.encode(unsaved.averageleadtime),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.numeric.encode(unsaved.standardprice),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.opt().encode(unsaved.lastreceiptcost),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoLocalDateTime.pgType.opt().encode(unsaved.lastreceiptdate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    PgTypes.int4.encode(unsaved.minorderqty),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.int4.encode(unsaved.maxorderqty),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.int4.opt().encode(unsaved.onorderqty),
-    typo.runtime.Fragment.lit("::int4, "),
-    UnitmeasureId.pgType.encode(unsaved.unitmeasurecode),
-    typo.runtime.Fragment.lit("::bpchar, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("productid", "businessentityid")
-      do update set
-        "averageleadtime" = EXCLUDED."averageleadtime",
-      "standardprice" = EXCLUDED."standardprice",
-      "lastreceiptcost" = EXCLUDED."lastreceiptcost",
-      "lastreceiptdate" = EXCLUDED."lastreceiptdate",
-      "minorderqty" = EXCLUDED."minorderqty",
-      "maxorderqty" = EXCLUDED."maxorderqty",
-      "onorderqty" = EXCLUDED."onorderqty",
-      "unitmeasurecode" = EXCLUDED."unitmeasurecode",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text""".trimMargin())
-  )
+  ): ProductvendorRow = Fragment.interpolate(Fragment.lit("insert into \"purchasing\".\"productvendor\"(\"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\")\nvalues ("), Fragment.encode(ProductId.pgType, unsaved.productid), Fragment.lit("::int4, "), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.averageleadtime), Fragment.lit("::int4, "), Fragment.encode(PgTypes.numeric, unsaved.standardprice), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric.nullable(), unsaved.lastreceiptcost), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.timestamp.nullable(), unsaved.lastreceiptdate), Fragment.lit("::timestamp, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.minorderqty), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.maxorderqty), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int4.nullable(), unsaved.onorderqty), Fragment.lit("::int4, "), Fragment.encode(UnitmeasureId.pgType, unsaved.unitmeasurecode), Fragment.lit("::bpchar, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"productid\", \"businessentityid\")\ndo update set\n  \"averageleadtime\" = EXCLUDED.\"averageleadtime\",\n\"standardprice\" = EXCLUDED.\"standardprice\",\n\"lastreceiptcost\" = EXCLUDED.\"lastreceiptcost\",\n\"lastreceiptdate\" = EXCLUDED.\"lastreceiptdate\",\n\"minorderqty\" = EXCLUDED.\"minorderqty\",\n\"maxorderqty\" = EXCLUDED.\"maxorderqty\",\n\"onorderqty\" = EXCLUDED.\"onorderqty\",\n\"unitmeasurecode\" = EXCLUDED.\"unitmeasurecode\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\""))
     .updateReturning(ProductvendorRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductvendorRow>,
+    unsaved: Iterator<ProductvendorRow>,
     c: Connection
-  ): List<ProductvendorRow> = interpolate(typo.runtime.Fragment.lit("""
-                                insert into "purchasing"."productvendor"("productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate")
-                                values (?::int4, ?::int4, ?::int4, ?::numeric, ?::numeric, ?::timestamp, ?::int4, ?::int4, ?::int4, ?::bpchar, ?::timestamp)
-                                on conflict ("productid", "businessentityid")
-                                do update set
-                                  "averageleadtime" = EXCLUDED."averageleadtime",
-                                "standardprice" = EXCLUDED."standardprice",
-                                "lastreceiptcost" = EXCLUDED."lastreceiptcost",
-                                "lastreceiptdate" = EXCLUDED."lastreceiptdate",
-                                "minorderqty" = EXCLUDED."minorderqty",
-                                "maxorderqty" = EXCLUDED."maxorderqty",
-                                "onorderqty" = EXCLUDED."onorderqty",
-                                "unitmeasurecode" = EXCLUDED."unitmeasurecode",
-                                "modifieddate" = EXCLUDED."modifieddate"
-                                returning "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate"::text, "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"::text""".trimMargin()))
+  ): List<ProductvendorRow> = Fragment.interpolate(Fragment.lit("insert into \"purchasing\".\"productvendor\"(\"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?::int4, ?::numeric, ?::numeric, ?::timestamp, ?::int4, ?::int4, ?::int4, ?::bpchar, ?::timestamp)\non conflict (\"productid\", \"businessentityid\")\ndo update set\n  \"averageleadtime\" = EXCLUDED.\"averageleadtime\",\n\"standardprice\" = EXCLUDED.\"standardprice\",\n\"lastreceiptcost\" = EXCLUDED.\"lastreceiptcost\",\n\"lastreceiptdate\" = EXCLUDED.\"lastreceiptdate\",\n\"minorderqty\" = EXCLUDED.\"minorderqty\",\n\"maxorderqty\" = EXCLUDED.\"maxorderqty\",\n\"onorderqty\" = EXCLUDED.\"onorderqty\",\n\"unitmeasurecode\" = EXCLUDED.\"unitmeasurecode\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\""))
     .updateManyReturning(ProductvendorRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<ProductvendorRow>,
+    unsaved: Iterator<ProductvendorRow>,
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table productvendor_TEMP (like "purchasing"."productvendor") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy productvendor_TEMP("productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, ProductvendorRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "purchasing"."productvendor"("productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate")
-      select * from productvendor_TEMP
-      on conflict ("productid", "businessentityid")
-      do update set
-        "averageleadtime" = EXCLUDED."averageleadtime",
-      "standardprice" = EXCLUDED."standardprice",
-      "lastreceiptcost" = EXCLUDED."lastreceiptcost",
-      "lastreceiptdate" = EXCLUDED."lastreceiptdate",
-      "minorderqty" = EXCLUDED."minorderqty",
-      "maxorderqty" = EXCLUDED."maxorderqty",
-      "onorderqty" = EXCLUDED."onorderqty",
-      "unitmeasurecode" = EXCLUDED."unitmeasurecode",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table productvendor_TEMP;""".trimMargin())).update().runUnchecked(c)
+    Fragment.interpolate(Fragment.lit("create temporary table productvendor_TEMP (like \"purchasing\".\"productvendor\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy productvendor_TEMP(\"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\") from stdin", batchSize, unsaved, c, ProductvendorRow.pgText)
+    return Fragment.interpolate(Fragment.lit("insert into \"purchasing\".\"productvendor\"(\"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\")\nselect * from productvendor_TEMP\non conflict (\"productid\", \"businessentityid\")\ndo update set\n  \"averageleadtime\" = EXCLUDED.\"averageleadtime\",\n\"standardprice\" = EXCLUDED.\"standardprice\",\n\"lastreceiptcost\" = EXCLUDED.\"lastreceiptcost\",\n\"lastreceiptdate\" = EXCLUDED.\"lastreceiptdate\",\n\"minorderqty\" = EXCLUDED.\"minorderqty\",\n\"maxorderqty\" = EXCLUDED.\"maxorderqty\",\n\"onorderqty\" = EXCLUDED.\"onorderqty\",\n\"unitmeasurecode\" = EXCLUDED.\"unitmeasurecode\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table productvendor_TEMP;")).update().runUnchecked(c)
   }
 }

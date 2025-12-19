@@ -8,21 +8,19 @@ package adventureworks.production.scrapreason
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ScrapreasonRepoMock(
   val toRow: (ScrapreasonRowUnsaved) -> ScrapreasonRow,
@@ -33,7 +31,7 @@ data class ScrapreasonRepoMock(
   override fun deleteById(
     scrapreasonid: ScrapreasonId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(scrapreasonid)).isPresent()
+  ): Boolean = map.remove(scrapreasonid) != null
 
   override fun deleteByIds(
     scrapreasonids: Array<ScrapreasonId>,
@@ -41,7 +39,7 @@ data class ScrapreasonRepoMock(
   ): Int {
     var count = 0
     for (id in scrapreasonids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ScrapreasonRepoMock(
     c: Connection
   ): ScrapreasonRow {
     if (map.containsKey(unsaved.scrapreasonid)) {
-      throw RuntimeException(str("id $unsaved.scrapreasonid already exists"))
+      throw RuntimeException("id " + unsaved.scrapreasonid + " already exists")
     }
     map[unsaved.scrapreasonid] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class ScrapreasonRepoMock(
   ): ScrapreasonRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<ScrapreasonRow>,
+    unsaved: Iterator<ScrapreasonRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class ScrapreasonRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ScrapreasonRowUnsaved>,
+    unsaved: Iterator<ScrapreasonRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class ScrapreasonRepoMock(
   override fun selectById(
     scrapreasonid: ScrapreasonId,
     c: Connection
-  ): Optional<ScrapreasonRow> = Optional.ofNullable(map[scrapreasonid])
+  ): ScrapreasonRow? = map[scrapreasonid]
 
   override fun selectByIds(
     scrapreasonids: Array<ScrapreasonId>,
@@ -109,9 +107,9 @@ data class ScrapreasonRepoMock(
   ): List<ScrapreasonRow> {
     val result = ArrayList<ScrapreasonRow>()
     for (id in scrapreasonids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class ScrapreasonRepoMock(
     row: ScrapreasonRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.scrapreasonid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.scrapreasonid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.scrapreasonid] = row
     }
@@ -144,7 +142,7 @@ data class ScrapreasonRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ScrapreasonRow>,
+    unsaved: Iterator<ScrapreasonRow>,
     c: Connection
   ): List<ScrapreasonRow> {
     val result = ArrayList<ScrapreasonRow>()
@@ -158,7 +156,7 @@ data class ScrapreasonRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<ScrapreasonRow>,
+    unsaved: Iterator<ScrapreasonRow>,
     batchSize: Int,
     c: Connection
   ): Int {

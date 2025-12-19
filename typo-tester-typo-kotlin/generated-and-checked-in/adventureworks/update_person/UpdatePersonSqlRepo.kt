@@ -5,14 +5,13 @@
  */
 package adventureworks.update_person
 
-import adventureworks.customtypes.TypoLocalDateTime
 import java.sql.Connection
-import java.util.Optional
+import java.time.LocalDateTime
 
 interface UpdatePersonSqlRepo {
-  fun apply(
+  abstract fun apply(
     suffix: String,
-    cutoff: Optional<TypoLocalDateTime>,
+    cutoff: LocalDateTime?,
     c: Connection
   ): Int
 }

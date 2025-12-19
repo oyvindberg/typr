@@ -8,14 +8,15 @@ package testdb.products
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.brands.BrandsId
 import testdb.customtypes.Defaulted
 import typo.data.maria.MariaSet
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: products
   * Primary key: product_id
@@ -31,31 +32,31 @@ data class ProductsRow(
     * Default: NULL
     * Points to [testdb.brands.BrandsRow.brandId]
     */
-  @JsonProperty("brand_id") val brandId: Optional<BrandsId>,
+  @JsonProperty("brand_id") val brandId: BrandsId?,
   /**  */
   val name: String,
   /** 
     * Default: NULL
     */
-  @JsonProperty("short_description") val shortDescription: Optional<String>,
+  @JsonProperty("short_description") val shortDescription: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("full_description") val fullDescription: Optional<String>,
+  @JsonProperty("full_description") val fullDescription: String?,
   /**  */
   @JsonProperty("base_price") val basePrice: BigDecimal,
   /** 
     * Default: NULL
     */
-  @JsonProperty("cost_price") val costPrice: Optional<BigDecimal>,
+  @JsonProperty("cost_price") val costPrice: BigDecimal?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("weight_kg") val weightKg: Optional<BigDecimal>,
+  @JsonProperty("weight_kg") val weightKg: BigDecimal?,
   /** length, width, height in cm
     * Default: NULL
     */
-  @JsonProperty("dimensions_json") val dimensionsJson: Optional<String>,
+  @JsonProperty("dimensions_json") val dimensionsJson: String?,
   /** 
     * Default: 'draft'
     */
@@ -67,15 +68,15 @@ data class ProductsRow(
   /** 
     * Default: NULL
     */
-  val tags: Optional<MariaSet>,
+  val tags: MariaSet?,
   /** 
     * Default: NULL
     */
-  val attributes: Optional<String>,
+  val attributes: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("seo_metadata") val seoMetadata: Optional<String>,
+  @JsonProperty("seo_metadata") val seoMetadata: String?,
   /** 
     * Default: current_timestamp(6)
     */
@@ -87,31 +88,31 @@ data class ProductsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("published_at") val publishedAt: Optional<LocalDateTime>
+  @JsonProperty("published_at") val publishedAt: LocalDateTime?
 ) {
   fun id(): ProductsId = productId
 
   fun toUnsavedRow(
-    brandId: Defaulted<Optional<BrandsId>>,
-    shortDescription: Defaulted<Optional<String>>,
-    fullDescription: Defaulted<Optional<String>>,
-    costPrice: Defaulted<Optional<BigDecimal>>,
-    weightKg: Defaulted<Optional<BigDecimal>>,
-    dimensionsJson: Defaulted<Optional<String>>,
+    brandId: Defaulted<BrandsId?>,
+    shortDescription: Defaulted<String?>,
+    fullDescription: Defaulted<String?>,
+    costPrice: Defaulted<BigDecimal?>,
+    weightKg: Defaulted<BigDecimal?>,
+    dimensionsJson: Defaulted<String?>,
     status: Defaulted<String>,
     taxClass: Defaulted<String>,
-    tags: Defaulted<Optional<MariaSet>>,
-    attributes: Defaulted<Optional<String>>,
-    seoMetadata: Defaulted<Optional<String>>,
+    tags: Defaulted<MariaSet?>,
+    attributes: Defaulted<String?>,
+    seoMetadata: Defaulted<String?>,
     createdAt: Defaulted<LocalDateTime>,
     updatedAt: Defaulted<LocalDateTime>,
-    publishedAt: Defaulted<Optional<LocalDateTime>>
+    publishedAt: Defaulted<LocalDateTime?>
   ): ProductsRowUnsaved = ProductsRowUnsaved(sku, name, basePrice, brandId, shortDescription, fullDescription, costPrice, weightKg, dimensionsJson, status, taxClass, tags, attributes, seoMetadata, createdAt, updatedAt, publishedAt)
 
   companion object {
-    val _rowParser: RowParser<ProductsRow> = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, BrandsId.pgType.opt(), MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.longtext.opt(), MariaTypes.decimal, MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.longtext.opt(), MariaTypes.text, MariaTypes.text, MariaTypes.set.opt(), MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> ProductsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt) })
+    val _rowParser: RowParser<ProductsRow> = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, BrandsId.pgType.nullable(), MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.longtext.nullable(), MariaTypes.text, MariaTypes.text, MariaTypes.set.nullable(), MariaTypes.longtext.nullable(), MariaTypes.longtext.nullable(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> ProductsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt) })
 
     val mariaText: MariaText<ProductsRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

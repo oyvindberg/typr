@@ -20,7 +20,7 @@ case class PdViewRow(
   /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.productdescriptionid]] */
   productdescriptionid: ProductdescriptionId,
   /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.description]] */
-  description: /* max 400 chars */ String,
+  description: String,
   /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productdescription.ProductdescriptionRow.modifieddate]] */
@@ -28,9 +28,9 @@ case class PdViewRow(
 )
 
 object PdViewRow {
-  implicit lazy val decoder: Decoder[PdViewRow] = Decoder.forProduct5[PdViewRow, ProductdescriptionId, ProductdescriptionId, /* max 400 chars */ String, TypoUUID, TypoLocalDateTime]("id", "productdescriptionid", "description", "rowguid", "modifieddate")(PdViewRow.apply)(ProductdescriptionId.decoder, ProductdescriptionId.decoder, Decoder.decodeString, TypoUUID.decoder, TypoLocalDateTime.decoder)
+  implicit lazy val decoder: Decoder[PdViewRow] = Decoder.forProduct5[PdViewRow, ProductdescriptionId, ProductdescriptionId, String, TypoUUID, TypoLocalDateTime]("id", "productdescriptionid", "description", "rowguid", "modifieddate")(PdViewRow.apply)(ProductdescriptionId.decoder, ProductdescriptionId.decoder, Decoder.decodeString, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  implicit lazy val encoder: Encoder[PdViewRow] = Encoder.forProduct5[PdViewRow, ProductdescriptionId, ProductdescriptionId, /* max 400 chars */ String, TypoUUID, TypoLocalDateTime]("id", "productdescriptionid", "description", "rowguid", "modifieddate")(x => (x.id, x.productdescriptionid, x.description, x.rowguid, x.modifieddate))(ProductdescriptionId.encoder, ProductdescriptionId.encoder, Encoder.encodeString, TypoUUID.encoder, TypoLocalDateTime.encoder)
+  implicit lazy val encoder: Encoder[PdViewRow] = Encoder.forProduct5[PdViewRow, ProductdescriptionId, ProductdescriptionId, String, TypoUUID, TypoLocalDateTime]("id", "productdescriptionid", "description", "rowguid", "modifieddate")(x => (x.id, x.productdescriptionid, x.description, x.rowguid, x.modifieddate))(ProductdescriptionId.encoder, ProductdescriptionId.encoder, Encoder.encodeString, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   implicit lazy val read: Read[PdViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -43,7 +43,7 @@ object PdViewRow {
       PdViewRow(
         id = arr(0).asInstanceOf[ProductdescriptionId],
             productdescriptionid = arr(1).asInstanceOf[ProductdescriptionId],
-            description = arr(2).asInstanceOf[/* max 400 chars */ String],
+            description = arr(2).asInstanceOf[String],
             rowguid = arr(3).asInstanceOf[TypoUUID],
             modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
       )

@@ -7,65 +7,65 @@ package adventureworks.sales.vstorewithaddresses
 
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface VstorewithaddressesViewFields : FieldsExpr<VstorewithaddressesViewRow> {
-  fun addressline1(): Field</* max 60 chars */ String, VstorewithaddressesViewRow>
+  abstract fun addressline1(): Field<String, VstorewithaddressesViewRow>
 
-  fun addressline2(): OptField</* max 60 chars */ String, VstorewithaddressesViewRow>
+  abstract fun addressline2(): Field<String, VstorewithaddressesViewRow>
 
-  fun addresstype(): Field<Name, VstorewithaddressesViewRow>
+  abstract fun addresstype(): Field<Name, VstorewithaddressesViewRow>
 
-  fun businessentityid(): Field<BusinessentityId, VstorewithaddressesViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, VstorewithaddressesViewRow>
 
-  fun city(): Field</* max 30 chars */ String, VstorewithaddressesViewRow>
+  abstract fun city(): Field<String, VstorewithaddressesViewRow>
 
-  override fun columns(): List<FieldLike<*, VstorewithaddressesViewRow>>
+  abstract override fun columns(): List<FieldLike<*, VstorewithaddressesViewRow>>
 
-  fun countryregionname(): Field<Name, VstorewithaddressesViewRow>
+  abstract fun countryregionname(): Field<Name, VstorewithaddressesViewRow>
 
-  fun name(): Field<Name, VstorewithaddressesViewRow>
+  abstract fun name(): Field<Name, VstorewithaddressesViewRow>
 
-  fun postalcode(): Field</* max 15 chars */ String, VstorewithaddressesViewRow>
+  abstract fun postalcode(): Field<String, VstorewithaddressesViewRow>
 
-  override fun rowParser(): RowParser<VstorewithaddressesViewRow> = VstorewithaddressesViewRow._rowParser
+  override fun rowParser(): RowParser<VstorewithaddressesViewRow> = VstorewithaddressesViewRow._rowParser.underlying
 
-  fun stateprovincename(): Field<Name, VstorewithaddressesViewRow>
+  abstract fun stateprovincename(): Field<Name, VstorewithaddressesViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : VstorewithaddressesViewFields, Relation<VstorewithaddressesViewFields, VstorewithaddressesViewRow> {
-      override fun businessentityid(): Field<BusinessentityId, VstorewithaddressesViewRow> = Field<BusinessentityId, VstorewithaddressesViewRow>(_path, "businessentityid", VstorewithaddressesViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : VstorewithaddressesViewFields, RelationStructure<VstorewithaddressesViewFields, VstorewithaddressesViewRow> {
+      override fun businessentityid(): Field<BusinessentityId, VstorewithaddressesViewRow> = Field<BusinessentityId, VstorewithaddressesViewRow>(_path, "businessentityid", VstorewithaddressesViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun name(): Field<Name, VstorewithaddressesViewRow> = Field<Name, VstorewithaddressesViewRow>(_path, "name", VstorewithaddressesViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, VstorewithaddressesViewRow> = Field<Name, VstorewithaddressesViewRow>(_path, "name", VstorewithaddressesViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun addresstype(): Field<Name, VstorewithaddressesViewRow> = Field<Name, VstorewithaddressesViewRow>(_path, "addresstype", VstorewithaddressesViewRow::addresstype, Optional.empty(), Optional.empty(), { row, value -> row.copy(addresstype = value) }, Name.pgType)
+      override fun addresstype(): Field<Name, VstorewithaddressesViewRow> = Field<Name, VstorewithaddressesViewRow>(_path, "addresstype", VstorewithaddressesViewRow::addresstype, null, null, { row, value -> row.copy(addresstype = value) }, Name.pgType)
 
-      override fun addressline1(): Field</* max 60 chars */ String, VstorewithaddressesViewRow> = Field</* max 60 chars */ String, VstorewithaddressesViewRow>(_path, "addressline1", VstorewithaddressesViewRow::addressline1, Optional.empty(), Optional.empty(), { row, value -> row.copy(addressline1 = value) }, PgTypes.text)
+      override fun addressline1(): Field<String, VstorewithaddressesViewRow> = Field<String, VstorewithaddressesViewRow>(_path, "addressline1", VstorewithaddressesViewRow::addressline1, null, null, { row, value -> row.copy(addressline1 = value) }, PgTypes.text)
 
-      override fun addressline2(): OptField</* max 60 chars */ String, VstorewithaddressesViewRow> = OptField</* max 60 chars */ String, VstorewithaddressesViewRow>(_path, "addressline2", VstorewithaddressesViewRow::addressline2, Optional.empty(), Optional.empty(), { row, value -> row.copy(addressline2 = value) }, PgTypes.text)
+      override fun addressline2(): Field<String, VstorewithaddressesViewRow> = Field<String, VstorewithaddressesViewRow>(_path, "addressline2", VstorewithaddressesViewRow::addressline2, null, null, { row, value -> row.copy(addressline2 = value) }, PgTypes.text)
 
-      override fun city(): Field</* max 30 chars */ String, VstorewithaddressesViewRow> = Field</* max 30 chars */ String, VstorewithaddressesViewRow>(_path, "city", VstorewithaddressesViewRow::city, Optional.empty(), Optional.empty(), { row, value -> row.copy(city = value) }, PgTypes.text)
+      override fun city(): Field<String, VstorewithaddressesViewRow> = Field<String, VstorewithaddressesViewRow>(_path, "city", VstorewithaddressesViewRow::city, null, null, { row, value -> row.copy(city = value) }, PgTypes.text)
 
-      override fun stateprovincename(): Field<Name, VstorewithaddressesViewRow> = Field<Name, VstorewithaddressesViewRow>(_path, "stateprovincename", VstorewithaddressesViewRow::stateprovincename, Optional.empty(), Optional.empty(), { row, value -> row.copy(stateprovincename = value) }, Name.pgType)
+      override fun stateprovincename(): Field<Name, VstorewithaddressesViewRow> = Field<Name, VstorewithaddressesViewRow>(_path, "stateprovincename", VstorewithaddressesViewRow::stateprovincename, null, null, { row, value -> row.copy(stateprovincename = value) }, Name.pgType)
 
-      override fun postalcode(): Field</* max 15 chars */ String, VstorewithaddressesViewRow> = Field</* max 15 chars */ String, VstorewithaddressesViewRow>(_path, "postalcode", VstorewithaddressesViewRow::postalcode, Optional.empty(), Optional.empty(), { row, value -> row.copy(postalcode = value) }, PgTypes.text)
+      override fun postalcode(): Field<String, VstorewithaddressesViewRow> = Field<String, VstorewithaddressesViewRow>(_path, "postalcode", VstorewithaddressesViewRow::postalcode, null, null, { row, value -> row.copy(postalcode = value) }, PgTypes.text)
 
-      override fun countryregionname(): Field<Name, VstorewithaddressesViewRow> = Field<Name, VstorewithaddressesViewRow>(_path, "countryregionname", VstorewithaddressesViewRow::countryregionname, Optional.empty(), Optional.empty(), { row, value -> row.copy(countryregionname = value) }, Name.pgType)
+      override fun countryregionname(): Field<Name, VstorewithaddressesViewRow> = Field<Name, VstorewithaddressesViewRow>(_path, "countryregionname", VstorewithaddressesViewRow::countryregionname, null, null, { row, value -> row.copy(countryregionname = value) }, Name.pgType)
 
-      override fun columns(): List<FieldLike<*, VstorewithaddressesViewRow>> = listOf(this.businessentityid(), this.name(), this.addresstype(), this.addressline1(), this.addressline2(), this.city(), this.stateprovincename(), this.postalcode(), this.countryregionname())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<VstorewithaddressesViewFields, VstorewithaddressesViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, VstorewithaddressesViewRow>> = listOf(this.businessentityid().underlying, this.name().underlying, this.addresstype().underlying, this.addressline1().underlying, this.addressline2().underlying, this.city().underlying, this.stateprovincename().underlying, this.postalcode().underlying, this.countryregionname().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<VstorewithaddressesViewFields, VstorewithaddressesViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

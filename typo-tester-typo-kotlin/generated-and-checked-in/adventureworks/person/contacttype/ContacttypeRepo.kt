@@ -6,89 +6,88 @@
 package adventureworks.person.contacttype
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ContacttypeRepo {
-  fun delete(): DeleteBuilder<ContacttypeFields, ContacttypeRow>
+  abstract fun delete(): DeleteBuilder<ContacttypeFields, ContacttypeRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     contacttypeid: ContacttypeId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     contacttypeids: Array<ContacttypeId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ContacttypeRow,
     c: Connection
   ): ContacttypeRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ContacttypeRowUnsaved,
     c: Connection
   ): ContacttypeRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<ContacttypeRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<ContacttypeRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ContacttypeRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<ContacttypeRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<ContacttypeFields, ContacttypeRow>
+  abstract fun select(): SelectBuilder<ContacttypeFields, ContacttypeRow>
 
-  fun selectAll(c: Connection): List<ContacttypeRow>
+  abstract fun selectAll(c: Connection): List<ContacttypeRow>
 
-  fun selectById(
+  abstract fun selectById(
     contacttypeid: ContacttypeId,
     c: Connection
-  ): Optional<ContacttypeRow>
+  ): ContacttypeRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     contacttypeids: Array<ContacttypeId>,
     c: Connection
   ): List<ContacttypeRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     contacttypeids: Array<ContacttypeId>,
     c: Connection
   ): Map<ContacttypeId, ContacttypeRow>
 
-  fun update(): UpdateBuilder<ContacttypeFields, ContacttypeRow>
+  abstract fun update(): UpdateBuilder<ContacttypeFields, ContacttypeRow>
 
-  fun update(
+  abstract fun update(
     row: ContacttypeRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ContacttypeRow,
     c: Connection
   ): ContacttypeRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<ContacttypeRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<ContacttypeRow>,
     c: Connection
   ): List<ContacttypeRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<ContacttypeRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<ContacttypeRow>,
     batchSize: Int,
     c: Connection
   ): Int

@@ -22,7 +22,7 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.shoppingcartitem` which has not been persisted yet */
 case class ShoppingcartitemRowUnsaved(
   /** Shopping cart identification number. */
-  shoppingcartid: /* max 50 chars */ String,
+  shoppingcartid: String,
   /** Product ordered. Foreign key to Product.ProductID.
    * Points to [[adventureworks.production.product.ProductRow.productid]]
    */

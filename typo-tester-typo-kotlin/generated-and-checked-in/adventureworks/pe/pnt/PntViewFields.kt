@@ -5,46 +5,48 @@
  */
 package adventureworks.pe.pnt
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PntViewFields : FieldsExpr<PntViewRow> {
-  override fun columns(): List<FieldLike<*, PntViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PntViewRow>>
 
-  fun id(): Field<PhonenumbertypeId, PntViewRow>
+  abstract fun id(): Field<PhonenumbertypeId, PntViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PntViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PntViewRow>
 
-  fun name(): Field<Name, PntViewRow>
+  abstract fun name(): Field<Name, PntViewRow>
 
-  fun phonenumbertypeid(): Field<PhonenumbertypeId, PntViewRow>
+  abstract fun phonenumbertypeid(): Field<PhonenumbertypeId, PntViewRow>
 
-  override fun rowParser(): RowParser<PntViewRow> = PntViewRow._rowParser
+  override fun rowParser(): RowParser<PntViewRow> = PntViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : PntViewFields, Relation<PntViewFields, PntViewRow> {
-      override fun id(): Field<PhonenumbertypeId, PntViewRow> = Field<PhonenumbertypeId, PntViewRow>(_path, "id", PntViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, PhonenumbertypeId.pgType)
+    data class Impl(val _path: List<Path>) : PntViewFields, RelationStructure<PntViewFields, PntViewRow> {
+      override fun id(): Field<PhonenumbertypeId, PntViewRow> = Field<PhonenumbertypeId, PntViewRow>(_path, "id", PntViewRow::id, null, null, { row, value -> row.copy(id = value) }, PhonenumbertypeId.pgType)
 
-      override fun phonenumbertypeid(): Field<PhonenumbertypeId, PntViewRow> = Field<PhonenumbertypeId, PntViewRow>(_path, "phonenumbertypeid", PntViewRow::phonenumbertypeid, Optional.empty(), Optional.empty(), { row, value -> row.copy(phonenumbertypeid = value) }, PhonenumbertypeId.pgType)
+      override fun phonenumbertypeid(): Field<PhonenumbertypeId, PntViewRow> = Field<PhonenumbertypeId, PntViewRow>(_path, "phonenumbertypeid", PntViewRow::phonenumbertypeid, null, null, { row, value -> row.copy(phonenumbertypeid = value) }, PhonenumbertypeId.pgType)
 
-      override fun name(): Field<Name, PntViewRow> = Field<Name, PntViewRow>(_path, "name", PntViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, PntViewRow> = Field<Name, PntViewRow>(_path, "name", PntViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PntViewRow> = Field<TypoLocalDateTime, PntViewRow>(_path, "modifieddate", PntViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PntViewRow> = Field<LocalDateTime, PntViewRow>(_path, "modifieddate", PntViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PntViewRow>> = listOf(this.id(), this.phonenumbertypeid(), this.name(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PntViewFields, PntViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PntViewRow>> = listOf(this.id().underlying, this.phonenumbertypeid().underlying, this.name().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PntViewFields, PntViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

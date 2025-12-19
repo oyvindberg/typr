@@ -7,10 +7,10 @@ package adventureworks.pr.pr
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PrViewRepo {
-  fun select(): SelectBuilder<PrViewFields, PrViewRow>
+  abstract fun select(): SelectBuilder<PrViewFields, PrViewRow>
 
-  fun selectAll(c: Connection): List<PrViewRow>
+  abstract fun selectAll(c: Connection): List<PrViewRow>
 }

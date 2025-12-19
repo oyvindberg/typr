@@ -6,7 +6,8 @@
 package adventureworks.humanresources.shift
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class ShiftId(@JsonValue val value: Int) {
       Bijection.of(ShiftId::value, ::ShiftId)
 
     val pgType: PgType<ShiftId> =
-      PgTypes.int4.bimap(::ShiftId, ShiftId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::ShiftId, ShiftId::value)
 
     val pgTypeArray: PgType<Array<ShiftId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::ShiftId, ShiftId::class.java) }, { xs -> arrayMap.map(xs, ShiftId::value, Int::class.javaObjectType) })

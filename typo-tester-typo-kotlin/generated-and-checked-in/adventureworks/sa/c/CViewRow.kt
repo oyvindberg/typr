@@ -5,14 +5,14 @@
  */
 package adventureworks.sa.c
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.customer.CustomerId
 import adventureworks.sales.salesterritory.SalesterritoryId
-import java.util.Optional
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: sa.c */
 data class CViewRow(
@@ -21,17 +21,17 @@ data class CViewRow(
   /** Points to [adventureworks.sales.customer.CustomerRow.customerid] */
   val customerid: CustomerId,
   /** Points to [adventureworks.sales.customer.CustomerRow.personid] */
-  val personid: Optional<BusinessentityId>,
+  val personid: BusinessentityId,
   /** Points to [adventureworks.sales.customer.CustomerRow.storeid] */
-  val storeid: Optional<BusinessentityId>,
+  val storeid: BusinessentityId,
   /** Points to [adventureworks.sales.customer.CustomerRow.territoryid] */
-  val territoryid: Optional<SalesterritoryId>,
+  val territoryid: SalesterritoryId,
   /** Points to [adventureworks.sales.customer.CustomerRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.sales.customer.CustomerRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<CViewRow> = RowParsers.of(CustomerId.pgType, CustomerId.pgType, BusinessentityId.pgType.opt(), BusinessentityId.pgType.opt(), SalesterritoryId.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> CViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.customerid, row.personid, row.storeid, row.territoryid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<CViewRow> = RowParsers.of(CustomerId.pgType, CustomerId.pgType, BusinessentityId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> CViewRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.id, row.customerid, row.personid, row.storeid, row.territoryid, row.rowguid, row.modifieddate) })
   }
 }

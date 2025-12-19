@@ -12,6 +12,7 @@ import adventureworks.production.product.ProductRow
 import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -20,7 +21,6 @@ import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait ProductcosthistoryFields {
   def productid: IdField[ProductId, ProductcosthistoryRow]
@@ -39,11 +39,11 @@ trait ProductcosthistoryFields {
 }
 
 object ProductcosthistoryFields {
-  lazy val structure: Relation[ProductcosthistoryFields, ProductcosthistoryRow] =
+  lazy val structure: RelationStructure[ProductcosthistoryFields, ProductcosthistoryRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductcosthistoryFields, ProductcosthistoryRow] {
+    extends RelationStructure[ProductcosthistoryFields, ProductcosthistoryRow] {
 
     override lazy val fields: ProductcosthistoryFields = new ProductcosthistoryFields {
       override def productid = IdField[ProductId, ProductcosthistoryRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))

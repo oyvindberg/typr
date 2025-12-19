@@ -7,10 +7,10 @@ package adventureworks.pr.pmpdc
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PmpdcViewRepo {
-  fun select(): SelectBuilder<PmpdcViewFields, PmpdcViewRow>
+  abstract fun select(): SelectBuilder<PmpdcViewFields, PmpdcViewRow>
 
-  fun selectAll(c: Connection): List<PmpdcViewRow>
+  abstract fun selectAll(c: Connection): List<PmpdcViewRow>
 }

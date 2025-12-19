@@ -7,11 +7,12 @@ package testdb.customer_addresses
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import org.mariadb.jdbc.type.Point
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -40,19 +41,19 @@ data class CustomerAddressesRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("street_line2") val streetLine2: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("street_line2") val streetLine2: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("state_province") val stateProvince: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("state_province") val stateProvince: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  val location: Defaulted<Optional<Point>> = UseDefault(),
+  val location: Defaulted<Point?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("delivery_notes") val deliveryNotes: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("delivery_notes") val deliveryNotes: Defaulted<String?> = UseDefault(),
   /** Default: current_timestamp()
 
     */
@@ -60,10 +61,10 @@ data class CustomerAddressesRowUnsaved(
 ) {
   fun toRow(
     isDefaultDefault: () -> Boolean,
-    streetLine2Default: () -> Optional<String>,
-    stateProvinceDefault: () -> Optional<String>,
-    locationDefault: () -> Optional<Point>,
-    deliveryNotesDefault: () -> Optional<String>,
+    streetLine2Default: () -> String?,
+    stateProvinceDefault: () -> String?,
+    locationDefault: () -> Point?,
+    deliveryNotesDefault: () -> String?,
     createdAtDefault: () -> LocalDateTime,
     addressIdDefault: () -> CustomerAddressesId
   ): CustomerAddressesRow = CustomerAddressesRow(addressId = addressIdDefault(), customerId = customerId, addressType = addressType, isDefault = isDefault.getOrElse(isDefaultDefault), recipientName = recipientName, streetLine1 = streetLine1, streetLine2 = streetLine2.getOrElse(streetLine2Default), city = city, stateProvince = stateProvince.getOrElse(stateProvinceDefault), postalCode = postalCode, countryCode = countryCode, location = location.getOrElse(locationDefault), deliveryNotes = deliveryNotes.getOrElse(deliveryNotesDefault), createdAt = createdAt.getOrElse(createdAtDefault))
@@ -84,15 +85,15 @@ data class CustomerAddressesRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.char_.mariaText().unsafeEncode(row.countryCode, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isDefault, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isDefault, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.streetLine2, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.streetLine2, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.stateProvince, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.stateProvince, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.point.opt().mariaText()).unsafeEncode(row.location, sb)
+      Defaulted.mariaText(MariaTypes.point.nullable().mariaText()).unsafeEncode(row.location, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.tinytext.opt().mariaText()).unsafeEncode(row.deliveryNotes, sb)
+      Defaulted.mariaText(MariaTypes.tinytext.nullable().mariaText()).unsafeEncode(row.deliveryNotes, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.createdAt, sb) })
   }

@@ -8,21 +8,19 @@ package adventureworks.person.stateprovince
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class StateprovinceRepoMock(
   val toRow: (StateprovinceRowUnsaved) -> StateprovinceRow,
@@ -33,7 +31,7 @@ data class StateprovinceRepoMock(
   override fun deleteById(
     stateprovinceid: StateprovinceId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(stateprovinceid)).isPresent()
+  ): Boolean = map.remove(stateprovinceid) != null
 
   override fun deleteByIds(
     stateprovinceids: Array<StateprovinceId>,
@@ -41,7 +39,7 @@ data class StateprovinceRepoMock(
   ): Int {
     var count = 0
     for (id in stateprovinceids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class StateprovinceRepoMock(
     c: Connection
   ): StateprovinceRow {
     if (map.containsKey(unsaved.stateprovinceid)) {
-      throw RuntimeException(str("id $unsaved.stateprovinceid already exists"))
+      throw RuntimeException("id " + unsaved.stateprovinceid + " already exists")
     }
     map[unsaved.stateprovinceid] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class StateprovinceRepoMock(
   ): StateprovinceRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<StateprovinceRow>,
+    unsaved: Iterator<StateprovinceRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class StateprovinceRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<StateprovinceRowUnsaved>,
+    unsaved: Iterator<StateprovinceRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class StateprovinceRepoMock(
   override fun selectById(
     stateprovinceid: StateprovinceId,
     c: Connection
-  ): Optional<StateprovinceRow> = Optional.ofNullable(map[stateprovinceid])
+  ): StateprovinceRow? = map[stateprovinceid]
 
   override fun selectByIds(
     stateprovinceids: Array<StateprovinceId>,
@@ -109,9 +107,9 @@ data class StateprovinceRepoMock(
   ): List<StateprovinceRow> {
     val result = ArrayList<StateprovinceRow>()
     for (id in stateprovinceids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class StateprovinceRepoMock(
     row: StateprovinceRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.stateprovinceid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.stateprovinceid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.stateprovinceid] = row
     }
@@ -144,7 +142,7 @@ data class StateprovinceRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<StateprovinceRow>,
+    unsaved: Iterator<StateprovinceRow>,
     c: Connection
   ): List<StateprovinceRow> {
     val result = ArrayList<StateprovinceRow>()
@@ -158,7 +156,7 @@ data class StateprovinceRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<StateprovinceRow>,
+    unsaved: Iterator<StateprovinceRow>,
     batchSize: Int,
     c: Connection
   ): Int {

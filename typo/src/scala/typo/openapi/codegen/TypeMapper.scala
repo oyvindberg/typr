@@ -19,7 +19,7 @@ class TypeMapper(
       lang.ListType.tpe.of(map(itemType))
 
     case TypeInfo.Optional(underlying) =>
-      lang.Optional.tpe.of(map(underlying))
+      lang.Optional.tpe(map(underlying))
 
     case TypeInfo.MapOf(keyType, valueType) =>
       lang.MapOps.tpe.of(map(keyType), map(valueType))
@@ -32,25 +32,25 @@ class TypeMapper(
 
     case TypeInfo.InlineEnum(_) =>
       // Inline enums should have been extracted during parsing - fallback to String
-      Types.String
+      lang.String
   }
 
   /** Map a primitive type to jvm.Type */
   def mapPrimitive(primitiveType: PrimitiveType): jvm.Type = primitiveType match {
-    case PrimitiveType.String     => Types.String
-    case PrimitiveType.Int32      => Types.Int
-    case PrimitiveType.Int64      => Types.Long
-    case PrimitiveType.Float      => Types.Float
-    case PrimitiveType.Double     => Types.Double
-    case PrimitiveType.Boolean    => Types.Boolean
+    case PrimitiveType.String     => lang.String
+    case PrimitiveType.Int32      => lang.Int
+    case PrimitiveType.Int64      => lang.Long
+    case PrimitiveType.Float      => lang.Float
+    case PrimitiveType.Double     => lang.Double
+    case PrimitiveType.Boolean    => lang.Boolean
     case PrimitiveType.Date       => Types.LocalDate
     case PrimitiveType.DateTime   => Types.OffsetDateTime
     case PrimitiveType.Time       => Types.LocalTime
     case PrimitiveType.UUID       => Types.UUID
     case PrimitiveType.URI        => Types.URI
-    case PrimitiveType.Email      => Types.String // Email is just a string with format validation
+    case PrimitiveType.Email      => lang.String // Email is just a string with format validation
     case PrimitiveType.Binary     => Types.ByteArray
-    case PrimitiveType.Byte       => Types.String // Base64 encoded string
+    case PrimitiveType.Byte       => lang.String // Base64 encoded string
     case PrimitiveType.BigDecimal => Types.BigDecimal
   }
 }
@@ -291,7 +291,7 @@ class ScalaTypeMapper(
       lang.ListType.tpe.of(map(itemType))
 
     case TypeInfo.Optional(underlying) =>
-      lang.Optional.tpe.of(map(underlying))
+      lang.Optional.tpe(map(underlying))
 
     case TypeInfo.MapOf(keyType, valueType) =>
       lang.MapOps.tpe.of(map(keyType), map(valueType))

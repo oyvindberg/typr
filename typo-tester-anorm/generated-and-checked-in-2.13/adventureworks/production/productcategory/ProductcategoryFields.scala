@@ -9,10 +9,10 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait ProductcategoryFields {
   def productcategoryid: IdField[ProductcategoryId, ProductcategoryRow]
@@ -22,11 +22,11 @@ trait ProductcategoryFields {
 }
 
 object ProductcategoryFields {
-  lazy val structure: Relation[ProductcategoryFields, ProductcategoryRow] =
+  lazy val structure: RelationStructure[ProductcategoryFields, ProductcategoryRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductcategoryFields, ProductcategoryRow] {
+    extends RelationStructure[ProductcategoryFields, ProductcategoryRow] {
 
     override lazy val fields: ProductcategoryFields = new ProductcategoryFields {
       override def productcategoryid = IdField[ProductcategoryId, ProductcategoryRow](_path, "productcategoryid", None, Some("int4"), x => x.productcategoryid, (row, value) => row.copy(productcategoryid = value))

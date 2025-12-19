@@ -1,4 +1,3 @@
 package typo.data;
 
-public record Xml(String value) {
-}
+public record Xml(String value) {}

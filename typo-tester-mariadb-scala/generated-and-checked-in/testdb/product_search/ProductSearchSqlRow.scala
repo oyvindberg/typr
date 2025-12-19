@@ -6,11 +6,12 @@
 package testdb.product_search
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.products.ProductsId
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** SQL file: product_search.sql */
 case class ProductSearchSqlRow(
@@ -21,15 +22,15 @@ case class ProductSearchSqlRow(
   /** Points to [[testdb.products.ProductsRow.name]] */
   name: String,
   /** Points to [[testdb.products.ProductsRow.shortDescription]] */
-  @JsonProperty("short_description") shortDescription: Optional[String],
+  @JsonProperty("short_description") shortDescription: String,
   /** Points to [[testdb.products.ProductsRow.basePrice]] */
-  @JsonProperty("base_price") basePrice: java.math.BigDecimal,
+  @JsonProperty("base_price") basePrice: BigDecimal,
   /** Points to [[testdb.products.ProductsRow.status]] */
   status: String,
   /** Points to [[testdb.brands.BrandsRow.name]] */
-  @JsonProperty("brand_name") brandName: Optional[String]
+  @JsonProperty("brand_name") brandName: Option[String]
 )
 
 object ProductSearchSqlRow {
-  val `_rowParser`: RowParser[ProductSearchSqlRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.text, MariaTypes.varchar.opt(), ProductSearchSqlRow.apply, row => Array[Object](row.productId.asInstanceOf[Object], row.sku.asInstanceOf[Object], row.name.asInstanceOf[Object], row.shortDescription.asInstanceOf[Object], row.basePrice.asInstanceOf[Object], row.status.asInstanceOf[Object], row.brandName.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[ProductSearchSqlRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.varchar.nullable)(ProductSearchSqlRow.apply)(row => Array[Any](row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.brandName))
 }

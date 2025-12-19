@@ -6,13 +6,13 @@
 package adventureworks.sales.currencyrate
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.sales.currency.CurrencyId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: sales.currencyrate
   * Currency exchange rates.
@@ -24,7 +24,7 @@ data class CurrencyrateRow(
     */
   val currencyrateid: CurrencyrateId,
   /** Date and time the exchange rate was obtained. */
-  val currencyratedate: TypoLocalDateTime,
+  val currencyratedate: LocalDateTime,
   /** Exchange rate was converted from this currency code.
     * Points to [adventureworks.sales.currency.CurrencyRow.currencycode]
     */
@@ -38,19 +38,19 @@ data class CurrencyrateRow(
   /** Final exchange rate for the day. */
   val endofdayrate: BigDecimal,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): CurrencyrateId = currencyrateid
 
   fun toUnsavedRow(
     currencyrateid: Defaulted<CurrencyrateId>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): CurrencyrateRowUnsaved = CurrencyrateRowUnsaved(currencyratedate, fromcurrencycode, tocurrencycode, averagerate, endofdayrate, currencyrateid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<CurrencyrateRow> = RowParsers.of(CurrencyrateId.pgType, TypoLocalDateTime.pgType, CurrencyId.pgType, CurrencyId.pgType, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> CurrencyrateRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.currencyrateid, row.currencyratedate, row.fromcurrencycode, row.tocurrencycode, row.averagerate, row.endofdayrate, row.modifieddate) })
+    val _rowParser: RowParser<CurrencyrateRow> = RowParsers.of(CurrencyrateId.pgType, PgTypes.timestamp, CurrencyId.pgType, CurrencyId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> CurrencyrateRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.currencyrateid, row.currencyratedate, row.fromcurrencycode, row.tocurrencycode, row.averagerate, row.endofdayrate, row.modifieddate) })
 
     val pgText: PgText<CurrencyrateRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

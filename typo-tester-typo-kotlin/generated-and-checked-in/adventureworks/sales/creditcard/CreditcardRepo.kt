@@ -7,89 +7,88 @@ package adventureworks.sales.creditcard
 
 import adventureworks.userdefined.CustomCreditcardId
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface CreditcardRepo {
-  fun delete(): DeleteBuilder<CreditcardFields, CreditcardRow>
+  abstract fun delete(): DeleteBuilder<CreditcardFields, CreditcardRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     creditcardid: /* user-picked */ CustomCreditcardId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     creditcardids: Array</* user-picked */ CustomCreditcardId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: CreditcardRow,
     c: Connection
   ): CreditcardRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: CreditcardRowUnsaved,
     c: Connection
   ): CreditcardRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<CreditcardRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<CreditcardRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<CreditcardRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<CreditcardRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<CreditcardFields, CreditcardRow>
+  abstract fun select(): SelectBuilder<CreditcardFields, CreditcardRow>
 
-  fun selectAll(c: Connection): List<CreditcardRow>
+  abstract fun selectAll(c: Connection): List<CreditcardRow>
 
-  fun selectById(
+  abstract fun selectById(
     creditcardid: /* user-picked */ CustomCreditcardId,
     c: Connection
-  ): Optional<CreditcardRow>
+  ): CreditcardRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     creditcardids: Array</* user-picked */ CustomCreditcardId>,
     c: Connection
   ): List<CreditcardRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     creditcardids: Array</* user-picked */ CustomCreditcardId>,
     c: Connection
   ): Map</* user-picked */ CustomCreditcardId, CreditcardRow>
 
-  fun update(): UpdateBuilder<CreditcardFields, CreditcardRow>
+  abstract fun update(): UpdateBuilder<CreditcardFields, CreditcardRow>
 
-  fun update(
+  abstract fun update(
     row: CreditcardRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: CreditcardRow,
     c: Connection
   ): CreditcardRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<CreditcardRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<CreditcardRow>,
     c: Connection
   ): List<CreditcardRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<CreditcardRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<CreditcardRow>,
     batchSize: Int,
     c: Connection
   ): Int

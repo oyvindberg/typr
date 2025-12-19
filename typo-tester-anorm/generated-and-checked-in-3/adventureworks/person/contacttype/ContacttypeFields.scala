@@ -8,10 +8,10 @@ package adventureworks.person.contacttype
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait ContacttypeFields {
   def contacttypeid: IdField[ContacttypeId, ContacttypeRow]
@@ -20,11 +20,11 @@ trait ContacttypeFields {
 }
 
 object ContacttypeFields {
-  lazy val structure: Relation[ContacttypeFields, ContacttypeRow] =
+  lazy val structure: RelationStructure[ContacttypeFields, ContacttypeRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ContacttypeFields, ContacttypeRow] {
+    extends RelationStructure[ContacttypeFields, ContacttypeRow] {
 
     override lazy val fields: ContacttypeFields = new ContacttypeFields {
       override def contacttypeid = IdField[ContacttypeId, ContacttypeRow](_path, "contacttypeid", None, Some("int4"), x => x.contacttypeid, (row, value) => row.copy(contacttypeid = value))

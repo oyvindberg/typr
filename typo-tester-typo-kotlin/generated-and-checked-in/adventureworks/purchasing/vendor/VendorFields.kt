@@ -5,73 +5,74 @@
  */
 package adventureworks.purchasing.vendor
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityFields
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.businessentity.BusinessentityRow
 import adventureworks.public.AccountNumber
 import adventureworks.public.Flag
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface VendorFields : FieldsExpr<VendorRow> {
-  fun accountnumber(): Field<AccountNumber, VendorRow>
+  abstract fun accountnumber(): Field<AccountNumber, VendorRow>
 
-  fun activeflag(): Field<Flag, VendorRow>
+  abstract fun activeflag(): Field<Flag, VendorRow>
 
-  fun businessentityid(): IdField<BusinessentityId, VendorRow>
+  abstract fun businessentityid(): IdField<BusinessentityId, VendorRow>
 
-  override fun columns(): List<FieldLike<*, VendorRow>>
+  abstract override fun columns(): List<FieldLike<*, VendorRow>>
 
-  fun creditrating(): Field<TypoShort, VendorRow>
+  abstract fun creditrating(): Field<Short, VendorRow>
 
-  fun fkPersonBusinessentity(): ForeignKey<BusinessentityFields, BusinessentityRow> = ForeignKey.of<BusinessentityFields, BusinessentityRow>("purchasing.FK_Vendor_BusinessEntity_BusinessEntityID").withColumnPair(businessentityid(), BusinessentityFields::businessentityid)
+  fun fkPersonBusinessentity(): ForeignKey<BusinessentityFields, BusinessentityRow> = ForeignKey.of<BusinessentityFields, BusinessentityRow>("purchasing.FK_Vendor_BusinessEntity_BusinessEntityID").withColumnPair<BusinessentityId>(businessentityid(), BusinessentityFields::businessentityid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, VendorRow>
+  abstract fun modifieddate(): Field<LocalDateTime, VendorRow>
 
-  fun name(): Field<Name, VendorRow>
+  abstract fun name(): Field<Name, VendorRow>
 
-  fun preferredvendorstatus(): Field<Flag, VendorRow>
+  abstract fun preferredvendorstatus(): Field<Flag, VendorRow>
 
-  fun purchasingwebserviceurl(): OptField</* max 1024 chars */ String, VendorRow>
+  abstract fun purchasingwebserviceurl(): OptField</* max 1024 chars */ String, VendorRow>
 
-  override fun rowParser(): RowParser<VendorRow> = VendorRow._rowParser
+  override fun rowParser(): RowParser<VendorRow> = VendorRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : VendorFields, Relation<VendorFields, VendorRow> {
-      override fun businessentityid(): IdField<BusinessentityId, VendorRow> = IdField<BusinessentityId, VendorRow>(_path, "businessentityid", VendorRow::businessentityid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : VendorFields, RelationStructure<VendorFields, VendorRow> {
+      override fun businessentityid(): IdField<BusinessentityId, VendorRow> = IdField<BusinessentityId, VendorRow>(_path, "businessentityid", VendorRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun accountnumber(): Field<AccountNumber, VendorRow> = Field<AccountNumber, VendorRow>(_path, "accountnumber", VendorRow::accountnumber, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(accountnumber = value) }, AccountNumber.pgType)
+      override fun accountnumber(): Field<AccountNumber, VendorRow> = Field<AccountNumber, VendorRow>(_path, "accountnumber", VendorRow::accountnumber, null, "varchar", { row, value -> row.copy(accountnumber = value) }, AccountNumber.pgType)
 
-      override fun name(): Field<Name, VendorRow> = Field<Name, VendorRow>(_path, "name", VendorRow::name, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, VendorRow> = Field<Name, VendorRow>(_path, "name", VendorRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun creditrating(): Field<TypoShort, VendorRow> = Field<TypoShort, VendorRow>(_path, "creditrating", VendorRow::creditrating, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(creditrating = value) }, TypoShort.pgType)
+      override fun creditrating(): Field<Short, VendorRow> = Field<Short, VendorRow>(_path, "creditrating", VendorRow::creditrating, null, "int2", { row, value -> row.copy(creditrating = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun preferredvendorstatus(): Field<Flag, VendorRow> = Field<Flag, VendorRow>(_path, "preferredvendorstatus", VendorRow::preferredvendorstatus, Optional.empty(), Optional.of("bool"), { row, value -> row.copy(preferredvendorstatus = value) }, Flag.pgType)
+      override fun preferredvendorstatus(): Field<Flag, VendorRow> = Field<Flag, VendorRow>(_path, "preferredvendorstatus", VendorRow::preferredvendorstatus, null, "bool", { row, value -> row.copy(preferredvendorstatus = value) }, Flag.pgType)
 
-      override fun activeflag(): Field<Flag, VendorRow> = Field<Flag, VendorRow>(_path, "activeflag", VendorRow::activeflag, Optional.empty(), Optional.of("bool"), { row, value -> row.copy(activeflag = value) }, Flag.pgType)
+      override fun activeflag(): Field<Flag, VendorRow> = Field<Flag, VendorRow>(_path, "activeflag", VendorRow::activeflag, null, "bool", { row, value -> row.copy(activeflag = value) }, Flag.pgType)
 
-      override fun purchasingwebserviceurl(): OptField</* max 1024 chars */ String, VendorRow> = OptField</* max 1024 chars */ String, VendorRow>(_path, "purchasingwebserviceurl", VendorRow::purchasingwebserviceurl, Optional.empty(), Optional.empty(), { row, value -> row.copy(purchasingwebserviceurl = value) }, PgTypes.text)
+      override fun purchasingwebserviceurl(): OptField<String, VendorRow> = OptField<String, VendorRow>(_path, "purchasingwebserviceurl", VendorRow::purchasingwebserviceurl, null, null, { row, value -> row.copy(purchasingwebserviceurl = value) }, PgTypes.text)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, VendorRow> = Field<TypoLocalDateTime, VendorRow>(_path, "modifieddate", VendorRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, VendorRow> = Field<LocalDateTime, VendorRow>(_path, "modifieddate", VendorRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, VendorRow>> = listOf(this.businessentityid(), this.accountnumber(), this.name(), this.creditrating(), this.preferredvendorstatus(), this.activeflag(), this.purchasingwebserviceurl(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<VendorFields, VendorRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, VendorRow>> = listOf(this.businessentityid().underlying, this.accountnumber().underlying, this.name().underlying, this.creditrating().underlying, this.preferredvendorstatus().underlying, this.activeflag().underlying, this.purchasingwebserviceurl().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<VendorFields, VendorRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

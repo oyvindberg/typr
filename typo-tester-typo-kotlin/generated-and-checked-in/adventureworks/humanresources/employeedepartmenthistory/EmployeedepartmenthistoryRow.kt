@@ -6,15 +6,16 @@
 package adventureworks.humanresources.employeedepartmenthistory
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDate
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: humanresources.employeedepartmenthistory
   * Employee department transfers.
@@ -36,30 +37,30 @@ data class EmployeedepartmenthistoryRow(
   /** Date the employee started work in the department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val startdate: TypoLocalDate,
+  val startdate: LocalDate,
   /** Date the employee left the department. NULL = Current department.
     * Constraint CK_EmployeeDepartmentHistory_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val enddate: Optional<TypoLocalDate>,
+  val enddate: LocalDate?,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): EmployeedepartmenthistoryId = EmployeedepartmenthistoryId(businessentityid, startdate, departmentid, shiftid)
 
   fun id(): EmployeedepartmenthistoryId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): EmployeedepartmenthistoryRowUnsaved = EmployeedepartmenthistoryRowUnsaved(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): EmployeedepartmenthistoryRowUnsaved = EmployeedepartmenthistoryRowUnsaved(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<EmployeedepartmenthistoryRow> = RowParsers.of(BusinessentityId.pgType, DepartmentId.pgType, ShiftId.pgType, TypoLocalDate.pgType, TypoLocalDate.pgType.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> EmployeedepartmenthistoryRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.departmentid, row.shiftid, row.startdate, row.enddate, row.modifieddate) })
+    val _rowParser: RowParser<EmployeedepartmenthistoryRow> = RowParsers.of(BusinessentityId.pgType, DepartmentId.pgType, ShiftId.pgType, PgTypes.date, PgTypes.date.nullable(), PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> EmployeedepartmenthistoryRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.businessentityid, row.departmentid, row.shiftid, row.startdate, row.enddate, row.modifieddate) })
 
     fun apply(
       compositeId: EmployeedepartmenthistoryId,
-      enddate: Optional<TypoLocalDate>,
-      modifieddate: TypoLocalDateTime
+      enddate: LocalDate?,
+      modifieddate: LocalDateTime
     ): EmployeedepartmenthistoryRow = EmployeedepartmenthistoryRow(compositeId.businessentityid, compositeId.departmentid, compositeId.shiftid, compositeId.startdate, enddate, modifieddate)
 
     val pgText: PgText<EmployeedepartmenthistoryRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

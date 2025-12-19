@@ -5,11 +5,12 @@
  */
 package adventureworks.pe.ct
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.contacttype.ContacttypeId
 import adventureworks.public.Name
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pe.ct */
 data class CtViewRow(
@@ -20,9 +21,9 @@ data class CtViewRow(
   /** Points to [adventureworks.person.contacttype.ContacttypeRow.name] */
   val name: Name,
   /** Points to [adventureworks.person.contacttype.ContacttypeRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<CtViewRow> = RowParsers.of(ContacttypeId.pgType, ContacttypeId.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> CtViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.contacttypeid, row.name, row.modifieddate) })
+    val _rowParser: RowParser<CtViewRow> = RowParsers.of(ContacttypeId.pgType, ContacttypeId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> CtViewRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.contacttypeid, row.name, row.modifieddate) })
   }
 }

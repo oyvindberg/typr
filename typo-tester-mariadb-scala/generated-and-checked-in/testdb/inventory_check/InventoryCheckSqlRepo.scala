@@ -7,12 +7,11 @@ package testdb.inventory_check
 
 import java.math.BigInteger
 import java.sql.Connection
-import java.util.Optional
 
 trait InventoryCheckSqlRepo {
   def apply(
-    warehouseId: Optional[java.lang.Short],
-    productId: Optional[BigInteger],
-    lowStockOnly: Optional[/* user-picked */ java.lang.Boolean]
-  )(using c: Connection): java.util.List[InventoryCheckSqlRow]
+    warehouseId: Option[Short],
+    productId: Option[BigInteger],
+    lowStockOnly: Option[Boolean]
+  )(using c: Connection): List[InventoryCheckSqlRow]
 }

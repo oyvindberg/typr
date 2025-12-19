@@ -27,7 +27,7 @@ case class ProductinventoryRowUnsaved(
    */
   locationid: LocationId,
   /** Storage compartment within an inventory location. */
-  shelf: /* max 10 chars */ String,
+  shelf: String,
   /** Storage container on a shelf in an inventory location.
    * Constraint CK_ProductInventory_Bin affecting columns bin:  (((bin >= 0) AND (bin <= 100)))
    */
@@ -59,9 +59,9 @@ case class ProductinventoryRowUnsaved(
 }
 
 object ProductinventoryRowUnsaved {
-  given decoder: Decoder[ProductinventoryRowUnsaved] = Decoder.forProduct7[ProductinventoryRowUnsaved, ProductId, LocationId, /* max 10 chars */ String, TypoShort, Defaulted[TypoShort], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(ProductinventoryRowUnsaved.apply)(using ProductId.decoder, LocationId.decoder, Decoder.decodeString, TypoShort.decoder, Defaulted.decoder(using TypoShort.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+  given decoder: Decoder[ProductinventoryRowUnsaved] = Decoder.forProduct7[ProductinventoryRowUnsaved, ProductId, LocationId, String, TypoShort, Defaulted[TypoShort], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(ProductinventoryRowUnsaved.apply)(using ProductId.decoder, LocationId.decoder, Decoder.decodeString, TypoShort.decoder, Defaulted.decoder(using TypoShort.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
 
-  given encoder: Encoder[ProductinventoryRowUnsaved] = Encoder.forProduct7[ProductinventoryRowUnsaved, ProductId, LocationId, /* max 10 chars */ String, TypoShort, Defaulted[TypoShort], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(x => (x.productid, x.locationid, x.shelf, x.bin, x.quantity, x.rowguid, x.modifieddate))(using ProductId.encoder, LocationId.encoder, Encoder.encodeString, TypoShort.encoder, Defaulted.encoder(using TypoShort.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
+  given encoder: Encoder[ProductinventoryRowUnsaved] = Encoder.forProduct7[ProductinventoryRowUnsaved, ProductId, LocationId, String, TypoShort, Defaulted[TypoShort], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(x => (x.productid, x.locationid, x.shelf, x.bin, x.quantity, x.rowguid, x.modifieddate))(using ProductId.encoder, LocationId.encoder, Encoder.encodeString, TypoShort.encoder, Defaulted.encoder(using TypoShort.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
 
   given pgText: Text[ProductinventoryRowUnsaved] = {
     Text.instance[ProductinventoryRowUnsaved]{ (row, sb) =>

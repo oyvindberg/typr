@@ -17,6 +17,7 @@ import adventureworks.production.product.ProductRow
 import anorm.ToParameterValue
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -24,12 +25,11 @@ import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait ProductinventoryFields {
   def productid: IdField[ProductId, ProductinventoryRow]
   def locationid: IdField[LocationId, ProductinventoryRow]
-  def shelf: Field[/* max 10 chars */ String, ProductinventoryRow]
+  def shelf: Field[String, ProductinventoryRow]
   def bin: Field[TypoShort, ProductinventoryRow]
   def quantity: Field[TypoShort, ProductinventoryRow]
   def rowguid: Field[TypoUUID, ProductinventoryRow]
@@ -48,16 +48,16 @@ trait ProductinventoryFields {
 }
 
 object ProductinventoryFields {
-  lazy val structure: Relation[ProductinventoryFields, ProductinventoryRow] =
+  lazy val structure: RelationStructure[ProductinventoryFields, ProductinventoryRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductinventoryFields, ProductinventoryRow] {
+    extends RelationStructure[ProductinventoryFields, ProductinventoryRow] {
 
     override lazy val fields: ProductinventoryFields = new ProductinventoryFields {
       override def productid = IdField[ProductId, ProductinventoryRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
       override def locationid = IdField[LocationId, ProductinventoryRow](_path, "locationid", None, Some("int2"), x => x.locationid, (row, value) => row.copy(locationid = value))
-      override def shelf = Field[/* max 10 chars */ String, ProductinventoryRow](_path, "shelf", None, None, x => x.shelf, (row, value) => row.copy(shelf = value))
+      override def shelf = Field[String, ProductinventoryRow](_path, "shelf", None, None, x => x.shelf, (row, value) => row.copy(shelf = value))
       override def bin = Field[TypoShort, ProductinventoryRow](_path, "bin", None, Some("int2"), x => x.bin, (row, value) => row.copy(bin = value))
       override def quantity = Field[TypoShort, ProductinventoryRow](_path, "quantity", None, Some("int2"), x => x.quantity, (row, value) => row.copy(quantity = value))
       override def rowguid = Field[TypoUUID, ProductinventoryRow](_path, "rowguid", None, Some("uuid"), x => x.rowguid, (row, value) => row.copy(rowguid = value))

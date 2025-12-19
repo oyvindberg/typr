@@ -9,5 +9,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonSubTypes(value = [Type(value = Cat::class, name = "cat"), Type(value = Dog::class, name = "dog"), Type(value = Bird::class, name = "bird")])
 sealed interface Animal {
   @JsonProperty("animal_type")
-  fun animal_type(): String
+  abstract fun animal_type(): String
 }

@@ -10,9 +10,9 @@ import testdb.categories.CategoriesId
 import testdb.customtypes.Defaulted
 import testdb.products.ProductsId
 import typo.runtime.MariaText
-import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: product_categories
  * Composite primary key: product_id, category_id
@@ -29,19 +29,19 @@ case class ProductCategoriesRow(
   /** 
    * Default: 0
    */
-  @JsonProperty("is_primary") isPrimary: java.lang.Boolean,
+  @JsonProperty("is_primary") isPrimary: Boolean,
   /** 
    * Default: 0
    */
-  @JsonProperty("sort_order") sortOrder: java.lang.Short
+  @JsonProperty("sort_order") sortOrder: Short
 ) {
   def compositeId: ProductCategoriesId = new ProductCategoriesId(productId, categoryId)
 
   def id: ProductCategoriesId = this.compositeId
 
   def toUnsavedRow(
-    isPrimary: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isPrimary),
-    sortOrder: Defaulted[java.lang.Short] = Defaulted.Provided(this.sortOrder)
+    isPrimary: Defaulted[Boolean] = Defaulted.Provided(this.isPrimary),
+    sortOrder: Defaulted[Short] = Defaulted.Provided(this.sortOrder)
   ): ProductCategoriesRowUnsaved = {
     new ProductCategoriesRowUnsaved(
       productId,
@@ -53,12 +53,12 @@ case class ProductCategoriesRow(
 }
 
 object ProductCategoriesRow {
-  val `_rowParser`: RowParser[ProductCategoriesRow] = RowParsers.of(ProductsId.pgType, CategoriesId.pgType, MariaTypes.bool, MariaTypes.smallint, ProductCategoriesRow.apply, row => Array[Object](row.productId.asInstanceOf[Object], row.categoryId.asInstanceOf[Object], row.isPrimary.asInstanceOf[Object], row.sortOrder.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[ProductCategoriesRow] = RowParsers.of(ProductsId.pgType, CategoriesId.pgType, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.smallint)(ProductCategoriesRow.apply)(row => Array[Any](row.productId, row.categoryId, row.isPrimary, row.sortOrder))
 
   def apply(
     compositeId: ProductCategoriesId,
-    isPrimary: java.lang.Boolean,
-    sortOrder: java.lang.Short
+    isPrimary: Boolean,
+    sortOrder: Short
   ): ProductCategoriesRow = {
     new ProductCategoriesRow(
       compositeId.productId,
@@ -68,5 +68,5 @@ object ProductCategoriesRow {
     )
   }
 
-  given mariaText: MariaText[ProductCategoriesRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[ProductCategoriesRow] = MariaText.from(`_rowParser`.underlying)
 }

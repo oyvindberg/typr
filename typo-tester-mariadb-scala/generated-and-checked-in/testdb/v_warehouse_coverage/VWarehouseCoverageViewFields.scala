@@ -5,18 +5,18 @@
  */
 package testdb.v_warehouse_coverage
 
-import java.util.Optional
 import testdb.warehouses.WarehousesId
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.OptField
 
-trait VWarehouseCoverageViewFields extends FieldsExpr[VWarehouseCoverageViewRow] {
+trait VWarehouseCoverageViewFields extends FieldsExpr0[VWarehouseCoverageViewRow] {
   def warehouseId: Field[WarehousesId, VWarehouseCoverageViewRow]
 
   def code: Field[String, VWarehouseCoverageViewRow]
@@ -31,27 +31,27 @@ trait VWarehouseCoverageViewFields extends FieldsExpr[VWarehouseCoverageViewRow]
 
   def timezone: Field[String, VWarehouseCoverageViewRow]
 
-  def isActive: Field[java.lang.Boolean, VWarehouseCoverageViewRow]
+  def isActive: Field[Boolean, VWarehouseCoverageViewRow]
 
-  def productsStocked: Field[java.lang.Long, VWarehouseCoverageViewRow]
+  def productsStocked: Field[Long, VWarehouseCoverageViewRow]
 
-  def totalInventory: OptField[java.math.BigDecimal, VWarehouseCoverageViewRow]
+  def totalInventory: OptField[BigDecimal, VWarehouseCoverageViewRow]
 
   override def columns: java.util.List[FieldLike[?, VWarehouseCoverageViewRow]]
 
-  override def rowParser: RowParser[VWarehouseCoverageViewRow] = VWarehouseCoverageViewRow._rowParser
+  override def rowParser: RowParser[VWarehouseCoverageViewRow] = VWarehouseCoverageViewRow._rowParser.underlying
 }
 
 object VWarehouseCoverageViewFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends VWarehouseCoverageViewFields with Relation[VWarehouseCoverageViewFields, VWarehouseCoverageViewRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends VWarehouseCoverageViewFields with RelationStructure[VWarehouseCoverageViewFields, VWarehouseCoverageViewRow] {
 
     override def warehouseId: Field[WarehousesId, VWarehouseCoverageViewRow] = {
       new Field[WarehousesId, VWarehouseCoverageViewRow](
         _path,
         "warehouse_id",
         _.warehouseId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(warehouseId = value),
         WarehousesId.pgType
       )
@@ -62,8 +62,8 @@ object VWarehouseCoverageViewFields {
         _path,
         "code",
         _.code,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(code = value),
         MariaTypes.char_
       )
@@ -74,8 +74,8 @@ object VWarehouseCoverageViewFields {
         _path,
         "name",
         _.name,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(name = value),
         MariaTypes.varchar
       )
@@ -86,8 +86,8 @@ object VWarehouseCoverageViewFields {
         _path,
         "address",
         _.address,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(address = value),
         MariaTypes.varchar
       )
@@ -98,8 +98,8 @@ object VWarehouseCoverageViewFields {
         _path,
         "location_wkt",
         _.locationWkt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(locationWkt = value),
         MariaTypes.longtext
       )
@@ -110,8 +110,8 @@ object VWarehouseCoverageViewFields {
         _path,
         "service_area_wkt",
         _.serviceAreaWkt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(serviceAreaWkt = value),
         MariaTypes.longtext
       )
@@ -122,53 +122,53 @@ object VWarehouseCoverageViewFields {
         _path,
         "timezone",
         _.timezone,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(timezone = value),
         MariaTypes.varchar
       )
     }
 
-    override def isActive: Field[java.lang.Boolean, VWarehouseCoverageViewRow] = {
-      new Field[java.lang.Boolean, VWarehouseCoverageViewRow](
+    override def isActive: Field[Boolean, VWarehouseCoverageViewRow] = {
+      new Field[Boolean, VWarehouseCoverageViewRow](
         _path,
         "is_active",
         _.isActive,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isActive = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
-    override def productsStocked: Field[java.lang.Long, VWarehouseCoverageViewRow] = {
-      new Field[java.lang.Long, VWarehouseCoverageViewRow](
+    override def productsStocked: Field[Long, VWarehouseCoverageViewRow] = {
+      new Field[Long, VWarehouseCoverageViewRow](
         _path,
         "products_stocked",
         _.productsStocked,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(productsStocked = value),
-        MariaTypes.bigint
+        ScalaDbTypes.MariaTypes.bigint
       )
     }
 
-    override def totalInventory: OptField[java.math.BigDecimal, VWarehouseCoverageViewRow] = {
-      new OptField[java.math.BigDecimal, VWarehouseCoverageViewRow](
+    override def totalInventory: OptField[BigDecimal, VWarehouseCoverageViewRow] = {
+      new OptField[BigDecimal, VWarehouseCoverageViewRow](
         _path,
         "total_inventory",
         _.totalInventory,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(totalInventory = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, VWarehouseCoverageViewRow]] = java.util.List.of(this.warehouseId, this.code, this.name, this.address, this.locationWkt, this.serviceAreaWkt, this.timezone, this.isActive, this.productsStocked, this.totalInventory)
+    override def columns: java.util.List[FieldLike[?, VWarehouseCoverageViewRow]] = java.util.List.of(this.warehouseId.underlying, this.code.underlying, this.name.underlying, this.address.underlying, this.locationWkt.underlying, this.serviceAreaWkt.underlying, this.timezone.underlying, this.isActive.underlying, this.productsStocked.underlying, this.totalInventory.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[VWarehouseCoverageViewFields, VWarehouseCoverageViewRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VWarehouseCoverageViewFields, VWarehouseCoverageViewRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

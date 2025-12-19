@@ -7,15 +7,12 @@ package adventureworks.production.vproductanddescription
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class VproductanddescriptionMVRepoImpl() : VproductanddescriptionMVRepo {
   override fun select(): SelectBuilder<VproductanddescriptionMVFields, VproductanddescriptionMVRow> = SelectBuilder.of("\"production\".\"vproductanddescription\"", VproductanddescriptionMVFields.structure, VproductanddescriptionMVRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<VproductanddescriptionMVRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "productid", "name", "productmodel", "cultureid", "description"
-    from "production"."vproductanddescription"
-  """.trimMargin())).query(VproductanddescriptionMVRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<VproductanddescriptionMVRow> = Fragment.interpolate(Fragment.lit("select \"productid\", \"name\", \"productmodel\", \"cultureid\", \"description\"\nfrom \"production\".\"vproductanddescription\"\n")).query(VproductanddescriptionMVRow._rowParser.all()).runUnchecked(c)
 }

@@ -7,15 +7,16 @@ package testdb.reviews
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
 import testdb.order_items.OrderItemsId
 import testdb.products.ProductsId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: reviews
  * Primary key: review_id
@@ -37,53 +38,53 @@ case class ReviewsRow(
    * Default: NULL
    * Points to [[testdb.order_items.OrderItemsRow.itemId]]
    */
-  @JsonProperty("order_item_id") orderItemId: Optional[OrderItemsId],
+  @JsonProperty("order_item_id") orderItemId: Option[OrderItemsId],
   /**  */
-  rating: java.lang.Short,
+  rating: Short,
   /** 
    * Default: NULL
    */
-  title: Optional[String],
+  title: Option[String],
   /** 
    * Default: NULL
    */
-  content: Optional[String],
+  content: Option[String],
   /** 
    * Default: NULL
    */
-  pros: Optional[String],
+  pros: Option[String],
   /** 
    * Default: NULL
    */
-  cons: Optional[String],
+  cons: Option[String],
   /** Array of image URLs
    * Default: NULL
    */
-  images: Optional[String],
+  images: Option[String],
   /** 
    * Default: 0
    */
-  @JsonProperty("is_verified_purchase") isVerifiedPurchase: java.lang.Boolean,
+  @JsonProperty("is_verified_purchase") isVerifiedPurchase: Boolean,
   /** 
    * Default: 0
    */
-  @JsonProperty("is_approved") isApproved: java.lang.Boolean,
+  @JsonProperty("is_approved") isApproved: Boolean,
   /** 
    * Default: 0
    */
-  @JsonProperty("helpful_votes") helpfulVotes: java.lang.Long,
+  @JsonProperty("helpful_votes") helpfulVotes: Long,
   /** 
    * Default: 0
    */
-  @JsonProperty("unhelpful_votes") unhelpfulVotes: java.lang.Long,
+  @JsonProperty("unhelpful_votes") unhelpfulVotes: Long,
   /** 
    * Default: NULL
    */
-  @JsonProperty("admin_response") adminResponse: Optional[String],
+  @JsonProperty("admin_response") adminResponse: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("responded_at") respondedAt: Optional[LocalDateTime],
+  @JsonProperty("responded_at") respondedAt: Option[LocalDateTime],
   /** 
    * Default: current_timestamp(6)
    */
@@ -96,18 +97,18 @@ case class ReviewsRow(
   def id: ReviewsId = reviewId
 
   def toUnsavedRow(
-    orderItemId: Defaulted[Optional[OrderItemsId]] = Defaulted.Provided(this.orderItemId),
-    title: Defaulted[Optional[String]] = Defaulted.Provided(this.title),
-    content: Defaulted[Optional[String]] = Defaulted.Provided(this.content),
-    pros: Defaulted[Optional[String]] = Defaulted.Provided(this.pros),
-    cons: Defaulted[Optional[String]] = Defaulted.Provided(this.cons),
-    images: Defaulted[Optional[String]] = Defaulted.Provided(this.images),
-    isVerifiedPurchase: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isVerifiedPurchase),
-    isApproved: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isApproved),
-    helpfulVotes: Defaulted[java.lang.Long] = Defaulted.Provided(this.helpfulVotes),
-    unhelpfulVotes: Defaulted[java.lang.Long] = Defaulted.Provided(this.unhelpfulVotes),
-    adminResponse: Defaulted[Optional[String]] = Defaulted.Provided(this.adminResponse),
-    respondedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.respondedAt),
+    orderItemId: Defaulted[Option[OrderItemsId]] = Defaulted.Provided(this.orderItemId),
+    title: Defaulted[Option[String]] = Defaulted.Provided(this.title),
+    content: Defaulted[Option[String]] = Defaulted.Provided(this.content),
+    pros: Defaulted[Option[String]] = Defaulted.Provided(this.pros),
+    cons: Defaulted[Option[String]] = Defaulted.Provided(this.cons),
+    images: Defaulted[Option[String]] = Defaulted.Provided(this.images),
+    isVerifiedPurchase: Defaulted[Boolean] = Defaulted.Provided(this.isVerifiedPurchase),
+    isApproved: Defaulted[Boolean] = Defaulted.Provided(this.isApproved),
+    helpfulVotes: Defaulted[Long] = Defaulted.Provided(this.helpfulVotes),
+    unhelpfulVotes: Defaulted[Long] = Defaulted.Provided(this.unhelpfulVotes),
+    adminResponse: Defaulted[Option[String]] = Defaulted.Provided(this.adminResponse),
+    respondedAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.respondedAt),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.updatedAt)
   ): ReviewsRowUnsaved = {
@@ -134,7 +135,7 @@ case class ReviewsRow(
 }
 
 object ReviewsRow {
-  val `_rowParser`: RowParser[ReviewsRow] = RowParsers.of(ReviewsId.pgType, ProductsId.pgType, CustomersId.pgType, OrderItemsId.pgType.opt(), MariaTypes.tinyintUnsigned, MariaTypes.varchar.opt(), MariaTypes.text.opt(), MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.bool, MariaTypes.bool, MariaTypes.intUnsigned, MariaTypes.intUnsigned, MariaTypes.text.opt(), MariaTypes.datetime.opt(), MariaTypes.datetime, MariaTypes.datetime, ReviewsRow.apply, row => Array[Object](row.reviewId.asInstanceOf[Object], row.productId.asInstanceOf[Object], row.customerId.asInstanceOf[Object], row.orderItemId.asInstanceOf[Object], row.rating.asInstanceOf[Object], row.title.asInstanceOf[Object], row.content.asInstanceOf[Object], row.pros.asInstanceOf[Object], row.cons.asInstanceOf[Object], row.images.asInstanceOf[Object], row.isVerifiedPurchase.asInstanceOf[Object], row.isApproved.asInstanceOf[Object], row.helpfulVotes.asInstanceOf[Object], row.unhelpfulVotes.asInstanceOf[Object], row.adminResponse.asInstanceOf[Object], row.respondedAt.asInstanceOf[Object], row.createdAt.asInstanceOf[Object], row.updatedAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[ReviewsRow] = RowParsers.of(ReviewsId.pgType, ProductsId.pgType, CustomersId.pgType, OrderItemsId.pgType.nullable, ScalaDbTypes.MariaTypes.tinyintUnsigned, MariaTypes.varchar.nullable, MariaTypes.text.nullable, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.intUnsigned, ScalaDbTypes.MariaTypes.intUnsigned, MariaTypes.text.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime, MariaTypes.datetime)(ReviewsRow.apply)(row => Array[Any](row.reviewId, row.productId, row.customerId, row.orderItemId, row.rating, row.title, row.content, row.pros, row.cons, row.images, row.isVerifiedPurchase, row.isApproved, row.helpfulVotes, row.unhelpfulVotes, row.adminResponse, row.respondedAt, row.createdAt, row.updatedAt))
 
-  given mariaText: MariaText[ReviewsRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[ReviewsRow] = MariaText.from(`_rowParser`.underlying)
 }

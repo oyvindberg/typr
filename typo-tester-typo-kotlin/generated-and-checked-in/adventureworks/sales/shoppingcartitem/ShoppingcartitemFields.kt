@@ -5,60 +5,62 @@
  */
 package adventureworks.sales.shoppingcartitem
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductFields
 import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface ShoppingcartitemFields : FieldsExpr<ShoppingcartitemRow> {
-  override fun columns(): List<FieldLike<*, ShoppingcartitemRow>>
+  abstract override fun columns(): List<FieldLike<*, ShoppingcartitemRow>>
 
-  fun datecreated(): Field<TypoLocalDateTime, ShoppingcartitemRow>
+  abstract fun datecreated(): Field<LocalDateTime, ShoppingcartitemRow>
 
-  fun fkProductionProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("sales.FK_ShoppingCartItem_Product_ProductID").withColumnPair(productid(), ProductFields::productid)
+  fun fkProductionProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("sales.FK_ShoppingCartItem_Product_ProductID").withColumnPair<ProductId>(productid(), ProductFields::productid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, ShoppingcartitemRow>
+  abstract fun modifieddate(): Field<LocalDateTime, ShoppingcartitemRow>
 
-  fun productid(): Field<ProductId, ShoppingcartitemRow>
+  abstract fun productid(): Field<ProductId, ShoppingcartitemRow>
 
-  fun quantity(): Field<Int, ShoppingcartitemRow>
+  abstract fun quantity(): Field<Int, ShoppingcartitemRow>
 
-  override fun rowParser(): RowParser<ShoppingcartitemRow> = ShoppingcartitemRow._rowParser
+  override fun rowParser(): RowParser<ShoppingcartitemRow> = ShoppingcartitemRow._rowParser.underlying
 
-  fun shoppingcartid(): Field</* max 50 chars */ String, ShoppingcartitemRow>
+  abstract fun shoppingcartid(): Field<String, ShoppingcartitemRow>
 
-  fun shoppingcartitemid(): IdField<ShoppingcartitemId, ShoppingcartitemRow>
+  abstract fun shoppingcartitemid(): IdField<ShoppingcartitemId, ShoppingcartitemRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : ShoppingcartitemFields, Relation<ShoppingcartitemFields, ShoppingcartitemRow> {
-      override fun shoppingcartitemid(): IdField<ShoppingcartitemId, ShoppingcartitemRow> = IdField<ShoppingcartitemId, ShoppingcartitemRow>(_path, "shoppingcartitemid", ShoppingcartitemRow::shoppingcartitemid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(shoppingcartitemid = value) }, ShoppingcartitemId.pgType)
+    data class Impl(val _path: List<Path>) : ShoppingcartitemFields, RelationStructure<ShoppingcartitemFields, ShoppingcartitemRow> {
+      override fun shoppingcartitemid(): IdField<ShoppingcartitemId, ShoppingcartitemRow> = IdField<ShoppingcartitemId, ShoppingcartitemRow>(_path, "shoppingcartitemid", ShoppingcartitemRow::shoppingcartitemid, null, "int4", { row, value -> row.copy(shoppingcartitemid = value) }, ShoppingcartitemId.pgType)
 
-      override fun shoppingcartid(): Field</* max 50 chars */ String, ShoppingcartitemRow> = Field</* max 50 chars */ String, ShoppingcartitemRow>(_path, "shoppingcartid", ShoppingcartitemRow::shoppingcartid, Optional.empty(), Optional.empty(), { row, value -> row.copy(shoppingcartid = value) }, PgTypes.text)
+      override fun shoppingcartid(): Field<String, ShoppingcartitemRow> = Field<String, ShoppingcartitemRow>(_path, "shoppingcartid", ShoppingcartitemRow::shoppingcartid, null, null, { row, value -> row.copy(shoppingcartid = value) }, PgTypes.text)
 
-      override fun quantity(): Field<Int, ShoppingcartitemRow> = Field<Int, ShoppingcartitemRow>(_path, "quantity", ShoppingcartitemRow::quantity, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(quantity = value) }, PgTypes.int4)
+      override fun quantity(): Field<Int, ShoppingcartitemRow> = Field<Int, ShoppingcartitemRow>(_path, "quantity", ShoppingcartitemRow::quantity, null, "int4", { row, value -> row.copy(quantity = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun productid(): Field<ProductId, ShoppingcartitemRow> = Field<ProductId, ShoppingcartitemRow>(_path, "productid", ShoppingcartitemRow::productid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+      override fun productid(): Field<ProductId, ShoppingcartitemRow> = Field<ProductId, ShoppingcartitemRow>(_path, "productid", ShoppingcartitemRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun datecreated(): Field<TypoLocalDateTime, ShoppingcartitemRow> = Field<TypoLocalDateTime, ShoppingcartitemRow>(_path, "datecreated", ShoppingcartitemRow::datecreated, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(datecreated = value) }, TypoLocalDateTime.pgType)
+      override fun datecreated(): Field<LocalDateTime, ShoppingcartitemRow> = Field<LocalDateTime, ShoppingcartitemRow>(_path, "datecreated", ShoppingcartitemRow::datecreated, null, "timestamp", { row, value -> row.copy(datecreated = value) }, PgTypes.timestamp)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, ShoppingcartitemRow> = Field<TypoLocalDateTime, ShoppingcartitemRow>(_path, "modifieddate", ShoppingcartitemRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, ShoppingcartitemRow> = Field<LocalDateTime, ShoppingcartitemRow>(_path, "modifieddate", ShoppingcartitemRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, ShoppingcartitemRow>> = listOf(this.shoppingcartitemid(), this.shoppingcartid(), this.quantity(), this.productid(), this.datecreated(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ShoppingcartitemFields, ShoppingcartitemRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ShoppingcartitemRow>> = listOf(this.shoppingcartitemid().underlying, this.shoppingcartid().underlying, this.quantity().underlying, this.productid().underlying, this.datecreated().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ShoppingcartitemFields, ShoppingcartitemRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

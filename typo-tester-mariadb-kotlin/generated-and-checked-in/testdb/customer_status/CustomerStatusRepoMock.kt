@@ -8,21 +8,19 @@ package testdb.customer_status
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class CustomerStatusRepoMock(
   val toRow: (CustomerStatusRowUnsaved) -> CustomerStatusRow,
@@ -33,7 +31,7 @@ data class CustomerStatusRepoMock(
   override fun deleteById(
     statusCode: CustomerStatusId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(statusCode)).isPresent()
+  ): Boolean = map.remove(statusCode) != null
 
   override fun deleteByIds(
     statusCodes: Array<CustomerStatusId>,
@@ -41,7 +39,7 @@ data class CustomerStatusRepoMock(
   ): Int {
     var count = 0
     for (id in statusCodes) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class CustomerStatusRepoMock(
     c: Connection
   ): CustomerStatusRow {
     if (map.containsKey(unsaved.statusCode)) {
-      throw RuntimeException(str("id $unsaved.statusCode already exists"))
+      throw RuntimeException("id " + unsaved.statusCode + " already exists")
     }
     map[unsaved.statusCode] = unsaved
     return unsaved
@@ -71,7 +69,7 @@ data class CustomerStatusRepoMock(
   override fun selectById(
     statusCode: CustomerStatusId,
     c: Connection
-  ): Optional<CustomerStatusRow> = Optional.ofNullable(map[statusCode])
+  ): CustomerStatusRow? = map[statusCode]
 
   override fun selectByIds(
     statusCodes: Array<CustomerStatusId>,
@@ -79,9 +77,9 @@ data class CustomerStatusRepoMock(
   ): List<CustomerStatusRow> {
     val result = ArrayList<CustomerStatusRow>()
     for (id in statusCodes) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -98,7 +96,7 @@ data class CustomerStatusRepoMock(
     row: CustomerStatusRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.statusCode]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.statusCode]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.statusCode] = row
     }
@@ -114,7 +112,7 @@ data class CustomerStatusRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<CustomerStatusRow>,
+    unsaved: Iterator<CustomerStatusRow>,
     c: Connection
   ): List<CustomerStatusRow> {
     val result = ArrayList<CustomerStatusRow>()

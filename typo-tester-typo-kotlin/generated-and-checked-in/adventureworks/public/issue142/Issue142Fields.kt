@@ -5,31 +5,32 @@
  */
 package adventureworks.public.issue142
 
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.RowParser
 
 interface Issue142Fields : FieldsExpr<Issue142Row> {
-  override fun columns(): List<FieldLike<*, Issue142Row>>
+  abstract override fun columns(): List<FieldLike<*, Issue142Row>>
 
-  override fun rowParser(): RowParser<Issue142Row> = Issue142Row._rowParser
+  override fun rowParser(): RowParser<Issue142Row> = Issue142Row._rowParser.underlying
 
-  fun tabellkode(): IdField<Issue142Id, Issue142Row>
+  abstract fun tabellkode(): IdField<Issue142Id, Issue142Row>
 
   companion object {
-    data class Impl(val _path: List<Path>) : Issue142Fields, Relation<Issue142Fields, Issue142Row> {
-      override fun tabellkode(): IdField<Issue142Id, Issue142Row> = IdField<Issue142Id, Issue142Row>(_path, "tabellkode", Issue142Row::tabellkode, Optional.empty(), Optional.empty(), { row, value -> row.copy(tabellkode = value) }, Issue142Id.pgType)
+    data class Impl(val _path: List<Path>) : Issue142Fields, RelationStructure<Issue142Fields, Issue142Row> {
+      override fun tabellkode(): IdField<Issue142Id, Issue142Row> = IdField<Issue142Id, Issue142Row>(_path, "tabellkode", Issue142Row::tabellkode, null, null, { row, value -> row.copy(tabellkode = value) }, Issue142Id.pgType)
 
-      override fun columns(): List<FieldLike<*, Issue142Row>> = listOf(this.tabellkode())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<Issue142Fields, Issue142Row> = Impl(_path)
+      override fun columns(): List<FieldLike<*, Issue142Row>> = listOf(this.tabellkode().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<Issue142Fields, Issue142Row> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

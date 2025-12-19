@@ -6,15 +6,15 @@
 package adventureworks.production.workorder
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.production.scrapreason.ScrapreasonId
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.workorder
   * Manufacturing work orders.
@@ -36,35 +36,35 @@ data class WorkorderRow(
   /** Quantity that failed inspection.
     * Constraint CK_WorkOrder_ScrappedQty affecting columns scrappedqty: ((scrappedqty >= 0))
     */
-  val scrappedqty: TypoShort,
+  val scrappedqty: Short,
   /** Work order start date.
     * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Work order end date.
     * Constraint CK_WorkOrder_EndDate affecting columns enddate, startdate: (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val enddate: Optional<TypoLocalDateTime>,
+  val enddate: LocalDateTime?,
   /** Work order due date. */
-  val duedate: TypoLocalDateTime,
+  val duedate: LocalDateTime,
   /** Reason for inspection failure.
     * Points to [adventureworks.production.scrapreason.ScrapreasonRow.scrapreasonid]
     */
-  val scrapreasonid: Optional<ScrapreasonId>,
+  val scrapreasonid: ScrapreasonId?,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): WorkorderId = workorderid
 
   fun toUnsavedRow(
     workorderid: Defaulted<WorkorderId>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): WorkorderRowUnsaved = WorkorderRowUnsaved(productid, orderqty, scrappedqty, startdate, enddate, duedate, scrapreasonid, workorderid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<WorkorderRow> = RowParsers.of(WorkorderId.pgType, ProductId.pgType, PgTypes.int4, TypoShort.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoLocalDateTime.pgType, ScrapreasonId.pgType.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> WorkorderRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.workorderid, row.productid, row.orderqty, row.scrappedqty, row.startdate, row.enddate, row.duedate, row.scrapreasonid, row.modifieddate) })
+    val _rowParser: RowParser<WorkorderRow> = RowParsers.of(WorkorderId.pgType, ProductId.pgType, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int2, PgTypes.timestamp, PgTypes.timestamp.nullable(), PgTypes.timestamp, ScrapreasonId.pgType.nullable(), PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> WorkorderRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.workorderid, row.productid, row.orderqty, row.scrappedqty, row.startdate, row.enddate, row.duedate, row.scrapreasonid, row.modifieddate) })
 
     val pgText: PgText<WorkorderRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

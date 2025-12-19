@@ -35,13 +35,13 @@ case class PViewRow(
   /** Points to [[adventureworks.production.product.ProductRow.name]] */
   name: Name,
   /** Points to [[adventureworks.production.product.ProductRow.productnumber]] */
-  productnumber: /* max 25 chars */ String,
+  productnumber: String,
   /** Points to [[adventureworks.production.product.ProductRow.makeflag]] */
   makeflag: Flag,
   /** Points to [[adventureworks.production.product.ProductRow.finishedgoodsflag]] */
   finishedgoodsflag: Flag,
   /** Points to [[adventureworks.production.product.ProductRow.color]] */
-  color: Option[/* max 15 chars */ String],
+  color: String,
   /** Points to [[adventureworks.production.product.ProductRow.safetystocklevel]] */
   safetystocklevel: TypoShort,
   /** Points to [[adventureworks.production.product.ProductRow.reorderpoint]] */
@@ -51,31 +51,31 @@ case class PViewRow(
   /** Points to [[adventureworks.production.product.ProductRow.listprice]] */
   listprice: BigDecimal,
   /** Points to [[adventureworks.production.product.ProductRow.size]] */
-  size: Option[/* max 5 chars */ String],
+  size: String,
   /** Points to [[adventureworks.production.product.ProductRow.sizeunitmeasurecode]] */
-  sizeunitmeasurecode: Option[UnitmeasureId],
+  sizeunitmeasurecode: UnitmeasureId,
   /** Points to [[adventureworks.production.product.ProductRow.weightunitmeasurecode]] */
-  weightunitmeasurecode: Option[UnitmeasureId],
+  weightunitmeasurecode: UnitmeasureId,
   /** Points to [[adventureworks.production.product.ProductRow.weight]] */
-  weight: Option[BigDecimal],
+  weight: BigDecimal,
   /** Points to [[adventureworks.production.product.ProductRow.daystomanufacture]] */
   daystomanufacture: Int,
   /** Points to [[adventureworks.production.product.ProductRow.productline]] */
-  productline: Option[/* bpchar, max 2 chars */ String],
+  productline: String,
   /** Points to [[adventureworks.production.product.ProductRow.class]] */
-  `class`: Option[/* bpchar, max 2 chars */ String],
+  `class`: String,
   /** Points to [[adventureworks.production.product.ProductRow.style]] */
-  style: Option[/* bpchar, max 2 chars */ String],
+  style: String,
   /** Points to [[adventureworks.production.product.ProductRow.productsubcategoryid]] */
-  productsubcategoryid: Option[ProductsubcategoryId],
+  productsubcategoryid: ProductsubcategoryId,
   /** Points to [[adventureworks.production.product.ProductRow.productmodelid]] */
-  productmodelid: Option[ProductmodelId],
+  productmodelid: ProductmodelId,
   /** Points to [[adventureworks.production.product.ProductRow.sellstartdate]] */
   sellstartdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.product.ProductRow.sellenddate]] */
-  sellenddate: Option[TypoLocalDateTime],
+  sellenddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.product.ProductRow.discontinueddate]] */
-  discontinueddate: Option[TypoLocalDateTime],
+  discontinueddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.product.ProductRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.product.ProductRow.modifieddate]] */
@@ -93,24 +93,24 @@ object PViewRow {
             productnumber = json.\("productnumber").as(Reads.StringReads),
             makeflag = json.\("makeflag").as(Flag.reads),
             finishedgoodsflag = json.\("finishedgoodsflag").as(Flag.reads),
-            color = json.\("color").toOption.map(_.as(Reads.StringReads)),
+            color = json.\("color").as(Reads.StringReads),
             safetystocklevel = json.\("safetystocklevel").as(TypoShort.reads),
             reorderpoint = json.\("reorderpoint").as(TypoShort.reads),
             standardcost = json.\("standardcost").as(Reads.bigDecReads),
             listprice = json.\("listprice").as(Reads.bigDecReads),
-            size = json.\("size").toOption.map(_.as(Reads.StringReads)),
-            sizeunitmeasurecode = json.\("sizeunitmeasurecode").toOption.map(_.as(UnitmeasureId.reads)),
-            weightunitmeasurecode = json.\("weightunitmeasurecode").toOption.map(_.as(UnitmeasureId.reads)),
-            weight = json.\("weight").toOption.map(_.as(Reads.bigDecReads)),
+            size = json.\("size").as(Reads.StringReads),
+            sizeunitmeasurecode = json.\("sizeunitmeasurecode").as(UnitmeasureId.reads),
+            weightunitmeasurecode = json.\("weightunitmeasurecode").as(UnitmeasureId.reads),
+            weight = json.\("weight").as(Reads.bigDecReads),
             daystomanufacture = json.\("daystomanufacture").as(Reads.IntReads),
-            productline = json.\("productline").toOption.map(_.as(Reads.StringReads)),
-            `class` = json.\("class").toOption.map(_.as(Reads.StringReads)),
-            style = json.\("style").toOption.map(_.as(Reads.StringReads)),
-            productsubcategoryid = json.\("productsubcategoryid").toOption.map(_.as(ProductsubcategoryId.reads)),
-            productmodelid = json.\("productmodelid").toOption.map(_.as(ProductmodelId.reads)),
+            productline = json.\("productline").as(Reads.StringReads),
+            `class` = json.\("class").as(Reads.StringReads),
+            style = json.\("style").as(Reads.StringReads),
+            productsubcategoryid = json.\("productsubcategoryid").as(ProductsubcategoryId.reads),
+            productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
             sellstartdate = json.\("sellstartdate").as(TypoLocalDateTime.reads),
-            sellenddate = json.\("sellenddate").toOption.map(_.as(TypoLocalDateTime.reads)),
-            discontinueddate = json.\("discontinueddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            sellenddate = json.\("sellenddate").as(TypoLocalDateTime.reads),
+            discontinueddate = json.\("discontinueddate").as(TypoLocalDateTime.reads),
             rowguid = json.\("rowguid").as(TypoUUID.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
@@ -129,24 +129,24 @@ object PViewRow {
           productnumber = row(idx + 3)(Column.columnToString),
           makeflag = row(idx + 4)(Flag.column),
           finishedgoodsflag = row(idx + 5)(Flag.column),
-          color = row(idx + 6)(Column.columnToOption(Column.columnToString)),
+          color = row(idx + 6)(Column.columnToString),
           safetystocklevel = row(idx + 7)(TypoShort.column),
           reorderpoint = row(idx + 8)(TypoShort.column),
           standardcost = row(idx + 9)(Column.columnToScalaBigDecimal),
           listprice = row(idx + 10)(Column.columnToScalaBigDecimal),
-          size = row(idx + 11)(Column.columnToOption(Column.columnToString)),
-          sizeunitmeasurecode = row(idx + 12)(Column.columnToOption(UnitmeasureId.column)),
-          weightunitmeasurecode = row(idx + 13)(Column.columnToOption(UnitmeasureId.column)),
-          weight = row(idx + 14)(Column.columnToOption(Column.columnToScalaBigDecimal)),
+          size = row(idx + 11)(Column.columnToString),
+          sizeunitmeasurecode = row(idx + 12)(UnitmeasureId.column),
+          weightunitmeasurecode = row(idx + 13)(UnitmeasureId.column),
+          weight = row(idx + 14)(Column.columnToScalaBigDecimal),
           daystomanufacture = row(idx + 15)(Column.columnToInt),
-          productline = row(idx + 16)(Column.columnToOption(Column.columnToString)),
-          `class` = row(idx + 17)(Column.columnToOption(Column.columnToString)),
-          style = row(idx + 18)(Column.columnToOption(Column.columnToString)),
-          productsubcategoryid = row(idx + 19)(Column.columnToOption(ProductsubcategoryId.column)),
-          productmodelid = row(idx + 20)(Column.columnToOption(ProductmodelId.column)),
+          productline = row(idx + 16)(Column.columnToString),
+          `class` = row(idx + 17)(Column.columnToString),
+          style = row(idx + 18)(Column.columnToString),
+          productsubcategoryid = row(idx + 19)(ProductsubcategoryId.column),
+          productmodelid = row(idx + 20)(ProductmodelId.column),
           sellstartdate = row(idx + 21)(TypoLocalDateTime.column),
-          sellenddate = row(idx + 22)(Column.columnToOption(TypoLocalDateTime.column)),
-          discontinueddate = row(idx + 23)(Column.columnToOption(TypoLocalDateTime.column)),
+          sellenddate = row(idx + 22)(TypoLocalDateTime.column),
+          discontinueddate = row(idx + 23)(TypoLocalDateTime.column),
           rowguid = row(idx + 24)(TypoUUID.column),
           modifieddate = row(idx + 25)(TypoLocalDateTime.column)
         )
@@ -163,24 +163,24 @@ object PViewRow {
         "productnumber" -> Writes.StringWrites.writes(o.productnumber),
         "makeflag" -> Flag.writes.writes(o.makeflag),
         "finishedgoodsflag" -> Flag.writes.writes(o.finishedgoodsflag),
-        "color" -> Writes.OptionWrites(Writes.StringWrites).writes(o.color),
+        "color" -> Writes.StringWrites.writes(o.color),
         "safetystocklevel" -> TypoShort.writes.writes(o.safetystocklevel),
         "reorderpoint" -> TypoShort.writes.writes(o.reorderpoint),
         "standardcost" -> Writes.BigDecimalWrites.writes(o.standardcost),
         "listprice" -> Writes.BigDecimalWrites.writes(o.listprice),
-        "size" -> Writes.OptionWrites(Writes.StringWrites).writes(o.size),
-        "sizeunitmeasurecode" -> Writes.OptionWrites(UnitmeasureId.writes).writes(o.sizeunitmeasurecode),
-        "weightunitmeasurecode" -> Writes.OptionWrites(UnitmeasureId.writes).writes(o.weightunitmeasurecode),
-        "weight" -> Writes.OptionWrites(Writes.BigDecimalWrites).writes(o.weight),
+        "size" -> Writes.StringWrites.writes(o.size),
+        "sizeunitmeasurecode" -> UnitmeasureId.writes.writes(o.sizeunitmeasurecode),
+        "weightunitmeasurecode" -> UnitmeasureId.writes.writes(o.weightunitmeasurecode),
+        "weight" -> Writes.BigDecimalWrites.writes(o.weight),
         "daystomanufacture" -> Writes.IntWrites.writes(o.daystomanufacture),
-        "productline" -> Writes.OptionWrites(Writes.StringWrites).writes(o.productline),
-        "class" -> Writes.OptionWrites(Writes.StringWrites).writes(o.`class`),
-        "style" -> Writes.OptionWrites(Writes.StringWrites).writes(o.style),
-        "productsubcategoryid" -> Writes.OptionWrites(ProductsubcategoryId.writes).writes(o.productsubcategoryid),
-        "productmodelid" -> Writes.OptionWrites(ProductmodelId.writes).writes(o.productmodelid),
+        "productline" -> Writes.StringWrites.writes(o.productline),
+        "class" -> Writes.StringWrites.writes(o.`class`),
+        "style" -> Writes.StringWrites.writes(o.style),
+        "productsubcategoryid" -> ProductsubcategoryId.writes.writes(o.productsubcategoryid),
+        "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
         "sellstartdate" -> TypoLocalDateTime.writes.writes(o.sellstartdate),
-        "sellenddate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.sellenddate),
-        "discontinueddate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.discontinueddate),
+        "sellenddate" -> TypoLocalDateTime.writes.writes(o.sellenddate),
+        "discontinueddate" -> TypoLocalDateTime.writes.writes(o.discontinueddate),
         "rowguid" -> TypoUUID.writes.writes(o.rowguid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))

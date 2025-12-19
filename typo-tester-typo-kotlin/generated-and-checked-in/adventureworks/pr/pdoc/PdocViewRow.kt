@@ -5,11 +5,12 @@
  */
 package adventureworks.pr.pdoc
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pr.pdoc */
 data class PdocViewRow(
@@ -18,11 +19,11 @@ data class PdocViewRow(
   /** Points to [adventureworks.production.productdocument.ProductdocumentRow.productid] */
   val productid: ProductId,
   /** Points to [adventureworks.production.productdocument.ProductdocumentRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime,
+  val modifieddate: LocalDateTime,
   /** Points to [adventureworks.production.productdocument.ProductdocumentRow.documentnode] */
   val documentnode: DocumentId
 ) {
   companion object {
-    val _rowParser: RowParser<PdocViewRow> = RowParsers.of(ProductId.pgType, ProductId.pgType, TypoLocalDateTime.pgType, DocumentId.pgType, { t0, t1, t2, t3 -> PdocViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.productid, row.modifieddate, row.documentnode) })
+    val _rowParser: RowParser<PdocViewRow> = RowParsers.of(ProductId.pgType, ProductId.pgType, PgTypes.timestamp, DocumentId.pgType, { t0, t1, t2, t3 -> PdocViewRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.productid, row.modifieddate, row.documentnode) })
   }
 }

@@ -39,7 +39,7 @@ public record TestInsert(Random random) {
 
   public FootballClubRow myschemaFootballClub(
     FootballClubId id,
-    /* max 100 chars */ String name,
+    String name,
     Connection c
   ) {
     return (new FootballClubRepoImpl()).insert(new FootballClubRow(id, name), c);
@@ -54,11 +54,11 @@ public record TestInsert(Random random) {
 
   public testdb.hardcoded.myschema.person.PersonRow myschemaPerson(
     FootballClubId favouriteFootballClubId,
-    /* max 100 chars */ String name,
+    String name,
     Optional</* max 30 chars */ String> nickName,
     Optional</* max 100 chars */ String> blogUrl,
-    /* max 254 chars */ String email,
-    /* max 8 chars */ String phone,
+    String email,
+    String phone,
     Boolean likesPizza,
     Optional</* max 254 chars */ String> workEmail,
     Defaulted<PersonId> id,

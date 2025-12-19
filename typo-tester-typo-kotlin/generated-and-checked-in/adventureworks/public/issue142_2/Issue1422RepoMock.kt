@@ -9,21 +9,19 @@ import adventureworks.public.issue142.Issue142Id
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class Issue1422RepoMock(val map: MutableMap<Issue142Id, Issue1422Row> = mutableMapOf<Issue142Id, Issue1422Row>()) : Issue1422Repo {
   override fun delete(): DeleteBuilder<Issue1422Fields, Issue1422Row> = DeleteBuilderMock(Issue1422Fields.structure, { map.values.toList() }, DeleteParams.empty(), { row -> row.tabellkode }, { id -> map.remove(id) })
@@ -31,7 +29,7 @@ data class Issue1422RepoMock(val map: MutableMap<Issue142Id, Issue1422Row> = mut
   override fun deleteById(
     tabellkode: Issue142Id,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(tabellkode)).isPresent()
+  ): Boolean = map.remove(tabellkode) != null
 
   override fun deleteByIds(
     tabellkodes: Array<Issue142Id>,
@@ -39,7 +37,7 @@ data class Issue1422RepoMock(val map: MutableMap<Issue142Id, Issue1422Row> = mut
   ): Int {
     var count = 0
     for (id in tabellkodes) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -51,14 +49,14 @@ data class Issue1422RepoMock(val map: MutableMap<Issue142Id, Issue1422Row> = mut
     c: Connection
   ): Issue1422Row {
     if (map.containsKey(unsaved.tabellkode)) {
-      throw RuntimeException(str("id $unsaved.tabellkode already exists"))
+      throw RuntimeException("id " + unsaved.tabellkode + " already exists")
     }
     map[unsaved.tabellkode] = unsaved
     return unsaved
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<Issue1422Row>,
+    unsaved: Iterator<Issue1422Row>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -78,7 +76,7 @@ data class Issue1422RepoMock(val map: MutableMap<Issue142Id, Issue1422Row> = mut
   override fun selectById(
     tabellkode: Issue142Id,
     c: Connection
-  ): Optional<Issue1422Row> = Optional.ofNullable(map[tabellkode])
+  ): Issue1422Row? = map[tabellkode]
 
   override fun selectByIds(
     tabellkodes: Array<Issue142Id>,
@@ -86,9 +84,9 @@ data class Issue1422RepoMock(val map: MutableMap<Issue142Id, Issue1422Row> = mut
   ): List<Issue1422Row> {
     val result = ArrayList<Issue1422Row>()
     for (id in tabellkodes) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -110,7 +108,7 @@ data class Issue1422RepoMock(val map: MutableMap<Issue142Id, Issue1422Row> = mut
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<Issue1422Row>,
+    unsaved: Iterator<Issue1422Row>,
     c: Connection
   ): List<Issue1422Row> {
     val result = ArrayList<Issue1422Row>()
@@ -124,7 +122,7 @@ data class Issue1422RepoMock(val map: MutableMap<Issue142Id, Issue1422Row> = mut
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<Issue1422Row>,
+    unsaved: Iterator<Issue1422Row>,
     batchSize: Int,
     c: Connection
   ): Int {

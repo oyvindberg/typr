@@ -6,89 +6,88 @@
 package adventureworks.sales.salesorderdetail
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface SalesorderdetailRepo {
-  fun delete(): DeleteBuilder<SalesorderdetailFields, SalesorderdetailRow>
+  abstract fun delete(): DeleteBuilder<SalesorderdetailFields, SalesorderdetailRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: SalesorderdetailId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<SalesorderdetailId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: SalesorderdetailRow,
     c: Connection
   ): SalesorderdetailRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: SalesorderdetailRowUnsaved,
     c: Connection
   ): SalesorderdetailRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<SalesorderdetailRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<SalesorderdetailRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<SalesorderdetailRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<SalesorderdetailRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<SalesorderdetailFields, SalesorderdetailRow>
+  abstract fun select(): SelectBuilder<SalesorderdetailFields, SalesorderdetailRow>
 
-  fun selectAll(c: Connection): List<SalesorderdetailRow>
+  abstract fun selectAll(c: Connection): List<SalesorderdetailRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: SalesorderdetailId,
     c: Connection
-  ): Optional<SalesorderdetailRow>
+  ): SalesorderdetailRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<SalesorderdetailId>,
     c: Connection
   ): List<SalesorderdetailRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<SalesorderdetailId>,
     c: Connection
   ): Map<SalesorderdetailId, SalesorderdetailRow>
 
-  fun update(): UpdateBuilder<SalesorderdetailFields, SalesorderdetailRow>
+  abstract fun update(): UpdateBuilder<SalesorderdetailFields, SalesorderdetailRow>
 
-  fun update(
+  abstract fun update(
     row: SalesorderdetailRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: SalesorderdetailRow,
     c: Connection
   ): SalesorderdetailRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<SalesorderdetailRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<SalesorderdetailRow>,
     c: Connection
   ): List<SalesorderdetailRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<SalesorderdetailRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<SalesorderdetailRow>,
     batchSize: Int,
     c: Connection
   ): Int

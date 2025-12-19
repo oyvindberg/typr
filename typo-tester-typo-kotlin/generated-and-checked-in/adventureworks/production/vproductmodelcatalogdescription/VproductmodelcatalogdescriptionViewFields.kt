@@ -5,133 +5,133 @@
  */
 package adventureworks.production.vproductmodelcatalogdescription
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface VproductmodelcatalogdescriptionViewFields : FieldsExpr<VproductmodelcatalogdescriptionViewRow> {
-  fun bikeframe(): OptField<String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun bikeframe(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun color(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun color(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  override fun columns(): List<FieldLike<*, VproductmodelcatalogdescriptionViewRow>>
+  abstract override fun columns(): List<FieldLike<*, VproductmodelcatalogdescriptionViewRow>>
 
-  fun copyright(): OptField</* max 30 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun copyright(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun crankset(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun crankset(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun maintenancedescription(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun maintenancedescription(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun manufacturer(): OptField<String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun manufacturer(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun material(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun material(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, VproductmodelcatalogdescriptionViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, VproductmodelcatalogdescriptionViewRow>
 
-  fun name(): Field<Name, VproductmodelcatalogdescriptionViewRow>
+  abstract fun name(): Field<Name, VproductmodelcatalogdescriptionViewRow>
 
-  fun noofyears(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun noofyears(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun pedal(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun pedal(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun pictureangle(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun pictureangle(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun picturesize(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun picturesize(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun productline(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun productline(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun productmodelid(): Field<ProductmodelId, VproductmodelcatalogdescriptionViewRow>
+  abstract fun productmodelid(): Field<ProductmodelId, VproductmodelcatalogdescriptionViewRow>
 
-  fun productphotoid(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun productphotoid(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun producturl(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun producturl(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun riderexperience(): OptField</* max 1024 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun riderexperience(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  override fun rowParser(): RowParser<VproductmodelcatalogdescriptionViewRow> = VproductmodelcatalogdescriptionViewRow._rowParser
+  override fun rowParser(): RowParser<VproductmodelcatalogdescriptionViewRow> = VproductmodelcatalogdescriptionViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, VproductmodelcatalogdescriptionViewRow>
+  abstract fun rowguid(): Field<UUID, VproductmodelcatalogdescriptionViewRow>
 
-  fun saddle(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun saddle(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun style(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun style(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun summary(): OptField<String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun summary(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun warrantydescription(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun warrantydescription(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun warrantyperiod(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun warrantyperiod(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
-  fun wheel(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>
+  abstract fun wheel(): Field<String, VproductmodelcatalogdescriptionViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : VproductmodelcatalogdescriptionViewFields, Relation<VproductmodelcatalogdescriptionViewFields, VproductmodelcatalogdescriptionViewRow> {
-      override fun productmodelid(): Field<ProductmodelId, VproductmodelcatalogdescriptionViewRow> = Field<ProductmodelId, VproductmodelcatalogdescriptionViewRow>(_path, "productmodelid", VproductmodelcatalogdescriptionViewRow::productmodelid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productmodelid = value) }, ProductmodelId.pgType)
+    data class Impl(val _path: List<Path>) : VproductmodelcatalogdescriptionViewFields, RelationStructure<VproductmodelcatalogdescriptionViewFields, VproductmodelcatalogdescriptionViewRow> {
+      override fun productmodelid(): Field<ProductmodelId, VproductmodelcatalogdescriptionViewRow> = Field<ProductmodelId, VproductmodelcatalogdescriptionViewRow>(_path, "productmodelid", VproductmodelcatalogdescriptionViewRow::productmodelid, null, null, { row, value -> row.copy(productmodelid = value) }, ProductmodelId.pgType)
 
-      override fun name(): Field<Name, VproductmodelcatalogdescriptionViewRow> = Field<Name, VproductmodelcatalogdescriptionViewRow>(_path, "name", VproductmodelcatalogdescriptionViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, VproductmodelcatalogdescriptionViewRow> = Field<Name, VproductmodelcatalogdescriptionViewRow>(_path, "name", VproductmodelcatalogdescriptionViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun summary(): OptField<String, VproductmodelcatalogdescriptionViewRow> = OptField<String, VproductmodelcatalogdescriptionViewRow>(_path, "Summary", VproductmodelcatalogdescriptionViewRow::summary, Optional.empty(), Optional.empty(), { row, value -> row.copy(summary = value) }, PgTypes.text)
+      override fun summary(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "Summary", VproductmodelcatalogdescriptionViewRow::summary, null, null, { row, value -> row.copy(summary = value) }, PgTypes.text)
 
-      override fun manufacturer(): OptField<String, VproductmodelcatalogdescriptionViewRow> = OptField<String, VproductmodelcatalogdescriptionViewRow>(_path, "manufacturer", VproductmodelcatalogdescriptionViewRow::manufacturer, Optional.empty(), Optional.empty(), { row, value -> row.copy(manufacturer = value) }, PgTypes.text)
+      override fun manufacturer(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "manufacturer", VproductmodelcatalogdescriptionViewRow::manufacturer, null, null, { row, value -> row.copy(manufacturer = value) }, PgTypes.text)
 
-      override fun copyright(): OptField</* max 30 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 30 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "copyright", VproductmodelcatalogdescriptionViewRow::copyright, Optional.empty(), Optional.empty(), { row, value -> row.copy(copyright = value) }, PgTypes.text)
+      override fun copyright(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "copyright", VproductmodelcatalogdescriptionViewRow::copyright, null, null, { row, value -> row.copy(copyright = value) }, PgTypes.text)
 
-      override fun producturl(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "producturl", VproductmodelcatalogdescriptionViewRow::producturl, Optional.empty(), Optional.empty(), { row, value -> row.copy(producturl = value) }, PgTypes.text)
+      override fun producturl(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "producturl", VproductmodelcatalogdescriptionViewRow::producturl, null, null, { row, value -> row.copy(producturl = value) }, PgTypes.text)
 
-      override fun warrantyperiod(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "warrantyperiod", VproductmodelcatalogdescriptionViewRow::warrantyperiod, Optional.empty(), Optional.empty(), { row, value -> row.copy(warrantyperiod = value) }, PgTypes.text)
+      override fun warrantyperiod(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "warrantyperiod", VproductmodelcatalogdescriptionViewRow::warrantyperiod, null, null, { row, value -> row.copy(warrantyperiod = value) }, PgTypes.text)
 
-      override fun warrantydescription(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "warrantydescription", VproductmodelcatalogdescriptionViewRow::warrantydescription, Optional.empty(), Optional.empty(), { row, value -> row.copy(warrantydescription = value) }, PgTypes.text)
+      override fun warrantydescription(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "warrantydescription", VproductmodelcatalogdescriptionViewRow::warrantydescription, null, null, { row, value -> row.copy(warrantydescription = value) }, PgTypes.text)
 
-      override fun noofyears(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "noofyears", VproductmodelcatalogdescriptionViewRow::noofyears, Optional.empty(), Optional.empty(), { row, value -> row.copy(noofyears = value) }, PgTypes.text)
+      override fun noofyears(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "noofyears", VproductmodelcatalogdescriptionViewRow::noofyears, null, null, { row, value -> row.copy(noofyears = value) }, PgTypes.text)
 
-      override fun maintenancedescription(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "maintenancedescription", VproductmodelcatalogdescriptionViewRow::maintenancedescription, Optional.empty(), Optional.empty(), { row, value -> row.copy(maintenancedescription = value) }, PgTypes.text)
+      override fun maintenancedescription(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "maintenancedescription", VproductmodelcatalogdescriptionViewRow::maintenancedescription, null, null, { row, value -> row.copy(maintenancedescription = value) }, PgTypes.text)
 
-      override fun wheel(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "wheel", VproductmodelcatalogdescriptionViewRow::wheel, Optional.empty(), Optional.empty(), { row, value -> row.copy(wheel = value) }, PgTypes.text)
+      override fun wheel(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "wheel", VproductmodelcatalogdescriptionViewRow::wheel, null, null, { row, value -> row.copy(wheel = value) }, PgTypes.text)
 
-      override fun saddle(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "saddle", VproductmodelcatalogdescriptionViewRow::saddle, Optional.empty(), Optional.empty(), { row, value -> row.copy(saddle = value) }, PgTypes.text)
+      override fun saddle(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "saddle", VproductmodelcatalogdescriptionViewRow::saddle, null, null, { row, value -> row.copy(saddle = value) }, PgTypes.text)
 
-      override fun pedal(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "pedal", VproductmodelcatalogdescriptionViewRow::pedal, Optional.empty(), Optional.empty(), { row, value -> row.copy(pedal = value) }, PgTypes.text)
+      override fun pedal(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "pedal", VproductmodelcatalogdescriptionViewRow::pedal, null, null, { row, value -> row.copy(pedal = value) }, PgTypes.text)
 
-      override fun bikeframe(): OptField<String, VproductmodelcatalogdescriptionViewRow> = OptField<String, VproductmodelcatalogdescriptionViewRow>(_path, "bikeframe", VproductmodelcatalogdescriptionViewRow::bikeframe, Optional.empty(), Optional.empty(), { row, value -> row.copy(bikeframe = value) }, PgTypes.text)
+      override fun bikeframe(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "bikeframe", VproductmodelcatalogdescriptionViewRow::bikeframe, null, null, { row, value -> row.copy(bikeframe = value) }, PgTypes.text)
 
-      override fun crankset(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "crankset", VproductmodelcatalogdescriptionViewRow::crankset, Optional.empty(), Optional.empty(), { row, value -> row.copy(crankset = value) }, PgTypes.text)
+      override fun crankset(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "crankset", VproductmodelcatalogdescriptionViewRow::crankset, null, null, { row, value -> row.copy(crankset = value) }, PgTypes.text)
 
-      override fun pictureangle(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "pictureangle", VproductmodelcatalogdescriptionViewRow::pictureangle, Optional.empty(), Optional.empty(), { row, value -> row.copy(pictureangle = value) }, PgTypes.text)
+      override fun pictureangle(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "pictureangle", VproductmodelcatalogdescriptionViewRow::pictureangle, null, null, { row, value -> row.copy(pictureangle = value) }, PgTypes.text)
 
-      override fun picturesize(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "picturesize", VproductmodelcatalogdescriptionViewRow::picturesize, Optional.empty(), Optional.empty(), { row, value -> row.copy(picturesize = value) }, PgTypes.text)
+      override fun picturesize(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "picturesize", VproductmodelcatalogdescriptionViewRow::picturesize, null, null, { row, value -> row.copy(picturesize = value) }, PgTypes.text)
 
-      override fun productphotoid(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "productphotoid", VproductmodelcatalogdescriptionViewRow::productphotoid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productphotoid = value) }, PgTypes.text)
+      override fun productphotoid(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "productphotoid", VproductmodelcatalogdescriptionViewRow::productphotoid, null, null, { row, value -> row.copy(productphotoid = value) }, PgTypes.text)
 
-      override fun material(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "material", VproductmodelcatalogdescriptionViewRow::material, Optional.empty(), Optional.empty(), { row, value -> row.copy(material = value) }, PgTypes.text)
+      override fun material(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "material", VproductmodelcatalogdescriptionViewRow::material, null, null, { row, value -> row.copy(material = value) }, PgTypes.text)
 
-      override fun color(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "color", VproductmodelcatalogdescriptionViewRow::color, Optional.empty(), Optional.empty(), { row, value -> row.copy(color = value) }, PgTypes.text)
+      override fun color(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "color", VproductmodelcatalogdescriptionViewRow::color, null, null, { row, value -> row.copy(color = value) }, PgTypes.text)
 
-      override fun productline(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "productline", VproductmodelcatalogdescriptionViewRow::productline, Optional.empty(), Optional.empty(), { row, value -> row.copy(productline = value) }, PgTypes.text)
+      override fun productline(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "productline", VproductmodelcatalogdescriptionViewRow::productline, null, null, { row, value -> row.copy(productline = value) }, PgTypes.text)
 
-      override fun style(): OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 256 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "style", VproductmodelcatalogdescriptionViewRow::style, Optional.empty(), Optional.empty(), { row, value -> row.copy(style = value) }, PgTypes.text)
+      override fun style(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "style", VproductmodelcatalogdescriptionViewRow::style, null, null, { row, value -> row.copy(style = value) }, PgTypes.text)
 
-      override fun riderexperience(): OptField</* max 1024 chars */ String, VproductmodelcatalogdescriptionViewRow> = OptField</* max 1024 chars */ String, VproductmodelcatalogdescriptionViewRow>(_path, "riderexperience", VproductmodelcatalogdescriptionViewRow::riderexperience, Optional.empty(), Optional.empty(), { row, value -> row.copy(riderexperience = value) }, PgTypes.text)
+      override fun riderexperience(): Field<String, VproductmodelcatalogdescriptionViewRow> = Field<String, VproductmodelcatalogdescriptionViewRow>(_path, "riderexperience", VproductmodelcatalogdescriptionViewRow::riderexperience, null, null, { row, value -> row.copy(riderexperience = value) }, PgTypes.text)
 
-      override fun rowguid(): Field<TypoUUID, VproductmodelcatalogdescriptionViewRow> = Field<TypoUUID, VproductmodelcatalogdescriptionViewRow>(_path, "rowguid", VproductmodelcatalogdescriptionViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, VproductmodelcatalogdescriptionViewRow> = Field<UUID, VproductmodelcatalogdescriptionViewRow>(_path, "rowguid", VproductmodelcatalogdescriptionViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, VproductmodelcatalogdescriptionViewRow> = Field<TypoLocalDateTime, VproductmodelcatalogdescriptionViewRow>(_path, "modifieddate", VproductmodelcatalogdescriptionViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, VproductmodelcatalogdescriptionViewRow> = Field<LocalDateTime, VproductmodelcatalogdescriptionViewRow>(_path, "modifieddate", VproductmodelcatalogdescriptionViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, VproductmodelcatalogdescriptionViewRow>> = listOf(this.productmodelid(), this.name(), this.summary(), this.manufacturer(), this.copyright(), this.producturl(), this.warrantyperiod(), this.warrantydescription(), this.noofyears(), this.maintenancedescription(), this.wheel(), this.saddle(), this.pedal(), this.bikeframe(), this.crankset(), this.pictureangle(), this.picturesize(), this.productphotoid(), this.material(), this.color(), this.productline(), this.style(), this.riderexperience(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<VproductmodelcatalogdescriptionViewFields, VproductmodelcatalogdescriptionViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, VproductmodelcatalogdescriptionViewRow>> = listOf(this.productmodelid().underlying, this.name().underlying, this.summary().underlying, this.manufacturer().underlying, this.copyright().underlying, this.producturl().underlying, this.warrantyperiod().underlying, this.warrantydescription().underlying, this.noofyears().underlying, this.maintenancedescription().underlying, this.wheel().underlying, this.saddle().underlying, this.pedal().underlying, this.bikeframe().underlying, this.crankset().underlying, this.pictureangle().underlying, this.picturesize().underlying, this.productphotoid().underlying, this.material().underlying, this.color().underlying, this.productline().underlying, this.style().underlying, this.riderexperience().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<VproductmodelcatalogdescriptionViewFields, VproductmodelcatalogdescriptionViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

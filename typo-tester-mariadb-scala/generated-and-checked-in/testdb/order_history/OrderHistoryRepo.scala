@@ -6,17 +6,16 @@
 package testdb.order_history
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait OrderHistoryRepo {
   def delete: DeleteBuilder[OrderHistoryFields, OrderHistoryRow]
 
-  def deleteById(historyId: OrderHistoryId)(using c: Connection): java.lang.Boolean
+  def deleteById(historyId: OrderHistoryId)(using c: Connection): Boolean
 
-  def deleteByIds(historyIds: Array[OrderHistoryId])(using c: Connection): Integer
+  def deleteByIds(historyIds: Array[OrderHistoryId])(using c: Connection): Int
 
   def insert(unsaved: OrderHistoryRow)(using c: Connection): OrderHistoryRow
 
@@ -24,19 +23,19 @@ trait OrderHistoryRepo {
 
   def select: SelectBuilder[OrderHistoryFields, OrderHistoryRow]
 
-  def selectAll(using c: Connection): java.util.List[OrderHistoryRow]
+  def selectAll(using c: Connection): List[OrderHistoryRow]
 
-  def selectById(historyId: OrderHistoryId)(using c: Connection): Optional[OrderHistoryRow]
+  def selectById(historyId: OrderHistoryId)(using c: Connection): Option[OrderHistoryRow]
 
-  def selectByIds(historyIds: Array[OrderHistoryId])(using c: Connection): java.util.List[OrderHistoryRow]
+  def selectByIds(historyIds: Array[OrderHistoryId])(using c: Connection): List[OrderHistoryRow]
 
-  def selectByIdsTracked(historyIds: Array[OrderHistoryId])(using c: Connection): java.util.Map[OrderHistoryId, OrderHistoryRow]
+  def selectByIdsTracked(historyIds: Array[OrderHistoryId])(using c: Connection): Map[OrderHistoryId, OrderHistoryRow]
 
   def update: UpdateBuilder[OrderHistoryFields, OrderHistoryRow]
 
-  def update(row: OrderHistoryRow)(using c: Connection): java.lang.Boolean
+  def update(row: OrderHistoryRow)(using c: Connection): Boolean
 
   def upsert(unsaved: OrderHistoryRow)(using c: Connection): OrderHistoryRow
 
-  def upsertBatch(unsaved: java.util.Iterator[OrderHistoryRow])(using c: Connection): java.util.List[OrderHistoryRow]
+  def upsertBatch(unsaved: Iterator[OrderHistoryRow])(using c: Connection): List[OrderHistoryRow]
 }

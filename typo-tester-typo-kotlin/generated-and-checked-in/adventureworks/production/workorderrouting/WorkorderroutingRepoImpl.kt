@@ -5,28 +5,24 @@
  */
 package adventureworks.production.workorderrouting
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.location.LocationId
 import adventureworks.production.workorder.WorkorderId
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
 
 class WorkorderroutingRepoImpl() : WorkorderroutingRepo {
   override fun delete(): DeleteBuilder<WorkorderroutingFields, WorkorderroutingRow> = DeleteBuilder.of("\"production\".\"workorderrouting\"", WorkorderroutingFields.structure, Dialect.POSTGRESQL)
@@ -34,21 +30,7 @@ class WorkorderroutingRepoImpl() : WorkorderroutingRepo {
   override fun deleteById(
     compositeId: WorkorderroutingId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "production"."workorderrouting" where "workorderid" = 
-    """.trimMargin()),
-    WorkorderId.pgType.encode(compositeId.workorderid),
-    typo.runtime.Fragment.lit("""
-     AND "productid" = 
-    """.trimMargin()),
-    PgTypes.int4.encode(compositeId.productid),
-    typo.runtime.Fragment.lit("""
-     AND "operationsequence" = 
-    """.trimMargin()),
-    TypoShort.pgType.encode(compositeId.operationsequence),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from \"production\".\"workorderrouting\" where \"workorderid\" = "), Fragment.encode(WorkorderId.pgType, compositeId.workorderid), Fragment.lit(" AND \"productid\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, compositeId.productid), Fragment.lit(" AND \"operationsequence\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int2, compositeId.operationsequence), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     compositeIds: Array<WorkorderroutingId>,
@@ -56,191 +38,74 @@ class WorkorderroutingRepoImpl() : WorkorderroutingRepo {
   ): Int {
     val workorderid: Array<WorkorderId> = arrayMap.map(compositeIds, WorkorderroutingId::workorderid, WorkorderId::class.java)
     val productid: Array<Int> = arrayMap.map(compositeIds, WorkorderroutingId::productid, Int::class.javaObjectType)
-    val operationsequence: Array<TypoShort> = arrayMap.map(compositeIds, WorkorderroutingId::operationsequence, TypoShort::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        delete
-        from "production"."workorderrouting"
-        where ("workorderid", "productid", "operationsequence")
-        in (select unnest(""".trimMargin()),
-      WorkorderId.pgTypeArray.encode(workorderid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      PgTypes.int4Array.encode(productid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      TypoShort.pgTypeArray.encode(operationsequence),
-      typo.runtime.Fragment.lit("""
-      ::int2[]))
-
-      """.trimMargin())
-    ).update().runUnchecked(c)
+    val operationsequence: Array<Short> = arrayMap.map(compositeIds, WorkorderroutingId::operationsequence, Short::class.javaObjectType)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"workorderrouting\"\nwhere (\"workorderid\", \"productid\", \"operationsequence\")\nin (select unnest("), Fragment.encode(WorkorderId.pgTypeArray, workorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int2Array, operationsequence), Fragment.lit("::int2[]))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: WorkorderroutingRow,
     c: Connection
-  ): WorkorderroutingRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "production"."workorderrouting"("workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate")
-      values (""".trimMargin()),
-    WorkorderId.pgType.encode(unsaved.workorderid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.int4.encode(unsaved.productid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoShort.pgType.encode(unsaved.operationsequence),
-    typo.runtime.Fragment.lit("::int2, "),
-    LocationId.pgType.encode(unsaved.locationid),
-    typo.runtime.Fragment.lit("::int2, "),
-    TypoLocalDateTime.pgType.encode(unsaved.scheduledstartdate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    TypoLocalDateTime.pgType.encode(unsaved.scheduledenddate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    TypoLocalDateTime.pgType.opt().encode(unsaved.actualstartdate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    TypoLocalDateTime.pgType.opt().encode(unsaved.actualenddate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    PgTypes.numeric.opt().encode(unsaved.actualresourcehrs),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.plannedcost),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.opt().encode(unsaved.actualcost),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): WorkorderroutingRow = Fragment.interpolate(Fragment.lit("insert into \"production\".\"workorderrouting\"(\"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\")\nvalues ("), Fragment.encode(WorkorderId.pgType, unsaved.workorderid), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.productid), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.operationsequence), Fragment.lit("::int2, "), Fragment.encode(LocationId.pgType, unsaved.locationid), Fragment.lit("::int2, "), Fragment.encode(PgTypes.timestamp, unsaved.scheduledstartdate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp, unsaved.scheduledenddate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp.nullable(), unsaved.actualstartdate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp.nullable(), unsaved.actualenddate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.numeric.nullable(), unsaved.actualresourcehrs), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.plannedcost), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric.nullable(), unsaved.actualcost), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\"\n"))
     .updateReturning(WorkorderroutingRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: WorkorderroutingRowUnsaved,
     c: Connection
   ): WorkorderroutingRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"workorderid\""))
-    values.add(interpolate(
-      WorkorderId.pgType.encode(unsaved.workorderid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(WorkorderId.pgType, unsaved.workorderid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"productid\""))
-    values.add(interpolate(
-      PgTypes.int4.encode(unsaved.productid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.productid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"operationsequence\""))
-    values.add(interpolate(
-      TypoShort.pgType.encode(unsaved.operationsequence),
-      typo.runtime.Fragment.lit("::int2")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.operationsequence), Fragment.lit("::int2")))
     columns.add(Fragment.lit("\"locationid\""))
-    values.add(interpolate(
-      LocationId.pgType.encode(unsaved.locationid),
-      typo.runtime.Fragment.lit("::int2")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(LocationId.pgType, unsaved.locationid), Fragment.lit("::int2")))
     columns.add(Fragment.lit("\"scheduledstartdate\""))
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.encode(unsaved.scheduledstartdate),
-      typo.runtime.Fragment.lit("::timestamp")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, unsaved.scheduledstartdate), Fragment.lit("::timestamp")))
     columns.add(Fragment.lit("\"scheduledenddate\""))
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.encode(unsaved.scheduledenddate),
-      typo.runtime.Fragment.lit("::timestamp")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, unsaved.scheduledenddate), Fragment.lit("::timestamp")))
     columns.add(Fragment.lit("\"actualstartdate\""))
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.opt().encode(unsaved.actualstartdate),
-      typo.runtime.Fragment.lit("::timestamp")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp.nullable(), unsaved.actualstartdate), Fragment.lit("::timestamp")))
     columns.add(Fragment.lit("\"actualenddate\""))
-    values.add(interpolate(
-      TypoLocalDateTime.pgType.opt().encode(unsaved.actualenddate),
-      typo.runtime.Fragment.lit("::timestamp")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp.nullable(), unsaved.actualenddate), Fragment.lit("::timestamp")))
     columns.add(Fragment.lit("\"actualresourcehrs\""))
-    values.add(interpolate(
-      PgTypes.numeric.opt().encode(unsaved.actualresourcehrs),
-      typo.runtime.Fragment.lit("::numeric")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric.nullable(), unsaved.actualresourcehrs), Fragment.lit("::numeric")))
     columns.add(Fragment.lit("\"plannedcost\""))
-    values.add(interpolate(
-      PgTypes.numeric.encode(unsaved.plannedcost),
-      typo.runtime.Fragment.lit("::numeric")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric, unsaved.plannedcost), Fragment.lit("::numeric")))
     columns.add(Fragment.lit("\"actualcost\""))
-    values.add(interpolate(
-      PgTypes.numeric.opt().encode(unsaved.actualcost),
-      typo.runtime.Fragment.lit("::numeric")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric.nullable(), unsaved.actualcost), Fragment.lit("::numeric")))
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "production"."workorderrouting"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into \"production\".\"workorderrouting\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\"\n"))
     return q.updateReturning(WorkorderroutingRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<WorkorderroutingRow>,
+    unsaved: Iterator<WorkorderroutingRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "production"."workorderrouting"("workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, WorkorderroutingRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"production\".\"workorderrouting\"(\"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, WorkorderroutingRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<WorkorderroutingRowUnsaved>,
+    unsaved: Iterator<WorkorderroutingRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "production"."workorderrouting"("workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, WorkorderroutingRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"production\".\"workorderrouting\"(\"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, WorkorderroutingRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<WorkorderroutingFields, WorkorderroutingRow> = SelectBuilder.of("\"production\".\"workorderrouting\"", WorkorderroutingFields.structure, WorkorderroutingRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<WorkorderroutingRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text
-    from "production"."workorderrouting"
-  """.trimMargin())).query(WorkorderroutingRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<WorkorderroutingRow> = Fragment.interpolate(Fragment.lit("select \"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\"\nfrom \"production\".\"workorderrouting\"\n")).query(WorkorderroutingRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     compositeId: WorkorderroutingId,
     c: Connection
-  ): Optional<WorkorderroutingRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text
-      from "production"."workorderrouting"
-      where "workorderid" = """.trimMargin()),
-    WorkorderId.pgType.encode(compositeId.workorderid),
-    typo.runtime.Fragment.lit("""
-     AND "productid" = 
-    """.trimMargin()),
-    PgTypes.int4.encode(compositeId.productid),
-    typo.runtime.Fragment.lit("""
-     AND "operationsequence" = 
-    """.trimMargin()),
-    TypoShort.pgType.encode(compositeId.operationsequence),
-    typo.runtime.Fragment.lit("")
-  ).query(WorkorderroutingRow._rowParser.first()).runUnchecked(c)
+  ): WorkorderroutingRow? = Fragment.interpolate(Fragment.lit("select \"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\"\nfrom \"production\".\"workorderrouting\"\nwhere \"workorderid\" = "), Fragment.encode(WorkorderId.pgType, compositeId.workorderid), Fragment.lit(" AND \"productid\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, compositeId.productid), Fragment.lit(" AND \"operationsequence\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int2, compositeId.operationsequence), Fragment.lit("")).query(WorkorderroutingRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     compositeIds: Array<WorkorderroutingId>,
@@ -248,23 +113,8 @@ class WorkorderroutingRepoImpl() : WorkorderroutingRepo {
   ): List<WorkorderroutingRow> {
     val workorderid: Array<WorkorderId> = arrayMap.map(compositeIds, WorkorderroutingId::workorderid, WorkorderId::class.java)
     val productid: Array<Int> = arrayMap.map(compositeIds, WorkorderroutingId::productid, Int::class.javaObjectType)
-    val operationsequence: Array<TypoShort> = arrayMap.map(compositeIds, WorkorderroutingId::operationsequence, TypoShort::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        select "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text
-        from "production"."workorderrouting"
-        where ("workorderid", "productid", "operationsequence")
-        in (select unnest(""".trimMargin()),
-      WorkorderId.pgTypeArray.encode(workorderid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      PgTypes.int4Array.encode(productid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      TypoShort.pgTypeArray.encode(operationsequence),
-      typo.runtime.Fragment.lit("""
-      ::int2[]))
-
-      """.trimMargin())
-    ).query(WorkorderroutingRow._rowParser.all()).runUnchecked(c)
+    val operationsequence: Array<Short> = arrayMap.map(compositeIds, WorkorderroutingId::operationsequence, Short::class.javaObjectType)
+    return Fragment.interpolate(Fragment.lit("select \"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\"\nfrom \"production\".\"workorderrouting\"\nwhere (\"workorderid\", \"productid\", \"operationsequence\")\nin (select unnest("), Fragment.encode(WorkorderId.pgTypeArray, workorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int2Array, operationsequence), Fragment.lit("::int2[]))\n")).query(WorkorderroutingRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(
@@ -273,165 +123,41 @@ class WorkorderroutingRepoImpl() : WorkorderroutingRepo {
   ): Map<WorkorderroutingId, WorkorderroutingRow> {
     val ret: MutableMap<WorkorderroutingId, WorkorderroutingRow> = mutableMapOf<WorkorderroutingId, WorkorderroutingRow>()
     selectByIds(compositeIds, c).forEach({ row -> ret.put(row.compositeId(), row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<WorkorderroutingFields, WorkorderroutingRow> = UpdateBuilder.of("\"production\".\"workorderrouting\"", WorkorderroutingFields.structure, WorkorderroutingRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<WorkorderroutingFields, WorkorderroutingRow> = UpdateBuilder.of("\"production\".\"workorderrouting\"", WorkorderroutingFields.structure, WorkorderroutingRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: WorkorderroutingRow,
     c: Connection
   ): Boolean {
     val compositeId: WorkorderroutingId = row.compositeId()
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "production"."workorderrouting"
-        set "locationid" = """.trimMargin()),
-      LocationId.pgType.encode(row.locationid),
-      typo.runtime.Fragment.lit("""
-        ::int2,
-        "scheduledstartdate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.scheduledstartdate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp,
-        "scheduledenddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.scheduledenddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp,
-        "actualstartdate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.opt().encode(row.actualstartdate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp,
-        "actualenddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.opt().encode(row.actualenddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp,
-        "actualresourcehrs" = """.trimMargin()),
-      PgTypes.numeric.opt().encode(row.actualresourcehrs),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "plannedcost" = """.trimMargin()),
-      PgTypes.numeric.encode(row.plannedcost),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "actualcost" = """.trimMargin()),
-      PgTypes.numeric.opt().encode(row.actualcost),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "workorderid" = """.trimMargin()),
-      WorkorderId.pgType.encode(compositeId.workorderid),
-      typo.runtime.Fragment.lit("""
-       AND "productid" = 
-      """.trimMargin()),
-      PgTypes.int4.encode(compositeId.productid),
-      typo.runtime.Fragment.lit("""
-       AND "operationsequence" = 
-      """.trimMargin()),
-      TypoShort.pgType.encode(compositeId.operationsequence),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update \"production\".\"workorderrouting\"\nset \"locationid\" = "), Fragment.encode(LocationId.pgType, row.locationid), Fragment.lit("::int2,\n\"scheduledstartdate\" = "), Fragment.encode(PgTypes.timestamp, row.scheduledstartdate), Fragment.lit("::timestamp,\n\"scheduledenddate\" = "), Fragment.encode(PgTypes.timestamp, row.scheduledenddate), Fragment.lit("::timestamp,\n\"actualstartdate\" = "), Fragment.encode(PgTypes.timestamp.nullable(), row.actualstartdate), Fragment.lit("::timestamp,\n\"actualenddate\" = "), Fragment.encode(PgTypes.timestamp.nullable(), row.actualenddate), Fragment.lit("::timestamp,\n\"actualresourcehrs\" = "), Fragment.encode(PgTypes.numeric.nullable(), row.actualresourcehrs), Fragment.lit("::numeric,\n\"plannedcost\" = "), Fragment.encode(PgTypes.numeric, row.plannedcost), Fragment.lit("::numeric,\n\"actualcost\" = "), Fragment.encode(PgTypes.numeric.nullable(), row.actualcost), Fragment.lit("::numeric,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"workorderid\" = "), Fragment.encode(WorkorderId.pgType, compositeId.workorderid), Fragment.lit(" AND \"productid\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, compositeId.productid), Fragment.lit(" AND \"operationsequence\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int2, compositeId.operationsequence), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: WorkorderroutingRow,
     c: Connection
-  ): WorkorderroutingRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "production"."workorderrouting"("workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate")
-      values (""".trimMargin()),
-    WorkorderId.pgType.encode(unsaved.workorderid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.int4.encode(unsaved.productid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoShort.pgType.encode(unsaved.operationsequence),
-    typo.runtime.Fragment.lit("::int2, "),
-    LocationId.pgType.encode(unsaved.locationid),
-    typo.runtime.Fragment.lit("::int2, "),
-    TypoLocalDateTime.pgType.encode(unsaved.scheduledstartdate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    TypoLocalDateTime.pgType.encode(unsaved.scheduledenddate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    TypoLocalDateTime.pgType.opt().encode(unsaved.actualstartdate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    TypoLocalDateTime.pgType.opt().encode(unsaved.actualenddate),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    PgTypes.numeric.opt().encode(unsaved.actualresourcehrs),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.plannedcost),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.opt().encode(unsaved.actualcost),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("workorderid", "productid", "operationsequence")
-      do update set
-        "locationid" = EXCLUDED."locationid",
-      "scheduledstartdate" = EXCLUDED."scheduledstartdate",
-      "scheduledenddate" = EXCLUDED."scheduledenddate",
-      "actualstartdate" = EXCLUDED."actualstartdate",
-      "actualenddate" = EXCLUDED."actualenddate",
-      "actualresourcehrs" = EXCLUDED."actualresourcehrs",
-      "plannedcost" = EXCLUDED."plannedcost",
-      "actualcost" = EXCLUDED."actualcost",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text""".trimMargin())
-  )
+  ): WorkorderroutingRow = Fragment.interpolate(Fragment.lit("insert into \"production\".\"workorderrouting\"(\"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\")\nvalues ("), Fragment.encode(WorkorderId.pgType, unsaved.workorderid), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.productid), Fragment.lit("::int4, "), Fragment.encode(KotlinDbTypes.PgTypes.int2, unsaved.operationsequence), Fragment.lit("::int2, "), Fragment.encode(LocationId.pgType, unsaved.locationid), Fragment.lit("::int2, "), Fragment.encode(PgTypes.timestamp, unsaved.scheduledstartdate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp, unsaved.scheduledenddate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp.nullable(), unsaved.actualstartdate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp.nullable(), unsaved.actualenddate), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.numeric.nullable(), unsaved.actualresourcehrs), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.plannedcost), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric.nullable(), unsaved.actualcost), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"workorderid\", \"productid\", \"operationsequence\")\ndo update set\n  \"locationid\" = EXCLUDED.\"locationid\",\n\"scheduledstartdate\" = EXCLUDED.\"scheduledstartdate\",\n\"scheduledenddate\" = EXCLUDED.\"scheduledenddate\",\n\"actualstartdate\" = EXCLUDED.\"actualstartdate\",\n\"actualenddate\" = EXCLUDED.\"actualenddate\",\n\"actualresourcehrs\" = EXCLUDED.\"actualresourcehrs\",\n\"plannedcost\" = EXCLUDED.\"plannedcost\",\n\"actualcost\" = EXCLUDED.\"actualcost\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\""))
     .updateReturning(WorkorderroutingRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<WorkorderroutingRow>,
+    unsaved: Iterator<WorkorderroutingRow>,
     c: Connection
-  ): List<WorkorderroutingRow> = interpolate(typo.runtime.Fragment.lit("""
-                                   insert into "production"."workorderrouting"("workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate")
-                                   values (?::int4, ?::int4, ?::int2, ?::int2, ?::timestamp, ?::timestamp, ?::timestamp, ?::timestamp, ?::numeric, ?::numeric, ?::numeric, ?::timestamp)
-                                   on conflict ("workorderid", "productid", "operationsequence")
-                                   do update set
-                                     "locationid" = EXCLUDED."locationid",
-                                   "scheduledstartdate" = EXCLUDED."scheduledstartdate",
-                                   "scheduledenddate" = EXCLUDED."scheduledenddate",
-                                   "actualstartdate" = EXCLUDED."actualstartdate",
-                                   "actualenddate" = EXCLUDED."actualenddate",
-                                   "actualresourcehrs" = EXCLUDED."actualresourcehrs",
-                                   "plannedcost" = EXCLUDED."plannedcost",
-                                   "actualcost" = EXCLUDED."actualcost",
-                                   "modifieddate" = EXCLUDED."modifieddate"
-                                   returning "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate"::text, "scheduledenddate"::text, "actualstartdate"::text, "actualenddate"::text, "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"::text""".trimMargin()))
+  ): List<WorkorderroutingRow> = Fragment.interpolate(Fragment.lit("insert into \"production\".\"workorderrouting\"(\"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?::int2, ?::int2, ?::timestamp, ?::timestamp, ?::timestamp, ?::timestamp, ?::numeric, ?::numeric, ?::numeric, ?::timestamp)\non conflict (\"workorderid\", \"productid\", \"operationsequence\")\ndo update set\n  \"locationid\" = EXCLUDED.\"locationid\",\n\"scheduledstartdate\" = EXCLUDED.\"scheduledstartdate\",\n\"scheduledenddate\" = EXCLUDED.\"scheduledenddate\",\n\"actualstartdate\" = EXCLUDED.\"actualstartdate\",\n\"actualenddate\" = EXCLUDED.\"actualenddate\",\n\"actualresourcehrs\" = EXCLUDED.\"actualresourcehrs\",\n\"plannedcost\" = EXCLUDED.\"plannedcost\",\n\"actualcost\" = EXCLUDED.\"actualcost\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\""))
     .updateManyReturning(WorkorderroutingRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<WorkorderroutingRow>,
+    unsaved: Iterator<WorkorderroutingRow>,
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table workorderrouting_TEMP (like "production"."workorderrouting") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy workorderrouting_TEMP("workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, WorkorderroutingRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "production"."workorderrouting"("workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate")
-      select * from workorderrouting_TEMP
-      on conflict ("workorderid", "productid", "operationsequence")
-      do update set
-        "locationid" = EXCLUDED."locationid",
-      "scheduledstartdate" = EXCLUDED."scheduledstartdate",
-      "scheduledenddate" = EXCLUDED."scheduledenddate",
-      "actualstartdate" = EXCLUDED."actualstartdate",
-      "actualenddate" = EXCLUDED."actualenddate",
-      "actualresourcehrs" = EXCLUDED."actualresourcehrs",
-      "plannedcost" = EXCLUDED."plannedcost",
-      "actualcost" = EXCLUDED."actualcost",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table workorderrouting_TEMP;""".trimMargin())).update().runUnchecked(c)
+    Fragment.interpolate(Fragment.lit("create temporary table workorderrouting_TEMP (like \"production\".\"workorderrouting\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy workorderrouting_TEMP(\"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\") from stdin", batchSize, unsaved, c, WorkorderroutingRow.pgText)
+    return Fragment.interpolate(Fragment.lit("insert into \"production\".\"workorderrouting\"(\"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\")\nselect * from workorderrouting_TEMP\non conflict (\"workorderid\", \"productid\", \"operationsequence\")\ndo update set\n  \"locationid\" = EXCLUDED.\"locationid\",\n\"scheduledstartdate\" = EXCLUDED.\"scheduledstartdate\",\n\"scheduledenddate\" = EXCLUDED.\"scheduledenddate\",\n\"actualstartdate\" = EXCLUDED.\"actualstartdate\",\n\"actualenddate\" = EXCLUDED.\"actualenddate\",\n\"actualresourcehrs\" = EXCLUDED.\"actualresourcehrs\",\n\"plannedcost\" = EXCLUDED.\"plannedcost\",\n\"actualcost\" = EXCLUDED.\"actualcost\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table workorderrouting_TEMP;")).update().runUnchecked(c)
   }
 }

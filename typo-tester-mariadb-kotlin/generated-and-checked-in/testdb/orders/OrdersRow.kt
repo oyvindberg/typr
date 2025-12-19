@@ -8,16 +8,17 @@ package testdb.orders
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_addresses.CustomerAddressesId
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
 import testdb.promotions.PromotionsId
 import typo.data.maria.Inet6
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: orders
   * Primary key: order_id
@@ -45,12 +46,12 @@ data class OrdersRow(
     * Default: NULL
     * Points to [testdb.customer_addresses.CustomerAddressesRow.addressId]
     */
-  @JsonProperty("shipping_address_id") val shippingAddressId: Optional<CustomerAddressesId>,
+  @JsonProperty("shipping_address_id") val shippingAddressId: CustomerAddressesId?,
   /** 
     * Default: NULL
     * Points to [testdb.customer_addresses.CustomerAddressesRow.addressId]
     */
-  @JsonProperty("billing_address_id") val billingAddressId: Optional<CustomerAddressesId>,
+  @JsonProperty("billing_address_id") val billingAddressId: CustomerAddressesId?,
   /**  */
   val subtotal: BigDecimal,
   /** 
@@ -75,23 +76,23 @@ data class OrdersRow(
     * Default: NULL
     * Points to [testdb.promotions.PromotionsRow.promotionId]
     */
-  @JsonProperty("promotion_id") val promotionId: Optional<PromotionsId>,
+  @JsonProperty("promotion_id") val promotionId: PromotionsId?,
   /** 
     * Default: NULL
     */
-  val notes: Optional<String>,
+  val notes: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("internal_notes") val internalNotes: Optional<String>,
+  @JsonProperty("internal_notes") val internalNotes: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("ip_address") val ipAddress: Optional<Inet6>,
+  @JsonProperty("ip_address") val ipAddress: Inet6?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("user_agent") val userAgent: Optional<String>,
+  @JsonProperty("user_agent") val userAgent: String?,
   /** 
     * Default: current_timestamp(6)
     */
@@ -99,42 +100,42 @@ data class OrdersRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("confirmed_at") val confirmedAt: Optional<LocalDateTime>,
+  @JsonProperty("confirmed_at") val confirmedAt: LocalDateTime?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("shipped_at") val shippedAt: Optional<LocalDateTime>,
+  @JsonProperty("shipped_at") val shippedAt: LocalDateTime?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("delivered_at") val deliveredAt: Optional<LocalDateTime>
+  @JsonProperty("delivered_at") val deliveredAt: LocalDateTime?
 ) {
   fun id(): OrdersId = orderId
 
   fun toUnsavedRow(
     orderStatus: Defaulted<String>,
     paymentStatus: Defaulted<String>,
-    shippingAddressId: Defaulted<Optional<CustomerAddressesId>>,
-    billingAddressId: Defaulted<Optional<CustomerAddressesId>>,
+    shippingAddressId: Defaulted<CustomerAddressesId?>,
+    billingAddressId: Defaulted<CustomerAddressesId?>,
     shippingCost: Defaulted<BigDecimal>,
     taxAmount: Defaulted<BigDecimal>,
     discountAmount: Defaulted<BigDecimal>,
     currencyCode: Defaulted<String>,
-    promotionId: Defaulted<Optional<PromotionsId>>,
-    notes: Defaulted<Optional<String>>,
-    internalNotes: Defaulted<Optional<String>>,
-    ipAddress: Defaulted<Optional<Inet6>>,
-    userAgent: Defaulted<Optional<String>>,
+    promotionId: Defaulted<PromotionsId?>,
+    notes: Defaulted<String?>,
+    internalNotes: Defaulted<String?>,
+    ipAddress: Defaulted<Inet6?>,
+    userAgent: Defaulted<String?>,
     orderedAt: Defaulted<LocalDateTime>,
-    confirmedAt: Defaulted<Optional<LocalDateTime>>,
-    shippedAt: Defaulted<Optional<LocalDateTime>>,
-    deliveredAt: Defaulted<Optional<LocalDateTime>>
+    confirmedAt: Defaulted<LocalDateTime?>,
+    shippedAt: Defaulted<LocalDateTime?>,
+    deliveredAt: Defaulted<LocalDateTime?>
   ): OrdersRowUnsaved = OrdersRowUnsaved(orderNumber, customerId, subtotal, totalAmount, orderStatus, paymentStatus, shippingAddressId, billingAddressId, shippingCost, taxAmount, discountAmount, currencyCode, promotionId, notes, internalNotes, ipAddress, userAgent, orderedAt, confirmedAt, shippedAt, deliveredAt)
 
   companion object {
-    val _rowParser: RowParser<OrdersRow> = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, CustomersId.pgType, MariaTypes.text, MariaTypes.text, CustomerAddressesId.pgType.opt(), CustomerAddressesId.pgType.opt(), MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.char_, PromotionsId.pgType.opt(), MariaTypes.text.opt(), MariaTypes.mediumtext.opt(), MariaTypes.inet6.opt(), MariaTypes.varchar.opt(), MariaTypes.datetime, MariaTypes.datetime.opt(), MariaTypes.datetime.opt(), MariaTypes.datetime.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21 -> OrdersRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!) }, { row -> arrayOf<Any?>(row.orderId, row.orderNumber, row.customerId, row.orderStatus, row.paymentStatus, row.shippingAddressId, row.billingAddressId, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.currencyCode, row.promotionId, row.notes, row.internalNotes, row.ipAddress, row.userAgent, row.orderedAt, row.confirmedAt, row.shippedAt, row.deliveredAt) })
+    val _rowParser: RowParser<OrdersRow> = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, CustomersId.pgType, MariaTypes.text, MariaTypes.text, CustomerAddressesId.pgType.nullable(), CustomerAddressesId.pgType.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, MariaTypes.char_, PromotionsId.pgType.nullable(), MariaTypes.text.nullable(), MariaTypes.mediumtext.nullable(), MariaTypes.inet6.nullable(), MariaTypes.varchar.nullable(), MariaTypes.datetime, MariaTypes.datetime.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21 -> OrdersRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) }, { row -> arrayOf<Any?>(row.orderId, row.orderNumber, row.customerId, row.orderStatus, row.paymentStatus, row.shippingAddressId, row.billingAddressId, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.currencyCode, row.promotionId, row.notes, row.internalNotes, row.ipAddress, row.userAgent, row.orderedAt, row.confirmedAt, row.shippedAt, row.deliveredAt) })
 
     val mariaText: MariaText<OrdersRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

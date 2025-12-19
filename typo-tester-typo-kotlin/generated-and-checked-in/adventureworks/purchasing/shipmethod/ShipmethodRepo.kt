@@ -6,89 +6,88 @@
 package adventureworks.purchasing.shipmethod
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ShipmethodRepo {
-  fun delete(): DeleteBuilder<ShipmethodFields, ShipmethodRow>
+  abstract fun delete(): DeleteBuilder<ShipmethodFields, ShipmethodRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     shipmethodid: ShipmethodId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     shipmethodids: Array<ShipmethodId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ShipmethodRow,
     c: Connection
   ): ShipmethodRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ShipmethodRowUnsaved,
     c: Connection
   ): ShipmethodRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<ShipmethodRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<ShipmethodRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ShipmethodRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<ShipmethodRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<ShipmethodFields, ShipmethodRow>
+  abstract fun select(): SelectBuilder<ShipmethodFields, ShipmethodRow>
 
-  fun selectAll(c: Connection): List<ShipmethodRow>
+  abstract fun selectAll(c: Connection): List<ShipmethodRow>
 
-  fun selectById(
+  abstract fun selectById(
     shipmethodid: ShipmethodId,
     c: Connection
-  ): Optional<ShipmethodRow>
+  ): ShipmethodRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     shipmethodids: Array<ShipmethodId>,
     c: Connection
   ): List<ShipmethodRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     shipmethodids: Array<ShipmethodId>,
     c: Connection
   ): Map<ShipmethodId, ShipmethodRow>
 
-  fun update(): UpdateBuilder<ShipmethodFields, ShipmethodRow>
+  abstract fun update(): UpdateBuilder<ShipmethodFields, ShipmethodRow>
 
-  fun update(
+  abstract fun update(
     row: ShipmethodRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ShipmethodRow,
     c: Connection
   ): ShipmethodRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<ShipmethodRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<ShipmethodRow>,
     c: Connection
   ): List<ShipmethodRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<ShipmethodRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<ShipmethodRow>,
     batchSize: Int,
     c: Connection
   ): Int

@@ -39,7 +39,7 @@ case class SalesterritoryRow(
    */
   countryregioncode: CountryregionId,
   /** Geographic area to which the sales territory belong. */
-  group: /* max 50 chars */ String,
+  group: String,
   /** Sales in the territory year to date.
    * Default: 0.00
    * Constraint CK_SalesTerritory_SalesYTD affecting columns salesytd: ((salesytd >= 0.00))

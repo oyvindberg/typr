@@ -7,22 +7,23 @@ package testdb.cte_test
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigInteger
-import java.util.Optional
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** SQL file: cte_test.sql */
 case class CteTestSqlRow(
   @JsonProperty("customer_id") customerId: BigInteger,
   email: String,
   @JsonProperty("first_name") firstName: String,
-  @JsonProperty("order_count") orderCount: java.lang.Long,
-  @JsonProperty("total_spent") totalSpent: java.math.BigDecimal,
+  @JsonProperty("order_count") orderCount: Long,
+  @JsonProperty("total_spent") totalSpent: BigDecimal,
   /** Points to [[testdb.brands.BrandsRow.name]] */
-  @JsonProperty("favorite_brand") favoriteBrand: Optional[String]
+  @JsonProperty("favorite_brand") favoriteBrand: Option[String]
 )
 
 object CteTestSqlRow {
-  val `_rowParser`: RowParser[CteTestSqlRow] = RowParsers.of(MariaTypes.bigintUnsigned, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.bigint, MariaTypes.decimal, MariaTypes.varchar.opt(), CteTestSqlRow.apply, row => Array[Object](row.customerId.asInstanceOf[Object], row.email.asInstanceOf[Object], row.firstName.asInstanceOf[Object], row.orderCount.asInstanceOf[Object], row.totalSpent.asInstanceOf[Object], row.favoriteBrand.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[CteTestSqlRow] = RowParsers.of(MariaTypes.bigintUnsigned, MariaTypes.varchar, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric, MariaTypes.varchar.nullable)(CteTestSqlRow.apply)(row => Array[Any](row.customerId, row.email, row.firstName, row.orderCount, row.totalSpent, row.favoriteBrand))
 }

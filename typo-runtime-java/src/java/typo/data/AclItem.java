@@ -1,4 +1,3 @@
 package typo.data;
 
-public record AclItem(String value) {
-}
+public record AclItem(String value) {}

@@ -7,11 +7,12 @@ package testdb.v_warehouse_coverage
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
-import java.util.Optional
 import testdb.warehouses.WarehousesId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: v_warehouse_coverage
   * VIEW
@@ -37,11 +38,11 @@ data class VWarehouseCoverageViewRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("location_wkt") val locationWkt: Optional<String>,
+  @JsonProperty("location_wkt") val locationWkt: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("service_area_wkt") val serviceAreaWkt: Optional<String>,
+  @JsonProperty("service_area_wkt") val serviceAreaWkt: String?,
   /** 
     * Default: 'UTC'
     * Points to [testdb.warehouses.WarehousesRow.timezone]
@@ -59,9 +60,9 @@ data class VWarehouseCoverageViewRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("total_inventory") val totalInventory: Optional<BigDecimal>
+  @JsonProperty("total_inventory") val totalInventory: BigDecimal?
 ) {
   companion object {
-    val _rowParser: RowParser<VWarehouseCoverageViewRow> = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.varchar, MariaTypes.bool, MariaTypes.bigint, MariaTypes.decimal.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VWarehouseCoverageViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.warehouseId, row.code, row.name, row.address, row.locationWkt, row.serviceAreaWkt, row.timezone, row.isActive, row.productsStocked, row.totalInventory) })
+    val _rowParser: RowParser<VWarehouseCoverageViewRow> = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.longtext.nullable(), MariaTypes.longtext.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VWarehouseCoverageViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.warehouseId, row.code, row.name, row.address, row.locationWkt, row.serviceAreaWkt, row.timezone, row.isActive, row.productsStocked, row.totalInventory) })
   }
 }

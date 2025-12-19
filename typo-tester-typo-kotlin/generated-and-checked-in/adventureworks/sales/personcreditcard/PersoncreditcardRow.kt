@@ -6,12 +6,13 @@
 package adventureworks.sales.personcreditcard
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: sales.personcreditcard
   * Cross-reference table mapping people to their credit card information in the CreditCard table.
@@ -27,23 +28,23 @@ data class PersoncreditcardRow(
     */
   val creditcardid: /* user-picked */ CustomCreditcardId,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): PersoncreditcardId = PersoncreditcardId(businessentityid, creditcardid)
 
   fun id(): PersoncreditcardId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): PersoncreditcardRowUnsaved = PersoncreditcardRowUnsaved(businessentityid, creditcardid, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): PersoncreditcardRowUnsaved = PersoncreditcardRowUnsaved(businessentityid, creditcardid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<PersoncreditcardRow> = RowParsers.of(BusinessentityId.pgType, CustomCreditcardId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> PersoncreditcardRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.creditcardid, row.modifieddate) })
+    val _rowParser: RowParser<PersoncreditcardRow> = RowParsers.of(BusinessentityId.pgType, CustomCreditcardId.pgType, PgTypes.timestamp, { t0, t1, t2 -> PersoncreditcardRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.businessentityid, row.creditcardid, row.modifieddate) })
 
     fun apply(
       compositeId: PersoncreditcardId,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): PersoncreditcardRow = PersoncreditcardRow(compositeId.businessentityid, compositeId.creditcardid, modifieddate)
 
     val pgText: PgText<PersoncreditcardRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

@@ -5,60 +5,61 @@
  */
 package adventureworks.sa.sth
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SthViewFields : FieldsExpr<SthViewRow> {
-  fun businessentityid(): Field<BusinessentityId, SthViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, SthViewRow>
 
-  override fun columns(): List<FieldLike<*, SthViewRow>>
+  abstract override fun columns(): List<FieldLike<*, SthViewRow>>
 
-  fun enddate(): OptField<TypoLocalDateTime, SthViewRow>
+  abstract fun enddate(): Field<LocalDateTime, SthViewRow>
 
-  fun id(): Field<SalesterritoryId, SthViewRow>
+  abstract fun id(): Field<SalesterritoryId, SthViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, SthViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SthViewRow>
 
-  override fun rowParser(): RowParser<SthViewRow> = SthViewRow._rowParser
+  override fun rowParser(): RowParser<SthViewRow> = SthViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, SthViewRow>
+  abstract fun rowguid(): Field<UUID, SthViewRow>
 
-  fun startdate(): Field<TypoLocalDateTime, SthViewRow>
+  abstract fun startdate(): Field<LocalDateTime, SthViewRow>
 
-  fun territoryid(): Field<SalesterritoryId, SthViewRow>
+  abstract fun territoryid(): Field<SalesterritoryId, SthViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SthViewFields, Relation<SthViewFields, SthViewRow> {
-      override fun id(): Field<SalesterritoryId, SthViewRow> = Field<SalesterritoryId, SthViewRow>(_path, "id", SthViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, SalesterritoryId.pgType)
+    data class Impl(val _path: List<Path>) : SthViewFields, RelationStructure<SthViewFields, SthViewRow> {
+      override fun id(): Field<SalesterritoryId, SthViewRow> = Field<SalesterritoryId, SthViewRow>(_path, "id", SthViewRow::id, null, null, { row, value -> row.copy(id = value) }, SalesterritoryId.pgType)
 
-      override fun businessentityid(): Field<BusinessentityId, SthViewRow> = Field<BusinessentityId, SthViewRow>(_path, "businessentityid", SthViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, SthViewRow> = Field<BusinessentityId, SthViewRow>(_path, "businessentityid", SthViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun territoryid(): Field<SalesterritoryId, SthViewRow> = Field<SalesterritoryId, SthViewRow>(_path, "territoryid", SthViewRow::territoryid, Optional.empty(), Optional.empty(), { row, value -> row.copy(territoryid = value) }, SalesterritoryId.pgType)
+      override fun territoryid(): Field<SalesterritoryId, SthViewRow> = Field<SalesterritoryId, SthViewRow>(_path, "territoryid", SthViewRow::territoryid, null, null, { row, value -> row.copy(territoryid = value) }, SalesterritoryId.pgType)
 
-      override fun startdate(): Field<TypoLocalDateTime, SthViewRow> = Field<TypoLocalDateTime, SthViewRow>(_path, "startdate", SthViewRow::startdate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(startdate = value) }, TypoLocalDateTime.pgType)
+      override fun startdate(): Field<LocalDateTime, SthViewRow> = Field<LocalDateTime, SthViewRow>(_path, "startdate", SthViewRow::startdate, null, null, { row, value -> row.copy(startdate = value) }, PgTypes.timestamp)
 
-      override fun enddate(): OptField<TypoLocalDateTime, SthViewRow> = OptField<TypoLocalDateTime, SthViewRow>(_path, "enddate", SthViewRow::enddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(enddate = value) }, TypoLocalDateTime.pgType)
+      override fun enddate(): Field<LocalDateTime, SthViewRow> = Field<LocalDateTime, SthViewRow>(_path, "enddate", SthViewRow::enddate, null, null, { row, value -> row.copy(enddate = value) }, PgTypes.timestamp)
 
-      override fun rowguid(): Field<TypoUUID, SthViewRow> = Field<TypoUUID, SthViewRow>(_path, "rowguid", SthViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, SthViewRow> = Field<UUID, SthViewRow>(_path, "rowguid", SthViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SthViewRow> = Field<TypoLocalDateTime, SthViewRow>(_path, "modifieddate", SthViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SthViewRow> = Field<LocalDateTime, SthViewRow>(_path, "modifieddate", SthViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SthViewRow>> = listOf(this.id(), this.businessentityid(), this.territoryid(), this.startdate(), this.enddate(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SthViewFields, SthViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SthViewRow>> = listOf(this.id().underlying, this.businessentityid().underlying, this.territoryid().underlying, this.startdate().underlying, this.enddate().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SthViewFields, SthViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

@@ -22,13 +22,13 @@ case class VproductmodelinstructionsViewRow(
   productmodelid: ProductmodelId,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
-  instructions: /* nullability unknown */ Option[String],
-  locationID: /* nullability unknown */ Option[Int],
-  setupHours: /* nullability unknown */ Option[BigDecimal],
-  machineHours: /* nullability unknown */ Option[BigDecimal],
-  laborHours: /* nullability unknown */ Option[BigDecimal],
-  lotSize: /* nullability unknown */ Option[Int],
-  step: /* nullability unknown */ Option[/* max 1024 chars */ String],
+  instructions: Option[String],
+  locationID: Int,
+  setupHours: BigDecimal,
+  machineHours: BigDecimal,
+  laborHours: BigDecimal,
+  lotSize: Int,
+  step: String,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
@@ -44,12 +44,12 @@ object VproductmodelinstructionsViewRow {
             productmodelid = ProductmodelId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             name = Name.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             instructions = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 2, rs)._2,
-            locationID = JdbcDecoder.optionDecoder(using JdbcDecoder.intDecoder).unsafeDecode(columIndex + 3, rs)._2,
-            setupHours = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 4, rs)._2,
-            machineHours = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 5, rs)._2,
-            laborHours = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 6, rs)._2,
-            lotSize = JdbcDecoder.optionDecoder(using JdbcDecoder.intDecoder).unsafeDecode(columIndex + 7, rs)._2,
-            step = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 8, rs)._2,
+            locationID = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 3, rs)._2,
+            setupHours = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 4, rs)._2,
+            machineHours = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 5, rs)._2,
+            laborHours = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 6, rs)._2,
+            lotSize = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 7, rs)._2,
+            step = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 8, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 9, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2
           )
@@ -61,12 +61,12 @@ object VproductmodelinstructionsViewRow {
       val productmodelid = jsonObj.get("productmodelid").toRight("Missing field 'productmodelid'").flatMap(_.as(using ProductmodelId.jsonDecoder))
       val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
       val instructions = jsonObj.get("instructions").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val locationID = jsonObj.get("LocationID").fold[Either[String, Option[Int]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.int)))
-      val setupHours = jsonObj.get("SetupHours").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
-      val machineHours = jsonObj.get("MachineHours").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
-      val laborHours = jsonObj.get("LaborHours").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
-      val lotSize = jsonObj.get("LotSize").fold[Either[String, Option[Int]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.int)))
-      val step = jsonObj.get("Step").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val locationID = jsonObj.get("LocationID").toRight("Missing field 'LocationID'").flatMap(_.as(using JsonDecoder.int))
+      val setupHours = jsonObj.get("SetupHours").toRight("Missing field 'SetupHours'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
+      val machineHours = jsonObj.get("MachineHours").toRight("Missing field 'MachineHours'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
+      val laborHours = jsonObj.get("LaborHours").toRight("Missing field 'LaborHours'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
+      val lotSize = jsonObj.get("LotSize").toRight("Missing field 'LotSize'").flatMap(_.as(using JsonDecoder.int))
+      val step = jsonObj.get("Step").toRight("Missing field 'Step'").flatMap(_.as(using JsonDecoder.string))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (productmodelid.isRight && name.isRight && instructions.isRight && locationID.isRight && setupHours.isRight && machineHours.isRight && laborHours.isRight && lotSize.isRight && step.isRight && rowguid.isRight && modifieddate.isRight)
@@ -89,22 +89,22 @@ object VproductmodelinstructionsViewRow {
         JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.instructions, indent, out)
         out.write(",")
         out.write(""""LocationID":""")
-        JsonEncoder.option(using JsonEncoder.int).unsafeEncode(a.locationID, indent, out)
+        JsonEncoder.int.unsafeEncode(a.locationID, indent, out)
         out.write(",")
         out.write(""""SetupHours":""")
-        JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.setupHours, indent, out)
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.setupHours, indent, out)
         out.write(",")
         out.write(""""MachineHours":""")
-        JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.machineHours, indent, out)
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.machineHours, indent, out)
         out.write(",")
         out.write(""""LaborHours":""")
-        JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.laborHours, indent, out)
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.laborHours, indent, out)
         out.write(",")
         out.write(""""LotSize":""")
-        JsonEncoder.option(using JsonEncoder.int).unsafeEncode(a.lotSize, indent, out)
+        JsonEncoder.int.unsafeEncode(a.lotSize, indent, out)
         out.write(",")
         out.write(""""Step":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.step, indent, out)
+        JsonEncoder.string.unsafeEncode(a.step, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

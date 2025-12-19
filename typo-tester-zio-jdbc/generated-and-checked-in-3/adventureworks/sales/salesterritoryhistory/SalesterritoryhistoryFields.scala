@@ -16,6 +16,7 @@ import adventureworks.sales.salesterritory.SalesterritoryRow
 import typo.dsl.ForeignKey
 import typo.dsl.PGType
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -24,7 +25,6 @@ import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait SalesterritoryhistoryFields {
   def businessentityid: IdField[BusinessentityId, SalesterritoryhistoryRow]
@@ -47,11 +47,11 @@ trait SalesterritoryhistoryFields {
 }
 
 object SalesterritoryhistoryFields {
-  lazy val structure: Relation[SalesterritoryhistoryFields, SalesterritoryhistoryRow] =
+  lazy val structure: RelationStructure[SalesterritoryhistoryFields, SalesterritoryhistoryRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SalesterritoryhistoryFields, SalesterritoryhistoryRow] {
+    extends RelationStructure[SalesterritoryhistoryFields, SalesterritoryhistoryRow] {
 
     override lazy val fields: SalesterritoryhistoryFields = new SalesterritoryhistoryFields {
       override def businessentityid = IdField[BusinessentityId, SalesterritoryhistoryRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))

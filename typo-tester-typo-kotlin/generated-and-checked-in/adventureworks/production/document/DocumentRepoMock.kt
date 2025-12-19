@@ -5,25 +5,23 @@
  */
 package adventureworks.production.document
 
-import adventureworks.customtypes.TypoUUID
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import java.util.UUID
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class DocumentRepoMock(
   val toRow: (DocumentRowUnsaved) -> DocumentRow,
@@ -34,7 +32,7 @@ data class DocumentRepoMock(
   override fun deleteById(
     documentnode: DocumentId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(documentnode)).isPresent()
+  ): Boolean = map.remove(documentnode) != null
 
   override fun deleteByIds(
     documentnodes: Array<DocumentId>,
@@ -42,7 +40,7 @@ data class DocumentRepoMock(
   ): Int {
     var count = 0
     for (id in documentnodes) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -54,7 +52,7 @@ data class DocumentRepoMock(
     c: Connection
   ): DocumentRow {
     if (map.containsKey(unsaved.documentnode)) {
-      throw RuntimeException(str("id $unsaved.documentnode already exists"))
+      throw RuntimeException("id " + unsaved.documentnode + " already exists")
     }
     map[unsaved.documentnode] = unsaved
     return unsaved
@@ -66,7 +64,7 @@ data class DocumentRepoMock(
   ): DocumentRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<DocumentRow>,
+    unsaved: Iterator<DocumentRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -81,7 +79,7 @@ data class DocumentRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<DocumentRowUnsaved>,
+    unsaved: Iterator<DocumentRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -102,7 +100,7 @@ data class DocumentRepoMock(
   override fun selectById(
     documentnode: DocumentId,
     c: Connection
-  ): Optional<DocumentRow> = Optional.ofNullable(map[documentnode])
+  ): DocumentRow? = map[documentnode]
 
   override fun selectByIds(
     documentnodes: Array<DocumentId>,
@@ -110,9 +108,9 @@ data class DocumentRepoMock(
   ): List<DocumentRow> {
     val result = ArrayList<DocumentRow>()
     for (id in documentnodes) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -124,9 +122,9 @@ data class DocumentRepoMock(
   ): Map<DocumentId, DocumentRow> = selectByIds(documentnodes, c).associateBy({ row: DocumentRow -> row.documentnode })
 
   override fun selectByUniqueRowguid(
-    rowguid: TypoUUID,
+    rowguid: UUID,
     c: Connection
-  ): Optional<DocumentRow> = Optional.ofNullable(map.values.toList().find({ v -> (rowguid == v.rowguid) }))
+  ): DocumentRow? = map.values.toList().find({ v -> (rowguid == v.rowguid) })
 
   override fun update(): UpdateBuilder<DocumentFields, DocumentRow> = UpdateBuilderMock(DocumentFields.structure, { map.values.toList() }, UpdateParams.empty(), { row -> row })
 
@@ -134,7 +132,7 @@ data class DocumentRepoMock(
     row: DocumentRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.documentnode]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.documentnode]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.documentnode] = row
     }
@@ -150,7 +148,7 @@ data class DocumentRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<DocumentRow>,
+    unsaved: Iterator<DocumentRow>,
     c: Connection
   ): List<DocumentRow> {
     val result = ArrayList<DocumentRow>()
@@ -164,7 +162,7 @@ data class DocumentRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<DocumentRow>,
+    unsaved: Iterator<DocumentRow>,
     batchSize: Int,
     c: Connection
   ): Int {

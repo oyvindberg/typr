@@ -7,11 +7,12 @@ package testdb.product_search
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
-import java.util.Optional
 import testdb.products.ProductsId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** SQL file: product_search.sql */
 data class ProductSearchSqlRow(
@@ -22,15 +23,15 @@ data class ProductSearchSqlRow(
   /** Points to [testdb.products.ProductsRow.name] */
   val name: String,
   /** Points to [testdb.products.ProductsRow.shortDescription] */
-  @JsonProperty("short_description") val shortDescription: Optional<String>,
+  @JsonProperty("short_description") val shortDescription: String,
   /** Points to [testdb.products.ProductsRow.basePrice] */
   @JsonProperty("base_price") val basePrice: BigDecimal,
   /** Points to [testdb.products.ProductsRow.status] */
   val status: String,
   /** Points to [testdb.brands.BrandsRow.name] */
-  @JsonProperty("brand_name") val brandName: Optional<String>
+  @JsonProperty("brand_name") val brandName: String?
 ) {
   companion object {
-    val _rowParser: RowParser<ProductSearchSqlRow> = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.text, MariaTypes.varchar.opt(), { t0, t1, t2, t3, t4, t5, t6 -> ProductSearchSqlRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.brandName) })
+    val _rowParser: RowParser<ProductSearchSqlRow> = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, KotlinDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5, t6 -> ProductSearchSqlRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.brandName) })
   }
 }

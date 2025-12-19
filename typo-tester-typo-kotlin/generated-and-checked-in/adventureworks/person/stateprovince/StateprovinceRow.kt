@@ -6,16 +6,16 @@
 package adventureworks.person.stateprovince
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Flag
 import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: person.stateprovince
   * State and province lookup table.
@@ -27,7 +27,7 @@ data class StateprovinceRow(
     */
   val stateprovinceid: StateprovinceId,
   /** ISO standard state or province code. */
-  val stateprovincecode: /* bpchar, max 3 chars */ String,
+  val stateprovincecode: String,
   /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
     * Points to [adventureworks.person.countryregion.CountryregionRow.countryregioncode]
     */
@@ -43,23 +43,23 @@ data class StateprovinceRow(
     */
   val territoryid: SalesterritoryId,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): StateprovinceId = stateprovinceid
 
   fun toUnsavedRow(
     stateprovinceid: Defaulted<StateprovinceId>,
     isonlystateprovinceflag: Defaulted<Flag>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): StateprovinceRowUnsaved = StateprovinceRowUnsaved(stateprovincecode, countryregioncode, name, territoryid, stateprovinceid, isonlystateprovinceflag, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<StateprovinceRow> = RowParsers.of(StateprovinceId.pgType, PgTypes.bpchar, CountryregionId.pgType, Flag.pgType, Name.pgType, SalesterritoryId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7 -> StateprovinceRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!) }, { row -> arrayOf<Any?>(row.stateprovinceid, row.stateprovincecode, row.countryregioncode, row.isonlystateprovinceflag, row.name, row.territoryid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<StateprovinceRow> = RowParsers.of(StateprovinceId.pgType, PgTypes.bpchar, CountryregionId.pgType, Flag.pgType, Name.pgType, SalesterritoryId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7 -> StateprovinceRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.stateprovinceid, row.stateprovincecode, row.countryregioncode, row.isonlystateprovinceflag, row.name, row.territoryid, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<StateprovinceRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

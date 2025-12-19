@@ -6,89 +6,88 @@
 package adventureworks.person.phonenumbertype
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PhonenumbertypeRepo {
-  fun delete(): DeleteBuilder<PhonenumbertypeFields, PhonenumbertypeRow>
+  abstract fun delete(): DeleteBuilder<PhonenumbertypeFields, PhonenumbertypeRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     phonenumbertypeid: PhonenumbertypeId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     phonenumbertypeids: Array<PhonenumbertypeId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: PhonenumbertypeRow,
     c: Connection
   ): PhonenumbertypeRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: PhonenumbertypeRowUnsaved,
     c: Connection
   ): PhonenumbertypeRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<PhonenumbertypeRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<PhonenumbertypeRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<PhonenumbertypeRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<PhonenumbertypeRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<PhonenumbertypeFields, PhonenumbertypeRow>
+  abstract fun select(): SelectBuilder<PhonenumbertypeFields, PhonenumbertypeRow>
 
-  fun selectAll(c: Connection): List<PhonenumbertypeRow>
+  abstract fun selectAll(c: Connection): List<PhonenumbertypeRow>
 
-  fun selectById(
+  abstract fun selectById(
     phonenumbertypeid: PhonenumbertypeId,
     c: Connection
-  ): Optional<PhonenumbertypeRow>
+  ): PhonenumbertypeRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     phonenumbertypeids: Array<PhonenumbertypeId>,
     c: Connection
   ): List<PhonenumbertypeRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     phonenumbertypeids: Array<PhonenumbertypeId>,
     c: Connection
   ): Map<PhonenumbertypeId, PhonenumbertypeRow>
 
-  fun update(): UpdateBuilder<PhonenumbertypeFields, PhonenumbertypeRow>
+  abstract fun update(): UpdateBuilder<PhonenumbertypeFields, PhonenumbertypeRow>
 
-  fun update(
+  abstract fun update(
     row: PhonenumbertypeRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: PhonenumbertypeRow,
     c: Connection
   ): PhonenumbertypeRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<PhonenumbertypeRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<PhonenumbertypeRow>,
     c: Connection
   ): List<PhonenumbertypeRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<PhonenumbertypeRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<PhonenumbertypeRow>,
     batchSize: Int,
     c: Connection
   ): Int

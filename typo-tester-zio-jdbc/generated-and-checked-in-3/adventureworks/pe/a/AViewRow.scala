@@ -24,17 +24,17 @@ case class AViewRow(
   /** Points to [[adventureworks.person.address.AddressRow.addressid]] */
   addressid: AddressId,
   /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
-  addressline1: /* max 60 chars */ String,
+  addressline1: String,
   /** Points to [[adventureworks.person.address.AddressRow.addressline2]] */
-  addressline2: Option[/* max 60 chars */ String],
+  addressline2: String,
   /** Points to [[adventureworks.person.address.AddressRow.city]] */
-  city: /* max 30 chars */ String,
+  city: String,
   /** Points to [[adventureworks.person.address.AddressRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
   /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
-  postalcode: /* max 15 chars */ String,
+  postalcode: String,
   /** Points to [[adventureworks.person.address.AddressRow.spatiallocation]] */
-  spatiallocation: Option[TypoBytea],
+  spatiallocation: TypoBytea,
   /** Points to [[adventureworks.person.address.AddressRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.person.address.AddressRow.modifieddate]] */
@@ -50,11 +50,11 @@ object AViewRow {
             id = AddressId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             addressid = AddressId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             addressline1 = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 2, rs)._2,
-            addressline2 = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            addressline2 = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 3, rs)._2,
             city = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 4, rs)._2,
             stateprovinceid = StateprovinceId.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             postalcode = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 6, rs)._2,
-            spatiallocation = JdbcDecoder.optionDecoder(using TypoBytea.jdbcDecoder).unsafeDecode(columIndex + 7, rs)._2,
+            spatiallocation = TypoBytea.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 9, rs)._2
           )
@@ -66,11 +66,11 @@ object AViewRow {
       val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using AddressId.jsonDecoder))
       val addressid = jsonObj.get("addressid").toRight("Missing field 'addressid'").flatMap(_.as(using AddressId.jsonDecoder))
       val addressline1 = jsonObj.get("addressline1").toRight("Missing field 'addressline1'").flatMap(_.as(using JsonDecoder.string))
-      val addressline2 = jsonObj.get("addressline2").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val addressline2 = jsonObj.get("addressline2").toRight("Missing field 'addressline2'").flatMap(_.as(using JsonDecoder.string))
       val city = jsonObj.get("city").toRight("Missing field 'city'").flatMap(_.as(using JsonDecoder.string))
       val stateprovinceid = jsonObj.get("stateprovinceid").toRight("Missing field 'stateprovinceid'").flatMap(_.as(using StateprovinceId.jsonDecoder))
       val postalcode = jsonObj.get("postalcode").toRight("Missing field 'postalcode'").flatMap(_.as(using JsonDecoder.string))
-      val spatiallocation = jsonObj.get("spatiallocation").fold[Either[String, Option[TypoBytea]]](Right(None))(_.as(using JsonDecoder.option(using TypoBytea.jsonDecoder)))
+      val spatiallocation = jsonObj.get("spatiallocation").toRight("Missing field 'spatiallocation'").flatMap(_.as(using TypoBytea.jsonDecoder))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (id.isRight && addressid.isRight && addressline1.isRight && addressline2.isRight && city.isRight && stateprovinceid.isRight && postalcode.isRight && spatiallocation.isRight && rowguid.isRight && modifieddate.isRight)
@@ -93,7 +93,7 @@ object AViewRow {
         JsonEncoder.string.unsafeEncode(a.addressline1, indent, out)
         out.write(",")
         out.write(""""addressline2":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.addressline2, indent, out)
+        JsonEncoder.string.unsafeEncode(a.addressline2, indent, out)
         out.write(",")
         out.write(""""city":""")
         JsonEncoder.string.unsafeEncode(a.city, indent, out)
@@ -105,7 +105,7 @@ object AViewRow {
         JsonEncoder.string.unsafeEncode(a.postalcode, indent, out)
         out.write(",")
         out.write(""""spatiallocation":""")
-        JsonEncoder.option(using TypoBytea.jsonEncoder).unsafeEncode(a.spatiallocation, indent, out)
+        TypoBytea.jsonEncoder.unsafeEncode(a.spatiallocation, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

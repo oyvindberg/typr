@@ -8,10 +8,10 @@ package adventureworks.production.unitmeasure
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait UnitmeasureFields {
   def unitmeasurecode: IdField[UnitmeasureId, UnitmeasureRow]
@@ -20,11 +20,11 @@ trait UnitmeasureFields {
 }
 
 object UnitmeasureFields {
-  lazy val structure: Relation[UnitmeasureFields, UnitmeasureRow] =
+  lazy val structure: RelationStructure[UnitmeasureFields, UnitmeasureRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[UnitmeasureFields, UnitmeasureRow] {
+    extends RelationStructure[UnitmeasureFields, UnitmeasureRow] {
 
     override lazy val fields: UnitmeasureFields = new UnitmeasureFields {
       override def unitmeasurecode = IdField[UnitmeasureId, UnitmeasureRow](_path, "unitmeasurecode", None, Some("bpchar"), x => x.unitmeasurecode, (row, value) => row.copy(unitmeasurecode = value))

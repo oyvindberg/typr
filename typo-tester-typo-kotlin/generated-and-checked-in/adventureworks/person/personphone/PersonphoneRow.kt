@@ -6,13 +6,14 @@
 package adventureworks.person.personphone
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.public.Phone
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: person.personphone
   * Telephone number and type of a person.
@@ -30,23 +31,23 @@ data class PersonphoneRow(
     */
   val phonenumbertypeid: PhonenumbertypeId,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): PersonphoneId = PersonphoneId(businessentityid, phonenumber, phonenumbertypeid)
 
   fun id(): PersonphoneId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): PersonphoneRowUnsaved = PersonphoneRowUnsaved(businessentityid, phonenumber, phonenumbertypeid, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): PersonphoneRowUnsaved = PersonphoneRowUnsaved(businessentityid, phonenumber, phonenumbertypeid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<PersonphoneRow> = RowParsers.of(BusinessentityId.pgType, Phone.pgType, PhonenumbertypeId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> PersonphoneRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.phonenumber, row.phonenumbertypeid, row.modifieddate) })
+    val _rowParser: RowParser<PersonphoneRow> = RowParsers.of(BusinessentityId.pgType, Phone.pgType, PhonenumbertypeId.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> PersonphoneRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.businessentityid, row.phonenumber, row.phonenumbertypeid, row.modifieddate) })
 
     fun apply(
       compositeId: PersonphoneId,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): PersonphoneRow = PersonphoneRow(compositeId.businessentityid, compositeId.phonenumber, compositeId.phonenumbertypeid, modifieddate)
 
     val pgText: PgText<PersonphoneRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

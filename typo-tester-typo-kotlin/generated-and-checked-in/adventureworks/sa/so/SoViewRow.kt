@@ -5,14 +5,14 @@
  */
 package adventureworks.sa.so
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.sales.specialoffer.SpecialofferId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sa.so */
 data class SoViewRow(
@@ -21,27 +21,27 @@ data class SoViewRow(
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.specialofferid] */
   val specialofferid: SpecialofferId,
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.description] */
-  val description: /* max 255 chars */ String,
+  val description: String,
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.discountpct] */
   val discountpct: BigDecimal,
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.type] */
-  val type: /* max 50 chars */ String,
+  val type: String,
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.category] */
-  val category: /* max 50 chars */ String,
+  val category: String,
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.startdate] */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.enddate] */
-  val enddate: TypoLocalDateTime,
+  val enddate: LocalDateTime,
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.minqty] */
   val minqty: Int,
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.maxqty] */
-  val maxqty: Optional<Int>,
+  val maxqty: Int,
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.sales.specialoffer.SpecialofferRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SoViewRow> = RowParsers.of(SpecialofferId.pgType, SpecialofferId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.text, PgTypes.text, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, PgTypes.int4, PgTypes.int4.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> SoViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.id, row.specialofferid, row.description, row.discountpct, row.type, row.category, row.startdate, row.enddate, row.minqty, row.maxqty, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SoViewRow> = RowParsers.of(SpecialofferId.pgType, SpecialofferId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.text, PgTypes.text, PgTypes.timestamp, PgTypes.timestamp, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> SoViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) }, { row -> arrayOf<Any?>(row.id, row.specialofferid, row.description, row.discountpct, row.type, row.category, row.startdate, row.enddate, row.minqty, row.maxqty, row.rowguid, row.modifieddate) })
   }
 }

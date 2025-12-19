@@ -1,6 +1,9 @@
 package typo
 
 package object dsl {
+  // Note: RelationStructure is now a top-level interface defined in Java
+  // No typealias needed - Scala code will use the Java interface directly
+
   type Required[T] = T
 
   /** This is a tuple, but it's possible to construct and deconstruct it without all the parentheses.

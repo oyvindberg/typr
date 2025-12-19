@@ -7,10 +7,10 @@ package adventureworks.pe.pa
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PaViewRepo {
-  fun select(): SelectBuilder<PaViewFields, PaViewRow>
+  abstract fun select(): SelectBuilder<PaViewFields, PaViewRow>
 
-  fun selectAll(c: Connection): List<PaViewRow>
+  abstract fun selectAll(c: Connection): List<PaViewRow>
 }

@@ -5,7 +5,6 @@
  */
 package testdb.order_items
 
-import java.util.Optional
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
 import testdb.orders.OrdersRow
@@ -15,18 +14,19 @@ import testdb.products.ProductsRow
 import testdb.warehouses.WarehousesFields
 import testdb.warehouses.WarehousesId
 import testdb.warehouses.WarehousesRow
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait OrderItemsFields extends FieldsExpr[OrderItemsRow] {
+trait OrderItemsFields extends FieldsExpr0[OrderItemsRow] {
   def itemId: IdField[OrderItemsId, OrderItemsRow]
 
   def orderId: Field[OrdersId, OrderItemsRow]
@@ -37,15 +37,15 @@ trait OrderItemsFields extends FieldsExpr[OrderItemsRow] {
 
   def productName: Field[String, OrderItemsRow]
 
-  def quantity: Field[Integer, OrderItemsRow]
+  def quantity: Field[Int, OrderItemsRow]
 
-  def unitPrice: Field[java.math.BigDecimal, OrderItemsRow]
+  def unitPrice: Field[BigDecimal, OrderItemsRow]
 
-  def discountAmount: Field[java.math.BigDecimal, OrderItemsRow]
+  def discountAmount: Field[BigDecimal, OrderItemsRow]
 
-  def taxAmount: Field[java.math.BigDecimal, OrderItemsRow]
+  def taxAmount: Field[BigDecimal, OrderItemsRow]
 
-  def lineTotal: Field[java.math.BigDecimal, OrderItemsRow]
+  def lineTotal: Field[BigDecimal, OrderItemsRow]
 
   def fulfillmentStatus: Field[String, OrderItemsRow]
 
@@ -53,27 +53,27 @@ trait OrderItemsFields extends FieldsExpr[OrderItemsRow] {
 
   def notes: OptField[String, OrderItemsRow]
 
-  def fkOrders: ForeignKey[OrdersFields, OrdersRow] = ForeignKey.of[OrdersFields, OrdersRow]("fk_oi_order").withColumnPair(orderId, _.orderId)
+  def fkOrders: ForeignKey[OrdersFields, OrdersRow] = ForeignKey.of[OrdersFields, OrdersRow]("fk_oi_order").withColumnPair[OrdersId](orderId, _.orderId)
 
-  def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_oi_product").withColumnPair(productId, _.productId)
+  def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_oi_product").withColumnPair[ProductsId](productId, _.productId)
 
-  def fkWarehouses: ForeignKey[WarehousesFields, WarehousesRow] = ForeignKey.of[WarehousesFields, WarehousesRow]("fk_oi_warehouse").withColumnPair(warehouseId, _.warehouseId)
+  def fkWarehouses: ForeignKey[WarehousesFields, WarehousesRow] = ForeignKey.of[WarehousesFields, WarehousesRow]("fk_oi_warehouse").withColumnPair[WarehousesId](warehouseId, _.warehouseId)
 
   override def columns: java.util.List[FieldLike[?, OrderItemsRow]]
 
-  override def rowParser: RowParser[OrderItemsRow] = OrderItemsRow._rowParser
+  override def rowParser: RowParser[OrderItemsRow] = OrderItemsRow._rowParser.underlying
 }
 
 object OrderItemsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OrderItemsFields with Relation[OrderItemsFields, OrderItemsRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends OrderItemsFields with RelationStructure[OrderItemsFields, OrderItemsRow] {
 
     override def itemId: IdField[OrderItemsId, OrderItemsRow] = {
       new IdField[OrderItemsId, OrderItemsRow](
         _path,
         "item_id",
         _.itemId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(itemId = value),
         OrderItemsId.pgType
       )
@@ -84,8 +84,8 @@ object OrderItemsFields {
         _path,
         "order_id",
         _.orderId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderId = value),
         OrdersId.pgType
       )
@@ -96,8 +96,8 @@ object OrderItemsFields {
         _path,
         "product_id",
         _.productId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(productId = value),
         ProductsId.pgType
       )
@@ -108,8 +108,8 @@ object OrderItemsFields {
         _path,
         "sku",
         _.sku,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(sku = value),
         MariaTypes.varchar
       )
@@ -120,70 +120,70 @@ object OrderItemsFields {
         _path,
         "product_name",
         _.productName,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(productName = value),
         MariaTypes.varchar
       )
     }
 
-    override def quantity: Field[Integer, OrderItemsRow] = {
-      new Field[Integer, OrderItemsRow](
+    override def quantity: Field[Int, OrderItemsRow] = {
+      new Field[Int, OrderItemsRow](
         _path,
         "quantity",
         _.quantity,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(quantity = value),
-        MariaTypes.smallintUnsigned
+        ScalaDbTypes.MariaTypes.smallintUnsigned
       )
     }
 
-    override def unitPrice: Field[java.math.BigDecimal, OrderItemsRow] = {
-      new Field[java.math.BigDecimal, OrderItemsRow](
+    override def unitPrice: Field[BigDecimal, OrderItemsRow] = {
+      new Field[BigDecimal, OrderItemsRow](
         _path,
         "unit_price",
         _.unitPrice,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(unitPrice = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def discountAmount: Field[java.math.BigDecimal, OrderItemsRow] = {
-      new Field[java.math.BigDecimal, OrderItemsRow](
+    override def discountAmount: Field[BigDecimal, OrderItemsRow] = {
+      new Field[BigDecimal, OrderItemsRow](
         _path,
         "discount_amount",
         _.discountAmount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(discountAmount = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def taxAmount: Field[java.math.BigDecimal, OrderItemsRow] = {
-      new Field[java.math.BigDecimal, OrderItemsRow](
+    override def taxAmount: Field[BigDecimal, OrderItemsRow] = {
+      new Field[BigDecimal, OrderItemsRow](
         _path,
         "tax_amount",
         _.taxAmount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(taxAmount = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def lineTotal: Field[java.math.BigDecimal, OrderItemsRow] = {
-      new Field[java.math.BigDecimal, OrderItemsRow](
+    override def lineTotal: Field[BigDecimal, OrderItemsRow] = {
+      new Field[BigDecimal, OrderItemsRow](
         _path,
         "line_total",
         _.lineTotal,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(lineTotal = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
@@ -192,8 +192,8 @@ object OrderItemsFields {
         _path,
         "fulfillment_status",
         _.fulfillmentStatus,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(fulfillmentStatus = value),
         MariaTypes.text
       )
@@ -204,8 +204,8 @@ object OrderItemsFields {
         _path,
         "warehouse_id",
         _.warehouseId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(warehouseId = value),
         WarehousesId.pgType
       )
@@ -216,17 +216,17 @@ object OrderItemsFields {
         _path,
         "notes",
         _.notes,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(notes = value),
         MariaTypes.tinytext
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, OrderItemsRow]] = java.util.List.of(this.itemId, this.orderId, this.productId, this.sku, this.productName, this.quantity, this.unitPrice, this.discountAmount, this.taxAmount, this.lineTotal, this.fulfillmentStatus, this.warehouseId, this.notes)
+    override def columns: java.util.List[FieldLike[?, OrderItemsRow]] = java.util.List.of(this.itemId.underlying, this.orderId.underlying, this.productId.underlying, this.sku.underlying, this.productName.underlying, this.quantity.underlying, this.unitPrice.underlying, this.discountAmount.underlying, this.taxAmount.underlying, this.lineTotal.underlying, this.fulfillmentStatus.underlying, this.warehouseId.underlying, this.notes.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[OrderItemsFields, OrderItemsRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrderItemsFields, OrderItemsRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

@@ -9,10 +9,10 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait ShipmethodFields {
   def shipmethodid: IdField[ShipmethodId, ShipmethodRow]
@@ -24,11 +24,11 @@ trait ShipmethodFields {
 }
 
 object ShipmethodFields {
-  lazy val structure: Relation[ShipmethodFields, ShipmethodRow] =
+  lazy val structure: RelationStructure[ShipmethodFields, ShipmethodRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ShipmethodFields, ShipmethodRow] {
+    extends RelationStructure[ShipmethodFields, ShipmethodRow] {
 
     override lazy val fields: ShipmethodFields = new ShipmethodFields {
       override def shipmethodid = IdField[ShipmethodId, ShipmethodRow](_path, "shipmethodid", None, Some("int4"), x => x.shipmethodid, (row, value) => row.copy(shipmethodid = value))

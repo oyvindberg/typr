@@ -12,18 +12,18 @@ import adventureworks.production.product.ProductRow
 import adventureworks.public.Name
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait ProductreviewFields {
   def productreviewid: IdField[ProductreviewId, ProductreviewRow]
   def productid: Field[ProductId, ProductreviewRow]
   def reviewername: Field[Name, ProductreviewRow]
   def reviewdate: Field[TypoLocalDateTime, ProductreviewRow]
-  def emailaddress: Field[/* max 50 chars */ String, ProductreviewRow]
+  def emailaddress: Field[String, ProductreviewRow]
   def rating: Field[Int, ProductreviewRow]
   def comments: OptField[/* max 3850 chars */ String, ProductreviewRow]
   def modifieddate: Field[TypoLocalDateTime, ProductreviewRow]
@@ -33,18 +33,18 @@ trait ProductreviewFields {
 }
 
 object ProductreviewFields {
-  lazy val structure: Relation[ProductreviewFields, ProductreviewRow] =
+  lazy val structure: RelationStructure[ProductreviewFields, ProductreviewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductreviewFields, ProductreviewRow] {
+    extends RelationStructure[ProductreviewFields, ProductreviewRow] {
 
     override lazy val fields: ProductreviewFields = new ProductreviewFields {
       override def productreviewid = IdField[ProductreviewId, ProductreviewRow](_path, "productreviewid", None, Some("int4"), x => x.productreviewid, (row, value) => row.copy(productreviewid = value))
       override def productid = Field[ProductId, ProductreviewRow](_path, "productid", None, Some("int4"), x => x.productid, (row, value) => row.copy(productid = value))
       override def reviewername = Field[Name, ProductreviewRow](_path, "reviewername", None, Some("varchar"), x => x.reviewername, (row, value) => row.copy(reviewername = value))
       override def reviewdate = Field[TypoLocalDateTime, ProductreviewRow](_path, "reviewdate", Some("text"), Some("timestamp"), x => x.reviewdate, (row, value) => row.copy(reviewdate = value))
-      override def emailaddress = Field[/* max 50 chars */ String, ProductreviewRow](_path, "emailaddress", None, None, x => x.emailaddress, (row, value) => row.copy(emailaddress = value))
+      override def emailaddress = Field[String, ProductreviewRow](_path, "emailaddress", None, None, x => x.emailaddress, (row, value) => row.copy(emailaddress = value))
       override def rating = Field[Int, ProductreviewRow](_path, "rating", None, Some("int4"), x => x.rating, (row, value) => row.copy(rating = value))
       override def comments = OptField[/* max 3850 chars */ String, ProductreviewRow](_path, "comments", None, None, x => x.comments, (row, value) => row.copy(comments = value))
       override def modifieddate = Field[TypoLocalDateTime, ProductreviewRow](_path, "modifieddate", Some("text"), Some("timestamp"), x => x.modifieddate, (row, value) => row.copy(modifieddate = value))

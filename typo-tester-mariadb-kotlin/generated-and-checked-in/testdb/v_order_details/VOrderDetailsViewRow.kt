@@ -8,11 +8,12 @@ package testdb.v_order_details
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.orders.OrdersId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: v_order_details
   * VIEW
@@ -58,7 +59,7 @@ data class VOrderDetailsViewRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("customer_name") val customerName: Optional<String>,
+  @JsonProperty("customer_name") val customerName: String?,
   /** 
     * Default: 0
     */
@@ -66,23 +67,23 @@ data class VOrderDetailsViewRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("total_quantity") val totalQuantity: Optional<BigDecimal>,
+  @JsonProperty("total_quantity") val totalQuantity: BigDecimal?,
   /** 
     * Default: NULL
     * Points to [testdb.shipments.ShipmentsRow.trackingNumber]
     */
-  @JsonProperty("tracking_number") val trackingNumber: Optional<String>,
+  @JsonProperty("tracking_number") val trackingNumber: String?,
   /** 
     * Default: 'pending'
     * Points to [testdb.shipments.ShipmentsRow.status]
     */
-  @JsonProperty("shipping_status") val shippingStatus: Optional<String>,
+  @JsonProperty("shipping_status") val shippingStatus: String?,
   /** 
     * Points to [testdb.shipping_carriers.ShippingCarriersRow.name]
     */
-  @JsonProperty("carrier_name") val carrierName: Optional<String>
+  @JsonProperty("carrier_name") val carrierName: String?
 ) {
   companion object {
-    val _rowParser: RowParser<VOrderDetailsViewRow> = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, MariaTypes.decimal, MariaTypes.char_, MariaTypes.datetime, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.bigint, MariaTypes.decimal.opt(), MariaTypes.varchar.opt(), MariaTypes.text.opt(), MariaTypes.varchar.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> VOrderDetailsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!) }, { row -> arrayOf<Any?>(row.orderId, row.orderNumber, row.orderStatus, row.paymentStatus, row.totalAmount, row.currencyCode, row.orderedAt, row.customerEmail, row.customerName, row.itemCount, row.totalQuantity, row.trackingNumber, row.shippingStatus, row.carrierName) })
+    val _rowParser: RowParser<VOrderDetailsViewRow> = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, KotlinDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.datetime, MariaTypes.varchar, MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.varchar.nullable(), MariaTypes.text.nullable(), MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> VOrderDetailsViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) }, { row -> arrayOf<Any?>(row.orderId, row.orderNumber, row.orderStatus, row.paymentStatus, row.totalAmount, row.currencyCode, row.orderedAt, row.customerEmail, row.customerName, row.itemCount, row.totalQuantity, row.trackingNumber, row.shippingStatus, row.carrierName) })
   }
 }

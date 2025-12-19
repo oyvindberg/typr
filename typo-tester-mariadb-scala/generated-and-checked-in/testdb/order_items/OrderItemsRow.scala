@@ -6,15 +6,16 @@
 package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.orders.OrdersId
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: order_items
  * Primary key: item_id
@@ -37,19 +38,19 @@ case class OrderItemsRow(
   /**  */
   @JsonProperty("product_name") productName: String,
   /**  */
-  quantity: Integer,
+  quantity: Int,
   /**  */
-  @JsonProperty("unit_price") unitPrice: java.math.BigDecimal,
+  @JsonProperty("unit_price") unitPrice: BigDecimal,
   /** 
    * Default: 0.0000
    */
-  @JsonProperty("discount_amount") discountAmount: java.math.BigDecimal,
+  @JsonProperty("discount_amount") discountAmount: BigDecimal,
   /** 
    * Default: 0.0000
    */
-  @JsonProperty("tax_amount") taxAmount: java.math.BigDecimal,
+  @JsonProperty("tax_amount") taxAmount: BigDecimal,
   /**  */
-  @JsonProperty("line_total") lineTotal: java.math.BigDecimal,
+  @JsonProperty("line_total") lineTotal: BigDecimal,
   /** 
    * Default: 'pending'
    */
@@ -58,20 +59,20 @@ case class OrderItemsRow(
    * Default: NULL
    * Points to [[testdb.warehouses.WarehousesRow.warehouseId]]
    */
-  @JsonProperty("warehouse_id") warehouseId: Optional[WarehousesId],
+  @JsonProperty("warehouse_id") warehouseId: Option[WarehousesId],
   /** 
    * Default: NULL
    */
-  notes: Optional[String]
+  notes: Option[String]
 ) {
   def id: OrderItemsId = itemId
 
   def toUnsavedRow(
-    discountAmount: Defaulted[java.math.BigDecimal] = Defaulted.Provided(this.discountAmount),
-    taxAmount: Defaulted[java.math.BigDecimal] = Defaulted.Provided(this.taxAmount),
+    discountAmount: Defaulted[BigDecimal] = Defaulted.Provided(this.discountAmount),
+    taxAmount: Defaulted[BigDecimal] = Defaulted.Provided(this.taxAmount),
     fulfillmentStatus: Defaulted[String] = Defaulted.Provided(this.fulfillmentStatus),
-    warehouseId: Defaulted[Optional[WarehousesId]] = Defaulted.Provided(this.warehouseId),
-    notes: Defaulted[Optional[String]] = Defaulted.Provided(this.notes)
+    warehouseId: Defaulted[Option[WarehousesId]] = Defaulted.Provided(this.warehouseId),
+    notes: Defaulted[Option[String]] = Defaulted.Provided(this.notes)
   ): OrderItemsRowUnsaved = {
     new OrderItemsRowUnsaved(
       orderId,
@@ -91,7 +92,7 @@ case class OrderItemsRow(
 }
 
 object OrderItemsRow {
-  val `_rowParser`: RowParser[OrderItemsRow] = RowParsers.of(OrderItemsId.pgType, OrdersId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.smallintUnsigned, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.text, WarehousesId.pgType.opt(), MariaTypes.tinytext.opt(), OrderItemsRow.apply, row => Array[Object](row.itemId.asInstanceOf[Object], row.orderId.asInstanceOf[Object], row.productId.asInstanceOf[Object], row.sku.asInstanceOf[Object], row.productName.asInstanceOf[Object], row.quantity.asInstanceOf[Object], row.unitPrice.asInstanceOf[Object], row.discountAmount.asInstanceOf[Object], row.taxAmount.asInstanceOf[Object], row.lineTotal.asInstanceOf[Object], row.fulfillmentStatus.asInstanceOf[Object], row.warehouseId.asInstanceOf[Object], row.notes.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[OrderItemsRow] = RowParsers.of(OrderItemsId.pgType, OrdersId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, ScalaDbTypes.MariaTypes.smallintUnsigned, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, WarehousesId.pgType.nullable, MariaTypes.tinytext.nullable)(OrderItemsRow.apply)(row => Array[Any](row.itemId, row.orderId, row.productId, row.sku, row.productName, row.quantity, row.unitPrice, row.discountAmount, row.taxAmount, row.lineTotal, row.fulfillmentStatus, row.warehouseId, row.notes))
 
-  given mariaText: MariaText[OrderItemsRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[OrderItemsRow] = MariaText.from(`_rowParser`.underlying)
 }

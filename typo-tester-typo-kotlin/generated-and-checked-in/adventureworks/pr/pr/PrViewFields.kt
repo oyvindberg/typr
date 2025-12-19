@@ -5,69 +5,70 @@
  */
 package adventureworks.pr.pr
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.production.productreview.ProductreviewId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PrViewFields : FieldsExpr<PrViewRow> {
-  override fun columns(): List<FieldLike<*, PrViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PrViewRow>>
 
-  fun comments(): OptField</* max 3850 chars */ String, PrViewRow>
+  abstract fun comments(): Field<String, PrViewRow>
 
-  fun emailaddress(): Field</* max 50 chars */ String, PrViewRow>
+  abstract fun emailaddress(): Field<String, PrViewRow>
 
-  fun id(): Field<ProductreviewId, PrViewRow>
+  abstract fun id(): Field<ProductreviewId, PrViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PrViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PrViewRow>
 
-  fun productid(): Field<ProductId, PrViewRow>
+  abstract fun productid(): Field<ProductId, PrViewRow>
 
-  fun productreviewid(): Field<ProductreviewId, PrViewRow>
+  abstract fun productreviewid(): Field<ProductreviewId, PrViewRow>
 
-  fun rating(): Field<Int, PrViewRow>
+  abstract fun rating(): Field<Int, PrViewRow>
 
-  fun reviewdate(): Field<TypoLocalDateTime, PrViewRow>
+  abstract fun reviewdate(): Field<LocalDateTime, PrViewRow>
 
-  fun reviewername(): Field<Name, PrViewRow>
+  abstract fun reviewername(): Field<Name, PrViewRow>
 
-  override fun rowParser(): RowParser<PrViewRow> = PrViewRow._rowParser
+  override fun rowParser(): RowParser<PrViewRow> = PrViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : PrViewFields, Relation<PrViewFields, PrViewRow> {
-      override fun id(): Field<ProductreviewId, PrViewRow> = Field<ProductreviewId, PrViewRow>(_path, "id", PrViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, ProductreviewId.pgType)
+    data class Impl(val _path: List<Path>) : PrViewFields, RelationStructure<PrViewFields, PrViewRow> {
+      override fun id(): Field<ProductreviewId, PrViewRow> = Field<ProductreviewId, PrViewRow>(_path, "id", PrViewRow::id, null, null, { row, value -> row.copy(id = value) }, ProductreviewId.pgType)
 
-      override fun productreviewid(): Field<ProductreviewId, PrViewRow> = Field<ProductreviewId, PrViewRow>(_path, "productreviewid", PrViewRow::productreviewid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productreviewid = value) }, ProductreviewId.pgType)
+      override fun productreviewid(): Field<ProductreviewId, PrViewRow> = Field<ProductreviewId, PrViewRow>(_path, "productreviewid", PrViewRow::productreviewid, null, null, { row, value -> row.copy(productreviewid = value) }, ProductreviewId.pgType)
 
-      override fun productid(): Field<ProductId, PrViewRow> = Field<ProductId, PrViewRow>(_path, "productid", PrViewRow::productid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+      override fun productid(): Field<ProductId, PrViewRow> = Field<ProductId, PrViewRow>(_path, "productid", PrViewRow::productid, null, null, { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun reviewername(): Field<Name, PrViewRow> = Field<Name, PrViewRow>(_path, "reviewername", PrViewRow::reviewername, Optional.empty(), Optional.empty(), { row, value -> row.copy(reviewername = value) }, Name.pgType)
+      override fun reviewername(): Field<Name, PrViewRow> = Field<Name, PrViewRow>(_path, "reviewername", PrViewRow::reviewername, null, null, { row, value -> row.copy(reviewername = value) }, Name.pgType)
 
-      override fun reviewdate(): Field<TypoLocalDateTime, PrViewRow> = Field<TypoLocalDateTime, PrViewRow>(_path, "reviewdate", PrViewRow::reviewdate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(reviewdate = value) }, TypoLocalDateTime.pgType)
+      override fun reviewdate(): Field<LocalDateTime, PrViewRow> = Field<LocalDateTime, PrViewRow>(_path, "reviewdate", PrViewRow::reviewdate, null, null, { row, value -> row.copy(reviewdate = value) }, PgTypes.timestamp)
 
-      override fun emailaddress(): Field</* max 50 chars */ String, PrViewRow> = Field</* max 50 chars */ String, PrViewRow>(_path, "emailaddress", PrViewRow::emailaddress, Optional.empty(), Optional.empty(), { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
+      override fun emailaddress(): Field<String, PrViewRow> = Field<String, PrViewRow>(_path, "emailaddress", PrViewRow::emailaddress, null, null, { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
 
-      override fun rating(): Field<Int, PrViewRow> = Field<Int, PrViewRow>(_path, "rating", PrViewRow::rating, Optional.empty(), Optional.empty(), { row, value -> row.copy(rating = value) }, PgTypes.int4)
+      override fun rating(): Field<Int, PrViewRow> = Field<Int, PrViewRow>(_path, "rating", PrViewRow::rating, null, null, { row, value -> row.copy(rating = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun comments(): OptField</* max 3850 chars */ String, PrViewRow> = OptField</* max 3850 chars */ String, PrViewRow>(_path, "comments", PrViewRow::comments, Optional.empty(), Optional.empty(), { row, value -> row.copy(comments = value) }, PgTypes.text)
+      override fun comments(): Field<String, PrViewRow> = Field<String, PrViewRow>(_path, "comments", PrViewRow::comments, null, null, { row, value -> row.copy(comments = value) }, PgTypes.text)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PrViewRow> = Field<TypoLocalDateTime, PrViewRow>(_path, "modifieddate", PrViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PrViewRow> = Field<LocalDateTime, PrViewRow>(_path, "modifieddate", PrViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PrViewRow>> = listOf(this.id(), this.productreviewid(), this.productid(), this.reviewername(), this.reviewdate(), this.emailaddress(), this.rating(), this.comments(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PrViewFields, PrViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PrViewRow>> = listOf(this.id().underlying, this.productreviewid().underlying, this.productid().underlying, this.reviewername().underlying, this.reviewdate().underlying, this.emailaddress().underlying, this.rating().underlying, this.comments().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PrViewFields, PrViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

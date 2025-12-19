@@ -6,70 +6,69 @@
 package testdb.order_history
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface OrderHistoryRepo {
-  fun delete(): DeleteBuilder<OrderHistoryFields, OrderHistoryRow>
+  abstract fun delete(): DeleteBuilder<OrderHistoryFields, OrderHistoryRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     historyId: OrderHistoryId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     historyIds: Array<OrderHistoryId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: OrderHistoryRow,
     c: Connection
   ): OrderHistoryRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: OrderHistoryRowUnsaved,
     c: Connection
   ): OrderHistoryRow
 
-  fun select(): SelectBuilder<OrderHistoryFields, OrderHistoryRow>
+  abstract fun select(): SelectBuilder<OrderHistoryFields, OrderHistoryRow>
 
-  fun selectAll(c: Connection): List<OrderHistoryRow>
+  abstract fun selectAll(c: Connection): List<OrderHistoryRow>
 
-  fun selectById(
+  abstract fun selectById(
     historyId: OrderHistoryId,
     c: Connection
-  ): Optional<OrderHistoryRow>
+  ): OrderHistoryRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     historyIds: Array<OrderHistoryId>,
     c: Connection
   ): List<OrderHistoryRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     historyIds: Array<OrderHistoryId>,
     c: Connection
   ): Map<OrderHistoryId, OrderHistoryRow>
 
-  fun update(): UpdateBuilder<OrderHistoryFields, OrderHistoryRow>
+  abstract fun update(): UpdateBuilder<OrderHistoryFields, OrderHistoryRow>
 
-  fun update(
+  abstract fun update(
     row: OrderHistoryRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: OrderHistoryRow,
     c: Connection
   ): OrderHistoryRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<OrderHistoryRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<OrderHistoryRow>,
     c: Connection
   ): List<OrderHistoryRow>
 }

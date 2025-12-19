@@ -5,86 +5,86 @@
  */
 package adventureworks.pr.wr
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.location.LocationId
 import adventureworks.production.workorder.WorkorderId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface WrViewFields : FieldsExpr<WrViewRow> {
-  fun actualcost(): OptField<BigDecimal, WrViewRow>
+  abstract fun actualcost(): Field<BigDecimal, WrViewRow>
 
-  fun actualenddate(): OptField<TypoLocalDateTime, WrViewRow>
+  abstract fun actualenddate(): Field<LocalDateTime, WrViewRow>
 
-  fun actualresourcehrs(): OptField<BigDecimal, WrViewRow>
+  abstract fun actualresourcehrs(): Field<BigDecimal, WrViewRow>
 
-  fun actualstartdate(): OptField<TypoLocalDateTime, WrViewRow>
+  abstract fun actualstartdate(): Field<LocalDateTime, WrViewRow>
 
-  override fun columns(): List<FieldLike<*, WrViewRow>>
+  abstract override fun columns(): List<FieldLike<*, WrViewRow>>
 
-  fun id(): Field<WorkorderId, WrViewRow>
+  abstract fun id(): Field<WorkorderId, WrViewRow>
 
-  fun locationid(): Field<LocationId, WrViewRow>
+  abstract fun locationid(): Field<LocationId, WrViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, WrViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, WrViewRow>
 
-  fun operationsequence(): Field<TypoShort, WrViewRow>
+  abstract fun operationsequence(): Field<Short, WrViewRow>
 
-  fun plannedcost(): Field<BigDecimal, WrViewRow>
+  abstract fun plannedcost(): Field<BigDecimal, WrViewRow>
 
-  fun productid(): Field<Int, WrViewRow>
+  abstract fun productid(): Field<Int, WrViewRow>
 
-  override fun rowParser(): RowParser<WrViewRow> = WrViewRow._rowParser
+  override fun rowParser(): RowParser<WrViewRow> = WrViewRow._rowParser.underlying
 
-  fun scheduledenddate(): Field<TypoLocalDateTime, WrViewRow>
+  abstract fun scheduledenddate(): Field<LocalDateTime, WrViewRow>
 
-  fun scheduledstartdate(): Field<TypoLocalDateTime, WrViewRow>
+  abstract fun scheduledstartdate(): Field<LocalDateTime, WrViewRow>
 
-  fun workorderid(): Field<WorkorderId, WrViewRow>
+  abstract fun workorderid(): Field<WorkorderId, WrViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : WrViewFields, Relation<WrViewFields, WrViewRow> {
-      override fun id(): Field<WorkorderId, WrViewRow> = Field<WorkorderId, WrViewRow>(_path, "id", WrViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, WorkorderId.pgType)
+    data class Impl(val _path: List<Path>) : WrViewFields, RelationStructure<WrViewFields, WrViewRow> {
+      override fun id(): Field<WorkorderId, WrViewRow> = Field<WorkorderId, WrViewRow>(_path, "id", WrViewRow::id, null, null, { row, value -> row.copy(id = value) }, WorkorderId.pgType)
 
-      override fun workorderid(): Field<WorkorderId, WrViewRow> = Field<WorkorderId, WrViewRow>(_path, "workorderid", WrViewRow::workorderid, Optional.empty(), Optional.empty(), { row, value -> row.copy(workorderid = value) }, WorkorderId.pgType)
+      override fun workorderid(): Field<WorkorderId, WrViewRow> = Field<WorkorderId, WrViewRow>(_path, "workorderid", WrViewRow::workorderid, null, null, { row, value -> row.copy(workorderid = value) }, WorkorderId.pgType)
 
-      override fun productid(): Field<Int, WrViewRow> = Field<Int, WrViewRow>(_path, "productid", WrViewRow::productid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productid = value) }, PgTypes.int4)
+      override fun productid(): Field<Int, WrViewRow> = Field<Int, WrViewRow>(_path, "productid", WrViewRow::productid, null, null, { row, value -> row.copy(productid = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun operationsequence(): Field<TypoShort, WrViewRow> = Field<TypoShort, WrViewRow>(_path, "operationsequence", WrViewRow::operationsequence, Optional.empty(), Optional.empty(), { row, value -> row.copy(operationsequence = value) }, TypoShort.pgType)
+      override fun operationsequence(): Field<Short, WrViewRow> = Field<Short, WrViewRow>(_path, "operationsequence", WrViewRow::operationsequence, null, null, { row, value -> row.copy(operationsequence = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun locationid(): Field<LocationId, WrViewRow> = Field<LocationId, WrViewRow>(_path, "locationid", WrViewRow::locationid, Optional.empty(), Optional.empty(), { row, value -> row.copy(locationid = value) }, LocationId.pgType)
+      override fun locationid(): Field<LocationId, WrViewRow> = Field<LocationId, WrViewRow>(_path, "locationid", WrViewRow::locationid, null, null, { row, value -> row.copy(locationid = value) }, LocationId.pgType)
 
-      override fun scheduledstartdate(): Field<TypoLocalDateTime, WrViewRow> = Field<TypoLocalDateTime, WrViewRow>(_path, "scheduledstartdate", WrViewRow::scheduledstartdate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(scheduledstartdate = value) }, TypoLocalDateTime.pgType)
+      override fun scheduledstartdate(): Field<LocalDateTime, WrViewRow> = Field<LocalDateTime, WrViewRow>(_path, "scheduledstartdate", WrViewRow::scheduledstartdate, null, null, { row, value -> row.copy(scheduledstartdate = value) }, PgTypes.timestamp)
 
-      override fun scheduledenddate(): Field<TypoLocalDateTime, WrViewRow> = Field<TypoLocalDateTime, WrViewRow>(_path, "scheduledenddate", WrViewRow::scheduledenddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(scheduledenddate = value) }, TypoLocalDateTime.pgType)
+      override fun scheduledenddate(): Field<LocalDateTime, WrViewRow> = Field<LocalDateTime, WrViewRow>(_path, "scheduledenddate", WrViewRow::scheduledenddate, null, null, { row, value -> row.copy(scheduledenddate = value) }, PgTypes.timestamp)
 
-      override fun actualstartdate(): OptField<TypoLocalDateTime, WrViewRow> = OptField<TypoLocalDateTime, WrViewRow>(_path, "actualstartdate", WrViewRow::actualstartdate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(actualstartdate = value) }, TypoLocalDateTime.pgType)
+      override fun actualstartdate(): Field<LocalDateTime, WrViewRow> = Field<LocalDateTime, WrViewRow>(_path, "actualstartdate", WrViewRow::actualstartdate, null, null, { row, value -> row.copy(actualstartdate = value) }, PgTypes.timestamp)
 
-      override fun actualenddate(): OptField<TypoLocalDateTime, WrViewRow> = OptField<TypoLocalDateTime, WrViewRow>(_path, "actualenddate", WrViewRow::actualenddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(actualenddate = value) }, TypoLocalDateTime.pgType)
+      override fun actualenddate(): Field<LocalDateTime, WrViewRow> = Field<LocalDateTime, WrViewRow>(_path, "actualenddate", WrViewRow::actualenddate, null, null, { row, value -> row.copy(actualenddate = value) }, PgTypes.timestamp)
 
-      override fun actualresourcehrs(): OptField<BigDecimal, WrViewRow> = OptField<BigDecimal, WrViewRow>(_path, "actualresourcehrs", WrViewRow::actualresourcehrs, Optional.empty(), Optional.empty(), { row, value -> row.copy(actualresourcehrs = value) }, PgTypes.numeric)
+      override fun actualresourcehrs(): Field<BigDecimal, WrViewRow> = Field<BigDecimal, WrViewRow>(_path, "actualresourcehrs", WrViewRow::actualresourcehrs, null, null, { row, value -> row.copy(actualresourcehrs = value) }, PgTypes.numeric)
 
-      override fun plannedcost(): Field<BigDecimal, WrViewRow> = Field<BigDecimal, WrViewRow>(_path, "plannedcost", WrViewRow::plannedcost, Optional.empty(), Optional.empty(), { row, value -> row.copy(plannedcost = value) }, PgTypes.numeric)
+      override fun plannedcost(): Field<BigDecimal, WrViewRow> = Field<BigDecimal, WrViewRow>(_path, "plannedcost", WrViewRow::plannedcost, null, null, { row, value -> row.copy(plannedcost = value) }, PgTypes.numeric)
 
-      override fun actualcost(): OptField<BigDecimal, WrViewRow> = OptField<BigDecimal, WrViewRow>(_path, "actualcost", WrViewRow::actualcost, Optional.empty(), Optional.empty(), { row, value -> row.copy(actualcost = value) }, PgTypes.numeric)
+      override fun actualcost(): Field<BigDecimal, WrViewRow> = Field<BigDecimal, WrViewRow>(_path, "actualcost", WrViewRow::actualcost, null, null, { row, value -> row.copy(actualcost = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, WrViewRow> = Field<TypoLocalDateTime, WrViewRow>(_path, "modifieddate", WrViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, WrViewRow> = Field<LocalDateTime, WrViewRow>(_path, "modifieddate", WrViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, WrViewRow>> = listOf(this.id(), this.workorderid(), this.productid(), this.operationsequence(), this.locationid(), this.scheduledstartdate(), this.scheduledenddate(), this.actualstartdate(), this.actualenddate(), this.actualresourcehrs(), this.plannedcost(), this.actualcost(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<WrViewFields, WrViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, WrViewRow>> = listOf(this.id().underlying, this.workorderid().underlying, this.productid().underlying, this.operationsequence().underlying, this.locationid().underlying, this.scheduledstartdate().underlying, this.scheduledenddate().underlying, this.actualstartdate().underlying, this.actualenddate().underlying, this.actualresourcehrs().underlying, this.plannedcost().underlying, this.actualcost().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<WrViewFields, WrViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

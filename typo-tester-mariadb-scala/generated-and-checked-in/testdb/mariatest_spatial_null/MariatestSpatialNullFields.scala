@@ -5,7 +5,6 @@
  */
 package testdb.mariatest_spatial_null
 
-import java.util.Optional
 import org.mariadb.jdbc.`type`.Geometry
 import org.mariadb.jdbc.`type`.GeometryCollection
 import org.mariadb.jdbc.`type`.LineString
@@ -14,16 +13,16 @@ import org.mariadb.jdbc.`type`.MultiPoint
 import org.mariadb.jdbc.`type`.MultiPolygon
 import org.mariadb.jdbc.`type`.Point
 import org.mariadb.jdbc.`type`.Polygon
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait MariatestSpatialNullFields extends FieldsExpr[MariatestSpatialNullRow] {
+trait MariatestSpatialNullFields extends FieldsExpr0[MariatestSpatialNullRow] {
   def id: IdField[MariatestSpatialNullId, MariatestSpatialNullRow]
 
   def geometryCol: OptField[Geometry, MariatestSpatialNullRow]
@@ -44,19 +43,19 @@ trait MariatestSpatialNullFields extends FieldsExpr[MariatestSpatialNullRow] {
 
   override def columns: java.util.List[FieldLike[?, MariatestSpatialNullRow]]
 
-  override def rowParser: RowParser[MariatestSpatialNullRow] = MariatestSpatialNullRow._rowParser
+  override def rowParser: RowParser[MariatestSpatialNullRow] = MariatestSpatialNullRow._rowParser.underlying
 }
 
 object MariatestSpatialNullFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends MariatestSpatialNullFields with Relation[MariatestSpatialNullFields, MariatestSpatialNullRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends MariatestSpatialNullFields with RelationStructure[MariatestSpatialNullFields, MariatestSpatialNullRow] {
 
     override def id: IdField[MariatestSpatialNullId, MariatestSpatialNullRow] = {
       new IdField[MariatestSpatialNullId, MariatestSpatialNullRow](
         _path,
         "id",
         _.id,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(id = value),
         MariatestSpatialNullId.pgType
       )
@@ -67,8 +66,8 @@ object MariatestSpatialNullFields {
         _path,
         "geometry_col",
         _.geometryCol,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(geometryCol = value),
         MariaTypes.geometry
       )
@@ -79,8 +78,8 @@ object MariatestSpatialNullFields {
         _path,
         "point_col",
         _.pointCol,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(pointCol = value),
         MariaTypes.point
       )
@@ -91,8 +90,8 @@ object MariatestSpatialNullFields {
         _path,
         "linestring_col",
         _.linestringCol,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(linestringCol = value),
         MariaTypes.linestring
       )
@@ -103,8 +102,8 @@ object MariatestSpatialNullFields {
         _path,
         "polygon_col",
         _.polygonCol,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(polygonCol = value),
         MariaTypes.polygon
       )
@@ -115,8 +114,8 @@ object MariatestSpatialNullFields {
         _path,
         "multipoint_col",
         _.multipointCol,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(multipointCol = value),
         MariaTypes.multipoint
       )
@@ -127,8 +126,8 @@ object MariatestSpatialNullFields {
         _path,
         "multilinestring_col",
         _.multilinestringCol,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(multilinestringCol = value),
         MariaTypes.multilinestring
       )
@@ -139,8 +138,8 @@ object MariatestSpatialNullFields {
         _path,
         "multipolygon_col",
         _.multipolygonCol,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(multipolygonCol = value),
         MariaTypes.multipolygon
       )
@@ -151,17 +150,17 @@ object MariatestSpatialNullFields {
         _path,
         "geometrycollection_col",
         _.geometrycollectionCol,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(geometrycollectionCol = value),
         MariaTypes.geometrycollection
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, MariatestSpatialNullRow]] = java.util.List.of(this.id, this.geometryCol, this.pointCol, this.linestringCol, this.polygonCol, this.multipointCol, this.multilinestringCol, this.multipolygonCol, this.geometrycollectionCol)
+    override def columns: java.util.List[FieldLike[?, MariatestSpatialNullRow]] = java.util.List.of(this.id.underlying, this.geometryCol.underlying, this.pointCol.underlying, this.linestringCol.underlying, this.polygonCol.underlying, this.multipointCol.underlying, this.multilinestringCol.underlying, this.multipolygonCol.underlying, this.geometrycollectionCol.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[MariatestSpatialNullFields, MariatestSpatialNullRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[MariatestSpatialNullFields, MariatestSpatialNullRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

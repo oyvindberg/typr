@@ -6,11 +6,12 @@
 package testdb.brands
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `brands` which has not been persisted yet */
 case class BrandsRowUnsaved(
@@ -21,25 +22,25 @@ case class BrandsRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("logo_blob") logoBlob: Defaulted[Optional[Array[Byte]]] = new UseDefault(),
+  @JsonProperty("logo_blob") logoBlob: Defaulted[Option[Array[Byte]]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("website_url") websiteUrl: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("website_url") websiteUrl: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("country_of_origin") countryOfOrigin: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("country_of_origin") countryOfOrigin: Defaulted[Option[String]] = new UseDefault(),
   /** Default: 1
 
    */
-  @JsonProperty("is_active") isActive: Defaulted[java.lang.Boolean] = new UseDefault()
+  @JsonProperty("is_active") isActive: Defaulted[Boolean] = new UseDefault()
 ) {
   def toRow(
-    logoBlobDefault: => Optional[Array[Byte]],
-    websiteUrlDefault: => Optional[String],
-    countryOfOriginDefault: => Optional[String],
-    isActiveDefault: => java.lang.Boolean,
+    logoBlobDefault: => Option[Array[Byte]],
+    websiteUrlDefault: => Option[String],
+    countryOfOriginDefault: => Option[String],
+    isActiveDefault: => Boolean,
     brandIdDefault: => BrandsId
   ): BrandsRow = {
     new BrandsRow(
@@ -55,5 +56,5 @@ case class BrandsRowUnsaved(
 }
 
 object BrandsRowUnsaved {
-  given mariaText: MariaText[BrandsRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.slug, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumblob.opt().mariaText).unsafeEncode(row.logoBlob, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.websiteUrl, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.char_.opt().mariaText).unsafeEncode(row.countryOfOrigin, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isActive, sb) })
+  given mariaText: MariaText[BrandsRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.slug, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.mediumblob.nullable.mariaText).unsafeEncode(row.logoBlob, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.websiteUrl, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.char_.nullable.mariaText).unsafeEncode(row.countryOfOrigin, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isActive, sb) })
 }

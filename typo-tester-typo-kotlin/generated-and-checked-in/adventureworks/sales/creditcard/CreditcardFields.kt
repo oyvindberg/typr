@@ -5,56 +5,57 @@
  */
 package adventureworks.sales.creditcard
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.userdefined.CustomCreditcardId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface CreditcardFields : FieldsExpr<CreditcardRow> {
-  fun cardnumber(): Field</* max 25 chars */ String, CreditcardRow>
+  abstract fun cardnumber(): Field<String, CreditcardRow>
 
-  fun cardtype(): Field</* max 50 chars */ String, CreditcardRow>
+  abstract fun cardtype(): Field<String, CreditcardRow>
 
-  override fun columns(): List<FieldLike<*, CreditcardRow>>
+  abstract override fun columns(): List<FieldLike<*, CreditcardRow>>
 
-  fun creditcardid(): IdField</* user-picked */ CustomCreditcardId, CreditcardRow>
+  abstract fun creditcardid(): IdField</* user-picked */ CustomCreditcardId, CreditcardRow>
 
-  fun expmonth(): Field<TypoShort, CreditcardRow>
+  abstract fun expmonth(): Field<Short, CreditcardRow>
 
-  fun expyear(): Field<TypoShort, CreditcardRow>
+  abstract fun expyear(): Field<Short, CreditcardRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, CreditcardRow>
+  abstract fun modifieddate(): Field<LocalDateTime, CreditcardRow>
 
-  override fun rowParser(): RowParser<CreditcardRow> = CreditcardRow._rowParser
+  override fun rowParser(): RowParser<CreditcardRow> = CreditcardRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : CreditcardFields, Relation<CreditcardFields, CreditcardRow> {
-      override fun creditcardid(): IdField</* user-picked */ CustomCreditcardId, CreditcardRow> = IdField</* user-picked */ CustomCreditcardId, CreditcardRow>(_path, "creditcardid", CreditcardRow::creditcardid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(creditcardid = value) }, CustomCreditcardId.pgType)
+    data class Impl(val _path: List<Path>) : CreditcardFields, RelationStructure<CreditcardFields, CreditcardRow> {
+      override fun creditcardid(): IdField</* user-picked */ CustomCreditcardId, CreditcardRow> = IdField</* user-picked */ CustomCreditcardId, CreditcardRow>(_path, "creditcardid", CreditcardRow::creditcardid, null, "int4", { row, value -> row.copy(creditcardid = value) }, CustomCreditcardId.pgType)
 
-      override fun cardtype(): Field</* max 50 chars */ String, CreditcardRow> = Field</* max 50 chars */ String, CreditcardRow>(_path, "cardtype", CreditcardRow::cardtype, Optional.empty(), Optional.empty(), { row, value -> row.copy(cardtype = value) }, PgTypes.text)
+      override fun cardtype(): Field<String, CreditcardRow> = Field<String, CreditcardRow>(_path, "cardtype", CreditcardRow::cardtype, null, null, { row, value -> row.copy(cardtype = value) }, PgTypes.text)
 
-      override fun cardnumber(): Field</* max 25 chars */ String, CreditcardRow> = Field</* max 25 chars */ String, CreditcardRow>(_path, "cardnumber", CreditcardRow::cardnumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(cardnumber = value) }, PgTypes.text)
+      override fun cardnumber(): Field<String, CreditcardRow> = Field<String, CreditcardRow>(_path, "cardnumber", CreditcardRow::cardnumber, null, null, { row, value -> row.copy(cardnumber = value) }, PgTypes.text)
 
-      override fun expmonth(): Field<TypoShort, CreditcardRow> = Field<TypoShort, CreditcardRow>(_path, "expmonth", CreditcardRow::expmonth, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(expmonth = value) }, TypoShort.pgType)
+      override fun expmonth(): Field<Short, CreditcardRow> = Field<Short, CreditcardRow>(_path, "expmonth", CreditcardRow::expmonth, null, "int2", { row, value -> row.copy(expmonth = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun expyear(): Field<TypoShort, CreditcardRow> = Field<TypoShort, CreditcardRow>(_path, "expyear", CreditcardRow::expyear, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(expyear = value) }, TypoShort.pgType)
+      override fun expyear(): Field<Short, CreditcardRow> = Field<Short, CreditcardRow>(_path, "expyear", CreditcardRow::expyear, null, "int2", { row, value -> row.copy(expyear = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, CreditcardRow> = Field<TypoLocalDateTime, CreditcardRow>(_path, "modifieddate", CreditcardRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, CreditcardRow> = Field<LocalDateTime, CreditcardRow>(_path, "modifieddate", CreditcardRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, CreditcardRow>> = listOf(this.creditcardid(), this.cardtype(), this.cardnumber(), this.expmonth(), this.expyear(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<CreditcardFields, CreditcardRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, CreditcardRow>> = listOf(this.creditcardid().underlying, this.cardtype().underlying, this.cardnumber().underlying, this.expmonth().underlying, this.expyear().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<CreditcardFields, CreditcardRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

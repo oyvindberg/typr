@@ -27,21 +27,21 @@ case class PersonDetailSqlRow(
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
-  jobtitle: /* max 50 chars */ String,
+  jobtitle: String,
   /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
-  addressline1: Option[/* max 60 chars */ String],
+  addressline1: Option[String],
   /** Points to [[adventureworks.person.address.AddressRow.city]] */
-  city: Option[/* max 30 chars */ String],
+  city: Option[String],
   /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
-  postalcode: Option[/* max 15 chars */ String],
+  postalcode: Option[String],
   /** Points to [[adventureworks.person.address.AddressRow.rowguid]] */
   rowguid: Option[TypoUUID]
 )
 
 object PersonDetailSqlRow {
-  implicit lazy val decoder: Decoder[PersonDetailSqlRow] = Decoder.forProduct10[PersonDetailSqlRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, /* max 50 chars */ String, Option[/* max 60 chars */ String], Option[/* max 30 chars */ String], Option[/* max 15 chars */ String], Option[TypoUUID]]("businessentityid", "title", "firstname", "middlename", "lastname", "jobtitle", "addressline1", "city", "postalcode", "rowguid")(PersonDetailSqlRow.apply)(BusinessentityId.decoder, Decoder.decodeOption(Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(Name.decoder), Name.decoder, Decoder.decodeString, Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(TypoUUID.decoder))
+  implicit lazy val decoder: Decoder[PersonDetailSqlRow] = Decoder.forProduct10[PersonDetailSqlRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, String, Option[String], Option[String], Option[String], Option[TypoUUID]]("businessentityid", "title", "firstname", "middlename", "lastname", "jobtitle", "addressline1", "city", "postalcode", "rowguid")(PersonDetailSqlRow.apply)(BusinessentityId.decoder, Decoder.decodeOption(Decoder.decodeString), FirstName.decoder, Decoder.decodeOption(Name.decoder), Name.decoder, Decoder.decodeString, Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(TypoUUID.decoder))
 
-  implicit lazy val encoder: Encoder[PersonDetailSqlRow] = Encoder.forProduct10[PersonDetailSqlRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, /* max 50 chars */ String, Option[/* max 60 chars */ String], Option[/* max 30 chars */ String], Option[/* max 15 chars */ String], Option[TypoUUID]]("businessentityid", "title", "firstname", "middlename", "lastname", "jobtitle", "addressline1", "city", "postalcode", "rowguid")(x => (x.businessentityid, x.title, x.firstname, x.middlename, x.lastname, x.jobtitle, x.addressline1, x.city, x.postalcode, x.rowguid))(BusinessentityId.encoder, Encoder.encodeOption(Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(Name.encoder), Name.encoder, Encoder.encodeString, Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(TypoUUID.encoder))
+  implicit lazy val encoder: Encoder[PersonDetailSqlRow] = Encoder.forProduct10[PersonDetailSqlRow, BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, String, Option[String], Option[String], Option[String], Option[TypoUUID]]("businessentityid", "title", "firstname", "middlename", "lastname", "jobtitle", "addressline1", "city", "postalcode", "rowguid")(x => (x.businessentityid, x.title, x.firstname, x.middlename, x.lastname, x.jobtitle, x.addressline1, x.city, x.postalcode, x.rowguid))(BusinessentityId.encoder, Encoder.encodeOption(Encoder.encodeString), FirstName.encoder, Encoder.encodeOption(Name.encoder), Name.encoder, Encoder.encodeString, Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(TypoUUID.encoder))
 
   implicit lazy val read: Read[PersonDetailSqlRow] = {
     new Read.CompositeOfInstances(Array(
@@ -62,10 +62,10 @@ object PersonDetailSqlRow {
             firstname = arr(2).asInstanceOf[/* user-picked */ FirstName],
             middlename = arr(3).asInstanceOf[Option[Name]],
             lastname = arr(4).asInstanceOf[Name],
-            jobtitle = arr(5).asInstanceOf[/* max 50 chars */ String],
-            addressline1 = arr(6).asInstanceOf[Option[/* max 60 chars */ String]],
-            city = arr(7).asInstanceOf[Option[/* max 30 chars */ String]],
-            postalcode = arr(8).asInstanceOf[Option[/* max 15 chars */ String]],
+            jobtitle = arr(5).asInstanceOf[String],
+            addressline1 = arr(6).asInstanceOf[Option[String]],
+            city = arr(7).asInstanceOf[Option[String]],
+            postalcode = arr(8).asInstanceOf[Option[String]],
             rowguid = arr(9).asInstanceOf[Option[TypoUUID]]
       )
     }

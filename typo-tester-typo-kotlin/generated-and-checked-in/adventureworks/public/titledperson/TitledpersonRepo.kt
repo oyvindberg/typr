@@ -6,29 +6,29 @@
 package adventureworks.public.titledperson
 
 import java.sql.Connection
+import kotlin.collections.Iterator
 import kotlin.collections.List
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface TitledpersonRepo {
-  fun delete(): DeleteBuilder<TitledpersonFields, TitledpersonRow>
+  abstract fun delete(): DeleteBuilder<TitledpersonFields, TitledpersonRow>
 
-  fun insert(
+  abstract fun insert(
     unsaved: TitledpersonRow,
     c: Connection
   ): TitledpersonRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<TitledpersonRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<TitledpersonRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<TitledpersonFields, TitledpersonRow>
+  abstract fun select(): SelectBuilder<TitledpersonFields, TitledpersonRow>
 
-  fun selectAll(c: Connection): List<TitledpersonRow>
+  abstract fun selectAll(c: Connection): List<TitledpersonRow>
 
-  fun update(): UpdateBuilder<TitledpersonFields, TitledpersonRow>
+  abstract fun update(): UpdateBuilder<TitledpersonFields, TitledpersonRow>
 }

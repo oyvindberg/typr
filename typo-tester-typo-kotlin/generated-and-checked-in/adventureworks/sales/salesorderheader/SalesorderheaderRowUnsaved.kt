@@ -7,9 +7,6 @@ package adventureworks.sales.salesorderheader
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.address.AddressId
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.AccountNumber
@@ -21,7 +18,10 @@ import adventureworks.sales.customer.CustomerId
 import adventureworks.sales.salesterritory.SalesterritoryId
 import adventureworks.userdefined.CustomCreditcardId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -30,15 +30,15 @@ data class SalesorderheaderRowUnsaved(
   /** Date the order is due to the customer.
     * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate))
     */
-  val duedate: TypoLocalDateTime,
+  val duedate: LocalDateTime,
   /** Date the order was shipped to the customer.
     * Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  val shipdate: Optional<TypoLocalDateTime> = Optional.empty(),
+  val shipdate: LocalDateTime? = null,
   /** Customer purchase order number reference. */
-  val purchaseordernumber: Optional<OrderNumber> = Optional.empty(),
+  val purchaseordernumber: OrderNumber? = null,
   /** Financial accounting number reference. */
-  val accountnumber: Optional<AccountNumber> = Optional.empty(),
+  val accountnumber: AccountNumber? = null,
   /** Customer identification number. Foreign key to Customer.BusinessEntityID.
     * Points to [adventureworks.sales.customer.CustomerRow.customerid]
     */
@@ -46,11 +46,11 @@ data class SalesorderheaderRowUnsaved(
   /** Sales person who created the sales order. Foreign key to SalesPerson.BusinessEntityID.
     * Points to [adventureworks.sales.salesperson.SalespersonRow.businessentityid]
     */
-  val salespersonid: Optional<BusinessentityId> = Optional.empty(),
+  val salespersonid: BusinessentityId? = null,
   /** Territory in which the sale was made. Foreign key to SalesTerritory.SalesTerritoryID.
     * Points to [adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]
     */
-  val territoryid: Optional<SalesterritoryId> = Optional.empty(),
+  val territoryid: SalesterritoryId? = null,
   /** Customer billing address. Foreign key to Address.AddressID.
     * Points to [adventureworks.person.address.AddressRow.addressid]
     */
@@ -66,17 +66,17 @@ data class SalesorderheaderRowUnsaved(
   /** Credit card identification number. Foreign key to CreditCard.CreditCardID.
     * Points to [adventureworks.sales.creditcard.CreditcardRow.creditcardid]
     */
-  val creditcardid: Optional</* user-picked */ CustomCreditcardId> = Optional.empty(),
+  val creditcardid: /* user-picked */ CustomCreditcardId? = null,
   /** Approval code provided by the credit card company. */
-  val creditcardapprovalcode: Optional</* max 15 chars */ String> = Optional.empty(),
+  val creditcardapprovalcode: /* max 15 chars */ String? = null,
   /** Currency exchange rate used. Foreign key to CurrencyRate.CurrencyRateID.
     * Points to [adventureworks.sales.currencyrate.CurrencyrateRow.currencyrateid]
     */
-  val currencyrateid: Optional<CurrencyrateId> = Optional.empty(),
+  val currencyrateid: CurrencyrateId? = null,
   /** Total due from customer. Computed as Subtotal + TaxAmt + Freight. */
-  val totaldue: Optional<BigDecimal> = Optional.empty(),
+  val totaldue: BigDecimal? = null,
   /** Sales representative comments. */
-  val comment: Optional</* max 128 chars */ String> = Optional.empty(),
+  val comment: /* max 128 chars */ String? = null,
   /** Default: nextval('sales.salesorderheader_salesorderid_seq'::regclass)
     * Primary key.
     */
@@ -84,18 +84,18 @@ data class SalesorderheaderRowUnsaved(
   /** Default: 0
     * Incremental number to track changes to the sales order over time.
     */
-  val revisionnumber: Defaulted<TypoShort> = UseDefault(),
+  val revisionnumber: Defaulted<Short> = UseDefault(),
   /** Default: now()
     * Dates the sales order was created.
     * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate:  ((duedate >= orderdate))
     * Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate:  (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  val orderdate: Defaulted<TypoLocalDateTime> = UseDefault(),
+  val orderdate: Defaulted<LocalDateTime> = UseDefault(),
   /** Default: 1
     * Order current status. 1 = In process; 2 = Approved; 3 = Backordered; 4 = Rejected; 5 = Shipped; 6 = Cancelled
     * Constraint CK_SalesOrderHeader_Status affecting columns status:  (((status >= 0) AND (status <= 8)))
     */
-  val status: Defaulted<TypoShort> = UseDefault(),
+  val status: Defaulted<Short> = UseDefault(),
   /** Default: true
     * 0 = Order placed by sales person. 1 = Order placed online by customer.
     */
@@ -116,38 +116,38 @@ data class SalesorderheaderRowUnsaved(
     */
   val freight: Defaulted<BigDecimal> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     salesorderidDefault: () -> SalesorderheaderId,
-    revisionnumberDefault: () -> TypoShort,
-    orderdateDefault: () -> TypoLocalDateTime,
-    statusDefault: () -> TypoShort,
+    revisionnumberDefault: () -> Short,
+    orderdateDefault: () -> LocalDateTime,
+    statusDefault: () -> Short,
     onlineorderflagDefault: () -> Flag,
     subtotalDefault: () -> BigDecimal,
     taxamtDefault: () -> BigDecimal,
     freightDefault: () -> BigDecimal,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): SalesorderheaderRow = SalesorderheaderRow(salesorderid = salesorderid.getOrElse(salesorderidDefault), revisionnumber = revisionnumber.getOrElse(revisionnumberDefault), orderdate = orderdate.getOrElse(orderdateDefault), duedate = duedate, shipdate = shipdate, status = status.getOrElse(statusDefault), onlineorderflag = onlineorderflag.getOrElse(onlineorderflagDefault), purchaseordernumber = purchaseordernumber, accountnumber = accountnumber, customerid = customerid, salespersonid = salespersonid, territoryid = territoryid, billtoaddressid = billtoaddressid, shiptoaddressid = shiptoaddressid, shipmethodid = shipmethodid, creditcardid = creditcardid, creditcardapprovalcode = creditcardapprovalcode, currencyrateid = currencyrateid, subtotal = subtotal.getOrElse(subtotalDefault), taxamt = taxamt.getOrElse(taxamtDefault), freight = freight.getOrElse(freightDefault), totaldue = totaldue, comment = comment, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<SalesorderheaderRowUnsaved> =
-      PgText.instance({ row, sb -> TypoLocalDateTime.pgType.pgText().unsafeEncode(row.duedate, sb)
+      PgText.instance({ row, sb -> PgTypes.timestamp.pgText().unsafeEncode(row.duedate, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.shipdate, sb)
+      PgTypes.timestamp.nullable().pgText().unsafeEncode(row.shipdate, sb)
       sb.append(PgText.DELIMETER)
-      OrderNumber.pgType.opt().pgText().unsafeEncode(row.purchaseordernumber, sb)
+      OrderNumber.pgType.nullable().pgText().unsafeEncode(row.purchaseordernumber, sb)
       sb.append(PgText.DELIMETER)
-      AccountNumber.pgType.opt().pgText().unsafeEncode(row.accountnumber, sb)
+      AccountNumber.pgType.nullable().pgText().unsafeEncode(row.accountnumber, sb)
       sb.append(PgText.DELIMETER)
       CustomerId.pgType.pgText().unsafeEncode(row.customerid, sb)
       sb.append(PgText.DELIMETER)
-      BusinessentityId.pgType.opt().pgText().unsafeEncode(row.salespersonid, sb)
+      BusinessentityId.pgType.nullable().pgText().unsafeEncode(row.salespersonid, sb)
       sb.append(PgText.DELIMETER)
-      SalesterritoryId.pgType.opt().pgText().unsafeEncode(row.territoryid, sb)
+      SalesterritoryId.pgType.nullable().pgText().unsafeEncode(row.territoryid, sb)
       sb.append(PgText.DELIMETER)
       AddressId.pgType.pgText().unsafeEncode(row.billtoaddressid, sb)
       sb.append(PgText.DELIMETER)
@@ -155,23 +155,23 @@ data class SalesorderheaderRowUnsaved(
       sb.append(PgText.DELIMETER)
       ShipmethodId.pgType.pgText().unsafeEncode(row.shipmethodid, sb)
       sb.append(PgText.DELIMETER)
-      CustomCreditcardId.pgType.opt().pgText().unsafeEncode(row.creditcardid, sb)
+      CustomCreditcardId.pgType.nullable().pgText().unsafeEncode(row.creditcardid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.creditcardapprovalcode, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.creditcardapprovalcode, sb)
       sb.append(PgText.DELIMETER)
-      CurrencyrateId.pgType.opt().pgText().unsafeEncode(row.currencyrateid, sb)
+      CurrencyrateId.pgType.nullable().pgText().unsafeEncode(row.currencyrateid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.numeric.opt().pgText().unsafeEncode(row.totaldue, sb)
+      PgTypes.numeric.nullable().pgText().unsafeEncode(row.totaldue, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.comment, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.comment, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(SalesorderheaderId.pgType.pgText()).unsafeEncode(row.salesorderid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.revisionnumber, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int2.pgText()).unsafeEncode(row.revisionnumber, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.orderdate, sb)
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.orderdate, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoShort.pgType.pgText()).unsafeEncode(row.status, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int2.pgText()).unsafeEncode(row.status, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.onlineorderflag, sb)
       sb.append(PgText.DELIMETER)
@@ -181,8 +181,8 @@ data class SalesorderheaderRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.freight, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

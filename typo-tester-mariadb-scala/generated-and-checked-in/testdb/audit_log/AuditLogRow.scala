@@ -7,13 +7,13 @@ package testdb.audit_log
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import typo.data.maria.Inet6
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
 
 /** Table: audit_log
  * Primary key: log_id
@@ -32,15 +32,15 @@ case class AuditLogRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("old_values") oldValues: Optional[String],
+  @JsonProperty("old_values") oldValues: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("new_values") newValues: Optional[String],
+  @JsonProperty("new_values") newValues: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("changed_by") changedBy: Optional[String],
+  @JsonProperty("changed_by") changedBy: Option[String],
   /** 
    * Default: current_timestamp(6)
    */
@@ -48,21 +48,21 @@ case class AuditLogRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("client_ip") clientIp: Optional[Inet6],
+  @JsonProperty("client_ip") clientIp: Option[Inet6],
   /** 
    * Default: NULL
    */
-  @JsonProperty("session_id") sessionId: Optional[Array[Byte]]
+  @JsonProperty("session_id") sessionId: Option[Array[Byte]]
 ) {
   def id: AuditLogId = logId
 
   def toUnsavedRow(
-    oldValues: Defaulted[Optional[String]] = Defaulted.Provided(this.oldValues),
-    newValues: Defaulted[Optional[String]] = Defaulted.Provided(this.newValues),
-    changedBy: Defaulted[Optional[String]] = Defaulted.Provided(this.changedBy),
+    oldValues: Defaulted[Option[String]] = Defaulted.Provided(this.oldValues),
+    newValues: Defaulted[Option[String]] = Defaulted.Provided(this.newValues),
+    changedBy: Defaulted[Option[String]] = Defaulted.Provided(this.changedBy),
     changedAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.changedAt),
-    clientIp: Defaulted[Optional[Inet6]] = Defaulted.Provided(this.clientIp),
-    sessionId: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.sessionId)
+    clientIp: Defaulted[Option[Inet6]] = Defaulted.Provided(this.clientIp),
+    sessionId: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.sessionId)
   ): AuditLogRowUnsaved = {
     new AuditLogRowUnsaved(
       tableName,
@@ -79,7 +79,7 @@ case class AuditLogRow(
 }
 
 object AuditLogRow {
-  val `_rowParser`: RowParser[AuditLogRow] = RowParsers.of(AuditLogId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.longtext.opt(), MariaTypes.longtext.opt(), MariaTypes.varchar.opt(), MariaTypes.datetime, MariaTypes.inet6.opt(), MariaTypes.varbinary.opt(), AuditLogRow.apply, row => Array[Object](row.logId.asInstanceOf[Object], row.tableName.asInstanceOf[Object], row.recordId.asInstanceOf[Object], row.action.asInstanceOf[Object], row.oldValues.asInstanceOf[Object], row.newValues.asInstanceOf[Object], row.changedBy.asInstanceOf[Object], row.changedAt.asInstanceOf[Object], row.clientIp.asInstanceOf[Object], row.sessionId.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[AuditLogRow] = RowParsers.of(AuditLogId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, MariaTypes.varchar.nullable, MariaTypes.datetime, MariaTypes.inet6.nullable, MariaTypes.varbinary.nullable)(AuditLogRow.apply)(row => Array[Any](row.logId, row.tableName, row.recordId, row.action, row.oldValues, row.newValues, row.changedBy, row.changedAt, row.clientIp, row.sessionId))
 
-  given mariaText: MariaText[AuditLogRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[AuditLogRow] = MariaText.from(`_rowParser`.underlying)
 }

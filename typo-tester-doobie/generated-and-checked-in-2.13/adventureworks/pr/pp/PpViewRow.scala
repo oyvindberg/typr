@@ -20,39 +20,39 @@ case class PpViewRow(
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.productphotoid]] */
   productphotoid: ProductphotoId,
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.thumbnailphoto]] */
-  thumbnailphoto: Option[TypoBytea],
+  thumbnailphoto: TypoBytea,
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.thumbnailphotofilename]] */
-  thumbnailphotofilename: Option[/* max 50 chars */ String],
+  thumbnailphotofilename: String,
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.largephoto]] */
-  largephoto: Option[TypoBytea],
+  largephoto: TypoBytea,
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.largephotofilename]] */
-  largephotofilename: Option[/* max 50 chars */ String],
+  largephotofilename: String,
   /** Points to [[adventureworks.production.productphoto.ProductphotoRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 
 object PpViewRow {
-  implicit lazy val decoder: Decoder[PpViewRow] = Decoder.forProduct7[PpViewRow, ProductphotoId, ProductphotoId, Option[TypoBytea], Option[/* max 50 chars */ String], Option[TypoBytea], Option[/* max 50 chars */ String], TypoLocalDateTime]("id", "productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate")(PpViewRow.apply)(ProductphotoId.decoder, ProductphotoId.decoder, Decoder.decodeOption(TypoBytea.decoder), Decoder.decodeOption(Decoder.decodeString), Decoder.decodeOption(TypoBytea.decoder), Decoder.decodeOption(Decoder.decodeString), TypoLocalDateTime.decoder)
+  implicit lazy val decoder: Decoder[PpViewRow] = Decoder.forProduct7[PpViewRow, ProductphotoId, ProductphotoId, TypoBytea, String, TypoBytea, String, TypoLocalDateTime]("id", "productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate")(PpViewRow.apply)(ProductphotoId.decoder, ProductphotoId.decoder, TypoBytea.decoder, Decoder.decodeString, TypoBytea.decoder, Decoder.decodeString, TypoLocalDateTime.decoder)
 
-  implicit lazy val encoder: Encoder[PpViewRow] = Encoder.forProduct7[PpViewRow, ProductphotoId, ProductphotoId, Option[TypoBytea], Option[/* max 50 chars */ String], Option[TypoBytea], Option[/* max 50 chars */ String], TypoLocalDateTime]("id", "productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate")(x => (x.id, x.productphotoid, x.thumbnailphoto, x.thumbnailphotofilename, x.largephoto, x.largephotofilename, x.modifieddate))(ProductphotoId.encoder, ProductphotoId.encoder, Encoder.encodeOption(TypoBytea.encoder), Encoder.encodeOption(Encoder.encodeString), Encoder.encodeOption(TypoBytea.encoder), Encoder.encodeOption(Encoder.encodeString), TypoLocalDateTime.encoder)
+  implicit lazy val encoder: Encoder[PpViewRow] = Encoder.forProduct7[PpViewRow, ProductphotoId, ProductphotoId, TypoBytea, String, TypoBytea, String, TypoLocalDateTime]("id", "productphotoid", "thumbnailphoto", "thumbnailphotofilename", "largephoto", "largephotofilename", "modifieddate")(x => (x.id, x.productphotoid, x.thumbnailphoto, x.thumbnailphotofilename, x.largephoto, x.largephotofilename, x.modifieddate))(ProductphotoId.encoder, ProductphotoId.encoder, TypoBytea.encoder, Encoder.encodeString, TypoBytea.encoder, Encoder.encodeString, TypoLocalDateTime.encoder)
 
   implicit lazy val read: Read[PpViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.Single(ProductphotoId.get).asInstanceOf[Read[Any]],
         new Read.Single(ProductphotoId.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoBytea.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoBytea.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoBytea.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
     ))(scala.reflect.ClassTag.Any).map { arr =>
       PpViewRow(
         id = arr(0).asInstanceOf[ProductphotoId],
             productphotoid = arr(1).asInstanceOf[ProductphotoId],
-            thumbnailphoto = arr(2).asInstanceOf[Option[TypoBytea]],
-            thumbnailphotofilename = arr(3).asInstanceOf[Option[/* max 50 chars */ String]],
-            largephoto = arr(4).asInstanceOf[Option[TypoBytea]],
-            largephotofilename = arr(5).asInstanceOf[Option[/* max 50 chars */ String]],
+            thumbnailphoto = arr(2).asInstanceOf[TypoBytea],
+            thumbnailphotofilename = arr(3).asInstanceOf[String],
+            largephoto = arr(4).asInstanceOf[TypoBytea],
+            largephotofilename = arr(5).asInstanceOf[String],
             modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
       )
     }

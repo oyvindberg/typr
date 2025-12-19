@@ -6,18 +6,16 @@
 package adventureworks.public.test_organisasjon
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
 
 class TestOrganisasjonRepoImpl() : TestOrganisasjonRepo {
   override fun delete(): DeleteBuilder<TestOrganisasjonFields, TestOrganisasjonRow> = DeleteBuilder.of("\"public\".\"test_organisasjon\"", TestOrganisasjonFields.structure, Dialect.POSTGRESQL)
@@ -25,81 +23,40 @@ class TestOrganisasjonRepoImpl() : TestOrganisasjonRepo {
   override fun deleteById(
     organisasjonskode: TestOrganisasjonId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "public"."test_organisasjon" where "organisasjonskode" = 
-    """.trimMargin()),
-    TestOrganisasjonId.pgType.encode(organisasjonskode),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from \"public\".\"test_organisasjon\" where \"organisasjonskode\" = "), Fragment.encode(TestOrganisasjonId.pgType, organisasjonskode), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     organisasjonskodes: Array<TestOrganisasjonId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "public"."test_organisasjon"
-               where "organisasjonskode" = ANY(""".trimMargin()),
-             TestOrganisasjonId.pgTypeArray.encode(organisasjonskodes),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = Fragment.interpolate(Fragment.lit("delete\nfrom \"public\".\"test_organisasjon\"\nwhere \"organisasjonskode\" = ANY("), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskodes), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: TestOrganisasjonRow,
     c: Connection
-  ): TestOrganisasjonRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "public"."test_organisasjon"("organisasjonskode")
-      values (""".trimMargin()),
-    TestOrganisasjonId.pgType.encode(unsaved.organisasjonskode),
-    typo.runtime.Fragment.lit("""
-      )
-      returning "organisasjonskode"
-    """.trimMargin())
-  )
+  ): TestOrganisasjonRow = Fragment.interpolate(Fragment.lit("insert into \"public\".\"test_organisasjon\"(\"organisasjonskode\")\nvalues ("), Fragment.encode(TestOrganisasjonId.pgType, unsaved.organisasjonskode), Fragment.lit(")\nreturning \"organisasjonskode\"\n"))
     .updateReturning(TestOrganisasjonRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<TestOrganisasjonRow>,
+    unsaved: Iterator<TestOrganisasjonRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "public"."test_organisasjon"("organisasjonskode") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, TestOrganisasjonRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"public\".\"test_organisasjon\"(\"organisasjonskode\") FROM STDIN", batchSize, unsaved, c, TestOrganisasjonRow.pgText)
 
   override fun select(): SelectBuilder<TestOrganisasjonFields, TestOrganisasjonRow> = SelectBuilder.of("\"public\".\"test_organisasjon\"", TestOrganisasjonFields.structure, TestOrganisasjonRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<TestOrganisasjonRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "organisasjonskode"
-    from "public"."test_organisasjon"
-  """.trimMargin())).query(TestOrganisasjonRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<TestOrganisasjonRow> = Fragment.interpolate(Fragment.lit("select \"organisasjonskode\"\nfrom \"public\".\"test_organisasjon\"\n")).query(TestOrganisasjonRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     organisasjonskode: TestOrganisasjonId,
     c: Connection
-  ): Optional<TestOrganisasjonRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "organisasjonskode"
-      from "public"."test_organisasjon"
-      where "organisasjonskode" = """.trimMargin()),
-    TestOrganisasjonId.pgType.encode(organisasjonskode),
-    typo.runtime.Fragment.lit("")
-  ).query(TestOrganisasjonRow._rowParser.first()).runUnchecked(c)
+  ): TestOrganisasjonRow? = Fragment.interpolate(Fragment.lit("select \"organisasjonskode\"\nfrom \"public\".\"test_organisasjon\"\nwhere \"organisasjonskode\" = "), Fragment.encode(TestOrganisasjonId.pgType, organisasjonskode), Fragment.lit("")).query(TestOrganisasjonRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     organisasjonskodes: Array<TestOrganisasjonId>,
     c: Connection
-  ): List<TestOrganisasjonRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "organisasjonskode"
-      from "public"."test_organisasjon"
-      where "organisasjonskode" = ANY(""".trimMargin()),
-    TestOrganisasjonId.pgTypeArray.encode(organisasjonskodes),
-    typo.runtime.Fragment.lit(")")
-  ).query(TestOrganisasjonRow._rowParser.all()).runUnchecked(c)
+  ): List<TestOrganisasjonRow> = Fragment.interpolate(Fragment.lit("select \"organisasjonskode\"\nfrom \"public\".\"test_organisasjon\"\nwhere \"organisasjonskode\" = ANY("), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskodes), Fragment.lit(")")).query(TestOrganisasjonRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     organisasjonskodes: Array<TestOrganisasjonId>,
@@ -107,58 +64,33 @@ class TestOrganisasjonRepoImpl() : TestOrganisasjonRepo {
   ): Map<TestOrganisasjonId, TestOrganisasjonRow> {
     val ret: MutableMap<TestOrganisasjonId, TestOrganisasjonRow> = mutableMapOf<TestOrganisasjonId, TestOrganisasjonRow>()
     selectByIds(organisasjonskodes, c).forEach({ row -> ret.put(row.organisasjonskode, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<TestOrganisasjonFields, TestOrganisasjonRow> = UpdateBuilder.of("\"public\".\"test_organisasjon\"", TestOrganisasjonFields.structure, TestOrganisasjonRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<TestOrganisasjonFields, TestOrganisasjonRow> = UpdateBuilder.of("\"public\".\"test_organisasjon\"", TestOrganisasjonFields.structure, TestOrganisasjonRow._rowParser, Dialect.POSTGRESQL)
 
   override fun upsert(
     unsaved: TestOrganisasjonRow,
     c: Connection
-  ): TestOrganisasjonRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "public"."test_organisasjon"("organisasjonskode")
-      values (""".trimMargin()),
-    TestOrganisasjonId.pgType.encode(unsaved.organisasjonskode),
-    typo.runtime.Fragment.lit("""
-      )
-      on conflict ("organisasjonskode")
-      do update set "organisasjonskode" = EXCLUDED."organisasjonskode"
-      returning "organisasjonskode"""".trimMargin())
-  )
+  ): TestOrganisasjonRow = Fragment.interpolate(Fragment.lit("insert into \"public\".\"test_organisasjon\"(\"organisasjonskode\")\nvalues ("), Fragment.encode(TestOrganisasjonId.pgType, unsaved.organisasjonskode), Fragment.lit(")\non conflict (\"organisasjonskode\")\ndo update set \"organisasjonskode\" = EXCLUDED.\"organisasjonskode\"\nreturning \"organisasjonskode\""))
     .updateReturning(TestOrganisasjonRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<TestOrganisasjonRow>,
+    unsaved: Iterator<TestOrganisasjonRow>,
     c: Connection
-  ): List<TestOrganisasjonRow> = interpolate(typo.runtime.Fragment.lit("""
-                                   insert into "public"."test_organisasjon"("organisasjonskode")
-                                   values (?)
-                                   on conflict ("organisasjonskode")
-                                   do update set "organisasjonskode" = EXCLUDED."organisasjonskode"
-                                   returning "organisasjonskode"""".trimMargin()))
+  ): List<TestOrganisasjonRow> = Fragment.interpolate(Fragment.lit("insert into \"public\".\"test_organisasjon\"(\"organisasjonskode\")\nvalues (?)\non conflict (\"organisasjonskode\")\ndo update set \"organisasjonskode\" = EXCLUDED.\"organisasjonskode\"\nreturning \"organisasjonskode\""))
     .updateManyReturning(TestOrganisasjonRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<TestOrganisasjonRow>,
+    unsaved: Iterator<TestOrganisasjonRow>,
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table test_organisasjon_TEMP (like "public"."test_organisasjon") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy test_organisasjon_TEMP("organisasjonskode") from stdin
-    """.trimMargin()), batchSize, unsaved, c, TestOrganisasjonRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "public"."test_organisasjon"("organisasjonskode")
-      select * from test_organisasjon_TEMP
-      on conflict ("organisasjonskode")
-      do nothing
-      ;
-      drop table test_organisasjon_TEMP;""".trimMargin())).update().runUnchecked(c)
+    Fragment.interpolate(Fragment.lit("create temporary table test_organisasjon_TEMP (like \"public\".\"test_organisasjon\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy test_organisasjon_TEMP(\"organisasjonskode\") from stdin", batchSize, unsaved, c, TestOrganisasjonRow.pgText)
+    return Fragment.interpolate(Fragment.lit("insert into \"public\".\"test_organisasjon\"(\"organisasjonskode\")\nselect * from test_organisasjon_TEMP\non conflict (\"organisasjonskode\")\ndo nothing\n;\ndrop table test_organisasjon_TEMP;")).update().runUnchecked(c)
   }
 }

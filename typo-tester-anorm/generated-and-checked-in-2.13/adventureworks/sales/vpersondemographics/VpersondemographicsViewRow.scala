@@ -24,18 +24,18 @@ import scala.util.Try
 case class VpersondemographicsViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
-  totalpurchaseytd: /* nullability unknown */ Option[TypoMoney],
-  datefirstpurchase: /* nullability unknown */ Option[TypoLocalDate],
-  birthdate: /* nullability unknown */ Option[TypoLocalDate],
-  maritalstatus: /* nullability unknown */ Option[/* max 1 chars */ String],
-  yearlyincome: /* nullability unknown */ Option[/* max 30 chars */ String],
-  gender: /* nullability unknown */ Option[/* max 1 chars */ String],
-  totalchildren: /* nullability unknown */ Option[Int],
-  numberchildrenathome: /* nullability unknown */ Option[Int],
-  education: /* nullability unknown */ Option[/* max 30 chars */ String],
-  occupation: /* nullability unknown */ Option[/* max 30 chars */ String],
-  homeownerflag: /* nullability unknown */ Option[Boolean],
-  numbercarsowned: /* nullability unknown */ Option[Int]
+  totalpurchaseytd: TypoMoney,
+  datefirstpurchase: TypoLocalDate,
+  birthdate: TypoLocalDate,
+  maritalstatus: String,
+  yearlyincome: String,
+  gender: String,
+  totalchildren: Int,
+  numberchildrenathome: Int,
+  education: String,
+  occupation: String,
+  homeownerflag: Boolean,
+  numbercarsowned: Int
 )
 
 object VpersondemographicsViewRow {
@@ -44,18 +44,18 @@ object VpersondemographicsViewRow {
         Try(
           VpersondemographicsViewRow(
             businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-            totalpurchaseytd = json.\("totalpurchaseytd").toOption.map(_.as(TypoMoney.reads)),
-            datefirstpurchase = json.\("datefirstpurchase").toOption.map(_.as(TypoLocalDate.reads)),
-            birthdate = json.\("birthdate").toOption.map(_.as(TypoLocalDate.reads)),
-            maritalstatus = json.\("maritalstatus").toOption.map(_.as(Reads.StringReads)),
-            yearlyincome = json.\("yearlyincome").toOption.map(_.as(Reads.StringReads)),
-            gender = json.\("gender").toOption.map(_.as(Reads.StringReads)),
-            totalchildren = json.\("totalchildren").toOption.map(_.as(Reads.IntReads)),
-            numberchildrenathome = json.\("numberchildrenathome").toOption.map(_.as(Reads.IntReads)),
-            education = json.\("education").toOption.map(_.as(Reads.StringReads)),
-            occupation = json.\("occupation").toOption.map(_.as(Reads.StringReads)),
-            homeownerflag = json.\("homeownerflag").toOption.map(_.as(Reads.BooleanReads)),
-            numbercarsowned = json.\("numbercarsowned").toOption.map(_.as(Reads.IntReads))
+            totalpurchaseytd = json.\("totalpurchaseytd").as(TypoMoney.reads),
+            datefirstpurchase = json.\("datefirstpurchase").as(TypoLocalDate.reads),
+            birthdate = json.\("birthdate").as(TypoLocalDate.reads),
+            maritalstatus = json.\("maritalstatus").as(Reads.StringReads),
+            yearlyincome = json.\("yearlyincome").as(Reads.StringReads),
+            gender = json.\("gender").as(Reads.StringReads),
+            totalchildren = json.\("totalchildren").as(Reads.IntReads),
+            numberchildrenathome = json.\("numberchildrenathome").as(Reads.IntReads),
+            education = json.\("education").as(Reads.StringReads),
+            occupation = json.\("occupation").as(Reads.StringReads),
+            homeownerflag = json.\("homeownerflag").as(Reads.BooleanReads),
+            numbercarsowned = json.\("numbercarsowned").as(Reads.IntReads)
           )
         )
       ),
@@ -67,18 +67,18 @@ object VpersondemographicsViewRow {
       Success(
         VpersondemographicsViewRow(
           businessentityid = row(idx + 0)(BusinessentityId.column),
-          totalpurchaseytd = row(idx + 1)(Column.columnToOption(TypoMoney.column)),
-          datefirstpurchase = row(idx + 2)(Column.columnToOption(TypoLocalDate.column)),
-          birthdate = row(idx + 3)(Column.columnToOption(TypoLocalDate.column)),
-          maritalstatus = row(idx + 4)(Column.columnToOption(Column.columnToString)),
-          yearlyincome = row(idx + 5)(Column.columnToOption(Column.columnToString)),
-          gender = row(idx + 6)(Column.columnToOption(Column.columnToString)),
-          totalchildren = row(idx + 7)(Column.columnToOption(Column.columnToInt)),
-          numberchildrenathome = row(idx + 8)(Column.columnToOption(Column.columnToInt)),
-          education = row(idx + 9)(Column.columnToOption(Column.columnToString)),
-          occupation = row(idx + 10)(Column.columnToOption(Column.columnToString)),
-          homeownerflag = row(idx + 11)(Column.columnToOption(Column.columnToBoolean)),
-          numbercarsowned = row(idx + 12)(Column.columnToOption(Column.columnToInt))
+          totalpurchaseytd = row(idx + 1)(TypoMoney.column),
+          datefirstpurchase = row(idx + 2)(TypoLocalDate.column),
+          birthdate = row(idx + 3)(TypoLocalDate.column),
+          maritalstatus = row(idx + 4)(Column.columnToString),
+          yearlyincome = row(idx + 5)(Column.columnToString),
+          gender = row(idx + 6)(Column.columnToString),
+          totalchildren = row(idx + 7)(Column.columnToInt),
+          numberchildrenathome = row(idx + 8)(Column.columnToInt),
+          education = row(idx + 9)(Column.columnToString),
+          occupation = row(idx + 10)(Column.columnToString),
+          homeownerflag = row(idx + 11)(Column.columnToBoolean),
+          numbercarsowned = row(idx + 12)(Column.columnToInt)
         )
       )
     }
@@ -88,18 +88,18 @@ object VpersondemographicsViewRow {
     OWrites[VpersondemographicsViewRow](o =>
       new JsObject(ListMap[String, JsValue](
         "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-        "totalpurchaseytd" -> Writes.OptionWrites(TypoMoney.writes).writes(o.totalpurchaseytd),
-        "datefirstpurchase" -> Writes.OptionWrites(TypoLocalDate.writes).writes(o.datefirstpurchase),
-        "birthdate" -> Writes.OptionWrites(TypoLocalDate.writes).writes(o.birthdate),
-        "maritalstatus" -> Writes.OptionWrites(Writes.StringWrites).writes(o.maritalstatus),
-        "yearlyincome" -> Writes.OptionWrites(Writes.StringWrites).writes(o.yearlyincome),
-        "gender" -> Writes.OptionWrites(Writes.StringWrites).writes(o.gender),
-        "totalchildren" -> Writes.OptionWrites(Writes.IntWrites).writes(o.totalchildren),
-        "numberchildrenathome" -> Writes.OptionWrites(Writes.IntWrites).writes(o.numberchildrenathome),
-        "education" -> Writes.OptionWrites(Writes.StringWrites).writes(o.education),
-        "occupation" -> Writes.OptionWrites(Writes.StringWrites).writes(o.occupation),
-        "homeownerflag" -> Writes.OptionWrites(Writes.BooleanWrites).writes(o.homeownerflag),
-        "numbercarsowned" -> Writes.OptionWrites(Writes.IntWrites).writes(o.numbercarsowned)
+        "totalpurchaseytd" -> TypoMoney.writes.writes(o.totalpurchaseytd),
+        "datefirstpurchase" -> TypoLocalDate.writes.writes(o.datefirstpurchase),
+        "birthdate" -> TypoLocalDate.writes.writes(o.birthdate),
+        "maritalstatus" -> Writes.StringWrites.writes(o.maritalstatus),
+        "yearlyincome" -> Writes.StringWrites.writes(o.yearlyincome),
+        "gender" -> Writes.StringWrites.writes(o.gender),
+        "totalchildren" -> Writes.IntWrites.writes(o.totalchildren),
+        "numberchildrenathome" -> Writes.IntWrites.writes(o.numberchildrenathome),
+        "education" -> Writes.StringWrites.writes(o.education),
+        "occupation" -> Writes.StringWrites.writes(o.occupation),
+        "homeownerflag" -> Writes.BooleanWrites.writes(o.homeownerflag),
+        "numbercarsowned" -> Writes.IntWrites.writes(o.numbercarsowned)
       ))
     )
   }

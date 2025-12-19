@@ -66,7 +66,7 @@ sealed trait SelectBuilderSql[Fields, Row] extends SelectBuilder[Fields, Row] {
 object SelectBuilderSql {
   final case class Relation[Fields, Row](
       name: String,
-      structure: Structure.Relation[Fields, Row],
+      structure: RelationStructure[Fields, Row],
       rowParser: Int => RowParser[Row],
       params: SelectParams[Fields, Row]
   ) extends SelectBuilderSql[Fields, Row] {

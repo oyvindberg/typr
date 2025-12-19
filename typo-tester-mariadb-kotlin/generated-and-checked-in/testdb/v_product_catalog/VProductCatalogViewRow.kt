@@ -7,12 +7,13 @@ package testdb.v_product_catalog
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
-import java.util.Optional
 import testdb.products.ProductsId
 import typo.data.maria.MariaSet
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: v_product_catalog
   * VIEW
@@ -35,7 +36,7 @@ data class VProductCatalogViewRow(
     * Default: NULL
     * Points to [testdb.products.ProductsRow.shortDescription]
     */
-  @JsonProperty("short_description") val shortDescription: Optional<String>,
+  @JsonProperty("short_description") val shortDescription: String?,
   /** 
     * Points to [testdb.products.ProductsRow.basePrice]
     */
@@ -49,11 +50,11 @@ data class VProductCatalogViewRow(
     * Default: NULL
     * Points to [testdb.products.ProductsRow.tags]
     */
-  val tags: Optional<MariaSet>,
+  val tags: MariaSet?,
   /** 
     * Points to [testdb.brands.BrandsRow.name]
     */
-  @JsonProperty("brand_name") val brandName: Optional<String>,
+  @JsonProperty("brand_name") val brandName: String?,
   /** 
     * Default: 0
     */
@@ -68,6 +69,6 @@ data class VProductCatalogViewRow(
   @JsonProperty("review_count") val reviewCount: Long
 ) {
   companion object {
-    val _rowParser: RowParser<VProductCatalogViewRow> = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.text, MariaTypes.set.opt(), MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.decimal, MariaTypes.bigint, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> VProductCatalogViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount) })
+    val _rowParser: RowParser<VProductCatalogViewRow> = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.set.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.bigint, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> VProductCatalogViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount) })
   }
 }

@@ -8,21 +8,19 @@ package testdb.product_images
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ProductImagesRepoMock(
   val toRow: (ProductImagesRowUnsaved) -> ProductImagesRow,
@@ -33,7 +31,7 @@ data class ProductImagesRepoMock(
   override fun deleteById(
     imageId: ProductImagesId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(imageId)).isPresent()
+  ): Boolean = map.remove(imageId) != null
 
   override fun deleteByIds(
     imageIds: Array<ProductImagesId>,
@@ -41,7 +39,7 @@ data class ProductImagesRepoMock(
   ): Int {
     var count = 0
     for (id in imageIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ProductImagesRepoMock(
     c: Connection
   ): ProductImagesRow {
     if (map.containsKey(unsaved.imageId)) {
-      throw RuntimeException(str("id $unsaved.imageId already exists"))
+      throw RuntimeException("id " + unsaved.imageId + " already exists")
     }
     map[unsaved.imageId] = unsaved
     return unsaved
@@ -71,7 +69,7 @@ data class ProductImagesRepoMock(
   override fun selectById(
     imageId: ProductImagesId,
     c: Connection
-  ): Optional<ProductImagesRow> = Optional.ofNullable(map[imageId])
+  ): ProductImagesRow? = map[imageId]
 
   override fun selectByIds(
     imageIds: Array<ProductImagesId>,
@@ -79,9 +77,9 @@ data class ProductImagesRepoMock(
   ): List<ProductImagesRow> {
     val result = ArrayList<ProductImagesRow>()
     for (id in imageIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -98,7 +96,7 @@ data class ProductImagesRepoMock(
     row: ProductImagesRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.imageId]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.imageId]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.imageId] = row
     }
@@ -114,7 +112,7 @@ data class ProductImagesRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductImagesRow>,
+    unsaved: Iterator<ProductImagesRow>,
     c: Connection
   ): List<ProductImagesRow> {
     val result = ArrayList<ProductImagesRow>()

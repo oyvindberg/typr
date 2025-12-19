@@ -24,7 +24,7 @@ case class SthViewRow(
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.modifieddate]] */
@@ -32,9 +32,9 @@ case class SthViewRow(
 )
 
 object SthViewRow {
-  given decoder: Decoder[SthViewRow] = Decoder.forProduct7[SthViewRow, SalesterritoryId, BusinessentityId, SalesterritoryId, TypoLocalDateTime, Option[TypoLocalDateTime], TypoUUID, TypoLocalDateTime]("id", "businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")(SthViewRow.apply)(using SalesterritoryId.decoder, BusinessentityId.decoder, SalesterritoryId.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(using TypoLocalDateTime.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[SthViewRow] = Decoder.forProduct7[SthViewRow, SalesterritoryId, BusinessentityId, SalesterritoryId, TypoLocalDateTime, TypoLocalDateTime, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")(SthViewRow.apply)(using SalesterritoryId.decoder, BusinessentityId.decoder, SalesterritoryId.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[SthViewRow] = Encoder.forProduct7[SthViewRow, SalesterritoryId, BusinessentityId, SalesterritoryId, TypoLocalDateTime, Option[TypoLocalDateTime], TypoUUID, TypoLocalDateTime]("id", "businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.territoryid, x.startdate, x.enddate, x.rowguid, x.modifieddate))(using SalesterritoryId.encoder, BusinessentityId.encoder, SalesterritoryId.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(using TypoLocalDateTime.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[SthViewRow] = Encoder.forProduct7[SthViewRow, SalesterritoryId, BusinessentityId, SalesterritoryId, TypoLocalDateTime, TypoLocalDateTime, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.territoryid, x.startdate, x.enddate, x.rowguid, x.modifieddate))(using SalesterritoryId.encoder, BusinessentityId.encoder, SalesterritoryId.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given read: Read[SthViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -42,7 +42,7 @@ object SthViewRow {
         new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
         new Read.Single(SalesterritoryId.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoUUID.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
@@ -51,7 +51,7 @@ object SthViewRow {
             businessentityid = arr(1).asInstanceOf[BusinessentityId],
             territoryid = arr(2).asInstanceOf[SalesterritoryId],
             startdate = arr(3).asInstanceOf[TypoLocalDateTime],
-            enddate = arr(4).asInstanceOf[Option[TypoLocalDateTime]],
+            enddate = arr(4).asInstanceOf[TypoLocalDateTime],
             rowguid = arr(5).asInstanceOf[TypoUUID],
             modifieddate = arr(6).asInstanceOf[TypoLocalDateTime]
       )

@@ -7,33 +7,34 @@ package adventureworks.production.illustration
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoXml
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.data.Xml
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `production.illustration` which has not been persisted yet */
 data class IllustrationRowUnsaved(
   /** Illustrations used in manufacturing instructions. Stored as XML. */
-  val diagram: Optional<TypoXml> = Optional.empty(),
+  val diagram: Xml? = null,
   /** Default: nextval('production.illustration_illustrationid_seq'::regclass)
     * Primary key for Illustration records.
     */
   val illustrationid: Defaulted<IllustrationId> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     illustrationidDefault: () -> IllustrationId,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): IllustrationRow = IllustrationRow(illustrationid = illustrationid.getOrElse(illustrationidDefault), diagram = diagram, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<IllustrationRowUnsaved> =
-      PgText.instance({ row, sb -> TypoXml.pgType.opt().pgText().unsafeEncode(row.diagram, sb)
+      PgText.instance({ row, sb -> PgTypes.xml.nullable().pgText().unsafeEncode(row.diagram, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(IllustrationId.pgType.pgText()).unsafeEncode(row.illustrationid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

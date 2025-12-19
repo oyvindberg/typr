@@ -8,9 +8,9 @@ package adventureworks.production.vproductanddescription
 import adventureworks.production.culture.CultureId
 import adventureworks.production.product.ProductId
 import adventureworks.public.Name
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Materialized View: production.vproductanddescription */
 data class VproductanddescriptionMVRow(
@@ -23,9 +23,9 @@ data class VproductanddescriptionMVRow(
   /** Points to [adventureworks.production.productmodelproductdescriptionculture.ProductmodelproductdescriptioncultureRow.cultureid] */
   val cultureid: CultureId,
   /** Points to [adventureworks.production.productdescription.ProductdescriptionRow.description] */
-  val description: /* max 400 chars */ String
+  val description: String
 ) {
   companion object {
-    val _rowParser: RowParser<VproductanddescriptionMVRow> = RowParsers.of(ProductId.pgType, Name.pgType, Name.pgType, CultureId.pgType, PgTypes.text, { t0, t1, t2, t3, t4 -> VproductanddescriptionMVRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.productid, row.name, row.productmodel, row.cultureid, row.description) })
+    val _rowParser: RowParser<VproductanddescriptionMVRow> = RowParsers.of(ProductId.pgType, Name.pgType, Name.pgType, CultureId.pgType, PgTypes.text, { t0, t1, t2, t3, t4 -> VproductanddescriptionMVRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.productid, row.name, row.productmodel, row.cultureid, row.description) })
   }
 }

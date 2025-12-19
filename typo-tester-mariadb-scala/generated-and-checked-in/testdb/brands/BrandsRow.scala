@@ -6,12 +6,13 @@
 package testdb.brands
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: brands
  * Primary key: brand_id
@@ -28,27 +29,27 @@ case class BrandsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("logo_blob") logoBlob: Optional[Array[Byte]],
+  @JsonProperty("logo_blob") logoBlob: Option[Array[Byte]],
   /** 
    * Default: NULL
    */
-  @JsonProperty("website_url") websiteUrl: Optional[String],
+  @JsonProperty("website_url") websiteUrl: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("country_of_origin") countryOfOrigin: Optional[String],
+  @JsonProperty("country_of_origin") countryOfOrigin: Option[String],
   /** 
    * Default: 1
    */
-  @JsonProperty("is_active") isActive: java.lang.Boolean
+  @JsonProperty("is_active") isActive: Boolean
 ) {
   def id: BrandsId = brandId
 
   def toUnsavedRow(
-    logoBlob: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.logoBlob),
-    websiteUrl: Defaulted[Optional[String]] = Defaulted.Provided(this.websiteUrl),
-    countryOfOrigin: Defaulted[Optional[String]] = Defaulted.Provided(this.countryOfOrigin),
-    isActive: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isActive)
+    logoBlob: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.logoBlob),
+    websiteUrl: Defaulted[Option[String]] = Defaulted.Provided(this.websiteUrl),
+    countryOfOrigin: Defaulted[Option[String]] = Defaulted.Provided(this.countryOfOrigin),
+    isActive: Defaulted[Boolean] = Defaulted.Provided(this.isActive)
   ): BrandsRowUnsaved = {
     new BrandsRowUnsaved(
       name,
@@ -62,7 +63,7 @@ case class BrandsRow(
 }
 
 object BrandsRow {
-  val `_rowParser`: RowParser[BrandsRow] = RowParsers.of(BrandsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumblob.opt(), MariaTypes.varchar.opt(), MariaTypes.char_.opt(), MariaTypes.bool, BrandsRow.apply, row => Array[Object](row.brandId.asInstanceOf[Object], row.name.asInstanceOf[Object], row.slug.asInstanceOf[Object], row.logoBlob.asInstanceOf[Object], row.websiteUrl.asInstanceOf[Object], row.countryOfOrigin.asInstanceOf[Object], row.isActive.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[BrandsRow] = RowParsers.of(BrandsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumblob.nullable, MariaTypes.varchar.nullable, MariaTypes.char_.nullable, ScalaDbTypes.MariaTypes.bool)(BrandsRow.apply)(row => Array[Any](row.brandId, row.name, row.slug, row.logoBlob, row.websiteUrl, row.countryOfOrigin, row.isActive))
 
-  given mariaText: MariaText[BrandsRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[BrandsRow] = MariaText.from(`_rowParser`.underlying)
 }

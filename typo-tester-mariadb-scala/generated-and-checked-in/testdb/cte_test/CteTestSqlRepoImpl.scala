@@ -6,11 +6,11 @@
 package testdb.cte_test
 
 import java.sql.Connection
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Fragment.sql
 
 class CteTestSqlRepoImpl extends CteTestSqlRepo {
-  override def apply(using c: Connection): java.util.List[CteTestSqlRow] = {
-    interpolate"""-- Test CTE tracking
+  override def apply(using c: Connection): List[CteTestSqlRow] = {
+    sql"""-- Test CTE tracking
     WITH customer_totals AS (
         SELECT
             o.customer_id,

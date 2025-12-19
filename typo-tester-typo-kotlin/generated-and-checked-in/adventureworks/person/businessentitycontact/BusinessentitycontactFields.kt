@@ -5,8 +5,6 @@
  */
 package adventureworks.person.businessentitycontact
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityFields
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.businessentity.BusinessentityRow
@@ -15,62 +13,66 @@ import adventureworks.person.contacttype.ContacttypeId
 import adventureworks.person.contacttype.ContacttypeRow
 import adventureworks.person.person.PersonFields
 import adventureworks.person.person.PersonRow
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface BusinessentitycontactFields : FieldsExpr<BusinessentitycontactRow> {
-  fun businessentityid(): IdField<BusinessentityId, BusinessentitycontactRow>
+  abstract fun businessentityid(): IdField<BusinessentityId, BusinessentitycontactRow>
 
-  override fun columns(): List<FieldLike<*, BusinessentitycontactRow>>
+  abstract override fun columns(): List<FieldLike<*, BusinessentitycontactRow>>
 
   fun compositeIdIn(compositeIds: List<BusinessentitycontactId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<BusinessentityId, BusinessentitycontactId, BusinessentitycontactRow>(businessentityid(), BusinessentitycontactId::businessentityid, BusinessentityId.pgType), Part<BusinessentityId, BusinessentitycontactId, BusinessentitycontactRow>(personid(), BusinessentitycontactId::personid, BusinessentityId.pgType), Part<ContacttypeId, BusinessentitycontactId, BusinessentitycontactRow>(contacttypeid(), BusinessentitycontactId::contacttypeid, ContacttypeId.pgType)), compositeIds)
 
   fun compositeIdIs(compositeId: BusinessentitycontactId): SqlExpr<Boolean> = SqlExpr.all(businessentityid().isEqual(compositeId.businessentityid), personid().isEqual(compositeId.personid), contacttypeid().isEqual(compositeId.contacttypeid))
 
-  fun contacttypeid(): IdField<ContacttypeId, BusinessentitycontactRow>
+  abstract fun contacttypeid(): IdField<ContacttypeId, BusinessentitycontactRow>
 
-  fun fkBusinessentity(): ForeignKey<BusinessentityFields, BusinessentityRow> = ForeignKey.of<BusinessentityFields, BusinessentityRow>("person.FK_BusinessEntityContact_BusinessEntity_BusinessEntityID").withColumnPair(businessentityid(), BusinessentityFields::businessentityid)
+  fun fkBusinessentity(): ForeignKey<BusinessentityFields, BusinessentityRow> = ForeignKey.of<BusinessentityFields, BusinessentityRow>("person.FK_BusinessEntityContact_BusinessEntity_BusinessEntityID").withColumnPair<BusinessentityId>(businessentityid(), BusinessentityFields::businessentityid)
 
-  fun fkContacttype(): ForeignKey<ContacttypeFields, ContacttypeRow> = ForeignKey.of<ContacttypeFields, ContacttypeRow>("person.FK_BusinessEntityContact_ContactType_ContactTypeID").withColumnPair(contacttypeid(), ContacttypeFields::contacttypeid)
+  fun fkContacttype(): ForeignKey<ContacttypeFields, ContacttypeRow> = ForeignKey.of<ContacttypeFields, ContacttypeRow>("person.FK_BusinessEntityContact_ContactType_ContactTypeID").withColumnPair<ContacttypeId>(contacttypeid(), ContacttypeFields::contacttypeid)
 
-  fun fkPerson(): ForeignKey<PersonFields, PersonRow> = ForeignKey.of<PersonFields, PersonRow>("person.FK_BusinessEntityContact_Person_PersonID").withColumnPair(personid(), PersonFields::businessentityid)
+  fun fkPerson(): ForeignKey<PersonFields, PersonRow> = ForeignKey.of<PersonFields, PersonRow>("person.FK_BusinessEntityContact_Person_PersonID").withColumnPair<BusinessentityId>(personid(), PersonFields::businessentityid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, BusinessentitycontactRow>
+  abstract fun modifieddate(): Field<LocalDateTime, BusinessentitycontactRow>
 
-  fun personid(): IdField<BusinessentityId, BusinessentitycontactRow>
+  abstract fun personid(): IdField<BusinessentityId, BusinessentitycontactRow>
 
-  override fun rowParser(): RowParser<BusinessentitycontactRow> = BusinessentitycontactRow._rowParser
+  override fun rowParser(): RowParser<BusinessentitycontactRow> = BusinessentitycontactRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, BusinessentitycontactRow>
+  abstract fun rowguid(): Field<UUID, BusinessentitycontactRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : BusinessentitycontactFields, Relation<BusinessentitycontactFields, BusinessentitycontactRow> {
-      override fun businessentityid(): IdField<BusinessentityId, BusinessentitycontactRow> = IdField<BusinessentityId, BusinessentitycontactRow>(_path, "businessentityid", BusinessentitycontactRow::businessentityid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : BusinessentitycontactFields, RelationStructure<BusinessentitycontactFields, BusinessentitycontactRow> {
+      override fun businessentityid(): IdField<BusinessentityId, BusinessentitycontactRow> = IdField<BusinessentityId, BusinessentitycontactRow>(_path, "businessentityid", BusinessentitycontactRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun personid(): IdField<BusinessentityId, BusinessentitycontactRow> = IdField<BusinessentityId, BusinessentitycontactRow>(_path, "personid", BusinessentitycontactRow::personid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(personid = value) }, BusinessentityId.pgType)
+      override fun personid(): IdField<BusinessentityId, BusinessentitycontactRow> = IdField<BusinessentityId, BusinessentitycontactRow>(_path, "personid", BusinessentitycontactRow::personid, null, "int4", { row, value -> row.copy(personid = value) }, BusinessentityId.pgType)
 
-      override fun contacttypeid(): IdField<ContacttypeId, BusinessentitycontactRow> = IdField<ContacttypeId, BusinessentitycontactRow>(_path, "contacttypeid", BusinessentitycontactRow::contacttypeid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(contacttypeid = value) }, ContacttypeId.pgType)
+      override fun contacttypeid(): IdField<ContacttypeId, BusinessentitycontactRow> = IdField<ContacttypeId, BusinessentitycontactRow>(_path, "contacttypeid", BusinessentitycontactRow::contacttypeid, null, "int4", { row, value -> row.copy(contacttypeid = value) }, ContacttypeId.pgType)
 
-      override fun rowguid(): Field<TypoUUID, BusinessentitycontactRow> = Field<TypoUUID, BusinessentitycontactRow>(_path, "rowguid", BusinessentitycontactRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, BusinessentitycontactRow> = Field<UUID, BusinessentitycontactRow>(_path, "rowguid", BusinessentitycontactRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, BusinessentitycontactRow> = Field<TypoLocalDateTime, BusinessentitycontactRow>(_path, "modifieddate", BusinessentitycontactRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, BusinessentitycontactRow> = Field<LocalDateTime, BusinessentitycontactRow>(_path, "modifieddate", BusinessentitycontactRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, BusinessentitycontactRow>> = listOf(this.businessentityid(), this.personid(), this.contacttypeid(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<BusinessentitycontactFields, BusinessentitycontactRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, BusinessentitycontactRow>> = listOf(this.businessentityid().underlying, this.personid().underlying, this.contacttypeid().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<BusinessentitycontactFields, BusinessentitycontactRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

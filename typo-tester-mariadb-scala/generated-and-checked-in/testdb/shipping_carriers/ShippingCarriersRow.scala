@@ -6,12 +6,13 @@
 package testdb.shipping_carriers
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: shipping_carriers
  * Primary key: carrier_id
@@ -28,22 +29,22 @@ case class ShippingCarriersRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("tracking_url_template") trackingUrlTemplate: Optional[String],
+  @JsonProperty("tracking_url_template") trackingUrlTemplate: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("api_config") apiConfig: Optional[String],
+  @JsonProperty("api_config") apiConfig: Option[String],
   /** 
    * Default: 1
    */
-  @JsonProperty("is_active") isActive: java.lang.Boolean
+  @JsonProperty("is_active") isActive: Boolean
 ) {
   def id: ShippingCarriersId = carrierId
 
   def toUnsavedRow(
-    trackingUrlTemplate: Defaulted[Optional[String]] = Defaulted.Provided(this.trackingUrlTemplate),
-    apiConfig: Defaulted[Optional[String]] = Defaulted.Provided(this.apiConfig),
-    isActive: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isActive)
+    trackingUrlTemplate: Defaulted[Option[String]] = Defaulted.Provided(this.trackingUrlTemplate),
+    apiConfig: Defaulted[Option[String]] = Defaulted.Provided(this.apiConfig),
+    isActive: Defaulted[Boolean] = Defaulted.Provided(this.isActive)
   ): ShippingCarriersRowUnsaved = {
     new ShippingCarriersRowUnsaved(
       code,
@@ -56,7 +57,7 @@ case class ShippingCarriersRow(
 }
 
 object ShippingCarriersRow {
-  val `_rowParser`: RowParser[ShippingCarriersRow] = RowParsers.of(ShippingCarriersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.longtext.opt(), MariaTypes.bool, ShippingCarriersRow.apply, row => Array[Object](row.carrierId.asInstanceOf[Object], row.code.asInstanceOf[Object], row.name.asInstanceOf[Object], row.trackingUrlTemplate.asInstanceOf[Object], row.apiConfig.asInstanceOf[Object], row.isActive.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[ShippingCarriersRow] = RowParsers.of(ShippingCarriersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.bool)(ShippingCarriersRow.apply)(row => Array[Any](row.carrierId, row.code, row.name, row.trackingUrlTemplate, row.apiConfig, row.isActive))
 
-  given mariaText: MariaText[ShippingCarriersRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[ShippingCarriersRow] = MariaText.from(`_rowParser`.underlying)
 }

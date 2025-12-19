@@ -6,7 +6,8 @@
 package adventureworks.public
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -20,7 +21,7 @@ data class NameStyle(@JsonValue val value: Boolean) {
       Bijection.of(NameStyle::value, ::NameStyle)
 
     val pgType: PgType<NameStyle> =
-      PgTypes.bool.bimap(::NameStyle, NameStyle::value).renamed("\"public\".\"NameStyle\"")
+      KotlinDbTypes.PgTypes.bool.bimap(::NameStyle, NameStyle::value).renamed("\"public\".\"NameStyle\"")
 
     val pgTypeArray: PgType<Array<NameStyle>> =
       PgTypes.boolArray.bimap({ xs -> arrayMap.map(xs, ::NameStyle, NameStyle::class.java) }, { xs -> arrayMap.map(xs, NameStyle::value, Boolean::class.javaObjectType) }).renamed("\"public\".\"NameStyle\"[]")

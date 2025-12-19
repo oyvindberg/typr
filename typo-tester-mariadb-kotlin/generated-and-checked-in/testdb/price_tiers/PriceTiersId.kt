@@ -6,17 +6,21 @@
 package testdb.price_tiers
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.MariaType
-import typo.runtime.MariaTypes
 
 /** Type for the primary key of table `price_tiers` */
 data class PriceTiersId(@JsonValue val value: Short) {
+  override fun toString(): kotlin.String {
+    return value.toString()
+  }
+
   companion object {
     val bijection: Bijection<PriceTiersId, Short> =
       Bijection.of(PriceTiersId::value, ::PriceTiersId)
 
     val pgType: MariaType<PriceTiersId> =
-      MariaTypes.smallint.bimap(::PriceTiersId, PriceTiersId::value)
+      KotlinDbTypes.MariaTypes.tinyintUnsigned.bimap(::PriceTiersId, PriceTiersId::value)
   }
 }

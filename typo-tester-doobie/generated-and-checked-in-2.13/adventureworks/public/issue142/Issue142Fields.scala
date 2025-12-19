@@ -6,20 +6,20 @@
 package adventureworks.public.issue142
 
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait Issue142Fields {
   def tabellkode: IdField[Issue142Id, Issue142Row]
 }
 
 object Issue142Fields {
-  lazy val structure: Relation[Issue142Fields, Issue142Row] =
+  lazy val structure: RelationStructure[Issue142Fields, Issue142Row] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[Issue142Fields, Issue142Row] {
+    extends RelationStructure[Issue142Fields, Issue142Row] {
 
     override lazy val fields: Issue142Fields = new Issue142Fields {
       override def tabellkode = IdField[Issue142Id, Issue142Row](_path, "tabellkode", None, None, x => x.tabellkode, (row, value) => row.copy(tabellkode = value))

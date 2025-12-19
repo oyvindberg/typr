@@ -5,20 +5,21 @@
  */
 package adventureworks.person_row_join
 
-import adventureworks.customtypes.TypoRecord
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.data.Record
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
+import typo.runtime.PgTypes
 
 /** SQL file: person_row_join.sql */
 data class PersonRowJoinSqlRow(
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.businessentityid] */
   val businessentityid: BusinessentityId,
-  val email: /* nullability unknown */ Optional<Array<TypoRecord>>,
-  val emails: /* nullability unknown */ Optional<Array<TypoRecord>>
+  val email: Array<Record>?,
+  val emails: Array<Record>?
 ) {
   companion object {
-    val _rowParser: RowParser<PersonRowJoinSqlRow> = RowParsers.of(BusinessentityId.pgType, TypoRecord.pgTypeArray.opt(), TypoRecord.pgTypeArray.opt(), { t0, t1, t2 -> PersonRowJoinSqlRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.email, row.emails) })
+    val _rowParser: RowParser<PersonRowJoinSqlRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.recordArray.nullable(), PgTypes.recordArray.nullable(), { t0, t1, t2 -> PersonRowJoinSqlRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.businessentityid, row.email, row.emails) })
   }
 }

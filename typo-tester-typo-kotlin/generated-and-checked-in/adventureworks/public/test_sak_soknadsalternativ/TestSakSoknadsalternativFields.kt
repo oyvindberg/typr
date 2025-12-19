@@ -9,23 +9,22 @@ import adventureworks.public.test_organisasjon.TestOrganisasjonId
 import adventureworks.public.test_utdanningstilbud.TestUtdanningstilbudFields
 import adventureworks.public.test_utdanningstilbud.TestUtdanningstilbudId
 import adventureworks.public.test_utdanningstilbud.TestUtdanningstilbudRow
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface TestSakSoknadsalternativFields : FieldsExpr<TestSakSoknadsalternativRow> {
-  override fun columns(): List<FieldLike<*, TestSakSoknadsalternativRow>>
+  abstract override fun columns(): List<FieldLike<*, TestSakSoknadsalternativRow>>
 
   fun compositeIdIn(compositeIds: List<TestSakSoknadsalternativId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<String, TestSakSoknadsalternativId, TestSakSoknadsalternativRow>(organisasjonskodeSaksbehandler(), TestSakSoknadsalternativId::organisasjonskodeSaksbehandler, PgTypes.text), Part<String, TestSakSoknadsalternativId, TestSakSoknadsalternativRow>(utdanningsmulighetKode(), TestSakSoknadsalternativId::utdanningsmulighetKode, PgTypes.text)), compositeIds)
 
@@ -35,30 +34,31 @@ interface TestSakSoknadsalternativFields : FieldsExpr<TestSakSoknadsalternativRo
 
   fun extractIdentTestUtdanningstilbudIdIs(id: TestUtdanningstilbudId): SqlExpr<Boolean> = SqlExpr.all(organisasjonskodeTilbyder().isEqual(id.organisasjonskode), utdanningsmulighetKode().isEqual(id.utdanningsmulighetKode))
 
-  fun fkTestUtdanningstilbud(): ForeignKey<TestUtdanningstilbudFields, TestUtdanningstilbudRow> = ForeignKey.of<TestUtdanningstilbudFields, TestUtdanningstilbudRow>("public.test_sak_soknadsalternativ_organisasjonskode_tilbyder_utda_fkey").withColumnPair(organisasjonskodeTilbyder(), TestUtdanningstilbudFields::organisasjonskode)
-  .withColumnPair(utdanningsmulighetKode(), TestUtdanningstilbudFields::utdanningsmulighetKode)
+  fun fkTestUtdanningstilbud(): ForeignKey<TestUtdanningstilbudFields, TestUtdanningstilbudRow> = ForeignKey.of<TestUtdanningstilbudFields, TestUtdanningstilbudRow>("public.test_sak_soknadsalternativ_organisasjonskode_tilbyder_utda_fkey").withColumnPair<TestOrganisasjonId>(organisasjonskodeTilbyder(), TestUtdanningstilbudFields::organisasjonskode).withColumnPair<String>(utdanningsmulighetKode(), TestUtdanningstilbudFields::utdanningsmulighetKode)
 
-  fun organisasjonskodeSaksbehandler(): IdField<String, TestSakSoknadsalternativRow>
+  abstract fun organisasjonskodeSaksbehandler(): IdField<String, TestSakSoknadsalternativRow>
 
-  fun organisasjonskodeTilbyder(): Field<TestOrganisasjonId, TestSakSoknadsalternativRow>
+  abstract fun organisasjonskodeTilbyder(): Field<TestOrganisasjonId, TestSakSoknadsalternativRow>
 
-  override fun rowParser(): RowParser<TestSakSoknadsalternativRow> = TestSakSoknadsalternativRow._rowParser
+  override fun rowParser(): RowParser<TestSakSoknadsalternativRow> = TestSakSoknadsalternativRow._rowParser.underlying
 
-  fun utdanningsmulighetKode(): IdField<String, TestSakSoknadsalternativRow>
+  abstract fun utdanningsmulighetKode(): IdField<String, TestSakSoknadsalternativRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : TestSakSoknadsalternativFields, Relation<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow> {
-      override fun organisasjonskodeSaksbehandler(): IdField<String, TestSakSoknadsalternativRow> = IdField<String, TestSakSoknadsalternativRow>(_path, "organisasjonskode_saksbehandler", TestSakSoknadsalternativRow::organisasjonskodeSaksbehandler, Optional.empty(), Optional.empty(), { row, value -> row.copy(organisasjonskodeSaksbehandler = value) }, PgTypes.text)
+    data class Impl(val _path: List<Path>) : TestSakSoknadsalternativFields, RelationStructure<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow> {
+      override fun organisasjonskodeSaksbehandler(): IdField<String, TestSakSoknadsalternativRow> = IdField<String, TestSakSoknadsalternativRow>(_path, "organisasjonskode_saksbehandler", TestSakSoknadsalternativRow::organisasjonskodeSaksbehandler, null, null, { row, value -> row.copy(organisasjonskodeSaksbehandler = value) }, PgTypes.text)
 
-      override fun utdanningsmulighetKode(): IdField<String, TestSakSoknadsalternativRow> = IdField<String, TestSakSoknadsalternativRow>(_path, "utdanningsmulighet_kode", TestSakSoknadsalternativRow::utdanningsmulighetKode, Optional.empty(), Optional.empty(), { row, value -> row.copy(utdanningsmulighetKode = value) }, PgTypes.text)
+      override fun utdanningsmulighetKode(): IdField<String, TestSakSoknadsalternativRow> = IdField<String, TestSakSoknadsalternativRow>(_path, "utdanningsmulighet_kode", TestSakSoknadsalternativRow::utdanningsmulighetKode, null, null, { row, value -> row.copy(utdanningsmulighetKode = value) }, PgTypes.text)
 
-      override fun organisasjonskodeTilbyder(): Field<TestOrganisasjonId, TestSakSoknadsalternativRow> = Field<TestOrganisasjonId, TestSakSoknadsalternativRow>(_path, "organisasjonskode_tilbyder", TestSakSoknadsalternativRow::organisasjonskodeTilbyder, Optional.empty(), Optional.empty(), { row, value -> row.copy(organisasjonskodeTilbyder = value) }, TestOrganisasjonId.pgType)
+      override fun organisasjonskodeTilbyder(): Field<TestOrganisasjonId, TestSakSoknadsalternativRow> = Field<TestOrganisasjonId, TestSakSoknadsalternativRow>(_path, "organisasjonskode_tilbyder", TestSakSoknadsalternativRow::organisasjonskodeTilbyder, null, null, { row, value -> row.copy(organisasjonskodeTilbyder = value) }, TestOrganisasjonId.pgType)
 
-      override fun columns(): List<FieldLike<*, TestSakSoknadsalternativRow>> = listOf(this.organisasjonskodeSaksbehandler(), this.utdanningsmulighetKode(), this.organisasjonskodeTilbyder())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, TestSakSoknadsalternativRow>> = listOf(this.organisasjonskodeSaksbehandler().underlying, this.utdanningsmulighetKode().underlying, this.organisasjonskodeTilbyder().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<TestSakSoknadsalternativFields, TestSakSoknadsalternativRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

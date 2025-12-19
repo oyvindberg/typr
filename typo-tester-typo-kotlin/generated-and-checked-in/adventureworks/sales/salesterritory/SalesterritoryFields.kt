@@ -5,79 +5,80 @@
  */
 package adventureworks.sales.salesterritory
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.countryregion.CountryregionFields
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.person.countryregion.CountryregionRow
 import adventureworks.public.Name
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SalesterritoryFields : FieldsExpr<SalesterritoryRow> {
-  override fun columns(): List<FieldLike<*, SalesterritoryRow>>
+  abstract override fun columns(): List<FieldLike<*, SalesterritoryRow>>
 
-  fun costlastyear(): Field<BigDecimal, SalesterritoryRow>
+  abstract fun costlastyear(): Field<BigDecimal, SalesterritoryRow>
 
-  fun costytd(): Field<BigDecimal, SalesterritoryRow>
+  abstract fun costytd(): Field<BigDecimal, SalesterritoryRow>
 
-  fun countryregioncode(): Field<CountryregionId, SalesterritoryRow>
+  abstract fun countryregioncode(): Field<CountryregionId, SalesterritoryRow>
 
-  fun fkPersonCountryregion(): ForeignKey<CountryregionFields, CountryregionRow> = ForeignKey.of<CountryregionFields, CountryregionRow>("sales.FK_SalesTerritory_CountryRegion_CountryRegionCode").withColumnPair(countryregioncode(), CountryregionFields::countryregioncode)
+  fun fkPersonCountryregion(): ForeignKey<CountryregionFields, CountryregionRow> = ForeignKey.of<CountryregionFields, CountryregionRow>("sales.FK_SalesTerritory_CountryRegion_CountryRegionCode").withColumnPair<CountryregionId>(countryregioncode(), CountryregionFields::countryregioncode)
 
-  fun group(): Field</* max 50 chars */ String, SalesterritoryRow>
+  abstract fun group(): Field<String, SalesterritoryRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, SalesterritoryRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SalesterritoryRow>
 
-  fun name(): Field<Name, SalesterritoryRow>
+  abstract fun name(): Field<Name, SalesterritoryRow>
 
-  override fun rowParser(): RowParser<SalesterritoryRow> = SalesterritoryRow._rowParser
+  override fun rowParser(): RowParser<SalesterritoryRow> = SalesterritoryRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, SalesterritoryRow>
+  abstract fun rowguid(): Field<UUID, SalesterritoryRow>
 
-  fun saleslastyear(): Field<BigDecimal, SalesterritoryRow>
+  abstract fun saleslastyear(): Field<BigDecimal, SalesterritoryRow>
 
-  fun salesytd(): Field<BigDecimal, SalesterritoryRow>
+  abstract fun salesytd(): Field<BigDecimal, SalesterritoryRow>
 
-  fun territoryid(): IdField<SalesterritoryId, SalesterritoryRow>
+  abstract fun territoryid(): IdField<SalesterritoryId, SalesterritoryRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SalesterritoryFields, Relation<SalesterritoryFields, SalesterritoryRow> {
-      override fun territoryid(): IdField<SalesterritoryId, SalesterritoryRow> = IdField<SalesterritoryId, SalesterritoryRow>(_path, "territoryid", SalesterritoryRow::territoryid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(territoryid = value) }, SalesterritoryId.pgType)
+    data class Impl(val _path: List<Path>) : SalesterritoryFields, RelationStructure<SalesterritoryFields, SalesterritoryRow> {
+      override fun territoryid(): IdField<SalesterritoryId, SalesterritoryRow> = IdField<SalesterritoryId, SalesterritoryRow>(_path, "territoryid", SalesterritoryRow::territoryid, null, "int4", { row, value -> row.copy(territoryid = value) }, SalesterritoryId.pgType)
 
-      override fun name(): Field<Name, SalesterritoryRow> = Field<Name, SalesterritoryRow>(_path, "name", SalesterritoryRow::name, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, SalesterritoryRow> = Field<Name, SalesterritoryRow>(_path, "name", SalesterritoryRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun countryregioncode(): Field<CountryregionId, SalesterritoryRow> = Field<CountryregionId, SalesterritoryRow>(_path, "countryregioncode", SalesterritoryRow::countryregioncode, Optional.empty(), Optional.empty(), { row, value -> row.copy(countryregioncode = value) }, CountryregionId.pgType)
+      override fun countryregioncode(): Field<CountryregionId, SalesterritoryRow> = Field<CountryregionId, SalesterritoryRow>(_path, "countryregioncode", SalesterritoryRow::countryregioncode, null, null, { row, value -> row.copy(countryregioncode = value) }, CountryregionId.pgType)
 
-      override fun group(): Field</* max 50 chars */ String, SalesterritoryRow> = Field</* max 50 chars */ String, SalesterritoryRow>(_path, "group", SalesterritoryRow::group, Optional.empty(), Optional.empty(), { row, value -> row.copy(group = value) }, PgTypes.text)
+      override fun group(): Field<String, SalesterritoryRow> = Field<String, SalesterritoryRow>(_path, "group", SalesterritoryRow::group, null, null, { row, value -> row.copy(group = value) }, PgTypes.text)
 
-      override fun salesytd(): Field<BigDecimal, SalesterritoryRow> = Field<BigDecimal, SalesterritoryRow>(_path, "salesytd", SalesterritoryRow::salesytd, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(salesytd = value) }, PgTypes.numeric)
+      override fun salesytd(): Field<BigDecimal, SalesterritoryRow> = Field<BigDecimal, SalesterritoryRow>(_path, "salesytd", SalesterritoryRow::salesytd, null, "numeric", { row, value -> row.copy(salesytd = value) }, PgTypes.numeric)
 
-      override fun saleslastyear(): Field<BigDecimal, SalesterritoryRow> = Field<BigDecimal, SalesterritoryRow>(_path, "saleslastyear", SalesterritoryRow::saleslastyear, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(saleslastyear = value) }, PgTypes.numeric)
+      override fun saleslastyear(): Field<BigDecimal, SalesterritoryRow> = Field<BigDecimal, SalesterritoryRow>(_path, "saleslastyear", SalesterritoryRow::saleslastyear, null, "numeric", { row, value -> row.copy(saleslastyear = value) }, PgTypes.numeric)
 
-      override fun costytd(): Field<BigDecimal, SalesterritoryRow> = Field<BigDecimal, SalesterritoryRow>(_path, "costytd", SalesterritoryRow::costytd, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(costytd = value) }, PgTypes.numeric)
+      override fun costytd(): Field<BigDecimal, SalesterritoryRow> = Field<BigDecimal, SalesterritoryRow>(_path, "costytd", SalesterritoryRow::costytd, null, "numeric", { row, value -> row.copy(costytd = value) }, PgTypes.numeric)
 
-      override fun costlastyear(): Field<BigDecimal, SalesterritoryRow> = Field<BigDecimal, SalesterritoryRow>(_path, "costlastyear", SalesterritoryRow::costlastyear, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(costlastyear = value) }, PgTypes.numeric)
+      override fun costlastyear(): Field<BigDecimal, SalesterritoryRow> = Field<BigDecimal, SalesterritoryRow>(_path, "costlastyear", SalesterritoryRow::costlastyear, null, "numeric", { row, value -> row.copy(costlastyear = value) }, PgTypes.numeric)
 
-      override fun rowguid(): Field<TypoUUID, SalesterritoryRow> = Field<TypoUUID, SalesterritoryRow>(_path, "rowguid", SalesterritoryRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, SalesterritoryRow> = Field<UUID, SalesterritoryRow>(_path, "rowguid", SalesterritoryRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SalesterritoryRow> = Field<TypoLocalDateTime, SalesterritoryRow>(_path, "modifieddate", SalesterritoryRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SalesterritoryRow> = Field<LocalDateTime, SalesterritoryRow>(_path, "modifieddate", SalesterritoryRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SalesterritoryRow>> = listOf(this.territoryid(), this.name(), this.countryregioncode(), this.group(), this.salesytd(), this.saleslastyear(), this.costytd(), this.costlastyear(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SalesterritoryFields, SalesterritoryRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SalesterritoryRow>> = listOf(this.territoryid().underlying, this.name().underlying, this.countryregioncode().underlying, this.group().underlying, this.salesytd().underlying, this.saleslastyear().underlying, this.costytd().underlying, this.costlastyear().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SalesterritoryFields, SalesterritoryRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

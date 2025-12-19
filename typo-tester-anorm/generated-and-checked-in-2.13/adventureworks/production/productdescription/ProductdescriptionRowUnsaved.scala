@@ -22,7 +22,7 @@ import scala.util.Try
 /** This class corresponds to a row in table `production.productdescription` which has not been persisted yet */
 case class ProductdescriptionRowUnsaved(
   /** Description of the product. */
-  description: /* max 400 chars */ String,
+  description: String,
   /** Default: nextval('production.productdescription_productdescriptionid_seq'::regclass)
    * Primary key for ProductDescription records.
    */

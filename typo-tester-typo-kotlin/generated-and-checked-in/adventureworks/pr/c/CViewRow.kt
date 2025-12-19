@@ -5,11 +5,12 @@
  */
 package adventureworks.pr.c
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.culture.CultureId
 import adventureworks.public.Name
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pr.c */
 data class CViewRow(
@@ -20,9 +21,9 @@ data class CViewRow(
   /** Points to [adventureworks.production.culture.CultureRow.name] */
   val name: Name,
   /** Points to [adventureworks.production.culture.CultureRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<CViewRow> = RowParsers.of(CultureId.pgType, CultureId.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> CViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.cultureid, row.name, row.modifieddate) })
+    val _rowParser: RowParser<CViewRow> = RowParsers.of(CultureId.pgType, CultureId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> CViewRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.cultureid, row.name, row.modifieddate) })
   }
 }

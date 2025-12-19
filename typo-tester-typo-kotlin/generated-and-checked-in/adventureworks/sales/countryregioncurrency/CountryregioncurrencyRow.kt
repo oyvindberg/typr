@@ -6,12 +6,13 @@
 package adventureworks.sales.countryregioncurrency
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.countryregion.CountryregionId
 import adventureworks.sales.currency.CurrencyId
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: sales.countryregioncurrency
   * Cross-reference table mapping ISO currency codes to a country or region.
@@ -27,23 +28,23 @@ data class CountryregioncurrencyRow(
     */
   val currencycode: CurrencyId,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): CountryregioncurrencyId = CountryregioncurrencyId(countryregioncode, currencycode)
 
   fun id(): CountryregioncurrencyId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): CountryregioncurrencyRowUnsaved = CountryregioncurrencyRowUnsaved(countryregioncode, currencycode, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): CountryregioncurrencyRowUnsaved = CountryregioncurrencyRowUnsaved(countryregioncode, currencycode, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<CountryregioncurrencyRow> = RowParsers.of(CountryregionId.pgType, CurrencyId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> CountryregioncurrencyRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.countryregioncode, row.currencycode, row.modifieddate) })
+    val _rowParser: RowParser<CountryregioncurrencyRow> = RowParsers.of(CountryregionId.pgType, CurrencyId.pgType, PgTypes.timestamp, { t0, t1, t2 -> CountryregioncurrencyRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.countryregioncode, row.currencycode, row.modifieddate) })
 
     fun apply(
       compositeId: CountryregioncurrencyId,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): CountryregioncurrencyRow = CountryregioncurrencyRow(compositeId.countryregioncode, compositeId.currencycode, modifieddate)
 
     val pgText: PgText<CountryregioncurrencyRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

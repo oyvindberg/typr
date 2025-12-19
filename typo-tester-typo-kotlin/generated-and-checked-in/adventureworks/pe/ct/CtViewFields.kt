@@ -5,46 +5,48 @@
  */
 package adventureworks.pe.ct
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.contacttype.ContacttypeId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface CtViewFields : FieldsExpr<CtViewRow> {
-  override fun columns(): List<FieldLike<*, CtViewRow>>
+  abstract override fun columns(): List<FieldLike<*, CtViewRow>>
 
-  fun contacttypeid(): Field<ContacttypeId, CtViewRow>
+  abstract fun contacttypeid(): Field<ContacttypeId, CtViewRow>
 
-  fun id(): Field<ContacttypeId, CtViewRow>
+  abstract fun id(): Field<ContacttypeId, CtViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, CtViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, CtViewRow>
 
-  fun name(): Field<Name, CtViewRow>
+  abstract fun name(): Field<Name, CtViewRow>
 
-  override fun rowParser(): RowParser<CtViewRow> = CtViewRow._rowParser
+  override fun rowParser(): RowParser<CtViewRow> = CtViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : CtViewFields, Relation<CtViewFields, CtViewRow> {
-      override fun id(): Field<ContacttypeId, CtViewRow> = Field<ContacttypeId, CtViewRow>(_path, "id", CtViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, ContacttypeId.pgType)
+    data class Impl(val _path: List<Path>) : CtViewFields, RelationStructure<CtViewFields, CtViewRow> {
+      override fun id(): Field<ContacttypeId, CtViewRow> = Field<ContacttypeId, CtViewRow>(_path, "id", CtViewRow::id, null, null, { row, value -> row.copy(id = value) }, ContacttypeId.pgType)
 
-      override fun contacttypeid(): Field<ContacttypeId, CtViewRow> = Field<ContacttypeId, CtViewRow>(_path, "contacttypeid", CtViewRow::contacttypeid, Optional.empty(), Optional.empty(), { row, value -> row.copy(contacttypeid = value) }, ContacttypeId.pgType)
+      override fun contacttypeid(): Field<ContacttypeId, CtViewRow> = Field<ContacttypeId, CtViewRow>(_path, "contacttypeid", CtViewRow::contacttypeid, null, null, { row, value -> row.copy(contacttypeid = value) }, ContacttypeId.pgType)
 
-      override fun name(): Field<Name, CtViewRow> = Field<Name, CtViewRow>(_path, "name", CtViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, CtViewRow> = Field<Name, CtViewRow>(_path, "name", CtViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, CtViewRow> = Field<TypoLocalDateTime, CtViewRow>(_path, "modifieddate", CtViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, CtViewRow> = Field<LocalDateTime, CtViewRow>(_path, "modifieddate", CtViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, CtViewRow>> = listOf(this.id(), this.contacttypeid(), this.name(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<CtViewFields, CtViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, CtViewRow>> = listOf(this.id().underlying, this.contacttypeid().underlying, this.name().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<CtViewFields, CtViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

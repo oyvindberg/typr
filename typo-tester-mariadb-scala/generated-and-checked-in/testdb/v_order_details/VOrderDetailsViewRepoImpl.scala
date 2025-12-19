@@ -6,15 +6,15 @@
 package testdb.v_order_details
 
 import java.sql.Connection
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Dialect
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.Fragment.sql
 
 class VOrderDetailsViewRepoImpl extends VOrderDetailsViewRepo {
   override def select: SelectBuilder[VOrderDetailsViewFields, VOrderDetailsViewRow] = SelectBuilder.of("`v_order_details`", VOrderDetailsViewFields.structure, VOrderDetailsViewRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[VOrderDetailsViewRow] = {
-    interpolate"""select `order_id`, `order_number`, `order_status`, `payment_status`, `total_amount`, `currency_code`, `ordered_at`, `customer_email`, `customer_name`, `item_count`, `total_quantity`, `tracking_number`, `shipping_status`, `carrier_name`
+  override def selectAll(using c: Connection): List[VOrderDetailsViewRow] = {
+    sql"""select `order_id`, `order_number`, `order_status`, `payment_status`, `total_amount`, `currency_code`, `ordered_at`, `customer_email`, `customer_name`, `item_count`, `total_quantity`, `tracking_number`, `shipping_status`, `carrier_name`
     from `v_order_details`
     """.query(VOrderDetailsViewRow.`_rowParser`.all()).runUnchecked(c)
   }

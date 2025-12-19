@@ -8,21 +8,19 @@ package adventureworks.production.transactionhistory
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class TransactionhistoryRepoMock(
   val toRow: (TransactionhistoryRowUnsaved) -> TransactionhistoryRow,
@@ -33,7 +31,7 @@ data class TransactionhistoryRepoMock(
   override fun deleteById(
     transactionid: TransactionhistoryId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(transactionid)).isPresent()
+  ): Boolean = map.remove(transactionid) != null
 
   override fun deleteByIds(
     transactionids: Array<TransactionhistoryId>,
@@ -41,7 +39,7 @@ data class TransactionhistoryRepoMock(
   ): Int {
     var count = 0
     for (id in transactionids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class TransactionhistoryRepoMock(
     c: Connection
   ): TransactionhistoryRow {
     if (map.containsKey(unsaved.transactionid)) {
-      throw RuntimeException(str("id $unsaved.transactionid already exists"))
+      throw RuntimeException("id " + unsaved.transactionid + " already exists")
     }
     map[unsaved.transactionid] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class TransactionhistoryRepoMock(
   ): TransactionhistoryRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<TransactionhistoryRow>,
+    unsaved: Iterator<TransactionhistoryRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class TransactionhistoryRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<TransactionhistoryRowUnsaved>,
+    unsaved: Iterator<TransactionhistoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class TransactionhistoryRepoMock(
   override fun selectById(
     transactionid: TransactionhistoryId,
     c: Connection
-  ): Optional<TransactionhistoryRow> = Optional.ofNullable(map[transactionid])
+  ): TransactionhistoryRow? = map[transactionid]
 
   override fun selectByIds(
     transactionids: Array<TransactionhistoryId>,
@@ -109,9 +107,9 @@ data class TransactionhistoryRepoMock(
   ): List<TransactionhistoryRow> {
     val result = ArrayList<TransactionhistoryRow>()
     for (id in transactionids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class TransactionhistoryRepoMock(
     row: TransactionhistoryRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.transactionid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.transactionid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.transactionid] = row
     }
@@ -144,7 +142,7 @@ data class TransactionhistoryRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<TransactionhistoryRow>,
+    unsaved: Iterator<TransactionhistoryRow>,
     c: Connection
   ): List<TransactionhistoryRow> {
     val result = ArrayList<TransactionhistoryRow>()
@@ -158,7 +156,7 @@ data class TransactionhistoryRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<TransactionhistoryRow>,
+    unsaved: Iterator<TransactionhistoryRow>,
     batchSize: Int,
     c: Connection
   ): Int {

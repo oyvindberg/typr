@@ -76,6 +76,21 @@ object SqlglotColumnInfo {
       origins = origins
     )
   }
+
+  implicit val writes: Writes[SqlglotColumnInfo] = Writes { col =>
+    Json.obj(
+      "name" -> col.name,
+      "alias" -> col.alias,
+      "inferred_type" -> col.inferredType,
+      "nullable_from_join" -> col.nullableFromJoin,
+      "nullable_in_schema" -> col.nullableInSchema,
+      "is_expression" -> col.isExpression,
+      "source_table" -> col.sourceTable,
+      "source_column" -> col.sourceColumn,
+      "source_type" -> col.sourceType,
+      "source_primary_key" -> col.sourcePrimaryKey
+    )
+  }
 }
 
 /** Information about a query parameter */

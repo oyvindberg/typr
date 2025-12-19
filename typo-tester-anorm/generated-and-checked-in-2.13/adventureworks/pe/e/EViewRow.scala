@@ -29,7 +29,7 @@ case class EViewRow(
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddressid]] */
   emailaddressid: Int,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
-  emailaddress: Option[/* max 50 chars */ String],
+  emailaddress: String,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.modifieddate]] */
@@ -44,7 +44,7 @@ object EViewRow {
             id = json.\("id").as(Reads.IntReads),
             businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
             emailaddressid = json.\("emailaddressid").as(Reads.IntReads),
-            emailaddress = json.\("emailaddress").toOption.map(_.as(Reads.StringReads)),
+            emailaddress = json.\("emailaddress").as(Reads.StringReads),
             rowguid = json.\("rowguid").as(TypoUUID.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
@@ -60,7 +60,7 @@ object EViewRow {
           id = row(idx + 0)(Column.columnToInt),
           businessentityid = row(idx + 1)(BusinessentityId.column),
           emailaddressid = row(idx + 2)(Column.columnToInt),
-          emailaddress = row(idx + 3)(Column.columnToOption(Column.columnToString)),
+          emailaddress = row(idx + 3)(Column.columnToString),
           rowguid = row(idx + 4)(TypoUUID.column),
           modifieddate = row(idx + 5)(TypoLocalDateTime.column)
         )
@@ -74,7 +74,7 @@ object EViewRow {
         "id" -> Writes.IntWrites.writes(o.id),
         "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
         "emailaddressid" -> Writes.IntWrites.writes(o.emailaddressid),
-        "emailaddress" -> Writes.OptionWrites(Writes.StringWrites).writes(o.emailaddress),
+        "emailaddress" -> Writes.StringWrites.writes(o.emailaddress),
         "rowguid" -> TypoUUID.writes.writes(o.rowguid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))

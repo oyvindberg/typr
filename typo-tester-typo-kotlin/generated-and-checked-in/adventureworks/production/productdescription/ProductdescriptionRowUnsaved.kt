@@ -7,28 +7,28 @@ package adventureworks.production.productdescription
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
+import java.time.LocalDateTime
+import java.util.UUID
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `production.productdescription` which has not been persisted yet */
 data class ProductdescriptionRowUnsaved(
   /** Description of the product. */
-  val description: /* max 400 chars */ String,
+  val description: String,
   /** Default: nextval('production.productdescription_productdescriptionid_seq'::regclass)
     * Primary key for ProductDescription records.
     */
   val productdescriptionid: Defaulted<ProductdescriptionId> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     productdescriptionidDefault: () -> ProductdescriptionId,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): ProductdescriptionRow = ProductdescriptionRow(productdescriptionid = productdescriptionid.getOrElse(productdescriptionidDefault), description = description, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -37,8 +37,8 @@ data class ProductdescriptionRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(ProductdescriptionId.pgType.pgText()).unsafeEncode(row.productdescriptionid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

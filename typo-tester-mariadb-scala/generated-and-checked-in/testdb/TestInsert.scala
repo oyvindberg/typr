@@ -11,8 +11,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
-import java.util.Optional
-import java.util.Random
 import org.mariadb.jdbc.`type`.Geometry
 import org.mariadb.jdbc.`type`.GeometryCollection
 import org.mariadb.jdbc.`type`.LineString
@@ -21,6 +19,7 @@ import org.mariadb.jdbc.`type`.MultiPoint
 import org.mariadb.jdbc.`type`.MultiPolygon
 import org.mariadb.jdbc.`type`.Point
 import org.mariadb.jdbc.`type`.Polygon
+import scala.util.Random
 import testdb.audit_log.AuditLogRepoImpl
 import testdb.audit_log.AuditLogRow
 import testdb.audit_log.AuditLogRowUnsaved
@@ -123,20 +122,19 @@ import testdb.warehouses.WarehousesRowUnsaved
 import typo.data.maria.Inet4
 import typo.data.maria.Inet6
 import typo.data.maria.MariaSet
-import typo.runtime.internal.RandomHelper
 
 /** Methods to generate random data for `Ident(TestInsert)` */
 case class TestInsert(random: Random) {
   def AuditLog(
-    tableName: String = RandomHelper.alphanumeric(random, 20),
-    recordId: String = RandomHelper.alphanumeric(random, 20),
-    action: String = RandomHelper.alphanumeric(random, 20),
-    oldValues: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    newValues: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    changedBy: Defaulted[Optional[String]] = Defaulted.UseDefault(),
+    tableName: String = random.alphanumeric.take(20).mkString,
+    recordId: String = random.alphanumeric.take(20).mkString,
+    action: String = random.alphanumeric.take(20).mkString,
+    oldValues: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    newValues: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    changedBy: Defaulted[Option[String]] = Defaulted.UseDefault(),
     changedAt: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
-    clientIp: Defaulted[Optional[Inet6]] = Defaulted.UseDefault(),
-    sessionId: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault()
+    clientIp: Defaulted[Option[Inet6]] = Defaulted.UseDefault(),
+    sessionId: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault()
   )(using c: Connection): AuditLogRow = {
     (new AuditLogRepoImpl()).insert(new AuditLogRowUnsaved(
       tableName = tableName,
@@ -152,12 +150,12 @@ case class TestInsert(random: Random) {
   }
 
   def Brands(
-    name: String = RandomHelper.alphanumeric(random, 20),
-    slug: String = RandomHelper.alphanumeric(random, 20),
-    logoBlob: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault(),
-    websiteUrl: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    countryOfOrigin: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    isActive: Defaulted[java.lang.Boolean] = Defaulted.UseDefault()
+    name: String = random.alphanumeric.take(20).mkString,
+    slug: String = random.alphanumeric.take(20).mkString,
+    logoBlob: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault(),
+    websiteUrl: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    countryOfOrigin: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    isActive: Defaulted[Boolean] = Defaulted.UseDefault()
   )(using c: Connection): BrandsRow = {
     (new BrandsRepoImpl()).insert(new BrandsRowUnsaved(
       name = name,
@@ -170,14 +168,14 @@ case class TestInsert(random: Random) {
   }
 
   def Categories(
-    name: String = RandomHelper.alphanumeric(random, 20),
-    slug: String = RandomHelper.alphanumeric(random, 20),
-    parentId: Defaulted[Optional[CategoriesId]] = Defaulted.UseDefault(),
-    description: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    imageUrl: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    sortOrder: Defaulted[java.lang.Short] = Defaulted.UseDefault(),
-    isVisible: Defaulted[java.lang.Boolean] = Defaulted.UseDefault(),
-    metadata: Defaulted[Optional[String]] = Defaulted.UseDefault()
+    name: String = random.alphanumeric.take(20).mkString,
+    slug: String = random.alphanumeric.take(20).mkString,
+    parentId: Defaulted[Option[CategoriesId]] = Defaulted.UseDefault(),
+    description: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    imageUrl: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    sortOrder: Defaulted[Short] = Defaulted.UseDefault(),
+    isVisible: Defaulted[Boolean] = Defaulted.UseDefault(),
+    metadata: Defaulted[Option[String]] = Defaulted.UseDefault()
   )(using c: Connection): CategoriesRow = {
     (new CategoriesRepoImpl()).insert(new CategoriesRowUnsaved(
       name = name,
@@ -193,17 +191,17 @@ case class TestInsert(random: Random) {
 
   def CustomerAddresses(
     customerId: CustomersId,
-    addressType: String = RandomHelper.alphanumeric(random, 20),
-    recipientName: String = RandomHelper.alphanumeric(random, 20),
-    streetLine1: String = RandomHelper.alphanumeric(random, 20),
-    city: String = RandomHelper.alphanumeric(random, 20),
-    postalCode: String = RandomHelper.alphanumeric(random, 20),
-    countryCode: String = RandomHelper.alphanumeric(random, 20),
-    isDefault: Defaulted[java.lang.Boolean] = Defaulted.UseDefault(),
-    streetLine2: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    stateProvince: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    location: Defaulted[Optional[Point]] = Defaulted.UseDefault(),
-    deliveryNotes: Defaulted[Optional[String]] = Defaulted.UseDefault(),
+    addressType: String = random.alphanumeric.take(20).mkString,
+    recipientName: String = random.alphanumeric.take(20).mkString,
+    streetLine1: String = random.alphanumeric.take(20).mkString,
+    city: String = random.alphanumeric.take(20).mkString,
+    postalCode: String = random.alphanumeric.take(20).mkString,
+    countryCode: String = random.alphanumeric.take(20).mkString,
+    isDefault: Defaulted[Boolean] = Defaulted.UseDefault(),
+    streetLine2: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    stateProvince: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    location: Defaulted[Option[Point]] = Defaulted.UseDefault(),
+    deliveryNotes: Defaulted[Option[String]] = Defaulted.UseDefault(),
     createdAt: Defaulted[LocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): CustomerAddressesRow = {
     (new CustomerAddressesRepoImpl()).insert(new CustomerAddressesRowUnsaved(
@@ -224,25 +222,25 @@ case class TestInsert(random: Random) {
   }
 
   def CustomerStatus(
-    statusCode: CustomerStatusId = CustomerStatusId(RandomHelper.alphanumeric(random, 20)),
-    description: String = RandomHelper.alphanumeric(random, 20),
-    isActive: Defaulted[java.lang.Boolean] = Defaulted.UseDefault()
+    statusCode: CustomerStatusId = CustomerStatusId(random.alphanumeric.take(20).mkString),
+    description: String = random.alphanumeric.take(20).mkString,
+    isActive: Defaulted[Boolean] = Defaulted.UseDefault()
   )(using c: Connection): CustomerStatusRow = (new CustomerStatusRepoImpl()).insert(new CustomerStatusRowUnsaved(statusCode = statusCode, description = description, isActive = isActive))(using c)
 
   def Customers(
     passwordHash: Array[Byte],
-    email: String = RandomHelper.alphanumeric(random, 20),
-    firstName: String = RandomHelper.alphanumeric(random, 20),
-    lastName: String = RandomHelper.alphanumeric(random, 20),
-    phone: Defaulted[Optional[String]] = Defaulted.UseDefault(),
+    email: String = random.alphanumeric.take(20).mkString,
+    firstName: String = random.alphanumeric.take(20).mkString,
+    lastName: String = random.alphanumeric.take(20).mkString,
+    phone: Defaulted[Option[String]] = Defaulted.UseDefault(),
     status: Defaulted[CustomerStatusId] = Defaulted.UseDefault(),
     tier: Defaulted[String] = Defaulted.UseDefault(),
-    preferences: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    marketingFlags: Defaulted[Optional[MariaSet]] = Defaulted.UseDefault(),
-    notes: Defaulted[Optional[String]] = Defaulted.UseDefault(),
+    preferences: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    marketingFlags: Defaulted[Option[MariaSet]] = Defaulted.UseDefault(),
+    notes: Defaulted[Option[String]] = Defaulted.UseDefault(),
     createdAt: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
-    lastLoginAt: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault()
+    lastLoginAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault()
   )(using c: Connection): CustomersRow = {
     (new CustomersRepoImpl()).insert(new CustomersRowUnsaved(
       email = email,
@@ -264,13 +262,13 @@ case class TestInsert(random: Random) {
   def Inventory(
     productId: ProductsId,
     warehouseId: WarehousesId,
-    quantityOnHand: Defaulted[Integer] = Defaulted.UseDefault(),
-    quantityReserved: Defaulted[Integer] = Defaulted.UseDefault(),
-    quantityOnOrder: Defaulted[Integer] = Defaulted.UseDefault(),
-    reorderPoint: Defaulted[Integer] = Defaulted.UseDefault(),
-    reorderQuantity: Defaulted[Integer] = Defaulted.UseDefault(),
-    binLocation: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    lastCountedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault(),
+    quantityOnHand: Defaulted[Int] = Defaulted.UseDefault(),
+    quantityReserved: Defaulted[Int] = Defaulted.UseDefault(),
+    quantityOnOrder: Defaulted[Int] = Defaulted.UseDefault(),
+    reorderPoint: Defaulted[Int] = Defaulted.UseDefault(),
+    reorderQuantity: Defaulted[Int] = Defaulted.UseDefault(),
+    binLocation: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    lastCountedAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault(),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): InventoryRow = {
     (new InventoryRepoImpl()).insert(new InventoryRowUnsaved(
@@ -306,28 +304,28 @@ case class TestInsert(random: Random) {
     setCol: MariaSet,
     inet4Col: Inet4,
     inet6Col: Inet6,
-    tinyintCol: java.lang.Byte = random.nextInt(java.lang.Byte.MAX_VALUE).toByte,
-    smallintCol: java.lang.Short = random.nextInt(java.lang.Short.MAX_VALUE).toShort,
-    mediumintCol: Integer = random.nextInt(),
+    tinyintCol: Byte = random.nextInt(Byte.MaxValue).toByte,
+    smallintCol: Short = random.nextInt(Short.MaxValue).toShort,
+    mediumintCol: Int = random.nextInt(),
     intCol: MariatestId = MariatestId(random.nextInt()),
-    bigintCol: java.lang.Long = random.nextLong(),
-    tinyintUCol: java.lang.Short = random.nextInt(java.lang.Short.MAX_VALUE).toShort,
-    smallintUCol: Integer = random.nextInt(),
-    mediumintUCol: Integer = random.nextInt(),
-    intUCol: java.lang.Long = random.nextLong(),
-    decimalCol: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    numericCol: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    floatCol: java.lang.Float = random.nextFloat(),
-    doubleCol: java.lang.Double = random.nextDouble(),
-    boolCol: java.lang.Boolean = random.nextBoolean(),
-    charCol: String = RandomHelper.alphanumeric(random, 20),
-    varcharCol: String = RandomHelper.alphanumeric(random, 20),
-    tinytextCol: String = RandomHelper.alphanumeric(random, 20),
-    textCol: String = RandomHelper.alphanumeric(random, 20),
-    mediumtextCol: String = RandomHelper.alphanumeric(random, 20),
-    longtextCol: String = RandomHelper.alphanumeric(random, 20),
-    enumCol: String = RandomHelper.alphanumeric(random, 20),
-    jsonCol: String = RandomHelper.alphanumeric(random, 20),
+    bigintCol: Long = random.nextLong(),
+    tinyintUCol: Short = random.nextInt(Short.MaxValue).toShort,
+    smallintUCol: Int = random.nextInt(),
+    mediumintUCol: Int = random.nextInt(),
+    intUCol: Long = random.nextLong(),
+    decimalCol: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    numericCol: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    floatCol: Float = random.nextFloat(),
+    doubleCol: Double = random.nextDouble(),
+    boolCol: Boolean = random.nextBoolean(),
+    charCol: String = random.alphanumeric.take(20).mkString,
+    varcharCol: String = random.alphanumeric.take(20).mkString,
+    tinytextCol: String = random.alphanumeric.take(20).mkString,
+    textCol: String = random.alphanumeric.take(20).mkString,
+    mediumtextCol: String = random.alphanumeric.take(20).mkString,
+    longtextCol: String = random.alphanumeric.take(20).mkString,
+    enumCol: String = random.alphanumeric.take(20).mkString,
+    jsonCol: String = random.alphanumeric.take(20).mkString,
     timestampCol: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
     timestampFspCol: Defaulted[LocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): MariatestRow = {
@@ -377,7 +375,7 @@ case class TestInsert(random: Random) {
     ))(using c)
   }
 
-  def MariatestIdentity(name: String = RandomHelper.alphanumeric(random, 20))(using c: Connection): MariatestIdentityRow = (new MariatestIdentityRepoImpl()).insert(new MariatestIdentityRowUnsaved(name = name))(using c)
+  def MariatestIdentity(name: String = random.alphanumeric.take(20).mkString)(using c: Connection): MariatestIdentityRow = (new MariatestIdentityRepoImpl()).insert(new MariatestIdentityRowUnsaved(name = name))(using c)
 
   def MariatestSpatial(
     geometryCol: Geometry,
@@ -402,14 +400,14 @@ case class TestInsert(random: Random) {
   }
 
   def MariatestSpatialNull(
-    geometryCol: Defaulted[Optional[Geometry]] = Defaulted.UseDefault(),
-    pointCol: Defaulted[Optional[Point]] = Defaulted.UseDefault(),
-    linestringCol: Defaulted[Optional[LineString]] = Defaulted.UseDefault(),
-    polygonCol: Defaulted[Optional[Polygon]] = Defaulted.UseDefault(),
-    multipointCol: Defaulted[Optional[MultiPoint]] = Defaulted.UseDefault(),
-    multilinestringCol: Defaulted[Optional[MultiLineString]] = Defaulted.UseDefault(),
-    multipolygonCol: Defaulted[Optional[MultiPolygon]] = Defaulted.UseDefault(),
-    geometrycollectionCol: Defaulted[Optional[GeometryCollection]] = Defaulted.UseDefault()
+    geometryCol: Defaulted[Option[Geometry]] = Defaulted.UseDefault(),
+    pointCol: Defaulted[Option[Point]] = Defaulted.UseDefault(),
+    linestringCol: Defaulted[Option[LineString]] = Defaulted.UseDefault(),
+    polygonCol: Defaulted[Option[Polygon]] = Defaulted.UseDefault(),
+    multipointCol: Defaulted[Option[MultiPoint]] = Defaulted.UseDefault(),
+    multilinestringCol: Defaulted[Option[MultiLineString]] = Defaulted.UseDefault(),
+    multipolygonCol: Defaulted[Option[MultiPolygon]] = Defaulted.UseDefault(),
+    geometrycollectionCol: Defaulted[Option[GeometryCollection]] = Defaulted.UseDefault()
   )(using c: Connection): MariatestSpatialNullRow = {
     (new MariatestSpatialNullRepoImpl()).insert(new MariatestSpatialNullRowUnsaved(
       geometryCol = geometryCol,
@@ -424,54 +422,54 @@ case class TestInsert(random: Random) {
   }
 
   def MariatestUnique(
-    email: String = RandomHelper.alphanumeric(random, 20),
-    code: String = RandomHelper.alphanumeric(random, 20),
-    category: String = RandomHelper.alphanumeric(random, 20)
+    email: String = random.alphanumeric.take(20).mkString,
+    code: String = random.alphanumeric.take(20).mkString,
+    category: String = random.alphanumeric.take(20).mkString
   )(using c: Connection): MariatestUniqueRow = (new MariatestUniqueRepoImpl()).insert(new MariatestUniqueRowUnsaved(email = email, code = code, category = category))(using c)
 
   def Mariatestnull(
-    tinyintCol: Defaulted[Optional[java.lang.Byte]] = Defaulted.UseDefault(),
-    smallintCol: Defaulted[Optional[java.lang.Short]] = Defaulted.UseDefault(),
-    mediumintCol: Defaulted[Optional[Integer]] = Defaulted.UseDefault(),
-    intCol: Defaulted[Optional[Integer]] = Defaulted.UseDefault(),
-    bigintCol: Defaulted[Optional[java.lang.Long]] = Defaulted.UseDefault(),
-    tinyintUCol: Defaulted[Optional[java.lang.Short]] = Defaulted.UseDefault(),
-    smallintUCol: Defaulted[Optional[Integer]] = Defaulted.UseDefault(),
-    mediumintUCol: Defaulted[Optional[Integer]] = Defaulted.UseDefault(),
-    intUCol: Defaulted[Optional[java.lang.Long]] = Defaulted.UseDefault(),
-    bigintUCol: Defaulted[Optional[BigInteger]] = Defaulted.UseDefault(),
-    decimalCol: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.UseDefault(),
-    numericCol: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.UseDefault(),
-    floatCol: Defaulted[Optional[java.lang.Float]] = Defaulted.UseDefault(),
-    doubleCol: Defaulted[Optional[java.lang.Double]] = Defaulted.UseDefault(),
-    boolCol: Defaulted[Optional[java.lang.Boolean]] = Defaulted.UseDefault(),
-    bitCol: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault(),
-    bit1Col: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault(),
-    charCol: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    varcharCol: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    tinytextCol: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    textCol: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    mediumtextCol: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    longtextCol: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    binaryCol: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault(),
-    varbinaryCol: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault(),
-    tinyblobCol: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault(),
-    blobCol: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault(),
-    mediumblobCol: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault(),
-    longblobCol: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault(),
-    dateCol: Defaulted[Optional[LocalDate]] = Defaulted.UseDefault(),
-    timeCol: Defaulted[Optional[LocalTime]] = Defaulted.UseDefault(),
-    timeFspCol: Defaulted[Optional[LocalTime]] = Defaulted.UseDefault(),
-    datetimeCol: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault(),
-    datetimeFspCol: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault(),
-    timestampCol: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault(),
-    timestampFspCol: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault(),
-    yearCol: Defaulted[Optional[Year]] = Defaulted.UseDefault(),
-    enumCol: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    setCol: Defaulted[Optional[MariaSet]] = Defaulted.UseDefault(),
-    jsonCol: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    inet4Col: Defaulted[Optional[Inet4]] = Defaulted.UseDefault(),
-    inet6Col: Defaulted[Optional[Inet6]] = Defaulted.UseDefault()
+    tinyintCol: Defaulted[Option[Byte]] = Defaulted.UseDefault(),
+    smallintCol: Defaulted[Option[Short]] = Defaulted.UseDefault(),
+    mediumintCol: Defaulted[Option[Int]] = Defaulted.UseDefault(),
+    intCol: Defaulted[Option[Int]] = Defaulted.UseDefault(),
+    bigintCol: Defaulted[Option[Long]] = Defaulted.UseDefault(),
+    tinyintUCol: Defaulted[Option[Short]] = Defaulted.UseDefault(),
+    smallintUCol: Defaulted[Option[Int]] = Defaulted.UseDefault(),
+    mediumintUCol: Defaulted[Option[Int]] = Defaulted.UseDefault(),
+    intUCol: Defaulted[Option[Long]] = Defaulted.UseDefault(),
+    bigintUCol: Defaulted[Option[BigInteger]] = Defaulted.UseDefault(),
+    decimalCol: Defaulted[Option[BigDecimal]] = Defaulted.UseDefault(),
+    numericCol: Defaulted[Option[BigDecimal]] = Defaulted.UseDefault(),
+    floatCol: Defaulted[Option[Float]] = Defaulted.UseDefault(),
+    doubleCol: Defaulted[Option[Double]] = Defaulted.UseDefault(),
+    boolCol: Defaulted[Option[Boolean]] = Defaulted.UseDefault(),
+    bitCol: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault(),
+    bit1Col: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault(),
+    charCol: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    varcharCol: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    tinytextCol: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    textCol: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    mediumtextCol: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    longtextCol: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    binaryCol: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault(),
+    varbinaryCol: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault(),
+    tinyblobCol: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault(),
+    blobCol: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault(),
+    mediumblobCol: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault(),
+    longblobCol: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault(),
+    dateCol: Defaulted[Option[LocalDate]] = Defaulted.UseDefault(),
+    timeCol: Defaulted[Option[LocalTime]] = Defaulted.UseDefault(),
+    timeFspCol: Defaulted[Option[LocalTime]] = Defaulted.UseDefault(),
+    datetimeCol: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault(),
+    datetimeFspCol: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault(),
+    timestampCol: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault(),
+    timestampFspCol: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault(),
+    yearCol: Defaulted[Option[Year]] = Defaulted.UseDefault(),
+    enumCol: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    setCol: Defaulted[Option[MariaSet]] = Defaulted.UseDefault(),
+    jsonCol: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    inet4Col: Defaulted[Option[Inet4]] = Defaulted.UseDefault(),
+    inet6Col: Defaulted[Option[Inet6]] = Defaulted.UseDefault()
   )(using c: Connection): MariatestnullRow = {
     (new MariatestnullRepoImpl()).insert(new MariatestnullRowUnsaved(
       tinyintCol = tinyintCol,
@@ -521,11 +519,11 @@ case class TestInsert(random: Random) {
 
   def OrderHistory(
     orderId: OrdersId,
-    newStatus: String = RandomHelper.alphanumeric(random, 20),
-    previousStatus: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    changedBy: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    changeReason: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    metadata: Defaulted[Optional[String]] = Defaulted.UseDefault(),
+    newStatus: String = random.alphanumeric.take(20).mkString,
+    previousStatus: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    changedBy: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    changeReason: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    metadata: Defaulted[Option[String]] = Defaulted.UseDefault(),
     createdAt: Defaulted[LocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): OrderHistoryRow = {
     (new OrderHistoryRepoImpl()).insert(new OrderHistoryRowUnsaved(
@@ -542,16 +540,16 @@ case class TestInsert(random: Random) {
   def OrderItems(
     orderId: OrdersId,
     productId: ProductsId,
-    sku: String = RandomHelper.alphanumeric(random, 20),
-    productName: String = RandomHelper.alphanumeric(random, 20),
-    quantity: Integer = random.nextInt(),
-    unitPrice: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    lineTotal: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    discountAmount: Defaulted[java.math.BigDecimal] = Defaulted.UseDefault(),
-    taxAmount: Defaulted[java.math.BigDecimal] = Defaulted.UseDefault(),
+    sku: String = random.alphanumeric.take(20).mkString,
+    productName: String = random.alphanumeric.take(20).mkString,
+    quantity: Int = random.nextInt(),
+    unitPrice: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    lineTotal: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    discountAmount: Defaulted[BigDecimal] = Defaulted.UseDefault(),
+    taxAmount: Defaulted[BigDecimal] = Defaulted.UseDefault(),
     fulfillmentStatus: Defaulted[String] = Defaulted.UseDefault(),
-    warehouseId: Defaulted[Optional[WarehousesId]] = Defaulted.UseDefault(),
-    notes: Defaulted[Optional[String]] = Defaulted.UseDefault()
+    warehouseId: Defaulted[Option[WarehousesId]] = Defaulted.UseDefault(),
+    notes: Defaulted[Option[String]] = Defaulted.UseDefault()
   )(using c: Connection): OrderItemsRow = {
     (new OrderItemsRepoImpl()).insert(new OrderItemsRowUnsaved(
       orderId = orderId,
@@ -571,26 +569,26 @@ case class TestInsert(random: Random) {
 
   def Orders(
     customerId: CustomersId,
-    orderNumber: String = RandomHelper.alphanumeric(random, 20),
-    subtotal: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    totalAmount: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
+    orderNumber: String = random.alphanumeric.take(20).mkString,
+    subtotal: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    totalAmount: BigDecimal = BigDecimal.decimal(random.nextDouble()),
     orderStatus: Defaulted[String] = Defaulted.UseDefault(),
     paymentStatus: Defaulted[String] = Defaulted.UseDefault(),
-    shippingAddressId: Defaulted[Optional[CustomerAddressesId]] = Defaulted.UseDefault(),
-    billingAddressId: Defaulted[Optional[CustomerAddressesId]] = Defaulted.UseDefault(),
-    shippingCost: Defaulted[java.math.BigDecimal] = Defaulted.UseDefault(),
-    taxAmount: Defaulted[java.math.BigDecimal] = Defaulted.UseDefault(),
-    discountAmount: Defaulted[java.math.BigDecimal] = Defaulted.UseDefault(),
+    shippingAddressId: Defaulted[Option[CustomerAddressesId]] = Defaulted.UseDefault(),
+    billingAddressId: Defaulted[Option[CustomerAddressesId]] = Defaulted.UseDefault(),
+    shippingCost: Defaulted[BigDecimal] = Defaulted.UseDefault(),
+    taxAmount: Defaulted[BigDecimal] = Defaulted.UseDefault(),
+    discountAmount: Defaulted[BigDecimal] = Defaulted.UseDefault(),
     currencyCode: Defaulted[String] = Defaulted.UseDefault(),
-    promotionId: Defaulted[Optional[PromotionsId]] = Defaulted.UseDefault(),
-    notes: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    internalNotes: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    ipAddress: Defaulted[Optional[Inet6]] = Defaulted.UseDefault(),
-    userAgent: Defaulted[Optional[String]] = Defaulted.UseDefault(),
+    promotionId: Defaulted[Option[PromotionsId]] = Defaulted.UseDefault(),
+    notes: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    internalNotes: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    ipAddress: Defaulted[Option[Inet6]] = Defaulted.UseDefault(),
+    userAgent: Defaulted[Option[String]] = Defaulted.UseDefault(),
     orderedAt: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
-    confirmedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault(),
-    shippedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault(),
-    deliveredAt: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault()
+    confirmedAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault(),
+    shippedAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault(),
+    deliveredAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault()
   )(using c: Connection): OrdersRow = {
     (new OrdersRepoImpl()).insert(new OrdersRowUnsaved(
       orderNumber = orderNumber,
@@ -618,12 +616,12 @@ case class TestInsert(random: Random) {
   }
 
   def PaymentMethods(
-    code: String = RandomHelper.alphanumeric(random, 20),
-    name: String = RandomHelper.alphanumeric(random, 20),
-    methodType: String = RandomHelper.alphanumeric(random, 20),
-    processorConfig: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    isActive: Defaulted[java.lang.Boolean] = Defaulted.UseDefault(),
-    sortOrder: Defaulted[java.lang.Byte] = Defaulted.UseDefault()
+    code: String = random.alphanumeric.take(20).mkString,
+    name: String = random.alphanumeric.take(20).mkString,
+    methodType: String = random.alphanumeric.take(20).mkString,
+    processorConfig: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    isActive: Defaulted[Boolean] = Defaulted.UseDefault(),
+    sortOrder: Defaulted[Byte] = Defaulted.UseDefault()
   )(using c: Connection): PaymentMethodsRow = {
     (new PaymentMethodsRepoImpl()).insert(new PaymentMethodsRowUnsaved(
       code = code,
@@ -638,15 +636,15 @@ case class TestInsert(random: Random) {
   def Payments(
     orderId: OrdersId,
     methodId: PaymentMethodsId,
-    amount: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    transactionId: Defaulted[Optional[String]] = Defaulted.UseDefault(),
+    amount: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    transactionId: Defaulted[Option[String]] = Defaulted.UseDefault(),
     currencyCode: Defaulted[String] = Defaulted.UseDefault(),
     status: Defaulted[String] = Defaulted.UseDefault(),
-    processorResponse: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    errorMessage: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    ipAddress: Defaulted[Optional[Inet6]] = Defaulted.UseDefault(),
+    processorResponse: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    errorMessage: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    ipAddress: Defaulted[Option[Inet6]] = Defaulted.UseDefault(),
     createdAt: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
-    processedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault()
+    processedAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault()
   )(using c: Connection): PaymentsRow = {
     (new PaymentsRepoImpl()).insert(new PaymentsRowUnsaved(
       orderId = orderId,
@@ -664,10 +662,10 @@ case class TestInsert(random: Random) {
   }
 
   def PriceTiers(
-    name: String = RandomHelper.alphanumeric(random, 20),
-    discountType: String = RandomHelper.alphanumeric(random, 20),
-    discountValue: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    minQuantity: Defaulted[java.lang.Long] = Defaulted.UseDefault()
+    name: String = random.alphanumeric.take(20).mkString,
+    discountType: String = random.alphanumeric.take(20).mkString,
+    discountValue: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    minQuantity: Defaulted[Long] = Defaulted.UseDefault()
   )(using c: Connection): PriceTiersRow = {
     (new PriceTiersRepoImpl()).insert(new PriceTiersRowUnsaved(
       name = name,
@@ -680,8 +678,8 @@ case class TestInsert(random: Random) {
   def ProductCategories(
     productId: ProductsId,
     categoryId: CategoriesId,
-    isPrimary: Defaulted[java.lang.Boolean] = Defaulted.UseDefault(),
-    sortOrder: Defaulted[java.lang.Short] = Defaulted.UseDefault()
+    isPrimary: Defaulted[Boolean] = Defaulted.UseDefault(),
+    sortOrder: Defaulted[Short] = Defaulted.UseDefault()
   )(using c: Connection): ProductCategoriesRow = {
     (new ProductCategoriesRepoImpl()).insert(new ProductCategoriesRowUnsaved(
       productId = productId,
@@ -693,12 +691,12 @@ case class TestInsert(random: Random) {
 
   def ProductImages(
     productId: ProductsId,
-    imageUrl: String = RandomHelper.alphanumeric(random, 20),
-    thumbnailUrl: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    altText: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    sortOrder: Defaulted[java.lang.Short] = Defaulted.UseDefault(),
-    isPrimary: Defaulted[java.lang.Boolean] = Defaulted.UseDefault(),
-    imageData: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault()
+    imageUrl: String = random.alphanumeric.take(20).mkString,
+    thumbnailUrl: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    altText: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    sortOrder: Defaulted[Short] = Defaulted.UseDefault(),
+    isPrimary: Defaulted[Boolean] = Defaulted.UseDefault(),
+    imageData: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault()
   )(using c: Connection): ProductImagesRow = {
     (new ProductImagesRepoImpl()).insert(new ProductImagesRowUnsaved(
       productId = productId,
@@ -714,10 +712,10 @@ case class TestInsert(random: Random) {
   def ProductPrices(
     productId: ProductsId,
     validFrom: LocalDate,
-    price: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    tierId: Defaulted[Optional[PriceTiersId]] = Defaulted.UseDefault(),
+    price: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    tierId: Defaulted[Option[PriceTiersId]] = Defaulted.UseDefault(),
     currencyCode: Defaulted[String] = Defaulted.UseDefault(),
-    validTo: Defaulted[Optional[LocalDate]] = Defaulted.UseDefault()
+    validTo: Defaulted[Option[LocalDate]] = Defaulted.UseDefault()
   )(using c: Connection): ProductPricesRow = {
     (new ProductPricesRepoImpl()).insert(new ProductPricesRowUnsaved(
       productId = productId,
@@ -730,23 +728,23 @@ case class TestInsert(random: Random) {
   }
 
   def Products(
-    sku: String = RandomHelper.alphanumeric(random, 20),
-    name: String = RandomHelper.alphanumeric(random, 20),
-    basePrice: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    brandId: Defaulted[Optional[BrandsId]] = Defaulted.UseDefault(),
-    shortDescription: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    fullDescription: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    costPrice: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.UseDefault(),
-    weightKg: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.UseDefault(),
-    dimensionsJson: Defaulted[Optional[String]] = Defaulted.UseDefault(),
+    sku: String = random.alphanumeric.take(20).mkString,
+    name: String = random.alphanumeric.take(20).mkString,
+    basePrice: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    brandId: Defaulted[Option[BrandsId]] = Defaulted.UseDefault(),
+    shortDescription: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    fullDescription: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    costPrice: Defaulted[Option[BigDecimal]] = Defaulted.UseDefault(),
+    weightKg: Defaulted[Option[BigDecimal]] = Defaulted.UseDefault(),
+    dimensionsJson: Defaulted[Option[String]] = Defaulted.UseDefault(),
     status: Defaulted[String] = Defaulted.UseDefault(),
     taxClass: Defaulted[String] = Defaulted.UseDefault(),
-    tags: Defaulted[Optional[MariaSet]] = Defaulted.UseDefault(),
-    attributes: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    seoMetadata: Defaulted[Optional[String]] = Defaulted.UseDefault(),
+    tags: Defaulted[Option[MariaSet]] = Defaulted.UseDefault(),
+    attributes: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    seoMetadata: Defaulted[Option[String]] = Defaulted.UseDefault(),
     createdAt: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
-    publishedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault()
+    publishedAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault()
   )(using c: Connection): ProductsRow = {
     (new ProductsRepoImpl()).insert(new ProductsRowUnsaved(
       sku = sku,
@@ -772,18 +770,18 @@ case class TestInsert(random: Random) {
   def Promotions(
     validFrom: LocalDateTime,
     validTo: LocalDateTime,
-    code: String = RandomHelper.alphanumeric(random, 20),
-    name: String = RandomHelper.alphanumeric(random, 20),
-    discountType: String = RandomHelper.alphanumeric(random, 20),
-    discountValue: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    description: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    minOrderAmount: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.UseDefault(),
-    maxUses: Defaulted[Optional[java.lang.Long]] = Defaulted.UseDefault(),
-    usesCount: Defaulted[java.lang.Long] = Defaulted.UseDefault(),
-    maxUsesPerCustomer: Defaulted[Optional[java.lang.Short]] = Defaulted.UseDefault(),
-    applicableTo: Defaulted[Optional[MariaSet]] = Defaulted.UseDefault(),
-    rulesJson: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    isActive: Defaulted[java.lang.Boolean] = Defaulted.UseDefault(),
+    code: String = random.alphanumeric.take(20).mkString,
+    name: String = random.alphanumeric.take(20).mkString,
+    discountType: String = random.alphanumeric.take(20).mkString,
+    discountValue: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    description: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    minOrderAmount: Defaulted[Option[BigDecimal]] = Defaulted.UseDefault(),
+    maxUses: Defaulted[Option[Long]] = Defaulted.UseDefault(),
+    usesCount: Defaulted[Long] = Defaulted.UseDefault(),
+    maxUsesPerCustomer: Defaulted[Option[Short]] = Defaulted.UseDefault(),
+    applicableTo: Defaulted[Option[MariaSet]] = Defaulted.UseDefault(),
+    rulesJson: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    isActive: Defaulted[Boolean] = Defaulted.UseDefault(),
     createdAt: Defaulted[LocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): PromotionsRow = {
     (new PromotionsRepoImpl()).insert(new PromotionsRowUnsaved(
@@ -808,19 +806,19 @@ case class TestInsert(random: Random) {
   def Reviews(
     productId: ProductsId,
     customerId: CustomersId,
-    rating: java.lang.Short = random.nextInt(java.lang.Short.MAX_VALUE).toShort,
-    orderItemId: Defaulted[Optional[OrderItemsId]] = Defaulted.UseDefault(),
-    title: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    content: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    pros: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    cons: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    images: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    isVerifiedPurchase: Defaulted[java.lang.Boolean] = Defaulted.UseDefault(),
-    isApproved: Defaulted[java.lang.Boolean] = Defaulted.UseDefault(),
-    helpfulVotes: Defaulted[java.lang.Long] = Defaulted.UseDefault(),
-    unhelpfulVotes: Defaulted[java.lang.Long] = Defaulted.UseDefault(),
-    adminResponse: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    respondedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault(),
+    rating: Short = random.nextInt(Short.MaxValue).toShort,
+    orderItemId: Defaulted[Option[OrderItemsId]] = Defaulted.UseDefault(),
+    title: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    content: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    pros: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    cons: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    images: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    isVerifiedPurchase: Defaulted[Boolean] = Defaulted.UseDefault(),
+    isApproved: Defaulted[Boolean] = Defaulted.UseDefault(),
+    helpfulVotes: Defaulted[Long] = Defaulted.UseDefault(),
+    unhelpfulVotes: Defaulted[Long] = Defaulted.UseDefault(),
+    adminResponse: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    respondedAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault(),
     createdAt: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): ReviewsRow = {
@@ -848,18 +846,18 @@ case class TestInsert(random: Random) {
   def Shipments(
     orderId: OrdersId,
     carrierId: ShippingCarriersId,
-    shippingMethod: String = RandomHelper.alphanumeric(random, 20),
-    shippingCost: java.math.BigDecimal = java.math.BigDecimal.valueOf(random.nextDouble()),
-    trackingNumber: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    weightKg: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.UseDefault(),
-    dimensionsJson: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    labelData: Defaulted[Optional[Array[Byte]]] = Defaulted.UseDefault(),
+    shippingMethod: String = random.alphanumeric.take(20).mkString,
+    shippingCost: BigDecimal = BigDecimal.decimal(random.nextDouble()),
+    trackingNumber: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    weightKg: Defaulted[Option[BigDecimal]] = Defaulted.UseDefault(),
+    dimensionsJson: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    labelData: Defaulted[Option[Array[Byte]]] = Defaulted.UseDefault(),
     status: Defaulted[String] = Defaulted.UseDefault(),
-    estimatedDeliveryDate: Defaulted[Optional[LocalDate]] = Defaulted.UseDefault(),
-    actualDeliveryAt: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault(),
-    insuranceAmount: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.UseDefault(),
-    originWarehouseId: Defaulted[Optional[WarehousesId]] = Defaulted.UseDefault(),
-    shippedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.UseDefault(),
+    estimatedDeliveryDate: Defaulted[Option[LocalDate]] = Defaulted.UseDefault(),
+    actualDeliveryAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault(),
+    insuranceAmount: Defaulted[Option[BigDecimal]] = Defaulted.UseDefault(),
+    originWarehouseId: Defaulted[Option[WarehousesId]] = Defaulted.UseDefault(),
+    shippedAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault(),
     createdAt: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.UseDefault()
   )(using c: Connection): ShipmentsRow = {
@@ -884,11 +882,11 @@ case class TestInsert(random: Random) {
   }
 
   def ShippingCarriers(
-    code: String = RandomHelper.alphanumeric(random, 20),
-    name: String = RandomHelper.alphanumeric(random, 20),
-    trackingUrlTemplate: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    apiConfig: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    isActive: Defaulted[java.lang.Boolean] = Defaulted.UseDefault()
+    code: String = random.alphanumeric.take(20).mkString,
+    name: String = random.alphanumeric.take(20).mkString,
+    trackingUrlTemplate: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    apiConfig: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    isActive: Defaulted[Boolean] = Defaulted.UseDefault()
   )(using c: Connection): ShippingCarriersRow = {
     (new ShippingCarriersRepoImpl()).insert(new ShippingCarriersRowUnsaved(
       code = code,
@@ -901,14 +899,14 @@ case class TestInsert(random: Random) {
 
   def Warehouses(
     location: Point,
-    code: String = RandomHelper.alphanumeric(random, 20),
-    name: String = RandomHelper.alphanumeric(random, 20),
-    address: String = RandomHelper.alphanumeric(random, 20),
-    serviceArea: Defaulted[Optional[Polygon]] = Defaulted.UseDefault(),
+    code: String = random.alphanumeric.take(20).mkString,
+    name: String = random.alphanumeric.take(20).mkString,
+    address: String = random.alphanumeric.take(20).mkString,
+    serviceArea: Defaulted[Option[Polygon]] = Defaulted.UseDefault(),
     timezone: Defaulted[String] = Defaulted.UseDefault(),
-    isActive: Defaulted[java.lang.Boolean] = Defaulted.UseDefault(),
-    contactEmail: Defaulted[Optional[String]] = Defaulted.UseDefault(),
-    contactPhone: Defaulted[Optional[String]] = Defaulted.UseDefault()
+    isActive: Defaulted[Boolean] = Defaulted.UseDefault(),
+    contactEmail: Defaulted[Option[String]] = Defaulted.UseDefault(),
+    contactPhone: Defaulted[Option[String]] = Defaulted.UseDefault()
   )(using c: Connection): WarehousesRow = {
     (new WarehousesRepoImpl()).insert(new WarehousesRowUnsaved(
       code = code,

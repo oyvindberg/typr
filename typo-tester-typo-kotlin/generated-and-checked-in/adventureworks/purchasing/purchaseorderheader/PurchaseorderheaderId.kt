@@ -6,7 +6,8 @@
 package adventureworks.purchasing.purchaseorderheader
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class PurchaseorderheaderId(@JsonValue val value: Int) {
       Bijection.of(PurchaseorderheaderId::value, ::PurchaseorderheaderId)
 
     val pgType: PgType<PurchaseorderheaderId> =
-      PgTypes.int4.bimap(::PurchaseorderheaderId, PurchaseorderheaderId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::PurchaseorderheaderId, PurchaseorderheaderId::value)
 
     val pgTypeArray: PgType<Array<PurchaseorderheaderId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::PurchaseorderheaderId, PurchaseorderheaderId::class.java) }, { xs -> arrayMap.map(xs, PurchaseorderheaderId::value, Int::class.javaObjectType) })

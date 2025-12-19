@@ -29,17 +29,17 @@ case class AViewRow(
   /** Points to [[adventureworks.person.address.AddressRow.addressid]] */
   addressid: AddressId,
   /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
-  addressline1: /* max 60 chars */ String,
+  addressline1: String,
   /** Points to [[adventureworks.person.address.AddressRow.addressline2]] */
-  addressline2: Option[/* max 60 chars */ String],
+  addressline2: String,
   /** Points to [[adventureworks.person.address.AddressRow.city]] */
-  city: /* max 30 chars */ String,
+  city: String,
   /** Points to [[adventureworks.person.address.AddressRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
   /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
-  postalcode: /* max 15 chars */ String,
+  postalcode: String,
   /** Points to [[adventureworks.person.address.AddressRow.spatiallocation]] */
-  spatiallocation: Option[TypoBytea],
+  spatiallocation: TypoBytea,
   /** Points to [[adventureworks.person.address.AddressRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.person.address.AddressRow.modifieddate]] */
@@ -54,11 +54,11 @@ object AViewRow {
             id = json.\("id").as(AddressId.reads),
             addressid = json.\("addressid").as(AddressId.reads),
             addressline1 = json.\("addressline1").as(Reads.StringReads),
-            addressline2 = json.\("addressline2").toOption.map(_.as(Reads.StringReads)),
+            addressline2 = json.\("addressline2").as(Reads.StringReads),
             city = json.\("city").as(Reads.StringReads),
             stateprovinceid = json.\("stateprovinceid").as(StateprovinceId.reads),
             postalcode = json.\("postalcode").as(Reads.StringReads),
-            spatiallocation = json.\("spatiallocation").toOption.map(_.as(TypoBytea.reads)),
+            spatiallocation = json.\("spatiallocation").as(TypoBytea.reads),
             rowguid = json.\("rowguid").as(TypoUUID.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
@@ -74,11 +74,11 @@ object AViewRow {
           id = row(idx + 0)(AddressId.column),
           addressid = row(idx + 1)(AddressId.column),
           addressline1 = row(idx + 2)(Column.columnToString),
-          addressline2 = row(idx + 3)(Column.columnToOption(Column.columnToString)),
+          addressline2 = row(idx + 3)(Column.columnToString),
           city = row(idx + 4)(Column.columnToString),
           stateprovinceid = row(idx + 5)(StateprovinceId.column),
           postalcode = row(idx + 6)(Column.columnToString),
-          spatiallocation = row(idx + 7)(Column.columnToOption(TypoBytea.column)),
+          spatiallocation = row(idx + 7)(TypoBytea.column),
           rowguid = row(idx + 8)(TypoUUID.column),
           modifieddate = row(idx + 9)(TypoLocalDateTime.column)
         )
@@ -92,11 +92,11 @@ object AViewRow {
         "id" -> AddressId.writes.writes(o.id),
         "addressid" -> AddressId.writes.writes(o.addressid),
         "addressline1" -> Writes.StringWrites.writes(o.addressline1),
-        "addressline2" -> Writes.OptionWrites(Writes.StringWrites).writes(o.addressline2),
+        "addressline2" -> Writes.StringWrites.writes(o.addressline2),
         "city" -> Writes.StringWrites.writes(o.city),
         "stateprovinceid" -> StateprovinceId.writes.writes(o.stateprovinceid),
         "postalcode" -> Writes.StringWrites.writes(o.postalcode),
-        "spatiallocation" -> Writes.OptionWrites(TypoBytea.writes).writes(o.spatiallocation),
+        "spatiallocation" -> TypoBytea.writes.writes(o.spatiallocation),
         "rowguid" -> TypoUUID.writes.writes(o.rowguid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))

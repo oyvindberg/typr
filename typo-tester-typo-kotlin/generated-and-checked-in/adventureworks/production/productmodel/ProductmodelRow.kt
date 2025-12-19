@@ -6,14 +6,15 @@
 package adventureworks.production.productmodel
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.data.Xml
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: production.productmodel
   * Product model classification.
@@ -27,26 +28,26 @@ data class ProductmodelRow(
   /** Product model description. */
   val name: Name,
   /** Detailed product catalog information in xml format. */
-  val catalogdescription: Optional<TypoXml>,
+  val catalogdescription: Xml?,
   /** Manufacturing instructions in xml format. */
-  val instructions: Optional<TypoXml>,
+  val instructions: Xml?,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): ProductmodelId = productmodelid
 
   fun toUnsavedRow(
     productmodelid: Defaulted<ProductmodelId>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): ProductmodelRowUnsaved = ProductmodelRowUnsaved(name, catalogdescription, instructions, productmodelid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductmodelRow> = RowParsers.of(ProductmodelId.pgType, Name.pgType, TypoXml.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> ProductmodelRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.productmodelid, row.name, row.catalogdescription, row.instructions, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<ProductmodelRow> = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.xml.nullable(), PgTypes.xml.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> ProductmodelRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.productmodelid, row.name, row.catalogdescription, row.instructions, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<ProductmodelRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

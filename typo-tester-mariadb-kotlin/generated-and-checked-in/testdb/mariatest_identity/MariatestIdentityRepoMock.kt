@@ -8,21 +8,19 @@ package testdb.mariatest_identity
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class MariatestIdentityRepoMock(
   val toRow: (MariatestIdentityRowUnsaved) -> MariatestIdentityRow,
@@ -33,7 +31,7 @@ data class MariatestIdentityRepoMock(
   override fun deleteById(
     id: MariatestIdentityId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(id)).isPresent()
+  ): Boolean = map.remove(id) != null
 
   override fun deleteByIds(
     ids: Array<MariatestIdentityId>,
@@ -41,7 +39,7 @@ data class MariatestIdentityRepoMock(
   ): Int {
     var count = 0
     for (id in ids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class MariatestIdentityRepoMock(
     c: Connection
   ): MariatestIdentityRow {
     if (map.containsKey(unsaved.id)) {
-      throw RuntimeException(str("id $unsaved.id already exists"))
+      throw RuntimeException("id " + unsaved.id + " already exists")
     }
     map[unsaved.id] = unsaved
     return unsaved
@@ -71,7 +69,7 @@ data class MariatestIdentityRepoMock(
   override fun selectById(
     id: MariatestIdentityId,
     c: Connection
-  ): Optional<MariatestIdentityRow> = Optional.ofNullable(map[id])
+  ): MariatestIdentityRow? = map[id]
 
   override fun selectByIds(
     ids: Array<MariatestIdentityId>,
@@ -79,9 +77,9 @@ data class MariatestIdentityRepoMock(
   ): List<MariatestIdentityRow> {
     val result = ArrayList<MariatestIdentityRow>()
     for (id in ids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -98,7 +96,7 @@ data class MariatestIdentityRepoMock(
     row: MariatestIdentityRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.id]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.id]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.id] = row
     }
@@ -114,7 +112,7 @@ data class MariatestIdentityRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<MariatestIdentityRow>,
+    unsaved: Iterator<MariatestIdentityRow>,
     c: Connection
   ): List<MariatestIdentityRow> {
     val result = ArrayList<MariatestIdentityRow>()

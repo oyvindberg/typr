@@ -8,12 +8,13 @@ package testdb.v_customer_summary
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_status.CustomerStatusId
 import testdb.customers.CustomersId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: v_customer_summary
   * VIEW
@@ -31,7 +32,7 @@ data class VCustomerSummaryViewRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("full_name") val fullName: Optional<String>,
+  @JsonProperty("full_name") val fullName: String?,
   /** 
     * Default: 'bronze'
     * Points to [testdb.customers.CustomersRow.tier]
@@ -51,7 +52,7 @@ data class VCustomerSummaryViewRow(
     * Default: NULL
     * Points to [testdb.customers.CustomersRow.lastLoginAt]
     */
-  @JsonProperty("last_login_at") val lastLoginAt: Optional<LocalDateTime>,
+  @JsonProperty("last_login_at") val lastLoginAt: LocalDateTime?,
   /** 
     * Default: 0
     */
@@ -63,9 +64,9 @@ data class VCustomerSummaryViewRow(
   /** 
     * Default: current_timestamp(6)
     */
-  @JsonProperty("last_order_date") val lastOrderDate: Optional<LocalDateTime>
+  @JsonProperty("last_order_date") val lastOrderDate: LocalDateTime?
 ) {
   companion object {
-    val _rowParser: RowParser<VCustomerSummaryViewRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, MariaTypes.datetime.opt(), MariaTypes.bigint, MariaTypes.decimal, MariaTypes.datetime.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VCustomerSummaryViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.fullName, row.tier, row.status, row.createdAt, row.lastLoginAt, row.totalOrders, row.lifetimeValue, row.lastOrderDate) })
+    val _rowParser: RowParser<VCustomerSummaryViewRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, MariaTypes.datetime.nullable(), KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VCustomerSummaryViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.fullName, row.tier, row.status, row.createdAt, row.lastLoginAt, row.totalOrders, row.lifetimeValue, row.lastOrderDate) })
   }
 }

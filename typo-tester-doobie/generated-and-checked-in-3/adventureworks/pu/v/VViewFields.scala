@@ -12,10 +12,9 @@ import adventureworks.public.AccountNumber
 import adventureworks.public.Flag
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait VViewFields {
   def id: Field[BusinessentityId, VViewRow]
@@ -25,16 +24,16 @@ trait VViewFields {
   def creditrating: Field[TypoShort, VViewRow]
   def preferredvendorstatus: Field[Flag, VViewRow]
   def activeflag: Field[Flag, VViewRow]
-  def purchasingwebserviceurl: OptField[/* max 1024 chars */ String, VViewRow]
+  def purchasingwebserviceurl: Field[String, VViewRow]
   def modifieddate: Field[TypoLocalDateTime, VViewRow]
 }
 
 object VViewFields {
-  lazy val structure: Relation[VViewFields, VViewRow] =
+  lazy val structure: RelationStructure[VViewFields, VViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[VViewFields, VViewRow] {
+    extends RelationStructure[VViewFields, VViewRow] {
 
     override lazy val fields: VViewFields = new VViewFields {
       override def id = Field[BusinessentityId, VViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
@@ -44,7 +43,7 @@ object VViewFields {
       override def creditrating = Field[TypoShort, VViewRow](_path, "creditrating", None, None, x => x.creditrating, (row, value) => row.copy(creditrating = value))
       override def preferredvendorstatus = Field[Flag, VViewRow](_path, "preferredvendorstatus", None, None, x => x.preferredvendorstatus, (row, value) => row.copy(preferredvendorstatus = value))
       override def activeflag = Field[Flag, VViewRow](_path, "activeflag", None, None, x => x.activeflag, (row, value) => row.copy(activeflag = value))
-      override def purchasingwebserviceurl = OptField[/* max 1024 chars */ String, VViewRow](_path, "purchasingwebserviceurl", None, None, x => x.purchasingwebserviceurl, (row, value) => row.copy(purchasingwebserviceurl = value))
+      override def purchasingwebserviceurl = Field[String, VViewRow](_path, "purchasingwebserviceurl", None, None, x => x.purchasingwebserviceurl, (row, value) => row.copy(purchasingwebserviceurl = value))
       override def modifieddate = Field[TypoLocalDateTime, VViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }
 

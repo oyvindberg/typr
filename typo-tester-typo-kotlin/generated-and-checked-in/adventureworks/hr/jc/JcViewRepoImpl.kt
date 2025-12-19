@@ -7,15 +7,12 @@ package adventureworks.hr.jc
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class JcViewRepoImpl() : JcViewRepo {
   override fun select(): SelectBuilder<JcViewFields, JcViewRow> = SelectBuilder.of("\"hr\".\"jc\"", JcViewFields.structure, JcViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<JcViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "jobcandidateid", "businessentityid", "resume", "modifieddate"::text
-    from "hr"."jc"
-  """.trimMargin())).query(JcViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<JcViewRow> = Fragment.interpolate(Fragment.lit("select \"id\", \"jobcandidateid\", \"businessentityid\", \"resume\", \"modifieddate\"\nfrom \"hr\".\"jc\"\n")).query(JcViewRow._rowParser.all()).runUnchecked(c)
 }

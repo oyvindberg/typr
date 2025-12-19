@@ -20,7 +20,7 @@ case class VstateprovincecountryregionMVRow(
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovincecode]] */
-  stateprovincecode: /* bpchar, max 3 chars */ String,
+  stateprovincecode: String,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.isonlystateprovinceflag]] */
   isonlystateprovinceflag: Flag,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.name]] */
@@ -34,9 +34,9 @@ case class VstateprovincecountryregionMVRow(
 )
 
 object VstateprovincecountryregionMVRow {
-  given decoder: Decoder[VstateprovincecountryregionMVRow] = Decoder.forProduct7[VstateprovincecountryregionMVRow, StateprovinceId, /* bpchar, max 3 chars */ String, Flag, Name, SalesterritoryId, CountryregionId, Name]("stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname")(VstateprovincecountryregionMVRow.apply)(using StateprovinceId.decoder, Decoder.decodeString, Flag.decoder, Name.decoder, SalesterritoryId.decoder, CountryregionId.decoder, Name.decoder)
+  given decoder: Decoder[VstateprovincecountryregionMVRow] = Decoder.forProduct7[VstateprovincecountryregionMVRow, StateprovinceId, String, Flag, Name, SalesterritoryId, CountryregionId, Name]("stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname")(VstateprovincecountryregionMVRow.apply)(using StateprovinceId.decoder, Decoder.decodeString, Flag.decoder, Name.decoder, SalesterritoryId.decoder, CountryregionId.decoder, Name.decoder)
 
-  given encoder: Encoder[VstateprovincecountryregionMVRow] = Encoder.forProduct7[VstateprovincecountryregionMVRow, StateprovinceId, /* bpchar, max 3 chars */ String, Flag, Name, SalesterritoryId, CountryregionId, Name]("stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname")(x => (x.stateprovinceid, x.stateprovincecode, x.isonlystateprovinceflag, x.stateprovincename, x.territoryid, x.countryregioncode, x.countryregionname))(using StateprovinceId.encoder, Encoder.encodeString, Flag.encoder, Name.encoder, SalesterritoryId.encoder, CountryregionId.encoder, Name.encoder)
+  given encoder: Encoder[VstateprovincecountryregionMVRow] = Encoder.forProduct7[VstateprovincecountryregionMVRow, StateprovinceId, String, Flag, Name, SalesterritoryId, CountryregionId, Name]("stateprovinceid", "stateprovincecode", "isonlystateprovinceflag", "stateprovincename", "territoryid", "countryregioncode", "countryregionname")(x => (x.stateprovinceid, x.stateprovincecode, x.isonlystateprovinceflag, x.stateprovincename, x.territoryid, x.countryregioncode, x.countryregionname))(using StateprovinceId.encoder, Encoder.encodeString, Flag.encoder, Name.encoder, SalesterritoryId.encoder, CountryregionId.encoder, Name.encoder)
 
   given read: Read[VstateprovincecountryregionMVRow] = {
     new Read.CompositeOfInstances(Array(
@@ -50,7 +50,7 @@ object VstateprovincecountryregionMVRow {
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       VstateprovincecountryregionMVRow(
         stateprovinceid = arr(0).asInstanceOf[StateprovinceId],
-            stateprovincecode = arr(1).asInstanceOf[/* bpchar, max 3 chars */ String],
+            stateprovincecode = arr(1).asInstanceOf[String],
             isonlystateprovinceflag = arr(2).asInstanceOf[Flag],
             stateprovincename = arr(3).asInstanceOf[Name],
             territoryid = arr(4).asInstanceOf[SalesterritoryId],

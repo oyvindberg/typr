@@ -8,10 +8,10 @@ package adventureworks.person.countryregion
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait CountryregionFields {
   def countryregioncode: IdField[CountryregionId, CountryregionRow]
@@ -20,11 +20,11 @@ trait CountryregionFields {
 }
 
 object CountryregionFields {
-  lazy val structure: Relation[CountryregionFields, CountryregionRow] =
+  lazy val structure: RelationStructure[CountryregionFields, CountryregionRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[CountryregionFields, CountryregionRow] {
+    extends RelationStructure[CountryregionFields, CountryregionRow] {
 
     override lazy val fields: CountryregionFields = new CountryregionFields {
       override def countryregioncode = IdField[CountryregionId, CountryregionRow](_path, "countryregioncode", None, None, x => x.countryregioncode, (row, value) => row.copy(countryregioncode = value))

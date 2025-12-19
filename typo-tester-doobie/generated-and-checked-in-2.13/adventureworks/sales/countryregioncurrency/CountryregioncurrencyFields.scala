@@ -14,6 +14,7 @@ import adventureworks.sales.currency.CurrencyId
 import adventureworks.sales.currency.CurrencyRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -21,7 +22,6 @@ import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait CountryregioncurrencyFields {
   def countryregioncode: IdField[CountryregionId, CountryregioncurrencyRow]
@@ -41,11 +41,11 @@ trait CountryregioncurrencyFields {
 }
 
 object CountryregioncurrencyFields {
-  lazy val structure: Relation[CountryregioncurrencyFields, CountryregioncurrencyRow] =
+  lazy val structure: RelationStructure[CountryregioncurrencyFields, CountryregioncurrencyRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[CountryregioncurrencyFields, CountryregioncurrencyRow] {
+    extends RelationStructure[CountryregioncurrencyFields, CountryregioncurrencyRow] {
 
     override lazy val fields: CountryregioncurrencyFields = new CountryregioncurrencyFields {
       override def countryregioncode = IdField[CountryregionId, CountryregioncurrencyRow](_path, "countryregioncode", None, None, x => x.countryregioncode, (row, value) => row.copy(countryregioncode = value))

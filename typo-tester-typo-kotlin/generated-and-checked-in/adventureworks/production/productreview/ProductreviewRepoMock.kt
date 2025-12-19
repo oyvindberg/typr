@@ -8,21 +8,19 @@ package adventureworks.production.productreview
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ProductreviewRepoMock(
   val toRow: (ProductreviewRowUnsaved) -> ProductreviewRow,
@@ -33,7 +31,7 @@ data class ProductreviewRepoMock(
   override fun deleteById(
     productreviewid: ProductreviewId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(productreviewid)).isPresent()
+  ): Boolean = map.remove(productreviewid) != null
 
   override fun deleteByIds(
     productreviewids: Array<ProductreviewId>,
@@ -41,7 +39,7 @@ data class ProductreviewRepoMock(
   ): Int {
     var count = 0
     for (id in productreviewids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ProductreviewRepoMock(
     c: Connection
   ): ProductreviewRow {
     if (map.containsKey(unsaved.productreviewid)) {
-      throw RuntimeException(str("id $unsaved.productreviewid already exists"))
+      throw RuntimeException("id " + unsaved.productreviewid + " already exists")
     }
     map[unsaved.productreviewid] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class ProductreviewRepoMock(
   ): ProductreviewRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<ProductreviewRow>,
+    unsaved: Iterator<ProductreviewRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class ProductreviewRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ProductreviewRowUnsaved>,
+    unsaved: Iterator<ProductreviewRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class ProductreviewRepoMock(
   override fun selectById(
     productreviewid: ProductreviewId,
     c: Connection
-  ): Optional<ProductreviewRow> = Optional.ofNullable(map[productreviewid])
+  ): ProductreviewRow? = map[productreviewid]
 
   override fun selectByIds(
     productreviewids: Array<ProductreviewId>,
@@ -109,9 +107,9 @@ data class ProductreviewRepoMock(
   ): List<ProductreviewRow> {
     val result = ArrayList<ProductreviewRow>()
     for (id in productreviewids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class ProductreviewRepoMock(
     row: ProductreviewRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.productreviewid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.productreviewid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.productreviewid] = row
     }
@@ -144,7 +142,7 @@ data class ProductreviewRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductreviewRow>,
+    unsaved: Iterator<ProductreviewRow>,
     c: Connection
   ): List<ProductreviewRow> {
     val result = ArrayList<ProductreviewRow>()
@@ -158,7 +156,7 @@ data class ProductreviewRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<ProductreviewRow>,
+    unsaved: Iterator<ProductreviewRow>,
     batchSize: Int,
     c: Connection
   ): Int {

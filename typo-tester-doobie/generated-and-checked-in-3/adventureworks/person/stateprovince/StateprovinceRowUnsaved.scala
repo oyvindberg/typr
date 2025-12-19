@@ -20,7 +20,7 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `person.stateprovince` which has not been persisted yet */
 case class StateprovinceRowUnsaved(
   /** ISO standard state or province code. */
-  stateprovincecode: /* bpchar, max 3 chars */ String,
+  stateprovincecode: String,
   /** ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
    * Points to [[adventureworks.person.countryregion.CountryregionRow.countryregioncode]]
    */
@@ -64,9 +64,9 @@ case class StateprovinceRowUnsaved(
 }
 
 object StateprovinceRowUnsaved {
-  given decoder: Decoder[StateprovinceRowUnsaved] = Decoder.forProduct8[StateprovinceRowUnsaved, /* bpchar, max 3 chars */ String, CountryregionId, Name, SalesterritoryId, Defaulted[StateprovinceId], Defaulted[Flag], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("stateprovincecode", "countryregioncode", "name", "territoryid", "stateprovinceid", "isonlystateprovinceflag", "rowguid", "modifieddate")(StateprovinceRowUnsaved.apply)(using Decoder.decodeString, CountryregionId.decoder, Name.decoder, SalesterritoryId.decoder, Defaulted.decoder(using StateprovinceId.decoder), Defaulted.decoder(using Flag.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+  given decoder: Decoder[StateprovinceRowUnsaved] = Decoder.forProduct8[StateprovinceRowUnsaved, String, CountryregionId, Name, SalesterritoryId, Defaulted[StateprovinceId], Defaulted[Flag], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("stateprovincecode", "countryregioncode", "name", "territoryid", "stateprovinceid", "isonlystateprovinceflag", "rowguid", "modifieddate")(StateprovinceRowUnsaved.apply)(using Decoder.decodeString, CountryregionId.decoder, Name.decoder, SalesterritoryId.decoder, Defaulted.decoder(using StateprovinceId.decoder), Defaulted.decoder(using Flag.decoder), Defaulted.decoder(using TypoUUID.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
 
-  given encoder: Encoder[StateprovinceRowUnsaved] = Encoder.forProduct8[StateprovinceRowUnsaved, /* bpchar, max 3 chars */ String, CountryregionId, Name, SalesterritoryId, Defaulted[StateprovinceId], Defaulted[Flag], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("stateprovincecode", "countryregioncode", "name", "territoryid", "stateprovinceid", "isonlystateprovinceflag", "rowguid", "modifieddate")(x => (x.stateprovincecode, x.countryregioncode, x.name, x.territoryid, x.stateprovinceid, x.isonlystateprovinceflag, x.rowguid, x.modifieddate))(using Encoder.encodeString, CountryregionId.encoder, Name.encoder, SalesterritoryId.encoder, Defaulted.encoder(using StateprovinceId.encoder), Defaulted.encoder(using Flag.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
+  given encoder: Encoder[StateprovinceRowUnsaved] = Encoder.forProduct8[StateprovinceRowUnsaved, String, CountryregionId, Name, SalesterritoryId, Defaulted[StateprovinceId], Defaulted[Flag], Defaulted[TypoUUID], Defaulted[TypoLocalDateTime]]("stateprovincecode", "countryregioncode", "name", "territoryid", "stateprovinceid", "isonlystateprovinceflag", "rowguid", "modifieddate")(x => (x.stateprovincecode, x.countryregioncode, x.name, x.territoryid, x.stateprovinceid, x.isonlystateprovinceflag, x.rowguid, x.modifieddate))(using Encoder.encodeString, CountryregionId.encoder, Name.encoder, SalesterritoryId.encoder, Defaulted.encoder(using StateprovinceId.encoder), Defaulted.encoder(using Flag.encoder), Defaulted.encoder(using TypoUUID.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
 
   given pgText: Text[StateprovinceRowUnsaved] = {
     Text.instance[StateprovinceRowUnsaved]{ (row, sb) =>

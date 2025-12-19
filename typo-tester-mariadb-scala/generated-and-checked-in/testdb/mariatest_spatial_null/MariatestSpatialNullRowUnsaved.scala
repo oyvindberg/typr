@@ -6,7 +6,6 @@
 package testdb.mariatest_spatial_null
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import org.mariadb.jdbc.`type`.Geometry
 import org.mariadb.jdbc.`type`.GeometryCollection
 import org.mariadb.jdbc.`type`.LineString
@@ -19,51 +18,52 @@ import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
 
 /** This class corresponds to a row in table `mariatest_spatial_null` which has not been persisted yet */
 case class MariatestSpatialNullRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("geometry_col") geometryCol: Defaulted[Optional[Geometry]] = new UseDefault(),
+  @JsonProperty("geometry_col") geometryCol: Defaulted[Option[Geometry]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("point_col") pointCol: Defaulted[Optional[Point]] = new UseDefault(),
+  @JsonProperty("point_col") pointCol: Defaulted[Option[Point]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("linestring_col") linestringCol: Defaulted[Optional[LineString]] = new UseDefault(),
+  @JsonProperty("linestring_col") linestringCol: Defaulted[Option[LineString]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("polygon_col") polygonCol: Defaulted[Optional[Polygon]] = new UseDefault(),
+  @JsonProperty("polygon_col") polygonCol: Defaulted[Option[Polygon]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("multipoint_col") multipointCol: Defaulted[Optional[MultiPoint]] = new UseDefault(),
+  @JsonProperty("multipoint_col") multipointCol: Defaulted[Option[MultiPoint]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("multilinestring_col") multilinestringCol: Defaulted[Optional[MultiLineString]] = new UseDefault(),
+  @JsonProperty("multilinestring_col") multilinestringCol: Defaulted[Option[MultiLineString]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("multipolygon_col") multipolygonCol: Defaulted[Optional[MultiPolygon]] = new UseDefault(),
+  @JsonProperty("multipolygon_col") multipolygonCol: Defaulted[Option[MultiPolygon]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("geometrycollection_col") geometrycollectionCol: Defaulted[Optional[GeometryCollection]] = new UseDefault()
+  @JsonProperty("geometrycollection_col") geometrycollectionCol: Defaulted[Option[GeometryCollection]] = new UseDefault()
 ) {
   def toRow(
-    geometryColDefault: => Optional[Geometry],
-    pointColDefault: => Optional[Point],
-    linestringColDefault: => Optional[LineString],
-    polygonColDefault: => Optional[Polygon],
-    multipointColDefault: => Optional[MultiPoint],
-    multilinestringColDefault: => Optional[MultiLineString],
-    multipolygonColDefault: => Optional[MultiPolygon],
-    geometrycollectionColDefault: => Optional[GeometryCollection],
+    geometryColDefault: => Option[Geometry],
+    pointColDefault: => Option[Point],
+    linestringColDefault: => Option[LineString],
+    polygonColDefault: => Option[Polygon],
+    multipointColDefault: => Option[MultiPoint],
+    multilinestringColDefault: => Option[MultiLineString],
+    multipolygonColDefault: => Option[MultiPolygon],
+    geometrycollectionColDefault: => Option[GeometryCollection],
     idDefault: => MariatestSpatialNullId
   ): MariatestSpatialNullRow = {
     new MariatestSpatialNullRow(
@@ -81,5 +81,5 @@ case class MariatestSpatialNullRowUnsaved(
 }
 
 object MariatestSpatialNullRowUnsaved {
-  given mariaText: MariaText[MariatestSpatialNullRowUnsaved] = MariaText.instance((row, sb) => { Defaulted.mariaText(using MariaTypes.geometry.opt().mariaText).unsafeEncode(row.geometryCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.point.opt().mariaText).unsafeEncode(row.pointCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.linestring.opt().mariaText).unsafeEncode(row.linestringCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.polygon.opt().mariaText).unsafeEncode(row.polygonCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.multipoint.opt().mariaText).unsafeEncode(row.multipointCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.multilinestring.opt().mariaText).unsafeEncode(row.multilinestringCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.multipolygon.opt().mariaText).unsafeEncode(row.multipolygonCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.geometrycollection.opt().mariaText).unsafeEncode(row.geometrycollectionCol, sb) })
+  given mariaText: MariaText[MariatestSpatialNullRowUnsaved] = MariaText.instance((row, sb) => { Defaulted.mariaText(using MariaTypes.geometry.nullable.mariaText).unsafeEncode(row.geometryCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.point.nullable.mariaText).unsafeEncode(row.pointCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.linestring.nullable.mariaText).unsafeEncode(row.linestringCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.polygon.nullable.mariaText).unsafeEncode(row.polygonCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.multipoint.nullable.mariaText).unsafeEncode(row.multipointCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.multilinestring.nullable.mariaText).unsafeEncode(row.multilinestringCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.multipolygon.nullable.mariaText).unsafeEncode(row.multipolygonCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.geometrycollection.nullable.mariaText).unsafeEncode(row.geometrycollectionCol, sb) })
 }

@@ -5,57 +5,58 @@
  */
 package adventureworks.person.password
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.person.PersonFields
 import adventureworks.person.person.PersonRow
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PasswordFields : FieldsExpr<PasswordRow> {
-  fun businessentityid(): IdField<BusinessentityId, PasswordRow>
+  abstract fun businessentityid(): IdField<BusinessentityId, PasswordRow>
 
-  override fun columns(): List<FieldLike<*, PasswordRow>>
+  abstract override fun columns(): List<FieldLike<*, PasswordRow>>
 
-  fun fkPerson(): ForeignKey<PersonFields, PersonRow> = ForeignKey.of<PersonFields, PersonRow>("person.FK_Password_Person_BusinessEntityID").withColumnPair(businessentityid(), PersonFields::businessentityid)
+  fun fkPerson(): ForeignKey<PersonFields, PersonRow> = ForeignKey.of<PersonFields, PersonRow>("person.FK_Password_Person_BusinessEntityID").withColumnPair<BusinessentityId>(businessentityid(), PersonFields::businessentityid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, PasswordRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PasswordRow>
 
-  fun passwordhash(): Field</* max 128 chars */ String, PasswordRow>
+  abstract fun passwordhash(): Field<String, PasswordRow>
 
-  fun passwordsalt(): Field</* max 10 chars */ String, PasswordRow>
+  abstract fun passwordsalt(): Field<String, PasswordRow>
 
-  override fun rowParser(): RowParser<PasswordRow> = PasswordRow._rowParser
+  override fun rowParser(): RowParser<PasswordRow> = PasswordRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, PasswordRow>
+  abstract fun rowguid(): Field<UUID, PasswordRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PasswordFields, Relation<PasswordFields, PasswordRow> {
-      override fun businessentityid(): IdField<BusinessentityId, PasswordRow> = IdField<BusinessentityId, PasswordRow>(_path, "businessentityid", PasswordRow::businessentityid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : PasswordFields, RelationStructure<PasswordFields, PasswordRow> {
+      override fun businessentityid(): IdField<BusinessentityId, PasswordRow> = IdField<BusinessentityId, PasswordRow>(_path, "businessentityid", PasswordRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun passwordhash(): Field</* max 128 chars */ String, PasswordRow> = Field</* max 128 chars */ String, PasswordRow>(_path, "passwordhash", PasswordRow::passwordhash, Optional.empty(), Optional.empty(), { row, value -> row.copy(passwordhash = value) }, PgTypes.text)
+      override fun passwordhash(): Field<String, PasswordRow> = Field<String, PasswordRow>(_path, "passwordhash", PasswordRow::passwordhash, null, null, { row, value -> row.copy(passwordhash = value) }, PgTypes.text)
 
-      override fun passwordsalt(): Field</* max 10 chars */ String, PasswordRow> = Field</* max 10 chars */ String, PasswordRow>(_path, "passwordsalt", PasswordRow::passwordsalt, Optional.empty(), Optional.empty(), { row, value -> row.copy(passwordsalt = value) }, PgTypes.text)
+      override fun passwordsalt(): Field<String, PasswordRow> = Field<String, PasswordRow>(_path, "passwordsalt", PasswordRow::passwordsalt, null, null, { row, value -> row.copy(passwordsalt = value) }, PgTypes.text)
 
-      override fun rowguid(): Field<TypoUUID, PasswordRow> = Field<TypoUUID, PasswordRow>(_path, "rowguid", PasswordRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, PasswordRow> = Field<UUID, PasswordRow>(_path, "rowguid", PasswordRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PasswordRow> = Field<TypoLocalDateTime, PasswordRow>(_path, "modifieddate", PasswordRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PasswordRow> = Field<LocalDateTime, PasswordRow>(_path, "modifieddate", PasswordRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PasswordRow>> = listOf(this.businessentityid(), this.passwordhash(), this.passwordsalt(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PasswordFields, PasswordRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PasswordRow>> = listOf(this.businessentityid().underlying, this.passwordhash().underlying, this.passwordsalt().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PasswordFields, PasswordRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

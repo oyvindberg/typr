@@ -8,21 +8,19 @@ package adventureworks.production.productsubcategory
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class ProductsubcategoryRepoMock(
   val toRow: (ProductsubcategoryRowUnsaved) -> ProductsubcategoryRow,
@@ -33,7 +31,7 @@ data class ProductsubcategoryRepoMock(
   override fun deleteById(
     productsubcategoryid: ProductsubcategoryId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(productsubcategoryid)).isPresent()
+  ): Boolean = map.remove(productsubcategoryid) != null
 
   override fun deleteByIds(
     productsubcategoryids: Array<ProductsubcategoryId>,
@@ -41,7 +39,7 @@ data class ProductsubcategoryRepoMock(
   ): Int {
     var count = 0
     for (id in productsubcategoryids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class ProductsubcategoryRepoMock(
     c: Connection
   ): ProductsubcategoryRow {
     if (map.containsKey(unsaved.productsubcategoryid)) {
-      throw RuntimeException(str("id $unsaved.productsubcategoryid already exists"))
+      throw RuntimeException("id " + unsaved.productsubcategoryid + " already exists")
     }
     map[unsaved.productsubcategoryid] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class ProductsubcategoryRepoMock(
   ): ProductsubcategoryRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<ProductsubcategoryRow>,
+    unsaved: Iterator<ProductsubcategoryRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class ProductsubcategoryRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ProductsubcategoryRowUnsaved>,
+    unsaved: Iterator<ProductsubcategoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class ProductsubcategoryRepoMock(
   override fun selectById(
     productsubcategoryid: ProductsubcategoryId,
     c: Connection
-  ): Optional<ProductsubcategoryRow> = Optional.ofNullable(map[productsubcategoryid])
+  ): ProductsubcategoryRow? = map[productsubcategoryid]
 
   override fun selectByIds(
     productsubcategoryids: Array<ProductsubcategoryId>,
@@ -109,9 +107,9 @@ data class ProductsubcategoryRepoMock(
   ): List<ProductsubcategoryRow> {
     val result = ArrayList<ProductsubcategoryRow>()
     for (id in productsubcategoryids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class ProductsubcategoryRepoMock(
     row: ProductsubcategoryRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.productsubcategoryid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.productsubcategoryid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.productsubcategoryid] = row
     }
@@ -144,7 +142,7 @@ data class ProductsubcategoryRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductsubcategoryRow>,
+    unsaved: Iterator<ProductsubcategoryRow>,
     c: Connection
   ): List<ProductsubcategoryRow> {
     val result = ArrayList<ProductsubcategoryRow>()
@@ -158,7 +156,7 @@ data class ProductsubcategoryRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<ProductsubcategoryRow>,
+    unsaved: Iterator<ProductsubcategoryRow>,
     batchSize: Int,
     c: Connection
   ): Int {

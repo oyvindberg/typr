@@ -5,19 +5,19 @@
  */
 package testdb.v_product_catalog
 
-import java.util.Optional
 import testdb.products.ProductsId
 import typo.data.maria.MariaSet
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.OptField
 
-trait VProductCatalogViewFields extends FieldsExpr[VProductCatalogViewRow] {
+trait VProductCatalogViewFields extends FieldsExpr0[VProductCatalogViewRow] {
   def productId: Field[ProductsId, VProductCatalogViewRow]
 
   def sku: Field[String, VProductCatalogViewRow]
@@ -26,7 +26,7 @@ trait VProductCatalogViewFields extends FieldsExpr[VProductCatalogViewRow] {
 
   def shortDescription: OptField[String, VProductCatalogViewRow]
 
-  def basePrice: Field[java.math.BigDecimal, VProductCatalogViewRow]
+  def basePrice: Field[BigDecimal, VProductCatalogViewRow]
 
   def status: Field[String, VProductCatalogViewRow]
 
@@ -34,27 +34,27 @@ trait VProductCatalogViewFields extends FieldsExpr[VProductCatalogViewRow] {
 
   def brandName: OptField[String, VProductCatalogViewRow]
 
-  def availableQuantity: Field[java.math.BigDecimal, VProductCatalogViewRow]
+  def availableQuantity: Field[BigDecimal, VProductCatalogViewRow]
 
-  def avgRating: Field[java.math.BigDecimal, VProductCatalogViewRow]
+  def avgRating: Field[BigDecimal, VProductCatalogViewRow]
 
-  def reviewCount: Field[java.lang.Long, VProductCatalogViewRow]
+  def reviewCount: Field[Long, VProductCatalogViewRow]
 
   override def columns: java.util.List[FieldLike[?, VProductCatalogViewRow]]
 
-  override def rowParser: RowParser[VProductCatalogViewRow] = VProductCatalogViewRow._rowParser
+  override def rowParser: RowParser[VProductCatalogViewRow] = VProductCatalogViewRow._rowParser.underlying
 }
 
 object VProductCatalogViewFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends VProductCatalogViewFields with Relation[VProductCatalogViewFields, VProductCatalogViewRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends VProductCatalogViewFields with RelationStructure[VProductCatalogViewFields, VProductCatalogViewRow] {
 
     override def productId: Field[ProductsId, VProductCatalogViewRow] = {
       new Field[ProductsId, VProductCatalogViewRow](
         _path,
         "product_id",
         _.productId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(productId = value),
         ProductsId.pgType
       )
@@ -65,8 +65,8 @@ object VProductCatalogViewFields {
         _path,
         "sku",
         _.sku,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(sku = value),
         MariaTypes.varchar
       )
@@ -77,8 +77,8 @@ object VProductCatalogViewFields {
         _path,
         "name",
         _.name,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(name = value),
         MariaTypes.varchar
       )
@@ -89,22 +89,22 @@ object VProductCatalogViewFields {
         _path,
         "short_description",
         _.shortDescription,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(shortDescription = value),
         MariaTypes.varchar
       )
     }
 
-    override def basePrice: Field[java.math.BigDecimal, VProductCatalogViewRow] = {
-      new Field[java.math.BigDecimal, VProductCatalogViewRow](
+    override def basePrice: Field[BigDecimal, VProductCatalogViewRow] = {
+      new Field[BigDecimal, VProductCatalogViewRow](
         _path,
         "base_price",
         _.basePrice,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(basePrice = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
@@ -113,8 +113,8 @@ object VProductCatalogViewFields {
         _path,
         "status",
         _.status,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(status = value),
         MariaTypes.text
       )
@@ -125,8 +125,8 @@ object VProductCatalogViewFields {
         _path,
         "tags",
         _.tags,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(tags = value),
         MariaTypes.set
       )
@@ -137,53 +137,53 @@ object VProductCatalogViewFields {
         _path,
         "brand_name",
         _.brandName,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(brandName = value),
         MariaTypes.varchar
       )
     }
 
-    override def availableQuantity: Field[java.math.BigDecimal, VProductCatalogViewRow] = {
-      new Field[java.math.BigDecimal, VProductCatalogViewRow](
+    override def availableQuantity: Field[BigDecimal, VProductCatalogViewRow] = {
+      new Field[BigDecimal, VProductCatalogViewRow](
         _path,
         "available_quantity",
         _.availableQuantity,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(availableQuantity = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def avgRating: Field[java.math.BigDecimal, VProductCatalogViewRow] = {
-      new Field[java.math.BigDecimal, VProductCatalogViewRow](
+    override def avgRating: Field[BigDecimal, VProductCatalogViewRow] = {
+      new Field[BigDecimal, VProductCatalogViewRow](
         _path,
         "avg_rating",
         _.avgRating,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(avgRating = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def reviewCount: Field[java.lang.Long, VProductCatalogViewRow] = {
-      new Field[java.lang.Long, VProductCatalogViewRow](
+    override def reviewCount: Field[Long, VProductCatalogViewRow] = {
+      new Field[Long, VProductCatalogViewRow](
         _path,
         "review_count",
         _.reviewCount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(reviewCount = value),
-        MariaTypes.bigint
+        ScalaDbTypes.MariaTypes.bigint
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, VProductCatalogViewRow]] = java.util.List.of(this.productId, this.sku, this.name, this.shortDescription, this.basePrice, this.status, this.tags, this.brandName, this.availableQuantity, this.avgRating, this.reviewCount)
+    override def columns: java.util.List[FieldLike[?, VProductCatalogViewRow]] = java.util.List.of(this.productId.underlying, this.sku.underlying, this.name.underlying, this.shortDescription.underlying, this.basePrice.underlying, this.status.underlying, this.tags.underlying, this.brandName.underlying, this.availableQuantity.underlying, this.avgRating.underlying, this.reviewCount.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[VProductCatalogViewFields, VProductCatalogViewRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VProductCatalogViewFields, VProductCatalogViewRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

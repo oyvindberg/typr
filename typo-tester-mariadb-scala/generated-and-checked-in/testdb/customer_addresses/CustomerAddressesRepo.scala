@@ -6,17 +6,16 @@
 package testdb.customer_addresses
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait CustomerAddressesRepo {
   def delete: DeleteBuilder[CustomerAddressesFields, CustomerAddressesRow]
 
-  def deleteById(addressId: CustomerAddressesId)(using c: Connection): java.lang.Boolean
+  def deleteById(addressId: CustomerAddressesId)(using c: Connection): Boolean
 
-  def deleteByIds(addressIds: Array[CustomerAddressesId])(using c: Connection): Integer
+  def deleteByIds(addressIds: Array[CustomerAddressesId])(using c: Connection): Int
 
   def insert(unsaved: CustomerAddressesRow)(using c: Connection): CustomerAddressesRow
 
@@ -24,19 +23,19 @@ trait CustomerAddressesRepo {
 
   def select: SelectBuilder[CustomerAddressesFields, CustomerAddressesRow]
 
-  def selectAll(using c: Connection): java.util.List[CustomerAddressesRow]
+  def selectAll(using c: Connection): List[CustomerAddressesRow]
 
-  def selectById(addressId: CustomerAddressesId)(using c: Connection): Optional[CustomerAddressesRow]
+  def selectById(addressId: CustomerAddressesId)(using c: Connection): Option[CustomerAddressesRow]
 
-  def selectByIds(addressIds: Array[CustomerAddressesId])(using c: Connection): java.util.List[CustomerAddressesRow]
+  def selectByIds(addressIds: Array[CustomerAddressesId])(using c: Connection): List[CustomerAddressesRow]
 
-  def selectByIdsTracked(addressIds: Array[CustomerAddressesId])(using c: Connection): java.util.Map[CustomerAddressesId, CustomerAddressesRow]
+  def selectByIdsTracked(addressIds: Array[CustomerAddressesId])(using c: Connection): Map[CustomerAddressesId, CustomerAddressesRow]
 
   def update: UpdateBuilder[CustomerAddressesFields, CustomerAddressesRow]
 
-  def update(row: CustomerAddressesRow)(using c: Connection): java.lang.Boolean
+  def update(row: CustomerAddressesRow)(using c: Connection): Boolean
 
   def upsert(unsaved: CustomerAddressesRow)(using c: Connection): CustomerAddressesRow
 
-  def upsertBatch(unsaved: java.util.Iterator[CustomerAddressesRow])(using c: Connection): java.util.List[CustomerAddressesRow]
+  def upsertBatch(unsaved: Iterator[CustomerAddressesRow])(using c: Connection): List[CustomerAddressesRow]
 }

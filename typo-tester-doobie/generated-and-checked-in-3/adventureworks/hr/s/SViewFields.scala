@@ -10,9 +10,9 @@ import adventureworks.customtypes.TypoLocalTime
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait SViewFields {
   def id: Field[ShiftId, SViewRow]
@@ -24,11 +24,11 @@ trait SViewFields {
 }
 
 object SViewFields {
-  lazy val structure: Relation[SViewFields, SViewRow] =
+  lazy val structure: RelationStructure[SViewFields, SViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SViewFields, SViewRow] {
+    extends RelationStructure[SViewFields, SViewRow] {
 
     override lazy val fields: SViewFields = new SViewFields {
       override def id = Field[ShiftId, SViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))

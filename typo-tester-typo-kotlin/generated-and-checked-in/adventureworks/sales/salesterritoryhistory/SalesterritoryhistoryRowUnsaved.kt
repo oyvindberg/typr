@@ -7,12 +7,13 @@ package adventureworks.sales.salesterritoryhistory
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `sales.salesterritoryhistory` which has not been persisted yet */
 data class SalesterritoryhistoryRowUnsaved(
@@ -27,19 +28,19 @@ data class SalesterritoryhistoryRowUnsaved(
   /** Primary key. Date the sales representive started work in the territory.
     * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Date the sales representative left work in the territory.
     * Constraint CK_SalesTerritoryHistory_EndDate affecting columns enddate, startdate:  (((enddate >= startdate) OR (enddate IS NULL)))
     */
-  val enddate: Optional<TypoLocalDateTime> = Optional.empty(),
+  val enddate: LocalDateTime? = null,
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): SalesterritoryhistoryRow = SalesterritoryhistoryRow(businessentityid = businessentityid, territoryid = territoryid, startdate = startdate, enddate = enddate, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -48,12 +49,12 @@ data class SalesterritoryhistoryRowUnsaved(
       sb.append(PgText.DELIMETER)
       SalesterritoryId.pgType.pgText().unsafeEncode(row.territoryid, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.startdate, sb)
+      PgTypes.timestamp.pgText().unsafeEncode(row.startdate, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.enddate, sb)
+      PgTypes.timestamp.nullable().pgText().unsafeEncode(row.enddate, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

@@ -6,7 +6,8 @@
 package adventureworks.production.transactionhistoryarchive
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class TransactionhistoryarchiveId(@JsonValue val value: Int) {
       Bijection.of(TransactionhistoryarchiveId::value, ::TransactionhistoryarchiveId)
 
     val pgType: PgType<TransactionhistoryarchiveId> =
-      PgTypes.int4.bimap(::TransactionhistoryarchiveId, TransactionhistoryarchiveId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::TransactionhistoryarchiveId, TransactionhistoryarchiveId::value)
 
     val pgTypeArray: PgType<Array<TransactionhistoryarchiveId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::TransactionhistoryarchiveId, TransactionhistoryarchiveId::class.java) }, { xs -> arrayMap.map(xs, TransactionhistoryarchiveId::value, Int::class.javaObjectType) })

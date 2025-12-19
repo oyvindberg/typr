@@ -9,10 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import testdb.categories.CategoriesId
 import testdb.customtypes.Defaulted
 import testdb.products.ProductsId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.MariaText
-import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: product_categories
   * Composite primary key: product_id, category_id
@@ -45,7 +45,7 @@ data class ProductCategoriesRow(
   ): ProductCategoriesRowUnsaved = ProductCategoriesRowUnsaved(productId, categoryId, isPrimary, sortOrder)
 
   companion object {
-    val _rowParser: RowParser<ProductCategoriesRow> = RowParsers.of(ProductsId.pgType, CategoriesId.pgType, MariaTypes.bool, MariaTypes.smallint, { t0, t1, t2, t3 -> ProductCategoriesRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productId, row.categoryId, row.isPrimary, row.sortOrder) })
+    val _rowParser: RowParser<ProductCategoriesRow> = RowParsers.of(ProductsId.pgType, CategoriesId.pgType, KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.smallint, { t0, t1, t2, t3 -> ProductCategoriesRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.productId, row.categoryId, row.isPrimary, row.sortOrder) })
 
     fun apply(
       compositeId: ProductCategoriesId,
@@ -54,6 +54,6 @@ data class ProductCategoriesRow(
     ): ProductCategoriesRow = ProductCategoriesRow(compositeId.productId, compositeId.categoryId, isPrimary, sortOrder)
 
     val mariaText: MariaText<ProductCategoriesRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

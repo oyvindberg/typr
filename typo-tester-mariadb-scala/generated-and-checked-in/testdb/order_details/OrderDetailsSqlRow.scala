@@ -11,8 +11,9 @@ import testdb.order_items.OrderItemsId
 import testdb.orders.OrdersId
 import testdb.products.ProductsId
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** SQL file: order_details.sql */
 case class OrderDetailsSqlRow(
@@ -25,15 +26,15 @@ case class OrderDetailsSqlRow(
   /** Points to [[testdb.orders.OrdersRow.paymentStatus]] */
   @JsonProperty("payment_status") paymentStatus: String,
   /** Points to [[testdb.orders.OrdersRow.subtotal]] */
-  subtotal: java.math.BigDecimal,
+  subtotal: BigDecimal,
   /** Points to [[testdb.orders.OrdersRow.shippingCost]] */
-  @JsonProperty("shipping_cost") shippingCost: java.math.BigDecimal,
+  @JsonProperty("shipping_cost") shippingCost: BigDecimal,
   /** Points to [[testdb.orders.OrdersRow.taxAmount]] */
-  @JsonProperty("tax_amount") taxAmount: java.math.BigDecimal,
+  @JsonProperty("tax_amount") taxAmount: BigDecimal,
   /** Points to [[testdb.orders.OrdersRow.discountAmount]] */
-  @JsonProperty("discount_amount") discountAmount: java.math.BigDecimal,
+  @JsonProperty("discount_amount") discountAmount: BigDecimal,
   /** Points to [[testdb.orders.OrdersRow.totalAmount]] */
-  @JsonProperty("total_amount") totalAmount: java.math.BigDecimal,
+  @JsonProperty("total_amount") totalAmount: BigDecimal,
   /** Points to [[testdb.orders.OrdersRow.orderedAt]] */
   @JsonProperty("ordered_at") orderedAt: LocalDateTime,
   /** Points to [[testdb.order_items.OrderItemsRow.itemId]] */
@@ -45,13 +46,13 @@ case class OrderDetailsSqlRow(
   /** Points to [[testdb.order_items.OrderItemsRow.productName]] */
   @JsonProperty("product_name") productName: String,
   /** Points to [[testdb.order_items.OrderItemsRow.quantity]] */
-  quantity: Integer,
+  quantity: Int,
   /** Points to [[testdb.order_items.OrderItemsRow.unitPrice]] */
-  @JsonProperty("unit_price") unitPrice: java.math.BigDecimal,
+  @JsonProperty("unit_price") unitPrice: BigDecimal,
   /** Points to [[testdb.order_items.OrderItemsRow.lineTotal]] */
-  @JsonProperty("line_total") lineTotal: java.math.BigDecimal
+  @JsonProperty("line_total") lineTotal: BigDecimal
 )
 
 object OrderDetailsSqlRow {
-  val `_rowParser`: RowParser[OrderDetailsSqlRow] = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.decimal, MariaTypes.datetime, OrderItemsId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.smallintUnsigned, MariaTypes.decimal, MariaTypes.decimal, OrderDetailsSqlRow.apply, row => Array[Object](row.orderId.asInstanceOf[Object], row.orderNumber.asInstanceOf[Object], row.orderStatus.asInstanceOf[Object], row.paymentStatus.asInstanceOf[Object], row.subtotal.asInstanceOf[Object], row.shippingCost.asInstanceOf[Object], row.taxAmount.asInstanceOf[Object], row.discountAmount.asInstanceOf[Object], row.totalAmount.asInstanceOf[Object], row.orderedAt.asInstanceOf[Object], row.itemId.asInstanceOf[Object], row.productId.asInstanceOf[Object], row.sku.asInstanceOf[Object], row.productName.asInstanceOf[Object], row.quantity.asInstanceOf[Object], row.unitPrice.asInstanceOf[Object], row.lineTotal.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[OrderDetailsSqlRow] = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, MariaTypes.datetime, OrderItemsId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, ScalaDbTypes.MariaTypes.smallintUnsigned, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric)(OrderDetailsSqlRow.apply)(row => Array[Any](row.orderId, row.orderNumber, row.orderStatus, row.paymentStatus, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.orderedAt, row.itemId, row.productId, row.sku, row.productName, row.quantity, row.unitPrice, row.lineTotal))
 }

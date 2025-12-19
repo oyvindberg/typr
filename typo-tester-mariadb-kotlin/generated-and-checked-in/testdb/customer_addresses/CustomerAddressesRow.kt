@@ -7,14 +7,15 @@ package testdb.customer_addresses
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import org.mariadb.jdbc.type.Point
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: customer_addresses
   * Primary key: address_id
@@ -41,13 +42,13 @@ data class CustomerAddressesRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("street_line2") val streetLine2: Optional<String>,
+  @JsonProperty("street_line2") val streetLine2: String?,
   /**  */
   val city: String,
   /** 
     * Default: NULL
     */
-  @JsonProperty("state_province") val stateProvince: Optional<String>,
+  @JsonProperty("state_province") val stateProvince: String?,
   /**  */
   @JsonProperty("postal_code") val postalCode: String,
   /**  */
@@ -55,11 +56,11 @@ data class CustomerAddressesRow(
   /** 
     * Default: NULL
     */
-  val location: Optional<Point>,
+  val location: Point?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("delivery_notes") val deliveryNotes: Optional<String>,
+  @JsonProperty("delivery_notes") val deliveryNotes: String?,
   /** 
     * Default: current_timestamp()
     */
@@ -69,17 +70,17 @@ data class CustomerAddressesRow(
 
   fun toUnsavedRow(
     isDefault: Defaulted<Boolean>,
-    streetLine2: Defaulted<Optional<String>>,
-    stateProvince: Defaulted<Optional<String>>,
-    location: Defaulted<Optional<Point>>,
-    deliveryNotes: Defaulted<Optional<String>>,
+    streetLine2: Defaulted<String?>,
+    stateProvince: Defaulted<String?>,
+    location: Defaulted<Point?>,
+    deliveryNotes: Defaulted<String?>,
     createdAt: Defaulted<LocalDateTime>
   ): CustomerAddressesRowUnsaved = CustomerAddressesRowUnsaved(customerId, addressType, recipientName, streetLine1, city, postalCode, countryCode, isDefault, streetLine2, stateProvince, location, deliveryNotes, createdAt)
 
   companion object {
-    val _rowParser: RowParser<CustomerAddressesRow> = RowParsers.of(CustomerAddressesId.pgType, CustomersId.pgType, MariaTypes.text, MariaTypes.bool, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.varchar, MariaTypes.char_, MariaTypes.point.opt(), MariaTypes.tinytext.opt(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> CustomerAddressesRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!) }, { row -> arrayOf<Any?>(row.addressId, row.customerId, row.addressType, row.isDefault, row.recipientName, row.streetLine1, row.streetLine2, row.city, row.stateProvince, row.postalCode, row.countryCode, row.location, row.deliveryNotes, row.createdAt) })
+    val _rowParser: RowParser<CustomerAddressesRow> = RowParsers.of(CustomerAddressesId.pgType, CustomersId.pgType, MariaTypes.text, KotlinDbTypes.MariaTypes.bool, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.varchar, MariaTypes.char_, MariaTypes.point.nullable(), MariaTypes.tinytext.nullable(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> CustomerAddressesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) }, { row -> arrayOf<Any?>(row.addressId, row.customerId, row.addressType, row.isDefault, row.recipientName, row.streetLine1, row.streetLine2, row.city, row.stateProvince, row.postalCode, row.countryCode, row.location, row.deliveryNotes, row.createdAt) })
 
     val mariaText: MariaText<CustomerAddressesRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

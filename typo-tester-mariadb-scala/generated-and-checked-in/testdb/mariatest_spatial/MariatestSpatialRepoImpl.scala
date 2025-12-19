@@ -6,58 +6,55 @@
 package testdb.mariatest_spatial
 
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import scala.collection.mutable.ListBuffer
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.Dialect
+import typo.scaladsl.Fragment
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.Fragment.sql
 
 class MariatestSpatialRepoImpl extends MariatestSpatialRepo {
   override def delete: DeleteBuilder[MariatestSpatialFields, MariatestSpatialRow] = DeleteBuilder.of("`mariatest_spatial`", MariatestSpatialFields.structure, Dialect.MARIADB)
 
-  override def deleteById(id: MariatestSpatialId)(using c: Connection): java.lang.Boolean = interpolate"delete from `mariatest_spatial` where `id` = ${MariatestSpatialId.pgType.encode(id)}".update().runUnchecked(c) > 0
+  override def deleteById(id: MariatestSpatialId)(using c: Connection): Boolean = sql"delete from `mariatest_spatial` where `id` = ${Fragment.encode(MariatestSpatialId.pgType, id)}".update().runUnchecked(c) > 0
 
-  override def deleteByIds(ids: Array[MariatestSpatialId])(using c: Connection): Integer = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    ids.foreach { id => fragments.add(MariatestSpatialId.pgType.encode(id)) }
+  override def deleteByIds(ids: Array[MariatestSpatialId])(using c: Connection): Int = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    ids.foreach { id => fragments.addOne(Fragment.encode(MariatestSpatialId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `mariatest_spatial` where `id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: MariatestSpatialRow)(using c: Connection): MariatestSpatialRow = {
-  interpolate"""insert into `mariatest_spatial`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
-    values (${MariaTypes.geometry.encode(unsaved.geometryCol)}, ${MariaTypes.point.encode(unsaved.pointCol)}, ${MariaTypes.linestring.encode(unsaved.linestringCol)}, ${MariaTypes.polygon.encode(unsaved.polygonCol)}, ${MariaTypes.multipoint.encode(unsaved.multipointCol)}, ${MariaTypes.multilinestring.encode(unsaved.multilinestringCol)}, ${MariaTypes.multipolygon.encode(unsaved.multipolygonCol)}, ${MariaTypes.geometrycollection.encode(unsaved.geometrycollectionCol)})
+  sql"""insert into `mariatest_spatial`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
+    values (${Fragment.encode(MariaTypes.geometry, unsaved.geometryCol)}, ${Fragment.encode(MariaTypes.point, unsaved.pointCol)}, ${Fragment.encode(MariaTypes.linestring, unsaved.linestringCol)}, ${Fragment.encode(MariaTypes.polygon, unsaved.polygonCol)}, ${Fragment.encode(MariaTypes.multipoint, unsaved.multipointCol)}, ${Fragment.encode(MariaTypes.multilinestring, unsaved.multilinestringCol)}, ${Fragment.encode(MariaTypes.multipolygon, unsaved.multipolygonCol)}, ${Fragment.encode(MariaTypes.geometrycollection, unsaved.geometrycollectionCol)})
     returning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
     """
     .updateReturning(MariatestSpatialRow.`_rowParser`.exactlyOne()).runUnchecked(c)
   }
 
   override def insert(unsaved: MariatestSpatialRowUnsaved)(using c: Connection): MariatestSpatialRow = {
-    val columns: ArrayList[Literal] = new ArrayList[Literal]()
-    val values: ArrayList[Fragment] = new ArrayList[Fragment]()
-    columns.add(Fragment.lit("`geometry_col`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.geometry.encode(unsaved.geometryCol)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`point_col`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.point.encode(unsaved.pointCol)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`linestring_col`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.linestring.encode(unsaved.linestringCol)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`polygon_col`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.polygon.encode(unsaved.polygonCol)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`multipoint_col`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.multipoint.encode(unsaved.multipointCol)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`multilinestring_col`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.multilinestring.encode(unsaved.multilinestringCol)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`multipolygon_col`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.multipolygon.encode(unsaved.multipolygonCol)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`geometrycollection_col`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.geometrycollection.encode(unsaved.geometrycollectionCol)}"): @scala.annotation.nowarn
+    val columns: ListBuffer[Fragment] = ListBuffer()
+    val values: ListBuffer[Fragment] = ListBuffer()
+    columns.addOne(Fragment.lit("`geometry_col`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.geometry, unsaved.geometryCol)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`point_col`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.point, unsaved.pointCol)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`linestring_col`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.linestring, unsaved.linestringCol)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`polygon_col`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.polygon, unsaved.polygonCol)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`multipoint_col`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.multipoint, unsaved.multipointCol)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`multilinestring_col`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.multilinestring, unsaved.multilinestringCol)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`multipolygon_col`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.multipolygon, unsaved.multipolygonCol)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`geometrycollection_col`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.geometrycollection, unsaved.geometrycollectionCol)}"): @scala.annotation.nowarn
     val q: Fragment = {
-      interpolate"""insert into `mariatest_spatial`(${Fragment.comma(columns)})
+      sql"""insert into `mariatest_spatial`(${Fragment.comma(columns)})
       values (${Fragment.comma(values)})
       returning `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
       """
@@ -67,49 +64,49 @@ class MariatestSpatialRepoImpl extends MariatestSpatialRepo {
 
   override def select: SelectBuilder[MariatestSpatialFields, MariatestSpatialRow] = SelectBuilder.of("`mariatest_spatial`", MariatestSpatialFields.structure, MariatestSpatialRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[MariatestSpatialRow] = {
-    interpolate"""select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
+  override def selectAll(using c: Connection): List[MariatestSpatialRow] = {
+    sql"""select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
     from `mariatest_spatial`
     """.query(MariatestSpatialRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectById(id: MariatestSpatialId)(using c: Connection): Optional[MariatestSpatialRow] = {
-    interpolate"""select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
+  override def selectById(id: MariatestSpatialId)(using c: Connection): Option[MariatestSpatialRow] = {
+    sql"""select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`
     from `mariatest_spatial`
-    where `id` = ${MariatestSpatialId.pgType.encode(id)}""".query(MariatestSpatialRow.`_rowParser`.first()).runUnchecked(c)
+    where `id` = ${Fragment.encode(MariatestSpatialId.pgType, id)}""".query(MariatestSpatialRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def selectByIds(ids: Array[MariatestSpatialId])(using c: Connection): java.util.List[MariatestSpatialRow] = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    ids.foreach { id => fragments.add(MariatestSpatialId.pgType.encode(id)) }
+  override def selectByIds(ids: Array[MariatestSpatialId])(using c: Connection): List[MariatestSpatialRow] = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    ids.foreach { id => fragments.addOne(Fragment.encode(MariatestSpatialId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col` from `mariatest_spatial` where `id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(MariatestSpatialRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectByIdsTracked(ids: Array[MariatestSpatialId])(using c: Connection): java.util.Map[MariatestSpatialId, MariatestSpatialRow] = {
-    val ret: HashMap[MariatestSpatialId, MariatestSpatialRow] = new HashMap[MariatestSpatialId, MariatestSpatialRow]()
-    selectByIds(ids)(using c).forEach(row => ret.put(row.id, row): @scala.annotation.nowarn)
-    return ret
+  override def selectByIdsTracked(ids: Array[MariatestSpatialId])(using c: Connection): Map[MariatestSpatialId, MariatestSpatialRow] = {
+    val ret: scala.collection.mutable.Map[MariatestSpatialId, MariatestSpatialRow] = scala.collection.mutable.Map.empty[MariatestSpatialId, MariatestSpatialRow]
+    selectByIds(ids)(using c).foreach(row => ret.put(row.id, row): @scala.annotation.nowarn)
+    return ret.toMap
   }
 
-  override def update: UpdateBuilder[MariatestSpatialFields, MariatestSpatialRow] = UpdateBuilder.of("`mariatest_spatial`", MariatestSpatialFields.structure, MariatestSpatialRow.`_rowParser`.all(), Dialect.MARIADB)
+  override def update: UpdateBuilder[MariatestSpatialFields, MariatestSpatialRow] = UpdateBuilder.of("`mariatest_spatial`", MariatestSpatialFields.structure, MariatestSpatialRow.`_rowParser`, Dialect.MARIADB)
 
-  override def update(row: MariatestSpatialRow)(using c: Connection): java.lang.Boolean = {
+  override def update(row: MariatestSpatialRow)(using c: Connection): Boolean = {
     val id: MariatestSpatialId = row.id
-    return interpolate"""update `mariatest_spatial`
-    set `geometry_col` = ${MariaTypes.geometry.encode(row.geometryCol)},
-    `point_col` = ${MariaTypes.point.encode(row.pointCol)},
-    `linestring_col` = ${MariaTypes.linestring.encode(row.linestringCol)},
-    `polygon_col` = ${MariaTypes.polygon.encode(row.polygonCol)},
-    `multipoint_col` = ${MariaTypes.multipoint.encode(row.multipointCol)},
-    `multilinestring_col` = ${MariaTypes.multilinestring.encode(row.multilinestringCol)},
-    `multipolygon_col` = ${MariaTypes.multipolygon.encode(row.multipolygonCol)},
-    `geometrycollection_col` = ${MariaTypes.geometrycollection.encode(row.geometrycollectionCol)}
-    where `id` = ${MariatestSpatialId.pgType.encode(id)}""".update().runUnchecked(c) > 0
+    return sql"""update `mariatest_spatial`
+    set `geometry_col` = ${Fragment.encode(MariaTypes.geometry, row.geometryCol)},
+    `point_col` = ${Fragment.encode(MariaTypes.point, row.pointCol)},
+    `linestring_col` = ${Fragment.encode(MariaTypes.linestring, row.linestringCol)},
+    `polygon_col` = ${Fragment.encode(MariaTypes.polygon, row.polygonCol)},
+    `multipoint_col` = ${Fragment.encode(MariaTypes.multipoint, row.multipointCol)},
+    `multilinestring_col` = ${Fragment.encode(MariaTypes.multilinestring, row.multilinestringCol)},
+    `multipolygon_col` = ${Fragment.encode(MariaTypes.multipolygon, row.multipolygonCol)},
+    `geometrycollection_col` = ${Fragment.encode(MariaTypes.geometrycollection, row.geometrycollectionCol)}
+    where `id` = ${Fragment.encode(MariatestSpatialId.pgType, id)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: MariatestSpatialRow)(using c: Connection): MariatestSpatialRow = {
-  interpolate"""INSERT INTO `mariatest_spatial`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
-    VALUES (${MariaTypes.geometry.encode(unsaved.geometryCol)}, ${MariaTypes.point.encode(unsaved.pointCol)}, ${MariaTypes.linestring.encode(unsaved.linestringCol)}, ${MariaTypes.polygon.encode(unsaved.polygonCol)}, ${MariaTypes.multipoint.encode(unsaved.multipointCol)}, ${MariaTypes.multilinestring.encode(unsaved.multilinestringCol)}, ${MariaTypes.multipolygon.encode(unsaved.multipolygonCol)}, ${MariaTypes.geometrycollection.encode(unsaved.geometrycollectionCol)})
+  sql"""INSERT INTO `mariatest_spatial`(`geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
+    VALUES (${Fragment.encode(MariaTypes.geometry, unsaved.geometryCol)}, ${Fragment.encode(MariaTypes.point, unsaved.pointCol)}, ${Fragment.encode(MariaTypes.linestring, unsaved.linestringCol)}, ${Fragment.encode(MariaTypes.polygon, unsaved.polygonCol)}, ${Fragment.encode(MariaTypes.multipoint, unsaved.multipointCol)}, ${Fragment.encode(MariaTypes.multilinestring, unsaved.multilinestringCol)}, ${Fragment.encode(MariaTypes.multipolygon, unsaved.multipolygonCol)}, ${Fragment.encode(MariaTypes.geometrycollection, unsaved.geometrycollectionCol)})
     ON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),
     `point_col` = VALUES(`point_col`),
     `linestring_col` = VALUES(`linestring_col`),
@@ -123,8 +120,8 @@ class MariatestSpatialRepoImpl extends MariatestSpatialRepo {
     .runUnchecked(c)
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[MariatestSpatialRow])(using c: Connection): java.util.List[MariatestSpatialRow] = {
-    interpolate"""INSERT INTO `mariatest_spatial`(`id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
+  override def upsertBatch(unsaved: Iterator[MariatestSpatialRow])(using c: Connection): List[MariatestSpatialRow] = {
+    sql"""INSERT INTO `mariatest_spatial`(`id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),
     `point_col` = VALUES(`point_col`),
@@ -136,6 +133,6 @@ class MariatestSpatialRepoImpl extends MariatestSpatialRepo {
     `geometrycollection_col` = VALUES(`geometrycollection_col`)
     RETURNING `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`"""
       .updateReturningEach(MariatestSpatialRow.`_rowParser`, unsaved)
-      .runUnchecked(c)
+    .runUnchecked(c)
   }
 }

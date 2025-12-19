@@ -21,7 +21,7 @@ case class FlaffRow(
   /** Points to [[adventureworks.public.flaff.FlaffRow.code]] */
   code: ShortText,
   /** Points to [[adventureworks.public.flaff.FlaffRow.anotherCode]] */
-  anotherCode: /* max 20 chars */ String,
+  anotherCode: String,
   /** Points to [[adventureworks.public.flaff.FlaffRow.someNumber]] */
   someNumber: Int,
   specifier: ShortText,

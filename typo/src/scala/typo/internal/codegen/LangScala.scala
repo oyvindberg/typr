@@ -1,30 +1,18 @@
 package typo
 package internal
 package codegen
-import typo.jvm.Type
 import typo.jvm.Code.TreeOps
+import typo.jvm.Type
 
-case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
+case class LangScala(dialect: Dialect, typeSupport: TypeSupport, dsl: DslQualifiedNames) extends Lang {
   override val `;` : jvm.Code = code""
 
-  // Delegate type support to the provided TypeSupport
-  override val BigDecimal: jvm.Type = typeSupport.BigDecimal
-  override val Boolean: jvm.Type = typeSupport.Boolean
-  override val Byte: jvm.Type = typeSupport.Byte
-  override val Double: jvm.Type = typeSupport.Double
-  override val Float: jvm.Type = typeSupport.Float
-  override val Int: jvm.Type = typeSupport.Int
-  override val IteratorType: jvm.Type = typeSupport.IteratorType
-  override val Long: jvm.Type = typeSupport.Long
-  override val Short: jvm.Type = typeSupport.Short
-  override val String: jvm.Type = typeSupport.String
-  override val Optional: OptionalSupport = typeSupport.Optional
-  override val ListType: ListSupport = typeSupport.ListType
-  override val Random: RandomSupport = typeSupport.Random
-  override val MapOps: MapSupport = typeSupport.MapOps
-  override def bigDecimalFromDouble(d: jvm.Code): jvm.Code = typeSupport.bigDecimalFromDouble(d)
+  // Type system types - Scala always uses Scala's type system
+  override val nothingType: jvm.Type = TypesScala.Nothing
+  override val voidType: jvm.Type = TypesScala.Unit
+  override val topType: jvm.Type = TypesScala.Any
 
-  override def s(content: jvm.Code): jvm.StringInterpolate =
+  override def s(content: jvm.Code): jvm.Code =
     jvm.StringInterpolate(TypesScala.StringContext, jvm.Ident("s"), content)
 
   override def docLink(cls: jvm.QIdent, value: jvm.Ident): String =
@@ -126,9 +114,19 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
       case jvm.Ident(value)                                                   => escapedIdent(value)
       case jvm.MethodRef(tpe, name)                                           => code"$tpe.$name"
       case jvm.QIdent(value)                                                  => value.map(t => renderTree(t, ctx)).mkCode(".")
-      case jvm.StrLit(str) if str.contains(Quote)                             => TripleQuote + str + TripleQuote
-      case jvm.StrLit(str)                                                    => Quote + str + Quote
-      case jvm.Summon(tpe)                                                    => code"implicitly[$tpe]"
+      case jvm.StrLit(str) if str.contains(Quote) || str.contains('\n')       =>
+        // Use triple-quotes for strings with quotes or newlines - no need to escape in triple-quotes
+        TripleQuote + str + TripleQuote
+      case jvm.StrLit(str) =>
+        // Use regular quotes and escape special characters
+        val escaped = str
+          .replace("\\", "\\\\")
+          .replace("\"", "\\\"")
+          .replace("\n", "\\n")
+          .replace("\r", "\\r")
+          .replace("\t", "\\t")
+        Quote + escaped + Quote
+      case jvm.Summon(tpe) => code"implicitly[$tpe]"
       case jvm.Type.Abstract(value, variance) =>
         variance match {
           case jvm.Variance.Invariant     => value.code
@@ -136,6 +134,7 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
           case jvm.Variance.Contravariant => code"-$value"
         }
       case jvm.Type.ArrayOf(value)                    => code"Array[$value]"
+      case jvm.Type.KotlinNullable(underlying)        => renderTree(underlying, ctx) // Scala doesn't have Kotlin's T? syntax, render underlying type
       case jvm.Type.Commented(underlying, comment)    => code"$comment $underlying"
       case jvm.Type.Annotated(underlying, annotation) => code"$underlying @$annotation"
       case jvm.Type.Function0(ret)                    => code"=> $ret"
@@ -146,9 +145,10 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
       case jvm.Type.UserDefined(underlying)           => code"/* user-picked */ $underlying"
       case jvm.Type.Void                              => code"Unit"
       case jvm.Type.Wildcard                          => code"?"
-      case jvm.Type.Primitive(name)                   => name
+      case jvm.Type.Primitive(name)                   => javaPrimitiveToScala(name)
       case p: jvm.Param[jvm.Type]                     => renderParam(p, false)
       case jvm.RuntimeInterpolation(value)            => code"$${$value"
+      case jvm.Import(_, _)                           => jvm.Code.Empty // Import node just triggers import, no code output
       case jvm.TypeSwitch(value, cases, nullCase, _, unchecked) =>
         val nullCaseCode = nullCase.map(body => code"case null => $body").toList
         val typeCases = cases.map { case jvm.TypeSwitch.Case(pat, ident, body) => code"case $ident: $pat => $body" }
@@ -231,9 +231,12 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
         val stringContent = linearized.map {
           case jvm.Code.Tree(jvm.RuntimeInterpolation(value)) =>
             // Wrap runtime values in ${...}
-            "$" + "{" + value.render(this).asString + "}"
-          case other =>
+            s"$${${value.render(this).asString}}"
+          case jvm.Code.Str(s) =>
             // String literals stay as-is
+            s
+          case other =>
+            // Render other code nodes and extract string
             other.render(this).asString
         }.mkString
         if (stringContent.contains(Quote) || stringContent.contains("\n")) {
@@ -653,7 +656,7 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
   // Scala: Bijection.apply[W, U](getter)(constructor) - using apply with two curried parameter lists
   // Note: Scala 3 requires explicit .apply when passing type parameters
   override def bijection(wrapperType: jvm.Type, underlying: jvm.Type, getter: jvm.FieldGetterRef, constructor: jvm.ConstructorMethodRef): jvm.Code = {
-    val bijection = jvm.Type.dsl.Bijection
+    val bijection = dsl.Bijection
     code"$bijection.apply[$wrapperType, $underlying]($getter)($constructor)"
   }
 
@@ -717,9 +720,8 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
     code"$target.$name"
 
   override def arrayOf(elements: List[jvm.Code]): jvm.Code = {
-    // Cast each element to Object using asInstanceOf to handle Scala 3 opaque types
-    val castElements = elements.map(e => code"$e.asInstanceOf[Object]")
-    code"Array[Object](${castElements.mkCode(", ")})"
+    // Use Array[Any] for Scala - elements don't need explicit casting
+    code"Array[Any](${elements.mkCode(", ")})"
   }
 
   // Scala: == calls .equals() for structural equality
@@ -794,4 +796,28 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport) extends Lang {
       "@"
     )
 
+  /** Convert Java primitive type names to Scala type names */
+  private def javaPrimitiveToScala(name: String) = name match {
+    case "byte"    => TypesScala.Byte
+    case "short"   => TypesScala.Short
+    case "int"     => TypesScala.Int
+    case "long"    => TypesScala.Long
+    case "float"   => TypesScala.Float
+    case "double"  => TypesScala.Double
+    case "boolean" => TypesScala.Boolean
+    case "char"    => TypesScala.Char
+    case other     => sys.error(s"Unexpected: $other")
+  }
+
+}
+
+object LangScala {
+
+  /** LangScala using the Java DSL (typo.dsl) - for old DbLibs (Anorm, Doobie, ZioJdbc) */
+  def javaDsl(dialect: Dialect, typeSupport: TypeSupport): LangScala =
+    LangScala(dialect, typeSupport, DslQualifiedNames.Java)
+
+  /** LangScala using the Java DSL (typo.dsl) - for DbLibTypo */
+  def scalaDsl(dialect: Dialect, typeSupport: TypeSupport): LangScala =
+    LangScala(dialect, typeSupport, DslQualifiedNames.Scala)
 }

@@ -10,10 +10,9 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PvViewFields {
   def id: Field[ProductId, PvViewRow]
@@ -21,21 +20,21 @@ trait PvViewFields {
   def businessentityid: Field[BusinessentityId, PvViewRow]
   def averageleadtime: Field[Int, PvViewRow]
   def standardprice: Field[BigDecimal, PvViewRow]
-  def lastreceiptcost: OptField[BigDecimal, PvViewRow]
-  def lastreceiptdate: OptField[TypoLocalDateTime, PvViewRow]
+  def lastreceiptcost: Field[BigDecimal, PvViewRow]
+  def lastreceiptdate: Field[TypoLocalDateTime, PvViewRow]
   def minorderqty: Field[Int, PvViewRow]
   def maxorderqty: Field[Int, PvViewRow]
-  def onorderqty: OptField[Int, PvViewRow]
+  def onorderqty: Field[Int, PvViewRow]
   def unitmeasurecode: Field[UnitmeasureId, PvViewRow]
   def modifieddate: Field[TypoLocalDateTime, PvViewRow]
 }
 
 object PvViewFields {
-  lazy val structure: Relation[PvViewFields, PvViewRow] =
+  lazy val structure: RelationStructure[PvViewFields, PvViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PvViewFields, PvViewRow] {
+    extends RelationStructure[PvViewFields, PvViewRow] {
 
     override lazy val fields: PvViewFields = new PvViewFields {
       override def id = Field[ProductId, PvViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
@@ -43,11 +42,11 @@ object PvViewFields {
       override def businessentityid = Field[BusinessentityId, PvViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def averageleadtime = Field[Int, PvViewRow](_path, "averageleadtime", None, None, x => x.averageleadtime, (row, value) => row.copy(averageleadtime = value))
       override def standardprice = Field[BigDecimal, PvViewRow](_path, "standardprice", None, None, x => x.standardprice, (row, value) => row.copy(standardprice = value))
-      override def lastreceiptcost = OptField[BigDecimal, PvViewRow](_path, "lastreceiptcost", None, None, x => x.lastreceiptcost, (row, value) => row.copy(lastreceiptcost = value))
-      override def lastreceiptdate = OptField[TypoLocalDateTime, PvViewRow](_path, "lastreceiptdate", Some("text"), None, x => x.lastreceiptdate, (row, value) => row.copy(lastreceiptdate = value))
+      override def lastreceiptcost = Field[BigDecimal, PvViewRow](_path, "lastreceiptcost", None, None, x => x.lastreceiptcost, (row, value) => row.copy(lastreceiptcost = value))
+      override def lastreceiptdate = Field[TypoLocalDateTime, PvViewRow](_path, "lastreceiptdate", Some("text"), None, x => x.lastreceiptdate, (row, value) => row.copy(lastreceiptdate = value))
       override def minorderqty = Field[Int, PvViewRow](_path, "minorderqty", None, None, x => x.minorderqty, (row, value) => row.copy(minorderqty = value))
       override def maxorderqty = Field[Int, PvViewRow](_path, "maxorderqty", None, None, x => x.maxorderqty, (row, value) => row.copy(maxorderqty = value))
-      override def onorderqty = OptField[Int, PvViewRow](_path, "onorderqty", None, None, x => x.onorderqty, (row, value) => row.copy(onorderqty = value))
+      override def onorderqty = Field[Int, PvViewRow](_path, "onorderqty", None, None, x => x.onorderqty, (row, value) => row.copy(onorderqty = value))
       override def unitmeasurecode = Field[UnitmeasureId, PvViewRow](_path, "unitmeasurecode", None, None, x => x.unitmeasurecode, (row, value) => row.copy(unitmeasurecode = value))
       override def modifieddate = Field[TypoLocalDateTime, PvViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }

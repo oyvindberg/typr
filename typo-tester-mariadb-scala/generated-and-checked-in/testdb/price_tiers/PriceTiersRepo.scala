@@ -6,17 +6,16 @@
 package testdb.price_tiers
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait PriceTiersRepo {
   def delete: DeleteBuilder[PriceTiersFields, PriceTiersRow]
 
-  def deleteById(tierId: PriceTiersId)(using c: Connection): java.lang.Boolean
+  def deleteById(tierId: PriceTiersId)(using c: Connection): Boolean
 
-  def deleteByIds(tierIds: Array[PriceTiersId])(using c: Connection): Integer
+  def deleteByIds(tierIds: Array[PriceTiersId])(using c: Connection): Int
 
   def insert(unsaved: PriceTiersRow)(using c: Connection): PriceTiersRow
 
@@ -24,19 +23,19 @@ trait PriceTiersRepo {
 
   def select: SelectBuilder[PriceTiersFields, PriceTiersRow]
 
-  def selectAll(using c: Connection): java.util.List[PriceTiersRow]
+  def selectAll(using c: Connection): List[PriceTiersRow]
 
-  def selectById(tierId: PriceTiersId)(using c: Connection): Optional[PriceTiersRow]
+  def selectById(tierId: PriceTiersId)(using c: Connection): Option[PriceTiersRow]
 
-  def selectByIds(tierIds: Array[PriceTiersId])(using c: Connection): java.util.List[PriceTiersRow]
+  def selectByIds(tierIds: Array[PriceTiersId])(using c: Connection): List[PriceTiersRow]
 
-  def selectByIdsTracked(tierIds: Array[PriceTiersId])(using c: Connection): java.util.Map[PriceTiersId, PriceTiersRow]
+  def selectByIdsTracked(tierIds: Array[PriceTiersId])(using c: Connection): Map[PriceTiersId, PriceTiersRow]
 
   def update: UpdateBuilder[PriceTiersFields, PriceTiersRow]
 
-  def update(row: PriceTiersRow)(using c: Connection): java.lang.Boolean
+  def update(row: PriceTiersRow)(using c: Connection): Boolean
 
   def upsert(unsaved: PriceTiersRow)(using c: Connection): PriceTiersRow
 
-  def upsertBatch(unsaved: java.util.Iterator[PriceTiersRow])(using c: Connection): java.util.List[PriceTiersRow]
+  def upsertBatch(unsaved: Iterator[PriceTiersRow])(using c: Connection): List[PriceTiersRow]
 }

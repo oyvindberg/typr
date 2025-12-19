@@ -6,70 +6,69 @@
 package testdb.audit_log
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface AuditLogRepo {
-  fun delete(): DeleteBuilder<AuditLogFields, AuditLogRow>
+  abstract fun delete(): DeleteBuilder<AuditLogFields, AuditLogRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     logId: AuditLogId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     logIds: Array<AuditLogId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: AuditLogRow,
     c: Connection
   ): AuditLogRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: AuditLogRowUnsaved,
     c: Connection
   ): AuditLogRow
 
-  fun select(): SelectBuilder<AuditLogFields, AuditLogRow>
+  abstract fun select(): SelectBuilder<AuditLogFields, AuditLogRow>
 
-  fun selectAll(c: Connection): List<AuditLogRow>
+  abstract fun selectAll(c: Connection): List<AuditLogRow>
 
-  fun selectById(
+  abstract fun selectById(
     logId: AuditLogId,
     c: Connection
-  ): Optional<AuditLogRow>
+  ): AuditLogRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     logIds: Array<AuditLogId>,
     c: Connection
   ): List<AuditLogRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     logIds: Array<AuditLogId>,
     c: Connection
   ): Map<AuditLogId, AuditLogRow>
 
-  fun update(): UpdateBuilder<AuditLogFields, AuditLogRow>
+  abstract fun update(): UpdateBuilder<AuditLogFields, AuditLogRow>
 
-  fun update(
+  abstract fun update(
     row: AuditLogRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: AuditLogRow,
     c: Connection
   ): AuditLogRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<AuditLogRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<AuditLogRow>,
     c: Connection
   ): List<AuditLogRow>
 }

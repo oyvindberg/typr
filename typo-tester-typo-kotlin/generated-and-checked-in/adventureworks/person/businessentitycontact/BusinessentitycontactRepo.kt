@@ -6,89 +6,88 @@
 package adventureworks.person.businessentitycontact
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface BusinessentitycontactRepo {
-  fun delete(): DeleteBuilder<BusinessentitycontactFields, BusinessentitycontactRow>
+  abstract fun delete(): DeleteBuilder<BusinessentitycontactFields, BusinessentitycontactRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: BusinessentitycontactId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<BusinessentitycontactId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: BusinessentitycontactRow,
     c: Connection
   ): BusinessentitycontactRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: BusinessentitycontactRowUnsaved,
     c: Connection
   ): BusinessentitycontactRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<BusinessentitycontactRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<BusinessentitycontactRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<BusinessentitycontactRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<BusinessentitycontactRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<BusinessentitycontactFields, BusinessentitycontactRow>
+  abstract fun select(): SelectBuilder<BusinessentitycontactFields, BusinessentitycontactRow>
 
-  fun selectAll(c: Connection): List<BusinessentitycontactRow>
+  abstract fun selectAll(c: Connection): List<BusinessentitycontactRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: BusinessentitycontactId,
     c: Connection
-  ): Optional<BusinessentitycontactRow>
+  ): BusinessentitycontactRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<BusinessentitycontactId>,
     c: Connection
   ): List<BusinessentitycontactRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<BusinessentitycontactId>,
     c: Connection
   ): Map<BusinessentitycontactId, BusinessentitycontactRow>
 
-  fun update(): UpdateBuilder<BusinessentitycontactFields, BusinessentitycontactRow>
+  abstract fun update(): UpdateBuilder<BusinessentitycontactFields, BusinessentitycontactRow>
 
-  fun update(
+  abstract fun update(
     row: BusinessentitycontactRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: BusinessentitycontactRow,
     c: Connection
   ): BusinessentitycontactRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<BusinessentitycontactRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<BusinessentitycontactRow>,
     c: Connection
   ): List<BusinessentitycontactRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<BusinessentitycontactRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<BusinessentitycontactRow>,
     batchSize: Int,
     c: Connection
   ): Int

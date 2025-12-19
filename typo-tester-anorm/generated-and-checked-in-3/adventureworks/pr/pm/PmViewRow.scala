@@ -10,7 +10,6 @@ import adventureworks.customtypes.TypoUUID
 import adventureworks.customtypes.TypoXml
 import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.public.Name
-import anorm.Column
 import anorm.RowParser
 import anorm.Success
 import play.api.libs.json.JsObject
@@ -18,7 +17,6 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 import scala.collection.immutable.ListMap
 import scala.util.Try
 
@@ -31,9 +29,9 @@ case class PmViewRow(
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.name]] */
   name: Name,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.catalogdescription]] */
-  catalogdescription: Option[TypoXml],
+  catalogdescription: TypoXml,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.instructions]] */
-  instructions: Option[TypoXml],
+  instructions: TypoXml,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.productmodel.ProductmodelRow.modifieddate]] */
@@ -48,8 +46,8 @@ object PmViewRow {
             id = json.\("id").as(ProductmodelId.reads),
             productmodelid = json.\("productmodelid").as(ProductmodelId.reads),
             name = json.\("name").as(Name.reads),
-            catalogdescription = json.\("catalogdescription").toOption.map(_.as(TypoXml.reads)),
-            instructions = json.\("instructions").toOption.map(_.as(TypoXml.reads)),
+            catalogdescription = json.\("catalogdescription").as(TypoXml.reads),
+            instructions = json.\("instructions").as(TypoXml.reads),
             rowguid = json.\("rowguid").as(TypoUUID.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
@@ -65,8 +63,8 @@ object PmViewRow {
           id = row(idx + 0)(using ProductmodelId.column),
           productmodelid = row(idx + 1)(using ProductmodelId.column),
           name = row(idx + 2)(using Name.column),
-          catalogdescription = row(idx + 3)(using Column.columnToOption(using TypoXml.column)),
-          instructions = row(idx + 4)(using Column.columnToOption(using TypoXml.column)),
+          catalogdescription = row(idx + 3)(using TypoXml.column),
+          instructions = row(idx + 4)(using TypoXml.column),
           rowguid = row(idx + 5)(using TypoUUID.column),
           modifieddate = row(idx + 6)(using TypoLocalDateTime.column)
         )
@@ -80,8 +78,8 @@ object PmViewRow {
         "id" -> ProductmodelId.writes.writes(o.id),
         "productmodelid" -> ProductmodelId.writes.writes(o.productmodelid),
         "name" -> Name.writes.writes(o.name),
-        "catalogdescription" -> Writes.OptionWrites(using TypoXml.writes).writes(o.catalogdescription),
-        "instructions" -> Writes.OptionWrites(using TypoXml.writes).writes(o.instructions),
+        "catalogdescription" -> TypoXml.writes.writes(o.catalogdescription),
+        "instructions" -> TypoXml.writes.writes(o.instructions),
         "rowguid" -> TypoUUID.writes.writes(o.rowguid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))

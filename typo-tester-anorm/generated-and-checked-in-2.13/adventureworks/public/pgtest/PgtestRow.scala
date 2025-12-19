@@ -48,9 +48,9 @@ import scala.util.Try
 case class PgtestRow(
   bool: Boolean,
   box: TypoBox,
-  bpchar: /* bpchar, max 3 chars */ String,
+  bpchar: String,
   bytea: TypoBytea,
-  char: /* bpchar, max 1 chars */ String,
+  char: String,
   circle: TypoCircle,
   date: TypoLocalDate,
   float4: Float,

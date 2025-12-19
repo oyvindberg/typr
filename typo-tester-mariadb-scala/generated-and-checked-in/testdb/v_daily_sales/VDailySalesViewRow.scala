@@ -7,10 +7,11 @@ package testdb.v_daily_sales
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
-import java.util.Optional
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** View: v_daily_sales
  * VIEW
@@ -19,45 +20,45 @@ case class VDailySalesViewRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("order_date") orderDate: Optional[LocalDate],
+  @JsonProperty("order_date") orderDate: Option[LocalDate],
   /** 
    * Default: 0
    */
-  @JsonProperty("order_count") orderCount: java.lang.Long,
+  @JsonProperty("order_count") orderCount: Long,
   /** 
    * Default: 0
    */
-  @JsonProperty("unique_customers") uniqueCustomers: java.lang.Long,
+  @JsonProperty("unique_customers") uniqueCustomers: Long,
   /** 
    * Default: NULL
    */
-  @JsonProperty("items_sold") itemsSold: Optional[java.math.BigDecimal],
+  @JsonProperty("items_sold") itemsSold: Option[BigDecimal],
   /** 
    * Default: NULL
    */
-  @JsonProperty("gross_sales") grossSales: Optional[java.math.BigDecimal],
+  @JsonProperty("gross_sales") grossSales: Option[BigDecimal],
   /** 
    * Default: NULL
    */
-  @JsonProperty("total_discounts") totalDiscounts: Optional[java.math.BigDecimal],
+  @JsonProperty("total_discounts") totalDiscounts: Option[BigDecimal],
   /** 
    * Default: NULL
    */
-  @JsonProperty("total_shipping") totalShipping: Optional[java.math.BigDecimal],
+  @JsonProperty("total_shipping") totalShipping: Option[BigDecimal],
   /** 
    * Default: NULL
    */
-  @JsonProperty("total_tax") totalTax: Optional[java.math.BigDecimal],
+  @JsonProperty("total_tax") totalTax: Option[BigDecimal],
   /** 
    * Default: NULL
    */
-  @JsonProperty("net_sales") netSales: Optional[java.math.BigDecimal],
+  @JsonProperty("net_sales") netSales: Option[BigDecimal],
   /** 
    * Default: NULL
    */
-  @JsonProperty("avg_order_value") avgOrderValue: Optional[java.math.BigDecimal]
+  @JsonProperty("avg_order_value") avgOrderValue: Option[BigDecimal]
 )
 
 object VDailySalesViewRow {
-  val `_rowParser`: RowParser[VDailySalesViewRow] = RowParsers.of(MariaTypes.date.opt(), MariaTypes.bigint, MariaTypes.bigint, MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), VDailySalesViewRow.apply, row => Array[Object](row.orderDate.asInstanceOf[Object], row.orderCount.asInstanceOf[Object], row.uniqueCustomers.asInstanceOf[Object], row.itemsSold.asInstanceOf[Object], row.grossSales.asInstanceOf[Object], row.totalDiscounts.asInstanceOf[Object], row.totalShipping.asInstanceOf[Object], row.totalTax.asInstanceOf[Object], row.netSales.asInstanceOf[Object], row.avgOrderValue.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VDailySalesViewRow] = RowParsers.of(MariaTypes.date.nullable, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable)(VDailySalesViewRow.apply)(row => Array[Any](row.orderDate, row.orderCount, row.uniqueCustomers, row.itemsSold, row.grossSales, row.totalDiscounts, row.totalShipping, row.totalTax, row.netSales, row.avgOrderValue))
 }

@@ -7,7 +7,6 @@ package testdb.reviews
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
@@ -15,6 +14,8 @@ import testdb.order_items.OrderItemsId
 import testdb.products.ProductsId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `reviews` which has not been persisted yet */
 case class ReviewsRowUnsaved(
@@ -27,55 +28,55 @@ case class ReviewsRowUnsaved(
    */
   @JsonProperty("customer_id") customerId: CustomersId,
   /**  */
-  rating: java.lang.Short,
+  rating: Short,
   /** Default: NULL
    * Points to [[testdb.order_items.OrderItemsRow.itemId]]
    */
-  @JsonProperty("order_item_id") orderItemId: Defaulted[Optional[OrderItemsId]] = new UseDefault(),
+  @JsonProperty("order_item_id") orderItemId: Defaulted[Option[OrderItemsId]] = new UseDefault(),
   /** Default: NULL
 
    */
-  title: Defaulted[Optional[String]] = new UseDefault(),
+  title: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  content: Defaulted[Optional[String]] = new UseDefault(),
+  content: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  pros: Defaulted[Optional[String]] = new UseDefault(),
+  pros: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  cons: Defaulted[Optional[String]] = new UseDefault(),
+  cons: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
    * Array of image URLs
    */
-  images: Defaulted[Optional[String]] = new UseDefault(),
+  images: Defaulted[Option[String]] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("is_verified_purchase") isVerifiedPurchase: Defaulted[java.lang.Boolean] = new UseDefault(),
+  @JsonProperty("is_verified_purchase") isVerifiedPurchase: Defaulted[Boolean] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("is_approved") isApproved: Defaulted[java.lang.Boolean] = new UseDefault(),
+  @JsonProperty("is_approved") isApproved: Defaulted[Boolean] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("helpful_votes") helpfulVotes: Defaulted[java.lang.Long] = new UseDefault(),
+  @JsonProperty("helpful_votes") helpfulVotes: Defaulted[Long] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("unhelpful_votes") unhelpfulVotes: Defaulted[java.lang.Long] = new UseDefault(),
+  @JsonProperty("unhelpful_votes") unhelpfulVotes: Defaulted[Long] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("admin_response") adminResponse: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("admin_response") adminResponse: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("responded_at") respondedAt: Defaulted[Optional[LocalDateTime]] = new UseDefault(),
+  @JsonProperty("responded_at") respondedAt: Defaulted[Option[LocalDateTime]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
@@ -86,18 +87,18 @@ case class ReviewsRowUnsaved(
   @JsonProperty("updated_at") updatedAt: Defaulted[LocalDateTime] = new UseDefault()
 ) {
   def toRow(
-    orderItemIdDefault: => Optional[OrderItemsId],
-    titleDefault: => Optional[String],
-    contentDefault: => Optional[String],
-    prosDefault: => Optional[String],
-    consDefault: => Optional[String],
-    imagesDefault: => Optional[String],
-    isVerifiedPurchaseDefault: => java.lang.Boolean,
-    isApprovedDefault: => java.lang.Boolean,
-    helpfulVotesDefault: => java.lang.Long,
-    unhelpfulVotesDefault: => java.lang.Long,
-    adminResponseDefault: => Optional[String],
-    respondedAtDefault: => Optional[LocalDateTime],
+    orderItemIdDefault: => Option[OrderItemsId],
+    titleDefault: => Option[String],
+    contentDefault: => Option[String],
+    prosDefault: => Option[String],
+    consDefault: => Option[String],
+    imagesDefault: => Option[String],
+    isVerifiedPurchaseDefault: => Boolean,
+    isApprovedDefault: => Boolean,
+    helpfulVotesDefault: => Long,
+    unhelpfulVotesDefault: => Long,
+    adminResponseDefault: => Option[String],
+    respondedAtDefault: => Option[LocalDateTime],
     createdAtDefault: => LocalDateTime,
     updatedAtDefault: => LocalDateTime,
     reviewIdDefault: => ReviewsId
@@ -126,5 +127,5 @@ case class ReviewsRowUnsaved(
 }
 
 object ReviewsRowUnsaved {
-  given mariaText: MariaText[ReviewsRowUnsaved] = MariaText.instance((row, sb) => { ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); CustomersId.pgType.mariaText.unsafeEncode(row.customerId, sb); sb.append(MariaText.DELIMETER); MariaTypes.tinyintUnsigned.mariaText.unsafeEncode(row.rating, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using OrderItemsId.pgType.opt().mariaText).unsafeEncode(row.orderItemId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.title, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.opt().mariaText).unsafeEncode(row.content, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.pros, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.cons, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.images, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isVerifiedPurchase, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isApproved, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.intUnsigned.mariaText).unsafeEncode(row.helpfulVotes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.intUnsigned.mariaText).unsafeEncode(row.unhelpfulVotes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.opt().mariaText).unsafeEncode(row.adminResponse, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.opt().mariaText).unsafeEncode(row.respondedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.updatedAt, sb) })
+  given mariaText: MariaText[ReviewsRowUnsaved] = MariaText.instance((row, sb) => { ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); CustomersId.pgType.mariaText.unsafeEncode(row.customerId, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.tinyintUnsigned.mariaText.unsafeEncode(row.rating, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using OrderItemsId.pgType.nullable.mariaText).unsafeEncode(row.orderItemId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.title, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.nullable.mariaText).unsafeEncode(row.content, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.pros, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.cons, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.images, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isVerifiedPurchase, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isApproved, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.intUnsigned.mariaText).unsafeEncode(row.helpfulVotes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.intUnsigned.mariaText).unsafeEncode(row.unhelpfulVotes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.nullable.mariaText).unsafeEncode(row.adminResponse, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.nullable.mariaText).unsafeEncode(row.respondedAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.updatedAt, sb) })
 }

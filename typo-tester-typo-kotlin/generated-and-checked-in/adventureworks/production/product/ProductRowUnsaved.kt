@@ -7,16 +7,16 @@ package adventureworks.production.product
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.production.productsubcategory.ProductsubcategoryId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import adventureworks.public.Flag
 import adventureworks.public.Name
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -25,17 +25,17 @@ data class ProductRowUnsaved(
   /** Name of the product. */
   val name: Name,
   /** Unique product identification number. */
-  val productnumber: /* max 25 chars */ String,
+  val productnumber: String,
   /** Product color. */
-  val color: Optional</* max 15 chars */ String> = Optional.empty(),
+  val color: /* max 15 chars */ String? = null,
   /** Minimum inventory quantity.
     * Constraint CK_Product_SafetyStockLevel affecting columns safetystocklevel:  ((safetystocklevel > 0))
     */
-  val safetystocklevel: TypoShort,
+  val safetystocklevel: Short,
   /** Inventory level that triggers a purchase order or work order.
     * Constraint CK_Product_ReorderPoint affecting columns reorderpoint:  ((reorderpoint > 0))
     */
-  val reorderpoint: TypoShort,
+  val reorderpoint: Short,
   /** Standard cost of the product.
     * Constraint CK_Product_StandardCost affecting columns standardcost:  ((standardcost >= 0.00))
     */
@@ -45,19 +45,19 @@ data class ProductRowUnsaved(
     */
   val listprice: BigDecimal,
   /** Product size. */
-  val size: Optional</* max 5 chars */ String> = Optional.empty(),
+  val size: /* max 5 chars */ String? = null,
   /** Unit of measure for Size column.
     * Points to [adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]
     */
-  val sizeunitmeasurecode: Optional<UnitmeasureId> = Optional.empty(),
+  val sizeunitmeasurecode: UnitmeasureId? = null,
   /** Unit of measure for Weight column.
     * Points to [adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]
     */
-  val weightunitmeasurecode: Optional<UnitmeasureId> = Optional.empty(),
+  val weightunitmeasurecode: UnitmeasureId? = null,
   /** Product weight.
     * Constraint CK_Product_Weight affecting columns weight:  ((weight > 0.00))
     */
-  val weight: Optional<BigDecimal> = Optional.empty(),
+  val weight: BigDecimal? = null,
   /** Number of days required to manufacture the product.
     * Constraint CK_Product_DaysToManufacture affecting columns daystomanufacture:  ((daystomanufacture >= 0))
     */
@@ -65,33 +65,33 @@ data class ProductRowUnsaved(
   /** R = Road, M = Mountain, T = Touring, S = Standard
     * Constraint CK_Product_ProductLine affecting columns productline:  (((upper((productline)::text) = ANY (ARRAY['S'::text, 'T'::text, 'M'::text, 'R'::text])) OR (productline IS NULL)))
     */
-  val productline: Optional</* bpchar, max 2 chars */ String> = Optional.empty(),
+  val productline: /* bpchar, max 2 chars */ String? = null,
   /** H = High, M = Medium, L = Low
     * Constraint CK_Product_Class affecting columns class:  (((upper((class)::text) = ANY (ARRAY['L'::text, 'M'::text, 'H'::text])) OR (class IS NULL)))
     */
-  val `class`: Optional</* bpchar, max 2 chars */ String> = Optional.empty(),
+  val `class`: /* bpchar, max 2 chars */ String? = null,
   /** W = Womens, M = Mens, U = Universal
     * Constraint CK_Product_Style affecting columns style:  (((upper((style)::text) = ANY (ARRAY['W'::text, 'M'::text, 'U'::text])) OR (style IS NULL)))
     */
-  val style: Optional</* bpchar, max 2 chars */ String> = Optional.empty(),
+  val style: /* bpchar, max 2 chars */ String? = null,
   /** Product is a member of this product subcategory. Foreign key to ProductSubCategory.ProductSubCategoryID.
     * Points to [adventureworks.production.productsubcategory.ProductsubcategoryRow.productsubcategoryid]
     */
-  val productsubcategoryid: Optional<ProductsubcategoryId> = Optional.empty(),
+  val productsubcategoryid: ProductsubcategoryId? = null,
   /** Product is a member of this product model. Foreign key to ProductModel.ProductModelID.
     * Points to [adventureworks.production.productmodel.ProductmodelRow.productmodelid]
     */
-  val productmodelid: Optional<ProductmodelId> = Optional.empty(),
+  val productmodelid: ProductmodelId? = null,
   /** Date the product was available for sale.
     * Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate:  (((sellenddate >= sellstartdate) OR (sellenddate IS NULL)))
     */
-  val sellstartdate: TypoLocalDateTime,
+  val sellstartdate: LocalDateTime,
   /** Date the product was no longer available for sale.
     * Constraint CK_Product_SellEndDate affecting columns sellenddate, sellstartdate:  (((sellenddate >= sellstartdate) OR (sellenddate IS NULL)))
     */
-  val sellenddate: Optional<TypoLocalDateTime> = Optional.empty(),
+  val sellenddate: LocalDateTime? = null,
   /** Date the product was discontinued. */
-  val discontinueddate: Optional<TypoLocalDateTime> = Optional.empty(),
+  val discontinueddate: LocalDateTime? = null,
   /** Default: nextval('production.product_productid_seq'::regclass)
     * Primary key for Product records.
     */
@@ -105,16 +105,16 @@ data class ProductRowUnsaved(
     */
   val finishedgoodsflag: Defaulted<Flag> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     productidDefault: () -> ProductId,
     makeflagDefault: () -> Flag,
     finishedgoodsflagDefault: () -> Flag,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): ProductRow = ProductRow(productid = productid.getOrElse(productidDefault), name = name, productnumber = productnumber, makeflag = makeflag.getOrElse(makeflagDefault), finishedgoodsflag = finishedgoodsflag.getOrElse(finishedgoodsflagDefault), color = color, safetystocklevel = safetystocklevel, reorderpoint = reorderpoint, standardcost = standardcost, listprice = listprice, size = size, sizeunitmeasurecode = sizeunitmeasurecode, weightunitmeasurecode = weightunitmeasurecode, weight = weight, daystomanufacture = daystomanufacture, productline = productline, `class` = `class`, style = style, productsubcategoryid = productsubcategoryid, productmodelid = productmodelid, sellstartdate = sellstartdate, sellenddate = sellenddate, discontinueddate = discontinueddate, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -123,41 +123,41 @@ data class ProductRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.productnumber, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.color, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.color, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.safetystocklevel, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.safetystocklevel, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.reorderpoint, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.reorderpoint, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.numeric.pgText().unsafeEncode(row.standardcost, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.numeric.pgText().unsafeEncode(row.listprice, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.size, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.size, sb)
       sb.append(PgText.DELIMETER)
-      UnitmeasureId.pgType.opt().pgText().unsafeEncode(row.sizeunitmeasurecode, sb)
+      UnitmeasureId.pgType.nullable().pgText().unsafeEncode(row.sizeunitmeasurecode, sb)
       sb.append(PgText.DELIMETER)
-      UnitmeasureId.pgType.opt().pgText().unsafeEncode(row.weightunitmeasurecode, sb)
+      UnitmeasureId.pgType.nullable().pgText().unsafeEncode(row.weightunitmeasurecode, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.numeric.opt().pgText().unsafeEncode(row.weight, sb)
+      PgTypes.numeric.nullable().pgText().unsafeEncode(row.weight, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.int4.pgText().unsafeEncode(row.daystomanufacture, sb)
+      KotlinDbTypes.PgTypes.int4.pgText().unsafeEncode(row.daystomanufacture, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.bpchar.opt().pgText().unsafeEncode(row.productline, sb)
+      PgTypes.bpchar.nullable().pgText().unsafeEncode(row.productline, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.bpchar.opt().pgText().unsafeEncode(row.`class`, sb)
+      PgTypes.bpchar.nullable().pgText().unsafeEncode(row.`class`, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.bpchar.opt().pgText().unsafeEncode(row.style, sb)
+      PgTypes.bpchar.nullable().pgText().unsafeEncode(row.style, sb)
       sb.append(PgText.DELIMETER)
-      ProductsubcategoryId.pgType.opt().pgText().unsafeEncode(row.productsubcategoryid, sb)
+      ProductsubcategoryId.pgType.nullable().pgText().unsafeEncode(row.productsubcategoryid, sb)
       sb.append(PgText.DELIMETER)
-      ProductmodelId.pgType.opt().pgText().unsafeEncode(row.productmodelid, sb)
+      ProductmodelId.pgType.nullable().pgText().unsafeEncode(row.productmodelid, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.sellstartdate, sb)
+      PgTypes.timestamp.pgText().unsafeEncode(row.sellstartdate, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.sellenddate, sb)
+      PgTypes.timestamp.nullable().pgText().unsafeEncode(row.sellenddate, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.opt().pgText().unsafeEncode(row.discontinueddate, sb)
+      PgTypes.timestamp.nullable().pgText().unsafeEncode(row.discontinueddate, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(ProductId.pgType.pgText()).unsafeEncode(row.productid, sb)
       sb.append(PgText.DELIMETER)
@@ -165,8 +165,8 @@ data class ProductRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.finishedgoodsflag, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

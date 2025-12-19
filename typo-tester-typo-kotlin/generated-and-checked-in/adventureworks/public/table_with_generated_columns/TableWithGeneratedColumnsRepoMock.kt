@@ -8,21 +8,19 @@ package adventureworks.public.table_with_generated_columns
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class TableWithGeneratedColumnsRepoMock(
   val toRow: (TableWithGeneratedColumnsRowUnsaved) -> TableWithGeneratedColumnsRow,
@@ -33,7 +31,7 @@ data class TableWithGeneratedColumnsRepoMock(
   override fun deleteById(
     name: TableWithGeneratedColumnsId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(name)).isPresent()
+  ): Boolean = map.remove(name) != null
 
   override fun deleteByIds(
     names: Array<TableWithGeneratedColumnsId>,
@@ -41,7 +39,7 @@ data class TableWithGeneratedColumnsRepoMock(
   ): Int {
     var count = 0
     for (id in names) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class TableWithGeneratedColumnsRepoMock(
     c: Connection
   ): TableWithGeneratedColumnsRow {
     if (map.containsKey(unsaved.name)) {
-      throw RuntimeException(str("id $unsaved.name already exists"))
+      throw RuntimeException("id " + unsaved.name + " already exists")
     }
     map[unsaved.name] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class TableWithGeneratedColumnsRepoMock(
   ): TableWithGeneratedColumnsRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<TableWithGeneratedColumnsRow>,
+    unsaved: Iterator<TableWithGeneratedColumnsRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class TableWithGeneratedColumnsRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<TableWithGeneratedColumnsRowUnsaved>,
+    unsaved: Iterator<TableWithGeneratedColumnsRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class TableWithGeneratedColumnsRepoMock(
   override fun selectById(
     name: TableWithGeneratedColumnsId,
     c: Connection
-  ): Optional<TableWithGeneratedColumnsRow> = Optional.ofNullable(map[name])
+  ): TableWithGeneratedColumnsRow? = map[name]
 
   override fun selectByIds(
     names: Array<TableWithGeneratedColumnsId>,
@@ -109,9 +107,9 @@ data class TableWithGeneratedColumnsRepoMock(
   ): List<TableWithGeneratedColumnsRow> {
     val result = ArrayList<TableWithGeneratedColumnsRow>()
     for (id in names) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -133,7 +131,7 @@ data class TableWithGeneratedColumnsRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<TableWithGeneratedColumnsRow>,
+    unsaved: Iterator<TableWithGeneratedColumnsRow>,
     c: Connection
   ): List<TableWithGeneratedColumnsRow> {
     val result = ArrayList<TableWithGeneratedColumnsRow>()
@@ -147,7 +145,7 @@ data class TableWithGeneratedColumnsRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<TableWithGeneratedColumnsRow>,
+    unsaved: Iterator<TableWithGeneratedColumnsRow>,
     batchSize: Int,
     c: Connection
   ): Int {

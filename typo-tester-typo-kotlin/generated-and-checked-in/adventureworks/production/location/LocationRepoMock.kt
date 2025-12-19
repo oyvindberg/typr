@@ -8,21 +8,19 @@ package adventureworks.production.location
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class LocationRepoMock(
   val toRow: (LocationRowUnsaved) -> LocationRow,
@@ -33,7 +31,7 @@ data class LocationRepoMock(
   override fun deleteById(
     locationid: LocationId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(locationid)).isPresent()
+  ): Boolean = map.remove(locationid) != null
 
   override fun deleteByIds(
     locationids: Array<LocationId>,
@@ -41,7 +39,7 @@ data class LocationRepoMock(
   ): Int {
     var count = 0
     for (id in locationids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class LocationRepoMock(
     c: Connection
   ): LocationRow {
     if (map.containsKey(unsaved.locationid)) {
-      throw RuntimeException(str("id $unsaved.locationid already exists"))
+      throw RuntimeException("id " + unsaved.locationid + " already exists")
     }
     map[unsaved.locationid] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class LocationRepoMock(
   ): LocationRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<LocationRow>,
+    unsaved: Iterator<LocationRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class LocationRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<LocationRowUnsaved>,
+    unsaved: Iterator<LocationRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class LocationRepoMock(
   override fun selectById(
     locationid: LocationId,
     c: Connection
-  ): Optional<LocationRow> = Optional.ofNullable(map[locationid])
+  ): LocationRow? = map[locationid]
 
   override fun selectByIds(
     locationids: Array<LocationId>,
@@ -109,9 +107,9 @@ data class LocationRepoMock(
   ): List<LocationRow> {
     val result = ArrayList<LocationRow>()
     for (id in locationids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class LocationRepoMock(
     row: LocationRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.locationid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.locationid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.locationid] = row
     }
@@ -144,7 +142,7 @@ data class LocationRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<LocationRow>,
+    unsaved: Iterator<LocationRow>,
     c: Connection
   ): List<LocationRow> {
     val result = ArrayList<LocationRow>()
@@ -158,7 +156,7 @@ data class LocationRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<LocationRow>,
+    unsaved: Iterator<LocationRow>,
     batchSize: Int,
     c: Connection
   ): Int {

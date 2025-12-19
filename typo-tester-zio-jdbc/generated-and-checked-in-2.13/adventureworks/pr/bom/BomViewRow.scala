@@ -23,13 +23,13 @@ case class BomViewRow(
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.billofmaterialsid]] */
   billofmaterialsid: Int,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.productassemblyid]] */
-  productassemblyid: Option[ProductId],
+  productassemblyid: ProductId,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.componentid]] */
   componentid: ProductId,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.unitmeasurecode]] */
   unitmeasurecode: UnitmeasureId,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.bomlevel]] */
@@ -48,10 +48,10 @@ object BomViewRow {
           BomViewRow(
             id = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 0, rs)._2,
             billofmaterialsid = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 1, rs)._2,
-            productassemblyid = JdbcDecoder.optionDecoder(ProductId.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
+            productassemblyid = ProductId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
             componentid = ProductId.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
             startdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-            enddate = JdbcDecoder.optionDecoder(TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 5, rs)._2,
+            enddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             unitmeasurecode = UnitmeasureId.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
             bomlevel = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
             perassemblyqty = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 8, rs)._2,
@@ -64,10 +64,10 @@ object BomViewRow {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
       val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(JsonDecoder.int))
       val billofmaterialsid = jsonObj.get("billofmaterialsid").toRight("Missing field 'billofmaterialsid'").flatMap(_.as(JsonDecoder.int))
-      val productassemblyid = jsonObj.get("productassemblyid").fold[Either[String, Option[ProductId]]](Right(None))(_.as(JsonDecoder.option(ProductId.jsonDecoder)))
+      val productassemblyid = jsonObj.get("productassemblyid").toRight("Missing field 'productassemblyid'").flatMap(_.as(ProductId.jsonDecoder))
       val componentid = jsonObj.get("componentid").toRight("Missing field 'componentid'").flatMap(_.as(ProductId.jsonDecoder))
       val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
-      val enddate = jsonObj.get("enddate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(JsonDecoder.option(TypoLocalDateTime.jsonDecoder)))
+      val enddate = jsonObj.get("enddate").toRight("Missing field 'enddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       val unitmeasurecode = jsonObj.get("unitmeasurecode").toRight("Missing field 'unitmeasurecode'").flatMap(_.as(UnitmeasureId.jsonDecoder))
       val bomlevel = jsonObj.get("bomlevel").toRight("Missing field 'bomlevel'").flatMap(_.as(TypoShort.jsonDecoder))
       val perassemblyqty = jsonObj.get("perassemblyqty").toRight("Missing field 'perassemblyqty'").flatMap(_.as(JsonDecoder.scalaBigDecimal))
@@ -89,7 +89,7 @@ object BomViewRow {
         JsonEncoder.int.unsafeEncode(a.billofmaterialsid, indent, out)
         out.write(",")
         out.write(""""productassemblyid":""")
-        JsonEncoder.option(ProductId.jsonEncoder).unsafeEncode(a.productassemblyid, indent, out)
+        ProductId.jsonEncoder.unsafeEncode(a.productassemblyid, indent, out)
         out.write(",")
         out.write(""""componentid":""")
         ProductId.jsonEncoder.unsafeEncode(a.componentid, indent, out)
@@ -98,7 +98,7 @@ object BomViewRow {
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.startdate, indent, out)
         out.write(",")
         out.write(""""enddate":""")
-        JsonEncoder.option(TypoLocalDateTime.jsonEncoder).unsafeEncode(a.enddate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.enddate, indent, out)
         out.write(",")
         out.write(""""unitmeasurecode":""")
         UnitmeasureId.jsonEncoder.unsafeEncode(a.unitmeasurecode, indent, out)

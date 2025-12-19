@@ -7,89 +7,88 @@ package adventureworks.person.password
 
 import adventureworks.person.businessentity.BusinessentityId
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PasswordRepo {
-  fun delete(): DeleteBuilder<PasswordFields, PasswordRow>
+  abstract fun delete(): DeleteBuilder<PasswordFields, PasswordRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     businessentityid: BusinessentityId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: PasswordRow,
     c: Connection
   ): PasswordRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: PasswordRowUnsaved,
     c: Connection
   ): PasswordRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<PasswordRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<PasswordRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<PasswordRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<PasswordRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<PasswordFields, PasswordRow>
+  abstract fun select(): SelectBuilder<PasswordFields, PasswordRow>
 
-  fun selectAll(c: Connection): List<PasswordRow>
+  abstract fun selectAll(c: Connection): List<PasswordRow>
 
-  fun selectById(
+  abstract fun selectById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Optional<PasswordRow>
+  ): PasswordRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
   ): List<PasswordRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     businessentityids: Array<BusinessentityId>,
     c: Connection
   ): Map<BusinessentityId, PasswordRow>
 
-  fun update(): UpdateBuilder<PasswordFields, PasswordRow>
+  abstract fun update(): UpdateBuilder<PasswordFields, PasswordRow>
 
-  fun update(
+  abstract fun update(
     row: PasswordRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: PasswordRow,
     c: Connection
   ): PasswordRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<PasswordRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<PasswordRow>,
     c: Connection
   ): List<PasswordRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<PasswordRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<PasswordRow>,
     batchSize: Int,
     c: Connection
   ): Int

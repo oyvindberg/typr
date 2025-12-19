@@ -5,16 +5,16 @@
  */
 package adventureworks.sa.tr
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.public.Name
 import adventureworks.sales.salestaxrate.SalestaxrateId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sa.tr */
 data class TrViewRow(
@@ -25,17 +25,17 @@ data class TrViewRow(
   /** Points to [adventureworks.sales.salestaxrate.SalestaxrateRow.stateprovinceid] */
   val stateprovinceid: StateprovinceId,
   /** Points to [adventureworks.sales.salestaxrate.SalestaxrateRow.taxtype] */
-  val taxtype: TypoShort,
+  val taxtype: Short,
   /** Points to [adventureworks.sales.salestaxrate.SalestaxrateRow.taxrate] */
   val taxrate: BigDecimal,
   /** Points to [adventureworks.sales.salestaxrate.SalestaxrateRow.name] */
   val name: Name,
   /** Points to [adventureworks.sales.salestaxrate.SalestaxrateRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.sales.salestaxrate.SalestaxrateRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<TrViewRow> = RowParsers.of(SalestaxrateId.pgType, SalestaxrateId.pgType, StateprovinceId.pgType, TypoShort.pgType, PgTypes.numeric, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7 -> TrViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!) }, { row -> arrayOf<Any?>(row.id, row.salestaxrateid, row.stateprovinceid, row.taxtype, row.taxrate, row.name, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<TrViewRow> = RowParsers.of(SalestaxrateId.pgType, SalestaxrateId.pgType, StateprovinceId.pgType, KotlinDbTypes.PgTypes.int2, PgTypes.numeric, Name.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7 -> TrViewRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.id, row.salestaxrateid, row.stateprovinceid, row.taxtype, row.taxrate, row.name, row.rowguid, row.modifieddate) })
   }
 }

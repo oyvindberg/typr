@@ -5,46 +5,48 @@
  */
 package adventureworks.pe.be
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface BeViewFields : FieldsExpr<BeViewRow> {
-  fun businessentityid(): Field<BusinessentityId, BeViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, BeViewRow>
 
-  override fun columns(): List<FieldLike<*, BeViewRow>>
+  abstract override fun columns(): List<FieldLike<*, BeViewRow>>
 
-  fun id(): Field<BusinessentityId, BeViewRow>
+  abstract fun id(): Field<BusinessentityId, BeViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, BeViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, BeViewRow>
 
-  override fun rowParser(): RowParser<BeViewRow> = BeViewRow._rowParser
+  override fun rowParser(): RowParser<BeViewRow> = BeViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, BeViewRow>
+  abstract fun rowguid(): Field<UUID, BeViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : BeViewFields, Relation<BeViewFields, BeViewRow> {
-      override fun id(): Field<BusinessentityId, BeViewRow> = Field<BusinessentityId, BeViewRow>(_path, "id", BeViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : BeViewFields, RelationStructure<BeViewFields, BeViewRow> {
+      override fun id(): Field<BusinessentityId, BeViewRow> = Field<BusinessentityId, BeViewRow>(_path, "id", BeViewRow::id, null, null, { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
 
-      override fun businessentityid(): Field<BusinessentityId, BeViewRow> = Field<BusinessentityId, BeViewRow>(_path, "businessentityid", BeViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, BeViewRow> = Field<BusinessentityId, BeViewRow>(_path, "businessentityid", BeViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun rowguid(): Field<TypoUUID, BeViewRow> = Field<TypoUUID, BeViewRow>(_path, "rowguid", BeViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, BeViewRow> = Field<UUID, BeViewRow>(_path, "rowguid", BeViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, BeViewRow> = Field<TypoLocalDateTime, BeViewRow>(_path, "modifieddate", BeViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, BeViewRow> = Field<LocalDateTime, BeViewRow>(_path, "modifieddate", BeViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, BeViewRow>> = listOf(this.id(), this.businessentityid(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<BeViewFields, BeViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, BeViewRow>> = listOf(this.id().underlying, this.businessentityid().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<BeViewFields, BeViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

@@ -9,13 +9,13 @@ import anorm.ParameterMetaData
 import anorm.ToParameterValue
 import anorm.ToStatement
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
 import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait OnlyPkColumnsFields {
   def keyColumn1: IdField[String, OnlyPkColumnsRow]
@@ -28,11 +28,11 @@ trait OnlyPkColumnsFields {
 }
 
 object OnlyPkColumnsFields {
-  lazy val structure: Relation[OnlyPkColumnsFields, OnlyPkColumnsRow] =
+  lazy val structure: RelationStructure[OnlyPkColumnsFields, OnlyPkColumnsRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[OnlyPkColumnsFields, OnlyPkColumnsRow] {
+    extends RelationStructure[OnlyPkColumnsFields, OnlyPkColumnsRow] {
 
     override lazy val fields: OnlyPkColumnsFields = new OnlyPkColumnsFields {
       override def keyColumn1 = IdField[String, OnlyPkColumnsRow](_path, "key_column_1", None, None, x => x.keyColumn1, (row, value) => row.copy(keyColumn1 = value))

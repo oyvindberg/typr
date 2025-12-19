@@ -6,17 +6,16 @@
 package testdb.promotions
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait PromotionsRepo {
   def delete: DeleteBuilder[PromotionsFields, PromotionsRow]
 
-  def deleteById(promotionId: PromotionsId)(using c: Connection): java.lang.Boolean
+  def deleteById(promotionId: PromotionsId)(using c: Connection): Boolean
 
-  def deleteByIds(promotionIds: Array[PromotionsId])(using c: Connection): Integer
+  def deleteByIds(promotionIds: Array[PromotionsId])(using c: Connection): Int
 
   def insert(unsaved: PromotionsRow)(using c: Connection): PromotionsRow
 
@@ -24,21 +23,21 @@ trait PromotionsRepo {
 
   def select: SelectBuilder[PromotionsFields, PromotionsRow]
 
-  def selectAll(using c: Connection): java.util.List[PromotionsRow]
+  def selectAll(using c: Connection): List[PromotionsRow]
 
-  def selectById(promotionId: PromotionsId)(using c: Connection): Optional[PromotionsRow]
+  def selectById(promotionId: PromotionsId)(using c: Connection): Option[PromotionsRow]
 
-  def selectByIds(promotionIds: Array[PromotionsId])(using c: Connection): java.util.List[PromotionsRow]
+  def selectByIds(promotionIds: Array[PromotionsId])(using c: Connection): List[PromotionsRow]
 
-  def selectByIdsTracked(promotionIds: Array[PromotionsId])(using c: Connection): java.util.Map[PromotionsId, PromotionsRow]
+  def selectByIdsTracked(promotionIds: Array[PromotionsId])(using c: Connection): Map[PromotionsId, PromotionsRow]
 
-  def selectByUniqueCode(code: String)(using c: Connection): Optional[PromotionsRow]
+  def selectByUniqueCode(code: String)(using c: Connection): Option[PromotionsRow]
 
   def update: UpdateBuilder[PromotionsFields, PromotionsRow]
 
-  def update(row: PromotionsRow)(using c: Connection): java.lang.Boolean
+  def update(row: PromotionsRow)(using c: Connection): Boolean
 
   def upsert(unsaved: PromotionsRow)(using c: Connection): PromotionsRow
 
-  def upsertBatch(unsaved: java.util.Iterator[PromotionsRow])(using c: Connection): java.util.List[PromotionsRow]
+  def upsertBatch(unsaved: Iterator[PromotionsRow])(using c: Connection): List[PromotionsRow]
 }

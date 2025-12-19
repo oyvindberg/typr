@@ -5,14 +5,14 @@
  */
 package adventureworks.sa.s
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
-import java.util.Optional
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.data.Xml
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: sa.s */
 data class SViewRow(
@@ -23,15 +23,15 @@ data class SViewRow(
   /** Points to [adventureworks.sales.store.StoreRow.name] */
   val name: Name,
   /** Points to [adventureworks.sales.store.StoreRow.salespersonid] */
-  val salespersonid: Optional<BusinessentityId>,
+  val salespersonid: BusinessentityId,
   /** Points to [adventureworks.sales.store.StoreRow.demographics] */
-  val demographics: Optional<TypoXml>,
+  val demographics: Xml,
   /** Points to [adventureworks.sales.store.StoreRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.sales.store.StoreRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, Name.pgType, BusinessentityId.pgType.opt(), TypoXml.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> SViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.name, row.salespersonid, row.demographics, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, Name.pgType, BusinessentityId.pgType, PgTypes.xml, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> SViewRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.name, row.salespersonid, row.demographics, row.rowguid, row.modifieddate) })
   }
 }

@@ -3,7 +3,6 @@ package testapi.api
 import com.fasterxml.jackson.databind.JsonNode
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import java.lang.IllegalStateException
-import java.util.Optional
 import kotlin.collections.List
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -17,7 +16,7 @@ import testapi.model.PetId
 
 interface PetsApiServer : PetsApi {
   /** Create a pet */
-  override fun createPet(body: PetCreate): Response201400<Pet, Error>
+  abstract override fun createPet(body: PetCreate): Response201400<Pet, Error>
 
   /** Endpoint wrapper for createPet - handles response status codes */
   @PostMapping(value = [""], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -31,13 +30,13 @@ interface PetsApiServer : PetsApi {
 
   /** Delete a pet */
   @DeleteMapping(value = ["/{petId}"])
-  override fun deletePet(
+  abstract override fun deletePet(
     /** The pet ID */
     petId: PetId
   ): Unit
 
   /** Get a pet by ID */
-  override fun getPet(
+  abstract override fun getPet(
     /** The pet ID */
     petId: PetId
   ): Response200404<Pet, Error>
@@ -55,23 +54,23 @@ interface PetsApiServer : PetsApi {
 
   /** Get pet photo */
   @GetMapping(value = ["/{petId}/photo"], produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
-  override fun getPetPhoto(
+  abstract override fun getPetPhoto(
     /** The pet ID */
     petId: PetId
   ): Unit
 
   /** List all pets */
   @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
-  override fun listPets(
+  abstract override fun listPets(
     /** Maximum number of pets to return */
-    limit: Optional<Integer>,
+    limit: Int?,
     /** Filter by status */
-    status: Optional<String>
+    status: String?
   ): List<Pet>
 
   /** Upload a pet photo */
   @PostMapping(value = ["/{petId}/photo"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-  override fun uploadPetPhoto(
+  abstract override fun uploadPetPhoto(
     /** The pet ID */
     petId: PetId,
     /** Optional caption for the photo */

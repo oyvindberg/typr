@@ -6,19 +6,19 @@
 package testdb.promotions
 
 import java.time.LocalDateTime
-import java.util.Optional
 import typo.data.maria.MariaSet
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait PromotionsFields extends FieldsExpr[PromotionsRow] {
+trait PromotionsFields extends FieldsExpr0[PromotionsRow] {
   def promotionId: IdField[PromotionsId, PromotionsRow]
 
   def code: Field[String, PromotionsRow]
@@ -29,15 +29,15 @@ trait PromotionsFields extends FieldsExpr[PromotionsRow] {
 
   def discountType: Field[String, PromotionsRow]
 
-  def discountValue: Field[java.math.BigDecimal, PromotionsRow]
+  def discountValue: Field[BigDecimal, PromotionsRow]
 
-  def minOrderAmount: OptField[java.math.BigDecimal, PromotionsRow]
+  def minOrderAmount: OptField[BigDecimal, PromotionsRow]
 
-  def maxUses: OptField[java.lang.Long, PromotionsRow]
+  def maxUses: OptField[Long, PromotionsRow]
 
-  def usesCount: Field[java.lang.Long, PromotionsRow]
+  def usesCount: Field[Long, PromotionsRow]
 
-  def maxUsesPerCustomer: OptField[java.lang.Short, PromotionsRow]
+  def maxUsesPerCustomer: OptField[Short, PromotionsRow]
 
   def applicableTo: OptField[MariaSet, PromotionsRow]
 
@@ -47,25 +47,25 @@ trait PromotionsFields extends FieldsExpr[PromotionsRow] {
 
   def validTo: Field[LocalDateTime, PromotionsRow]
 
-  def isActive: Field[java.lang.Boolean, PromotionsRow]
+  def isActive: Field[Boolean, PromotionsRow]
 
   def createdAt: Field[LocalDateTime, PromotionsRow]
 
   override def columns: java.util.List[FieldLike[?, PromotionsRow]]
 
-  override def rowParser: RowParser[PromotionsRow] = PromotionsRow._rowParser
+  override def rowParser: RowParser[PromotionsRow] = PromotionsRow._rowParser.underlying
 }
 
 object PromotionsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends PromotionsFields with Relation[PromotionsFields, PromotionsRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends PromotionsFields with RelationStructure[PromotionsFields, PromotionsRow] {
 
     override def promotionId: IdField[PromotionsId, PromotionsRow] = {
       new IdField[PromotionsId, PromotionsRow](
         _path,
         "promotion_id",
         _.promotionId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(promotionId = value),
         PromotionsId.pgType
       )
@@ -76,8 +76,8 @@ object PromotionsFields {
         _path,
         "code",
         _.code,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(code = value),
         MariaTypes.varchar
       )
@@ -88,8 +88,8 @@ object PromotionsFields {
         _path,
         "name",
         _.name,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(name = value),
         MariaTypes.varchar
       )
@@ -100,8 +100,8 @@ object PromotionsFields {
         _path,
         "description",
         _.description,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(description = value),
         MariaTypes.text
       )
@@ -112,70 +112,70 @@ object PromotionsFields {
         _path,
         "discount_type",
         _.discountType,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(discountType = value),
         MariaTypes.text
       )
     }
 
-    override def discountValue: Field[java.math.BigDecimal, PromotionsRow] = {
-      new Field[java.math.BigDecimal, PromotionsRow](
+    override def discountValue: Field[BigDecimal, PromotionsRow] = {
+      new Field[BigDecimal, PromotionsRow](
         _path,
         "discount_value",
         _.discountValue,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(discountValue = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def minOrderAmount: OptField[java.math.BigDecimal, PromotionsRow] = {
-      new OptField[java.math.BigDecimal, PromotionsRow](
+    override def minOrderAmount: OptField[BigDecimal, PromotionsRow] = {
+      new OptField[BigDecimal, PromotionsRow](
         _path,
         "min_order_amount",
         _.minOrderAmount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(minOrderAmount = value),
-        MariaTypes.decimal
+        ScalaDbTypes.MariaTypes.numeric
       )
     }
 
-    override def maxUses: OptField[java.lang.Long, PromotionsRow] = {
-      new OptField[java.lang.Long, PromotionsRow](
+    override def maxUses: OptField[Long, PromotionsRow] = {
+      new OptField[Long, PromotionsRow](
         _path,
         "max_uses",
         _.maxUses,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(maxUses = value),
-        MariaTypes.intUnsigned
+        ScalaDbTypes.MariaTypes.intUnsigned
       )
     }
 
-    override def usesCount: Field[java.lang.Long, PromotionsRow] = {
-      new Field[java.lang.Long, PromotionsRow](
+    override def usesCount: Field[Long, PromotionsRow] = {
+      new Field[Long, PromotionsRow](
         _path,
         "uses_count",
         _.usesCount,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(usesCount = value),
-        MariaTypes.intUnsigned
+        ScalaDbTypes.MariaTypes.intUnsigned
       )
     }
 
-    override def maxUsesPerCustomer: OptField[java.lang.Short, PromotionsRow] = {
-      new OptField[java.lang.Short, PromotionsRow](
+    override def maxUsesPerCustomer: OptField[Short, PromotionsRow] = {
+      new OptField[Short, PromotionsRow](
         _path,
         "max_uses_per_customer",
         _.maxUsesPerCustomer,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(maxUsesPerCustomer = value),
-        MariaTypes.tinyintUnsigned
+        ScalaDbTypes.MariaTypes.tinyintUnsigned
       )
     }
 
@@ -184,8 +184,8 @@ object PromotionsFields {
         _path,
         "applicable_to",
         _.applicableTo,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(applicableTo = value),
         MariaTypes.set
       )
@@ -196,8 +196,8 @@ object PromotionsFields {
         _path,
         "rules_json",
         _.rulesJson,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(rulesJson = value),
         MariaTypes.longtext
       )
@@ -208,8 +208,8 @@ object PromotionsFields {
         _path,
         "valid_from",
         _.validFrom,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(validFrom = value),
         MariaTypes.datetime
       )
@@ -220,22 +220,22 @@ object PromotionsFields {
         _path,
         "valid_to",
         _.validTo,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(validTo = value),
         MariaTypes.datetime
       )
     }
 
-    override def isActive: Field[java.lang.Boolean, PromotionsRow] = {
-      new Field[java.lang.Boolean, PromotionsRow](
+    override def isActive: Field[Boolean, PromotionsRow] = {
+      new Field[Boolean, PromotionsRow](
         _path,
         "is_active",
         _.isActive,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isActive = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
@@ -244,17 +244,17 @@ object PromotionsFields {
         _path,
         "created_at",
         _.createdAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(createdAt = value),
         MariaTypes.datetime
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, PromotionsRow]] = java.util.List.of(this.promotionId, this.code, this.name, this.description, this.discountType, this.discountValue, this.minOrderAmount, this.maxUses, this.usesCount, this.maxUsesPerCustomer, this.applicableTo, this.rulesJson, this.validFrom, this.validTo, this.isActive, this.createdAt)
+    override def columns: java.util.List[FieldLike[?, PromotionsRow]] = java.util.List.of(this.promotionId.underlying, this.code.underlying, this.name.underlying, this.description.underlying, this.discountType.underlying, this.discountValue.underlying, this.minOrderAmount.underlying, this.maxUses.underlying, this.usesCount.underlying, this.maxUsesPerCustomer.underlying, this.applicableTo.underlying, this.rulesJson.underlying, this.validFrom.underlying, this.validTo.underlying, this.isActive.underlying, this.createdAt.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[PromotionsFields, PromotionsRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PromotionsFields, PromotionsRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

@@ -5,13 +5,14 @@
  */
 package adventureworks.pr.th
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.production.transactionhistory.TransactionhistoryId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.th */
 data class ThViewRow(
@@ -26,17 +27,17 @@ data class ThViewRow(
   /** Points to [adventureworks.production.transactionhistory.TransactionhistoryRow.referenceorderlineid] */
   val referenceorderlineid: Int,
   /** Points to [adventureworks.production.transactionhistory.TransactionhistoryRow.transactiondate] */
-  val transactiondate: TypoLocalDateTime,
+  val transactiondate: LocalDateTime,
   /** Points to [adventureworks.production.transactionhistory.TransactionhistoryRow.transactiontype] */
-  val transactiontype: /* bpchar, max 1 chars */ String,
+  val transactiontype: String,
   /** Points to [adventureworks.production.transactionhistory.TransactionhistoryRow.quantity] */
   val quantity: Int,
   /** Points to [adventureworks.production.transactionhistory.TransactionhistoryRow.actualcost] */
   val actualcost: BigDecimal,
   /** Points to [adventureworks.production.transactionhistory.TransactionhistoryRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<ThViewRow> = RowParsers.of(TransactionhistoryId.pgType, TransactionhistoryId.pgType, ProductId.pgType, PgTypes.int4, PgTypes.int4, TypoLocalDateTime.pgType, PgTypes.bpchar, PgTypes.int4, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> ThViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.id, row.transactionid, row.productid, row.referenceorderid, row.referenceorderlineid, row.transactiondate, row.transactiontype, row.quantity, row.actualcost, row.modifieddate) })
+    val _rowParser: RowParser<ThViewRow> = RowParsers.of(TransactionhistoryId.pgType, TransactionhistoryId.pgType, ProductId.pgType, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, PgTypes.timestamp, PgTypes.bpchar, KotlinDbTypes.PgTypes.int4, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> ThViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.id, row.transactionid, row.productid, row.referenceorderid, row.referenceorderlineid, row.transactiondate, row.transactiontype, row.quantity, row.actualcost, row.modifieddate) })
   }
 }

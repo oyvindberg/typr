@@ -6,19 +6,18 @@
 package testdb.inventory
 
 import java.sql.Connection
-import java.util.Optional
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait InventoryRepo {
   def delete: DeleteBuilder[InventoryFields, InventoryRow]
 
-  def deleteById(inventoryId: InventoryId)(using c: Connection): java.lang.Boolean
+  def deleteById(inventoryId: InventoryId)(using c: Connection): Boolean
 
-  def deleteByIds(inventoryIds: Array[InventoryId])(using c: Connection): Integer
+  def deleteByIds(inventoryIds: Array[InventoryId])(using c: Connection): Int
 
   def insert(unsaved: InventoryRow)(using c: Connection): InventoryRow
 
@@ -26,24 +25,24 @@ trait InventoryRepo {
 
   def select: SelectBuilder[InventoryFields, InventoryRow]
 
-  def selectAll(using c: Connection): java.util.List[InventoryRow]
+  def selectAll(using c: Connection): List[InventoryRow]
 
-  def selectById(inventoryId: InventoryId)(using c: Connection): Optional[InventoryRow]
+  def selectById(inventoryId: InventoryId)(using c: Connection): Option[InventoryRow]
 
-  def selectByIds(inventoryIds: Array[InventoryId])(using c: Connection): java.util.List[InventoryRow]
+  def selectByIds(inventoryIds: Array[InventoryId])(using c: Connection): List[InventoryRow]
 
-  def selectByIdsTracked(inventoryIds: Array[InventoryId])(using c: Connection): java.util.Map[InventoryId, InventoryRow]
+  def selectByIdsTracked(inventoryIds: Array[InventoryId])(using c: Connection): Map[InventoryId, InventoryRow]
 
   def selectByUniqueProductIdAndWarehouseId(
     productId: ProductsId,
     warehouseId: WarehousesId
-  )(using c: Connection): Optional[InventoryRow]
+  )(using c: Connection): Option[InventoryRow]
 
   def update: UpdateBuilder[InventoryFields, InventoryRow]
 
-  def update(row: InventoryRow)(using c: Connection): java.lang.Boolean
+  def update(row: InventoryRow)(using c: Connection): Boolean
 
   def upsert(unsaved: InventoryRow)(using c: Connection): InventoryRow
 
-  def upsertBatch(unsaved: java.util.Iterator[InventoryRow])(using c: Connection): java.util.List[InventoryRow]
+  def upsertBatch(unsaved: Iterator[InventoryRow])(using c: Connection): List[InventoryRow]
 }

@@ -7,10 +7,10 @@ package adventureworks.sales.vindividualcustomer
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VindividualcustomerViewRepo {
-  fun select(): SelectBuilder<VindividualcustomerViewFields, VindividualcustomerViewRow>
+  abstract fun select(): SelectBuilder<VindividualcustomerViewFields, VindividualcustomerViewRow>
 
-  fun selectAll(c: Connection): List<VindividualcustomerViewRow>
+  abstract fun selectAll(c: Connection): List<VindividualcustomerViewRow>
 }

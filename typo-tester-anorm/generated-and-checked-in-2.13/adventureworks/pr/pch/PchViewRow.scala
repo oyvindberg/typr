@@ -28,7 +28,7 @@ case class PchViewRow(
   /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.standardcost]] */
   standardcost: BigDecimal,
   /** Points to [[adventureworks.production.productcosthistory.ProductcosthistoryRow.modifieddate]] */
@@ -43,7 +43,7 @@ object PchViewRow {
             id = json.\("id").as(ProductId.reads),
             productid = json.\("productid").as(ProductId.reads),
             startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-            enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            enddate = json.\("enddate").as(TypoLocalDateTime.reads),
             standardcost = json.\("standardcost").as(Reads.bigDecReads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
@@ -59,7 +59,7 @@ object PchViewRow {
           id = row(idx + 0)(ProductId.column),
           productid = row(idx + 1)(ProductId.column),
           startdate = row(idx + 2)(TypoLocalDateTime.column),
-          enddate = row(idx + 3)(Column.columnToOption(TypoLocalDateTime.column)),
+          enddate = row(idx + 3)(TypoLocalDateTime.column),
           standardcost = row(idx + 4)(Column.columnToScalaBigDecimal),
           modifieddate = row(idx + 5)(TypoLocalDateTime.column)
         )
@@ -73,7 +73,7 @@ object PchViewRow {
         "id" -> ProductId.writes.writes(o.id),
         "productid" -> ProductId.writes.writes(o.productid),
         "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-        "enddate" -> Writes.OptionWrites(TypoLocalDateTime.writes).writes(o.enddate),
+        "enddate" -> TypoLocalDateTime.writes.writes(o.enddate),
         "standardcost" -> Writes.BigDecimalWrites.writes(o.standardcost),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))

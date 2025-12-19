@@ -6,9 +6,9 @@
 package testdb.customer_status
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
 import typo.runtime.MariaType
 import typo.runtime.MariaTypes
+import typo.scaladsl.Bijection
 
 /** Type for the primary key of table `customer_status` */
 case class CustomerStatusId(@JsonValue value: String) extends scala.AnyVal
@@ -16,5 +16,5 @@ case class CustomerStatusId(@JsonValue value: String) extends scala.AnyVal
 object CustomerStatusId {
   given bijection: Bijection[CustomerStatusId, String] = Bijection.apply[CustomerStatusId, String](_.value)(CustomerStatusId.apply)
 
-  given pgType: MariaType[CustomerStatusId] = MariaTypes.text.bimap(CustomerStatusId.apply, _.value)
+  given pgType: MariaType[CustomerStatusId] = MariaTypes.varchar.bimap(CustomerStatusId.apply, _.value)
 }

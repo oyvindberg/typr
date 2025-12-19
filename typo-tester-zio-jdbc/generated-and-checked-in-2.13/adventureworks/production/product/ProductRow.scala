@@ -34,7 +34,7 @@ case class ProductRow(
   /** Name of the product. */
   name: Name,
   /** Unique product identification number. */
-  productnumber: /* max 25 chars */ String,
+  productnumber: String,
   /** 0 = Product is purchased, 1 = Product is manufactured in-house.
    * Default: true
    */

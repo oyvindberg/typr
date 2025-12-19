@@ -11,34 +11,33 @@ import adventureworks.customtypes.TypoXml
 import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PmViewFields {
   def id: Field[ProductmodelId, PmViewRow]
   def productmodelid: Field[ProductmodelId, PmViewRow]
   def name: Field[Name, PmViewRow]
-  def catalogdescription: OptField[TypoXml, PmViewRow]
-  def instructions: OptField[TypoXml, PmViewRow]
+  def catalogdescription: Field[TypoXml, PmViewRow]
+  def instructions: Field[TypoXml, PmViewRow]
   def rowguid: Field[TypoUUID, PmViewRow]
   def modifieddate: Field[TypoLocalDateTime, PmViewRow]
 }
 
 object PmViewFields {
-  lazy val structure: Relation[PmViewFields, PmViewRow] =
+  lazy val structure: RelationStructure[PmViewFields, PmViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PmViewFields, PmViewRow] {
+    extends RelationStructure[PmViewFields, PmViewRow] {
 
     override lazy val fields: PmViewFields = new PmViewFields {
       override def id = Field[ProductmodelId, PmViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def productmodelid = Field[ProductmodelId, PmViewRow](_path, "productmodelid", None, None, x => x.productmodelid, (row, value) => row.copy(productmodelid = value))
       override def name = Field[Name, PmViewRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
-      override def catalogdescription = OptField[TypoXml, PmViewRow](_path, "catalogdescription", None, None, x => x.catalogdescription, (row, value) => row.copy(catalogdescription = value))
-      override def instructions = OptField[TypoXml, PmViewRow](_path, "instructions", None, None, x => x.instructions, (row, value) => row.copy(instructions = value))
+      override def catalogdescription = Field[TypoXml, PmViewRow](_path, "catalogdescription", None, None, x => x.catalogdescription, (row, value) => row.copy(catalogdescription = value))
+      override def instructions = Field[TypoXml, PmViewRow](_path, "instructions", None, None, x => x.instructions, (row, value) => row.copy(instructions = value))
       override def rowguid = Field[TypoUUID, PmViewRow](_path, "rowguid", None, None, x => x.rowguid, (row, value) => row.copy(rowguid = value))
       override def modifieddate = Field[TypoLocalDateTime, PmViewRow](_path, "modifieddate", Some("text"), None, x => x.modifieddate, (row, value) => row.copy(modifieddate = value))
     }

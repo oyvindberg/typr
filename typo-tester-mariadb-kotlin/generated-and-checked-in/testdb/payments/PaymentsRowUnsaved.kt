@@ -8,12 +8,13 @@ package testdb.payments
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.orders.OrdersId
 import testdb.payment_methods.PaymentMethodsId
 import typo.data.maria.Inet6
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -32,7 +33,7 @@ data class PaymentsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("transaction_id") val transactionId: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("transaction_id") val transactionId: Defaulted<String?> = UseDefault(),
   /** Default: 'USD'
 
     */
@@ -44,15 +45,15 @@ data class PaymentsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("processor_response") val processorResponse: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("processor_response") val processorResponse: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("error_message") val errorMessage: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("error_message") val errorMessage: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("ip_address") val ipAddress: Defaulted<Optional<Inet6>> = UseDefault(),
+  @JsonProperty("ip_address") val ipAddress: Defaulted<Inet6?> = UseDefault(),
   /** Default: current_timestamp(6)
 
     */
@@ -60,17 +61,17 @@ data class PaymentsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("processed_at") val processedAt: Defaulted<Optional<LocalDateTime>> = UseDefault()
+  @JsonProperty("processed_at") val processedAt: Defaulted<LocalDateTime?> = UseDefault()
 ) {
   fun toRow(
-    transactionIdDefault: () -> Optional<String>,
+    transactionIdDefault: () -> String?,
     currencyCodeDefault: () -> String,
     statusDefault: () -> String,
-    processorResponseDefault: () -> Optional<String>,
-    errorMessageDefault: () -> Optional<String>,
-    ipAddressDefault: () -> Optional<Inet6>,
+    processorResponseDefault: () -> String?,
+    errorMessageDefault: () -> String?,
+    ipAddressDefault: () -> Inet6?,
     createdAtDefault: () -> LocalDateTime,
-    processedAtDefault: () -> Optional<LocalDateTime>,
+    processedAtDefault: () -> LocalDateTime?,
     paymentIdDefault: () -> PaymentsId
   ): PaymentsRow = PaymentsRow(paymentId = paymentIdDefault(), orderId = orderId, methodId = methodId, transactionId = transactionId.getOrElse(transactionIdDefault), amount = amount, currencyCode = currencyCode.getOrElse(currencyCodeDefault), status = status.getOrElse(statusDefault), processorResponse = processorResponse.getOrElse(processorResponseDefault), errorMessage = errorMessage.getOrElse(errorMessageDefault), ipAddress = ipAddress.getOrElse(ipAddressDefault), createdAt = createdAt.getOrElse(createdAtDefault), processedAt = processedAt.getOrElse(processedAtDefault))
 
@@ -80,22 +81,22 @@ data class PaymentsRowUnsaved(
       sb.append(MariaText.DELIMETER)
       PaymentMethodsId.pgType.mariaText().unsafeEncode(row.methodId, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.amount, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.amount, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.transactionId, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.transactionId, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.char_.mariaText()).unsafeEncode(row.currencyCode, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.text.mariaText()).unsafeEncode(row.status, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.processorResponse, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.processorResponse, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.errorMessage, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.errorMessage, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.inet6.opt().mariaText()).unsafeEncode(row.ipAddress, sb)
+      Defaulted.mariaText(MariaTypes.inet6.nullable().mariaText()).unsafeEncode(row.ipAddress, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.createdAt, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.processedAt, sb) })
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.processedAt, sb) })
   }
 }

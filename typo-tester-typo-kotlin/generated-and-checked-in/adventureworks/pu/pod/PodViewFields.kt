@@ -5,73 +5,74 @@
  */
 package adventureworks.pu.pod
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PodViewFields : FieldsExpr<PodViewRow> {
-  override fun columns(): List<FieldLike<*, PodViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PodViewRow>>
 
-  fun duedate(): Field<TypoLocalDateTime, PodViewRow>
+  abstract fun duedate(): Field<LocalDateTime, PodViewRow>
 
-  fun id(): Field<Int, PodViewRow>
+  abstract fun id(): Field<Int, PodViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PodViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PodViewRow>
 
-  fun orderqty(): Field<TypoShort, PodViewRow>
+  abstract fun orderqty(): Field<Short, PodViewRow>
 
-  fun productid(): Field<ProductId, PodViewRow>
+  abstract fun productid(): Field<ProductId, PodViewRow>
 
-  fun purchaseorderdetailid(): Field<Int, PodViewRow>
+  abstract fun purchaseorderdetailid(): Field<Int, PodViewRow>
 
-  fun purchaseorderid(): Field<PurchaseorderheaderId, PodViewRow>
+  abstract fun purchaseorderid(): Field<PurchaseorderheaderId, PodViewRow>
 
-  fun receivedqty(): Field<BigDecimal, PodViewRow>
+  abstract fun receivedqty(): Field<BigDecimal, PodViewRow>
 
-  fun rejectedqty(): Field<BigDecimal, PodViewRow>
+  abstract fun rejectedqty(): Field<BigDecimal, PodViewRow>
 
-  override fun rowParser(): RowParser<PodViewRow> = PodViewRow._rowParser
+  override fun rowParser(): RowParser<PodViewRow> = PodViewRow._rowParser.underlying
 
-  fun unitprice(): Field<BigDecimal, PodViewRow>
+  abstract fun unitprice(): Field<BigDecimal, PodViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PodViewFields, Relation<PodViewFields, PodViewRow> {
-      override fun id(): Field<Int, PodViewRow> = Field<Int, PodViewRow>(_path, "id", PodViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, PgTypes.int4)
+    data class Impl(val _path: List<Path>) : PodViewFields, RelationStructure<PodViewFields, PodViewRow> {
+      override fun id(): Field<Int, PodViewRow> = Field<Int, PodViewRow>(_path, "id", PodViewRow::id, null, null, { row, value -> row.copy(id = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun purchaseorderid(): Field<PurchaseorderheaderId, PodViewRow> = Field<PurchaseorderheaderId, PodViewRow>(_path, "purchaseorderid", PodViewRow::purchaseorderid, Optional.empty(), Optional.empty(), { row, value -> row.copy(purchaseorderid = value) }, PurchaseorderheaderId.pgType)
+      override fun purchaseorderid(): Field<PurchaseorderheaderId, PodViewRow> = Field<PurchaseorderheaderId, PodViewRow>(_path, "purchaseorderid", PodViewRow::purchaseorderid, null, null, { row, value -> row.copy(purchaseorderid = value) }, PurchaseorderheaderId.pgType)
 
-      override fun purchaseorderdetailid(): Field<Int, PodViewRow> = Field<Int, PodViewRow>(_path, "purchaseorderdetailid", PodViewRow::purchaseorderdetailid, Optional.empty(), Optional.empty(), { row, value -> row.copy(purchaseorderdetailid = value) }, PgTypes.int4)
+      override fun purchaseorderdetailid(): Field<Int, PodViewRow> = Field<Int, PodViewRow>(_path, "purchaseorderdetailid", PodViewRow::purchaseorderdetailid, null, null, { row, value -> row.copy(purchaseorderdetailid = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun duedate(): Field<TypoLocalDateTime, PodViewRow> = Field<TypoLocalDateTime, PodViewRow>(_path, "duedate", PodViewRow::duedate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(duedate = value) }, TypoLocalDateTime.pgType)
+      override fun duedate(): Field<LocalDateTime, PodViewRow> = Field<LocalDateTime, PodViewRow>(_path, "duedate", PodViewRow::duedate, null, null, { row, value -> row.copy(duedate = value) }, PgTypes.timestamp)
 
-      override fun orderqty(): Field<TypoShort, PodViewRow> = Field<TypoShort, PodViewRow>(_path, "orderqty", PodViewRow::orderqty, Optional.empty(), Optional.empty(), { row, value -> row.copy(orderqty = value) }, TypoShort.pgType)
+      override fun orderqty(): Field<Short, PodViewRow> = Field<Short, PodViewRow>(_path, "orderqty", PodViewRow::orderqty, null, null, { row, value -> row.copy(orderqty = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun productid(): Field<ProductId, PodViewRow> = Field<ProductId, PodViewRow>(_path, "productid", PodViewRow::productid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+      override fun productid(): Field<ProductId, PodViewRow> = Field<ProductId, PodViewRow>(_path, "productid", PodViewRow::productid, null, null, { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun unitprice(): Field<BigDecimal, PodViewRow> = Field<BigDecimal, PodViewRow>(_path, "unitprice", PodViewRow::unitprice, Optional.empty(), Optional.empty(), { row, value -> row.copy(unitprice = value) }, PgTypes.numeric)
+      override fun unitprice(): Field<BigDecimal, PodViewRow> = Field<BigDecimal, PodViewRow>(_path, "unitprice", PodViewRow::unitprice, null, null, { row, value -> row.copy(unitprice = value) }, PgTypes.numeric)
 
-      override fun receivedqty(): Field<BigDecimal, PodViewRow> = Field<BigDecimal, PodViewRow>(_path, "receivedqty", PodViewRow::receivedqty, Optional.empty(), Optional.empty(), { row, value -> row.copy(receivedqty = value) }, PgTypes.numeric)
+      override fun receivedqty(): Field<BigDecimal, PodViewRow> = Field<BigDecimal, PodViewRow>(_path, "receivedqty", PodViewRow::receivedqty, null, null, { row, value -> row.copy(receivedqty = value) }, PgTypes.numeric)
 
-      override fun rejectedqty(): Field<BigDecimal, PodViewRow> = Field<BigDecimal, PodViewRow>(_path, "rejectedqty", PodViewRow::rejectedqty, Optional.empty(), Optional.empty(), { row, value -> row.copy(rejectedqty = value) }, PgTypes.numeric)
+      override fun rejectedqty(): Field<BigDecimal, PodViewRow> = Field<BigDecimal, PodViewRow>(_path, "rejectedqty", PodViewRow::rejectedqty, null, null, { row, value -> row.copy(rejectedqty = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PodViewRow> = Field<TypoLocalDateTime, PodViewRow>(_path, "modifieddate", PodViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PodViewRow> = Field<LocalDateTime, PodViewRow>(_path, "modifieddate", PodViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PodViewRow>> = listOf(this.id(), this.purchaseorderid(), this.purchaseorderdetailid(), this.duedate(), this.orderqty(), this.productid(), this.unitprice(), this.receivedqty(), this.rejectedqty(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PodViewFields, PodViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PodViewRow>> = listOf(this.id().underlying, this.purchaseorderid().underlying, this.purchaseorderdetailid().underlying, this.duedate().underlying, this.orderqty().underlying, this.productid().underlying, this.unitprice().underlying, this.receivedqty().underlying, this.rejectedqty().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PodViewFields, PodViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
 import testdb.customer_status.CustomerStatusId
 import testdb.customers.CustomersId
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** SQL file: simple_customer_lookup.sql */
 data class SimpleCustomerLookupSqlRow(
@@ -31,6 +31,6 @@ data class SimpleCustomerLookupSqlRow(
   @JsonProperty("created_at") val createdAt: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SimpleCustomerLookupSqlRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6 -> SimpleCustomerLookupSqlRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.firstName, row.lastName, row.tier, row.status, row.createdAt) })
+    val _rowParser: RowParser<SimpleCustomerLookupSqlRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6 -> SimpleCustomerLookupSqlRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.firstName, row.lastName, row.tier, row.status, row.createdAt) })
   }
 }

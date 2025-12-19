@@ -7,12 +7,13 @@ package testdb.reviews
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.order_items.OrderItemsId
 import testdb.products.ProductsId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -31,27 +32,27 @@ data class ReviewsRowUnsaved(
   /** Default: NULL
     * Points to [testdb.order_items.OrderItemsRow.itemId]
     */
-  @JsonProperty("order_item_id") val orderItemId: Defaulted<Optional<OrderItemsId>> = UseDefault(),
+  @JsonProperty("order_item_id") val orderItemId: Defaulted<OrderItemsId?> = UseDefault(),
   /** Default: NULL
 
     */
-  val title: Defaulted<Optional<String>> = UseDefault(),
+  val title: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  val content: Defaulted<Optional<String>> = UseDefault(),
+  val content: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  val pros: Defaulted<Optional<String>> = UseDefault(),
+  val pros: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  val cons: Defaulted<Optional<String>> = UseDefault(),
+  val cons: Defaulted<String?> = UseDefault(),
   /** Default: NULL
     * Array of image URLs
     */
-  val images: Defaulted<Optional<String>> = UseDefault(),
+  val images: Defaulted<String?> = UseDefault(),
   /** Default: 0
 
     */
@@ -71,11 +72,11 @@ data class ReviewsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("admin_response") val adminResponse: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("admin_response") val adminResponse: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("responded_at") val respondedAt: Defaulted<Optional<LocalDateTime>> = UseDefault(),
+  @JsonProperty("responded_at") val respondedAt: Defaulted<LocalDateTime?> = UseDefault(),
   /** Default: current_timestamp(6)
 
     */
@@ -86,18 +87,18 @@ data class ReviewsRowUnsaved(
   @JsonProperty("updated_at") val updatedAt: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
-    orderItemIdDefault: () -> Optional<OrderItemsId>,
-    titleDefault: () -> Optional<String>,
-    contentDefault: () -> Optional<String>,
-    prosDefault: () -> Optional<String>,
-    consDefault: () -> Optional<String>,
-    imagesDefault: () -> Optional<String>,
+    orderItemIdDefault: () -> OrderItemsId?,
+    titleDefault: () -> String?,
+    contentDefault: () -> String?,
+    prosDefault: () -> String?,
+    consDefault: () -> String?,
+    imagesDefault: () -> String?,
     isVerifiedPurchaseDefault: () -> Boolean,
     isApprovedDefault: () -> Boolean,
     helpfulVotesDefault: () -> Long,
     unhelpfulVotesDefault: () -> Long,
-    adminResponseDefault: () -> Optional<String>,
-    respondedAtDefault: () -> Optional<LocalDateTime>,
+    adminResponseDefault: () -> String?,
+    respondedAtDefault: () -> LocalDateTime?,
     createdAtDefault: () -> LocalDateTime,
     updatedAtDefault: () -> LocalDateTime,
     reviewIdDefault: () -> ReviewsId
@@ -109,31 +110,31 @@ data class ReviewsRowUnsaved(
       sb.append(MariaText.DELIMETER)
       CustomersId.pgType.mariaText().unsafeEncode(row.customerId, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.tinyintUnsigned.mariaText().unsafeEncode(row.rating, sb)
+      KotlinDbTypes.MariaTypes.tinyintUnsigned.mariaText().unsafeEncode(row.rating, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(OrderItemsId.pgType.opt().mariaText()).unsafeEncode(row.orderItemId, sb)
+      Defaulted.mariaText(OrderItemsId.pgType.nullable().mariaText()).unsafeEncode(row.orderItemId, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.title, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.title, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.text.opt().mariaText()).unsafeEncode(row.content, sb)
+      Defaulted.mariaText(MariaTypes.text.nullable().mariaText()).unsafeEncode(row.content, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.pros, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.pros, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.cons, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.cons, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.images, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.images, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isVerifiedPurchase, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isVerifiedPurchase, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.mariaText()).unsafeEncode(row.isApproved, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.mariaText()).unsafeEncode(row.isApproved, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.intUnsigned.mariaText()).unsafeEncode(row.helpfulVotes, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.intUnsigned.mariaText()).unsafeEncode(row.helpfulVotes, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.intUnsigned.mariaText()).unsafeEncode(row.unhelpfulVotes, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.intUnsigned.mariaText()).unsafeEncode(row.unhelpfulVotes, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.text.opt().mariaText()).unsafeEncode(row.adminResponse, sb)
+      Defaulted.mariaText(MariaTypes.text.nullable().mariaText()).unsafeEncode(row.adminResponse, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.respondedAt, sb)
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.respondedAt, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.createdAt, sb)
       sb.append(MariaText.DELIMETER)

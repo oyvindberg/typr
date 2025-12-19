@@ -5,13 +5,12 @@
  */
 package adventureworks.pr.pch
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.pch */
 data class PchViewRow(
@@ -20,15 +19,15 @@ data class PchViewRow(
   /** Points to [adventureworks.production.productcosthistory.ProductcosthistoryRow.productid] */
   val productid: ProductId,
   /** Points to [adventureworks.production.productcosthistory.ProductcosthistoryRow.startdate] */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Points to [adventureworks.production.productcosthistory.ProductcosthistoryRow.enddate] */
-  val enddate: Optional<TypoLocalDateTime>,
+  val enddate: LocalDateTime,
   /** Points to [adventureworks.production.productcosthistory.ProductcosthistoryRow.standardcost] */
   val standardcost: BigDecimal,
   /** Points to [adventureworks.production.productcosthistory.ProductcosthistoryRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PchViewRow> = RowParsers.of(ProductId.pgType, ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> PchViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.productid, row.startdate, row.enddate, row.standardcost, row.modifieddate) })
+    val _rowParser: RowParser<PchViewRow> = RowParsers.of(ProductId.pgType, ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> PchViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.id, row.productid, row.startdate, row.enddate, row.standardcost, row.modifieddate) })
   }
 }

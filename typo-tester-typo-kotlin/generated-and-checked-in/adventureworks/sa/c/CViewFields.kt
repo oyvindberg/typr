@@ -5,61 +5,62 @@
  */
 package adventureworks.sa.c
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.customer.CustomerId
 import adventureworks.sales.salesterritory.SalesterritoryId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface CViewFields : FieldsExpr<CViewRow> {
-  override fun columns(): List<FieldLike<*, CViewRow>>
+  abstract override fun columns(): List<FieldLike<*, CViewRow>>
 
-  fun customerid(): Field<CustomerId, CViewRow>
+  abstract fun customerid(): Field<CustomerId, CViewRow>
 
-  fun id(): Field<CustomerId, CViewRow>
+  abstract fun id(): Field<CustomerId, CViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, CViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, CViewRow>
 
-  fun personid(): OptField<BusinessentityId, CViewRow>
+  abstract fun personid(): Field<BusinessentityId, CViewRow>
 
-  override fun rowParser(): RowParser<CViewRow> = CViewRow._rowParser
+  override fun rowParser(): RowParser<CViewRow> = CViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, CViewRow>
+  abstract fun rowguid(): Field<UUID, CViewRow>
 
-  fun storeid(): OptField<BusinessentityId, CViewRow>
+  abstract fun storeid(): Field<BusinessentityId, CViewRow>
 
-  fun territoryid(): OptField<SalesterritoryId, CViewRow>
+  abstract fun territoryid(): Field<SalesterritoryId, CViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : CViewFields, Relation<CViewFields, CViewRow> {
-      override fun id(): Field<CustomerId, CViewRow> = Field<CustomerId, CViewRow>(_path, "id", CViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, CustomerId.pgType)
+    data class Impl(val _path: List<Path>) : CViewFields, RelationStructure<CViewFields, CViewRow> {
+      override fun id(): Field<CustomerId, CViewRow> = Field<CustomerId, CViewRow>(_path, "id", CViewRow::id, null, null, { row, value -> row.copy(id = value) }, CustomerId.pgType)
 
-      override fun customerid(): Field<CustomerId, CViewRow> = Field<CustomerId, CViewRow>(_path, "customerid", CViewRow::customerid, Optional.empty(), Optional.empty(), { row, value -> row.copy(customerid = value) }, CustomerId.pgType)
+      override fun customerid(): Field<CustomerId, CViewRow> = Field<CustomerId, CViewRow>(_path, "customerid", CViewRow::customerid, null, null, { row, value -> row.copy(customerid = value) }, CustomerId.pgType)
 
-      override fun personid(): OptField<BusinessentityId, CViewRow> = OptField<BusinessentityId, CViewRow>(_path, "personid", CViewRow::personid, Optional.empty(), Optional.empty(), { row, value -> row.copy(personid = value) }, BusinessentityId.pgType)
+      override fun personid(): Field<BusinessentityId, CViewRow> = Field<BusinessentityId, CViewRow>(_path, "personid", CViewRow::personid, null, null, { row, value -> row.copy(personid = value) }, BusinessentityId.pgType)
 
-      override fun storeid(): OptField<BusinessentityId, CViewRow> = OptField<BusinessentityId, CViewRow>(_path, "storeid", CViewRow::storeid, Optional.empty(), Optional.empty(), { row, value -> row.copy(storeid = value) }, BusinessentityId.pgType)
+      override fun storeid(): Field<BusinessentityId, CViewRow> = Field<BusinessentityId, CViewRow>(_path, "storeid", CViewRow::storeid, null, null, { row, value -> row.copy(storeid = value) }, BusinessentityId.pgType)
 
-      override fun territoryid(): OptField<SalesterritoryId, CViewRow> = OptField<SalesterritoryId, CViewRow>(_path, "territoryid", CViewRow::territoryid, Optional.empty(), Optional.empty(), { row, value -> row.copy(territoryid = value) }, SalesterritoryId.pgType)
+      override fun territoryid(): Field<SalesterritoryId, CViewRow> = Field<SalesterritoryId, CViewRow>(_path, "territoryid", CViewRow::territoryid, null, null, { row, value -> row.copy(territoryid = value) }, SalesterritoryId.pgType)
 
-      override fun rowguid(): Field<TypoUUID, CViewRow> = Field<TypoUUID, CViewRow>(_path, "rowguid", CViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, CViewRow> = Field<UUID, CViewRow>(_path, "rowguid", CViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, CViewRow> = Field<TypoLocalDateTime, CViewRow>(_path, "modifieddate", CViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, CViewRow> = Field<LocalDateTime, CViewRow>(_path, "modifieddate", CViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, CViewRow>> = listOf(this.id(), this.customerid(), this.personid(), this.storeid(), this.territoryid(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<CViewFields, CViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, CViewRow>> = listOf(this.id().underlying, this.customerid().underlying, this.personid().underlying, this.storeid().underlying, this.territoryid().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<CViewFields, CViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

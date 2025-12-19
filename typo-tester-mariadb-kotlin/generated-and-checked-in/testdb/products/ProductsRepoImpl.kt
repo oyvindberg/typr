@@ -7,20 +7,19 @@ package testdb.products
 
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.brands.BrandsId
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
 
 class ProductsRepoImpl() : ProductsRepo {
   override fun delete(): DeleteBuilder<ProductsFields, ProductsRow> = DeleteBuilder.of("`products`", ProductsFields.structure, Dialect.MARIADB)
@@ -28,258 +27,124 @@ class ProductsRepoImpl() : ProductsRepo {
   override fun deleteById(
     productId: ProductsId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("delete from `products` where `product_id` = "),
-    ProductsId.pgType.encode(productId),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from `products` where `product_id` = "), Fragment.encode(ProductsId.pgType, productId), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     productIds: Array<ProductsId>,
     c: Connection
   ): Int {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in productIds) { fragments.add(ProductsId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in productIds) { fragments.add(Fragment.encode(ProductsId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("delete from `products` where `product_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: ProductsRow,
     c: Connection
-  ): ProductsRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into `products`(`sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)
-      values (""".trimMargin()),
-    MariaTypes.text.encode(unsaved.sku),
-    typo.runtime.Fragment.lit(", "),
-    BrandsId.pgType.opt().encode(unsaved.brandId),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.shortDescription),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.fullDescription),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.encode(unsaved.basePrice),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.opt().encode(unsaved.costPrice),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.opt().encode(unsaved.weightKg),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.dimensionsJson),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.status),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.taxClass),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.set.opt().encode(unsaved.tags),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.attributes),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.seoMetadata),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.createdAt),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.updatedAt),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.opt().encode(unsaved.publishedAt),
-    typo.runtime.Fragment.lit("""
-      )
-      returning `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
-    """.trimMargin())
-  )
+  ): ProductsRow = Fragment.interpolate(Fragment.lit("insert into `products`(`sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.sku), Fragment.lit(", "), Fragment.encode(BrandsId.pgType.nullable(), unsaved.brandId), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.shortDescription), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.fullDescription), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric, unsaved.basePrice), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), unsaved.costPrice), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), unsaved.weightKg), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.dimensionsJson), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.status), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.taxClass), Fragment.lit(", "), Fragment.encode(MariaTypes.set.nullable(), unsaved.tags), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.attributes), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.seoMetadata), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.nullable(), unsaved.publishedAt), Fragment.lit(")\nreturning `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`\n"))
     .updateReturning(ProductsRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: ProductsRowUnsaved,
     c: Connection
   ): ProductsRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("`sku`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.sku),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar, unsaved.sku), Fragment.lit("")))
     columns.add(Fragment.lit("`name`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit("")))
     columns.add(Fragment.lit("`base_price`"))
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.basePrice),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.numeric, unsaved.basePrice), Fragment.lit("")))
     unsaved.brandId.visit(
       {  },
       { value -> columns.add(Fragment.lit("`brand_id`"))
-      values.add(interpolate(
-        BrandsId.pgType.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(BrandsId.pgType.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.shortDescription.visit(
       {  },
       { value -> columns.add(Fragment.lit("`short_description`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.fullDescription.visit(
       {  },
       { value -> columns.add(Fragment.lit("`full_description`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.longtext.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.costPrice.visit(
       {  },
       { value -> columns.add(Fragment.lit("`cost_price`"))
-      values.add(interpolate(
-        MariaTypes.numeric.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.weightKg.visit(
       {  },
       { value -> columns.add(Fragment.lit("`weight_kg`"))
-      values.add(interpolate(
-        MariaTypes.numeric.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.dimensionsJson.visit(
       {  },
       { value -> columns.add(Fragment.lit("`dimensions_json`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.longtext.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.status.visit(
       {  },
       { value -> columns.add(Fragment.lit("`status`"))
-      values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.text, value), Fragment.lit(""))) }
     );
     unsaved.taxClass.visit(
       {  },
       { value -> columns.add(Fragment.lit("`tax_class`"))
-      values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.text, value), Fragment.lit(""))) }
     );
     unsaved.tags.visit(
       {  },
       { value -> columns.add(Fragment.lit("`tags`"))
-      values.add(interpolate(
-        MariaTypes.set.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.set.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.attributes.visit(
       {  },
       { value -> columns.add(Fragment.lit("`attributes`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.longtext.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.seoMetadata.visit(
       {  },
       { value -> columns.add(Fragment.lit("`seo_metadata`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.longtext.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.createdAt.visit(
       {  },
       { value -> columns.add(Fragment.lit("`created_at`"))
-      values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit(""))) }
     );
     unsaved.updatedAt.visit(
       {  },
       { value -> columns.add(Fragment.lit("`updated_at`"))
-      values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit(""))) }
     );
     unsaved.publishedAt.visit(
       {  },
       { value -> columns.add(Fragment.lit("`published_at`"))
-      values.add(interpolate(
-        MariaTypes.datetime.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.datetime.nullable(), value), Fragment.lit(""))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("insert into `products`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into `products`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`\n"))
     return q.updateReturning(ProductsRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun select(): SelectBuilder<ProductsFields, ProductsRow> = SelectBuilder.of("`products`", ProductsFields.structure, ProductsRow._rowParser, Dialect.MARIADB)
 
-  override fun selectAll(c: Connection): List<ProductsRow> = interpolate(typo.runtime.Fragment.lit("""
-    select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
-    from `products`
-  """.trimMargin())).query(ProductsRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<ProductsRow> = Fragment.interpolate(Fragment.lit("select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`\nfrom `products`\n")).query(ProductsRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     productId: ProductsId,
     c: Connection
-  ): Optional<ProductsRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
-      from `products`
-      where `product_id` = """.trimMargin()),
-    ProductsId.pgType.encode(productId),
-    typo.runtime.Fragment.lit("")
-  ).query(ProductsRow._rowParser.first()).runUnchecked(c)
+  ): ProductsRow? = Fragment.interpolate(Fragment.lit("select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`\nfrom `products`\nwhere `product_id` = "), Fragment.encode(ProductsId.pgType, productId), Fragment.lit("")).query(ProductsRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     productIds: Array<ProductsId>,
     c: Connection
   ): List<ProductsRow> {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in productIds) { fragments.add(ProductsId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in productIds) { fragments.add(Fragment.encode(ProductsId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at` from `products` where `product_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ProductsRow._rowParser.all()).runUnchecked(c)
   }
 
@@ -289,196 +154,35 @@ class ProductsRepoImpl() : ProductsRepo {
   ): Map<ProductsId, ProductsRow> {
     val ret: MutableMap<ProductsId, ProductsRow> = mutableMapOf<ProductsId, ProductsRow>()
     selectByIds(productIds, c).forEach({ row -> ret.put(row.productId, row) })
-    return ret
+    return ret.toMap()
   }
 
   override fun selectByUniqueSku(
     sku: String,
     c: Connection
-  ): Optional<ProductsRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
-      from `products`
-      where `sku` = """.trimMargin()),
-    MariaTypes.text.encode(sku),
-    typo.runtime.Fragment.lit("""
+  ): ProductsRow? = Fragment.interpolate(Fragment.lit("select `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`\nfrom `products`\nwhere `sku` = "), Fragment.encode(MariaTypes.varchar, sku), Fragment.lit("\n")).query(ProductsRow._rowParser.first()).runUnchecked(c)
 
-
-    """.trimMargin())
-  ).query(ProductsRow._rowParser.first()).runUnchecked(c)
-
-  override fun update(): UpdateBuilder<ProductsFields, ProductsRow> = UpdateBuilder.of("`products`", ProductsFields.structure, ProductsRow._rowParser.all(), Dialect.MARIADB)
+  override fun update(): UpdateBuilder<ProductsFields, ProductsRow> = UpdateBuilder.of("`products`", ProductsFields.structure, ProductsRow._rowParser, Dialect.MARIADB)
 
   override fun update(
     row: ProductsRow,
     c: Connection
   ): Boolean {
     val productId: ProductsId = row.productId
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update `products`
-        set `sku` = """.trimMargin()),
-      MariaTypes.text.encode(row.sku),
-      typo.runtime.Fragment.lit("""
-        ,
-        `brand_id` = """.trimMargin()),
-      BrandsId.pgType.opt().encode(row.brandId),
-      typo.runtime.Fragment.lit("""
-        ,
-        `name` = """.trimMargin()),
-      MariaTypes.text.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ,
-        `short_description` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.shortDescription),
-      typo.runtime.Fragment.lit("""
-        ,
-        `full_description` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.fullDescription),
-      typo.runtime.Fragment.lit("""
-        ,
-        `base_price` = """.trimMargin()),
-      MariaTypes.numeric.encode(row.basePrice),
-      typo.runtime.Fragment.lit("""
-        ,
-        `cost_price` = """.trimMargin()),
-      MariaTypes.numeric.opt().encode(row.costPrice),
-      typo.runtime.Fragment.lit("""
-        ,
-        `weight_kg` = """.trimMargin()),
-      MariaTypes.numeric.opt().encode(row.weightKg),
-      typo.runtime.Fragment.lit("""
-        ,
-        `dimensions_json` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.dimensionsJson),
-      typo.runtime.Fragment.lit("""
-        ,
-        `status` = """.trimMargin()),
-      MariaTypes.text.encode(row.status),
-      typo.runtime.Fragment.lit("""
-        ,
-        `tax_class` = """.trimMargin()),
-      MariaTypes.text.encode(row.taxClass),
-      typo.runtime.Fragment.lit("""
-        ,
-        `tags` = """.trimMargin()),
-      MariaTypes.set.opt().encode(row.tags),
-      typo.runtime.Fragment.lit("""
-        ,
-        `attributes` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.attributes),
-      typo.runtime.Fragment.lit("""
-        ,
-        `seo_metadata` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.seoMetadata),
-      typo.runtime.Fragment.lit("""
-        ,
-        `created_at` = """.trimMargin()),
-      MariaTypes.datetime.encode(row.createdAt),
-      typo.runtime.Fragment.lit("""
-        ,
-        `updated_at` = """.trimMargin()),
-      MariaTypes.datetime.encode(row.updatedAt),
-      typo.runtime.Fragment.lit("""
-        ,
-        `published_at` = """.trimMargin()),
-      MariaTypes.datetime.opt().encode(row.publishedAt),
-      typo.runtime.Fragment.lit("""
-  
-        where `product_id` = """.trimMargin()),
-      ProductsId.pgType.encode(productId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update `products`\nset `sku` = "), Fragment.encode(MariaTypes.varchar, row.sku), Fragment.lit(",\n`brand_id` = "), Fragment.encode(BrandsId.pgType.nullable(), row.brandId), Fragment.lit(",\n`name` = "), Fragment.encode(MariaTypes.varchar, row.name), Fragment.lit(",\n`short_description` = "), Fragment.encode(MariaTypes.varchar.nullable(), row.shortDescription), Fragment.lit(",\n`full_description` = "), Fragment.encode(MariaTypes.longtext.nullable(), row.fullDescription), Fragment.lit(",\n`base_price` = "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric, row.basePrice), Fragment.lit(",\n`cost_price` = "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), row.costPrice), Fragment.lit(",\n`weight_kg` = "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), row.weightKg), Fragment.lit(",\n`dimensions_json` = "), Fragment.encode(MariaTypes.longtext.nullable(), row.dimensionsJson), Fragment.lit(",\n`status` = "), Fragment.encode(MariaTypes.text, row.status), Fragment.lit(",\n`tax_class` = "), Fragment.encode(MariaTypes.text, row.taxClass), Fragment.lit(",\n`tags` = "), Fragment.encode(MariaTypes.set.nullable(), row.tags), Fragment.lit(",\n`attributes` = "), Fragment.encode(MariaTypes.longtext.nullable(), row.attributes), Fragment.lit(",\n`seo_metadata` = "), Fragment.encode(MariaTypes.longtext.nullable(), row.seoMetadata), Fragment.lit(",\n`created_at` = "), Fragment.encode(MariaTypes.datetime, row.createdAt), Fragment.lit(",\n`updated_at` = "), Fragment.encode(MariaTypes.datetime, row.updatedAt), Fragment.lit(",\n`published_at` = "), Fragment.encode(MariaTypes.datetime.nullable(), row.publishedAt), Fragment.lit("\nwhere `product_id` = "), Fragment.encode(ProductsId.pgType, productId), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: ProductsRow,
     c: Connection
-  ): ProductsRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      INSERT INTO `products`(`sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)
-      VALUES (""".trimMargin()),
-    MariaTypes.text.encode(unsaved.sku),
-    typo.runtime.Fragment.lit(", "),
-    BrandsId.pgType.opt().encode(unsaved.brandId),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.shortDescription),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.fullDescription),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.encode(unsaved.basePrice),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.opt().encode(unsaved.costPrice),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.opt().encode(unsaved.weightKg),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.dimensionsJson),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.status),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.taxClass),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.set.opt().encode(unsaved.tags),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.attributes),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.seoMetadata),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.createdAt),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.updatedAt),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.opt().encode(unsaved.publishedAt),
-    typo.runtime.Fragment.lit("""
-      )
-      ON DUPLICATE KEY UPDATE `sku` = VALUES(`sku`),
-      `brand_id` = VALUES(`brand_id`),
-      `name` = VALUES(`name`),
-      `short_description` = VALUES(`short_description`),
-      `full_description` = VALUES(`full_description`),
-      `base_price` = VALUES(`base_price`),
-      `cost_price` = VALUES(`cost_price`),
-      `weight_kg` = VALUES(`weight_kg`),
-      `dimensions_json` = VALUES(`dimensions_json`),
-      `status` = VALUES(`status`),
-      `tax_class` = VALUES(`tax_class`),
-      `tags` = VALUES(`tags`),
-      `attributes` = VALUES(`attributes`),
-      `seo_metadata` = VALUES(`seo_metadata`),
-      `created_at` = VALUES(`created_at`),
-      `updated_at` = VALUES(`updated_at`),
-      `published_at` = VALUES(`published_at`)
-      RETURNING `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`""".trimMargin())
-  )
+  ): ProductsRow = Fragment.interpolate(Fragment.lit("INSERT INTO `products`(`sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.sku), Fragment.lit(", "), Fragment.encode(BrandsId.pgType.nullable(), unsaved.brandId), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.shortDescription), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.fullDescription), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric, unsaved.basePrice), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), unsaved.costPrice), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), unsaved.weightKg), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.dimensionsJson), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.status), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.taxClass), Fragment.lit(", "), Fragment.encode(MariaTypes.set.nullable(), unsaved.tags), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.attributes), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.seoMetadata), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.updatedAt), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime.nullable(), unsaved.publishedAt), Fragment.lit(")\nON DUPLICATE KEY UPDATE `sku` = VALUES(`sku`),\n`brand_id` = VALUES(`brand_id`),\n`name` = VALUES(`name`),\n`short_description` = VALUES(`short_description`),\n`full_description` = VALUES(`full_description`),\n`base_price` = VALUES(`base_price`),\n`cost_price` = VALUES(`cost_price`),\n`weight_kg` = VALUES(`weight_kg`),\n`dimensions_json` = VALUES(`dimensions_json`),\n`status` = VALUES(`status`),\n`tax_class` = VALUES(`tax_class`),\n`tags` = VALUES(`tags`),\n`attributes` = VALUES(`attributes`),\n`seo_metadata` = VALUES(`seo_metadata`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`),\n`published_at` = VALUES(`published_at`)\nRETURNING `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`"))
     .updateReturning(ProductsRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductsRow>,
+    unsaved: Iterator<ProductsRow>,
     c: Connection
-  ): List<ProductsRow> = interpolate(typo.runtime.Fragment.lit("""
-                           INSERT INTO `products`(`product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                           ON DUPLICATE KEY UPDATE `sku` = VALUES(`sku`),
-                           `brand_id` = VALUES(`brand_id`),
-                           `name` = VALUES(`name`),
-                           `short_description` = VALUES(`short_description`),
-                           `full_description` = VALUES(`full_description`),
-                           `base_price` = VALUES(`base_price`),
-                           `cost_price` = VALUES(`cost_price`),
-                           `weight_kg` = VALUES(`weight_kg`),
-                           `dimensions_json` = VALUES(`dimensions_json`),
-                           `status` = VALUES(`status`),
-                           `tax_class` = VALUES(`tax_class`),
-                           `tags` = VALUES(`tags`),
-                           `attributes` = VALUES(`attributes`),
-                           `seo_metadata` = VALUES(`seo_metadata`),
-                           `created_at` = VALUES(`created_at`),
-                           `updated_at` = VALUES(`updated_at`),
-                           `published_at` = VALUES(`published_at`)
-                           RETURNING `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`""".trimMargin()))
+  ): List<ProductsRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `products`(`product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `sku` = VALUES(`sku`),\n`brand_id` = VALUES(`brand_id`),\n`name` = VALUES(`name`),\n`short_description` = VALUES(`short_description`),\n`full_description` = VALUES(`full_description`),\n`base_price` = VALUES(`base_price`),\n`cost_price` = VALUES(`cost_price`),\n`weight_kg` = VALUES(`weight_kg`),\n`dimensions_json` = VALUES(`dimensions_json`),\n`status` = VALUES(`status`),\n`tax_class` = VALUES(`tax_class`),\n`tags` = VALUES(`tags`),\n`attributes` = VALUES(`attributes`),\n`seo_metadata` = VALUES(`seo_metadata`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`),\n`published_at` = VALUES(`published_at`)\nRETURNING `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`"))
     .updateReturningEach(ProductsRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 }

@@ -5,17 +5,16 @@
  */
 package testdb.mariatest_unique
 
-import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
 
-trait MariatestUniqueFields extends FieldsExpr[MariatestUniqueRow] {
+trait MariatestUniqueFields extends FieldsExpr0[MariatestUniqueRow] {
   def id: IdField[MariatestUniqueId, MariatestUniqueRow]
 
   def email: Field[String, MariatestUniqueRow]
@@ -26,19 +25,19 @@ trait MariatestUniqueFields extends FieldsExpr[MariatestUniqueRow] {
 
   override def columns: java.util.List[FieldLike[?, MariatestUniqueRow]]
 
-  override def rowParser: RowParser[MariatestUniqueRow] = MariatestUniqueRow._rowParser
+  override def rowParser: RowParser[MariatestUniqueRow] = MariatestUniqueRow._rowParser.underlying
 }
 
 object MariatestUniqueFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends MariatestUniqueFields with Relation[MariatestUniqueFields, MariatestUniqueRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends MariatestUniqueFields with RelationStructure[MariatestUniqueFields, MariatestUniqueRow] {
 
     override def id: IdField[MariatestUniqueId, MariatestUniqueRow] = {
       new IdField[MariatestUniqueId, MariatestUniqueRow](
         _path,
         "id",
         _.id,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(id = value),
         MariatestUniqueId.pgType
       )
@@ -49,8 +48,8 @@ object MariatestUniqueFields {
         _path,
         "email",
         _.email,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(email = value),
         MariaTypes.varchar
       )
@@ -61,8 +60,8 @@ object MariatestUniqueFields {
         _path,
         "code",
         _.code,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(code = value),
         MariaTypes.varchar
       )
@@ -73,17 +72,17 @@ object MariatestUniqueFields {
         _path,
         "category",
         _.category,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(category = value),
         MariaTypes.varchar
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, MariatestUniqueRow]] = java.util.List.of(this.id, this.email, this.code, this.category)
+    override def columns: java.util.List[FieldLike[?, MariatestUniqueRow]] = java.util.List.of(this.id.underlying, this.email.underlying, this.code.underlying, this.category.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[MariatestUniqueFields, MariatestUniqueRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[MariatestUniqueFields, MariatestUniqueRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

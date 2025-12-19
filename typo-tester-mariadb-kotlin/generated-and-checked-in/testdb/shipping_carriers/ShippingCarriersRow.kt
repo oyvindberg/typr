@@ -6,12 +6,13 @@
 package testdb.shipping_carriers
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: shipping_carriers
   * Primary key: carrier_id
@@ -28,11 +29,11 @@ data class ShippingCarriersRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("tracking_url_template") val trackingUrlTemplate: Optional<String>,
+  @JsonProperty("tracking_url_template") val trackingUrlTemplate: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("api_config") val apiConfig: Optional<String>,
+  @JsonProperty("api_config") val apiConfig: String?,
   /** 
     * Default: 1
     */
@@ -41,15 +42,15 @@ data class ShippingCarriersRow(
   fun id(): ShippingCarriersId = carrierId
 
   fun toUnsavedRow(
-    trackingUrlTemplate: Defaulted<Optional<String>>,
-    apiConfig: Defaulted<Optional<String>>,
+    trackingUrlTemplate: Defaulted<String?>,
+    apiConfig: Defaulted<String?>,
     isActive: Defaulted<Boolean>
   ): ShippingCarriersRowUnsaved = ShippingCarriersRowUnsaved(code, name, trackingUrlTemplate, apiConfig, isActive)
 
   companion object {
-    val _rowParser: RowParser<ShippingCarriersRow> = RowParsers.of(ShippingCarriersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.longtext.opt(), MariaTypes.bool, { t0, t1, t2, t3, t4, t5 -> ShippingCarriersRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.carrierId, row.code, row.name, row.trackingUrlTemplate, row.apiConfig, row.isActive) })
+    val _rowParser: RowParser<ShippingCarriersRow> = RowParsers.of(ShippingCarriersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.bool, { t0, t1, t2, t3, t4, t5 -> ShippingCarriersRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.carrierId, row.code, row.name, row.trackingUrlTemplate, row.apiConfig, row.isActive) })
 
     val mariaText: MariaText<ShippingCarriersRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

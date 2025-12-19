@@ -5,11 +5,12 @@
  */
 package adventureworks.pe.be
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pe.be */
 data class BeViewRow(
@@ -18,11 +19,11 @@ data class BeViewRow(
   /** Points to [adventureworks.person.businessentity.BusinessentityRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Points to [adventureworks.person.businessentity.BusinessentityRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.person.businessentity.BusinessentityRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<BeViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> BeViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<BeViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3 -> BeViewRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.rowguid, row.modifieddate) })
   }
 }

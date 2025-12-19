@@ -6,13 +6,13 @@
 package adventureworks.production.location
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.location
   * Product inventory and manufacturing locations.
@@ -36,7 +36,7 @@ data class LocationRow(
     */
   val availability: BigDecimal,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): LocationId = locationid
 
@@ -44,13 +44,13 @@ data class LocationRow(
     locationid: Defaulted<LocationId>,
     costrate: Defaulted<BigDecimal>,
     availability: Defaulted<BigDecimal>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): LocationRowUnsaved = LocationRowUnsaved(name, locationid, costrate, availability, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<LocationRow> = RowParsers.of(LocationId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> LocationRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.locationid, row.name, row.costrate, row.availability, row.modifieddate) })
+    val _rowParser: RowParser<LocationRow> = RowParsers.of(LocationId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> LocationRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.locationid, row.name, row.costrate, row.availability, row.modifieddate) })
 
     val pgText: PgText<LocationRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

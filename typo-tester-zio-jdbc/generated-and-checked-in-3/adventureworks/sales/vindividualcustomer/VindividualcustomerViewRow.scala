@@ -22,39 +22,39 @@ case class VindividualcustomerViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.person.person.PersonRow.title]] */
-  title: Option[/* max 8 chars */ String],
+  title: String,
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: String,
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Option[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Option[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
-  emailaddress: Option[/* max 50 chars */ String],
+  emailaddress: String,
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
   emailpromotion: Int,
   /** Points to [[adventureworks.person.addresstype.AddresstypeRow.name]] */
   addresstype: Name,
   /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
-  addressline1: /* max 60 chars */ String,
+  addressline1: String,
   /** Points to [[adventureworks.person.address.AddressRow.addressline2]] */
-  addressline2: Option[/* max 60 chars */ String],
+  addressline2: String,
   /** Points to [[adventureworks.person.address.AddressRow.city]] */
-  city: /* max 30 chars */ String,
+  city: String,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.name]] */
   stateprovincename: Name,
   /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
-  postalcode: /* max 15 chars */ String,
+  postalcode: String,
   /** Points to [[adventureworks.person.countryregion.CountryregionRow.name]] */
   countryregionname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.demographics]] */
-  demographics: Option[TypoXml]
+  demographics: TypoXml
 )
 
 object VindividualcustomerViewRow {
@@ -64,23 +64,23 @@ object VindividualcustomerViewRow {
         columIndex + 17 ->
           VindividualcustomerViewRow(
             businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-            title = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 1, rs)._2,
+            title = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 1, rs)._2,
             firstname = FirstName.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-            middlename = JdbcDecoder.optionDecoder(using Name.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            middlename = Name.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
             lastname = Name.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-            suffix = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
-            phonenumber = JdbcDecoder.optionDecoder(using Phone.jdbcDecoder).unsafeDecode(columIndex + 6, rs)._2,
-            phonenumbertype = JdbcDecoder.optionDecoder(using Name.jdbcDecoder).unsafeDecode(columIndex + 7, rs)._2,
-            emailaddress = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 8, rs)._2,
+            suffix = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 5, rs)._2,
+            phonenumber = Phone.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
+            phonenumbertype = Name.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
+            emailaddress = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 8, rs)._2,
             emailpromotion = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 9, rs)._2,
             addresstype = Name.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2,
             addressline1 = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 11, rs)._2,
-            addressline2 = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 12, rs)._2,
+            addressline2 = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 12, rs)._2,
             city = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 13, rs)._2,
             stateprovincename = Name.jdbcDecoder.unsafeDecode(columIndex + 14, rs)._2,
             postalcode = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 15, rs)._2,
             countryregionname = Name.jdbcDecoder.unsafeDecode(columIndex + 16, rs)._2,
-            demographics = JdbcDecoder.optionDecoder(using TypoXml.jdbcDecoder).unsafeDecode(columIndex + 17, rs)._2
+            demographics = TypoXml.jdbcDecoder.unsafeDecode(columIndex + 17, rs)._2
           )
     }
   }
@@ -88,23 +88,23 @@ object VindividualcustomerViewRow {
   given jsonDecoder: JsonDecoder[VindividualcustomerViewRow] = {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
       val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
-      val title = jsonObj.get("title").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val title = jsonObj.get("title").toRight("Missing field 'title'").flatMap(_.as(using JsonDecoder.string))
       val firstname = jsonObj.get("firstname").toRight("Missing field 'firstname'").flatMap(_.as(using FirstName.jsonDecoder))
-      val middlename = jsonObj.get("middlename").fold[Either[String, Option[Name]]](Right(None))(_.as(using JsonDecoder.option(using Name.jsonDecoder)))
+      val middlename = jsonObj.get("middlename").toRight("Missing field 'middlename'").flatMap(_.as(using Name.jsonDecoder))
       val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(using Name.jsonDecoder))
-      val suffix = jsonObj.get("suffix").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
-      val phonenumber = jsonObj.get("phonenumber").fold[Either[String, Option[Phone]]](Right(None))(_.as(using JsonDecoder.option(using Phone.jsonDecoder)))
-      val phonenumbertype = jsonObj.get("phonenumbertype").fold[Either[String, Option[Name]]](Right(None))(_.as(using JsonDecoder.option(using Name.jsonDecoder)))
-      val emailaddress = jsonObj.get("emailaddress").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val suffix = jsonObj.get("suffix").toRight("Missing field 'suffix'").flatMap(_.as(using JsonDecoder.string))
+      val phonenumber = jsonObj.get("phonenumber").toRight("Missing field 'phonenumber'").flatMap(_.as(using Phone.jsonDecoder))
+      val phonenumbertype = jsonObj.get("phonenumbertype").toRight("Missing field 'phonenumbertype'").flatMap(_.as(using Name.jsonDecoder))
+      val emailaddress = jsonObj.get("emailaddress").toRight("Missing field 'emailaddress'").flatMap(_.as(using JsonDecoder.string))
       val emailpromotion = jsonObj.get("emailpromotion").toRight("Missing field 'emailpromotion'").flatMap(_.as(using JsonDecoder.int))
       val addresstype = jsonObj.get("addresstype").toRight("Missing field 'addresstype'").flatMap(_.as(using Name.jsonDecoder))
       val addressline1 = jsonObj.get("addressline1").toRight("Missing field 'addressline1'").flatMap(_.as(using JsonDecoder.string))
-      val addressline2 = jsonObj.get("addressline2").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val addressline2 = jsonObj.get("addressline2").toRight("Missing field 'addressline2'").flatMap(_.as(using JsonDecoder.string))
       val city = jsonObj.get("city").toRight("Missing field 'city'").flatMap(_.as(using JsonDecoder.string))
       val stateprovincename = jsonObj.get("stateprovincename").toRight("Missing field 'stateprovincename'").flatMap(_.as(using Name.jsonDecoder))
       val postalcode = jsonObj.get("postalcode").toRight("Missing field 'postalcode'").flatMap(_.as(using JsonDecoder.string))
       val countryregionname = jsonObj.get("countryregionname").toRight("Missing field 'countryregionname'").flatMap(_.as(using Name.jsonDecoder))
-      val demographics = jsonObj.get("demographics").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(using JsonDecoder.option(using TypoXml.jsonDecoder)))
+      val demographics = jsonObj.get("demographics").toRight("Missing field 'demographics'").flatMap(_.as(using TypoXml.jsonDecoder))
       if (businessentityid.isRight && title.isRight && firstname.isRight && middlename.isRight && lastname.isRight && suffix.isRight && phonenumber.isRight && phonenumbertype.isRight && emailaddress.isRight && emailpromotion.isRight && addresstype.isRight && addressline1.isRight && addressline2.isRight && city.isRight && stateprovincename.isRight && postalcode.isRight && countryregionname.isRight && demographics.isRight)
         Right(VindividualcustomerViewRow(businessentityid = businessentityid.toOption.get, title = title.toOption.get, firstname = firstname.toOption.get, middlename = middlename.toOption.get, lastname = lastname.toOption.get, suffix = suffix.toOption.get, phonenumber = phonenumber.toOption.get, phonenumbertype = phonenumbertype.toOption.get, emailaddress = emailaddress.toOption.get, emailpromotion = emailpromotion.toOption.get, addresstype = addresstype.toOption.get, addressline1 = addressline1.toOption.get, addressline2 = addressline2.toOption.get, city = city.toOption.get, stateprovincename = stateprovincename.toOption.get, postalcode = postalcode.toOption.get, countryregionname = countryregionname.toOption.get, demographics = demographics.toOption.get))
       else Left(List[Either[String, Any]](businessentityid, title, firstname, middlename, lastname, suffix, phonenumber, phonenumbertype, emailaddress, emailpromotion, addresstype, addressline1, addressline2, city, stateprovincename, postalcode, countryregionname, demographics).flatMap(_.left.toOption).mkString(", "))
@@ -119,28 +119,28 @@ object VindividualcustomerViewRow {
         BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
         out.write(",")
         out.write(""""title":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.title, indent, out)
+        JsonEncoder.string.unsafeEncode(a.title, indent, out)
         out.write(",")
         out.write(""""firstname":""")
         FirstName.jsonEncoder.unsafeEncode(a.firstname, indent, out)
         out.write(",")
         out.write(""""middlename":""")
-        JsonEncoder.option(using Name.jsonEncoder).unsafeEncode(a.middlename, indent, out)
+        Name.jsonEncoder.unsafeEncode(a.middlename, indent, out)
         out.write(",")
         out.write(""""lastname":""")
         Name.jsonEncoder.unsafeEncode(a.lastname, indent, out)
         out.write(",")
         out.write(""""suffix":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.suffix, indent, out)
+        JsonEncoder.string.unsafeEncode(a.suffix, indent, out)
         out.write(",")
         out.write(""""phonenumber":""")
-        JsonEncoder.option(using Phone.jsonEncoder).unsafeEncode(a.phonenumber, indent, out)
+        Phone.jsonEncoder.unsafeEncode(a.phonenumber, indent, out)
         out.write(",")
         out.write(""""phonenumbertype":""")
-        JsonEncoder.option(using Name.jsonEncoder).unsafeEncode(a.phonenumbertype, indent, out)
+        Name.jsonEncoder.unsafeEncode(a.phonenumbertype, indent, out)
         out.write(",")
         out.write(""""emailaddress":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.emailaddress, indent, out)
+        JsonEncoder.string.unsafeEncode(a.emailaddress, indent, out)
         out.write(",")
         out.write(""""emailpromotion":""")
         JsonEncoder.int.unsafeEncode(a.emailpromotion, indent, out)
@@ -152,7 +152,7 @@ object VindividualcustomerViewRow {
         JsonEncoder.string.unsafeEncode(a.addressline1, indent, out)
         out.write(",")
         out.write(""""addressline2":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.addressline2, indent, out)
+        JsonEncoder.string.unsafeEncode(a.addressline2, indent, out)
         out.write(",")
         out.write(""""city":""")
         JsonEncoder.string.unsafeEncode(a.city, indent, out)
@@ -167,7 +167,7 @@ object VindividualcustomerViewRow {
         Name.jsonEncoder.unsafeEncode(a.countryregionname, indent, out)
         out.write(",")
         out.write(""""demographics":""")
-        JsonEncoder.option(using TypoXml.jsonEncoder).unsafeEncode(a.demographics, indent, out)
+        TypoXml.jsonEncoder.unsafeEncode(a.demographics, indent, out)
         out.write("}")
       }
     }

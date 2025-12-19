@@ -7,13 +7,14 @@ package testdb.customer_addresses
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import org.mariadb.jdbc.`type`.Point
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `customer_addresses` which has not been persisted yet */
 case class CustomerAddressesRowUnsaved(
@@ -36,34 +37,34 @@ case class CustomerAddressesRowUnsaved(
   /** Default: 0
 
    */
-  @JsonProperty("is_default") isDefault: Defaulted[java.lang.Boolean] = new UseDefault(),
+  @JsonProperty("is_default") isDefault: Defaulted[Boolean] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("street_line2") streetLine2: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("street_line2") streetLine2: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("state_province") stateProvince: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("state_province") stateProvince: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  location: Defaulted[Optional[Point]] = new UseDefault(),
+  location: Defaulted[Option[Point]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("delivery_notes") deliveryNotes: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("delivery_notes") deliveryNotes: Defaulted[Option[String]] = new UseDefault(),
   /** Default: current_timestamp()
 
    */
   @JsonProperty("created_at") createdAt: Defaulted[LocalDateTime] = new UseDefault()
 ) {
   def toRow(
-    isDefaultDefault: => java.lang.Boolean,
-    streetLine2Default: => Optional[String],
-    stateProvinceDefault: => Optional[String],
-    locationDefault: => Optional[Point],
-    deliveryNotesDefault: => Optional[String],
+    isDefaultDefault: => Boolean,
+    streetLine2Default: => Option[String],
+    stateProvinceDefault: => Option[String],
+    locationDefault: => Option[Point],
+    deliveryNotesDefault: => Option[String],
     createdAtDefault: => LocalDateTime,
     addressIdDefault: => CustomerAddressesId
   ): CustomerAddressesRow = {
@@ -87,5 +88,5 @@ case class CustomerAddressesRowUnsaved(
 }
 
 object CustomerAddressesRowUnsaved {
-  given mariaText: MariaText[CustomerAddressesRowUnsaved] = MariaText.instance((row, sb) => { CustomersId.pgType.mariaText.unsafeEncode(row.customerId, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.addressType, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.recipientName, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.streetLine1, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.city, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.postalCode, sb); sb.append(MariaText.DELIMETER); MariaTypes.char_.mariaText.unsafeEncode(row.countryCode, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isDefault, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.streetLine2, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.stateProvince, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.point.opt().mariaText).unsafeEncode(row.location, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinytext.opt().mariaText).unsafeEncode(row.deliveryNotes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb) })
+  given mariaText: MariaText[CustomerAddressesRowUnsaved] = MariaText.instance((row, sb) => { CustomersId.pgType.mariaText.unsafeEncode(row.customerId, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.addressType, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.recipientName, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.streetLine1, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.city, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.postalCode, sb); sb.append(MariaText.DELIMETER); MariaTypes.char_.mariaText.unsafeEncode(row.countryCode, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isDefault, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.streetLine2, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.stateProvince, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.point.nullable.mariaText).unsafeEncode(row.location, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinytext.nullable.mariaText).unsafeEncode(row.deliveryNotes, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.datetime.mariaText).unsafeEncode(row.createdAt, sb) })
 }

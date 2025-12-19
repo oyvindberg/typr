@@ -11,7 +11,7 @@ import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.products.ProductsId
 import typo.runtime.MariaText
-import typo.runtime.MariaTypes
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `product_categories` which has not been persisted yet */
 case class ProductCategoriesRowUnsaved(
@@ -26,15 +26,15 @@ case class ProductCategoriesRowUnsaved(
   /** Default: 0
 
    */
-  @JsonProperty("is_primary") isPrimary: Defaulted[java.lang.Boolean] = new UseDefault(),
+  @JsonProperty("is_primary") isPrimary: Defaulted[Boolean] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("sort_order") sortOrder: Defaulted[java.lang.Short] = new UseDefault()
+  @JsonProperty("sort_order") sortOrder: Defaulted[Short] = new UseDefault()
 ) {
   def toRow(
-    isPrimaryDefault: => java.lang.Boolean,
-    sortOrderDefault: => java.lang.Short
+    isPrimaryDefault: => Boolean,
+    sortOrderDefault: => Short
   ): ProductCategoriesRow = {
     new ProductCategoriesRow(
       productId = productId,
@@ -46,5 +46,5 @@ case class ProductCategoriesRowUnsaved(
 }
 
 object ProductCategoriesRowUnsaved {
-  given mariaText: MariaText[ProductCategoriesRowUnsaved] = MariaText.instance((row, sb) => { ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); CategoriesId.pgType.mariaText.unsafeEncode(row.categoryId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isPrimary, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.smallint.mariaText).unsafeEncode(row.sortOrder, sb) })
+  given mariaText: MariaText[ProductCategoriesRowUnsaved] = MariaText.instance((row, sb) => { ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); CategoriesId.pgType.mariaText.unsafeEncode(row.categoryId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isPrimary, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.smallint.mariaText).unsafeEncode(row.sortOrder, sb) })
 }

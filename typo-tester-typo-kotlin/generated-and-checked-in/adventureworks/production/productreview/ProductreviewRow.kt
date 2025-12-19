@@ -6,14 +6,15 @@
 package adventureworks.production.productreview
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.productreview
   * Customer reviews of products they have purchased.
@@ -33,30 +34,30 @@ data class ProductreviewRow(
   /** Date review was submitted.
     * Default: now()
     */
-  val reviewdate: TypoLocalDateTime,
+  val reviewdate: LocalDateTime,
   /** Reviewer's e-mail address. */
-  val emailaddress: /* max 50 chars */ String,
+  val emailaddress: String,
   /** Product rating given by the reviewer. Scale is 1 to 5 with 5 as the highest rating.
     * Constraint CK_ProductReview_Rating affecting columns rating: (((rating >= 1) AND (rating <= 5)))
     */
   val rating: Int,
   /** Reviewer's comments */
-  val comments: Optional</* max 3850 chars */ String>,
+  val comments: /* max 3850 chars */ String?,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): ProductreviewId = productreviewid
 
   fun toUnsavedRow(
     productreviewid: Defaulted<ProductreviewId>,
-    reviewdate: Defaulted<TypoLocalDateTime>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    reviewdate: Defaulted<LocalDateTime>,
+    modifieddate: Defaulted<LocalDateTime>
   ): ProductreviewRowUnsaved = ProductreviewRowUnsaved(productid, reviewername, emailaddress, rating, comments, productreviewid, reviewdate, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductreviewRow> = RowParsers.of(ProductreviewId.pgType, ProductId.pgType, Name.pgType, TypoLocalDateTime.pgType, PgTypes.text, PgTypes.int4, PgTypes.text.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7 -> ProductreviewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!) }, { row -> arrayOf<Any?>(row.productreviewid, row.productid, row.reviewername, row.reviewdate, row.emailaddress, row.rating, row.comments, row.modifieddate) })
+    val _rowParser: RowParser<ProductreviewRow> = RowParsers.of(ProductreviewId.pgType, ProductId.pgType, Name.pgType, PgTypes.timestamp, PgTypes.text, KotlinDbTypes.PgTypes.int4, PgTypes.text.nullable(), PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7 -> ProductreviewRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.productreviewid, row.productid, row.reviewername, row.reviewdate, row.emailaddress, row.rating, row.comments, row.modifieddate) })
 
     val pgText: PgText<ProductreviewRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

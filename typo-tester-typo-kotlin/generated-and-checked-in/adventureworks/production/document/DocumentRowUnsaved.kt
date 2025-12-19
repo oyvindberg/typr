@@ -7,38 +7,37 @@ package adventureworks.production.document
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `production.document` which has not been persisted yet */
 data class DocumentRowUnsaved(
   /** Title of the document. */
-  val title: /* max 50 chars */ String,
+  val title: String,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
     * Points to [adventureworks.humanresources.employee.EmployeeRow.businessentityid]
     */
   val owner: BusinessentityId,
   /** File name of the document */
-  val filename: /* max 400 chars */ String,
+  val filename: String,
   /** File extension indicating the document type. For example, .doc or .txt. */
-  val fileextension: Optional</* max 8 chars */ String> = Optional.empty(),
+  val fileextension: /* max 8 chars */ String? = null,
   /** Revision number of the document. */
-  val revision: /* bpchar, max 5 chars */ String,
+  val revision: String,
   /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
     * Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3)))
     */
-  val status: TypoShort,
+  val status: Short,
   /** Document abstract. */
-  val documentsummary: Optional<String> = Optional.empty(),
+  val documentsummary: String? = null,
   /** Complete document. */
-  val document: Optional<TypoBytea> = Optional.empty(),
+  val document: ByteArray? = null,
   /** Default: false
     * 0 = This is a folder, 1 = This is a document.
     */
@@ -50,9 +49,9 @@ data class DocumentRowUnsaved(
   /** Default: uuid_generate_v1()
     * ROWGUIDCOL number uniquely identifying the record. Required for FileStream.
     */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault(),
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault(),
   /** Default: '/'::character varying
     * Primary key for Document records.
     */
@@ -61,8 +60,8 @@ data class DocumentRowUnsaved(
   fun toRow(
     folderflagDefault: () -> Flag,
     changenumberDefault: () -> Int,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime,
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime,
     documentnodeDefault: () -> DocumentId
   ): DocumentRow = DocumentRow(title = title, owner = owner, folderflag = folderflag.getOrElse(folderflagDefault), filename = filename, fileextension = fileextension, revision = revision, changenumber = changenumber.getOrElse(changenumberDefault), status = status, documentsummary = documentsummary, document = document, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault), documentnode = documentnode.getOrElse(documentnodeDefault))
 
@@ -74,23 +73,23 @@ data class DocumentRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.filename, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.fileextension, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.fileextension, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.bpchar.pgText().unsafeEncode(row.revision, sb)
       sb.append(PgText.DELIMETER)
-      TypoShort.pgType.pgText().unsafeEncode(row.status, sb)
+      KotlinDbTypes.PgTypes.int2.pgText().unsafeEncode(row.status, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.documentsummary, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.documentsummary, sb)
       sb.append(PgText.DELIMETER)
-      TypoBytea.pgType.opt().pgText().unsafeEncode(row.document, sb)
+      PgTypes.bytea.nullable().pgText().unsafeEncode(row.document, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.folderflag, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.changenumber, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.changenumber, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb)
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(DocumentId.pgType.pgText()).unsafeEncode(row.documentnode, sb) })
   }

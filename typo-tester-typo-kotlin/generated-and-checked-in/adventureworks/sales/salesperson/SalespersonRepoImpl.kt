@@ -5,27 +5,22 @@
  */
 package adventureworks.sales.salesperson
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
 
 class SalespersonRepoImpl() : SalespersonRepo {
   override fun delete(): DeleteBuilder<SalespersonFields, SalespersonRow> = DeleteBuilder.of("\"sales\".\"salesperson\"", SalespersonFields.structure, Dialect.POSTGRESQL)
@@ -33,192 +28,93 @@ class SalespersonRepoImpl() : SalespersonRepo {
   override fun deleteById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "sales"."salesperson" where "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(businessentityid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from \"sales\".\"salesperson\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "sales"."salesperson"
-               where "businessentityid" = ANY(""".trimMargin()),
-             BusinessentityId.pgTypeArray.encode(businessentityids),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"salesperson\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: SalespersonRow,
     c: Connection
-  ): SalespersonRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "sales"."salesperson"("businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    SalesterritoryId.pgType.opt().encode(unsaved.territoryid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.numeric.opt().encode(unsaved.salesquota),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.bonus),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.commissionpct),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.salesytd),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.saleslastyear),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): SalespersonRow = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"salesperson\"(\"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(SalesterritoryId.pgType.nullable(), unsaved.territoryid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.numeric.nullable(), unsaved.salesquota), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.bonus), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.commissionpct), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.salesytd), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.saleslastyear), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\"\n"))
     .updateReturning(SalespersonRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: SalespersonRowUnsaved,
     c: Connection
   ): SalespersonRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"businessentityid\""))
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"territoryid\""))
-    values.add(interpolate(
-      SalesterritoryId.pgType.opt().encode(unsaved.territoryid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(SalesterritoryId.pgType.nullable(), unsaved.territoryid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"salesquota\""))
-    values.add(interpolate(
-      PgTypes.numeric.opt().encode(unsaved.salesquota),
-      typo.runtime.Fragment.lit("::numeric")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric.nullable(), unsaved.salesquota), Fragment.lit("::numeric")))
     unsaved.bonus.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"bonus\""))
-      values.add(interpolate(
-        PgTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("::numeric")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric, value), Fragment.lit("::numeric"))) }
     );
     unsaved.commissionpct.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"commissionpct\""))
-      values.add(interpolate(
-        PgTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("::numeric")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric, value), Fragment.lit("::numeric"))) }
     );
     unsaved.salesytd.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"salesytd\""))
-      values.add(interpolate(
-        PgTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("::numeric")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric, value), Fragment.lit("::numeric"))) }
     );
     unsaved.saleslastyear.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"saleslastyear\""))
-      values.add(interpolate(
-        PgTypes.numeric.encode(value),
-        typo.runtime.Fragment.lit("::numeric")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.numeric, value), Fragment.lit("::numeric"))) }
     );
     unsaved.rowguid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"rowguid\""))
-      values.add(interpolate(
-        TypoUUID.pgType.encode(value),
-        typo.runtime.Fragment.lit("::uuid")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.uuid, value), Fragment.lit("::uuid"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "sales"."salesperson"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"salesperson\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\"\n"))
     return q.updateReturning(SalespersonRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<SalespersonRow>,
+    unsaved: Iterator<SalespersonRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "sales"."salesperson"("businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, SalespersonRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"sales\".\"salesperson\"(\"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, SalespersonRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<SalespersonRowUnsaved>,
+    unsaved: Iterator<SalespersonRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "sales"."salesperson"("businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, SalespersonRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"sales\".\"salesperson\"(\"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, SalespersonRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<SalespersonFields, SalespersonRow> = SelectBuilder.of("\"sales\".\"salesperson\"", SalespersonFields.structure, SalespersonRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<SalespersonRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text
-    from "sales"."salesperson"
-  """.trimMargin())).query(SalespersonRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<SalespersonRow> = Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salesperson\"\n")).query(SalespersonRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Optional<SalespersonRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text
-      from "sales"."salesperson"
-      where "businessentityid" = """.trimMargin()),
-    BusinessentityId.pgType.encode(businessentityid),
-    typo.runtime.Fragment.lit("")
-  ).query(SalespersonRow._rowParser.first()).runUnchecked(c)
+  ): SalespersonRow? = Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salesperson\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).query(SalespersonRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     businessentityids: Array<BusinessentityId>,
     c: Connection
-  ): List<SalespersonRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text
-      from "sales"."salesperson"
-      where "businessentityid" = ANY(""".trimMargin()),
-    BusinessentityId.pgTypeArray.encode(businessentityids),
-    typo.runtime.Fragment.lit(")")
-  ).query(SalespersonRow._rowParser.all()).runUnchecked(c)
+  ): List<SalespersonRow> = Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salesperson\"\nwhere \"businessentityid\" = ANY("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityids), Fragment.lit(")")).query(SalespersonRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     businessentityids: Array<BusinessentityId>,
@@ -226,144 +122,41 @@ class SalespersonRepoImpl() : SalespersonRepo {
   ): Map<BusinessentityId, SalespersonRow> {
     val ret: MutableMap<BusinessentityId, SalespersonRow> = mutableMapOf<BusinessentityId, SalespersonRow>()
     selectByIds(businessentityids, c).forEach({ row -> ret.put(row.businessentityid, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<SalespersonFields, SalespersonRow> = UpdateBuilder.of("\"sales\".\"salesperson\"", SalespersonFields.structure, SalespersonRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<SalespersonFields, SalespersonRow> = UpdateBuilder.of("\"sales\".\"salesperson\"", SalespersonFields.structure, SalespersonRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: SalespersonRow,
     c: Connection
   ): Boolean {
     val businessentityid: BusinessentityId = row.businessentityid
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "sales"."salesperson"
-        set "territoryid" = """.trimMargin()),
-      SalesterritoryId.pgType.opt().encode(row.territoryid),
-      typo.runtime.Fragment.lit("""
-        ::int4,
-        "salesquota" = """.trimMargin()),
-      PgTypes.numeric.opt().encode(row.salesquota),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "bonus" = """.trimMargin()),
-      PgTypes.numeric.encode(row.bonus),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "commissionpct" = """.trimMargin()),
-      PgTypes.numeric.encode(row.commissionpct),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "salesytd" = """.trimMargin()),
-      PgTypes.numeric.encode(row.salesytd),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "saleslastyear" = """.trimMargin()),
-      PgTypes.numeric.encode(row.saleslastyear),
-      typo.runtime.Fragment.lit("""
-        ::numeric,
-        "rowguid" = """.trimMargin()),
-      TypoUUID.pgType.encode(row.rowguid),
-      typo.runtime.Fragment.lit("""
-        ::uuid,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "businessentityid" = """.trimMargin()),
-      BusinessentityId.pgType.encode(businessentityid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update \"sales\".\"salesperson\"\nset \"territoryid\" = "), Fragment.encode(SalesterritoryId.pgType.nullable(), row.territoryid), Fragment.lit("::int4,\n\"salesquota\" = "), Fragment.encode(PgTypes.numeric.nullable(), row.salesquota), Fragment.lit("::numeric,\n\"bonus\" = "), Fragment.encode(PgTypes.numeric, row.bonus), Fragment.lit("::numeric,\n\"commissionpct\" = "), Fragment.encode(PgTypes.numeric, row.commissionpct), Fragment.lit("::numeric,\n\"salesytd\" = "), Fragment.encode(PgTypes.numeric, row.salesytd), Fragment.lit("::numeric,\n\"saleslastyear\" = "), Fragment.encode(PgTypes.numeric, row.saleslastyear), Fragment.lit("::numeric,\n\"rowguid\" = "), Fragment.encode(PgTypes.uuid, row.rowguid), Fragment.lit("::uuid,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, businessentityid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: SalespersonRow,
     c: Connection
-  ): SalespersonRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "sales"."salesperson"("businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    SalesterritoryId.pgType.opt().encode(unsaved.territoryid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.numeric.opt().encode(unsaved.salesquota),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.bonus),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.commissionpct),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.salesytd),
-    typo.runtime.Fragment.lit("::numeric, "),
-    PgTypes.numeric.encode(unsaved.saleslastyear),
-    typo.runtime.Fragment.lit("::numeric, "),
-    TypoUUID.pgType.encode(unsaved.rowguid),
-    typo.runtime.Fragment.lit("::uuid, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("businessentityid")
-      do update set
-        "territoryid" = EXCLUDED."territoryid",
-      "salesquota" = EXCLUDED."salesquota",
-      "bonus" = EXCLUDED."bonus",
-      "commissionpct" = EXCLUDED."commissionpct",
-      "salesytd" = EXCLUDED."salesytd",
-      "saleslastyear" = EXCLUDED."saleslastyear",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text""".trimMargin())
-  )
+  ): SalespersonRow = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"salesperson\"(\"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(SalesterritoryId.pgType.nullable(), unsaved.territoryid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.numeric.nullable(), unsaved.salesquota), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.bonus), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.commissionpct), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.salesytd), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.numeric, unsaved.saleslastyear), Fragment.lit("::numeric, "), Fragment.encode(PgTypes.uuid, unsaved.rowguid), Fragment.lit("::uuid, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"businessentityid\")\ndo update set\n  \"territoryid\" = EXCLUDED.\"territoryid\",\n\"salesquota\" = EXCLUDED.\"salesquota\",\n\"bonus\" = EXCLUDED.\"bonus\",\n\"commissionpct\" = EXCLUDED.\"commissionpct\",\n\"salesytd\" = EXCLUDED.\"salesytd\",\n\"saleslastyear\" = EXCLUDED.\"saleslastyear\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\""))
     .updateReturning(SalespersonRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<SalespersonRow>,
+    unsaved: Iterator<SalespersonRow>,
     c: Connection
-  ): List<SalespersonRow> = interpolate(typo.runtime.Fragment.lit("""
-                              insert into "sales"."salesperson"("businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")
-                              values (?::int4, ?::int4, ?::numeric, ?::numeric, ?::numeric, ?::numeric, ?::numeric, ?::uuid, ?::timestamp)
-                              on conflict ("businessentityid")
-                              do update set
-                                "territoryid" = EXCLUDED."territoryid",
-                              "salesquota" = EXCLUDED."salesquota",
-                              "bonus" = EXCLUDED."bonus",
-                              "commissionpct" = EXCLUDED."commissionpct",
-                              "salesytd" = EXCLUDED."salesytd",
-                              "saleslastyear" = EXCLUDED."saleslastyear",
-                              "rowguid" = EXCLUDED."rowguid",
-                              "modifieddate" = EXCLUDED."modifieddate"
-                              returning "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate"::text""".trimMargin()))
+  ): List<SalespersonRow> = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"salesperson\"(\"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?::numeric, ?::numeric, ?::numeric, ?::numeric, ?::numeric, ?::uuid, ?::timestamp)\non conflict (\"businessentityid\")\ndo update set\n  \"territoryid\" = EXCLUDED.\"territoryid\",\n\"salesquota\" = EXCLUDED.\"salesquota\",\n\"bonus\" = EXCLUDED.\"bonus\",\n\"commissionpct\" = EXCLUDED.\"commissionpct\",\n\"salesytd\" = EXCLUDED.\"salesytd\",\n\"saleslastyear\" = EXCLUDED.\"saleslastyear\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\""))
     .updateManyReturning(SalespersonRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<SalespersonRow>,
+    unsaved: Iterator<SalespersonRow>,
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table salesperson_TEMP (like "sales"."salesperson") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy salesperson_TEMP("businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, SalespersonRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "sales"."salesperson"("businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")
-      select * from salesperson_TEMP
-      on conflict ("businessentityid")
-      do update set
-        "territoryid" = EXCLUDED."territoryid",
-      "salesquota" = EXCLUDED."salesquota",
-      "bonus" = EXCLUDED."bonus",
-      "commissionpct" = EXCLUDED."commissionpct",
-      "salesytd" = EXCLUDED."salesytd",
-      "saleslastyear" = EXCLUDED."saleslastyear",
-      "rowguid" = EXCLUDED."rowguid",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table salesperson_TEMP;""".trimMargin())).update().runUnchecked(c)
+    Fragment.interpolate(Fragment.lit("create temporary table salesperson_TEMP (like \"sales\".\"salesperson\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy salesperson_TEMP(\"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\") from stdin", batchSize, unsaved, c, SalespersonRow.pgText)
+    return Fragment.interpolate(Fragment.lit("insert into \"sales\".\"salesperson\"(\"businessentityid\", \"territoryid\", \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\", \"saleslastyear\", \"rowguid\", \"modifieddate\")\nselect * from salesperson_TEMP\non conflict (\"businessentityid\")\ndo update set\n  \"territoryid\" = EXCLUDED.\"territoryid\",\n\"salesquota\" = EXCLUDED.\"salesquota\",\n\"bonus\" = EXCLUDED.\"bonus\",\n\"commissionpct\" = EXCLUDED.\"commissionpct\",\n\"salesytd\" = EXCLUDED.\"salesytd\",\n\"saleslastyear\" = EXCLUDED.\"saleslastyear\",\n\"rowguid\" = EXCLUDED.\"rowguid\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table salesperson_TEMP;")).update().runUnchecked(c)
   }
 }

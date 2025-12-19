@@ -20,7 +20,7 @@ case class FlaffRow(
   /** Points to [[adventureworks.public.flaff.FlaffRow.code]] */
   code: ShortText,
   /** Points to [[adventureworks.public.flaff.FlaffRow.anotherCode]] */
-  anotherCode: /* max 20 chars */ String,
+  anotherCode: String,
   /** Points to [[adventureworks.public.flaff.FlaffRow.someNumber]] */
   someNumber: Int,
   specifier: ShortText,
@@ -53,9 +53,9 @@ object FlaffRow {
     )
   }
 
-  implicit lazy val decoder: Decoder[FlaffRow] = Decoder.forProduct5[FlaffRow, ShortText, /* max 20 chars */ String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(FlaffRow.apply)(ShortText.decoder, Decoder.decodeString, Decoder.decodeInt, ShortText.decoder, Decoder.decodeOption(ShortText.decoder))
+  implicit lazy val decoder: Decoder[FlaffRow] = Decoder.forProduct5[FlaffRow, ShortText, String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(FlaffRow.apply)(ShortText.decoder, Decoder.decodeString, Decoder.decodeInt, ShortText.decoder, Decoder.decodeOption(ShortText.decoder))
 
-  implicit lazy val encoder: Encoder[FlaffRow] = Encoder.forProduct5[FlaffRow, ShortText, /* max 20 chars */ String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(x => (x.code, x.anotherCode, x.someNumber, x.specifier, x.parentspecifier))(ShortText.encoder, Encoder.encodeString, Encoder.encodeInt, ShortText.encoder, Encoder.encodeOption(ShortText.encoder))
+  implicit lazy val encoder: Encoder[FlaffRow] = Encoder.forProduct5[FlaffRow, ShortText, String, Int, ShortText, Option[ShortText]]("code", "another_code", "some_number", "specifier", "parentspecifier")(x => (x.code, x.anotherCode, x.someNumber, x.specifier, x.parentspecifier))(ShortText.encoder, Encoder.encodeString, Encoder.encodeInt, ShortText.encoder, Encoder.encodeOption(ShortText.encoder))
 
   implicit lazy val pgText: Text[FlaffRow] = {
     Text.instance[FlaffRow]{ (row, sb) =>
@@ -81,7 +81,7 @@ object FlaffRow {
     ))(scala.reflect.ClassTag.Any).map { arr =>
       FlaffRow(
         code = arr(0).asInstanceOf[ShortText],
-            anotherCode = arr(1).asInstanceOf[/* max 20 chars */ String],
+            anotherCode = arr(1).asInstanceOf[String],
             someNumber = arr(2).asInstanceOf[Int],
             specifier = arr(3).asInstanceOf[ShortText],
             parentspecifier = arr(4).asInstanceOf[Option[ShortText]]

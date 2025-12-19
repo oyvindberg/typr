@@ -7,10 +7,10 @@ package adventureworks.humanresources.vemployeedepartment
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VemployeedepartmentViewRepo {
-  fun select(): SelectBuilder<VemployeedepartmentViewFields, VemployeedepartmentViewRow>
+  abstract fun select(): SelectBuilder<VemployeedepartmentViewFields, VemployeedepartmentViewRow>
 
-  fun selectAll(c: Connection): List<VemployeedepartmentViewRow>
+  abstract fun selectAll(c: Connection): List<VemployeedepartmentViewRow>
 }

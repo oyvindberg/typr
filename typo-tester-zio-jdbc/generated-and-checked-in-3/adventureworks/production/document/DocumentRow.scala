@@ -26,7 +26,7 @@ import zio.json.internal.Write
  */
 case class DocumentRow(
   /** Title of the document. */
-  title: /* max 50 chars */ String,
+  title: String,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
    * Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]]
    */
@@ -36,11 +36,11 @@ case class DocumentRow(
    */
   folderflag: Flag,
   /** File name of the document */
-  filename: /* max 400 chars */ String,
+  filename: String,
   /** File extension indicating the document type. For example, .doc or .txt. */
   fileextension: Option[/* max 8 chars */ String],
   /** Revision number of the document. */
-  revision: /* bpchar, max 5 chars */ String,
+  revision: String,
   /** Engineering change approval number.
    * Default: 0
    */

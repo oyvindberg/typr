@@ -27,25 +27,25 @@ import scala.util.Try
 /** View: pr.d */
 case class DViewRow(
   /** Points to [[adventureworks.production.document.DocumentRow.title]] */
-  title: /* max 50 chars */ String,
+  title: String,
   /** Points to [[adventureworks.production.document.DocumentRow.owner]] */
   owner: BusinessentityId,
   /** Points to [[adventureworks.production.document.DocumentRow.folderflag]] */
   folderflag: Flag,
   /** Points to [[adventureworks.production.document.DocumentRow.filename]] */
-  filename: /* max 400 chars */ String,
+  filename: String,
   /** Points to [[adventureworks.production.document.DocumentRow.fileextension]] */
-  fileextension: Option[/* max 8 chars */ String],
+  fileextension: String,
   /** Points to [[adventureworks.production.document.DocumentRow.revision]] */
-  revision: /* bpchar, max 5 chars */ String,
+  revision: String,
   /** Points to [[adventureworks.production.document.DocumentRow.changenumber]] */
   changenumber: Int,
   /** Points to [[adventureworks.production.document.DocumentRow.status]] */
   status: TypoShort,
   /** Points to [[adventureworks.production.document.DocumentRow.documentsummary]] */
-  documentsummary: Option[String],
+  documentsummary: String,
   /** Points to [[adventureworks.production.document.DocumentRow.document]] */
-  document: Option[TypoBytea],
+  document: TypoBytea,
   /** Points to [[adventureworks.production.document.DocumentRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.production.document.DocumentRow.modifieddate]] */
@@ -63,12 +63,12 @@ object DViewRow {
             owner = json.\("owner").as(BusinessentityId.reads),
             folderflag = json.\("folderflag").as(Flag.reads),
             filename = json.\("filename").as(Reads.StringReads),
-            fileextension = json.\("fileextension").toOption.map(_.as(Reads.StringReads)),
+            fileextension = json.\("fileextension").as(Reads.StringReads),
             revision = json.\("revision").as(Reads.StringReads),
             changenumber = json.\("changenumber").as(Reads.IntReads),
             status = json.\("status").as(TypoShort.reads),
-            documentsummary = json.\("documentsummary").toOption.map(_.as(Reads.StringReads)),
-            document = json.\("document").toOption.map(_.as(TypoBytea.reads)),
+            documentsummary = json.\("documentsummary").as(Reads.StringReads),
+            document = json.\("document").as(TypoBytea.reads),
             rowguid = json.\("rowguid").as(TypoUUID.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads),
             documentnode = json.\("documentnode").as(DocumentId.reads)
@@ -86,12 +86,12 @@ object DViewRow {
           owner = row(idx + 1)(BusinessentityId.column),
           folderflag = row(idx + 2)(Flag.column),
           filename = row(idx + 3)(Column.columnToString),
-          fileextension = row(idx + 4)(Column.columnToOption(Column.columnToString)),
+          fileextension = row(idx + 4)(Column.columnToString),
           revision = row(idx + 5)(Column.columnToString),
           changenumber = row(idx + 6)(Column.columnToInt),
           status = row(idx + 7)(TypoShort.column),
-          documentsummary = row(idx + 8)(Column.columnToOption(Column.columnToString)),
-          document = row(idx + 9)(Column.columnToOption(TypoBytea.column)),
+          documentsummary = row(idx + 8)(Column.columnToString),
+          document = row(idx + 9)(TypoBytea.column),
           rowguid = row(idx + 10)(TypoUUID.column),
           modifieddate = row(idx + 11)(TypoLocalDateTime.column),
           documentnode = row(idx + 12)(DocumentId.column)
@@ -107,12 +107,12 @@ object DViewRow {
         "owner" -> BusinessentityId.writes.writes(o.owner),
         "folderflag" -> Flag.writes.writes(o.folderflag),
         "filename" -> Writes.StringWrites.writes(o.filename),
-        "fileextension" -> Writes.OptionWrites(Writes.StringWrites).writes(o.fileextension),
+        "fileextension" -> Writes.StringWrites.writes(o.fileextension),
         "revision" -> Writes.StringWrites.writes(o.revision),
         "changenumber" -> Writes.IntWrites.writes(o.changenumber),
         "status" -> TypoShort.writes.writes(o.status),
-        "documentsummary" -> Writes.OptionWrites(Writes.StringWrites).writes(o.documentsummary),
-        "document" -> Writes.OptionWrites(TypoBytea.writes).writes(o.document),
+        "documentsummary" -> Writes.StringWrites.writes(o.documentsummary),
+        "document" -> TypoBytea.writes.writes(o.document),
         "rowguid" -> TypoUUID.writes.writes(o.rowguid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate),
         "documentnode" -> DocumentId.writes.writes(o.documentnode)

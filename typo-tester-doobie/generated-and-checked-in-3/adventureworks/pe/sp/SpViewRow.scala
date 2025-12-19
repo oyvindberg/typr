@@ -24,7 +24,7 @@ case class SpViewRow(
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovinceid]] */
   stateprovinceid: StateprovinceId,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.stateprovincecode]] */
-  stateprovincecode: /* bpchar, max 3 chars */ String,
+  stateprovincecode: String,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.countryregioncode]] */
   countryregioncode: CountryregionId,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.isonlystateprovinceflag]] */
@@ -40,9 +40,9 @@ case class SpViewRow(
 )
 
 object SpViewRow {
-  given decoder: Decoder[SpViewRow] = Decoder.forProduct9[SpViewRow, StateprovinceId, StateprovinceId, /* bpchar, max 3 chars */ String, CountryregionId, Flag, Name, SalesterritoryId, TypoUUID, TypoLocalDateTime]("id", "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate")(SpViewRow.apply)(using StateprovinceId.decoder, StateprovinceId.decoder, Decoder.decodeString, CountryregionId.decoder, Flag.decoder, Name.decoder, SalesterritoryId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[SpViewRow] = Decoder.forProduct9[SpViewRow, StateprovinceId, StateprovinceId, String, CountryregionId, Flag, Name, SalesterritoryId, TypoUUID, TypoLocalDateTime]("id", "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate")(SpViewRow.apply)(using StateprovinceId.decoder, StateprovinceId.decoder, Decoder.decodeString, CountryregionId.decoder, Flag.decoder, Name.decoder, SalesterritoryId.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[SpViewRow] = Encoder.forProduct9[SpViewRow, StateprovinceId, StateprovinceId, /* bpchar, max 3 chars */ String, CountryregionId, Flag, Name, SalesterritoryId, TypoUUID, TypoLocalDateTime]("id", "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate")(x => (x.id, x.stateprovinceid, x.stateprovincecode, x.countryregioncode, x.isonlystateprovinceflag, x.name, x.territoryid, x.rowguid, x.modifieddate))(using StateprovinceId.encoder, StateprovinceId.encoder, Encoder.encodeString, CountryregionId.encoder, Flag.encoder, Name.encoder, SalesterritoryId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[SpViewRow] = Encoder.forProduct9[SpViewRow, StateprovinceId, StateprovinceId, String, CountryregionId, Flag, Name, SalesterritoryId, TypoUUID, TypoLocalDateTime]("id", "stateprovinceid", "stateprovincecode", "countryregioncode", "isonlystateprovinceflag", "name", "territoryid", "rowguid", "modifieddate")(x => (x.id, x.stateprovinceid, x.stateprovincecode, x.countryregioncode, x.isonlystateprovinceflag, x.name, x.territoryid, x.rowguid, x.modifieddate))(using StateprovinceId.encoder, StateprovinceId.encoder, Encoder.encodeString, CountryregionId.encoder, Flag.encoder, Name.encoder, SalesterritoryId.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given read: Read[SpViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -59,7 +59,7 @@ object SpViewRow {
       SpViewRow(
         id = arr(0).asInstanceOf[StateprovinceId],
             stateprovinceid = arr(1).asInstanceOf[StateprovinceId],
-            stateprovincecode = arr(2).asInstanceOf[/* bpchar, max 3 chars */ String],
+            stateprovincecode = arr(2).asInstanceOf[String],
             countryregioncode = arr(3).asInstanceOf[CountryregionId],
             isonlystateprovinceflag = arr(4).asInstanceOf[Flag],
             name = arr(5).asInstanceOf[Name],

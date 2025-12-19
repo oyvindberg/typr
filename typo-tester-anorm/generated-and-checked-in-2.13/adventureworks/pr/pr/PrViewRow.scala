@@ -34,11 +34,11 @@ case class PrViewRow(
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.reviewdate]] */
   reviewdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.emailaddress]] */
-  emailaddress: /* max 50 chars */ String,
+  emailaddress: String,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.rating]] */
   rating: Int,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.comments]] */
-  comments: Option[/* max 3850 chars */ String],
+  comments: String,
   /** Points to [[adventureworks.production.productreview.ProductreviewRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -55,7 +55,7 @@ object PrViewRow {
             reviewdate = json.\("reviewdate").as(TypoLocalDateTime.reads),
             emailaddress = json.\("emailaddress").as(Reads.StringReads),
             rating = json.\("rating").as(Reads.IntReads),
-            comments = json.\("comments").toOption.map(_.as(Reads.StringReads)),
+            comments = json.\("comments").as(Reads.StringReads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
         )
@@ -74,7 +74,7 @@ object PrViewRow {
           reviewdate = row(idx + 4)(TypoLocalDateTime.column),
           emailaddress = row(idx + 5)(Column.columnToString),
           rating = row(idx + 6)(Column.columnToInt),
-          comments = row(idx + 7)(Column.columnToOption(Column.columnToString)),
+          comments = row(idx + 7)(Column.columnToString),
           modifieddate = row(idx + 8)(TypoLocalDateTime.column)
         )
       )
@@ -91,7 +91,7 @@ object PrViewRow {
         "reviewdate" -> TypoLocalDateTime.writes.writes(o.reviewdate),
         "emailaddress" -> Writes.StringWrites.writes(o.emailaddress),
         "rating" -> Writes.IntWrites.writes(o.rating),
-        "comments" -> Writes.OptionWrites(Writes.StringWrites).writes(o.comments),
+        "comments" -> Writes.StringWrites.writes(o.comments),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))
     )

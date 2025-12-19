@@ -7,61 +7,19 @@ package testdb.product_search
 
 import java.math.BigDecimal
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
 
 class ProductSearchSqlRepoImpl() : ProductSearchSqlRepo {
   override fun apply(
-    brandId: Optional<Int>,
-    minPrice: Optional<BigDecimal>,
-    maxPrice: Optional<BigDecimal>,
-    status: Optional<String>,
+    brandId: Int?,
+    minPrice: BigDecimal?,
+    maxPrice: BigDecimal?,
+    status: String?,
     limit: Long,
     c: Connection
-  ): List<ProductSearchSqlRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      -- Search products with optional filters
-      SELECT p.product_id,
-             p.sku,
-             p.name,
-             p.short_description,
-             p.base_price,
-             p.status,
-             b.name AS brand_name
-      FROM products p
-      LEFT JOIN brands b ON p.brand_id = b.brand_id
-      WHERE (""".trimMargin()),
-    MariaTypes.int_.opt().encode(brandId),
-    typo.runtime.Fragment.lit(" IS NULL OR p.brand_id = "),
-    MariaTypes.int_.opt().encode(brandId),
-    typo.runtime.Fragment.lit("""
-      )
-        AND (""".trimMargin()),
-    MariaTypes.numeric.opt().encode(minPrice),
-    typo.runtime.Fragment.lit(" IS NULL OR p.base_price >= "),
-    MariaTypes.numeric.opt().encode(minPrice),
-    typo.runtime.Fragment.lit("""
-      )
-        AND (""".trimMargin()),
-    MariaTypes.numeric.opt().encode(maxPrice),
-    typo.runtime.Fragment.lit(" IS NULL OR p.base_price <= "),
-    MariaTypes.numeric.opt().encode(maxPrice),
-    typo.runtime.Fragment.lit("""
-      )
-        AND (""".trimMargin()),
-    MariaTypes.text.opt().encode(status),
-    typo.runtime.Fragment.lit(" IS NULL OR p.status = "),
-    MariaTypes.text.opt().encode(status),
-    typo.runtime.Fragment.lit("""
-      )
-      ORDER BY p.name
-      LIMIT """.trimMargin()),
-    MariaTypes.bigint.encode(limit),
-    typo.runtime.Fragment.lit("""
-
-
-    """.trimMargin())
-  ).query(ProductSearchSqlRow._rowParser.all()).runUnchecked(c)
+  ): List<ProductSearchSqlRow> = Fragment.interpolate(Fragment.lit("-- Search products with optional filters\nSELECT p.product_id,\n       p.sku,\n       p.name,\n       p.short_description,\n       p.base_price,\n       p.status,\n       b.name AS brand_name\nFROM products p\nLEFT JOIN brands b ON p.brand_id = b.brand_id\nWHERE ("), Fragment.encode(KotlinDbTypes.MariaTypes.smallintUnsigned.nullable(), brandId), Fragment.lit(" IS NULL OR p.brand_id = "), Fragment.encode(KotlinDbTypes.MariaTypes.smallintUnsigned.nullable(), brandId), Fragment.lit(")\n  AND ("), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), minPrice), Fragment.lit(" IS NULL OR p.base_price >= "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), minPrice), Fragment.lit(")\n  AND ("), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), maxPrice), Fragment.lit(" IS NULL OR p.base_price <= "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), maxPrice), Fragment.lit(")\n  AND ("), Fragment.encode(MariaTypes.text.nullable(), status), Fragment.lit(" IS NULL OR p.status = "), Fragment.encode(MariaTypes.text.nullable(), status), Fragment.lit(")\nORDER BY p.name\nLIMIT "), Fragment.encode(KotlinDbTypes.MariaTypes.bigint, limit), Fragment.lit("\n")).query(ProductSearchSqlRow._rowParser.all()).runUnchecked(c)
 }

@@ -6,13 +6,13 @@
 package testdb.inventory_check
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.inventory.InventoryId
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** SQL file: inventory_check.sql */
 case class InventoryCheckSqlRow(
@@ -31,17 +31,17 @@ case class InventoryCheckSqlRow(
   /** Points to [[testdb.warehouses.WarehousesRow.name]] */
   @JsonProperty("warehouse_name") warehouseName: String,
   /** Points to [[testdb.inventory.InventoryRow.quantityOnHand]] */
-  @JsonProperty("quantity_on_hand") quantityOnHand: Integer,
+  @JsonProperty("quantity_on_hand") quantityOnHand: Int,
   /** Points to [[testdb.inventory.InventoryRow.quantityReserved]] */
-  @JsonProperty("quantity_reserved") quantityReserved: Integer,
-  /** Points to [[testdb.inventory.InventoryRow.quantityOnHand]] */
-  available: Integer,
+  @JsonProperty("quantity_reserved") quantityReserved: Int,
+  /** Points to [[testdb.inventory.InventoryRow.quantityReserved]] */
+  available: Int,
   /** Points to [[testdb.inventory.InventoryRow.reorderPoint]] */
-  @JsonProperty("reorder_point") reorderPoint: Integer,
+  @JsonProperty("reorder_point") reorderPoint: Int,
   /** Points to [[testdb.inventory.InventoryRow.binLocation]] */
-  @JsonProperty("bin_location") binLocation: Optional[String]
+  @JsonProperty("bin_location") binLocation: String
 )
 
 object InventoryCheckSqlRow {
-  val `_rowParser`: RowParser[InventoryCheckSqlRow] = RowParsers.of(InventoryId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.varchar.opt(), InventoryCheckSqlRow.apply, row => Array[Object](row.inventoryId.asInstanceOf[Object], row.productId.asInstanceOf[Object], row.sku.asInstanceOf[Object], row.productName.asInstanceOf[Object], row.warehouseId.asInstanceOf[Object], row.warehouseCode.asInstanceOf[Object], row.warehouseName.asInstanceOf[Object], row.quantityOnHand.asInstanceOf[Object], row.quantityReserved.asInstanceOf[Object], row.available.asInstanceOf[Object], row.reorderPoint.asInstanceOf[Object], row.binLocation.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[InventoryCheckSqlRow] = RowParsers.of(InventoryId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, MariaTypes.varchar)(InventoryCheckSqlRow.apply)(row => Array[Any](row.inventoryId, row.productId, row.sku, row.productName, row.warehouseId, row.warehouseCode, row.warehouseName, row.quantityOnHand, row.quantityReserved, row.available, row.reorderPoint, row.binLocation))
 }

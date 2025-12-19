@@ -8,10 +8,10 @@ package adventureworks.production.culture
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait CultureFields {
   def cultureid: IdField[CultureId, CultureRow]
@@ -20,11 +20,11 @@ trait CultureFields {
 }
 
 object CultureFields {
-  lazy val structure: Relation[CultureFields, CultureRow] =
+  lazy val structure: RelationStructure[CultureFields, CultureRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[CultureFields, CultureRow] {
+    extends RelationStructure[CultureFields, CultureRow] {
 
     override lazy val fields: CultureFields = new CultureFields {
       override def cultureid = IdField[CultureId, CultureRow](_path, "cultureid", None, Some("bpchar"), x => x.cultureid, (row, value) => row.copy(cultureid = value))

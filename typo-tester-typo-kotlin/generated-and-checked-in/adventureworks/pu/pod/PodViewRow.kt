@@ -5,14 +5,14 @@
  */
 package adventureworks.pu.pod
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pu.pod */
 data class PodViewRow(
@@ -23,9 +23,9 @@ data class PodViewRow(
   /** Points to [adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.purchaseorderdetailid] */
   val purchaseorderdetailid: Int,
   /** Points to [adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.duedate] */
-  val duedate: TypoLocalDateTime,
+  val duedate: LocalDateTime,
   /** Points to [adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.orderqty] */
-  val orderqty: TypoShort,
+  val orderqty: Short,
   /** Points to [adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.productid] */
   val productid: ProductId,
   /** Points to [adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.unitprice] */
@@ -35,9 +35,9 @@ data class PodViewRow(
   /** Points to [adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.rejectedqty] */
   val rejectedqty: BigDecimal,
   /** Points to [adventureworks.purchasing.purchaseorderdetail.PurchaseorderdetailRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PodViewRow> = RowParsers.of(PgTypes.int4, PurchaseorderheaderId.pgType, PgTypes.int4, TypoLocalDateTime.pgType, TypoShort.pgType, ProductId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> PodViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.id, row.purchaseorderid, row.purchaseorderdetailid, row.duedate, row.orderqty, row.productid, row.unitprice, row.receivedqty, row.rejectedqty, row.modifieddate) })
+    val _rowParser: RowParser<PodViewRow> = RowParsers.of(KotlinDbTypes.PgTypes.int4, PurchaseorderheaderId.pgType, KotlinDbTypes.PgTypes.int4, PgTypes.timestamp, KotlinDbTypes.PgTypes.int2, ProductId.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> PodViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.id, row.purchaseorderid, row.purchaseorderdetailid, row.duedate, row.orderqty, row.productid, row.unitprice, row.receivedqty, row.rejectedqty, row.modifieddate) })
   }
 }

@@ -15,10 +15,10 @@ import typo.dsl.DeleteBuilder;
 import typo.dsl.Dialect;
 import typo.dsl.SelectBuilder;
 import typo.dsl.UpdateBuilder;
+import typo.runtime.Fragment;
 import typo.runtime.PgTypes;
 import typo.runtime.streamingInsert;
 import static typo.runtime.Fragment.interpolate;
-import static typo.runtime.internal.stringInterpolator.str;
 
 public class FootballClubRepoImpl implements FootballClubRepo {
   @Override
@@ -31,13 +31,7 @@ public class FootballClubRepoImpl implements FootballClubRepo {
     FootballClubId id,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-      delete from "myschema"."football_club" where "id" = 
-      """),
-      FootballClubId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("delete from \"myschema\".\"football_club\" where \"id\" = "), Fragment.encode(FootballClubId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -45,14 +39,7 @@ public class FootballClubRepoImpl implements FootballClubRepo {
     FootballClubId[] ids,
     Connection c
   ) {
-    return interpolate(
-               typo.runtime.Fragment.lit("""
-                  delete
-                  from "myschema"."football_club"
-                  where "id" = ANY("""),
-               FootballClubId.pgTypeArray.encode(ids),
-               typo.runtime.Fragment.lit(")")
-             )
+    return interpolate(Fragment.lit("delete\nfrom \"myschema\".\"football_club\"\nwhere \"id\" = ANY("), Fragment.encode(FootballClubId.pgTypeArray, ids), Fragment.lit(")"))
       .update()
       .runUnchecked(c);
   };
@@ -62,18 +49,7 @@ public class FootballClubRepoImpl implements FootballClubRepo {
     FootballClubRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "myschema"."football_club"("id", "name")
-         values ("""),
-      FootballClubId.pgType.encode(unsaved.id()),
-      typo.runtime.Fragment.lit("::int8, "),
-      PgTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-         )
-         returning "id", "name"
-      """)
-    )
+    return interpolate(Fragment.lit("insert into \"myschema\".\"football_club\"(\"id\", \"name\")\nvalues ("), Fragment.encode(FootballClubId.pgType, unsaved.id()), Fragment.lit("::int8, "), Fragment.encode(PgTypes.text, unsaved.name()), Fragment.lit(")\nreturning \"id\", \"name\"\n"))
       .updateReturning(FootballClubRow._rowParser.exactlyOne()).runUnchecked(c);
   };
 
@@ -83,9 +59,7 @@ public class FootballClubRepoImpl implements FootballClubRepo {
     Integer batchSize,
     Connection c
   ) {
-    return streamingInsert.insertUnchecked(str("""
-    COPY "myschema"."football_club"("id", "name") FROM STDIN
-    """), batchSize, unsaved, c, FootballClubRow.pgText);
+    return streamingInsert.insertUnchecked("COPY \"myschema\".\"football_club\"(\"id\", \"name\") FROM STDIN", batchSize, unsaved, c, FootballClubRow.pgText);
   };
 
   @Override
@@ -95,10 +69,7 @@ public class FootballClubRepoImpl implements FootballClubRepo {
 
   @Override
   public List<FootballClubRow> selectAll(Connection c) {
-    return interpolate(typo.runtime.Fragment.lit("""
-       select "id", "name"
-       from "myschema"."football_club"
-    """)).query(FootballClubRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"name\"\nfrom \"myschema\".\"football_club\"\n")).query(FootballClubRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -106,14 +77,7 @@ public class FootballClubRepoImpl implements FootballClubRepo {
     FootballClubId id,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "id", "name"
-         from "myschema"."football_club"
-         where "id" = """),
-      FootballClubId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).query(FootballClubRow._rowParser.first()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"name\"\nfrom \"myschema\".\"football_club\"\nwhere \"id\" = "), Fragment.encode(FootballClubId.pgType, id), Fragment.lit("")).query(FootballClubRow._rowParser.first()).runUnchecked(c);
   };
 
   @Override
@@ -121,14 +85,7 @@ public class FootballClubRepoImpl implements FootballClubRepo {
     FootballClubId[] ids,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         select "id", "name"
-         from "myschema"."football_club"
-         where "id" = ANY("""),
-      FootballClubId.pgTypeArray.encode(ids),
-      typo.runtime.Fragment.lit(")")
-    ).query(FootballClubRow._rowParser.all()).runUnchecked(c);
+    return interpolate(Fragment.lit("select \"id\", \"name\"\nfrom \"myschema\".\"football_club\"\nwhere \"id\" = ANY("), Fragment.encode(FootballClubId.pgTypeArray, ids), Fragment.lit(")")).query(FootballClubRow._rowParser.all()).runUnchecked(c);
   };
 
   @Override
@@ -143,7 +100,7 @@ public class FootballClubRepoImpl implements FootballClubRepo {
 
   @Override
   public UpdateBuilder<FootballClubFields, FootballClubRow> update() {
-    return UpdateBuilder.of("\"myschema\".\"football_club\"", FootballClubFields.structure(), FootballClubRow._rowParser.all(), Dialect.POSTGRESQL);
+    return UpdateBuilder.of("\"myschema\".\"football_club\"", FootballClubFields.structure(), FootballClubRow._rowParser, Dialect.POSTGRESQL);
   };
 
   @Override
@@ -152,17 +109,7 @@ public class FootballClubRepoImpl implements FootballClubRepo {
     Connection c
   ) {
     FootballClubId id = row.id();;
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         update "myschema"."football_club"
-         set "name" = """),
-      PgTypes.text.encode(row.name()),
-      typo.runtime.Fragment.lit("""
-   
-         where "id" = """),
-      FootballClubId.pgType.encode(id),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0;
+    return interpolate(Fragment.lit("update \"myschema\".\"football_club\"\nset \"name\" = "), Fragment.encode(PgTypes.text, row.name()), Fragment.lit("\nwhere \"id\" = "), Fragment.encode(FootballClubId.pgType, id), Fragment.lit("")).update().runUnchecked(c) > 0;
   };
 
   @Override
@@ -170,20 +117,7 @@ public class FootballClubRepoImpl implements FootballClubRepo {
     FootballClubRow unsaved,
     Connection c
   ) {
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-         insert into "myschema"."football_club"("id", "name")
-         values ("""),
-      FootballClubId.pgType.encode(unsaved.id()),
-      typo.runtime.Fragment.lit("::int8, "),
-      PgTypes.text.encode(unsaved.name()),
-      typo.runtime.Fragment.lit("""
-         )
-         on conflict ("id")
-         do update set
-           "name" = EXCLUDED."name"
-         returning "id", "name\"""")
-    )
+    return interpolate(Fragment.lit("insert into \"myschema\".\"football_club\"(\"id\", \"name\")\nvalues ("), Fragment.encode(FootballClubId.pgType, unsaved.id()), Fragment.lit("::int8, "), Fragment.encode(PgTypes.text, unsaved.name()), Fragment.lit(")\non conflict (\"id\")\ndo update set\n  \"name\" = EXCLUDED.\"name\"\nreturning \"id\", \"name\""))
       .updateReturning(FootballClubRow._rowParser.exactlyOne())
       .runUnchecked(c);
   };
@@ -193,15 +127,9 @@ public class FootballClubRepoImpl implements FootballClubRepo {
     Iterator<FootballClubRow> unsaved,
     Connection c
   ) {
-    return interpolate(typo.runtime.Fragment.lit("""
-                insert into "myschema"."football_club"("id", "name")
-                values (?::int8, ?)
-                on conflict ("id")
-                do update set
-                  "name" = EXCLUDED."name"
-                returning "id", "name\""""))
+    return interpolate(Fragment.lit("insert into \"myschema\".\"football_club\"(\"id\", \"name\")\nvalues (?::int8, ?)\non conflict (\"id\")\ndo update set\n  \"name\" = EXCLUDED.\"name\"\nreturning \"id\", \"name\""))
       .updateManyReturning(FootballClubRow._rowParser, unsaved)
-      .runUnchecked(c);
+    .runUnchecked(c);
   };
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
@@ -211,19 +139,8 @@ public class FootballClubRepoImpl implements FootballClubRepo {
     Integer batchSize,
     Connection c
   ) {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table football_club_TEMP (like "myschema"."football_club") on commit drop
-    """)).update().runUnchecked(c);
-    streamingInsert.insertUnchecked(str("""
-    copy football_club_TEMP("id", "name") from stdin
-    """), batchSize, unsaved, c, FootballClubRow.pgText);
-    return interpolate(typo.runtime.Fragment.lit("""
-       insert into "myschema"."football_club"("id", "name")
-       select * from football_club_TEMP
-       on conflict ("id")
-       do update set
-         "name" = EXCLUDED."name"
-       ;
-       drop table football_club_TEMP;""")).update().runUnchecked(c);
+    interpolate(Fragment.lit("create temporary table football_club_TEMP (like \"myschema\".\"football_club\") on commit drop")).update().runUnchecked(c);
+    streamingInsert.insertUnchecked("copy football_club_TEMP(\"id\", \"name\") from stdin", batchSize, unsaved, c, FootballClubRow.pgText);
+    return interpolate(Fragment.lit("insert into \"myschema\".\"football_club\"(\"id\", \"name\")\nselect * from football_club_TEMP\non conflict (\"id\")\ndo update set\n  \"name\" = EXCLUDED.\"name\"\n;\ndrop table football_club_TEMP;")).update().runUnchecked(c);
   };
 }

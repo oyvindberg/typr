@@ -15,6 +15,7 @@ import adventureworks.sales.specialoffer.SpecialofferId
 import adventureworks.sales.specialoffer.SpecialofferRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
 import typo.dsl.SqlExpr.CompositeIn
 import typo.dsl.SqlExpr.CompositeIn.TuplePart
@@ -22,7 +23,6 @@ import typo.dsl.SqlExpr.Const.As.as
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait SpecialofferproductFields {
   def specialofferid: IdField[SpecialofferId, SpecialofferproductRow]
@@ -43,11 +43,11 @@ trait SpecialofferproductFields {
 }
 
 object SpecialofferproductFields {
-  lazy val structure: Relation[SpecialofferproductFields, SpecialofferproductRow] =
+  lazy val structure: RelationStructure[SpecialofferproductFields, SpecialofferproductRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SpecialofferproductFields, SpecialofferproductRow] {
+    extends RelationStructure[SpecialofferproductFields, SpecialofferproductRow] {
 
     override lazy val fields: SpecialofferproductFields = new SpecialofferproductFields {
       override def specialofferid = IdField[SpecialofferId, SpecialofferproductRow](_path, "specialofferid", None, Some("int4"), x => x.specialofferid, (row, value) => row.copy(specialofferid = value))

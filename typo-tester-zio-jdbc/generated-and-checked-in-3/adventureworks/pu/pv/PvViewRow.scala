@@ -29,15 +29,15 @@ case class PvViewRow(
   /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.standardprice]] */
   standardprice: BigDecimal,
   /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.lastreceiptcost]] */
-  lastreceiptcost: Option[BigDecimal],
+  lastreceiptcost: BigDecimal,
   /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.lastreceiptdate]] */
-  lastreceiptdate: Option[TypoLocalDateTime],
+  lastreceiptdate: TypoLocalDateTime,
   /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.minorderqty]] */
   minorderqty: Int,
   /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.maxorderqty]] */
   maxorderqty: Int,
   /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.onorderqty]] */
-  onorderqty: Option[Int],
+  onorderqty: Int,
   /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.unitmeasurecode]] */
   unitmeasurecode: UnitmeasureId,
   /** Points to [[adventureworks.purchasing.productvendor.ProductvendorRow.modifieddate]] */
@@ -55,11 +55,11 @@ object PvViewRow {
             businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
             averageleadtime = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 3, rs)._2,
             standardprice = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 4, rs)._2,
-            lastreceiptcost = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 5, rs)._2,
-            lastreceiptdate = JdbcDecoder.optionDecoder(using TypoLocalDateTime.jdbcDecoder).unsafeDecode(columIndex + 6, rs)._2,
+            lastreceiptcost = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 5, rs)._2,
+            lastreceiptdate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
             minorderqty = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 7, rs)._2,
             maxorderqty = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 8, rs)._2,
-            onorderqty = JdbcDecoder.optionDecoder(using JdbcDecoder.intDecoder).unsafeDecode(columIndex + 9, rs)._2,
+            onorderqty = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 9, rs)._2,
             unitmeasurecode = UnitmeasureId.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 11, rs)._2
           )
@@ -73,11 +73,11 @@ object PvViewRow {
       val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
       val averageleadtime = jsonObj.get("averageleadtime").toRight("Missing field 'averageleadtime'").flatMap(_.as(using JsonDecoder.int))
       val standardprice = jsonObj.get("standardprice").toRight("Missing field 'standardprice'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
-      val lastreceiptcost = jsonObj.get("lastreceiptcost").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
-      val lastreceiptdate = jsonObj.get("lastreceiptdate").fold[Either[String, Option[TypoLocalDateTime]]](Right(None))(_.as(using JsonDecoder.option(using TypoLocalDateTime.jsonDecoder)))
+      val lastreceiptcost = jsonObj.get("lastreceiptcost").toRight("Missing field 'lastreceiptcost'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
+      val lastreceiptdate = jsonObj.get("lastreceiptdate").toRight("Missing field 'lastreceiptdate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       val minorderqty = jsonObj.get("minorderqty").toRight("Missing field 'minorderqty'").flatMap(_.as(using JsonDecoder.int))
       val maxorderqty = jsonObj.get("maxorderqty").toRight("Missing field 'maxorderqty'").flatMap(_.as(using JsonDecoder.int))
-      val onorderqty = jsonObj.get("onorderqty").fold[Either[String, Option[Int]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.int)))
+      val onorderqty = jsonObj.get("onorderqty").toRight("Missing field 'onorderqty'").flatMap(_.as(using JsonDecoder.int))
       val unitmeasurecode = jsonObj.get("unitmeasurecode").toRight("Missing field 'unitmeasurecode'").flatMap(_.as(using UnitmeasureId.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (id.isRight && productid.isRight && businessentityid.isRight && averageleadtime.isRight && standardprice.isRight && lastreceiptcost.isRight && lastreceiptdate.isRight && minorderqty.isRight && maxorderqty.isRight && onorderqty.isRight && unitmeasurecode.isRight && modifieddate.isRight)
@@ -106,10 +106,10 @@ object PvViewRow {
         JsonEncoder.scalaBigDecimal.unsafeEncode(a.standardprice, indent, out)
         out.write(",")
         out.write(""""lastreceiptcost":""")
-        JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.lastreceiptcost, indent, out)
+        JsonEncoder.scalaBigDecimal.unsafeEncode(a.lastreceiptcost, indent, out)
         out.write(",")
         out.write(""""lastreceiptdate":""")
-        JsonEncoder.option(using TypoLocalDateTime.jsonEncoder).unsafeEncode(a.lastreceiptdate, indent, out)
+        TypoLocalDateTime.jsonEncoder.unsafeEncode(a.lastreceiptdate, indent, out)
         out.write(",")
         out.write(""""minorderqty":""")
         JsonEncoder.int.unsafeEncode(a.minorderqty, indent, out)
@@ -118,7 +118,7 @@ object PvViewRow {
         JsonEncoder.int.unsafeEncode(a.maxorderqty, indent, out)
         out.write(",")
         out.write(""""onorderqty":""")
-        JsonEncoder.option(using JsonEncoder.int).unsafeEncode(a.onorderqty, indent, out)
+        JsonEncoder.int.unsafeEncode(a.onorderqty, indent, out)
         out.write(",")
         out.write(""""unitmeasurecode":""")
         UnitmeasureId.jsonEncoder.unsafeEncode(a.unitmeasurecode, indent, out)

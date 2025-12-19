@@ -18,39 +18,40 @@ import typo.data.maria.Inet6
 import typo.data.maria.MariaSet
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `mariatest` which has not been persisted yet */
 case class MariatestRowUnsaved(
   /**  */
-  @JsonProperty("tinyint_col") tinyintCol: java.lang.Byte,
+  @JsonProperty("tinyint_col") tinyintCol: Byte,
   /**  */
-  @JsonProperty("smallint_col") smallintCol: java.lang.Short,
+  @JsonProperty("smallint_col") smallintCol: Short,
   /**  */
-  @JsonProperty("mediumint_col") mediumintCol: Integer,
+  @JsonProperty("mediumint_col") mediumintCol: Int,
   /**  */
   @JsonProperty("int_col") intCol: MariatestId,
   /**  */
-  @JsonProperty("bigint_col") bigintCol: java.lang.Long,
+  @JsonProperty("bigint_col") bigintCol: Long,
   /**  */
-  @JsonProperty("tinyint_u_col") tinyintUCol: java.lang.Short,
+  @JsonProperty("tinyint_u_col") tinyintUCol: Short,
   /**  */
-  @JsonProperty("smallint_u_col") smallintUCol: Integer,
+  @JsonProperty("smallint_u_col") smallintUCol: Int,
   /**  */
-  @JsonProperty("mediumint_u_col") mediumintUCol: Integer,
+  @JsonProperty("mediumint_u_col") mediumintUCol: Int,
   /**  */
-  @JsonProperty("int_u_col") intUCol: java.lang.Long,
+  @JsonProperty("int_u_col") intUCol: Long,
   /**  */
   @JsonProperty("bigint_u_col") bigintUCol: BigInteger,
   /**  */
-  @JsonProperty("decimal_col") decimalCol: java.math.BigDecimal,
+  @JsonProperty("decimal_col") decimalCol: BigDecimal,
   /**  */
-  @JsonProperty("numeric_col") numericCol: java.math.BigDecimal,
+  @JsonProperty("numeric_col") numericCol: BigDecimal,
   /**  */
-  @JsonProperty("float_col") floatCol: java.lang.Float,
+  @JsonProperty("float_col") floatCol: Float,
   /**  */
-  @JsonProperty("double_col") doubleCol: java.lang.Double,
+  @JsonProperty("double_col") doubleCol: Double,
   /**  */
-  @JsonProperty("bool_col") boolCol: java.lang.Boolean,
+  @JsonProperty("bool_col") boolCol: Boolean,
   /**  */
   @JsonProperty("bit_col") bitCol: Array[Byte],
   /**  */
@@ -162,5 +163,5 @@ case class MariatestRowUnsaved(
 }
 
 object MariatestRowUnsaved {
-  given mariaText: MariaText[MariatestRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.tinyint.mariaText.unsafeEncode(row.tinyintCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.smallint.mariaText.unsafeEncode(row.smallintCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.mediumint.mariaText.unsafeEncode(row.mediumintCol, sb); sb.append(MariaText.DELIMETER); MariatestId.pgType.mariaText.unsafeEncode(row.intCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.bigint.mariaText.unsafeEncode(row.bigintCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.tinyintUnsigned.mariaText.unsafeEncode(row.tinyintUCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.smallintUnsigned.mariaText.unsafeEncode(row.smallintUCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.mediumintUnsigned.mariaText.unsafeEncode(row.mediumintUCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.intUnsigned.mariaText.unsafeEncode(row.intUCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.bigintUnsigned.mariaText.unsafeEncode(row.bigintUCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.decimalCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.numericCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.float_.mariaText.unsafeEncode(row.floatCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.double_.mariaText.unsafeEncode(row.doubleCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.bool.mariaText.unsafeEncode(row.boolCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.bit.mariaText.unsafeEncode(row.bitCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.bit.mariaText.unsafeEncode(row.bit1Col, sb); sb.append(MariaText.DELIMETER); MariaTypes.char_.mariaText.unsafeEncode(row.charCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.varcharCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.tinytext.mariaText.unsafeEncode(row.tinytextCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.textCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.mediumtext.mariaText.unsafeEncode(row.mediumtextCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.longtext.mariaText.unsafeEncode(row.longtextCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.binary.mariaText.unsafeEncode(row.binaryCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.varbinary.mariaText.unsafeEncode(row.varbinaryCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.tinyblob.mariaText.unsafeEncode(row.tinyblobCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.blob.mariaText.unsafeEncode(row.blobCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.mediumblob.mariaText.unsafeEncode(row.mediumblobCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.longblob.mariaText.unsafeEncode(row.longblobCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.date.mariaText.unsafeEncode(row.dateCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.time.mariaText.unsafeEncode(row.timeCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.time.mariaText.unsafeEncode(row.timeFspCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.datetime.mariaText.unsafeEncode(row.datetimeCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.datetime.mariaText.unsafeEncode(row.datetimeFspCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.year.mariaText.unsafeEncode(row.yearCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.enumCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.set.mariaText.unsafeEncode(row.setCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.longtext.mariaText.unsafeEncode(row.jsonCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.inet4.mariaText.unsafeEncode(row.inet4Col, sb); sb.append(MariaText.DELIMETER); MariaTypes.inet6.mariaText.unsafeEncode(row.inet6Col, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.timestamp.mariaText).unsafeEncode(row.timestampCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.timestamp.mariaText).unsafeEncode(row.timestampFspCol, sb) })
+  given mariaText: MariaText[MariatestRowUnsaved] = MariaText.instance((row, sb) => { ScalaDbTypes.MariaTypes.tinyint.mariaText.unsafeEncode(row.tinyintCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.smallint.mariaText.unsafeEncode(row.smallintCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.mediumint.mariaText.unsafeEncode(row.mediumintCol, sb); sb.append(MariaText.DELIMETER); MariatestId.pgType.mariaText.unsafeEncode(row.intCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.bigint.mariaText.unsafeEncode(row.bigintCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.tinyintUnsigned.mariaText.unsafeEncode(row.tinyintUCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.smallintUnsigned.mariaText.unsafeEncode(row.smallintUCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.mediumintUnsigned.mariaText.unsafeEncode(row.mediumintUCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.intUnsigned.mariaText.unsafeEncode(row.intUCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.bigintUnsigned.mariaText.unsafeEncode(row.bigintUCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.decimalCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.numericCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.float_.mariaText.unsafeEncode(row.floatCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.double_.mariaText.unsafeEncode(row.doubleCol, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.bool.mariaText.unsafeEncode(row.boolCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.bit.mariaText.unsafeEncode(row.bitCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.bit.mariaText.unsafeEncode(row.bit1Col, sb); sb.append(MariaText.DELIMETER); MariaTypes.char_.mariaText.unsafeEncode(row.charCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.varcharCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.tinytext.mariaText.unsafeEncode(row.tinytextCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.textCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.mediumtext.mariaText.unsafeEncode(row.mediumtextCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.longtext.mariaText.unsafeEncode(row.longtextCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.binary.mariaText.unsafeEncode(row.binaryCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.varbinary.mariaText.unsafeEncode(row.varbinaryCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.tinyblob.mariaText.unsafeEncode(row.tinyblobCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.blob.mariaText.unsafeEncode(row.blobCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.mediumblob.mariaText.unsafeEncode(row.mediumblobCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.longblob.mariaText.unsafeEncode(row.longblobCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.date.mariaText.unsafeEncode(row.dateCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.time.mariaText.unsafeEncode(row.timeCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.time.mariaText.unsafeEncode(row.timeFspCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.datetime.mariaText.unsafeEncode(row.datetimeCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.datetime.mariaText.unsafeEncode(row.datetimeFspCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.year.mariaText.unsafeEncode(row.yearCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.text.mariaText.unsafeEncode(row.enumCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.set.mariaText.unsafeEncode(row.setCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.longtext.mariaText.unsafeEncode(row.jsonCol, sb); sb.append(MariaText.DELIMETER); MariaTypes.inet4.mariaText.unsafeEncode(row.inet4Col, sb); sb.append(MariaText.DELIMETER); MariaTypes.inet6.mariaText.unsafeEncode(row.inet6Col, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.timestamp.mariaText).unsafeEncode(row.timestampCol, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.timestamp.mariaText).unsafeEncode(row.timestampFspCol, sb) })
 }

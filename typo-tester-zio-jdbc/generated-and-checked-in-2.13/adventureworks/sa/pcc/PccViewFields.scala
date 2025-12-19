@@ -9,9 +9,9 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait PccViewFields {
   def id: Field[BusinessentityId, PccViewRow]
@@ -21,11 +21,11 @@ trait PccViewFields {
 }
 
 object PccViewFields {
-  lazy val structure: Relation[PccViewFields, PccViewRow] =
+  lazy val structure: RelationStructure[PccViewFields, PccViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PccViewFields, PccViewRow] {
+    extends RelationStructure[PccViewFields, PccViewRow] {
 
     override lazy val fields: PccViewFields = new PccViewFields {
       override def id = Field[BusinessentityId, PccViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))

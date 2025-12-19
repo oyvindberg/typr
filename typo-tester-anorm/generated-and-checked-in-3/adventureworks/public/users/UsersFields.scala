@@ -8,11 +8,11 @@ package adventureworks.public.users
 import adventureworks.customtypes.TypoInstant
 import adventureworks.customtypes.TypoUnknownCitext
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait UsersFields {
   def userId: IdField[UsersId, UsersRow]
@@ -25,11 +25,11 @@ trait UsersFields {
 }
 
 object UsersFields {
-  lazy val structure: Relation[UsersFields, UsersRow] =
+  lazy val structure: RelationStructure[UsersFields, UsersRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[UsersFields, UsersRow] {
+    extends RelationStructure[UsersFields, UsersRow] {
 
     override lazy val fields: UsersFields = new UsersFields {
       override def userId = IdField[UsersId, UsersRow](_path, "user_id", None, Some("uuid"), x => x.userId, (row, value) => row.copy(userId = value))

@@ -6,7 +6,8 @@
 package adventureworks.sales.currencyrate
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class CurrencyrateId(@JsonValue val value: Int) {
       Bijection.of(CurrencyrateId::value, ::CurrencyrateId)
 
     val pgType: PgType<CurrencyrateId> =
-      PgTypes.int4.bimap(::CurrencyrateId, CurrencyrateId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::CurrencyrateId, CurrencyrateId::value)
 
     val pgTypeArray: PgType<Array<CurrencyrateId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::CurrencyrateId, CurrencyrateId::class.java) }, { xs -> arrayMap.map(xs, CurrencyrateId::value, Int::class.javaObjectType) })

@@ -5,31 +5,32 @@
  */
 package adventureworks.public.title
 
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.RowParser
 
 interface TitleFields : FieldsExpr<TitleRow> {
-  fun code(): IdField<TitleId, TitleRow>
+  abstract fun code(): IdField<TitleId, TitleRow>
 
-  override fun columns(): List<FieldLike<*, TitleRow>>
+  abstract override fun columns(): List<FieldLike<*, TitleRow>>
 
-  override fun rowParser(): RowParser<TitleRow> = TitleRow._rowParser
+  override fun rowParser(): RowParser<TitleRow> = TitleRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : TitleFields, Relation<TitleFields, TitleRow> {
-      override fun code(): IdField<TitleId, TitleRow> = IdField<TitleId, TitleRow>(_path, "code", TitleRow::code, Optional.empty(), Optional.empty(), { row, value -> row.copy(code = value) }, TitleId.pgType)
+    data class Impl(val _path: List<Path>) : TitleFields, RelationStructure<TitleFields, TitleRow> {
+      override fun code(): IdField<TitleId, TitleRow> = IdField<TitleId, TitleRow>(_path, "code", TitleRow::code, null, null, { row, value -> row.copy(code = value) }, TitleId.pgType)
 
-      override fun columns(): List<FieldLike<*, TitleRow>> = listOf(this.code())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<TitleFields, TitleRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, TitleRow>> = listOf(this.code().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<TitleFields, TitleRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

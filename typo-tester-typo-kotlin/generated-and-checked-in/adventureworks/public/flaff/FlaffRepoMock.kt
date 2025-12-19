@@ -8,21 +8,19 @@ package adventureworks.public.flaff
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class FlaffRepoMock(val map: MutableMap<FlaffId, FlaffRow> = mutableMapOf<FlaffId, FlaffRow>()) : FlaffRepo {
   override fun delete(): DeleteBuilder<FlaffFields, FlaffRow> = DeleteBuilderMock(FlaffFields.structure, { map.values.toList() }, DeleteParams.empty(), { row -> row.compositeId() }, { id -> map.remove(id) })
@@ -30,7 +28,7 @@ data class FlaffRepoMock(val map: MutableMap<FlaffId, FlaffRow> = mutableMapOf<F
   override fun deleteById(
     compositeId: FlaffId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(compositeId)).isPresent()
+  ): Boolean = map.remove(compositeId) != null
 
   override fun deleteByIds(
     compositeIds: Array<FlaffId>,
@@ -38,7 +36,7 @@ data class FlaffRepoMock(val map: MutableMap<FlaffId, FlaffRow> = mutableMapOf<F
   ): Int {
     var count = 0
     for (id in compositeIds) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -50,14 +48,14 @@ data class FlaffRepoMock(val map: MutableMap<FlaffId, FlaffRow> = mutableMapOf<F
     c: Connection
   ): FlaffRow {
     if (map.containsKey(unsaved.compositeId())) {
-      throw RuntimeException(str("id $unsaved.compositeId() already exists"))
+      throw RuntimeException("id " + unsaved.compositeId() + " already exists")
     }
     map[unsaved.compositeId()] = unsaved
     return unsaved
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<FlaffRow>,
+    unsaved: Iterator<FlaffRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -77,7 +75,7 @@ data class FlaffRepoMock(val map: MutableMap<FlaffId, FlaffRow> = mutableMapOf<F
   override fun selectById(
     compositeId: FlaffId,
     c: Connection
-  ): Optional<FlaffRow> = Optional.ofNullable(map[compositeId])
+  ): FlaffRow? = map[compositeId]
 
   override fun selectByIds(
     compositeIds: Array<FlaffId>,
@@ -85,9 +83,9 @@ data class FlaffRepoMock(val map: MutableMap<FlaffId, FlaffRow> = mutableMapOf<F
   ): List<FlaffRow> {
     val result = ArrayList<FlaffRow>()
     for (id in compositeIds) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -104,7 +102,7 @@ data class FlaffRepoMock(val map: MutableMap<FlaffId, FlaffRow> = mutableMapOf<F
     row: FlaffRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.compositeId()]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.compositeId()]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.compositeId()] = row
     }
@@ -120,7 +118,7 @@ data class FlaffRepoMock(val map: MutableMap<FlaffId, FlaffRow> = mutableMapOf<F
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<FlaffRow>,
+    unsaved: Iterator<FlaffRow>,
     c: Connection
   ): List<FlaffRow> {
     val result = ArrayList<FlaffRow>()
@@ -134,7 +132,7 @@ data class FlaffRepoMock(val map: MutableMap<FlaffId, FlaffRow> = mutableMapOf<F
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<FlaffRow>,
+    unsaved: Iterator<FlaffRow>,
     batchSize: Int,
     c: Connection
   ): Int {

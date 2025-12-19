@@ -8,20 +8,21 @@ package testdb.update_order_status
 import java.sql.Connection
 import testdb.orders.OrdersId
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Fragment
+import typo.scaladsl.Fragment.sql
 
 class UpdateOrderStatusSqlRepoImpl extends UpdateOrderStatusSqlRepo {
   override def apply(
-    newStatus: /* user-picked */ String,
+    newStatus: String,
     orderId: /* user-picked */ OrdersId
-  )(using c: Connection): Integer = {
-    interpolate"""-- Update order status
+  )(using c: Connection): Int = {
+    sql"""-- Update order status
     UPDATE orders
-    SET order_status = ${MariaTypes.text.encode(newStatus)},
-        confirmed_at = CASE WHEN ${MariaTypes.text.encode(newStatus)} = 'confirmed' THEN NOW(6) ELSE confirmed_at END,
-        shipped_at = CASE WHEN ${MariaTypes.text.encode(newStatus)} = 'shipped' THEN NOW(6) ELSE shipped_at END,
-        delivered_at = CASE WHEN ${MariaTypes.text.encode(newStatus)} = 'delivered' THEN NOW(6) ELSE delivered_at END
-    WHERE order_id = ${/* user-picked */ OrdersId.pgType.encode(orderId)}
+    SET order_status = ${Fragment.encode(MariaTypes.varchar, newStatus)},
+        confirmed_at = CASE WHEN ${Fragment.encode(MariaTypes.varchar, newStatus)} = 'confirmed' THEN NOW(6) ELSE confirmed_at END,
+        shipped_at = CASE WHEN ${Fragment.encode(MariaTypes.varchar, newStatus)} = 'shipped' THEN NOW(6) ELSE shipped_at END,
+        delivered_at = CASE WHEN ${Fragment.encode(MariaTypes.varchar, newStatus)} = 'delivered' THEN NOW(6) ELSE delivered_at END
+    WHERE order_id = ${Fragment.encode(OrdersId.pgType, orderId)}
     """.update().runUnchecked(c)
   }
 }

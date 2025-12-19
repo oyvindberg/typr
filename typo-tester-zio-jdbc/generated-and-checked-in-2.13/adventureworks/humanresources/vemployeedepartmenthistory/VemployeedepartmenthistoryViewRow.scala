@@ -21,15 +21,15 @@ case class VemployeedepartmenthistoryViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.person.person.PersonRow.title]] */
-  title: Option[/* max 8 chars */ String],
+  title: String,
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: String,
   /** Points to [[adventureworks.humanresources.shift.ShiftRow.name]] */
   shift: Name,
   /** Points to [[adventureworks.humanresources.department.DepartmentRow.name]] */
@@ -39,7 +39,7 @@ case class VemployeedepartmenthistoryViewRow(
   /** Points to [[adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.startdate]] */
   startdate: TypoLocalDate,
   /** Points to [[adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow.enddate]] */
-  enddate: Option[TypoLocalDate]
+  enddate: TypoLocalDate
 )
 
 object VemployeedepartmenthistoryViewRow {
@@ -49,16 +49,16 @@ object VemployeedepartmenthistoryViewRow {
         columIndex + 10 ->
           VemployeedepartmenthistoryViewRow(
             businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
-            title = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 1, rs)._2,
+            title = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 1, rs)._2,
             firstname = FirstName.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-            middlename = JdbcDecoder.optionDecoder(Name.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            middlename = Name.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
             lastname = Name.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-            suffix = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 5, rs)._2,
+            suffix = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 5, rs)._2,
             shift = Name.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
             department = Name.jdbcDecoder.unsafeDecode(columIndex + 7, rs)._2,
             groupname = Name.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2,
             startdate = TypoLocalDate.jdbcDecoder.unsafeDecode(columIndex + 9, rs)._2,
-            enddate = JdbcDecoder.optionDecoder(TypoLocalDate.jdbcDecoder).unsafeDecode(columIndex + 10, rs)._2
+            enddate = TypoLocalDate.jdbcDecoder.unsafeDecode(columIndex + 10, rs)._2
           )
     }
   }
@@ -66,16 +66,16 @@ object VemployeedepartmenthistoryViewRow {
   implicit lazy val jsonDecoder: JsonDecoder[VemployeedepartmenthistoryViewRow] = {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
       val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
-      val title = jsonObj.get("title").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val title = jsonObj.get("title").toRight("Missing field 'title'").flatMap(_.as(JsonDecoder.string))
       val firstname = jsonObj.get("firstname").toRight("Missing field 'firstname'").flatMap(_.as(FirstName.jsonDecoder))
-      val middlename = jsonObj.get("middlename").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
+      val middlename = jsonObj.get("middlename").toRight("Missing field 'middlename'").flatMap(_.as(Name.jsonDecoder))
       val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(Name.jsonDecoder))
-      val suffix = jsonObj.get("suffix").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val suffix = jsonObj.get("suffix").toRight("Missing field 'suffix'").flatMap(_.as(JsonDecoder.string))
       val shift = jsonObj.get("shift").toRight("Missing field 'shift'").flatMap(_.as(Name.jsonDecoder))
       val department = jsonObj.get("department").toRight("Missing field 'department'").flatMap(_.as(Name.jsonDecoder))
       val groupname = jsonObj.get("groupname").toRight("Missing field 'groupname'").flatMap(_.as(Name.jsonDecoder))
       val startdate = jsonObj.get("startdate").toRight("Missing field 'startdate'").flatMap(_.as(TypoLocalDate.jsonDecoder))
-      val enddate = jsonObj.get("enddate").fold[Either[String, Option[TypoLocalDate]]](Right(None))(_.as(JsonDecoder.option(TypoLocalDate.jsonDecoder)))
+      val enddate = jsonObj.get("enddate").toRight("Missing field 'enddate'").flatMap(_.as(TypoLocalDate.jsonDecoder))
       if (businessentityid.isRight && title.isRight && firstname.isRight && middlename.isRight && lastname.isRight && suffix.isRight && shift.isRight && department.isRight && groupname.isRight && startdate.isRight && enddate.isRight)
         Right(VemployeedepartmenthistoryViewRow(businessentityid = businessentityid.toOption.get, title = title.toOption.get, firstname = firstname.toOption.get, middlename = middlename.toOption.get, lastname = lastname.toOption.get, suffix = suffix.toOption.get, shift = shift.toOption.get, department = department.toOption.get, groupname = groupname.toOption.get, startdate = startdate.toOption.get, enddate = enddate.toOption.get))
       else Left(List[Either[String, Any]](businessentityid, title, firstname, middlename, lastname, suffix, shift, department, groupname, startdate, enddate).flatMap(_.left.toOption).mkString(", "))
@@ -90,19 +90,19 @@ object VemployeedepartmenthistoryViewRow {
         BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
         out.write(",")
         out.write(""""title":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.title, indent, out)
+        JsonEncoder.string.unsafeEncode(a.title, indent, out)
         out.write(",")
         out.write(""""firstname":""")
         FirstName.jsonEncoder.unsafeEncode(a.firstname, indent, out)
         out.write(",")
         out.write(""""middlename":""")
-        JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.middlename, indent, out)
+        Name.jsonEncoder.unsafeEncode(a.middlename, indent, out)
         out.write(",")
         out.write(""""lastname":""")
         Name.jsonEncoder.unsafeEncode(a.lastname, indent, out)
         out.write(",")
         out.write(""""suffix":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.suffix, indent, out)
+        JsonEncoder.string.unsafeEncode(a.suffix, indent, out)
         out.write(",")
         out.write(""""shift":""")
         Name.jsonEncoder.unsafeEncode(a.shift, indent, out)
@@ -117,7 +117,7 @@ object VemployeedepartmenthistoryViewRow {
         TypoLocalDate.jsonEncoder.unsafeEncode(a.startdate, indent, out)
         out.write(",")
         out.write(""""enddate":""")
-        JsonEncoder.option(TypoLocalDate.jsonEncoder).unsafeEncode(a.enddate, indent, out)
+        TypoLocalDate.jsonEncoder.unsafeEncode(a.enddate, indent, out)
         out.write("}")
       }
     }

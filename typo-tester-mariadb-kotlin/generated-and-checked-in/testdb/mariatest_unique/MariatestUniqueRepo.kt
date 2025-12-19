@@ -6,81 +6,80 @@
 package testdb.mariatest_unique
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface MariatestUniqueRepo {
-  fun delete(): DeleteBuilder<MariatestUniqueFields, MariatestUniqueRow>
+  abstract fun delete(): DeleteBuilder<MariatestUniqueFields, MariatestUniqueRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     id: MariatestUniqueId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     ids: Array<MariatestUniqueId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: MariatestUniqueRow,
     c: Connection
   ): MariatestUniqueRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: MariatestUniqueRowUnsaved,
     c: Connection
   ): MariatestUniqueRow
 
-  fun select(): SelectBuilder<MariatestUniqueFields, MariatestUniqueRow>
+  abstract fun select(): SelectBuilder<MariatestUniqueFields, MariatestUniqueRow>
 
-  fun selectAll(c: Connection): List<MariatestUniqueRow>
+  abstract fun selectAll(c: Connection): List<MariatestUniqueRow>
 
-  fun selectById(
+  abstract fun selectById(
     id: MariatestUniqueId,
     c: Connection
-  ): Optional<MariatestUniqueRow>
+  ): MariatestUniqueRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     ids: Array<MariatestUniqueId>,
     c: Connection
   ): List<MariatestUniqueRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     ids: Array<MariatestUniqueId>,
     c: Connection
   ): Map<MariatestUniqueId, MariatestUniqueRow>
 
-  fun selectByUniqueCodeAndCategory(
+  abstract fun selectByUniqueCodeAndCategory(
     code: String,
     category: String,
     c: Connection
-  ): Optional<MariatestUniqueRow>
+  ): MariatestUniqueRow?
 
-  fun selectByUniqueEmail(
+  abstract fun selectByUniqueEmail(
     email: String,
     c: Connection
-  ): Optional<MariatestUniqueRow>
+  ): MariatestUniqueRow?
 
-  fun update(): UpdateBuilder<MariatestUniqueFields, MariatestUniqueRow>
+  abstract fun update(): UpdateBuilder<MariatestUniqueFields, MariatestUniqueRow>
 
-  fun update(
+  abstract fun update(
     row: MariatestUniqueRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: MariatestUniqueRow,
     c: Connection
   ): MariatestUniqueRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<MariatestUniqueRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<MariatestUniqueRow>,
     c: Connection
   ): List<MariatestUniqueRow>
 }

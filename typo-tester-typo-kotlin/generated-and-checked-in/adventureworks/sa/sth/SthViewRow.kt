@@ -5,13 +5,13 @@
  */
 package adventureworks.sa.sth
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
-import java.util.Optional
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: sa.sth */
 data class SthViewRow(
@@ -22,15 +22,15 @@ data class SthViewRow(
   /** Points to [adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.territoryid] */
   val territoryid: SalesterritoryId,
   /** Points to [adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.startdate] */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Points to [adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.enddate] */
-  val enddate: Optional<TypoLocalDateTime>,
+  val enddate: LocalDateTime,
   /** Points to [adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.sales.salesterritoryhistory.SalesterritoryhistoryRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<SthViewRow> = RowParsers.of(SalesterritoryId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> SthViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.territoryid, row.startdate, row.enddate, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SthViewRow> = RowParsers.of(SalesterritoryId.pgType, BusinessentityId.pgType, SalesterritoryId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> SthViewRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.territoryid, row.startdate, row.enddate, row.rowguid, row.modifieddate) })
   }
 }

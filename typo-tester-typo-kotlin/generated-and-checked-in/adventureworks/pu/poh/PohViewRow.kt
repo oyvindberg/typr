@@ -5,16 +5,15 @@
  */
 package adventureworks.pu.poh
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import adventureworks.purchasing.shipmethod.ShipmethodId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pu.poh */
 data class PohViewRow(
@@ -23,9 +22,9 @@ data class PohViewRow(
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.purchaseorderid] */
   val purchaseorderid: PurchaseorderheaderId,
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.revisionnumber] */
-  val revisionnumber: TypoShort,
+  val revisionnumber: Short,
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.status] */
-  val status: TypoShort,
+  val status: Short,
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.employeeid] */
   val employeeid: BusinessentityId,
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.vendorid] */
@@ -33,9 +32,9 @@ data class PohViewRow(
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.shipmethodid] */
   val shipmethodid: ShipmethodId,
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.orderdate] */
-  val orderdate: TypoLocalDateTime,
+  val orderdate: LocalDateTime,
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.shipdate] */
-  val shipdate: Optional<TypoLocalDateTime>,
+  val shipdate: LocalDateTime,
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.subtotal] */
   val subtotal: BigDecimal,
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.taxamt] */
@@ -43,9 +42,9 @@ data class PohViewRow(
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.freight] */
   val freight: BigDecimal,
   /** Points to [adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PohViewRow> = RowParsers.of(PurchaseorderheaderId.pgType, PurchaseorderheaderId.pgType, TypoShort.pgType, TypoShort.pgType, BusinessentityId.pgType, BusinessentityId.pgType, ShipmethodId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> PohViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.id, row.purchaseorderid, row.revisionnumber, row.status, row.employeeid, row.vendorid, row.shipmethodid, row.orderdate, row.shipdate, row.subtotal, row.taxamt, row.freight, row.modifieddate) })
+    val _rowParser: RowParser<PohViewRow> = RowParsers.of(PurchaseorderheaderId.pgType, PurchaseorderheaderId.pgType, KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, BusinessentityId.pgType, BusinessentityId.pgType, ShipmethodId.pgType, PgTypes.timestamp, PgTypes.timestamp, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> PohViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) }, { row -> arrayOf<Any?>(row.id, row.purchaseorderid, row.revisionnumber, row.status, row.employeeid, row.vendorid, row.shipmethodid, row.orderdate, row.shipdate, row.subtotal, row.taxamt, row.freight, row.modifieddate) })
   }
 }

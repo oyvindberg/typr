@@ -7,15 +7,12 @@ package adventureworks.pr.c
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class CViewRepoImpl() : CViewRepo {
   override fun select(): SelectBuilder<CViewFields, CViewRow> = SelectBuilder.of("\"pr\".\"c\"", CViewFields.structure, CViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<CViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "cultureid", "name", "modifieddate"::text
-    from "pr"."c"
-  """.trimMargin())).query(CViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<CViewRow> = Fragment.interpolate(Fragment.lit("select \"id\", \"cultureid\", \"name\", \"modifieddate\"\nfrom \"pr\".\"c\"\n")).query(CViewRow._rowParser.all()).runUnchecked(c)
 }

@@ -28,13 +28,13 @@ case class BomViewRow(
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.billofmaterialsid]] */
   billofmaterialsid: Int,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.productassemblyid]] */
-  productassemblyid: Option[ProductId],
+  productassemblyid: ProductId,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.componentid]] */
   componentid: ProductId,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.unitmeasurecode]] */
   unitmeasurecode: UnitmeasureId,
   /** Points to [[adventureworks.production.billofmaterials.BillofmaterialsRow.bomlevel]] */
@@ -52,10 +52,10 @@ object BomViewRow {
           BomViewRow(
             id = json.\("id").as(Reads.IntReads),
             billofmaterialsid = json.\("billofmaterialsid").as(Reads.IntReads),
-            productassemblyid = json.\("productassemblyid").toOption.map(_.as(ProductId.reads)),
+            productassemblyid = json.\("productassemblyid").as(ProductId.reads),
             componentid = json.\("componentid").as(ProductId.reads),
             startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-            enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            enddate = json.\("enddate").as(TypoLocalDateTime.reads),
             unitmeasurecode = json.\("unitmeasurecode").as(UnitmeasureId.reads),
             bomlevel = json.\("bomlevel").as(TypoShort.reads),
             perassemblyqty = json.\("perassemblyqty").as(Reads.bigDecReads),
@@ -72,10 +72,10 @@ object BomViewRow {
         BomViewRow(
           id = row(idx + 0)(using Column.columnToInt),
           billofmaterialsid = row(idx + 1)(using Column.columnToInt),
-          productassemblyid = row(idx + 2)(using Column.columnToOption(using ProductId.column)),
+          productassemblyid = row(idx + 2)(using ProductId.column),
           componentid = row(idx + 3)(using ProductId.column),
           startdate = row(idx + 4)(using TypoLocalDateTime.column),
-          enddate = row(idx + 5)(using Column.columnToOption(using TypoLocalDateTime.column)),
+          enddate = row(idx + 5)(using TypoLocalDateTime.column),
           unitmeasurecode = row(idx + 6)(using UnitmeasureId.column),
           bomlevel = row(idx + 7)(using TypoShort.column),
           perassemblyqty = row(idx + 8)(using Column.columnToScalaBigDecimal),
@@ -90,10 +90,10 @@ object BomViewRow {
       new JsObject(ListMap[String, JsValue](
         "id" -> Writes.IntWrites.writes(o.id),
         "billofmaterialsid" -> Writes.IntWrites.writes(o.billofmaterialsid),
-        "productassemblyid" -> Writes.OptionWrites(using ProductId.writes).writes(o.productassemblyid),
+        "productassemblyid" -> ProductId.writes.writes(o.productassemblyid),
         "componentid" -> ProductId.writes.writes(o.componentid),
         "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-        "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
+        "enddate" -> TypoLocalDateTime.writes.writes(o.enddate),
         "unitmeasurecode" -> UnitmeasureId.writes.writes(o.unitmeasurecode),
         "bomlevel" -> TypoShort.writes.writes(o.bomlevel),
         "perassemblyqty" -> Writes.BigDecimalWrites.writes(o.perassemblyqty),

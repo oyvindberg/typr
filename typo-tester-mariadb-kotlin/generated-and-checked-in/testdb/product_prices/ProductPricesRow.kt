@@ -8,14 +8,15 @@ package testdb.product_prices
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.price_tiers.PriceTiersId
 import testdb.products.ProductsId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: product_prices
   * Primary key: price_id
@@ -33,7 +34,7 @@ data class ProductPricesRow(
     * Default: NULL
     * Points to [testdb.price_tiers.PriceTiersRow.tierId]
     */
-  @JsonProperty("tier_id") val tierId: Optional<PriceTiersId>,
+  @JsonProperty("tier_id") val tierId: PriceTiersId?,
   /**  */
   val price: BigDecimal,
   /** 
@@ -45,20 +46,20 @@ data class ProductPricesRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("valid_to") val validTo: Optional<LocalDate>
+  @JsonProperty("valid_to") val validTo: LocalDate?
 ) {
   fun id(): ProductPricesId = priceId
 
   fun toUnsavedRow(
-    tierId: Defaulted<Optional<PriceTiersId>>,
+    tierId: Defaulted<PriceTiersId?>,
     currencyCode: Defaulted<String>,
-    validTo: Defaulted<Optional<LocalDate>>
+    validTo: Defaulted<LocalDate?>
   ): ProductPricesRowUnsaved = ProductPricesRowUnsaved(productId, price, validFrom, tierId, currencyCode, validTo)
 
   companion object {
-    val _rowParser: RowParser<ProductPricesRow> = RowParsers.of(ProductPricesId.pgType, ProductsId.pgType, PriceTiersId.pgType.opt(), MariaTypes.decimal, MariaTypes.char_, MariaTypes.date, MariaTypes.date.opt(), { t0, t1, t2, t3, t4, t5, t6 -> ProductPricesRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.priceId, row.productId, row.tierId, row.price, row.currencyCode, row.validFrom, row.validTo) })
+    val _rowParser: RowParser<ProductPricesRow> = RowParsers.of(ProductPricesId.pgType, ProductsId.pgType, PriceTiersId.pgType.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.date, MariaTypes.date.nullable(), { t0, t1, t2, t3, t4, t5, t6 -> ProductPricesRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.priceId, row.productId, row.tierId, row.price, row.currencyCode, row.validFrom, row.validTo) })
 
     val mariaText: MariaText<ProductPricesRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

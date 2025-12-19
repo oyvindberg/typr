@@ -6,10 +6,10 @@
 package testdb.v_customer_summary
 
 import java.sql.Connection
-import typo.dsl.SelectBuilder
+import typo.scaladsl.SelectBuilder
 
 trait VCustomerSummaryViewRepo {
   def select: SelectBuilder[VCustomerSummaryViewFields, VCustomerSummaryViewRow]
 
-  def selectAll(using c: Connection): java.util.List[VCustomerSummaryViewRow]
+  def selectAll(using c: Connection): List[VCustomerSummaryViewRow]
 }

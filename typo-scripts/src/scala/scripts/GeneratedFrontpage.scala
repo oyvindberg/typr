@@ -3,6 +3,7 @@ package scripts
 import ryddig.{Formatter, LogLevel, LogPatterns, Loggers}
 import typo.*
 import typo.internal.codegen.LangScala
+import typo.internal.external.{ExternalTools, ExternalToolsConfig}
 import typo.internal.pg.OpenEnum
 import typo.internal.sqlfiles.SqlFileReader
 import typo.internal.{FileSync, generate}
@@ -27,14 +28,15 @@ object GeneratedFrontpage {
         val scriptsPath = buildDir.resolve("db/pg/frontpage")
         val selector = Selector.schemas("frontpage")
         val typoLogger = TypoLogger.Console
-        val metadb = Await.result(MetaDb.fromDb(typoLogger, ds, selector, schemaMode = SchemaMode.MultiSchema), Duration.Inf)
+        val externalTools = ExternalTools.init(typoLogger, ExternalToolsConfig.default)
+        val metadb = Await.result(MetaDb.fromDb(typoLogger, ds, selector, schemaMode = SchemaMode.MultiSchema, externalTools), Duration.Inf)
         val relationNameToOpenEnum = Map.empty[db.RelationName, OpenEnum]
 
-        val sqlScripts = Await.result(SqlFileReader(typoLogger, scriptsPath, ds), Duration.Inf)
+        val sqlScripts = Await.result(SqlFileReader(typoLogger, scriptsPath, ds, externalTools), Duration.Inf)
 
         val options = Options(
           pkg = "frontpage",
-          lang = LangScala(Dialect.Scala2XSource3, TypeSupportScala),
+          lang = LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala),
           dbLib = Some(DbLibName.Anorm),
           jsonLibs = List(JsonLibName.PlayJson),
           typeOverride = TypeOverride.Empty,

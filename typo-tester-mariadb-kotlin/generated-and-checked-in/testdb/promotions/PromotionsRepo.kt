@@ -6,75 +6,74 @@
 package testdb.promotions
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PromotionsRepo {
-  fun delete(): DeleteBuilder<PromotionsFields, PromotionsRow>
+  abstract fun delete(): DeleteBuilder<PromotionsFields, PromotionsRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     promotionId: PromotionsId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     promotionIds: Array<PromotionsId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: PromotionsRow,
     c: Connection
   ): PromotionsRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: PromotionsRowUnsaved,
     c: Connection
   ): PromotionsRow
 
-  fun select(): SelectBuilder<PromotionsFields, PromotionsRow>
+  abstract fun select(): SelectBuilder<PromotionsFields, PromotionsRow>
 
-  fun selectAll(c: Connection): List<PromotionsRow>
+  abstract fun selectAll(c: Connection): List<PromotionsRow>
 
-  fun selectById(
+  abstract fun selectById(
     promotionId: PromotionsId,
     c: Connection
-  ): Optional<PromotionsRow>
+  ): PromotionsRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     promotionIds: Array<PromotionsId>,
     c: Connection
   ): List<PromotionsRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     promotionIds: Array<PromotionsId>,
     c: Connection
   ): Map<PromotionsId, PromotionsRow>
 
-  fun selectByUniqueCode(
+  abstract fun selectByUniqueCode(
     code: String,
     c: Connection
-  ): Optional<PromotionsRow>
+  ): PromotionsRow?
 
-  fun update(): UpdateBuilder<PromotionsFields, PromotionsRow>
+  abstract fun update(): UpdateBuilder<PromotionsFields, PromotionsRow>
 
-  fun update(
+  abstract fun update(
     row: PromotionsRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: PromotionsRow,
     c: Connection
   ): PromotionsRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<PromotionsRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<PromotionsRow>,
     c: Connection
   ): List<PromotionsRow>
 }

@@ -5,12 +5,12 @@
  */
 package adventureworks.sa.cc
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.userdefined.CustomCreditcardId
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sa.cc */
 data class CcViewRow(
@@ -19,17 +19,17 @@ data class CcViewRow(
   /** Points to [adventureworks.sales.creditcard.CreditcardRow.creditcardid] */
   val creditcardid: /* user-picked */ CustomCreditcardId,
   /** Points to [adventureworks.sales.creditcard.CreditcardRow.cardtype] */
-  val cardtype: /* max 50 chars */ String,
+  val cardtype: String,
   /** Points to [adventureworks.sales.creditcard.CreditcardRow.cardnumber] */
-  val cardnumber: /* max 25 chars */ String,
+  val cardnumber: String,
   /** Points to [adventureworks.sales.creditcard.CreditcardRow.expmonth] */
-  val expmonth: TypoShort,
+  val expmonth: Short,
   /** Points to [adventureworks.sales.creditcard.CreditcardRow.expyear] */
-  val expyear: TypoShort,
+  val expyear: Short,
   /** Points to [adventureworks.sales.creditcard.CreditcardRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<CcViewRow> = RowParsers.of(CustomCreditcardId.pgType, CustomCreditcardId.pgType, PgTypes.text, PgTypes.text, TypoShort.pgType, TypoShort.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> CcViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.creditcardid, row.cardtype, row.cardnumber, row.expmonth, row.expyear, row.modifieddate) })
+    val _rowParser: RowParser<CcViewRow> = RowParsers.of(CustomCreditcardId.pgType, CustomCreditcardId.pgType, PgTypes.text, PgTypes.text, KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> CcViewRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.id, row.creditcardid, row.cardtype, row.cardnumber, row.expmonth, row.expyear, row.modifieddate) })
   }
 }

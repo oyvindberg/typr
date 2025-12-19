@@ -7,10 +7,10 @@ package adventureworks.person.vadditionalcontactinfo
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VadditionalcontactinfoViewRepo {
-  fun select(): SelectBuilder<VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow>
+  abstract fun select(): SelectBuilder<VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow>
 
-  fun selectAll(c: Connection): List<VadditionalcontactinfoViewRow>
+  abstract fun selectAll(c: Connection): List<VadditionalcontactinfoViewRow>
 }

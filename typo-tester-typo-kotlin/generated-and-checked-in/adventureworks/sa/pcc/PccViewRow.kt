@@ -5,11 +5,12 @@
  */
 package adventureworks.sa.pcc
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: sa.pcc */
 data class PccViewRow(
@@ -20,9 +21,9 @@ data class PccViewRow(
   /** Points to [adventureworks.sales.personcreditcard.PersoncreditcardRow.creditcardid] */
   val creditcardid: /* user-picked */ CustomCreditcardId,
   /** Points to [adventureworks.sales.personcreditcard.PersoncreditcardRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PccViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, CustomCreditcardId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3 -> PccViewRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.creditcardid, row.modifieddate) })
+    val _rowParser: RowParser<PccViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, CustomCreditcardId.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> PccViewRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.creditcardid, row.modifieddate) })
   }
 }

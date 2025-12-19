@@ -8,10 +8,11 @@ package testdb.price_tiers
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import testdb.customtypes.Defaulted
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: price_tiers
   * Primary key: tier_id
@@ -37,9 +38,9 @@ data class PriceTiersRow(
   fun toUnsavedRow(minQuantity: Defaulted<Long>): PriceTiersRowUnsaved = PriceTiersRowUnsaved(name, discountType, discountValue, minQuantity)
 
   companion object {
-    val _rowParser: RowParser<PriceTiersRow> = RowParsers.of(PriceTiersId.pgType, MariaTypes.varchar, MariaTypes.intUnsigned, MariaTypes.text, MariaTypes.decimal, { t0, t1, t2, t3, t4 -> PriceTiersRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.tierId, row.name, row.minQuantity, row.discountType, row.discountValue) })
+    val _rowParser: RowParser<PriceTiersRow> = RowParsers.of(PriceTiersId.pgType, MariaTypes.varchar, KotlinDbTypes.MariaTypes.intUnsigned, MariaTypes.text, KotlinDbTypes.MariaTypes.numeric, { t0, t1, t2, t3, t4 -> PriceTiersRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.tierId, row.name, row.minQuantity, row.discountType, row.discountValue) })
 
     val mariaText: MariaText<PriceTiersRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

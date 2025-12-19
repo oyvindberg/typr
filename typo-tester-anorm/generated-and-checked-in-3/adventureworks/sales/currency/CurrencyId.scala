@@ -14,14 +14,14 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.currency` */
-case class CurrencyId(value: /* bpchar, max 3 chars */ String) extends scala.AnyVal
+case class CurrencyId(value: String) extends scala.AnyVal
 
 object CurrencyId {
   given arrayColumn: Column[Array[CurrencyId]] = Column.columnToArray(using column, implicitly)
 
   given arrayToStatement: ToStatement[Array[CurrencyId]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  given bijection: Bijection[CurrencyId, /* bpchar, max 3 chars */ String] = Bijection.apply[CurrencyId, /* bpchar, max 3 chars */ String](_.value)(CurrencyId.apply)
+  given bijection: Bijection[CurrencyId, String] = Bijection.apply[CurrencyId, String](_.value)(CurrencyId.apply)
 
   given column: Column[CurrencyId] = Column.columnToString.map(CurrencyId.apply)
 

@@ -7,21 +7,20 @@ package testdb.product_prices
 
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.price_tiers.PriceTiersId
 import testdb.products.ProductsId
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
 
 class ProductPricesRepoImpl() : ProductPricesRepo {
   override fun delete(): DeleteBuilder<ProductPricesFields, ProductPricesRow> = DeleteBuilder.of("`product_prices`", ProductPricesFields.structure, Dialect.MARIADB)
@@ -29,137 +28,69 @@ class ProductPricesRepoImpl() : ProductPricesRepo {
   override fun deleteById(
     priceId: ProductPricesId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("delete from `product_prices` where `price_id` = "),
-    ProductPricesId.pgType.encode(priceId),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from `product_prices` where `price_id` = "), Fragment.encode(ProductPricesId.pgType, priceId), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     priceIds: Array<ProductPricesId>,
     c: Connection
   ): Int {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in priceIds) { fragments.add(ProductPricesId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in priceIds) { fragments.add(Fragment.encode(ProductPricesId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("delete from `product_prices` where `price_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: ProductPricesRow,
     c: Connection
-  ): ProductPricesRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
-      values (""".trimMargin()),
-    ProductsId.pgType.encode(unsaved.productId),
-    typo.runtime.Fragment.lit(", "),
-    PriceTiersId.pgType.opt().encode(unsaved.tierId),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.encode(unsaved.price),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.currencyCode),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.date.encode(unsaved.validFrom),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.date.opt().encode(unsaved.validTo),
-    typo.runtime.Fragment.lit("""
-      )
-      returning `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
-    """.trimMargin())
-  )
+  ): ProductPricesRow = Fragment.interpolate(Fragment.lit("insert into `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)\nvalues ("), Fragment.encode(ProductsId.pgType, unsaved.productId), Fragment.lit(", "), Fragment.encode(PriceTiersId.pgType.nullable(), unsaved.tierId), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric, unsaved.price), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.currencyCode), Fragment.lit(", "), Fragment.encode(MariaTypes.date, unsaved.validFrom), Fragment.lit(", "), Fragment.encode(MariaTypes.date.nullable(), unsaved.validTo), Fragment.lit(")\nreturning `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`\n"))
     .updateReturning(ProductPricesRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: ProductPricesRowUnsaved,
     c: Connection
   ): ProductPricesRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("`product_id`"))
-    values.add(interpolate(
-      ProductsId.pgType.encode(unsaved.productId),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId), Fragment.lit("")))
     columns.add(Fragment.lit("`price`"))
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.price),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.numeric, unsaved.price), Fragment.lit("")))
     columns.add(Fragment.lit("`valid_from`"))
-    values.add(interpolate(
-      MariaTypes.date.encode(unsaved.validFrom),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.date, unsaved.validFrom), Fragment.lit("")))
     unsaved.tierId.visit(
       {  },
       { value -> columns.add(Fragment.lit("`tier_id`"))
-      values.add(interpolate(
-        PriceTiersId.pgType.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PriceTiersId.pgType.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.currencyCode.visit(
       {  },
       { value -> columns.add(Fragment.lit("`currency_code`"))
-      values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.char_, value), Fragment.lit(""))) }
     );
     unsaved.validTo.visit(
       {  },
       { value -> columns.add(Fragment.lit("`valid_to`"))
-      values.add(interpolate(
-        MariaTypes.date.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.date.nullable(), value), Fragment.lit(""))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("insert into `product_prices`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into `product_prices`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`\n"))
     return q.updateReturning(ProductPricesRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun select(): SelectBuilder<ProductPricesFields, ProductPricesRow> = SelectBuilder.of("`product_prices`", ProductPricesFields.structure, ProductPricesRow._rowParser, Dialect.MARIADB)
 
-  override fun selectAll(c: Connection): List<ProductPricesRow> = interpolate(typo.runtime.Fragment.lit("""
-    select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
-    from `product_prices`
-  """.trimMargin())).query(ProductPricesRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<ProductPricesRow> = Fragment.interpolate(Fragment.lit("select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`\nfrom `product_prices`\n")).query(ProductPricesRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     priceId: ProductPricesId,
     c: Connection
-  ): Optional<ProductPricesRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`
-      from `product_prices`
-      where `price_id` = """.trimMargin()),
-    ProductPricesId.pgType.encode(priceId),
-    typo.runtime.Fragment.lit("")
-  ).query(ProductPricesRow._rowParser.first()).runUnchecked(c)
+  ): ProductPricesRow? = Fragment.interpolate(Fragment.lit("select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`\nfrom `product_prices`\nwhere `price_id` = "), Fragment.encode(ProductPricesId.pgType, priceId), Fragment.lit("")).query(ProductPricesRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     priceIds: Array<ProductPricesId>,
     c: Connection
   ): List<ProductPricesRow> {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in priceIds) { fragments.add(ProductPricesId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in priceIds) { fragments.add(Fragment.encode(ProductPricesId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("select `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to` from `product_prices` where `price_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ProductPricesRow._rowParser.all()).runUnchecked(c)
   }
 
@@ -169,93 +100,30 @@ class ProductPricesRepoImpl() : ProductPricesRepo {
   ): Map<ProductPricesId, ProductPricesRow> {
     val ret: MutableMap<ProductPricesId, ProductPricesRow> = mutableMapOf<ProductPricesId, ProductPricesRow>()
     selectByIds(priceIds, c).forEach({ row -> ret.put(row.priceId, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<ProductPricesFields, ProductPricesRow> = UpdateBuilder.of("`product_prices`", ProductPricesFields.structure, ProductPricesRow._rowParser.all(), Dialect.MARIADB)
+  override fun update(): UpdateBuilder<ProductPricesFields, ProductPricesRow> = UpdateBuilder.of("`product_prices`", ProductPricesFields.structure, ProductPricesRow._rowParser, Dialect.MARIADB)
 
   override fun update(
     row: ProductPricesRow,
     c: Connection
   ): Boolean {
     val priceId: ProductPricesId = row.priceId
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update `product_prices`
-        set `product_id` = """.trimMargin()),
-      ProductsId.pgType.encode(row.productId),
-      typo.runtime.Fragment.lit("""
-        ,
-        `tier_id` = """.trimMargin()),
-      PriceTiersId.pgType.opt().encode(row.tierId),
-      typo.runtime.Fragment.lit("""
-        ,
-        `price` = """.trimMargin()),
-      MariaTypes.numeric.encode(row.price),
-      typo.runtime.Fragment.lit("""
-        ,
-        `currency_code` = """.trimMargin()),
-      MariaTypes.text.encode(row.currencyCode),
-      typo.runtime.Fragment.lit("""
-        ,
-        `valid_from` = """.trimMargin()),
-      MariaTypes.date.encode(row.validFrom),
-      typo.runtime.Fragment.lit("""
-        ,
-        `valid_to` = """.trimMargin()),
-      MariaTypes.date.opt().encode(row.validTo),
-      typo.runtime.Fragment.lit("""
-  
-        where `price_id` = """.trimMargin()),
-      ProductPricesId.pgType.encode(priceId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update `product_prices`\nset `product_id` = "), Fragment.encode(ProductsId.pgType, row.productId), Fragment.lit(",\n`tier_id` = "), Fragment.encode(PriceTiersId.pgType.nullable(), row.tierId), Fragment.lit(",\n`price` = "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric, row.price), Fragment.lit(",\n`currency_code` = "), Fragment.encode(MariaTypes.char_, row.currencyCode), Fragment.lit(",\n`valid_from` = "), Fragment.encode(MariaTypes.date, row.validFrom), Fragment.lit(",\n`valid_to` = "), Fragment.encode(MariaTypes.date.nullable(), row.validTo), Fragment.lit("\nwhere `price_id` = "), Fragment.encode(ProductPricesId.pgType, priceId), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: ProductPricesRow,
     c: Connection
-  ): ProductPricesRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      INSERT INTO `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
-      VALUES (""".trimMargin()),
-    ProductsId.pgType.encode(unsaved.productId),
-    typo.runtime.Fragment.lit(", "),
-    PriceTiersId.pgType.opt().encode(unsaved.tierId),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.encode(unsaved.price),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.currencyCode),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.date.encode(unsaved.validFrom),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.date.opt().encode(unsaved.validTo),
-    typo.runtime.Fragment.lit("""
-      )
-      ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-      `tier_id` = VALUES(`tier_id`),
-      `price` = VALUES(`price`),
-      `currency_code` = VALUES(`currency_code`),
-      `valid_from` = VALUES(`valid_from`),
-      `valid_to` = VALUES(`valid_to`)
-      RETURNING `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`""".trimMargin())
-  )
+  ): ProductPricesRow = Fragment.interpolate(Fragment.lit("INSERT INTO `product_prices`(`product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)\nVALUES ("), Fragment.encode(ProductsId.pgType, unsaved.productId), Fragment.lit(", "), Fragment.encode(PriceTiersId.pgType.nullable(), unsaved.tierId), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric, unsaved.price), Fragment.lit(", "), Fragment.encode(MariaTypes.char_, unsaved.currencyCode), Fragment.lit(", "), Fragment.encode(MariaTypes.date, unsaved.validFrom), Fragment.lit(", "), Fragment.encode(MariaTypes.date.nullable(), unsaved.validTo), Fragment.lit(")\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`tier_id` = VALUES(`tier_id`),\n`price` = VALUES(`price`),\n`currency_code` = VALUES(`currency_code`),\n`valid_from` = VALUES(`valid_from`),\n`valid_to` = VALUES(`valid_to`)\nRETURNING `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`"))
     .updateReturning(ProductPricesRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductPricesRow>,
+    unsaved: Iterator<ProductPricesRow>,
     c: Connection
-  ): List<ProductPricesRow> = interpolate(typo.runtime.Fragment.lit("""
-                                INSERT INTO `product_prices`(`price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)
-                                VALUES (?, ?, ?, ?, ?, ?, ?)
-                                ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
-                                `tier_id` = VALUES(`tier_id`),
-                                `price` = VALUES(`price`),
-                                `currency_code` = VALUES(`currency_code`),
-                                `valid_from` = VALUES(`valid_from`),
-                                `valid_to` = VALUES(`valid_to`)
-                                RETURNING `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`""".trimMargin()))
+  ): List<ProductPricesRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `product_prices`(`price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)\nVALUES (?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`tier_id` = VALUES(`tier_id`),\n`price` = VALUES(`price`),\n`currency_code` = VALUES(`currency_code`),\n`valid_from` = VALUES(`valid_from`),\n`valid_to` = VALUES(`valid_to`)\nRETURNING `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`"))
     .updateReturningEach(ProductPricesRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 }

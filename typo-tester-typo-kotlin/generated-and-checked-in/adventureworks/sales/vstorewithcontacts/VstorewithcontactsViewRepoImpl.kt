@@ -7,15 +7,12 @@ package adventureworks.sales.vstorewithcontacts
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class VstorewithcontactsViewRepoImpl() : VstorewithcontactsViewRepo {
   override fun select(): SelectBuilder<VstorewithcontactsViewFields, VstorewithcontactsViewRow> = SelectBuilder.of("\"sales\".\"vstorewithcontacts\"", VstorewithcontactsViewFields.structure, VstorewithcontactsViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<VstorewithcontactsViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "name", "contacttype", "title", "firstname", "middlename", "lastname", "suffix", "phonenumber", "phonenumbertype", "emailaddress", "emailpromotion"
-    from "sales"."vstorewithcontacts"
-  """.trimMargin())).query(VstorewithcontactsViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<VstorewithcontactsViewRow> = Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"name\", \"contacttype\", \"title\", \"firstname\", \"middlename\", \"lastname\", \"suffix\", \"phonenumber\", \"phonenumbertype\", \"emailaddress\", \"emailpromotion\"\nfrom \"sales\".\"vstorewithcontacts\"\n")).query(VstorewithcontactsViewRow._rowParser.all()).runUnchecked(c)
 }

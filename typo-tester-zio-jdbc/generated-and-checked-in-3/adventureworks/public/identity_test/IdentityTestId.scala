@@ -15,7 +15,7 @@ import zio.json.JsonDecoder
 import zio.json.JsonEncoder
 
 /** Type for the primary key of table `public.identity-test` */
-case class IdentityTestId(value: /* max 250 chars */ String) extends scala.AnyVal
+case class IdentityTestId(value: String) extends scala.AnyVal
 
 object IdentityTestId {
   given arrayJdbcDecoder: JdbcDecoder[Array[IdentityTestId]] = adventureworks.StringArrayDecoder.map(_.map(IdentityTestId.apply))
@@ -24,7 +24,7 @@ object IdentityTestId {
 
   given arraySetter: Setter[Array[IdentityTestId]] = adventureworks.StringArraySetter.contramap(_.map(_.value))
 
-  given bijection: Bijection[IdentityTestId, /* max 250 chars */ String] = Bijection.apply[IdentityTestId, /* max 250 chars */ String](_.value)(IdentityTestId.apply)
+  given bijection: Bijection[IdentityTestId, String] = Bijection.apply[IdentityTestId, String](_.value)(IdentityTestId.apply)
 
   given jdbcDecoder: JdbcDecoder[IdentityTestId] = JdbcDecoder.stringDecoder.map(IdentityTestId.apply)
 

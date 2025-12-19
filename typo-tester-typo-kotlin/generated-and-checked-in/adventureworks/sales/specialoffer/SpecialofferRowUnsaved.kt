@@ -7,33 +7,34 @@ package adventureworks.sales.specialoffer
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `sales.specialoffer` which has not been persisted yet */
 data class SpecialofferRowUnsaved(
   /** Discount description. */
-  val description: /* max 255 chars */ String,
+  val description: String,
   /** Discount type category. */
-  val type: /* max 50 chars */ String,
+  val type: String,
   /** Group the discount applies to such as Reseller or Customer. */
-  val category: /* max 50 chars */ String,
+  val category: String,
   /** Discount start date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
     */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Discount end date.
     * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
     */
-  val enddate: TypoLocalDateTime,
+  val enddate: LocalDateTime,
   /** Maximum discount percent allowed.
     * Constraint CK_SpecialOffer_MaxQty affecting columns maxqty:  ((maxqty >= 0))
     */
-  val maxqty: Optional<Int> = Optional.empty(),
+  val maxqty: Int? = null,
   /** Default: nextval('sales.specialoffer_specialofferid_seq'::regclass)
     * Primary key for SpecialOffer records.
     */
@@ -49,16 +50,16 @@ data class SpecialofferRowUnsaved(
     */
   val minqty: Defaulted<Int> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     specialofferidDefault: () -> SpecialofferId,
     discountpctDefault: () -> BigDecimal,
     minqtyDefault: () -> Int,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): SpecialofferRow = SpecialofferRow(specialofferid = specialofferid.getOrElse(specialofferidDefault), description = description, discountpct = discountpct.getOrElse(discountpctDefault), type = type, category = category, startdate = startdate, enddate = enddate, minqty = minqty.getOrElse(minqtyDefault), maxqty = maxqty, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -69,20 +70,20 @@ data class SpecialofferRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.text.pgText().unsafeEncode(row.category, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.startdate, sb)
+      PgTypes.timestamp.pgText().unsafeEncode(row.startdate, sb)
       sb.append(PgText.DELIMETER)
-      TypoLocalDateTime.pgType.pgText().unsafeEncode(row.enddate, sb)
+      PgTypes.timestamp.pgText().unsafeEncode(row.enddate, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.int4.opt().pgText().unsafeEncode(row.maxqty, sb)
+      KotlinDbTypes.PgTypes.int4.nullable().pgText().unsafeEncode(row.maxqty, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(SpecialofferId.pgType.pgText()).unsafeEncode(row.specialofferid, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.discountpct, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.minqty, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.minqty, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

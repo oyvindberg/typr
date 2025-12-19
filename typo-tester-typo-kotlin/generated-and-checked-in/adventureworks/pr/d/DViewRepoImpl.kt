@@ -7,15 +7,12 @@ package adventureworks.pr.d
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class DViewRepoImpl() : DViewRepo {
   override fun select(): SelectBuilder<DViewFields, DViewRow> = SelectBuilder.of("\"pr\".\"d\"", DViewFields.structure, DViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<DViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate"::text, "documentnode"
-    from "pr"."d"
-  """.trimMargin())).query(DViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<DViewRow> = Fragment.interpolate(Fragment.lit("select \"title\", \"owner\", \"folderflag\", \"filename\", \"fileextension\", \"revision\", \"changenumber\", \"status\", \"documentsummary\", \"document\", \"rowguid\", \"modifieddate\", \"documentnode\"\nfrom \"pr\".\"d\"\n")).query(DViewRow._rowParser.all()).runUnchecked(c)
 }

@@ -7,14 +7,15 @@ package adventureworks.person.person
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.public.NameStyle
 import adventureworks.userdefined.FirstName
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.data.Xml
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -27,21 +28,21 @@ data class PersonRowUnsaved(
   /** Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact
     * Constraint CK_Person_PersonType affecting columns persontype:  (((persontype IS NULL) OR (upper((persontype)::text) = ANY (ARRAY['SC'::text, 'VC'::text, 'IN'::text, 'EM'::text, 'SP'::text, 'GC'::text]))))
     */
-  val persontype: /* bpchar, max 2 chars */ String,
+  val persontype: String,
   /** A courtesy title. For example, Mr. or Ms. */
-  val title: Optional</* max 8 chars */ String> = Optional.empty(),
+  val title: /* max 8 chars */ String? = null,
   /** First name of the person. */
   val firstname: /* user-picked */ FirstName,
   /** Middle name or middle initial of the person. */
-  val middlename: Optional<Name> = Optional.empty(),
+  val middlename: Name? = null,
   /** Last name of the person. */
   val lastname: Name,
   /** Surname suffix. For example, Sr. or Jr. */
-  val suffix: Optional</* max 10 chars */ String> = Optional.empty(),
+  val suffix: /* max 10 chars */ String? = null,
   /** Additional contact information about the person stored in xml format. */
-  val additionalcontactinfo: Optional<TypoXml> = Optional.empty(),
+  val additionalcontactinfo: Xml? = null,
   /** Personal information such as hobbies, and income collected from online shoppers. Used for sales analysis. */
-  val demographics: Optional<TypoXml> = Optional.empty(),
+  val demographics: Xml? = null,
   /** Default: false
     * 0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order.
     */
@@ -52,15 +53,15 @@ data class PersonRowUnsaved(
     */
   val emailpromotion: Defaulted<Int> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     namestyleDefault: () -> NameStyle,
     emailpromotionDefault: () -> Int,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): PersonRow = PersonRow(businessentityid = businessentityid, persontype = persontype, namestyle = namestyle.getOrElse(namestyleDefault), title = title, firstname = firstname, middlename = middlename, lastname = lastname, suffix = suffix, emailpromotion = emailpromotion.getOrElse(emailpromotionDefault), additionalcontactinfo = additionalcontactinfo, demographics = demographics, rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -69,26 +70,26 @@ data class PersonRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.bpchar.pgText().unsafeEncode(row.persontype, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.title, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.title, sb)
       sb.append(PgText.DELIMETER)
       FirstName.pgType.pgText().unsafeEncode(row.firstname, sb)
       sb.append(PgText.DELIMETER)
-      Name.pgType.opt().pgText().unsafeEncode(row.middlename, sb)
+      Name.pgType.nullable().pgText().unsafeEncode(row.middlename, sb)
       sb.append(PgText.DELIMETER)
       Name.pgType.pgText().unsafeEncode(row.lastname, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.opt().pgText().unsafeEncode(row.suffix, sb)
+      PgTypes.text.nullable().pgText().unsafeEncode(row.suffix, sb)
       sb.append(PgText.DELIMETER)
-      TypoXml.pgType.opt().pgText().unsafeEncode(row.additionalcontactinfo, sb)
+      PgTypes.xml.nullable().pgText().unsafeEncode(row.additionalcontactinfo, sb)
       sb.append(PgText.DELIMETER)
-      TypoXml.pgType.opt().pgText().unsafeEncode(row.demographics, sb)
+      PgTypes.xml.nullable().pgText().unsafeEncode(row.demographics, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(NameStyle.pgType.pgText()).unsafeEncode(row.namestyle, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.int4.pgText()).unsafeEncode(row.emailpromotion, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.emailpromotion, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

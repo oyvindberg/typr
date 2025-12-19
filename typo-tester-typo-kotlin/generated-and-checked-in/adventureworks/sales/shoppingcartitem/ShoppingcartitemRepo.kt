@@ -6,89 +6,88 @@
 package adventureworks.sales.shoppingcartitem
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ShoppingcartitemRepo {
-  fun delete(): DeleteBuilder<ShoppingcartitemFields, ShoppingcartitemRow>
+  abstract fun delete(): DeleteBuilder<ShoppingcartitemFields, ShoppingcartitemRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     shoppingcartitemid: ShoppingcartitemId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     shoppingcartitemids: Array<ShoppingcartitemId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ShoppingcartitemRow,
     c: Connection
   ): ShoppingcartitemRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ShoppingcartitemRowUnsaved,
     c: Connection
   ): ShoppingcartitemRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<ShoppingcartitemRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<ShoppingcartitemRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ShoppingcartitemRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<ShoppingcartitemRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<ShoppingcartitemFields, ShoppingcartitemRow>
+  abstract fun select(): SelectBuilder<ShoppingcartitemFields, ShoppingcartitemRow>
 
-  fun selectAll(c: Connection): List<ShoppingcartitemRow>
+  abstract fun selectAll(c: Connection): List<ShoppingcartitemRow>
 
-  fun selectById(
+  abstract fun selectById(
     shoppingcartitemid: ShoppingcartitemId,
     c: Connection
-  ): Optional<ShoppingcartitemRow>
+  ): ShoppingcartitemRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     shoppingcartitemids: Array<ShoppingcartitemId>,
     c: Connection
   ): List<ShoppingcartitemRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     shoppingcartitemids: Array<ShoppingcartitemId>,
     c: Connection
   ): Map<ShoppingcartitemId, ShoppingcartitemRow>
 
-  fun update(): UpdateBuilder<ShoppingcartitemFields, ShoppingcartitemRow>
+  abstract fun update(): UpdateBuilder<ShoppingcartitemFields, ShoppingcartitemRow>
 
-  fun update(
+  abstract fun update(
     row: ShoppingcartitemRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ShoppingcartitemRow,
     c: Connection
   ): ShoppingcartitemRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<ShoppingcartitemRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<ShoppingcartitemRow>,
     c: Connection
   ): List<ShoppingcartitemRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<ShoppingcartitemRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<ShoppingcartitemRow>,
     batchSize: Int,
     c: Connection
   ): Int

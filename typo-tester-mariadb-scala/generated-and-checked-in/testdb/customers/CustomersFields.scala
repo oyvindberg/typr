@@ -6,23 +6,22 @@
 package testdb.customers
 
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_status.CustomerStatusFields
 import testdb.customer_status.CustomerStatusId
 import testdb.customer_status.CustomerStatusRow
 import typo.data.maria.MariaSet
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait CustomersFields extends FieldsExpr[CustomersRow] {
+trait CustomersFields extends FieldsExpr0[CustomersRow] {
   def customerId: IdField[CustomersId, CustomersRow]
 
   def email: Field[String, CustomersRow]
@@ -51,23 +50,23 @@ trait CustomersFields extends FieldsExpr[CustomersRow] {
 
   def lastLoginAt: OptField[LocalDateTime, CustomersRow]
 
-  def fkCustomerStatus: ForeignKey[CustomerStatusFields, CustomerStatusRow] = ForeignKey.of[CustomerStatusFields, CustomerStatusRow]("fk_customer_status").withColumnPair(status, _.statusCode)
+  def fkCustomerStatus: ForeignKey[CustomerStatusFields, CustomerStatusRow] = ForeignKey.of[CustomerStatusFields, CustomerStatusRow]("fk_customer_status").withColumnPair[CustomerStatusId](status, _.statusCode)
 
   override def columns: java.util.List[FieldLike[?, CustomersRow]]
 
-  override def rowParser: RowParser[CustomersRow] = CustomersRow._rowParser
+  override def rowParser: RowParser[CustomersRow] = CustomersRow._rowParser.underlying
 }
 
 object CustomersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CustomersFields with Relation[CustomersFields, CustomersRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends CustomersFields with RelationStructure[CustomersFields, CustomersRow] {
 
     override def customerId: IdField[CustomersId, CustomersRow] = {
       new IdField[CustomersId, CustomersRow](
         _path,
         "customer_id",
         _.customerId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(customerId = value),
         CustomersId.pgType
       )
@@ -78,8 +77,8 @@ object CustomersFields {
         _path,
         "email",
         _.email,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(email = value),
         MariaTypes.varchar
       )
@@ -90,8 +89,8 @@ object CustomersFields {
         _path,
         "password_hash",
         _.passwordHash,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(passwordHash = value),
         MariaTypes.binary
       )
@@ -102,8 +101,8 @@ object CustomersFields {
         _path,
         "first_name",
         _.firstName,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(firstName = value),
         MariaTypes.varchar
       )
@@ -114,8 +113,8 @@ object CustomersFields {
         _path,
         "last_name",
         _.lastName,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(lastName = value),
         MariaTypes.varchar
       )
@@ -126,8 +125,8 @@ object CustomersFields {
         _path,
         "phone",
         _.phone,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(phone = value),
         MariaTypes.varchar
       )
@@ -138,8 +137,8 @@ object CustomersFields {
         _path,
         "status",
         _.status,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(status = value),
         CustomerStatusId.pgType
       )
@@ -150,8 +149,8 @@ object CustomersFields {
         _path,
         "tier",
         _.tier,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(tier = value),
         MariaTypes.text
       )
@@ -162,8 +161,8 @@ object CustomersFields {
         _path,
         "preferences",
         _.preferences,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(preferences = value),
         MariaTypes.longtext
       )
@@ -174,8 +173,8 @@ object CustomersFields {
         _path,
         "marketing_flags",
         _.marketingFlags,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(marketingFlags = value),
         MariaTypes.set
       )
@@ -186,8 +185,8 @@ object CustomersFields {
         _path,
         "notes",
         _.notes,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(notes = value),
         MariaTypes.text
       )
@@ -198,8 +197,8 @@ object CustomersFields {
         _path,
         "created_at",
         _.createdAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(createdAt = value),
         MariaTypes.datetime
       )
@@ -210,8 +209,8 @@ object CustomersFields {
         _path,
         "updated_at",
         _.updatedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(updatedAt = value),
         MariaTypes.datetime
       )
@@ -222,17 +221,17 @@ object CustomersFields {
         _path,
         "last_login_at",
         _.lastLoginAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(lastLoginAt = value),
         MariaTypes.datetime
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, CustomersRow]] = java.util.List.of(this.customerId, this.email, this.passwordHash, this.firstName, this.lastName, this.phone, this.status, this.tier, this.preferences, this.marketingFlags, this.notes, this.createdAt, this.updatedAt, this.lastLoginAt)
+    override def columns: java.util.List[FieldLike[?, CustomersRow]] = java.util.List.of(this.customerId.underlying, this.email.underlying, this.passwordHash.underlying, this.firstName.underlying, this.lastName.underlying, this.phone.underlying, this.status.underlying, this.tier.underlying, this.preferences.underlying, this.marketingFlags.underlying, this.notes.underlying, this.createdAt.underlying, this.updatedAt.underlying, this.lastLoginAt.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[CustomersFields, CustomersRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomersFields, CustomersRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

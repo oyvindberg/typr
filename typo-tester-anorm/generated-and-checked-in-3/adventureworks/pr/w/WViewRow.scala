@@ -37,11 +37,11 @@ case class WViewRow(
   /** Points to [[adventureworks.production.workorder.WorkorderRow.startdate]] */
   startdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorder.WorkorderRow.enddate]] */
-  enddate: Option[TypoLocalDateTime],
+  enddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorder.WorkorderRow.duedate]] */
   duedate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorder.WorkorderRow.scrapreasonid]] */
-  scrapreasonid: Option[ScrapreasonId],
+  scrapreasonid: ScrapreasonId,
   /** Points to [[adventureworks.production.workorder.WorkorderRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -57,9 +57,9 @@ object WViewRow {
             orderqty = json.\("orderqty").as(Reads.IntReads),
             scrappedqty = json.\("scrappedqty").as(TypoShort.reads),
             startdate = json.\("startdate").as(TypoLocalDateTime.reads),
-            enddate = json.\("enddate").toOption.map(_.as(TypoLocalDateTime.reads)),
+            enddate = json.\("enddate").as(TypoLocalDateTime.reads),
             duedate = json.\("duedate").as(TypoLocalDateTime.reads),
-            scrapreasonid = json.\("scrapreasonid").toOption.map(_.as(ScrapreasonId.reads)),
+            scrapreasonid = json.\("scrapreasonid").as(ScrapreasonId.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
         )
@@ -77,9 +77,9 @@ object WViewRow {
           orderqty = row(idx + 3)(using Column.columnToInt),
           scrappedqty = row(idx + 4)(using TypoShort.column),
           startdate = row(idx + 5)(using TypoLocalDateTime.column),
-          enddate = row(idx + 6)(using Column.columnToOption(using TypoLocalDateTime.column)),
+          enddate = row(idx + 6)(using TypoLocalDateTime.column),
           duedate = row(idx + 7)(using TypoLocalDateTime.column),
-          scrapreasonid = row(idx + 8)(using Column.columnToOption(using ScrapreasonId.column)),
+          scrapreasonid = row(idx + 8)(using ScrapreasonId.column),
           modifieddate = row(idx + 9)(using TypoLocalDateTime.column)
         )
       )
@@ -95,9 +95,9 @@ object WViewRow {
         "orderqty" -> Writes.IntWrites.writes(o.orderqty),
         "scrappedqty" -> TypoShort.writes.writes(o.scrappedqty),
         "startdate" -> TypoLocalDateTime.writes.writes(o.startdate),
-        "enddate" -> Writes.OptionWrites(using TypoLocalDateTime.writes).writes(o.enddate),
+        "enddate" -> TypoLocalDateTime.writes.writes(o.enddate),
         "duedate" -> TypoLocalDateTime.writes.writes(o.duedate),
-        "scrapreasonid" -> Writes.OptionWrites(using ScrapreasonId.writes).writes(o.scrapreasonid),
+        "scrapreasonid" -> ScrapreasonId.writes.writes(o.scrapreasonid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))
     )

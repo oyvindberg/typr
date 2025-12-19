@@ -24,7 +24,7 @@ case class EViewRow(
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddressid]] */
   emailaddressid: Int,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
-  emailaddress: Option[/* max 50 chars */ String],
+  emailaddress: String,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.modifieddate]] */
@@ -40,7 +40,7 @@ object EViewRow {
             id = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 0, rs)._2,
             businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             emailaddressid = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 2, rs)._2,
-            emailaddress = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            emailaddress = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 3, rs)._2,
             rowguid = TypoUUID.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2
           )
@@ -52,7 +52,7 @@ object EViewRow {
       val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(using JsonDecoder.int))
       val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(using BusinessentityId.jsonDecoder))
       val emailaddressid = jsonObj.get("emailaddressid").toRight("Missing field 'emailaddressid'").flatMap(_.as(using JsonDecoder.int))
-      val emailaddress = jsonObj.get("emailaddress").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val emailaddress = jsonObj.get("emailaddress").toRight("Missing field 'emailaddress'").flatMap(_.as(using JsonDecoder.string))
       val rowguid = jsonObj.get("rowguid").toRight("Missing field 'rowguid'").flatMap(_.as(using TypoUUID.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(using TypoLocalDateTime.jsonDecoder))
       if (id.isRight && businessentityid.isRight && emailaddressid.isRight && emailaddress.isRight && rowguid.isRight && modifieddate.isRight)
@@ -75,7 +75,7 @@ object EViewRow {
         JsonEncoder.int.unsafeEncode(a.emailaddressid, indent, out)
         out.write(",")
         out.write(""""emailaddress":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.emailaddress, indent, out)
+        JsonEncoder.string.unsafeEncode(a.emailaddress, indent, out)
         out.write(",")
         out.write(""""rowguid":""")
         TypoUUID.jsonEncoder.unsafeEncode(a.rowguid, indent, out)

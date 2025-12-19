@@ -6,11 +6,12 @@
 package adventureworks.production.unitmeasure
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: production.unitmeasure
   * Unit of measure lookup table.
@@ -22,16 +23,16 @@ data class UnitmeasureRow(
   /** Unit of measure description. */
   val name: Name,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): UnitmeasureId = unitmeasurecode
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): UnitmeasureRowUnsaved = UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): UnitmeasureRowUnsaved = UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<UnitmeasureRow> = RowParsers.of(UnitmeasureId.pgType, Name.pgType, TypoLocalDateTime.pgType, { t0, t1, t2 -> UnitmeasureRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.unitmeasurecode, row.name, row.modifieddate) })
+    val _rowParser: RowParser<UnitmeasureRow> = RowParsers.of(UnitmeasureId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2 -> UnitmeasureRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.unitmeasurecode, row.name, row.modifieddate) })
 
     val pgText: PgText<UnitmeasureRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

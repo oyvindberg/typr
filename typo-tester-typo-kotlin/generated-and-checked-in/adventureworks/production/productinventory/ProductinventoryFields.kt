@@ -5,78 +5,79 @@
  */
 package adventureworks.production.productinventory
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.location.LocationFields
 import adventureworks.production.location.LocationId
 import adventureworks.production.location.LocationRow
 import adventureworks.production.product.ProductFields
 import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface ProductinventoryFields : FieldsExpr<ProductinventoryRow> {
-  fun bin(): Field<TypoShort, ProductinventoryRow>
+  abstract fun bin(): Field<Short, ProductinventoryRow>
 
-  override fun columns(): List<FieldLike<*, ProductinventoryRow>>
+  abstract override fun columns(): List<FieldLike<*, ProductinventoryRow>>
 
   fun compositeIdIn(compositeIds: List<ProductinventoryId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<ProductId, ProductinventoryId, ProductinventoryRow>(productid(), ProductinventoryId::productid, ProductId.pgType), Part<LocationId, ProductinventoryId, ProductinventoryRow>(locationid(), ProductinventoryId::locationid, LocationId.pgType)), compositeIds)
 
   fun compositeIdIs(compositeId: ProductinventoryId): SqlExpr<Boolean> = SqlExpr.all(productid().isEqual(compositeId.productid), locationid().isEqual(compositeId.locationid))
 
-  fun fkLocation(): ForeignKey<LocationFields, LocationRow> = ForeignKey.of<LocationFields, LocationRow>("production.FK_ProductInventory_Location_LocationID").withColumnPair(locationid(), LocationFields::locationid)
+  fun fkLocation(): ForeignKey<LocationFields, LocationRow> = ForeignKey.of<LocationFields, LocationRow>("production.FK_ProductInventory_Location_LocationID").withColumnPair<LocationId>(locationid(), LocationFields::locationid)
 
-  fun fkProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("production.FK_ProductInventory_Product_ProductID").withColumnPair(productid(), ProductFields::productid)
+  fun fkProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("production.FK_ProductInventory_Product_ProductID").withColumnPair<ProductId>(productid(), ProductFields::productid)
 
-  fun locationid(): IdField<LocationId, ProductinventoryRow>
+  abstract fun locationid(): IdField<LocationId, ProductinventoryRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, ProductinventoryRow>
+  abstract fun modifieddate(): Field<LocalDateTime, ProductinventoryRow>
 
-  fun productid(): IdField<ProductId, ProductinventoryRow>
+  abstract fun productid(): IdField<ProductId, ProductinventoryRow>
 
-  fun quantity(): Field<TypoShort, ProductinventoryRow>
+  abstract fun quantity(): Field<Short, ProductinventoryRow>
 
-  override fun rowParser(): RowParser<ProductinventoryRow> = ProductinventoryRow._rowParser
+  override fun rowParser(): RowParser<ProductinventoryRow> = ProductinventoryRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, ProductinventoryRow>
+  abstract fun rowguid(): Field<UUID, ProductinventoryRow>
 
-  fun shelf(): Field</* max 10 chars */ String, ProductinventoryRow>
+  abstract fun shelf(): Field<String, ProductinventoryRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductinventoryFields, Relation<ProductinventoryFields, ProductinventoryRow> {
-      override fun productid(): IdField<ProductId, ProductinventoryRow> = IdField<ProductId, ProductinventoryRow>(_path, "productid", ProductinventoryRow::productid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+    data class Impl(val _path: List<Path>) : ProductinventoryFields, RelationStructure<ProductinventoryFields, ProductinventoryRow> {
+      override fun productid(): IdField<ProductId, ProductinventoryRow> = IdField<ProductId, ProductinventoryRow>(_path, "productid", ProductinventoryRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun locationid(): IdField<LocationId, ProductinventoryRow> = IdField<LocationId, ProductinventoryRow>(_path, "locationid", ProductinventoryRow::locationid, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(locationid = value) }, LocationId.pgType)
+      override fun locationid(): IdField<LocationId, ProductinventoryRow> = IdField<LocationId, ProductinventoryRow>(_path, "locationid", ProductinventoryRow::locationid, null, "int2", { row, value -> row.copy(locationid = value) }, LocationId.pgType)
 
-      override fun shelf(): Field</* max 10 chars */ String, ProductinventoryRow> = Field</* max 10 chars */ String, ProductinventoryRow>(_path, "shelf", ProductinventoryRow::shelf, Optional.empty(), Optional.empty(), { row, value -> row.copy(shelf = value) }, PgTypes.text)
+      override fun shelf(): Field<String, ProductinventoryRow> = Field<String, ProductinventoryRow>(_path, "shelf", ProductinventoryRow::shelf, null, null, { row, value -> row.copy(shelf = value) }, PgTypes.text)
 
-      override fun bin(): Field<TypoShort, ProductinventoryRow> = Field<TypoShort, ProductinventoryRow>(_path, "bin", ProductinventoryRow::bin, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(bin = value) }, TypoShort.pgType)
+      override fun bin(): Field<Short, ProductinventoryRow> = Field<Short, ProductinventoryRow>(_path, "bin", ProductinventoryRow::bin, null, "int2", { row, value -> row.copy(bin = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun quantity(): Field<TypoShort, ProductinventoryRow> = Field<TypoShort, ProductinventoryRow>(_path, "quantity", ProductinventoryRow::quantity, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(quantity = value) }, TypoShort.pgType)
+      override fun quantity(): Field<Short, ProductinventoryRow> = Field<Short, ProductinventoryRow>(_path, "quantity", ProductinventoryRow::quantity, null, "int2", { row, value -> row.copy(quantity = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun rowguid(): Field<TypoUUID, ProductinventoryRow> = Field<TypoUUID, ProductinventoryRow>(_path, "rowguid", ProductinventoryRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, ProductinventoryRow> = Field<UUID, ProductinventoryRow>(_path, "rowguid", ProductinventoryRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, ProductinventoryRow> = Field<TypoLocalDateTime, ProductinventoryRow>(_path, "modifieddate", ProductinventoryRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, ProductinventoryRow> = Field<LocalDateTime, ProductinventoryRow>(_path, "modifieddate", ProductinventoryRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, ProductinventoryRow>> = listOf(this.productid(), this.locationid(), this.shelf(), this.bin(), this.quantity(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ProductinventoryFields, ProductinventoryRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ProductinventoryRow>> = listOf(this.productid().underlying, this.locationid().underlying, this.shelf().underlying, this.bin().underlying, this.quantity().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ProductinventoryFields, ProductinventoryRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

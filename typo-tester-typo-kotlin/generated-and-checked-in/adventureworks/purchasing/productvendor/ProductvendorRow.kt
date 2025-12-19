@@ -6,16 +6,17 @@
 package adventureworks.purchasing.productvendor
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: purchasing.productvendor
   * Cross-reference table mapping vendors with the products they supply.
@@ -41,9 +42,9 @@ data class ProductvendorRow(
   /** The selling price when last purchased.
     * Constraint CK_ProductVendor_LastReceiptCost affecting columns lastreceiptcost: ((lastreceiptcost > 0.00))
     */
-  val lastreceiptcost: Optional<BigDecimal>,
+  val lastreceiptcost: BigDecimal?,
   /** Date the product was last received by the vendor. */
-  val lastreceiptdate: Optional<TypoLocalDateTime>,
+  val lastreceiptdate: LocalDateTime?,
   /** The maximum quantity that should be ordered.
     * Constraint CK_ProductVendor_MinOrderQty affecting columns minorderqty: ((minorderqty >= 1))
     */
@@ -55,37 +56,37 @@ data class ProductvendorRow(
   /** The quantity currently on order.
     * Constraint CK_ProductVendor_OnOrderQty affecting columns onorderqty: ((onorderqty >= 0))
     */
-  val onorderqty: Optional<Int>,
+  val onorderqty: Int?,
   /** The product's unit of measure.
     * Points to [adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]
     */
   val unitmeasurecode: UnitmeasureId,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): ProductvendorId = ProductvendorId(productid, businessentityid)
 
   fun id(): ProductvendorId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): ProductvendorRowUnsaved = ProductvendorRowUnsaved(productid, businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): ProductvendorRowUnsaved = ProductvendorRowUnsaved(productid, businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductvendorRow> = RowParsers.of(ProductId.pgType, BusinessentityId.pgType, PgTypes.int4, PgTypes.numeric, PgTypes.numeric.opt(), TypoLocalDateTime.pgType.opt(), PgTypes.int4, PgTypes.int4, PgTypes.int4.opt(), UnitmeasureId.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> ProductvendorRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.productid, row.businessentityid, row.averageleadtime, row.standardprice, row.lastreceiptcost, row.lastreceiptdate, row.minorderqty, row.maxorderqty, row.onorderqty, row.unitmeasurecode, row.modifieddate) })
+    val _rowParser: RowParser<ProductvendorRow> = RowParsers.of(ProductId.pgType, BusinessentityId.pgType, KotlinDbTypes.PgTypes.int4, PgTypes.numeric, PgTypes.numeric.nullable(), PgTypes.timestamp.nullable(), KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4.nullable(), UnitmeasureId.pgType, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> ProductvendorRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) }, { row -> arrayOf<Any?>(row.productid, row.businessentityid, row.averageleadtime, row.standardprice, row.lastreceiptcost, row.lastreceiptdate, row.minorderqty, row.maxorderqty, row.onorderqty, row.unitmeasurecode, row.modifieddate) })
 
     fun apply(
       compositeId: ProductvendorId,
       averageleadtime: Int,
       standardprice: BigDecimal,
-      lastreceiptcost: Optional<BigDecimal>,
-      lastreceiptdate: Optional<TypoLocalDateTime>,
+      lastreceiptcost: BigDecimal?,
+      lastreceiptdate: LocalDateTime?,
       minorderqty: Int,
       maxorderqty: Int,
-      onorderqty: Optional<Int>,
+      onorderqty: Int?,
       unitmeasurecode: UnitmeasureId,
-      modifieddate: TypoLocalDateTime
+      modifieddate: LocalDateTime
     ): ProductvendorRow = ProductvendorRow(compositeId.productid, compositeId.businessentityid, averageleadtime, standardprice, lastreceiptcost, lastreceiptdate, minorderqty, maxorderqty, onorderqty, unitmeasurecode, modifieddate)
 
     val pgText: PgText<ProductvendorRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

@@ -5,13 +5,11 @@
  */
 package adventureworks.pr.pp
 
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.productphoto.ProductphotoId
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.pp */
 data class PpViewRow(
@@ -20,17 +18,17 @@ data class PpViewRow(
   /** Points to [adventureworks.production.productphoto.ProductphotoRow.productphotoid] */
   val productphotoid: ProductphotoId,
   /** Points to [adventureworks.production.productphoto.ProductphotoRow.thumbnailphoto] */
-  val thumbnailphoto: Optional<TypoBytea>,
+  val thumbnailphoto: ByteArray,
   /** Points to [adventureworks.production.productphoto.ProductphotoRow.thumbnailphotofilename] */
-  val thumbnailphotofilename: Optional</* max 50 chars */ String>,
+  val thumbnailphotofilename: String,
   /** Points to [adventureworks.production.productphoto.ProductphotoRow.largephoto] */
-  val largephoto: Optional<TypoBytea>,
+  val largephoto: ByteArray,
   /** Points to [adventureworks.production.productphoto.ProductphotoRow.largephotofilename] */
-  val largephotofilename: Optional</* max 50 chars */ String>,
+  val largephotofilename: String,
   /** Points to [adventureworks.production.productphoto.ProductphotoRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PpViewRow> = RowParsers.of(ProductphotoId.pgType, ProductphotoId.pgType, TypoBytea.pgType.opt(), PgTypes.text.opt(), TypoBytea.pgType.opt(), PgTypes.text.opt(), TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6 -> PpViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.id, row.productphotoid, row.thumbnailphoto, row.thumbnailphotofilename, row.largephoto, row.largephotofilename, row.modifieddate) })
+    val _rowParser: RowParser<PpViewRow> = RowParsers.of(ProductphotoId.pgType, ProductphotoId.pgType, PgTypes.bytea, PgTypes.text, PgTypes.bytea, PgTypes.text, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6 -> PpViewRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.id, row.productphotoid, row.thumbnailphoto, row.thumbnailphotofilename, row.largephoto, row.largephotofilename, row.modifieddate) })
   }
 }

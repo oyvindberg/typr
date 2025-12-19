@@ -7,10 +7,10 @@ package adventureworks.sa.cu
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface CuViewRepo {
-  fun select(): SelectBuilder<CuViewFields, CuViewRow>
+  abstract fun select(): SelectBuilder<CuViewFields, CuViewRow>
 
-  fun selectAll(c: Connection): List<CuViewRow>
+  abstract fun selectAll(c: Connection): List<CuViewRow>
 }

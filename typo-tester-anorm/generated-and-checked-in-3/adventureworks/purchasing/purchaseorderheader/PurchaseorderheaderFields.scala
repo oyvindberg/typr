@@ -17,11 +17,11 @@ import adventureworks.purchasing.vendor.VendorFields
 import adventureworks.purchasing.vendor.VendorRow
 import typo.dsl.ForeignKey
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PurchaseorderheaderFields {
   def purchaseorderid: IdField[PurchaseorderheaderId, PurchaseorderheaderRow]
@@ -48,11 +48,11 @@ trait PurchaseorderheaderFields {
 }
 
 object PurchaseorderheaderFields {
-  lazy val structure: Relation[PurchaseorderheaderFields, PurchaseorderheaderRow] =
+  lazy val structure: RelationStructure[PurchaseorderheaderFields, PurchaseorderheaderRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PurchaseorderheaderFields, PurchaseorderheaderRow] {
+    extends RelationStructure[PurchaseorderheaderFields, PurchaseorderheaderRow] {
 
     override lazy val fields: PurchaseorderheaderFields = new PurchaseorderheaderFields {
       override def purchaseorderid = IdField[PurchaseorderheaderId, PurchaseorderheaderRow](_path, "purchaseorderid", None, Some("int4"), x => x.purchaseorderid, (row, value) => row.copy(purchaseorderid = value))

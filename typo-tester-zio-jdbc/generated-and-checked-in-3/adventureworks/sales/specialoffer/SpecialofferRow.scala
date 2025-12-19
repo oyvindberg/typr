@@ -26,16 +26,16 @@ case class SpecialofferRow(
    */
   specialofferid: SpecialofferId,
   /** Discount description. */
-  description: /* max 255 chars */ String,
+  description: String,
   /** Discount precentage.
    * Default: 0.00
    * Constraint CK_SpecialOffer_DiscountPct affecting columns discountpct: ((discountpct >= 0.00))
    */
   discountpct: BigDecimal,
   /** Discount type category. */
-  `type`: /* max 50 chars */ String,
+  `type`: String,
   /** Group the discount applies to such as Reseller or Customer. */
-  category: /* max 50 chars */ String,
+  category: String,
   /** Discount start date.
    * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate: ((enddate >= startdate))
    */

@@ -6,70 +6,69 @@
 package testdb.mariatest_spatial_null
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface MariatestSpatialNullRepo {
-  fun delete(): DeleteBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow>
+  abstract fun delete(): DeleteBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     id: MariatestSpatialNullId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     ids: Array<MariatestSpatialNullId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: MariatestSpatialNullRow,
     c: Connection
   ): MariatestSpatialNullRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: MariatestSpatialNullRowUnsaved,
     c: Connection
   ): MariatestSpatialNullRow
 
-  fun select(): SelectBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow>
+  abstract fun select(): SelectBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow>
 
-  fun selectAll(c: Connection): List<MariatestSpatialNullRow>
+  abstract fun selectAll(c: Connection): List<MariatestSpatialNullRow>
 
-  fun selectById(
+  abstract fun selectById(
     id: MariatestSpatialNullId,
     c: Connection
-  ): Optional<MariatestSpatialNullRow>
+  ): MariatestSpatialNullRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     ids: Array<MariatestSpatialNullId>,
     c: Connection
   ): List<MariatestSpatialNullRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     ids: Array<MariatestSpatialNullId>,
     c: Connection
   ): Map<MariatestSpatialNullId, MariatestSpatialNullRow>
 
-  fun update(): UpdateBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow>
+  abstract fun update(): UpdateBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow>
 
-  fun update(
+  abstract fun update(
     row: MariatestSpatialNullRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: MariatestSpatialNullRow,
     c: Connection
   ): MariatestSpatialNullRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<MariatestSpatialNullRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<MariatestSpatialNullRow>,
     c: Connection
   ): List<MariatestSpatialNullRow>
 }

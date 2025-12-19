@@ -6,16 +6,16 @@
 package adventureworks.production.billofmaterials
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.product.ProductId
 import adventureworks.production.unitmeasure.UnitmeasureId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: production.billofmaterials
   * Items required to make bicycles and bicycle subassemblies. It identifies the heirarchical relationship between a parent product and its components.
@@ -31,7 +31,7 @@ data class BillofmaterialsRow(
     * Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid: ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
     * Constraint CK_BillOfMaterials_ProductAssemblyID affecting columns componentid, productassemblyid: ((productassemblyid <> componentid))
     */
-  val productassemblyid: Optional<ProductId>,
+  val productassemblyid: ProductId?,
   /** Component identification number. Foreign key to Product.ProductID.
     * Points to [adventureworks.production.product.ProductRow.productid]
     * Constraint CK_BillOfMaterials_ProductAssemblyID affecting columns componentid, productassemblyid: ((productassemblyid <> componentid))
@@ -41,11 +41,11 @@ data class BillofmaterialsRow(
     * Default: now()
     * Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate: (((enddate > startdate) OR (enddate IS NULL)))
     */
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   /** Date the component stopped being used in the assembly item.
     * Constraint CK_BillOfMaterials_EndDate affecting columns enddate, startdate: (((enddate > startdate) OR (enddate IS NULL)))
     */
-  val enddate: Optional<TypoLocalDateTime>,
+  val enddate: LocalDateTime?,
   /** Standard code identifying the unit of measure for the quantity.
     * Points to [adventureworks.production.unitmeasure.UnitmeasureRow.unitmeasurecode]
     */
@@ -53,7 +53,7 @@ data class BillofmaterialsRow(
   /** Indicates the depth the component is from its parent (AssemblyID).
     * Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid: ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
     */
-  val bomlevel: TypoShort,
+  val bomlevel: Short,
   /** Quantity of the component needed to create the assembly.
     * Default: 1.00
     * Constraint CK_BillOfMaterials_BOMLevel affecting columns bomlevel, perassemblyqty, productassemblyid: ((((productassemblyid IS NULL) AND (bomlevel = 0) AND (perassemblyqty = 1.00)) OR ((productassemblyid IS NOT NULL) AND (bomlevel >= 1))))
@@ -61,21 +61,21 @@ data class BillofmaterialsRow(
     */
   val perassemblyqty: BigDecimal,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): Int = billofmaterialsid
 
   fun toUnsavedRow(
     billofmaterialsid: Defaulted<Int>,
-    startdate: Defaulted<TypoLocalDateTime>,
+    startdate: Defaulted<LocalDateTime>,
     perassemblyqty: Defaulted<BigDecimal>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): BillofmaterialsRowUnsaved = BillofmaterialsRowUnsaved(productassemblyid, componentid, enddate, unitmeasurecode, bomlevel, billofmaterialsid, startdate, perassemblyqty, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<BillofmaterialsRow> = RowParsers.of(PgTypes.int4, ProductId.pgType.opt(), ProductId.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), UnitmeasureId.pgType, TypoShort.pgType, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> BillofmaterialsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.billofmaterialsid, row.productassemblyid, row.componentid, row.startdate, row.enddate, row.unitmeasurecode, row.bomlevel, row.perassemblyqty, row.modifieddate) })
+    val _rowParser: RowParser<BillofmaterialsRow> = RowParsers.of(KotlinDbTypes.PgTypes.int4, ProductId.pgType.nullable(), ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp.nullable(), UnitmeasureId.pgType, KotlinDbTypes.PgTypes.int2, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> BillofmaterialsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.billofmaterialsid, row.productassemblyid, row.componentid, row.startdate, row.enddate, row.unitmeasurecode, row.bomlevel, row.perassemblyqty, row.modifieddate) })
 
     val pgText: PgText<BillofmaterialsRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

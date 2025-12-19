@@ -35,7 +35,7 @@ case class VViewRow(
   /** Points to [[adventureworks.purchasing.vendor.VendorRow.activeflag]] */
   activeflag: Flag,
   /** Points to [[adventureworks.purchasing.vendor.VendorRow.purchasingwebserviceurl]] */
-  purchasingwebserviceurl: Option[/* max 1024 chars */ String],
+  purchasingwebserviceurl: String,
   /** Points to [[adventureworks.purchasing.vendor.VendorRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -53,7 +53,7 @@ object VViewRow {
             creditrating = TypoShort.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
             preferredvendorstatus = Flag.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             activeflag = Flag.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
-            purchasingwebserviceurl = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 7, rs)._2,
+            purchasingwebserviceurl = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 7, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2
           )
     }
@@ -68,7 +68,7 @@ object VViewRow {
       val creditrating = jsonObj.get("creditrating").toRight("Missing field 'creditrating'").flatMap(_.as(TypoShort.jsonDecoder))
       val preferredvendorstatus = jsonObj.get("preferredvendorstatus").toRight("Missing field 'preferredvendorstatus'").flatMap(_.as(Flag.jsonDecoder))
       val activeflag = jsonObj.get("activeflag").toRight("Missing field 'activeflag'").flatMap(_.as(Flag.jsonDecoder))
-      val purchasingwebserviceurl = jsonObj.get("purchasingwebserviceurl").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val purchasingwebserviceurl = jsonObj.get("purchasingwebserviceurl").toRight("Missing field 'purchasingwebserviceurl'").flatMap(_.as(JsonDecoder.string))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       if (id.isRight && businessentityid.isRight && accountnumber.isRight && name.isRight && creditrating.isRight && preferredvendorstatus.isRight && activeflag.isRight && purchasingwebserviceurl.isRight && modifieddate.isRight)
         Right(VViewRow(id = id.toOption.get, businessentityid = businessentityid.toOption.get, accountnumber = accountnumber.toOption.get, name = name.toOption.get, creditrating = creditrating.toOption.get, preferredvendorstatus = preferredvendorstatus.toOption.get, activeflag = activeflag.toOption.get, purchasingwebserviceurl = purchasingwebserviceurl.toOption.get, modifieddate = modifieddate.toOption.get))
@@ -102,7 +102,7 @@ object VViewRow {
         Flag.jsonEncoder.unsafeEncode(a.activeflag, indent, out)
         out.write(",")
         out.write(""""purchasingwebserviceurl":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.purchasingwebserviceurl, indent, out)
+        JsonEncoder.string.unsafeEncode(a.purchasingwebserviceurl, indent, out)
         out.write(",")
         out.write(""""modifieddate":""")
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)

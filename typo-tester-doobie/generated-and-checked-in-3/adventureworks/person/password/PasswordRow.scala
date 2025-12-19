@@ -24,9 +24,9 @@ case class PasswordRow(
   /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Password for the e-mail account. */
-  passwordhash: /* max 128 chars */ String,
+  passwordhash: String,
   /** Random value concatenated with the password string before the password is hashed. */
-  passwordsalt: /* max 10 chars */ String,
+  passwordsalt: String,
   /** Default: uuid_generate_v1() */
   rowguid: TypoUUID,
   /** Default: now() */
@@ -49,9 +49,9 @@ case class PasswordRow(
 }
 
 object PasswordRow {
-  given decoder: Decoder[PasswordRow] = Decoder.forProduct5[PasswordRow, BusinessentityId, /* max 128 chars */ String, /* max 10 chars */ String, TypoUUID, TypoLocalDateTime]("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")(PasswordRow.apply)(using BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeString, TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[PasswordRow] = Decoder.forProduct5[PasswordRow, BusinessentityId, String, String, TypoUUID, TypoLocalDateTime]("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")(PasswordRow.apply)(using BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeString, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[PasswordRow] = Encoder.forProduct5[PasswordRow, BusinessentityId, /* max 128 chars */ String, /* max 10 chars */ String, TypoUUID, TypoLocalDateTime]("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")(x => (x.businessentityid, x.passwordhash, x.passwordsalt, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeString, TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[PasswordRow] = Encoder.forProduct5[PasswordRow, BusinessentityId, String, String, TypoUUID, TypoLocalDateTime]("businessentityid", "passwordhash", "passwordsalt", "rowguid", "modifieddate")(x => (x.businessentityid, x.passwordhash, x.passwordsalt, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeString, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given pgText: Text[PasswordRow] = {
     Text.instance[PasswordRow]{ (row, sb) =>
@@ -77,8 +77,8 @@ object PasswordRow {
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       PasswordRow(
         businessentityid = arr(0).asInstanceOf[BusinessentityId],
-            passwordhash = arr(1).asInstanceOf[/* max 128 chars */ String],
-            passwordsalt = arr(2).asInstanceOf[/* max 10 chars */ String],
+            passwordhash = arr(1).asInstanceOf[String],
+            passwordsalt = arr(2).asInstanceOf[String],
             rowguid = arr(3).asInstanceOf[TypoUUID],
             modifieddate = arr(4).asInstanceOf[TypoLocalDateTime]
       )

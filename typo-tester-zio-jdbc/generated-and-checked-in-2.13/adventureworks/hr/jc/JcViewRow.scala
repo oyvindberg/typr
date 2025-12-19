@@ -23,9 +23,9 @@ case class JcViewRow(
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.jobcandidateid]] */
   jobcandidateid: JobcandidateId,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.businessentityid]] */
-  businessentityid: Option[BusinessentityId],
+  businessentityid: BusinessentityId,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.resume]] */
-  resume: Option[TypoXml],
+  resume: TypoXml,
   /** Points to [[adventureworks.humanresources.jobcandidate.JobcandidateRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
@@ -38,8 +38,8 @@ object JcViewRow {
           JcViewRow(
             id = JobcandidateId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             jobcandidateid = JobcandidateId.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
-            businessentityid = JdbcDecoder.optionDecoder(BusinessentityId.jdbcDecoder).unsafeDecode(columIndex + 2, rs)._2,
-            resume = JdbcDecoder.optionDecoder(TypoXml.jdbcDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
+            resume = TypoXml.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
             modifieddate = TypoLocalDateTime.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2
           )
     }
@@ -49,8 +49,8 @@ object JcViewRow {
     JsonDecoder[Json.Obj].mapOrFail { jsonObj =>
       val id = jsonObj.get("id").toRight("Missing field 'id'").flatMap(_.as(JobcandidateId.jsonDecoder))
       val jobcandidateid = jsonObj.get("jobcandidateid").toRight("Missing field 'jobcandidateid'").flatMap(_.as(JobcandidateId.jsonDecoder))
-      val businessentityid = jsonObj.get("businessentityid").fold[Either[String, Option[BusinessentityId]]](Right(None))(_.as(JsonDecoder.option(BusinessentityId.jsonDecoder)))
-      val resume = jsonObj.get("resume").fold[Either[String, Option[TypoXml]]](Right(None))(_.as(JsonDecoder.option(TypoXml.jsonDecoder)))
+      val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
+      val resume = jsonObj.get("resume").toRight("Missing field 'resume'").flatMap(_.as(TypoXml.jsonDecoder))
       val modifieddate = jsonObj.get("modifieddate").toRight("Missing field 'modifieddate'").flatMap(_.as(TypoLocalDateTime.jsonDecoder))
       if (id.isRight && jobcandidateid.isRight && businessentityid.isRight && resume.isRight && modifieddate.isRight)
         Right(JcViewRow(id = id.toOption.get, jobcandidateid = jobcandidateid.toOption.get, businessentityid = businessentityid.toOption.get, resume = resume.toOption.get, modifieddate = modifieddate.toOption.get))
@@ -69,10 +69,10 @@ object JcViewRow {
         JobcandidateId.jsonEncoder.unsafeEncode(a.jobcandidateid, indent, out)
         out.write(",")
         out.write(""""businessentityid":""")
-        JsonEncoder.option(BusinessentityId.jsonEncoder).unsafeEncode(a.businessentityid, indent, out)
+        BusinessentityId.jsonEncoder.unsafeEncode(a.businessentityid, indent, out)
         out.write(",")
         out.write(""""resume":""")
-        JsonEncoder.option(TypoXml.jsonEncoder).unsafeEncode(a.resume, indent, out)
+        TypoXml.jsonEncoder.unsafeEncode(a.resume, indent, out)
         out.write(",")
         out.write(""""modifieddate":""")
         TypoLocalDateTime.jsonEncoder.unsafeEncode(a.modifieddate, indent, out)

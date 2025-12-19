@@ -6,13 +6,13 @@
 package adventureworks.person.password
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: person.password
   * One way hashed authentication information
@@ -22,25 +22,25 @@ data class PasswordRow(
   /** Points to [adventureworks.person.person.PersonRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Password for the e-mail account. */
-  val passwordhash: /* max 128 chars */ String,
+  val passwordhash: String,
   /** Random value concatenated with the password string before the password is hashed. */
-  val passwordsalt: /* max 10 chars */ String,
+  val passwordsalt: String,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): BusinessentityId = businessentityid
 
   fun toUnsavedRow(
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): PasswordRowUnsaved = PasswordRowUnsaved(businessentityid, passwordhash, passwordsalt, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<PasswordRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> PasswordRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.passwordhash, row.passwordsalt, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<PasswordRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> PasswordRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.businessentityid, row.passwordhash, row.passwordsalt, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<PasswordRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

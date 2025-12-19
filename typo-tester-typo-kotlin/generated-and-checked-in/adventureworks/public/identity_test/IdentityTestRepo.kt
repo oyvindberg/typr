@@ -6,89 +6,88 @@
 package adventureworks.public.identity_test
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface IdentityTestRepo {
-  fun delete(): DeleteBuilder<IdentityTestFields, IdentityTestRow>
+  abstract fun delete(): DeleteBuilder<IdentityTestFields, IdentityTestRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     name: IdentityTestId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     names: Array<IdentityTestId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: IdentityTestRow,
     c: Connection
   ): IdentityTestRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: IdentityTestRowUnsaved,
     c: Connection
   ): IdentityTestRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<IdentityTestRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<IdentityTestRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<IdentityTestRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<IdentityTestRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<IdentityTestFields, IdentityTestRow>
+  abstract fun select(): SelectBuilder<IdentityTestFields, IdentityTestRow>
 
-  fun selectAll(c: Connection): List<IdentityTestRow>
+  abstract fun selectAll(c: Connection): List<IdentityTestRow>
 
-  fun selectById(
+  abstract fun selectById(
     name: IdentityTestId,
     c: Connection
-  ): Optional<IdentityTestRow>
+  ): IdentityTestRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     names: Array<IdentityTestId>,
     c: Connection
   ): List<IdentityTestRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     names: Array<IdentityTestId>,
     c: Connection
   ): Map<IdentityTestId, IdentityTestRow>
 
-  fun update(): UpdateBuilder<IdentityTestFields, IdentityTestRow>
+  abstract fun update(): UpdateBuilder<IdentityTestFields, IdentityTestRow>
 
-  fun update(
+  abstract fun update(
     row: IdentityTestRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: IdentityTestRow,
     c: Connection
   ): IdentityTestRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<IdentityTestRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<IdentityTestRow>,
     c: Connection
   ): List<IdentityTestRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<IdentityTestRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<IdentityTestRow>,
     batchSize: Int,
     c: Connection
   ): Int

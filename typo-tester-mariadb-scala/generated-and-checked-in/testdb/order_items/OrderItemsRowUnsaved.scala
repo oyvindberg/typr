@@ -6,7 +6,6 @@
 package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.orders.OrdersId
@@ -14,6 +13,8 @@ import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `order_items` which has not been persisted yet */
 case class OrderItemsRowUnsaved(
@@ -30,19 +31,19 @@ case class OrderItemsRowUnsaved(
   /**  */
   @JsonProperty("product_name") productName: String,
   /**  */
-  quantity: Integer,
+  quantity: Int,
   /**  */
-  @JsonProperty("unit_price") unitPrice: java.math.BigDecimal,
+  @JsonProperty("unit_price") unitPrice: BigDecimal,
   /**  */
-  @JsonProperty("line_total") lineTotal: java.math.BigDecimal,
+  @JsonProperty("line_total") lineTotal: BigDecimal,
   /** Default: 0.0000
 
    */
-  @JsonProperty("discount_amount") discountAmount: Defaulted[java.math.BigDecimal] = new UseDefault(),
+  @JsonProperty("discount_amount") discountAmount: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 0.0000
 
    */
-  @JsonProperty("tax_amount") taxAmount: Defaulted[java.math.BigDecimal] = new UseDefault(),
+  @JsonProperty("tax_amount") taxAmount: Defaulted[BigDecimal] = new UseDefault(),
   /** Default: 'pending'
 
    */
@@ -50,18 +51,18 @@ case class OrderItemsRowUnsaved(
   /** Default: NULL
    * Points to [[testdb.warehouses.WarehousesRow.warehouseId]]
    */
-  @JsonProperty("warehouse_id") warehouseId: Defaulted[Optional[WarehousesId]] = new UseDefault(),
+  @JsonProperty("warehouse_id") warehouseId: Defaulted[Option[WarehousesId]] = new UseDefault(),
   /** Default: NULL
 
    */
-  notes: Defaulted[Optional[String]] = new UseDefault()
+  notes: Defaulted[Option[String]] = new UseDefault()
 ) {
   def toRow(
-    discountAmountDefault: => java.math.BigDecimal,
-    taxAmountDefault: => java.math.BigDecimal,
+    discountAmountDefault: => BigDecimal,
+    taxAmountDefault: => BigDecimal,
     fulfillmentStatusDefault: => String,
-    warehouseIdDefault: => Optional[WarehousesId],
-    notesDefault: => Optional[String],
+    warehouseIdDefault: => Option[WarehousesId],
+    notesDefault: => Option[String],
     itemIdDefault: => OrderItemsId
   ): OrderItemsRow = {
     new OrderItemsRow(
@@ -83,5 +84,5 @@ case class OrderItemsRowUnsaved(
 }
 
 object OrderItemsRowUnsaved {
-  given mariaText: MariaText[OrderItemsRowUnsaved] = MariaText.instance((row, sb) => { OrdersId.pgType.mariaText.unsafeEncode(row.orderId, sb); sb.append(MariaText.DELIMETER); ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.sku, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.productName, sb); sb.append(MariaText.DELIMETER); MariaTypes.smallintUnsigned.mariaText.unsafeEncode(row.quantity, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.unitPrice, sb); sb.append(MariaText.DELIMETER); MariaTypes.decimal.mariaText.unsafeEncode(row.lineTotal, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.mariaText).unsafeEncode(row.discountAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.decimal.mariaText).unsafeEncode(row.taxAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.fulfillmentStatus, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using WarehousesId.pgType.opt().mariaText).unsafeEncode(row.warehouseId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinytext.opt().mariaText).unsafeEncode(row.notes, sb) })
+  given mariaText: MariaText[OrderItemsRowUnsaved] = MariaText.instance((row, sb) => { OrdersId.pgType.mariaText.unsafeEncode(row.orderId, sb); sb.append(MariaText.DELIMETER); ProductsId.pgType.mariaText.unsafeEncode(row.productId, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.sku, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.productName, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.smallintUnsigned.mariaText.unsafeEncode(row.quantity, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.unitPrice, sb); sb.append(MariaText.DELIMETER); ScalaDbTypes.MariaTypes.numeric.mariaText.unsafeEncode(row.lineTotal, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.mariaText).unsafeEncode(row.discountAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.numeric.mariaText).unsafeEncode(row.taxAmount, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.text.mariaText).unsafeEncode(row.fulfillmentStatus, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using WarehousesId.pgType.nullable.mariaText).unsafeEncode(row.warehouseId, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.tinytext.nullable.mariaText).unsafeEncode(row.notes, sb) })
 }

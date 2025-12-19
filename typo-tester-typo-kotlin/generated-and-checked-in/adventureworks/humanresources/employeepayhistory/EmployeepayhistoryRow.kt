@@ -6,14 +6,14 @@
 package adventureworks.humanresources.employeepayhistory
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
 import adventureworks.person.businessentity.BusinessentityId
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: humanresources.employeepayhistory
   * Employee pay history.
@@ -25,7 +25,7 @@ data class EmployeepayhistoryRow(
     */
   val businessentityid: BusinessentityId,
   /** Date the change in pay is effective */
-  val ratechangedate: TypoLocalDateTime,
+  val ratechangedate: LocalDateTime,
   /** Salary hourly rate.
     * Constraint CK_EmployeePayHistory_Rate affecting columns rate: (((rate >= 6.50) AND (rate <= 200.00)))
     */
@@ -33,27 +33,27 @@ data class EmployeepayhistoryRow(
   /** 1 = Salary received monthly, 2 = Salary received biweekly
     * Constraint CK_EmployeePayHistory_PayFrequency affecting columns payfrequency: ((payfrequency = ANY (ARRAY[1, 2])))
     */
-  val payfrequency: TypoShort,
+  val payfrequency: Short,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): EmployeepayhistoryId = EmployeepayhistoryId(businessentityid, ratechangedate)
 
   fun id(): EmployeepayhistoryId = this.compositeId()
 
-  fun toUnsavedRow(modifieddate: Defaulted<TypoLocalDateTime>): EmployeepayhistoryRowUnsaved = EmployeepayhistoryRowUnsaved(businessentityid, ratechangedate, rate, payfrequency, modifieddate)
+  fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime>): EmployeepayhistoryRowUnsaved = EmployeepayhistoryRowUnsaved(businessentityid, ratechangedate, rate, payfrequency, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<EmployeepayhistoryRow> = RowParsers.of(BusinessentityId.pgType, TypoLocalDateTime.pgType, PgTypes.numeric, TypoShort.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> EmployeepayhistoryRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.ratechangedate, row.rate, row.payfrequency, row.modifieddate) })
+    val _rowParser: RowParser<EmployeepayhistoryRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.timestamp, PgTypes.numeric, KotlinDbTypes.PgTypes.int2, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> EmployeepayhistoryRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.businessentityid, row.ratechangedate, row.rate, row.payfrequency, row.modifieddate) })
 
     fun apply(
       compositeId: EmployeepayhistoryId,
       rate: BigDecimal,
-      payfrequency: TypoShort,
-      modifieddate: TypoLocalDateTime
+      payfrequency: Short,
+      modifieddate: LocalDateTime
     ): EmployeepayhistoryRow = EmployeepayhistoryRow(compositeId.businessentityid, compositeId.ratechangedate, rate, payfrequency, modifieddate)
 
     val pgText: PgText<EmployeepayhistoryRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

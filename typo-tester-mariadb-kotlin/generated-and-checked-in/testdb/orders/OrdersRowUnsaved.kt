@@ -8,13 +8,14 @@ package testdb.orders
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customer_addresses.CustomerAddressesId
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.promotions.PromotionsId
 import typo.data.maria.Inet6
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -41,11 +42,11 @@ data class OrdersRowUnsaved(
   /** Default: NULL
     * Points to [testdb.customer_addresses.CustomerAddressesRow.addressId]
     */
-  @JsonProperty("shipping_address_id") val shippingAddressId: Defaulted<Optional<CustomerAddressesId>> = UseDefault(),
+  @JsonProperty("shipping_address_id") val shippingAddressId: Defaulted<CustomerAddressesId?> = UseDefault(),
   /** Default: NULL
     * Points to [testdb.customer_addresses.CustomerAddressesRow.addressId]
     */
-  @JsonProperty("billing_address_id") val billingAddressId: Defaulted<Optional<CustomerAddressesId>> = UseDefault(),
+  @JsonProperty("billing_address_id") val billingAddressId: Defaulted<CustomerAddressesId?> = UseDefault(),
   /** Default: 0.0000
 
     */
@@ -65,23 +66,23 @@ data class OrdersRowUnsaved(
   /** Default: NULL
     * Points to [testdb.promotions.PromotionsRow.promotionId]
     */
-  @JsonProperty("promotion_id") val promotionId: Defaulted<Optional<PromotionsId>> = UseDefault(),
+  @JsonProperty("promotion_id") val promotionId: Defaulted<PromotionsId?> = UseDefault(),
   /** Default: NULL
 
     */
-  val notes: Defaulted<Optional<String>> = UseDefault(),
+  val notes: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("internal_notes") val internalNotes: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("internal_notes") val internalNotes: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("ip_address") val ipAddress: Defaulted<Optional<Inet6>> = UseDefault(),
+  @JsonProperty("ip_address") val ipAddress: Defaulted<Inet6?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("user_agent") val userAgent: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("user_agent") val userAgent: Defaulted<String?> = UseDefault(),
   /** Default: current_timestamp(6)
 
     */
@@ -89,34 +90,34 @@ data class OrdersRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("confirmed_at") val confirmedAt: Defaulted<Optional<LocalDateTime>> = UseDefault(),
+  @JsonProperty("confirmed_at") val confirmedAt: Defaulted<LocalDateTime?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("shipped_at") val shippedAt: Defaulted<Optional<LocalDateTime>> = UseDefault(),
+  @JsonProperty("shipped_at") val shippedAt: Defaulted<LocalDateTime?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("delivered_at") val deliveredAt: Defaulted<Optional<LocalDateTime>> = UseDefault()
+  @JsonProperty("delivered_at") val deliveredAt: Defaulted<LocalDateTime?> = UseDefault()
 ) {
   fun toRow(
     orderStatusDefault: () -> String,
     paymentStatusDefault: () -> String,
-    shippingAddressIdDefault: () -> Optional<CustomerAddressesId>,
-    billingAddressIdDefault: () -> Optional<CustomerAddressesId>,
+    shippingAddressIdDefault: () -> CustomerAddressesId?,
+    billingAddressIdDefault: () -> CustomerAddressesId?,
     shippingCostDefault: () -> BigDecimal,
     taxAmountDefault: () -> BigDecimal,
     discountAmountDefault: () -> BigDecimal,
     currencyCodeDefault: () -> String,
-    promotionIdDefault: () -> Optional<PromotionsId>,
-    notesDefault: () -> Optional<String>,
-    internalNotesDefault: () -> Optional<String>,
-    ipAddressDefault: () -> Optional<Inet6>,
-    userAgentDefault: () -> Optional<String>,
+    promotionIdDefault: () -> PromotionsId?,
+    notesDefault: () -> String?,
+    internalNotesDefault: () -> String?,
+    ipAddressDefault: () -> Inet6?,
+    userAgentDefault: () -> String?,
     orderedAtDefault: () -> LocalDateTime,
-    confirmedAtDefault: () -> Optional<LocalDateTime>,
-    shippedAtDefault: () -> Optional<LocalDateTime>,
-    deliveredAtDefault: () -> Optional<LocalDateTime>,
+    confirmedAtDefault: () -> LocalDateTime?,
+    shippedAtDefault: () -> LocalDateTime?,
+    deliveredAtDefault: () -> LocalDateTime?,
     orderIdDefault: () -> OrdersId
   ): OrdersRow = OrdersRow(orderId = orderIdDefault(), orderNumber = orderNumber, customerId = customerId, orderStatus = orderStatus.getOrElse(orderStatusDefault), paymentStatus = paymentStatus.getOrElse(paymentStatusDefault), shippingAddressId = shippingAddressId.getOrElse(shippingAddressIdDefault), billingAddressId = billingAddressId.getOrElse(billingAddressIdDefault), subtotal = subtotal, shippingCost = shippingCost.getOrElse(shippingCostDefault), taxAmount = taxAmount.getOrElse(taxAmountDefault), discountAmount = discountAmount.getOrElse(discountAmountDefault), totalAmount = totalAmount, currencyCode = currencyCode.getOrElse(currencyCodeDefault), promotionId = promotionId.getOrElse(promotionIdDefault), notes = notes.getOrElse(notesDefault), internalNotes = internalNotes.getOrElse(internalNotesDefault), ipAddress = ipAddress.getOrElse(ipAddressDefault), userAgent = userAgent.getOrElse(userAgentDefault), orderedAt = orderedAt.getOrElse(orderedAtDefault), confirmedAt = confirmedAt.getOrElse(confirmedAtDefault), shippedAt = shippedAt.getOrElse(shippedAtDefault), deliveredAt = deliveredAt.getOrElse(deliveredAtDefault))
 
@@ -126,42 +127,42 @@ data class OrdersRowUnsaved(
       sb.append(MariaText.DELIMETER)
       CustomersId.pgType.mariaText().unsafeEncode(row.customerId, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.subtotal, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.subtotal, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.totalAmount, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.totalAmount, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.text.mariaText()).unsafeEncode(row.orderStatus, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.text.mariaText()).unsafeEncode(row.paymentStatus, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(CustomerAddressesId.pgType.opt().mariaText()).unsafeEncode(row.shippingAddressId, sb)
+      Defaulted.mariaText(CustomerAddressesId.pgType.nullable().mariaText()).unsafeEncode(row.shippingAddressId, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(CustomerAddressesId.pgType.opt().mariaText()).unsafeEncode(row.billingAddressId, sb)
+      Defaulted.mariaText(CustomerAddressesId.pgType.nullable().mariaText()).unsafeEncode(row.billingAddressId, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.mariaText()).unsafeEncode(row.shippingCost, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.mariaText()).unsafeEncode(row.shippingCost, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.mariaText()).unsafeEncode(row.taxAmount, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.mariaText()).unsafeEncode(row.taxAmount, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.mariaText()).unsafeEncode(row.discountAmount, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.mariaText()).unsafeEncode(row.discountAmount, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.char_.mariaText()).unsafeEncode(row.currencyCode, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(PromotionsId.pgType.opt().mariaText()).unsafeEncode(row.promotionId, sb)
+      Defaulted.mariaText(PromotionsId.pgType.nullable().mariaText()).unsafeEncode(row.promotionId, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.text.opt().mariaText()).unsafeEncode(row.notes, sb)
+      Defaulted.mariaText(MariaTypes.text.nullable().mariaText()).unsafeEncode(row.notes, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.mediumtext.opt().mariaText()).unsafeEncode(row.internalNotes, sb)
+      Defaulted.mariaText(MariaTypes.mediumtext.nullable().mariaText()).unsafeEncode(row.internalNotes, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.inet6.opt().mariaText()).unsafeEncode(row.ipAddress, sb)
+      Defaulted.mariaText(MariaTypes.inet6.nullable().mariaText()).unsafeEncode(row.ipAddress, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.userAgent, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.userAgent, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.orderedAt, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.confirmedAt, sb)
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.confirmedAt, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.shippedAt, sb)
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.shippedAt, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.deliveredAt, sb) })
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.deliveredAt, sb) })
   }
 }

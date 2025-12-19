@@ -5,13 +5,14 @@
  */
 package adventureworks.pr.psc
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.production.productsubcategory.ProductsubcategoryId
 import adventureworks.public.Name
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.runtime.PgTypes
 
 /** View: pr.psc */
 data class PscViewRow(
@@ -24,11 +25,11 @@ data class PscViewRow(
   /** Points to [adventureworks.production.productsubcategory.ProductsubcategoryRow.name] */
   val name: Name,
   /** Points to [adventureworks.production.productsubcategory.ProductsubcategoryRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.production.productsubcategory.ProductsubcategoryRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PscViewRow> = RowParsers.of(ProductsubcategoryId.pgType, ProductsubcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> PscViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.productsubcategoryid, row.productcategoryid, row.name, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<PscViewRow> = RowParsers.of(ProductsubcategoryId.pgType, ProductsubcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> PscViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.id, row.productsubcategoryid, row.productcategoryid, row.name, row.rowguid, row.modifieddate) })
   }
 }

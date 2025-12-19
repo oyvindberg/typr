@@ -12,15 +12,15 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait VadditionalcontactinfoViewFields {
   def businessentityid: Field[BusinessentityId, VadditionalcontactinfoViewRow]
   def firstname: Field[/* user-picked */ FirstName, VadditionalcontactinfoViewRow]
-  def middlename: OptField[Name, VadditionalcontactinfoViewRow]
+  def middlename: Field[Name, VadditionalcontactinfoViewRow]
   def lastname: Field[Name, VadditionalcontactinfoViewRow]
   def telephonenumber: OptField[TypoXml, VadditionalcontactinfoViewRow]
   def telephonespecialinstructions: OptField[String, VadditionalcontactinfoViewRow]
@@ -38,16 +38,16 @@ trait VadditionalcontactinfoViewFields {
 }
 
 object VadditionalcontactinfoViewFields {
-  lazy val structure: Relation[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow] =
+  lazy val structure: RelationStructure[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow] {
+    extends RelationStructure[VadditionalcontactinfoViewFields, VadditionalcontactinfoViewRow] {
 
     override lazy val fields: VadditionalcontactinfoViewFields = new VadditionalcontactinfoViewFields {
       override def businessentityid = Field[BusinessentityId, VadditionalcontactinfoViewRow](_path, "businessentityid", None, None, x => x.businessentityid, (row, value) => row.copy(businessentityid = value))
       override def firstname = Field[/* user-picked */ FirstName, VadditionalcontactinfoViewRow](_path, "firstname", None, None, x => x.firstname, (row, value) => row.copy(firstname = value))
-      override def middlename = OptField[Name, VadditionalcontactinfoViewRow](_path, "middlename", None, None, x => x.middlename, (row, value) => row.copy(middlename = value))
+      override def middlename = Field[Name, VadditionalcontactinfoViewRow](_path, "middlename", None, None, x => x.middlename, (row, value) => row.copy(middlename = value))
       override def lastname = Field[Name, VadditionalcontactinfoViewRow](_path, "lastname", None, None, x => x.lastname, (row, value) => row.copy(lastname = value))
       override def telephonenumber = OptField[TypoXml, VadditionalcontactinfoViewRow](_path, "telephonenumber", None, None, x => x.telephonenumber, (row, value) => row.copy(telephonenumber = value))
       override def telephonespecialinstructions = OptField[String, VadditionalcontactinfoViewRow](_path, "telephonespecialinstructions", None, None, x => x.telephonespecialinstructions, (row, value) => row.copy(telephonespecialinstructions = value))

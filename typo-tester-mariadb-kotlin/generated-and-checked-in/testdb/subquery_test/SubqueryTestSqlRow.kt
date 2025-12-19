@@ -7,11 +7,12 @@ package testdb.subquery_test
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
-import java.util.Optional
 import testdb.customers.CustomersId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** SQL file: subquery_test.sql */
 data class SubqueryTestSqlRow(
@@ -24,9 +25,9 @@ data class SubqueryTestSqlRow(
   @JsonProperty("order_count") val orderCount: Long,
   @JsonProperty("total_spent") val totalSpent: BigDecimal,
   /** Points to [testdb.brands.BrandsRow.name] */
-  @JsonProperty("favorite_brand") val favoriteBrand: Optional<String>
+  @JsonProperty("favorite_brand") val favoriteBrand: String?
 ) {
   companion object {
-    val _rowParser: RowParser<SubqueryTestSqlRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.bigint, MariaTypes.decimal, MariaTypes.varchar.opt(), { t0, t1, t2, t3, t4, t5 -> SubqueryTestSqlRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.firstName, row.orderCount, row.totalSpent, row.favoriteBrand) })
+    val _rowParser: RowParser<SubqueryTestSqlRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric, MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5 -> SubqueryTestSqlRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.firstName, row.orderCount, row.totalSpent, row.favoriteBrand) })
   }
 }

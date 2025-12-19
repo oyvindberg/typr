@@ -33,7 +33,7 @@ case class SalesterritoryRow(
    */
   countryregioncode: CountryregionId,
   /** Geographic area to which the sales territory belong. */
-  group: /* max 50 chars */ String,
+  group: String,
   /** Sales in the territory year to date.
    * Default: 0.00
    * Constraint CK_SalesTerritory_SalesYTD affecting columns salesytd: ((salesytd >= 0.00))
@@ -86,9 +86,9 @@ case class SalesterritoryRow(
 }
 
 object SalesterritoryRow {
-  implicit lazy val decoder: Decoder[SalesterritoryRow] = Decoder.forProduct10[SalesterritoryRow, SalesterritoryId, Name, CountryregionId, /* max 50 chars */ String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")(SalesterritoryRow.apply)(SalesterritoryId.decoder, Name.decoder, CountryregionId.decoder, Decoder.decodeString, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
+  implicit lazy val decoder: Decoder[SalesterritoryRow] = Decoder.forProduct10[SalesterritoryRow, SalesterritoryId, Name, CountryregionId, String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")(SalesterritoryRow.apply)(SalesterritoryId.decoder, Name.decoder, CountryregionId.decoder, Decoder.decodeString, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  implicit lazy val encoder: Encoder[SalesterritoryRow] = Encoder.forProduct10[SalesterritoryRow, SalesterritoryId, Name, CountryregionId, /* max 50 chars */ String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")(x => (x.territoryid, x.name, x.countryregioncode, x.group, x.salesytd, x.saleslastyear, x.costytd, x.costlastyear, x.rowguid, x.modifieddate))(SalesterritoryId.encoder, Name.encoder, CountryregionId.encoder, Encoder.encodeString, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
+  implicit lazy val encoder: Encoder[SalesterritoryRow] = Encoder.forProduct10[SalesterritoryRow, SalesterritoryId, Name, CountryregionId, String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("territoryid", "name", "countryregioncode", "group", "salesytd", "saleslastyear", "costytd", "costlastyear", "rowguid", "modifieddate")(x => (x.territoryid, x.name, x.countryregioncode, x.group, x.salesytd, x.saleslastyear, x.costytd, x.costlastyear, x.rowguid, x.modifieddate))(SalesterritoryId.encoder, Name.encoder, CountryregionId.encoder, Encoder.encodeString, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   implicit lazy val pgText: Text[SalesterritoryRow] = {
     Text.instance[SalesterritoryRow]{ (row, sb) =>
@@ -131,7 +131,7 @@ object SalesterritoryRow {
         territoryid = arr(0).asInstanceOf[SalesterritoryId],
             name = arr(1).asInstanceOf[Name],
             countryregioncode = arr(2).asInstanceOf[CountryregionId],
-            group = arr(3).asInstanceOf[/* max 50 chars */ String],
+            group = arr(3).asInstanceOf[String],
             salesytd = arr(4).asInstanceOf[BigDecimal],
             saleslastyear = arr(5).asInstanceOf[BigDecimal],
             costytd = arr(6).asInstanceOf[BigDecimal],

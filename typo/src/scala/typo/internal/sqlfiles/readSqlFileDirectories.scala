@@ -5,7 +5,7 @@ package sqlfiles
 import org.postgresql.core.SqlCommandType
 import org.postgresql.jdbc.PgConnection
 import org.postgresql.util.PSQLException
-import typo.internal.analysis.{DecomposedSql, JdbcMetadata, NullabilityFromExplain}
+import typo.internal.analysis.*
 
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.{FileVisitResult, Files, Path, SimpleFileVisitor}
@@ -14,10 +14,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object readSqlFileDirectories {
   def apply(logger: TypoLogger, scriptsPath: Path, ds: TypoDataSource)(implicit ec: ExecutionContext): Future[List[SqlFile]] = {
-    val eventualMaybeFiles: List[Future[Option[SqlFile]]] =
-      findSqlFilesUnder(scriptsPath).map { sqlFile =>
-        logger.timed(s"analyze $sqlFile") {
+    // Find all SQL files
+    val sqlFilePaths = findSqlFilesUnder(scriptsPath)
+    if (sqlFilePaths.isEmpty) {
+      return Future.successful(Nil)
+    }
 
+    // Use JDBC metadata for PostgreSQL (authoritative types) with sqlglot enrichment
+    val eventualMaybeFiles: List[Future[Option[SqlFile]]] =
+      sqlFilePaths.map { sqlFile =>
+        logger.timed(s"analyze $sqlFile") {
           val sqlContent = Files.readString(sqlFile)
           val decomposedSql = DecomposedSql.parse(sqlContent)
 
@@ -61,7 +67,6 @@ object readSqlFileDirectories {
     val q = pc.createQuery(decomposedSql.sqlWithNulls, true, false)
     Option(q.query.getSqlCommand).map(_.getType).getOrElse(SqlCommandType.BLANK)
   }
-
   def findSqlFilesUnder(scriptsPath: Path): List[Path] = {
     if (!Files.exists(scriptsPath)) Nil
     else {

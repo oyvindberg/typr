@@ -5,9 +5,6 @@
  */
 package adventureworks.sales.salesorderdetail
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.product.ProductId
 import adventureworks.sales.salesorderheader.SalesorderheaderFields
 import adventureworks.sales.salesorderheader.SalesorderheaderId
@@ -17,28 +14,30 @@ import adventureworks.sales.specialofferproduct.SpecialofferproductFields
 import adventureworks.sales.specialofferproduct.SpecialofferproductId
 import adventureworks.sales.specialofferproduct.SpecialofferproductRow
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.CompositeIn
+import typo.kotlindsl.SqlExpr.CompositeIn.Part
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SalesorderdetailFields : FieldsExpr<SalesorderdetailRow> {
-  fun carriertrackingnumber(): OptField</* max 25 chars */ String, SalesorderdetailRow>
+  abstract fun carriertrackingnumber(): OptField</* max 25 chars */ String, SalesorderdetailRow>
 
-  override fun columns(): List<FieldLike<*, SalesorderdetailRow>>
+  abstract override fun columns(): List<FieldLike<*, SalesorderdetailRow>>
 
-  fun compositeIdIn(compositeIds: List<SalesorderdetailId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<SalesorderheaderId, SalesorderdetailId, SalesorderdetailRow>(salesorderid(), SalesorderdetailId::salesorderid, SalesorderheaderId.pgType), Part<Int, SalesorderdetailId, SalesorderdetailRow>(salesorderdetailid(), SalesorderdetailId::salesorderdetailid, PgTypes.int4)), compositeIds)
+  fun compositeIdIn(compositeIds: List<SalesorderdetailId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<SalesorderheaderId, SalesorderdetailId, SalesorderdetailRow>(salesorderid(), SalesorderdetailId::salesorderid, SalesorderheaderId.pgType), Part<Int, SalesorderdetailId, SalesorderdetailRow>(salesorderdetailid(), SalesorderdetailId::salesorderdetailid, KotlinDbTypes.PgTypes.int4)), compositeIds)
 
   fun compositeIdIs(compositeId: SalesorderdetailId): SqlExpr<Boolean> = SqlExpr.all(salesorderid().isEqual(compositeId.salesorderid), salesorderdetailid().isEqual(compositeId.salesorderdetailid))
 
@@ -46,58 +45,59 @@ interface SalesorderdetailFields : FieldsExpr<SalesorderdetailRow> {
 
   fun extractIdentSpecialofferproductIdIs(id: SpecialofferproductId): SqlExpr<Boolean> = SqlExpr.all(specialofferid().isEqual(id.specialofferid), productid().isEqual(id.productid))
 
-  fun fkSalesorderheader(): ForeignKey<SalesorderheaderFields, SalesorderheaderRow> = ForeignKey.of<SalesorderheaderFields, SalesorderheaderRow>("sales.FK_SalesOrderDetail_SalesOrderHeader_SalesOrderID").withColumnPair(salesorderid(), SalesorderheaderFields::salesorderid)
+  fun fkSalesorderheader(): ForeignKey<SalesorderheaderFields, SalesorderheaderRow> = ForeignKey.of<SalesorderheaderFields, SalesorderheaderRow>("sales.FK_SalesOrderDetail_SalesOrderHeader_SalesOrderID").withColumnPair<SalesorderheaderId>(salesorderid(), SalesorderheaderFields::salesorderid)
 
-  fun fkSpecialofferproduct(): ForeignKey<SpecialofferproductFields, SpecialofferproductRow> = ForeignKey.of<SpecialofferproductFields, SpecialofferproductRow>("sales.FK_SalesOrderDetail_SpecialOfferProduct_SpecialOfferIDProductID").withColumnPair(specialofferid(), SpecialofferproductFields::specialofferid)
-  .withColumnPair(productid(), SpecialofferproductFields::productid)
+  fun fkSpecialofferproduct(): ForeignKey<SpecialofferproductFields, SpecialofferproductRow> = ForeignKey.of<SpecialofferproductFields, SpecialofferproductRow>("sales.FK_SalesOrderDetail_SpecialOfferProduct_SpecialOfferIDProductID").withColumnPair<SpecialofferId>(specialofferid(), SpecialofferproductFields::specialofferid).withColumnPair<ProductId>(productid(), SpecialofferproductFields::productid)
 
-  fun modifieddate(): Field<TypoLocalDateTime, SalesorderdetailRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SalesorderdetailRow>
 
-  fun orderqty(): Field<TypoShort, SalesorderdetailRow>
+  abstract fun orderqty(): Field<Short, SalesorderdetailRow>
 
-  fun productid(): Field<ProductId, SalesorderdetailRow>
+  abstract fun productid(): Field<ProductId, SalesorderdetailRow>
 
-  override fun rowParser(): RowParser<SalesorderdetailRow> = SalesorderdetailRow._rowParser
+  override fun rowParser(): RowParser<SalesorderdetailRow> = SalesorderdetailRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, SalesorderdetailRow>
+  abstract fun rowguid(): Field<UUID, SalesorderdetailRow>
 
-  fun salesorderdetailid(): IdField<Int, SalesorderdetailRow>
+  abstract fun salesorderdetailid(): IdField<Int, SalesorderdetailRow>
 
-  fun salesorderid(): IdField<SalesorderheaderId, SalesorderdetailRow>
+  abstract fun salesorderid(): IdField<SalesorderheaderId, SalesorderdetailRow>
 
-  fun specialofferid(): Field<SpecialofferId, SalesorderdetailRow>
+  abstract fun specialofferid(): Field<SpecialofferId, SalesorderdetailRow>
 
-  fun unitprice(): Field<BigDecimal, SalesorderdetailRow>
+  abstract fun unitprice(): Field<BigDecimal, SalesorderdetailRow>
 
-  fun unitpricediscount(): Field<BigDecimal, SalesorderdetailRow>
+  abstract fun unitpricediscount(): Field<BigDecimal, SalesorderdetailRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SalesorderdetailFields, Relation<SalesorderdetailFields, SalesorderdetailRow> {
-      override fun salesorderid(): IdField<SalesorderheaderId, SalesorderdetailRow> = IdField<SalesorderheaderId, SalesorderdetailRow>(_path, "salesorderid", SalesorderdetailRow::salesorderid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(salesorderid = value) }, SalesorderheaderId.pgType)
+    data class Impl(val _path: List<Path>) : SalesorderdetailFields, RelationStructure<SalesorderdetailFields, SalesorderdetailRow> {
+      override fun salesorderid(): IdField<SalesorderheaderId, SalesorderdetailRow> = IdField<SalesorderheaderId, SalesorderdetailRow>(_path, "salesorderid", SalesorderdetailRow::salesorderid, null, "int4", { row, value -> row.copy(salesorderid = value) }, SalesorderheaderId.pgType)
 
-      override fun salesorderdetailid(): IdField<Int, SalesorderdetailRow> = IdField<Int, SalesorderdetailRow>(_path, "salesorderdetailid", SalesorderdetailRow::salesorderdetailid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(salesorderdetailid = value) }, PgTypes.int4)
+      override fun salesorderdetailid(): IdField<Int, SalesorderdetailRow> = IdField<Int, SalesorderdetailRow>(_path, "salesorderdetailid", SalesorderdetailRow::salesorderdetailid, null, "int4", { row, value -> row.copy(salesorderdetailid = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun carriertrackingnumber(): OptField</* max 25 chars */ String, SalesorderdetailRow> = OptField</* max 25 chars */ String, SalesorderdetailRow>(_path, "carriertrackingnumber", SalesorderdetailRow::carriertrackingnumber, Optional.empty(), Optional.empty(), { row, value -> row.copy(carriertrackingnumber = value) }, PgTypes.text)
+      override fun carriertrackingnumber(): OptField<String, SalesorderdetailRow> = OptField<String, SalesorderdetailRow>(_path, "carriertrackingnumber", SalesorderdetailRow::carriertrackingnumber, null, null, { row, value -> row.copy(carriertrackingnumber = value) }, PgTypes.text)
 
-      override fun orderqty(): Field<TypoShort, SalesorderdetailRow> = Field<TypoShort, SalesorderdetailRow>(_path, "orderqty", SalesorderdetailRow::orderqty, Optional.empty(), Optional.of("int2"), { row, value -> row.copy(orderqty = value) }, TypoShort.pgType)
+      override fun orderqty(): Field<Short, SalesorderdetailRow> = Field<Short, SalesorderdetailRow>(_path, "orderqty", SalesorderdetailRow::orderqty, null, "int2", { row, value -> row.copy(orderqty = value) }, KotlinDbTypes.PgTypes.int2)
 
-      override fun productid(): Field<ProductId, SalesorderdetailRow> = Field<ProductId, SalesorderdetailRow>(_path, "productid", SalesorderdetailRow::productid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productid = value) }, ProductId.pgType)
+      override fun productid(): Field<ProductId, SalesorderdetailRow> = Field<ProductId, SalesorderdetailRow>(_path, "productid", SalesorderdetailRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, ProductId.pgType)
 
-      override fun specialofferid(): Field<SpecialofferId, SalesorderdetailRow> = Field<SpecialofferId, SalesorderdetailRow>(_path, "specialofferid", SalesorderdetailRow::specialofferid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(specialofferid = value) }, SpecialofferId.pgType)
+      override fun specialofferid(): Field<SpecialofferId, SalesorderdetailRow> = Field<SpecialofferId, SalesorderdetailRow>(_path, "specialofferid", SalesorderdetailRow::specialofferid, null, "int4", { row, value -> row.copy(specialofferid = value) }, SpecialofferId.pgType)
 
-      override fun unitprice(): Field<BigDecimal, SalesorderdetailRow> = Field<BigDecimal, SalesorderdetailRow>(_path, "unitprice", SalesorderdetailRow::unitprice, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(unitprice = value) }, PgTypes.numeric)
+      override fun unitprice(): Field<BigDecimal, SalesorderdetailRow> = Field<BigDecimal, SalesorderdetailRow>(_path, "unitprice", SalesorderdetailRow::unitprice, null, "numeric", { row, value -> row.copy(unitprice = value) }, PgTypes.numeric)
 
-      override fun unitpricediscount(): Field<BigDecimal, SalesorderdetailRow> = Field<BigDecimal, SalesorderdetailRow>(_path, "unitpricediscount", SalesorderdetailRow::unitpricediscount, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(unitpricediscount = value) }, PgTypes.numeric)
+      override fun unitpricediscount(): Field<BigDecimal, SalesorderdetailRow> = Field<BigDecimal, SalesorderdetailRow>(_path, "unitpricediscount", SalesorderdetailRow::unitpricediscount, null, "numeric", { row, value -> row.copy(unitpricediscount = value) }, PgTypes.numeric)
 
-      override fun rowguid(): Field<TypoUUID, SalesorderdetailRow> = Field<TypoUUID, SalesorderdetailRow>(_path, "rowguid", SalesorderdetailRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, SalesorderdetailRow> = Field<UUID, SalesorderdetailRow>(_path, "rowguid", SalesorderdetailRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SalesorderdetailRow> = Field<TypoLocalDateTime, SalesorderdetailRow>(_path, "modifieddate", SalesorderdetailRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SalesorderdetailRow> = Field<LocalDateTime, SalesorderdetailRow>(_path, "modifieddate", SalesorderdetailRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SalesorderdetailRow>> = listOf(this.salesorderid(), this.salesorderdetailid(), this.carriertrackingnumber(), this.orderqty(), this.productid(), this.specialofferid(), this.unitprice(), this.unitpricediscount(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SalesorderdetailFields, SalesorderdetailRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SalesorderdetailRow>> = listOf(this.salesorderid().underlying, this.salesorderdetailid().underlying, this.carriertrackingnumber().underlying, this.orderqty().underlying, this.productid().underlying, this.specialofferid().underlying, this.unitprice().underlying, this.unitpricediscount().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SalesorderdetailFields, SalesorderdetailRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

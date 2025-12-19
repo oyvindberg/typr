@@ -5,26 +5,22 @@
  */
 package adventureworks.sales.personcreditcard
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
 
 class PersoncreditcardRepoImpl() : PersoncreditcardRepo {
   override fun delete(): DeleteBuilder<PersoncreditcardFields, PersoncreditcardRow> = DeleteBuilder.of("\"sales\".\"personcreditcard\"", PersoncreditcardFields.structure, Dialect.POSTGRESQL)
@@ -32,17 +28,7 @@ class PersoncreditcardRepoImpl() : PersoncreditcardRepo {
   override fun deleteById(
     compositeId: PersoncreditcardId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "sales"."personcreditcard" where "businessentityid" = 
-    """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("""
-     AND "creditcardid" = 
-    """.trimMargin()),
-    /* user-picked */ CustomCreditcardId.pgType.encode(compositeId.creditcardid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from \"sales\".\"personcreditcard\" where \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"creditcardid\" = "), Fragment.encode(CustomCreditcardId.pgType, compositeId.creditcardid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     compositeIds: Array<PersoncreditcardId>,
@@ -50,121 +36,55 @@ class PersoncreditcardRepoImpl() : PersoncreditcardRepo {
   ): Int {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, PersoncreditcardId::businessentityid, BusinessentityId::class.java)
     val creditcardid: Array</* user-picked */ CustomCreditcardId> = arrayMap.map(compositeIds, PersoncreditcardId::creditcardid, /* user-picked */ CustomCreditcardId::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        delete
-        from "sales"."personcreditcard"
-        where ("businessentityid", "creditcardid")
-        in (select unnest(""".trimMargin()),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      CustomCreditcardId.pgTypeArray.encode(creditcardid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """.trimMargin())
-    ).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"personcreditcard\"\nwhere (\"businessentityid\", \"creditcardid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: PersoncreditcardRow,
     c: Connection
-  ): PersoncreditcardRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "sales"."personcreditcard"("businessentityid", "creditcardid", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    /* user-picked */ CustomCreditcardId.pgType.encode(unsaved.creditcardid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "businessentityid", "creditcardid", "modifieddate"::text
-    """.trimMargin())
-  )
+  ): PersoncreditcardRow = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"personcreditcard\"(\"businessentityid\", \"creditcardid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(CustomCreditcardId.pgType, unsaved.creditcardid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"businessentityid\", \"creditcardid\", \"modifieddate\"\n"))
     .updateReturning(PersoncreditcardRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: PersoncreditcardRowUnsaved,
     c: Connection
   ): PersoncreditcardRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"businessentityid\""))
-    values.add(interpolate(
-      BusinessentityId.pgType.encode(unsaved.businessentityid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4")))
     columns.add(Fragment.lit("\"creditcardid\""))
-    values.add(interpolate(
-      /* user-picked */ CustomCreditcardId.pgType.encode(unsaved.creditcardid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(CustomCreditcardId.pgType, unsaved.creditcardid), Fragment.lit("::int4")))
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "sales"."personcreditcard"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "businessentityid", "creditcardid", "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"personcreditcard\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"businessentityid\", \"creditcardid\", \"modifieddate\"\n"))
     return q.updateReturning(PersoncreditcardRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<PersoncreditcardRow>,
+    unsaved: Iterator<PersoncreditcardRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "sales"."personcreditcard"("businessentityid", "creditcardid", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, PersoncreditcardRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"sales\".\"personcreditcard\"(\"businessentityid\", \"creditcardid\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, PersoncreditcardRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<PersoncreditcardRowUnsaved>,
+    unsaved: Iterator<PersoncreditcardRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "sales"."personcreditcard"("businessentityid", "creditcardid", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, PersoncreditcardRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"sales\".\"personcreditcard\"(\"businessentityid\", \"creditcardid\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, PersoncreditcardRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<PersoncreditcardFields, PersoncreditcardRow> = SelectBuilder.of("\"sales\".\"personcreditcard\"", PersoncreditcardFields.structure, PersoncreditcardRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<PersoncreditcardRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "businessentityid", "creditcardid", "modifieddate"::text
-    from "sales"."personcreditcard"
-  """.trimMargin())).query(PersoncreditcardRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<PersoncreditcardRow> = Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"creditcardid\", \"modifieddate\"\nfrom \"sales\".\"personcreditcard\"\n")).query(PersoncreditcardRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     compositeId: PersoncreditcardId,
     c: Connection
-  ): Optional<PersoncreditcardRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "businessentityid", "creditcardid", "modifieddate"::text
-      from "sales"."personcreditcard"
-      where "businessentityid" = """.trimMargin()),
-    BusinessentityId.pgType.encode(compositeId.businessentityid),
-    typo.runtime.Fragment.lit("""
-     AND "creditcardid" = 
-    """.trimMargin()),
-    /* user-picked */ CustomCreditcardId.pgType.encode(compositeId.creditcardid),
-    typo.runtime.Fragment.lit("")
-  ).query(PersoncreditcardRow._rowParser.first()).runUnchecked(c)
+  ): PersoncreditcardRow? = Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"creditcardid\", \"modifieddate\"\nfrom \"sales\".\"personcreditcard\"\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"creditcardid\" = "), Fragment.encode(CustomCreditcardId.pgType, compositeId.creditcardid), Fragment.lit("")).query(PersoncreditcardRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     compositeIds: Array<PersoncreditcardId>,
@@ -172,20 +92,7 @@ class PersoncreditcardRepoImpl() : PersoncreditcardRepo {
   ): List<PersoncreditcardRow> {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, PersoncreditcardId::businessentityid, BusinessentityId::class.java)
     val creditcardid: Array</* user-picked */ CustomCreditcardId> = arrayMap.map(compositeIds, PersoncreditcardId::creditcardid, /* user-picked */ CustomCreditcardId::class.java)
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        select "businessentityid", "creditcardid", "modifieddate"::text
-        from "sales"."personcreditcard"
-        where ("businessentityid", "creditcardid")
-        in (select unnest(""".trimMargin()),
-      BusinessentityId.pgTypeArray.encode(businessentityid),
-      typo.runtime.Fragment.lit("::int4[]), unnest("),
-      CustomCreditcardId.pgTypeArray.encode(creditcardid),
-      typo.runtime.Fragment.lit("""
-      ::int4[]))
-
-      """.trimMargin())
-    ).query(PersoncreditcardRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"creditcardid\", \"modifieddate\"\nfrom \"sales\".\"personcreditcard\"\nwhere (\"businessentityid\", \"creditcardid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid), Fragment.lit("::int4[]))\n")).query(PersoncreditcardRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(
@@ -194,87 +101,41 @@ class PersoncreditcardRepoImpl() : PersoncreditcardRepo {
   ): Map<PersoncreditcardId, PersoncreditcardRow> {
     val ret: MutableMap<PersoncreditcardId, PersoncreditcardRow> = mutableMapOf<PersoncreditcardId, PersoncreditcardRow>()
     selectByIds(compositeIds, c).forEach({ row -> ret.put(row.compositeId(), row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<PersoncreditcardFields, PersoncreditcardRow> = UpdateBuilder.of("\"sales\".\"personcreditcard\"", PersoncreditcardFields.structure, PersoncreditcardRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<PersoncreditcardFields, PersoncreditcardRow> = UpdateBuilder.of("\"sales\".\"personcreditcard\"", PersoncreditcardFields.structure, PersoncreditcardRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: PersoncreditcardRow,
     c: Connection
   ): Boolean {
     val compositeId: PersoncreditcardId = row.compositeId()
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "sales"."personcreditcard"
-        set "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "businessentityid" = """.trimMargin()),
-      BusinessentityId.pgType.encode(compositeId.businessentityid),
-      typo.runtime.Fragment.lit("""
-       AND "creditcardid" = 
-      """.trimMargin()),
-      /* user-picked */ CustomCreditcardId.pgType.encode(compositeId.creditcardid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update \"sales\".\"personcreditcard\"\nset \"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"businessentityid\" = "), Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid), Fragment.lit(" AND \"creditcardid\" = "), Fragment.encode(CustomCreditcardId.pgType, compositeId.creditcardid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: PersoncreditcardRow,
     c: Connection
-  ): PersoncreditcardRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "sales"."personcreditcard"("businessentityid", "creditcardid", "modifieddate")
-      values (""".trimMargin()),
-    BusinessentityId.pgType.encode(unsaved.businessentityid),
-    typo.runtime.Fragment.lit("::int4, "),
-    /* user-picked */ CustomCreditcardId.pgType.encode(unsaved.creditcardid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("businessentityid", "creditcardid")
-      do update set
-        "modifieddate" = EXCLUDED."modifieddate"
-      returning "businessentityid", "creditcardid", "modifieddate"::text""".trimMargin())
-  )
+  ): PersoncreditcardRow = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"personcreditcard\"(\"businessentityid\", \"creditcardid\", \"modifieddate\")\nvalues ("), Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid), Fragment.lit("::int4, "), Fragment.encode(CustomCreditcardId.pgType, unsaved.creditcardid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"businessentityid\", \"creditcardid\")\ndo update set\n  \"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"creditcardid\", \"modifieddate\""))
     .updateReturning(PersoncreditcardRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<PersoncreditcardRow>,
+    unsaved: Iterator<PersoncreditcardRow>,
     c: Connection
-  ): List<PersoncreditcardRow> = interpolate(typo.runtime.Fragment.lit("""
-                                   insert into "sales"."personcreditcard"("businessentityid", "creditcardid", "modifieddate")
-                                   values (?::int4, ?::int4, ?::timestamp)
-                                   on conflict ("businessentityid", "creditcardid")
-                                   do update set
-                                     "modifieddate" = EXCLUDED."modifieddate"
-                                   returning "businessentityid", "creditcardid", "modifieddate"::text""".trimMargin()))
+  ): List<PersoncreditcardRow> = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"personcreditcard\"(\"businessentityid\", \"creditcardid\", \"modifieddate\")\nvalues (?::int4, ?::int4, ?::timestamp)\non conflict (\"businessentityid\", \"creditcardid\")\ndo update set\n  \"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"businessentityid\", \"creditcardid\", \"modifieddate\""))
     .updateManyReturning(PersoncreditcardRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<PersoncreditcardRow>,
+    unsaved: Iterator<PersoncreditcardRow>,
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table personcreditcard_TEMP (like "sales"."personcreditcard") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy personcreditcard_TEMP("businessentityid", "creditcardid", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, PersoncreditcardRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "sales"."personcreditcard"("businessentityid", "creditcardid", "modifieddate")
-      select * from personcreditcard_TEMP
-      on conflict ("businessentityid", "creditcardid")
-      do update set
-        "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table personcreditcard_TEMP;""".trimMargin())).update().runUnchecked(c)
+    Fragment.interpolate(Fragment.lit("create temporary table personcreditcard_TEMP (like \"sales\".\"personcreditcard\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy personcreditcard_TEMP(\"businessentityid\", \"creditcardid\", \"modifieddate\") from stdin", batchSize, unsaved, c, PersoncreditcardRow.pgText)
+    return Fragment.interpolate(Fragment.lit("insert into \"sales\".\"personcreditcard\"(\"businessentityid\", \"creditcardid\", \"modifieddate\")\nselect * from personcreditcard_TEMP\non conflict (\"businessentityid\", \"creditcardid\")\ndo update set\n  \"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table personcreditcard_TEMP;")).update().runUnchecked(c)
   }
 }

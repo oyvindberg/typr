@@ -6,89 +6,88 @@
 package adventureworks.person.addresstype
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface AddresstypeRepo {
-  fun delete(): DeleteBuilder<AddresstypeFields, AddresstypeRow>
+  abstract fun delete(): DeleteBuilder<AddresstypeFields, AddresstypeRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     addresstypeid: AddresstypeId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     addresstypeids: Array<AddresstypeId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: AddresstypeRow,
     c: Connection
   ): AddresstypeRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: AddresstypeRowUnsaved,
     c: Connection
   ): AddresstypeRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<AddresstypeRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<AddresstypeRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<AddresstypeRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<AddresstypeRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<AddresstypeFields, AddresstypeRow>
+  abstract fun select(): SelectBuilder<AddresstypeFields, AddresstypeRow>
 
-  fun selectAll(c: Connection): List<AddresstypeRow>
+  abstract fun selectAll(c: Connection): List<AddresstypeRow>
 
-  fun selectById(
+  abstract fun selectById(
     addresstypeid: AddresstypeId,
     c: Connection
-  ): Optional<AddresstypeRow>
+  ): AddresstypeRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     addresstypeids: Array<AddresstypeId>,
     c: Connection
   ): List<AddresstypeRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     addresstypeids: Array<AddresstypeId>,
     c: Connection
   ): Map<AddresstypeId, AddresstypeRow>
 
-  fun update(): UpdateBuilder<AddresstypeFields, AddresstypeRow>
+  abstract fun update(): UpdateBuilder<AddresstypeFields, AddresstypeRow>
 
-  fun update(
+  abstract fun update(
     row: AddresstypeRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: AddresstypeRow,
     c: Connection
   ): AddresstypeRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<AddresstypeRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<AddresstypeRow>,
     c: Connection
   ): List<AddresstypeRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<AddresstypeRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<AddresstypeRow>,
     batchSize: Int,
     c: Connection
   ): Int

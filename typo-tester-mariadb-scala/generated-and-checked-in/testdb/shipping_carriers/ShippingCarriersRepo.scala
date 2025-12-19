@@ -6,17 +6,16 @@
 package testdb.shipping_carriers
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait ShippingCarriersRepo {
   def delete: DeleteBuilder[ShippingCarriersFields, ShippingCarriersRow]
 
-  def deleteById(carrierId: ShippingCarriersId)(using c: Connection): java.lang.Boolean
+  def deleteById(carrierId: ShippingCarriersId)(using c: Connection): Boolean
 
-  def deleteByIds(carrierIds: Array[ShippingCarriersId])(using c: Connection): Integer
+  def deleteByIds(carrierIds: Array[ShippingCarriersId])(using c: Connection): Int
 
   def insert(unsaved: ShippingCarriersRow)(using c: Connection): ShippingCarriersRow
 
@@ -24,21 +23,21 @@ trait ShippingCarriersRepo {
 
   def select: SelectBuilder[ShippingCarriersFields, ShippingCarriersRow]
 
-  def selectAll(using c: Connection): java.util.List[ShippingCarriersRow]
+  def selectAll(using c: Connection): List[ShippingCarriersRow]
 
-  def selectById(carrierId: ShippingCarriersId)(using c: Connection): Optional[ShippingCarriersRow]
+  def selectById(carrierId: ShippingCarriersId)(using c: Connection): Option[ShippingCarriersRow]
 
-  def selectByIds(carrierIds: Array[ShippingCarriersId])(using c: Connection): java.util.List[ShippingCarriersRow]
+  def selectByIds(carrierIds: Array[ShippingCarriersId])(using c: Connection): List[ShippingCarriersRow]
 
-  def selectByIdsTracked(carrierIds: Array[ShippingCarriersId])(using c: Connection): java.util.Map[ShippingCarriersId, ShippingCarriersRow]
+  def selectByIdsTracked(carrierIds: Array[ShippingCarriersId])(using c: Connection): Map[ShippingCarriersId, ShippingCarriersRow]
 
-  def selectByUniqueCode(code: String)(using c: Connection): Optional[ShippingCarriersRow]
+  def selectByUniqueCode(code: String)(using c: Connection): Option[ShippingCarriersRow]
 
   def update: UpdateBuilder[ShippingCarriersFields, ShippingCarriersRow]
 
-  def update(row: ShippingCarriersRow)(using c: Connection): java.lang.Boolean
+  def update(row: ShippingCarriersRow)(using c: Connection): Boolean
 
   def upsert(unsaved: ShippingCarriersRow)(using c: Connection): ShippingCarriersRow
 
-  def upsertBatch(unsaved: java.util.Iterator[ShippingCarriersRow])(using c: Connection): java.util.List[ShippingCarriersRow]
+  def upsertBatch(unsaved: Iterator[ShippingCarriersRow])(using c: Connection): List[ShippingCarriersRow]
 }

@@ -6,70 +6,69 @@
 package testdb.product_categories
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface ProductCategoriesRepo {
-  fun delete(): DeleteBuilder<ProductCategoriesFields, ProductCategoriesRow>
+  abstract fun delete(): DeleteBuilder<ProductCategoriesFields, ProductCategoriesRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: ProductCategoriesId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<ProductCategoriesId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: ProductCategoriesRow,
     c: Connection
   ): ProductCategoriesRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: ProductCategoriesRowUnsaved,
     c: Connection
   ): ProductCategoriesRow
 
-  fun select(): SelectBuilder<ProductCategoriesFields, ProductCategoriesRow>
+  abstract fun select(): SelectBuilder<ProductCategoriesFields, ProductCategoriesRow>
 
-  fun selectAll(c: Connection): List<ProductCategoriesRow>
+  abstract fun selectAll(c: Connection): List<ProductCategoriesRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: ProductCategoriesId,
     c: Connection
-  ): Optional<ProductCategoriesRow>
+  ): ProductCategoriesRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<ProductCategoriesId>,
     c: Connection
   ): List<ProductCategoriesRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<ProductCategoriesId>,
     c: Connection
   ): Map<ProductCategoriesId, ProductCategoriesRow>
 
-  fun update(): UpdateBuilder<ProductCategoriesFields, ProductCategoriesRow>
+  abstract fun update(): UpdateBuilder<ProductCategoriesFields, ProductCategoriesRow>
 
-  fun update(
+  abstract fun update(
     row: ProductCategoriesRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: ProductCategoriesRow,
     c: Connection
   ): ProductCategoriesRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<ProductCategoriesRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<ProductCategoriesRow>,
     c: Connection
   ): List<ProductCategoriesRow>
 }

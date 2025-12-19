@@ -7,12 +7,12 @@ package adventureworks.sales.salesperson
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
 
@@ -25,11 +25,11 @@ data class SalespersonRowUnsaved(
   /** Territory currently assigned to. Foreign key to SalesTerritory.SalesTerritoryID.
     * Points to [adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]
     */
-  val territoryid: Optional<SalesterritoryId> = Optional.empty(),
+  val territoryid: SalesterritoryId? = null,
   /** Projected yearly sales.
     * Constraint CK_SalesPerson_SalesQuota affecting columns salesquota:  ((salesquota > 0.00))
     */
-  val salesquota: Optional<BigDecimal> = Optional.empty(),
+  val salesquota: BigDecimal? = null,
   /** Default: 0.00
     * Bonus due if quota is met.
     * Constraint CK_SalesPerson_Bonus affecting columns bonus:  ((bonus >= 0.00))
@@ -51,26 +51,26 @@ data class SalespersonRowUnsaved(
     */
   val saleslastyear: Defaulted<BigDecimal> = UseDefault(),
   /** Default: uuid_generate_v1() */
-  val rowguid: Defaulted<TypoUUID> = UseDefault(),
+  val rowguid: Defaulted<UUID> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     bonusDefault: () -> BigDecimal,
     commissionpctDefault: () -> BigDecimal,
     salesytdDefault: () -> BigDecimal,
     saleslastyearDefault: () -> BigDecimal,
-    rowguidDefault: () -> TypoUUID,
-    modifieddateDefault: () -> TypoLocalDateTime
+    rowguidDefault: () -> UUID,
+    modifieddateDefault: () -> LocalDateTime
   ): SalespersonRow = SalespersonRow(businessentityid = businessentityid, territoryid = territoryid, salesquota = salesquota, bonus = bonus.getOrElse(bonusDefault), commissionpct = commissionpct.getOrElse(commissionpctDefault), salesytd = salesytd.getOrElse(salesytdDefault), saleslastyear = saleslastyear.getOrElse(saleslastyearDefault), rowguid = rowguid.getOrElse(rowguidDefault), modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<SalespersonRowUnsaved> =
       PgText.instance({ row, sb -> BusinessentityId.pgType.pgText().unsafeEncode(row.businessentityid, sb)
       sb.append(PgText.DELIMETER)
-      SalesterritoryId.pgType.opt().pgText().unsafeEncode(row.territoryid, sb)
+      SalesterritoryId.pgType.nullable().pgText().unsafeEncode(row.territoryid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.numeric.opt().pgText().unsafeEncode(row.salesquota, sb)
+      PgTypes.numeric.nullable().pgText().unsafeEncode(row.salesquota, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.bonus, sb)
       sb.append(PgText.DELIMETER)
@@ -80,8 +80,8 @@ data class SalespersonRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.numeric.pgText()).unsafeEncode(row.saleslastyear, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoUUID.pgType.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

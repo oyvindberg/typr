@@ -26,17 +26,17 @@ case class VemployeedepartmentViewRow(
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.person.person.PersonRow.title]] */
-  title: Option[/* max 8 chars */ String],
+  title: String,
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: String,
   /** Points to [[adventureworks.humanresources.employee.EmployeeRow.jobtitle]] */
-  jobtitle: /* max 50 chars */ String,
+  jobtitle: String,
   /** Points to [[adventureworks.humanresources.department.DepartmentRow.name]] */
   department: Name,
   /** Points to [[adventureworks.humanresources.department.DepartmentRow.groupname]] */
@@ -51,11 +51,11 @@ object VemployeedepartmentViewRow {
         Try(
           VemployeedepartmentViewRow(
             businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
-            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            title = json.\("title").as(Reads.StringReads),
             firstname = json.\("firstname").as(FirstName.reads),
-            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            middlename = json.\("middlename").as(Name.reads),
             lastname = json.\("lastname").as(Name.reads),
-            suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
+            suffix = json.\("suffix").as(Reads.StringReads),
             jobtitle = json.\("jobtitle").as(Reads.StringReads),
             department = json.\("department").as(Name.reads),
             groupname = json.\("groupname").as(Name.reads),
@@ -71,11 +71,11 @@ object VemployeedepartmentViewRow {
       Success(
         VemployeedepartmentViewRow(
           businessentityid = row(idx + 0)(using BusinessentityId.column),
-          title = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
+          title = row(idx + 1)(using Column.columnToString),
           firstname = row(idx + 2)(using /* user-picked */ FirstName.column),
-          middlename = row(idx + 3)(using Column.columnToOption(using Name.column)),
+          middlename = row(idx + 3)(using Name.column),
           lastname = row(idx + 4)(using Name.column),
-          suffix = row(idx + 5)(using Column.columnToOption(using Column.columnToString)),
+          suffix = row(idx + 5)(using Column.columnToString),
           jobtitle = row(idx + 6)(using Column.columnToString),
           department = row(idx + 7)(using Name.column),
           groupname = row(idx + 8)(using Name.column),
@@ -89,11 +89,11 @@ object VemployeedepartmentViewRow {
     OWrites[VemployeedepartmentViewRow](o =>
       new JsObject(ListMap[String, JsValue](
         "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
-        "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
+        "title" -> Writes.StringWrites.writes(o.title),
         "firstname" -> FirstName.writes.writes(o.firstname),
-        "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
+        "middlename" -> Name.writes.writes(o.middlename),
         "lastname" -> Name.writes.writes(o.lastname),
-        "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
+        "suffix" -> Writes.StringWrites.writes(o.suffix),
         "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
         "department" -> Name.writes.writes(o.department),
         "groupname" -> Name.writes.writes(o.groupname),

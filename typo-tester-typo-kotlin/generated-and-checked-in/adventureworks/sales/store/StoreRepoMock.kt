@@ -9,21 +9,19 @@ import adventureworks.person.businessentity.BusinessentityId
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class StoreRepoMock(
   val toRow: (StoreRowUnsaved) -> StoreRow,
@@ -34,7 +32,7 @@ data class StoreRepoMock(
   override fun deleteById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(businessentityid)).isPresent()
+  ): Boolean = map.remove(businessentityid) != null
 
   override fun deleteByIds(
     businessentityids: Array<BusinessentityId>,
@@ -42,7 +40,7 @@ data class StoreRepoMock(
   ): Int {
     var count = 0
     for (id in businessentityids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -54,7 +52,7 @@ data class StoreRepoMock(
     c: Connection
   ): StoreRow {
     if (map.containsKey(unsaved.businessentityid)) {
-      throw RuntimeException(str("id $unsaved.businessentityid already exists"))
+      throw RuntimeException("id " + unsaved.businessentityid + " already exists")
     }
     map[unsaved.businessentityid] = unsaved
     return unsaved
@@ -66,7 +64,7 @@ data class StoreRepoMock(
   ): StoreRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<StoreRow>,
+    unsaved: Iterator<StoreRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -81,7 +79,7 @@ data class StoreRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<StoreRowUnsaved>,
+    unsaved: Iterator<StoreRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -102,7 +100,7 @@ data class StoreRepoMock(
   override fun selectById(
     businessentityid: BusinessentityId,
     c: Connection
-  ): Optional<StoreRow> = Optional.ofNullable(map[businessentityid])
+  ): StoreRow? = map[businessentityid]
 
   override fun selectByIds(
     businessentityids: Array<BusinessentityId>,
@@ -110,9 +108,9 @@ data class StoreRepoMock(
   ): List<StoreRow> {
     val result = ArrayList<StoreRow>()
     for (id in businessentityids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -129,7 +127,7 @@ data class StoreRepoMock(
     row: StoreRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.businessentityid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.businessentityid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.businessentityid] = row
     }
@@ -145,7 +143,7 @@ data class StoreRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<StoreRow>,
+    unsaved: Iterator<StoreRow>,
     c: Connection
   ): List<StoreRow> {
     val result = ArrayList<StoreRow>()
@@ -159,7 +157,7 @@ data class StoreRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<StoreRow>,
+    unsaved: Iterator<StoreRow>,
     batchSize: Int,
     c: Connection
   ): Int {

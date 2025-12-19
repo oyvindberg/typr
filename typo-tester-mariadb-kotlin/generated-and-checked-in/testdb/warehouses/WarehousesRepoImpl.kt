@@ -7,19 +7,18 @@ package testdb.warehouses
 
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
 
 class WarehousesRepoImpl() : WarehousesRepo {
   override fun delete(): DeleteBuilder<WarehousesFields, WarehousesRow> = DeleteBuilder.of("`warehouses`", WarehousesFields.structure, Dialect.MARIADB)
@@ -27,167 +26,81 @@ class WarehousesRepoImpl() : WarehousesRepo {
   override fun deleteById(
     warehouseId: WarehousesId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("delete from `warehouses` where `warehouse_id` = "),
-    WarehousesId.pgType.encode(warehouseId),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from `warehouses` where `warehouse_id` = "), Fragment.encode(WarehousesId.pgType, warehouseId), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     warehouseIds: Array<WarehousesId>,
     c: Connection
   ): Int {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in warehouseIds) { fragments.add(WarehousesId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in warehouseIds) { fragments.add(Fragment.encode(WarehousesId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("delete from `warehouses` where `warehouse_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: WarehousesRow,
     c: Connection
-  ): WarehousesRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into `warehouses`(`code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`)
-      values (""".trimMargin()),
-    MariaTypes.text.encode(unsaved.code),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.address),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.point.encode(unsaved.location),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.polygon.opt().encode(unsaved.serviceArea),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.timezone),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bool.encode(unsaved.isActive),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.contactEmail),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.contactPhone),
-    typo.runtime.Fragment.lit("""
-      )
-      returning `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`
-    """.trimMargin())
-  )
+  ): WarehousesRow = Fragment.interpolate(Fragment.lit("insert into `warehouses`(`code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`)\nvalues ("), Fragment.encode(MariaTypes.char_, unsaved.code), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.address), Fragment.lit(", "), Fragment.encode(MariaTypes.point, unsaved.location), Fragment.lit(", "), Fragment.encode(MariaTypes.polygon.nullable(), unsaved.serviceArea), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.timezone), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, unsaved.isActive), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.contactEmail), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.contactPhone), Fragment.lit(")\nreturning `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`\n"))
     .updateReturning(WarehousesRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: WarehousesRowUnsaved,
     c: Connection
   ): WarehousesRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("`code`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.code),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.char_, unsaved.code), Fragment.lit("")))
     columns.add(Fragment.lit("`name`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit("")))
     columns.add(Fragment.lit("`address`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.address),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar, unsaved.address), Fragment.lit("")))
     columns.add(Fragment.lit("`location`"))
-    values.add(interpolate(
-      MariaTypes.point.encode(unsaved.location),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.point, unsaved.location), Fragment.lit("")))
     unsaved.serviceArea.visit(
       {  },
       { value -> columns.add(Fragment.lit("`service_area`"))
-      values.add(interpolate(
-        MariaTypes.polygon.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.polygon.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.timezone.visit(
       {  },
       { value -> columns.add(Fragment.lit("`timezone`"))
-      values.add(interpolate(
-        MariaTypes.text.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar, value), Fragment.lit(""))) }
     );
     unsaved.isActive.visit(
       {  },
       { value -> columns.add(Fragment.lit("`is_active`"))
-      values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.bool, value), Fragment.lit(""))) }
     );
     unsaved.contactEmail.visit(
       {  },
       { value -> columns.add(Fragment.lit("`contact_email`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.contactPhone.visit(
       {  },
       { value -> columns.add(Fragment.lit("`contact_phone`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar.nullable(), value), Fragment.lit(""))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("insert into `warehouses`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into `warehouses`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`\n"))
     return q.updateReturning(WarehousesRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun select(): SelectBuilder<WarehousesFields, WarehousesRow> = SelectBuilder.of("`warehouses`", WarehousesFields.structure, WarehousesRow._rowParser, Dialect.MARIADB)
 
-  override fun selectAll(c: Connection): List<WarehousesRow> = interpolate(typo.runtime.Fragment.lit("""
-    select `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`
-    from `warehouses`
-  """.trimMargin())).query(WarehousesRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<WarehousesRow> = Fragment.interpolate(Fragment.lit("select `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`\nfrom `warehouses`\n")).query(WarehousesRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     warehouseId: WarehousesId,
     c: Connection
-  ): Optional<WarehousesRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`
-      from `warehouses`
-      where `warehouse_id` = """.trimMargin()),
-    WarehousesId.pgType.encode(warehouseId),
-    typo.runtime.Fragment.lit("")
-  ).query(WarehousesRow._rowParser.first()).runUnchecked(c)
+  ): WarehousesRow? = Fragment.interpolate(Fragment.lit("select `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`\nfrom `warehouses`\nwhere `warehouse_id` = "), Fragment.encode(WarehousesId.pgType, warehouseId), Fragment.lit("")).query(WarehousesRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     warehouseIds: Array<WarehousesId>,
     c: Connection
   ): List<WarehousesRow> {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in warehouseIds) { fragments.add(WarehousesId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in warehouseIds) { fragments.add(Fragment.encode(WarehousesId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("select `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone` from `warehouses` where `warehouse_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(WarehousesRow._rowParser.all()).runUnchecked(c)
   }
 
@@ -197,132 +110,35 @@ class WarehousesRepoImpl() : WarehousesRepo {
   ): Map<WarehousesId, WarehousesRow> {
     val ret: MutableMap<WarehousesId, WarehousesRow> = mutableMapOf<WarehousesId, WarehousesRow>()
     selectByIds(warehouseIds, c).forEach({ row -> ret.put(row.warehouseId, row) })
-    return ret
+    return ret.toMap()
   }
 
   override fun selectByUniqueCode(
     code: String,
     c: Connection
-  ): Optional<WarehousesRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`
-      from `warehouses`
-      where `code` = """.trimMargin()),
-    MariaTypes.text.encode(code),
-    typo.runtime.Fragment.lit("""
+  ): WarehousesRow? = Fragment.interpolate(Fragment.lit("select `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`\nfrom `warehouses`\nwhere `code` = "), Fragment.encode(MariaTypes.char_, code), Fragment.lit("\n")).query(WarehousesRow._rowParser.first()).runUnchecked(c)
 
-
-    """.trimMargin())
-  ).query(WarehousesRow._rowParser.first()).runUnchecked(c)
-
-  override fun update(): UpdateBuilder<WarehousesFields, WarehousesRow> = UpdateBuilder.of("`warehouses`", WarehousesFields.structure, WarehousesRow._rowParser.all(), Dialect.MARIADB)
+  override fun update(): UpdateBuilder<WarehousesFields, WarehousesRow> = UpdateBuilder.of("`warehouses`", WarehousesFields.structure, WarehousesRow._rowParser, Dialect.MARIADB)
 
   override fun update(
     row: WarehousesRow,
     c: Connection
   ): Boolean {
     val warehouseId: WarehousesId = row.warehouseId
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update `warehouses`
-        set `code` = """.trimMargin()),
-      MariaTypes.text.encode(row.code),
-      typo.runtime.Fragment.lit("""
-        ,
-        `name` = """.trimMargin()),
-      MariaTypes.text.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ,
-        `address` = """.trimMargin()),
-      MariaTypes.text.encode(row.address),
-      typo.runtime.Fragment.lit("""
-        ,
-        `location` = """.trimMargin()),
-      MariaTypes.point.encode(row.location),
-      typo.runtime.Fragment.lit("""
-        ,
-        `service_area` = """.trimMargin()),
-      MariaTypes.polygon.opt().encode(row.serviceArea),
-      typo.runtime.Fragment.lit("""
-        ,
-        `timezone` = """.trimMargin()),
-      MariaTypes.text.encode(row.timezone),
-      typo.runtime.Fragment.lit("""
-        ,
-        `is_active` = """.trimMargin()),
-      MariaTypes.bool.encode(row.isActive),
-      typo.runtime.Fragment.lit("""
-        ,
-        `contact_email` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.contactEmail),
-      typo.runtime.Fragment.lit("""
-        ,
-        `contact_phone` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.contactPhone),
-      typo.runtime.Fragment.lit("""
-  
-        where `warehouse_id` = """.trimMargin()),
-      WarehousesId.pgType.encode(warehouseId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update `warehouses`\nset `code` = "), Fragment.encode(MariaTypes.char_, row.code), Fragment.lit(",\n`name` = "), Fragment.encode(MariaTypes.varchar, row.name), Fragment.lit(",\n`address` = "), Fragment.encode(MariaTypes.varchar, row.address), Fragment.lit(",\n`location` = "), Fragment.encode(MariaTypes.point, row.location), Fragment.lit(",\n`service_area` = "), Fragment.encode(MariaTypes.polygon.nullable(), row.serviceArea), Fragment.lit(",\n`timezone` = "), Fragment.encode(MariaTypes.varchar, row.timezone), Fragment.lit(",\n`is_active` = "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, row.isActive), Fragment.lit(",\n`contact_email` = "), Fragment.encode(MariaTypes.varchar.nullable(), row.contactEmail), Fragment.lit(",\n`contact_phone` = "), Fragment.encode(MariaTypes.varchar.nullable(), row.contactPhone), Fragment.lit("\nwhere `warehouse_id` = "), Fragment.encode(WarehousesId.pgType, warehouseId), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: WarehousesRow,
     c: Connection
-  ): WarehousesRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      INSERT INTO `warehouses`(`code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`)
-      VALUES (""".trimMargin()),
-    MariaTypes.text.encode(unsaved.code),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.address),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.point.encode(unsaved.location),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.polygon.opt().encode(unsaved.serviceArea),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.timezone),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bool.encode(unsaved.isActive),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.contactEmail),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.contactPhone),
-    typo.runtime.Fragment.lit("""
-      )
-      ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
-      `name` = VALUES(`name`),
-      `address` = VALUES(`address`),
-      `location` = VALUES(`location`),
-      `service_area` = VALUES(`service_area`),
-      `timezone` = VALUES(`timezone`),
-      `is_active` = VALUES(`is_active`),
-      `contact_email` = VALUES(`contact_email`),
-      `contact_phone` = VALUES(`contact_phone`)
-      RETURNING `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`""".trimMargin())
-  )
+  ): WarehousesRow = Fragment.interpolate(Fragment.lit("INSERT INTO `warehouses`(`code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`)\nVALUES ("), Fragment.encode(MariaTypes.char_, unsaved.code), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.address), Fragment.lit(", "), Fragment.encode(MariaTypes.point, unsaved.location), Fragment.lit(", "), Fragment.encode(MariaTypes.polygon.nullable(), unsaved.serviceArea), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.timezone), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, unsaved.isActive), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.contactEmail), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.contactPhone), Fragment.lit(")\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`address` = VALUES(`address`),\n`location` = VALUES(`location`),\n`service_area` = VALUES(`service_area`),\n`timezone` = VALUES(`timezone`),\n`is_active` = VALUES(`is_active`),\n`contact_email` = VALUES(`contact_email`),\n`contact_phone` = VALUES(`contact_phone`)\nRETURNING `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`"))
     .updateReturning(WarehousesRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<WarehousesRow>,
+    unsaved: Iterator<WarehousesRow>,
     c: Connection
-  ): List<WarehousesRow> = interpolate(typo.runtime.Fragment.lit("""
-                             INSERT INTO `warehouses`(`warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`)
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                             ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
-                             `name` = VALUES(`name`),
-                             `address` = VALUES(`address`),
-                             `location` = VALUES(`location`),
-                             `service_area` = VALUES(`service_area`),
-                             `timezone` = VALUES(`timezone`),
-                             `is_active` = VALUES(`is_active`),
-                             `contact_email` = VALUES(`contact_email`),
-                             `contact_phone` = VALUES(`contact_phone`)
-                             RETURNING `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`""".trimMargin()))
+  ): List<WarehousesRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `warehouses`(`warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`address` = VALUES(`address`),\n`location` = VALUES(`location`),\n`service_area` = VALUES(`service_area`),\n`timezone` = VALUES(`timezone`),\n`is_active` = VALUES(`is_active`),\n`contact_email` = VALUES(`contact_email`),\n`contact_phone` = VALUES(`contact_phone`)\nRETURNING `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`"))
     .updateReturningEach(WarehousesRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 }

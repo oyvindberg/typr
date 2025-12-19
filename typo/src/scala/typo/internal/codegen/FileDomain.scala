@@ -18,7 +18,7 @@ object FileDomain {
     val bijection =
       if (options.enableDsl)
         Some {
-          val thisBijection = jvm.Type.dsl.Bijection.of(domain.tpe, domain.underlyingType)
+          val thisBijection = lang.dsl.Bijection.of(domain.tpe, domain.underlyingType)
           val expr = lang.bijection(domain.tpe, domain.underlyingType, jvm.FieldGetterRef(domain.tpe, value), jvm.ConstructorMethodRef(domain.tpe))
           jvm.Given(Nil, jvm.Ident("bijection"), Nil, thisBijection, expr)
         }
@@ -28,7 +28,14 @@ object FileDomain {
     val instances = List(
       bijection.toList,
       jsonInstances.flatMap(_.givens),
-      options.dbLib.toList.flatMap(_.wrapperTypeInstances(wrapperType = domain.tpe, underlying = domain.underlyingType, overrideDbType = Some(domain.underlying.name.quotedValue)))
+      options.dbLib.toList.flatMap(
+        _.wrapperTypeInstances(
+          wrapperType = domain.tpe,
+          underlyingJvmType = domain.underlyingType,
+          underlyingDbType = domain.underlying.tpe,
+          overrideDbType = Some(domain.underlying.name.quotedValue)
+        )
+      )
     ).flatten
     val fieldAnnotations = JsonLib.mergeFieldAnnotations(jsonInstances.flatMap(_.fieldAnnotations.toList))
     val typeAnnotations = jsonInstances.flatMap(_.typeAnnotations)

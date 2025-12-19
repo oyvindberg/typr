@@ -6,14 +6,15 @@
 package adventureworks.person.businessentityaddress
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.address.AddressId
 import adventureworks.person.addresstype.AddresstypeId
 import adventureworks.person.businessentity.BusinessentityId
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: person.businessentityaddress
   * Cross-reference table mapping customers, vendors, and employees to their addresses.
@@ -33,29 +34,29 @@ data class BusinessentityaddressRow(
     */
   val addresstypeid: AddresstypeId,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun compositeId(): BusinessentityaddressId = BusinessentityaddressId(businessentityid, addressid, addresstypeid)
 
   fun id(): BusinessentityaddressId = this.compositeId()
 
   fun toUnsavedRow(
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): BusinessentityaddressRowUnsaved = BusinessentityaddressRowUnsaved(businessentityid, addressid, addresstypeid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<BusinessentityaddressRow> = RowParsers.of(BusinessentityId.pgType, AddressId.pgType, AddresstypeId.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> BusinessentityaddressRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.addressid, row.addresstypeid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<BusinessentityaddressRow> = RowParsers.of(BusinessentityId.pgType, AddressId.pgType, AddresstypeId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> BusinessentityaddressRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.businessentityid, row.addressid, row.addresstypeid, row.rowguid, row.modifieddate) })
 
     fun apply(
       compositeId: BusinessentityaddressId,
-      rowguid: TypoUUID,
-      modifieddate: TypoLocalDateTime
+      rowguid: UUID,
+      modifieddate: LocalDateTime
     ): BusinessentityaddressRow = BusinessentityaddressRow(compositeId.businessentityid, compositeId.addressid, compositeId.addresstypeid, rowguid, modifieddate)
 
     val pgText: PgText<BusinessentityaddressRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

@@ -8,21 +8,19 @@ package adventureworks.sales.salesterritory
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class SalesterritoryRepoMock(
   val toRow: (SalesterritoryRowUnsaved) -> SalesterritoryRow,
@@ -33,7 +31,7 @@ data class SalesterritoryRepoMock(
   override fun deleteById(
     territoryid: SalesterritoryId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(territoryid)).isPresent()
+  ): Boolean = map.remove(territoryid) != null
 
   override fun deleteByIds(
     territoryids: Array<SalesterritoryId>,
@@ -41,7 +39,7 @@ data class SalesterritoryRepoMock(
   ): Int {
     var count = 0
     for (id in territoryids) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class SalesterritoryRepoMock(
     c: Connection
   ): SalesterritoryRow {
     if (map.containsKey(unsaved.territoryid)) {
-      throw RuntimeException(str("id $unsaved.territoryid already exists"))
+      throw RuntimeException("id " + unsaved.territoryid + " already exists")
     }
     map[unsaved.territoryid] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class SalesterritoryRepoMock(
   ): SalesterritoryRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<SalesterritoryRow>,
+    unsaved: Iterator<SalesterritoryRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class SalesterritoryRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<SalesterritoryRowUnsaved>,
+    unsaved: Iterator<SalesterritoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class SalesterritoryRepoMock(
   override fun selectById(
     territoryid: SalesterritoryId,
     c: Connection
-  ): Optional<SalesterritoryRow> = Optional.ofNullable(map[territoryid])
+  ): SalesterritoryRow? = map[territoryid]
 
   override fun selectByIds(
     territoryids: Array<SalesterritoryId>,
@@ -109,9 +107,9 @@ data class SalesterritoryRepoMock(
   ): List<SalesterritoryRow> {
     val result = ArrayList<SalesterritoryRow>()
     for (id in territoryids) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class SalesterritoryRepoMock(
     row: SalesterritoryRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.territoryid]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.territoryid]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.territoryid] = row
     }
@@ -144,7 +142,7 @@ data class SalesterritoryRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<SalesterritoryRow>,
+    unsaved: Iterator<SalesterritoryRow>,
     c: Connection
   ): List<SalesterritoryRow> {
     val result = ArrayList<SalesterritoryRow>()
@@ -158,7 +156,7 @@ data class SalesterritoryRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<SalesterritoryRow>,
+    unsaved: Iterator<SalesterritoryRow>,
     batchSize: Int,
     c: Connection
   ): Int {

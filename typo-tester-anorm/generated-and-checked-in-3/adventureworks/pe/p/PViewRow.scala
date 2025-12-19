@@ -31,25 +31,25 @@ case class PViewRow(
   /** Points to [[adventureworks.person.person.PersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.person.person.PersonRow.persontype]] */
-  persontype: /* bpchar, max 2 chars */ String,
+  persontype: String,
   /** Points to [[adventureworks.person.person.PersonRow.namestyle]] */
   namestyle: NameStyle,
   /** Points to [[adventureworks.person.person.PersonRow.title]] */
-  title: Option[/* max 8 chars */ String],
+  title: String,
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: String,
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
   emailpromotion: Int,
   /** Points to [[adventureworks.person.person.PersonRow.additionalcontactinfo]] */
-  additionalcontactinfo: Option[TypoXml],
+  additionalcontactinfo: TypoXml,
   /** Points to [[adventureworks.person.person.PersonRow.demographics]] */
-  demographics: Option[TypoXml],
+  demographics: TypoXml,
   /** Points to [[adventureworks.person.person.PersonRow.rowguid]] */
   rowguid: TypoUUID,
   /** Points to [[adventureworks.person.person.PersonRow.modifieddate]] */
@@ -65,14 +65,14 @@ object PViewRow {
             businessentityid = json.\("businessentityid").as(BusinessentityId.reads),
             persontype = json.\("persontype").as(Reads.StringReads),
             namestyle = json.\("namestyle").as(NameStyle.reads),
-            title = json.\("title").toOption.map(_.as(Reads.StringReads)),
+            title = json.\("title").as(Reads.StringReads),
             firstname = json.\("firstname").as(FirstName.reads),
-            middlename = json.\("middlename").toOption.map(_.as(Name.reads)),
+            middlename = json.\("middlename").as(Name.reads),
             lastname = json.\("lastname").as(Name.reads),
-            suffix = json.\("suffix").toOption.map(_.as(Reads.StringReads)),
+            suffix = json.\("suffix").as(Reads.StringReads),
             emailpromotion = json.\("emailpromotion").as(Reads.IntReads),
-            additionalcontactinfo = json.\("additionalcontactinfo").toOption.map(_.as(TypoXml.reads)),
-            demographics = json.\("demographics").toOption.map(_.as(TypoXml.reads)),
+            additionalcontactinfo = json.\("additionalcontactinfo").as(TypoXml.reads),
+            demographics = json.\("demographics").as(TypoXml.reads),
             rowguid = json.\("rowguid").as(TypoUUID.reads),
             modifieddate = json.\("modifieddate").as(TypoLocalDateTime.reads)
           )
@@ -89,14 +89,14 @@ object PViewRow {
           businessentityid = row(idx + 1)(using BusinessentityId.column),
           persontype = row(idx + 2)(using Column.columnToString),
           namestyle = row(idx + 3)(using NameStyle.column),
-          title = row(idx + 4)(using Column.columnToOption(using Column.columnToString)),
+          title = row(idx + 4)(using Column.columnToString),
           firstname = row(idx + 5)(using /* user-picked */ FirstName.column),
-          middlename = row(idx + 6)(using Column.columnToOption(using Name.column)),
+          middlename = row(idx + 6)(using Name.column),
           lastname = row(idx + 7)(using Name.column),
-          suffix = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
+          suffix = row(idx + 8)(using Column.columnToString),
           emailpromotion = row(idx + 9)(using Column.columnToInt),
-          additionalcontactinfo = row(idx + 10)(using Column.columnToOption(using TypoXml.column)),
-          demographics = row(idx + 11)(using Column.columnToOption(using TypoXml.column)),
+          additionalcontactinfo = row(idx + 10)(using TypoXml.column),
+          demographics = row(idx + 11)(using TypoXml.column),
           rowguid = row(idx + 12)(using TypoUUID.column),
           modifieddate = row(idx + 13)(using TypoLocalDateTime.column)
         )
@@ -111,14 +111,14 @@ object PViewRow {
         "businessentityid" -> BusinessentityId.writes.writes(o.businessentityid),
         "persontype" -> Writes.StringWrites.writes(o.persontype),
         "namestyle" -> NameStyle.writes.writes(o.namestyle),
-        "title" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.title),
+        "title" -> Writes.StringWrites.writes(o.title),
         "firstname" -> FirstName.writes.writes(o.firstname),
-        "middlename" -> Writes.OptionWrites(using Name.writes).writes(o.middlename),
+        "middlename" -> Name.writes.writes(o.middlename),
         "lastname" -> Name.writes.writes(o.lastname),
-        "suffix" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.suffix),
+        "suffix" -> Writes.StringWrites.writes(o.suffix),
         "emailpromotion" -> Writes.IntWrites.writes(o.emailpromotion),
-        "additionalcontactinfo" -> Writes.OptionWrites(using TypoXml.writes).writes(o.additionalcontactinfo),
-        "demographics" -> Writes.OptionWrites(using TypoXml.writes).writes(o.demographics),
+        "additionalcontactinfo" -> TypoXml.writes.writes(o.additionalcontactinfo),
+        "demographics" -> TypoXml.writes.writes(o.demographics),
         "rowguid" -> TypoUUID.writes.writes(o.rowguid),
         "modifieddate" -> TypoLocalDateTime.writes.writes(o.modifieddate)
       ))

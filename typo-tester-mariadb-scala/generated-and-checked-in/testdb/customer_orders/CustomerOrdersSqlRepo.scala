@@ -6,12 +6,11 @@
 package testdb.customer_orders
 
 import java.sql.Connection
-import java.util.Optional
 import testdb.customers.CustomersId
 
 trait CustomerOrdersSqlRepo {
   def apply(
     customerId: /* user-picked */ CustomersId,
-    orderStatus: Optional[String]
-  )(using c: Connection): java.util.List[CustomerOrdersSqlRow]
+    orderStatus: Option[String]
+  )(using c: Connection): List[CustomerOrdersSqlRow]
 }

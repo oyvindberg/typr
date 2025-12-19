@@ -6,26 +6,26 @@
 package testdb.hardcoded.myschema.football_club
 
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait FootballClubFields {
   def id: IdField[FootballClubId, FootballClubRow]
-  def name: Field[/* max 100 chars */ String, FootballClubRow]
+  def name: Field[String, FootballClubRow]
 }
 
 object FootballClubFields {
-  lazy val structure: Relation[FootballClubFields, FootballClubRow] =
+  lazy val structure: RelationStructure[FootballClubFields, FootballClubRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[FootballClubFields, FootballClubRow] {
+    extends RelationStructure[FootballClubFields, FootballClubRow] {
 
     override lazy val fields: FootballClubFields = new FootballClubFields {
       override def id = IdField[FootballClubId, FootballClubRow](_path, "id", None, Some("int8"), x => x.id, (row, value) => row.copy(id = value))
-      override def name = Field[/* max 100 chars */ String, FootballClubRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
+      override def name = Field[String, FootballClubRow](_path, "name", None, None, x => x.name, (row, value) => row.copy(name = value))
     }
 
     override lazy val columns: List[FieldLike[?, FootballClubRow]] =

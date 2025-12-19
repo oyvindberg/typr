@@ -7,10 +7,10 @@ package adventureworks.pu.pod
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PodViewRepo {
-  fun select(): SelectBuilder<PodViewFields, PodViewRow>
+  abstract fun select(): SelectBuilder<PodViewFields, PodViewRow>
 
-  fun selectAll(c: Connection): List<PodViewRow>
+  abstract fun selectAll(c: Connection): List<PodViewRow>
 }

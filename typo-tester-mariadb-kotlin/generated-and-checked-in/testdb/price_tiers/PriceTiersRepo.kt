@@ -6,70 +6,69 @@
 package testdb.price_tiers
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface PriceTiersRepo {
-  fun delete(): DeleteBuilder<PriceTiersFields, PriceTiersRow>
+  abstract fun delete(): DeleteBuilder<PriceTiersFields, PriceTiersRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     tierId: PriceTiersId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     tierIds: Array<PriceTiersId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: PriceTiersRow,
     c: Connection
   ): PriceTiersRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: PriceTiersRowUnsaved,
     c: Connection
   ): PriceTiersRow
 
-  fun select(): SelectBuilder<PriceTiersFields, PriceTiersRow>
+  abstract fun select(): SelectBuilder<PriceTiersFields, PriceTiersRow>
 
-  fun selectAll(c: Connection): List<PriceTiersRow>
+  abstract fun selectAll(c: Connection): List<PriceTiersRow>
 
-  fun selectById(
+  abstract fun selectById(
     tierId: PriceTiersId,
     c: Connection
-  ): Optional<PriceTiersRow>
+  ): PriceTiersRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     tierIds: Array<PriceTiersId>,
     c: Connection
   ): List<PriceTiersRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     tierIds: Array<PriceTiersId>,
     c: Connection
   ): Map<PriceTiersId, PriceTiersRow>
 
-  fun update(): UpdateBuilder<PriceTiersFields, PriceTiersRow>
+  abstract fun update(): UpdateBuilder<PriceTiersFields, PriceTiersRow>
 
-  fun update(
+  abstract fun update(
     row: PriceTiersRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: PriceTiersRow,
     c: Connection
   ): PriceTiersRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<PriceTiersRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<PriceTiersRow>,
     c: Connection
   ): List<PriceTiersRow>
 }

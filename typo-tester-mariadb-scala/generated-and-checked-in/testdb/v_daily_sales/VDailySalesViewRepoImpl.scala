@@ -6,15 +6,15 @@
 package testdb.v_daily_sales
 
 import java.sql.Connection
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.Dialect
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.Fragment.sql
 
 class VDailySalesViewRepoImpl extends VDailySalesViewRepo {
   override def select: SelectBuilder[VDailySalesViewFields, VDailySalesViewRow] = SelectBuilder.of("`v_daily_sales`", VDailySalesViewFields.structure, VDailySalesViewRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[VDailySalesViewRow] = {
-    interpolate"""select `order_date`, `order_count`, `unique_customers`, `items_sold`, `gross_sales`, `total_discounts`, `total_shipping`, `total_tax`, `net_sales`, `avg_order_value`
+  override def selectAll(using c: Connection): List[VDailySalesViewRow] = {
+    sql"""select `order_date`, `order_count`, `unique_customers`, `items_sold`, `gross_sales`, `total_discounts`, `total_shipping`, `total_tax`, `net_sales`, `avg_order_value`
     from `v_daily_sales`
     """.query(VDailySalesViewRow.`_rowParser`.all()).runUnchecked(c)
   }

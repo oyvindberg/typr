@@ -7,19 +7,18 @@ package testdb.shipping_carriers
 
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
 
 class ShippingCarriersRepoImpl() : ShippingCarriersRepo {
   override fun delete(): DeleteBuilder<ShippingCarriersFields, ShippingCarriersRow> = DeleteBuilder.of("`shipping_carriers`", ShippingCarriersFields.structure, Dialect.MARIADB)
@@ -27,129 +26,67 @@ class ShippingCarriersRepoImpl() : ShippingCarriersRepo {
   override fun deleteById(
     carrierId: ShippingCarriersId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("delete from `shipping_carriers` where `carrier_id` = "),
-    ShippingCarriersId.pgType.encode(carrierId),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from `shipping_carriers` where `carrier_id` = "), Fragment.encode(ShippingCarriersId.pgType, carrierId), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     carrierIds: Array<ShippingCarriersId>,
     c: Connection
   ): Int {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in carrierIds) { fragments.add(ShippingCarriersId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in carrierIds) { fragments.add(Fragment.encode(ShippingCarriersId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("delete from `shipping_carriers` where `carrier_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: ShippingCarriersRow,
     c: Connection
-  ): ShippingCarriersRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
-      values (""".trimMargin()),
-    MariaTypes.text.encode(unsaved.code),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.trackingUrlTemplate),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.apiConfig),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bool.encode(unsaved.isActive),
-    typo.runtime.Fragment.lit("""
-      )
-      returning `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
-    """.trimMargin())
-  )
+  ): ShippingCarriersRow = Fragment.interpolate(Fragment.lit("insert into `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.code), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.trackingUrlTemplate), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.apiConfig), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, unsaved.isActive), Fragment.lit(")\nreturning `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`\n"))
     .updateReturning(ShippingCarriersRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: ShippingCarriersRowUnsaved,
     c: Connection
   ): ShippingCarriersRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("`code`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.code),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar, unsaved.code), Fragment.lit("")))
     columns.add(Fragment.lit("`name`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit("")))
     unsaved.trackingUrlTemplate.visit(
       {  },
       { value -> columns.add(Fragment.lit("`tracking_url_template`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.apiConfig.visit(
       {  },
       { value -> columns.add(Fragment.lit("`api_config`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.longtext.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.isActive.visit(
       {  },
       { value -> columns.add(Fragment.lit("`is_active`"))
-      values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.bool, value), Fragment.lit(""))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("insert into `shipping_carriers`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into `shipping_carriers`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`\n"))
     return q.updateReturning(ShippingCarriersRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun select(): SelectBuilder<ShippingCarriersFields, ShippingCarriersRow> = SelectBuilder.of("`shipping_carriers`", ShippingCarriersFields.structure, ShippingCarriersRow._rowParser, Dialect.MARIADB)
 
-  override fun selectAll(c: Connection): List<ShippingCarriersRow> = interpolate(typo.runtime.Fragment.lit("""
-    select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
-    from `shipping_carriers`
-  """.trimMargin())).query(ShippingCarriersRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<ShippingCarriersRow> = Fragment.interpolate(Fragment.lit("select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`\nfrom `shipping_carriers`\n")).query(ShippingCarriersRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     carrierId: ShippingCarriersId,
     c: Connection
-  ): Optional<ShippingCarriersRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
-      from `shipping_carriers`
-      where `carrier_id` = """.trimMargin()),
-    ShippingCarriersId.pgType.encode(carrierId),
-    typo.runtime.Fragment.lit("")
-  ).query(ShippingCarriersRow._rowParser.first()).runUnchecked(c)
+  ): ShippingCarriersRow? = Fragment.interpolate(Fragment.lit("select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`\nfrom `shipping_carriers`\nwhere `carrier_id` = "), Fragment.encode(ShippingCarriersId.pgType, carrierId), Fragment.lit("")).query(ShippingCarriersRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     carrierIds: Array<ShippingCarriersId>,
     c: Connection
   ): List<ShippingCarriersRow> {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in carrierIds) { fragments.add(ShippingCarriersId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in carrierIds) { fragments.add(Fragment.encode(ShippingCarriersId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active` from `shipping_carriers` where `carrier_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ShippingCarriersRow._rowParser.all()).runUnchecked(c)
   }
 
@@ -159,100 +96,35 @@ class ShippingCarriersRepoImpl() : ShippingCarriersRepo {
   ): Map<ShippingCarriersId, ShippingCarriersRow> {
     val ret: MutableMap<ShippingCarriersId, ShippingCarriersRow> = mutableMapOf<ShippingCarriersId, ShippingCarriersRow>()
     selectByIds(carrierIds, c).forEach({ row -> ret.put(row.carrierId, row) })
-    return ret
+    return ret.toMap()
   }
 
   override fun selectByUniqueCode(
     code: String,
     c: Connection
-  ): Optional<ShippingCarriersRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
-      from `shipping_carriers`
-      where `code` = """.trimMargin()),
-    MariaTypes.text.encode(code),
-    typo.runtime.Fragment.lit("""
+  ): ShippingCarriersRow? = Fragment.interpolate(Fragment.lit("select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`\nfrom `shipping_carriers`\nwhere `code` = "), Fragment.encode(MariaTypes.varchar, code), Fragment.lit("\n")).query(ShippingCarriersRow._rowParser.first()).runUnchecked(c)
 
-
-    """.trimMargin())
-  ).query(ShippingCarriersRow._rowParser.first()).runUnchecked(c)
-
-  override fun update(): UpdateBuilder<ShippingCarriersFields, ShippingCarriersRow> = UpdateBuilder.of("`shipping_carriers`", ShippingCarriersFields.structure, ShippingCarriersRow._rowParser.all(), Dialect.MARIADB)
+  override fun update(): UpdateBuilder<ShippingCarriersFields, ShippingCarriersRow> = UpdateBuilder.of("`shipping_carriers`", ShippingCarriersFields.structure, ShippingCarriersRow._rowParser, Dialect.MARIADB)
 
   override fun update(
     row: ShippingCarriersRow,
     c: Connection
   ): Boolean {
     val carrierId: ShippingCarriersId = row.carrierId
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update `shipping_carriers`
-        set `code` = """.trimMargin()),
-      MariaTypes.text.encode(row.code),
-      typo.runtime.Fragment.lit("""
-        ,
-        `name` = """.trimMargin()),
-      MariaTypes.text.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ,
-        `tracking_url_template` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.trackingUrlTemplate),
-      typo.runtime.Fragment.lit("""
-        ,
-        `api_config` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.apiConfig),
-      typo.runtime.Fragment.lit("""
-        ,
-        `is_active` = """.trimMargin()),
-      MariaTypes.bool.encode(row.isActive),
-      typo.runtime.Fragment.lit("""
-  
-        where `carrier_id` = """.trimMargin()),
-      ShippingCarriersId.pgType.encode(carrierId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update `shipping_carriers`\nset `code` = "), Fragment.encode(MariaTypes.varchar, row.code), Fragment.lit(",\n`name` = "), Fragment.encode(MariaTypes.varchar, row.name), Fragment.lit(",\n`tracking_url_template` = "), Fragment.encode(MariaTypes.varchar.nullable(), row.trackingUrlTemplate), Fragment.lit(",\n`api_config` = "), Fragment.encode(MariaTypes.longtext.nullable(), row.apiConfig), Fragment.lit(",\n`is_active` = "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, row.isActive), Fragment.lit("\nwhere `carrier_id` = "), Fragment.encode(ShippingCarriersId.pgType, carrierId), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: ShippingCarriersRow,
     c: Connection
-  ): ShippingCarriersRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      INSERT INTO `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
-      VALUES (""".trimMargin()),
-    MariaTypes.text.encode(unsaved.code),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.trackingUrlTemplate),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.apiConfig),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bool.encode(unsaved.isActive),
-    typo.runtime.Fragment.lit("""
-      )
-      ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
-      `name` = VALUES(`name`),
-      `tracking_url_template` = VALUES(`tracking_url_template`),
-      `api_config` = VALUES(`api_config`),
-      `is_active` = VALUES(`is_active`)
-      RETURNING `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`""".trimMargin())
-  )
+  ): ShippingCarriersRow = Fragment.interpolate(Fragment.lit("INSERT INTO `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.code), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar.nullable(), unsaved.trackingUrlTemplate), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.apiConfig), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, unsaved.isActive), Fragment.lit(")\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`tracking_url_template` = VALUES(`tracking_url_template`),\n`api_config` = VALUES(`api_config`),\n`is_active` = VALUES(`is_active`)\nRETURNING `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`"))
     .updateReturning(ShippingCarriersRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ShippingCarriersRow>,
+    unsaved: Iterator<ShippingCarriersRow>,
     c: Connection
-  ): List<ShippingCarriersRow> = interpolate(typo.runtime.Fragment.lit("""
-                                   INSERT INTO `shipping_carriers`(`carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
-                                   VALUES (?, ?, ?, ?, ?, ?)
-                                   ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
-                                   `name` = VALUES(`name`),
-                                   `tracking_url_template` = VALUES(`tracking_url_template`),
-                                   `api_config` = VALUES(`api_config`),
-                                   `is_active` = VALUES(`is_active`)
-                                   RETURNING `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`""".trimMargin()))
+  ): List<ShippingCarriersRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `shipping_carriers`(`carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`)\nVALUES (?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`tracking_url_template` = VALUES(`tracking_url_template`),\n`api_config` = VALUES(`api_config`),\n`is_active` = VALUES(`is_active`)\nRETURNING `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`"))
     .updateReturningEach(ShippingCarriersRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 }

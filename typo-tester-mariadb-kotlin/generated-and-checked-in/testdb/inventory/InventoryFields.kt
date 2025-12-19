@@ -6,7 +6,6 @@
 package testdb.inventory
 
 import java.time.LocalDateTime
-import java.util.Optional
 import kotlin.collections.List
 import testdb.products.ProductsFields
 import testdb.products.ProductsId
@@ -15,76 +14,79 @@ import testdb.warehouses.WarehousesFields
 import testdb.warehouses.WarehousesId
 import testdb.warehouses.WarehousesRow
 import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.ForeignKey
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
 
 interface InventoryFields : FieldsExpr<InventoryRow> {
-  fun binLocation(): OptField<String, InventoryRow>
+  abstract fun binLocation(): OptField<String, InventoryRow>
 
-  override fun columns(): List<FieldLike<*, InventoryRow>>
+  abstract override fun columns(): List<FieldLike<*, InventoryRow>>
 
-  fun fkProducts(): ForeignKey<ProductsFields, ProductsRow> = ForeignKey.of<ProductsFields, ProductsRow>("fk_inventory_product").withColumnPair(productId(), ProductsFields::productId)
+  fun fkProducts(): ForeignKey<ProductsFields, ProductsRow> = ForeignKey.of<ProductsFields, ProductsRow>("fk_inventory_product").withColumnPair<ProductsId>(productId(), ProductsFields::productId)
 
-  fun fkWarehouses(): ForeignKey<WarehousesFields, WarehousesRow> = ForeignKey.of<WarehousesFields, WarehousesRow>("fk_inventory_warehouse").withColumnPair(warehouseId(), WarehousesFields::warehouseId)
+  fun fkWarehouses(): ForeignKey<WarehousesFields, WarehousesRow> = ForeignKey.of<WarehousesFields, WarehousesRow>("fk_inventory_warehouse").withColumnPair<WarehousesId>(warehouseId(), WarehousesFields::warehouseId)
 
-  fun inventoryId(): IdField<InventoryId, InventoryRow>
+  abstract fun inventoryId(): IdField<InventoryId, InventoryRow>
 
-  fun lastCountedAt(): OptField<LocalDateTime, InventoryRow>
+  abstract fun lastCountedAt(): OptField<LocalDateTime, InventoryRow>
 
-  fun productId(): Field<ProductsId, InventoryRow>
+  abstract fun productId(): Field<ProductsId, InventoryRow>
 
-  fun quantityOnHand(): Field<Int, InventoryRow>
+  abstract fun quantityOnHand(): Field<Int, InventoryRow>
 
-  fun quantityOnOrder(): Field<Int, InventoryRow>
+  abstract fun quantityOnOrder(): Field<Int, InventoryRow>
 
-  fun quantityReserved(): Field<Int, InventoryRow>
+  abstract fun quantityReserved(): Field<Int, InventoryRow>
 
-  fun reorderPoint(): Field<Int, InventoryRow>
+  abstract fun reorderPoint(): Field<Int, InventoryRow>
 
-  fun reorderQuantity(): Field<Int, InventoryRow>
+  abstract fun reorderQuantity(): Field<Int, InventoryRow>
 
-  override fun rowParser(): RowParser<InventoryRow> = InventoryRow._rowParser
+  override fun rowParser(): RowParser<InventoryRow> = InventoryRow._rowParser.underlying
 
-  fun updatedAt(): Field<LocalDateTime, InventoryRow>
+  abstract fun updatedAt(): Field<LocalDateTime, InventoryRow>
 
-  fun warehouseId(): Field<WarehousesId, InventoryRow>
+  abstract fun warehouseId(): Field<WarehousesId, InventoryRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : InventoryFields, Relation<InventoryFields, InventoryRow> {
-      override fun inventoryId(): IdField<InventoryId, InventoryRow> = IdField<InventoryId, InventoryRow>(_path, "inventory_id", InventoryRow::inventoryId, Optional.empty(), Optional.empty(), { row, value -> row.copy(inventoryId = value) }, InventoryId.pgType)
+    data class Impl(val _path: List<Path>) : InventoryFields, RelationStructure<InventoryFields, InventoryRow> {
+      override fun inventoryId(): IdField<InventoryId, InventoryRow> = IdField<InventoryId, InventoryRow>(_path, "inventory_id", InventoryRow::inventoryId, null, null, { row, value -> row.copy(inventoryId = value) }, InventoryId.pgType)
 
-      override fun productId(): Field<ProductsId, InventoryRow> = Field<ProductsId, InventoryRow>(_path, "product_id", InventoryRow::productId, Optional.empty(), Optional.empty(), { row, value -> row.copy(productId = value) }, ProductsId.pgType)
+      override fun productId(): Field<ProductsId, InventoryRow> = Field<ProductsId, InventoryRow>(_path, "product_id", InventoryRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.pgType)
 
-      override fun warehouseId(): Field<WarehousesId, InventoryRow> = Field<WarehousesId, InventoryRow>(_path, "warehouse_id", InventoryRow::warehouseId, Optional.empty(), Optional.empty(), { row, value -> row.copy(warehouseId = value) }, WarehousesId.pgType)
+      override fun warehouseId(): Field<WarehousesId, InventoryRow> = Field<WarehousesId, InventoryRow>(_path, "warehouse_id", InventoryRow::warehouseId, null, null, { row, value -> row.copy(warehouseId = value) }, WarehousesId.pgType)
 
-      override fun quantityOnHand(): Field<Int, InventoryRow> = Field<Int, InventoryRow>(_path, "quantity_on_hand", InventoryRow::quantityOnHand, Optional.empty(), Optional.empty(), { row, value -> row.copy(quantityOnHand = value) }, MariaTypes.int_)
+      override fun quantityOnHand(): Field<Int, InventoryRow> = Field<Int, InventoryRow>(_path, "quantity_on_hand", InventoryRow::quantityOnHand, null, null, { row, value -> row.copy(quantityOnHand = value) }, KotlinDbTypes.MariaTypes.int_)
 
-      override fun quantityReserved(): Field<Int, InventoryRow> = Field<Int, InventoryRow>(_path, "quantity_reserved", InventoryRow::quantityReserved, Optional.empty(), Optional.empty(), { row, value -> row.copy(quantityReserved = value) }, MariaTypes.int_)
+      override fun quantityReserved(): Field<Int, InventoryRow> = Field<Int, InventoryRow>(_path, "quantity_reserved", InventoryRow::quantityReserved, null, null, { row, value -> row.copy(quantityReserved = value) }, KotlinDbTypes.MariaTypes.int_)
 
-      override fun quantityOnOrder(): Field<Int, InventoryRow> = Field<Int, InventoryRow>(_path, "quantity_on_order", InventoryRow::quantityOnOrder, Optional.empty(), Optional.empty(), { row, value -> row.copy(quantityOnOrder = value) }, MariaTypes.int_)
+      override fun quantityOnOrder(): Field<Int, InventoryRow> = Field<Int, InventoryRow>(_path, "quantity_on_order", InventoryRow::quantityOnOrder, null, null, { row, value -> row.copy(quantityOnOrder = value) }, KotlinDbTypes.MariaTypes.int_)
 
-      override fun reorderPoint(): Field<Int, InventoryRow> = Field<Int, InventoryRow>(_path, "reorder_point", InventoryRow::reorderPoint, Optional.empty(), Optional.empty(), { row, value -> row.copy(reorderPoint = value) }, MariaTypes.int_)
+      override fun reorderPoint(): Field<Int, InventoryRow> = Field<Int, InventoryRow>(_path, "reorder_point", InventoryRow::reorderPoint, null, null, { row, value -> row.copy(reorderPoint = value) }, KotlinDbTypes.MariaTypes.int_)
 
-      override fun reorderQuantity(): Field<Int, InventoryRow> = Field<Int, InventoryRow>(_path, "reorder_quantity", InventoryRow::reorderQuantity, Optional.empty(), Optional.empty(), { row, value -> row.copy(reorderQuantity = value) }, MariaTypes.int_)
+      override fun reorderQuantity(): Field<Int, InventoryRow> = Field<Int, InventoryRow>(_path, "reorder_quantity", InventoryRow::reorderQuantity, null, null, { row, value -> row.copy(reorderQuantity = value) }, KotlinDbTypes.MariaTypes.int_)
 
-      override fun binLocation(): OptField<String, InventoryRow> = OptField<String, InventoryRow>(_path, "bin_location", InventoryRow::binLocation, Optional.empty(), Optional.empty(), { row, value -> row.copy(binLocation = value) }, MariaTypes.varchar)
+      override fun binLocation(): OptField<String, InventoryRow> = OptField<String, InventoryRow>(_path, "bin_location", InventoryRow::binLocation, null, null, { row, value -> row.copy(binLocation = value) }, MariaTypes.varchar)
 
-      override fun lastCountedAt(): OptField<LocalDateTime, InventoryRow> = OptField<LocalDateTime, InventoryRow>(_path, "last_counted_at", InventoryRow::lastCountedAt, Optional.empty(), Optional.empty(), { row, value -> row.copy(lastCountedAt = value) }, MariaTypes.datetime)
+      override fun lastCountedAt(): OptField<LocalDateTime, InventoryRow> = OptField<LocalDateTime, InventoryRow>(_path, "last_counted_at", InventoryRow::lastCountedAt, null, null, { row, value -> row.copy(lastCountedAt = value) }, MariaTypes.datetime)
 
-      override fun updatedAt(): Field<LocalDateTime, InventoryRow> = Field<LocalDateTime, InventoryRow>(_path, "updated_at", InventoryRow::updatedAt, Optional.empty(), Optional.empty(), { row, value -> row.copy(updatedAt = value) }, MariaTypes.datetime)
+      override fun updatedAt(): Field<LocalDateTime, InventoryRow> = Field<LocalDateTime, InventoryRow>(_path, "updated_at", InventoryRow::updatedAt, null, null, { row, value -> row.copy(updatedAt = value) }, MariaTypes.datetime)
 
-      override fun columns(): List<FieldLike<*, InventoryRow>> = listOf(this.inventoryId(), this.productId(), this.warehouseId(), this.quantityOnHand(), this.quantityReserved(), this.quantityOnOrder(), this.reorderPoint(), this.reorderQuantity(), this.binLocation(), this.lastCountedAt(), this.updatedAt())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<InventoryFields, InventoryRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, InventoryRow>> = listOf(this.inventoryId().underlying, this.productId().underlying, this.warehouseId().underlying, this.quantityOnHand().underlying, this.quantityReserved().underlying, this.quantityOnOrder().underlying, this.reorderPoint().underlying, this.reorderQuantity().underlying, this.binLocation().underlying, this.lastCountedAt().underlying, this.updatedAt().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<InventoryFields, InventoryRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

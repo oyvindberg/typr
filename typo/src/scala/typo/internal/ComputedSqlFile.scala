@@ -46,7 +46,7 @@ case class ComputedSqlFile(
         // we let types flow through constraints down to this column, the point is to reuse id types downstream
         val typeFromFk: Option[jvm.Type] = findTypeFromFk(logger, source, col.name, pointsTo, eval, lang)(_ => None)
 
-        val tpe = scalaTypeMapper.sqlFile(col.parsedColumnName.overriddenType.orElse(typeFromFk), dbType, nullability)
+        val tpe = scalaTypeMapper.sqlFile(col.parsedColumnName.overriddenJvmType(lang).orElse(typeFromFk), dbType, nullability)
 
         val dbCol = db.Col(
           parsedName = col.parsedColumnName,
@@ -59,7 +59,21 @@ case class ComputedSqlFile(
           constraints = Nil,
           jsonDescription = DebugJson(col)
         )
-        ComputedColumn(pointsTo = pointsTo, name = naming.field(col.name), tpe = tpe, dbCol = dbCol)
+        // If user specified an override, create UserDefined with the proper Either; otherwise use standard inference
+        val typoType = col.parsedColumnName.overriddenType match {
+          case Some(overridden) =>
+            val innerTpe = lang.Optional.unapply(tpe).getOrElse(tpe)
+            val base = TypoType.UserDefined(innerTpe, dbType, overridden.toEither)
+            if (nullability == Nullability.Nullable) TypoType.Nullable(tpe, base) else base
+          case None =>
+            TypoType.fromJvmAndDb(tpe, dbType, naming.pkg, lang)
+        }
+        ComputedColumn(
+          pointsTo = pointsTo,
+          name = naming.field(col.name),
+          dbCol = dbCol,
+          typoType = typoType
+        )
       }
     }
 
@@ -82,13 +96,24 @@ case class ComputedSqlFile(
           logger.warn(s"${sqlFile.relPath}: Couldn't translate type from param $maybeName with type ${jdbcParam.parameterTypeName}")
         }
 
+        val nullability = maybeParsedName.flatMap(_.nullability).getOrElse(jdbcParam.isNullable.toNullability)
+
         val tpe = scalaTypeMapper.sqlFile(
-          maybeOverridden = maybeParsedName.flatMap(_.overriddenType),
+          maybeOverridden = maybeParsedName.flatMap(_.overriddenJvmType(lang)),
           dbType = dbType,
-          nullability = maybeParsedName.flatMap(_.nullability).getOrElse(jdbcParam.isNullable.toNullability)
+          nullability = nullability
         )
 
-        ComputedSqlFile.Param(scalaName, tpe, indices, udtName = jdbcParam.parameterTypeName, dbType)
+        // If user specified an override, create UserDefined with the proper Either; otherwise use standard inference
+        val typoType = maybeParsedName.flatMap(_.overriddenType) match {
+          case Some(overridden) =>
+            val innerTpe = lang.Optional.unapply(tpe).getOrElse(tpe)
+            val base = TypoType.UserDefined(innerTpe, dbType, overridden.toEither)
+            if (nullability == Nullability.Nullable) TypoType.Nullable(tpe, base) else base
+          case None =>
+            TypoType.fromJvmAndDb(tpe, dbType, naming.pkg, lang)
+        }
+        ComputedSqlFile.Param(scalaName, tpe, indices, udtName = jdbcParam.parameterTypeName, dbType, typoType)
       }
 
   val names: ComputedNames =
@@ -102,5 +127,5 @@ case class ComputedSqlFile(
 }
 
 object ComputedSqlFile {
-  case class Param(name: jvm.Ident, tpe: jvm.Type, indices: List[Int], udtName: String, dbType: db.Type)
+  case class Param(name: jvm.Ident, tpe: jvm.Type, indices: List[Int], udtName: String, dbType: db.Type, typoType: TypoType)
 }

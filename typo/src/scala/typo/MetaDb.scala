@@ -1,8 +1,9 @@
 package typo
 
-import typo.internal.{Lazy, TypeMapperDb}
+import typo.internal.external.ExternalTools
 import typo.internal.mariadb.{MariaMetaDb, MariaTypeMapperDb}
 import typo.internal.pg.{PgMetaDb, PgTypeMapperDb}
+import typo.internal.{Lazy, TypeMapperDb}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -13,8 +14,8 @@ case class MetaDb(
     domains: List[db.Domain]
 ) {
   val typeMapperDb: TypeMapperDb = dbType match {
-    case DbType.PostgreSQL             => PgTypeMapperDb(enums, domains)
-    case DbType.MariaDB | DbType.MySQL => MariaTypeMapperDb()
+    case DbType.PostgreSQL => PgTypeMapperDb(enums, domains)
+    case DbType.MariaDB    => MariaTypeMapperDb()
   }
 }
 
@@ -27,11 +28,10 @@ object MetaDb {
   val AnalyzedView = PgMetaDb.AnalyzedView
 
   /** Load metadata from database, dispatching to the appropriate implementation based on database type */
-  def fromDb(logger: TypoLogger, ds: TypoDataSource, viewSelector: Selector, schemaMode: SchemaMode)(implicit ec: ExecutionContext): Future[MetaDb] =
+  def fromDb(logger: TypoLogger, ds: TypoDataSource, viewSelector: Selector, schemaMode: SchemaMode, externalTools: ExternalTools)(implicit ec: ExecutionContext): Future[MetaDb] =
     ds.dbType match {
-      case DbType.PostgreSQL => PgMetaDb.fromDb(logger, ds, viewSelector, schemaMode)
+      case DbType.PostgreSQL => PgMetaDb.fromDb(logger, ds, viewSelector, schemaMode, externalTools)
       case DbType.MariaDB    => MariaMetaDb.fromDb(logger, ds, viewSelector, schemaMode)
-      case DbType.MySQL      => MariaMetaDb.fromDb(logger, ds, viewSelector, schemaMode) // Use MariaDB implementation for MySQL
     }
 
   /** Load metadata from PostgreSQL-specific input (for backwards compatibility) */

@@ -28,7 +28,7 @@ case class StViewRow(
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.countryregioncode]] */
   countryregioncode: CountryregionId,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.group]] */
-  group: /* max 50 chars */ String,
+  group: String,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.salesytd]] */
   salesytd: BigDecimal,
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.saleslastyear]] */

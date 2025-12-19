@@ -21,9 +21,9 @@ case class SpViewRow(
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.businessentityid]] */
   businessentityid: BusinessentityId,
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.territoryid]] */
-  territoryid: Option[SalesterritoryId],
+  territoryid: SalesterritoryId,
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.salesquota]] */
-  salesquota: Option[BigDecimal],
+  salesquota: BigDecimal,
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.bonus]] */
   bonus: BigDecimal,
   /** Points to [[adventureworks.sales.salesperson.SalespersonRow.commissionpct]] */
@@ -39,16 +39,16 @@ case class SpViewRow(
 )
 
 object SpViewRow {
-  given decoder: Decoder[SpViewRow] = Decoder.forProduct10[SpViewRow, BusinessentityId, BusinessentityId, Option[SalesterritoryId], Option[BigDecimal], BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")(SpViewRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, Decoder.decodeOption(using SalesterritoryId.decoder), Decoder.decodeOption(using Decoder.decodeBigDecimal), Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[SpViewRow] = Decoder.forProduct10[SpViewRow, BusinessentityId, BusinessentityId, SalesterritoryId, BigDecimal, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")(SpViewRow.apply)(using BusinessentityId.decoder, BusinessentityId.decoder, SalesterritoryId.decoder, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[SpViewRow] = Encoder.forProduct10[SpViewRow, BusinessentityId, BusinessentityId, Option[SalesterritoryId], Option[BigDecimal], BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.territoryid, x.salesquota, x.bonus, x.commissionpct, x.salesytd, x.saleslastyear, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, Encoder.encodeOption(using SalesterritoryId.encoder), Encoder.encodeOption(using Encoder.encodeBigDecimal), Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[SpViewRow] = Encoder.forProduct10[SpViewRow, BusinessentityId, BusinessentityId, SalesterritoryId, BigDecimal, BigDecimal, BigDecimal, BigDecimal, BigDecimal, TypoUUID, TypoLocalDateTime]("id", "businessentityid", "territoryid", "salesquota", "bonus", "commissionpct", "salesytd", "saleslastyear", "rowguid", "modifieddate")(x => (x.id, x.businessentityid, x.territoryid, x.salesquota, x.bonus, x.commissionpct, x.salesytd, x.saleslastyear, x.rowguid, x.modifieddate))(using BusinessentityId.encoder, BusinessentityId.encoder, SalesterritoryId.encoder, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given read: Read[SpViewRow] = {
     new Read.CompositeOfInstances(Array(
       new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
         new Read.Single(BusinessentityId.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(SalesterritoryId.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(SalesterritoryId.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
@@ -59,8 +59,8 @@ object SpViewRow {
       SpViewRow(
         id = arr(0).asInstanceOf[BusinessentityId],
             businessentityid = arr(1).asInstanceOf[BusinessentityId],
-            territoryid = arr(2).asInstanceOf[Option[SalesterritoryId]],
-            salesquota = arr(3).asInstanceOf[Option[BigDecimal]],
+            territoryid = arr(2).asInstanceOf[SalesterritoryId],
+            salesquota = arr(3).asInstanceOf[BigDecimal],
             bonus = arr(4).asInstanceOf[BigDecimal],
             commissionpct = arr(5).asInstanceOf[BigDecimal],
             salesytd = arr(6).asInstanceOf[BigDecimal],

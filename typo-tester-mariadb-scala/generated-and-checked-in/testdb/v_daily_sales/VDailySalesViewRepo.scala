@@ -6,10 +6,10 @@
 package testdb.v_daily_sales
 
 import java.sql.Connection
-import typo.dsl.SelectBuilder
+import typo.scaladsl.SelectBuilder
 
 trait VDailySalesViewRepo {
   def select: SelectBuilder[VDailySalesViewFields, VDailySalesViewRow]
 
-  def selectAll(using c: Connection): java.util.List[VDailySalesViewRow]
+  def selectAll(using c: Connection): List[VDailySalesViewRow]
 }

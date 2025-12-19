@@ -11,10 +11,9 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import adventureworks.purchasing.shipmethod.ShipmethodId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait PohViewFields {
   def id: Field[PurchaseorderheaderId, PohViewRow]
@@ -25,7 +24,7 @@ trait PohViewFields {
   def vendorid: Field[BusinessentityId, PohViewRow]
   def shipmethodid: Field[ShipmethodId, PohViewRow]
   def orderdate: Field[TypoLocalDateTime, PohViewRow]
-  def shipdate: OptField[TypoLocalDateTime, PohViewRow]
+  def shipdate: Field[TypoLocalDateTime, PohViewRow]
   def subtotal: Field[BigDecimal, PohViewRow]
   def taxamt: Field[BigDecimal, PohViewRow]
   def freight: Field[BigDecimal, PohViewRow]
@@ -33,11 +32,11 @@ trait PohViewFields {
 }
 
 object PohViewFields {
-  lazy val structure: Relation[PohViewFields, PohViewRow] =
+  lazy val structure: RelationStructure[PohViewFields, PohViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[PohViewFields, PohViewRow] {
+    extends RelationStructure[PohViewFields, PohViewRow] {
 
     override lazy val fields: PohViewFields = new PohViewFields {
       override def id = Field[PurchaseorderheaderId, PohViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
@@ -48,7 +47,7 @@ object PohViewFields {
       override def vendorid = Field[BusinessentityId, PohViewRow](_path, "vendorid", None, None, x => x.vendorid, (row, value) => row.copy(vendorid = value))
       override def shipmethodid = Field[ShipmethodId, PohViewRow](_path, "shipmethodid", None, None, x => x.shipmethodid, (row, value) => row.copy(shipmethodid = value))
       override def orderdate = Field[TypoLocalDateTime, PohViewRow](_path, "orderdate", Some("text"), None, x => x.orderdate, (row, value) => row.copy(orderdate = value))
-      override def shipdate = OptField[TypoLocalDateTime, PohViewRow](_path, "shipdate", Some("text"), None, x => x.shipdate, (row, value) => row.copy(shipdate = value))
+      override def shipdate = Field[TypoLocalDateTime, PohViewRow](_path, "shipdate", Some("text"), None, x => x.shipdate, (row, value) => row.copy(shipdate = value))
       override def subtotal = Field[BigDecimal, PohViewRow](_path, "subtotal", None, None, x => x.subtotal, (row, value) => row.copy(subtotal = value))
       override def taxamt = Field[BigDecimal, PohViewRow](_path, "taxamt", None, None, x => x.taxamt, (row, value) => row.copy(taxamt = value))
       override def freight = Field[BigDecimal, PohViewRow](_path, "freight", None, None, x => x.freight, (row, value) => row.copy(freight = value))

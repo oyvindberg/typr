@@ -8,21 +8,19 @@ package adventureworks.person.countryregion
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.DeleteBuilder.DeleteBuilderMock
-import typo.dsl.DeleteParams
-import typo.dsl.SelectBuilder
-import typo.dsl.SelectBuilderMock
-import typo.dsl.SelectParams
-import typo.dsl.UpdateBuilder
-import typo.dsl.UpdateBuilder.UpdateBuilderMock
-import typo.dsl.UpdateParams
-import typo.runtime.internal.stringInterpolator.str
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.DeleteBuilderMock
+import typo.kotlindsl.DeleteParams
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.SelectBuilderMock
+import typo.kotlindsl.SelectParams
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.UpdateBuilderMock
+import typo.kotlindsl.UpdateParams
 
 data class CountryregionRepoMock(
   val toRow: (CountryregionRowUnsaved) -> CountryregionRow,
@@ -33,7 +31,7 @@ data class CountryregionRepoMock(
   override fun deleteById(
     countryregioncode: CountryregionId,
     c: Connection
-  ): Boolean = Optional.ofNullable(map.remove(countryregioncode)).isPresent()
+  ): Boolean = map.remove(countryregioncode) != null
 
   override fun deleteByIds(
     countryregioncodes: Array<CountryregionId>,
@@ -41,7 +39,7 @@ data class CountryregionRepoMock(
   ): Int {
     var count = 0
     for (id in countryregioncodes) {
-      if (Optional.ofNullable(map.remove(id)).isPresent()) {
+      if (map.remove(id) != null) {
       count = count + 1
     }
     }
@@ -53,7 +51,7 @@ data class CountryregionRepoMock(
     c: Connection
   ): CountryregionRow {
     if (map.containsKey(unsaved.countryregioncode)) {
-      throw RuntimeException(str("id $unsaved.countryregioncode already exists"))
+      throw RuntimeException("id " + unsaved.countryregioncode + " already exists")
     }
     map[unsaved.countryregioncode] = unsaved
     return unsaved
@@ -65,7 +63,7 @@ data class CountryregionRepoMock(
   ): CountryregionRow = insert(toRow(unsaved), c)
 
   override fun insertStreaming(
-    unsaved: MutableIterator<CountryregionRow>,
+    unsaved: Iterator<CountryregionRow>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -80,7 +78,7 @@ data class CountryregionRepoMock(
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<CountryregionRowUnsaved>,
+    unsaved: Iterator<CountryregionRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long {
@@ -101,7 +99,7 @@ data class CountryregionRepoMock(
   override fun selectById(
     countryregioncode: CountryregionId,
     c: Connection
-  ): Optional<CountryregionRow> = Optional.ofNullable(map[countryregioncode])
+  ): CountryregionRow? = map[countryregioncode]
 
   override fun selectByIds(
     countryregioncodes: Array<CountryregionId>,
@@ -109,9 +107,9 @@ data class CountryregionRepoMock(
   ): List<CountryregionRow> {
     val result = ArrayList<CountryregionRow>()
     for (id in countryregioncodes) {
-      val opt = Optional.ofNullable(map[id])
-      if (opt.isPresent()) {
-      result.add(opt.get())
+      val opt = map[id]
+      if (opt != null) {
+      result.add(opt!!)
     }
     }
     return result
@@ -128,7 +126,7 @@ data class CountryregionRepoMock(
     row: CountryregionRow,
     c: Connection
   ): Boolean {
-    val shouldUpdate = Optional.ofNullable(map[row.countryregioncode]).filter({ oldRow -> (oldRow != row) }).isPresent()
+    val shouldUpdate = map[row.countryregioncode]?.takeIf({ oldRow -> (oldRow != row) }) != null
     if (shouldUpdate) {
       map[row.countryregioncode] = row
     }
@@ -144,7 +142,7 @@ data class CountryregionRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<CountryregionRow>,
+    unsaved: Iterator<CountryregionRow>,
     c: Connection
   ): List<CountryregionRow> {
     val result = ArrayList<CountryregionRow>()
@@ -158,7 +156,7 @@ data class CountryregionRepoMock(
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<CountryregionRow>,
+    unsaved: Iterator<CountryregionRow>,
     batchSize: Int,
     c: Connection
   ): Int {

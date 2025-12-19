@@ -5,14 +5,14 @@
  */
 package adventureworks.sales.vstorewithdemographics
 
-import adventureworks.customtypes.TypoMoney
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
+import typo.data.Money
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: sales.vstorewithdemographics */
 data class VstorewithdemographicsViewRow(
@@ -20,18 +20,18 @@ data class VstorewithdemographicsViewRow(
   val businessentityid: BusinessentityId,
   /** Points to [adventureworks.sales.store.StoreRow.name] */
   val name: Name,
-  @JsonProperty("AnnualSales") val annualSales: /* nullability unknown */ Optional<TypoMoney>,
-  @JsonProperty("AnnualRevenue") val annualRevenue: /* nullability unknown */ Optional<TypoMoney>,
-  @JsonProperty("BankName") val bankName: /* nullability unknown */ Optional</* max 50 chars */ String>,
-  @JsonProperty("BusinessType") val businessType: /* nullability unknown */ Optional</* max 5 chars */ String>,
-  @JsonProperty("YearOpened") val yearOpened: /* nullability unknown */ Optional<Int>,
-  @JsonProperty("Specialty") val specialty: /* nullability unknown */ Optional</* max 50 chars */ String>,
-  @JsonProperty("SquareFeet") val squareFeet: /* nullability unknown */ Optional<Int>,
-  @JsonProperty("Brands") val brands: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  @JsonProperty("Internet") val internet: /* nullability unknown */ Optional</* max 30 chars */ String>,
-  @JsonProperty("NumberEmployees") val numberEmployees: /* nullability unknown */ Optional<Int>
+  @JsonProperty("AnnualSales") val annualSales: Money,
+  @JsonProperty("AnnualRevenue") val annualRevenue: Money,
+  @JsonProperty("BankName") val bankName: String,
+  @JsonProperty("BusinessType") val businessType: String,
+  @JsonProperty("YearOpened") val yearOpened: Int,
+  @JsonProperty("Specialty") val specialty: String,
+  @JsonProperty("SquareFeet") val squareFeet: Int,
+  @JsonProperty("Brands") val brands: String,
+  @JsonProperty("Internet") val internet: String,
+  @JsonProperty("NumberEmployees") val numberEmployees: Int
 ) {
   companion object {
-    val _rowParser: RowParser<VstorewithdemographicsViewRow> = RowParsers.of(BusinessentityId.pgType, Name.pgType, TypoMoney.pgType.opt(), TypoMoney.pgType.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.int4.opt(), PgTypes.text.opt(), PgTypes.int4.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.int4.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> VstorewithdemographicsViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.name, row.annualSales, row.annualRevenue, row.bankName, row.businessType, row.yearOpened, row.specialty, row.squareFeet, row.brands, row.internet, row.numberEmployees) })
+    val _rowParser: RowParser<VstorewithdemographicsViewRow> = RowParsers.of(BusinessentityId.pgType, Name.pgType, PgTypes.money, PgTypes.money, PgTypes.text, PgTypes.text, KotlinDbTypes.PgTypes.int4, PgTypes.text, KotlinDbTypes.PgTypes.int4, PgTypes.text, PgTypes.text, KotlinDbTypes.PgTypes.int4, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> VstorewithdemographicsViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) }, { row -> arrayOf<Any?>(row.businessentityid, row.name, row.annualSales, row.annualRevenue, row.bankName, row.businessType, row.yearOpened, row.specialty, row.squareFeet, row.brands, row.internet, row.numberEmployees) })
   }
 }

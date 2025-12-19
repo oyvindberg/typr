@@ -6,17 +6,16 @@
 package testdb.mariatest_unique
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait MariatestUniqueRepo {
   def delete: DeleteBuilder[MariatestUniqueFields, MariatestUniqueRow]
 
-  def deleteById(id: MariatestUniqueId)(using c: Connection): java.lang.Boolean
+  def deleteById(id: MariatestUniqueId)(using c: Connection): Boolean
 
-  def deleteByIds(ids: Array[MariatestUniqueId])(using c: Connection): Integer
+  def deleteByIds(ids: Array[MariatestUniqueId])(using c: Connection): Int
 
   def insert(unsaved: MariatestUniqueRow)(using c: Connection): MariatestUniqueRow
 
@@ -24,26 +23,26 @@ trait MariatestUniqueRepo {
 
   def select: SelectBuilder[MariatestUniqueFields, MariatestUniqueRow]
 
-  def selectAll(using c: Connection): java.util.List[MariatestUniqueRow]
+  def selectAll(using c: Connection): List[MariatestUniqueRow]
 
-  def selectById(id: MariatestUniqueId)(using c: Connection): Optional[MariatestUniqueRow]
+  def selectById(id: MariatestUniqueId)(using c: Connection): Option[MariatestUniqueRow]
 
-  def selectByIds(ids: Array[MariatestUniqueId])(using c: Connection): java.util.List[MariatestUniqueRow]
+  def selectByIds(ids: Array[MariatestUniqueId])(using c: Connection): List[MariatestUniqueRow]
 
-  def selectByIdsTracked(ids: Array[MariatestUniqueId])(using c: Connection): java.util.Map[MariatestUniqueId, MariatestUniqueRow]
+  def selectByIdsTracked(ids: Array[MariatestUniqueId])(using c: Connection): Map[MariatestUniqueId, MariatestUniqueRow]
 
   def selectByUniqueCodeAndCategory(
     code: String,
     category: String
-  )(using c: Connection): Optional[MariatestUniqueRow]
+  )(using c: Connection): Option[MariatestUniqueRow]
 
-  def selectByUniqueEmail(email: String)(using c: Connection): Optional[MariatestUniqueRow]
+  def selectByUniqueEmail(email: String)(using c: Connection): Option[MariatestUniqueRow]
 
   def update: UpdateBuilder[MariatestUniqueFields, MariatestUniqueRow]
 
-  def update(row: MariatestUniqueRow)(using c: Connection): java.lang.Boolean
+  def update(row: MariatestUniqueRow)(using c: Connection): Boolean
 
   def upsert(unsaved: MariatestUniqueRow)(using c: Connection): MariatestUniqueRow
 
-  def upsertBatch(unsaved: java.util.Iterator[MariatestUniqueRow])(using c: Connection): java.util.List[MariatestUniqueRow]
+  def upsertBatch(unsaved: Iterator[MariatestUniqueRow])(using c: Connection): List[MariatestUniqueRow]
 }

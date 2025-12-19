@@ -22,17 +22,17 @@ import zio.json.internal.Write
 /** This class corresponds to a row in table `production.document` which has not been persisted yet */
 case class DocumentRowUnsaved(
   /** Title of the document. */
-  title: /* max 50 chars */ String,
+  title: String,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
    * Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]]
    */
   owner: BusinessentityId,
   /** File name of the document */
-  filename: /* max 400 chars */ String,
+  filename: String,
   /** File extension indicating the document type. For example, .doc or .txt. */
   fileextension: Option[/* max 8 chars */ String] = None,
   /** Revision number of the document. */
-  revision: /* bpchar, max 5 chars */ String,
+  revision: String,
   /** 1 = Pending approval, 2 = Approved, 3 = Obsolete
    * Constraint CK_Document_Status affecting columns status:  (((status >= 1) AND (status <= 3)))
    */

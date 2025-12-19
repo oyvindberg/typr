@@ -6,15 +6,15 @@
 package testdb.payment_methods
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
 import typo.runtime.MariaType
-import typo.runtime.MariaTypes
+import typo.scaladsl.Bijection
+import typo.scaladsl.ScalaDbTypes
 
 /** Type for the primary key of table `payment_methods` */
-case class PaymentMethodsId(@JsonValue value: java.lang.Short) extends scala.AnyVal
+case class PaymentMethodsId(@JsonValue value: Short) extends scala.AnyVal
 
 object PaymentMethodsId {
-  given bijection: Bijection[PaymentMethodsId, java.lang.Short] = Bijection.apply[PaymentMethodsId, java.lang.Short](_.value)(PaymentMethodsId.apply)
+  given bijection: Bijection[PaymentMethodsId, Short] = Bijection.apply[PaymentMethodsId, Short](_.value)(PaymentMethodsId.apply)
 
-  given pgType: MariaType[PaymentMethodsId] = MariaTypes.smallint.bimap(PaymentMethodsId.apply, _.value)
+  given pgType: MariaType[PaymentMethodsId] = ScalaDbTypes.MariaTypes.tinyintUnsigned.bimap(PaymentMethodsId.apply, _.value)
 }

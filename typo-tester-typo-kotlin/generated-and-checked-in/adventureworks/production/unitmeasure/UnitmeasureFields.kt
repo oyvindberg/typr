@@ -5,42 +5,44 @@
  */
 package adventureworks.production.unitmeasure
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface UnitmeasureFields : FieldsExpr<UnitmeasureRow> {
-  override fun columns(): List<FieldLike<*, UnitmeasureRow>>
+  abstract override fun columns(): List<FieldLike<*, UnitmeasureRow>>
 
-  fun modifieddate(): Field<TypoLocalDateTime, UnitmeasureRow>
+  abstract fun modifieddate(): Field<LocalDateTime, UnitmeasureRow>
 
-  fun name(): Field<Name, UnitmeasureRow>
+  abstract fun name(): Field<Name, UnitmeasureRow>
 
-  override fun rowParser(): RowParser<UnitmeasureRow> = UnitmeasureRow._rowParser
+  override fun rowParser(): RowParser<UnitmeasureRow> = UnitmeasureRow._rowParser.underlying
 
-  fun unitmeasurecode(): IdField<UnitmeasureId, UnitmeasureRow>
+  abstract fun unitmeasurecode(): IdField<UnitmeasureId, UnitmeasureRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : UnitmeasureFields, Relation<UnitmeasureFields, UnitmeasureRow> {
-      override fun unitmeasurecode(): IdField<UnitmeasureId, UnitmeasureRow> = IdField<UnitmeasureId, UnitmeasureRow>(_path, "unitmeasurecode", UnitmeasureRow::unitmeasurecode, Optional.empty(), Optional.of("bpchar"), { row, value -> row.copy(unitmeasurecode = value) }, UnitmeasureId.pgType)
+    data class Impl(val _path: List<Path>) : UnitmeasureFields, RelationStructure<UnitmeasureFields, UnitmeasureRow> {
+      override fun unitmeasurecode(): IdField<UnitmeasureId, UnitmeasureRow> = IdField<UnitmeasureId, UnitmeasureRow>(_path, "unitmeasurecode", UnitmeasureRow::unitmeasurecode, null, "bpchar", { row, value -> row.copy(unitmeasurecode = value) }, UnitmeasureId.pgType)
 
-      override fun name(): Field<Name, UnitmeasureRow> = Field<Name, UnitmeasureRow>(_path, "name", UnitmeasureRow::name, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, UnitmeasureRow> = Field<Name, UnitmeasureRow>(_path, "name", UnitmeasureRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, UnitmeasureRow> = Field<TypoLocalDateTime, UnitmeasureRow>(_path, "modifieddate", UnitmeasureRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, UnitmeasureRow> = Field<LocalDateTime, UnitmeasureRow>(_path, "modifieddate", UnitmeasureRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, UnitmeasureRow>> = listOf(this.unitmeasurecode(), this.name(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<UnitmeasureFields, UnitmeasureRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, UnitmeasureRow>> = listOf(this.unitmeasurecode().underlying, this.name().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<UnitmeasureFields, UnitmeasureRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

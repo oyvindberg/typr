@@ -7,10 +7,10 @@ package adventureworks.pr.pdoc
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PdocViewRepo {
-  fun select(): SelectBuilder<PdocViewFields, PdocViewRow>
+  abstract fun select(): SelectBuilder<PdocViewFields, PdocViewRow>
 
-  fun selectAll(c: Connection): List<PdocViewRow>
+  abstract fun selectAll(c: Connection): List<PdocViewRow>
 }

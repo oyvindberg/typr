@@ -7,10 +7,9 @@ package adventureworks.purchasing.vvendorwithaddresses
 
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
-import java.util.Optional
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: purchasing.vvendorwithaddresses */
 data class VvendorwithaddressesViewRow(
@@ -21,19 +20,19 @@ data class VvendorwithaddressesViewRow(
   /** Points to [adventureworks.person.addresstype.AddresstypeRow.name] */
   val addresstype: Name,
   /** Points to [adventureworks.person.address.AddressRow.addressline1] */
-  val addressline1: /* max 60 chars */ String,
+  val addressline1: String,
   /** Points to [adventureworks.person.address.AddressRow.addressline2] */
-  val addressline2: Optional</* max 60 chars */ String>,
+  val addressline2: String,
   /** Points to [adventureworks.person.address.AddressRow.city] */
-  val city: /* max 30 chars */ String,
+  val city: String,
   /** Points to [adventureworks.person.stateprovince.StateprovinceRow.name] */
   val stateprovincename: Name,
   /** Points to [adventureworks.person.address.AddressRow.postalcode] */
-  val postalcode: /* max 15 chars */ String,
+  val postalcode: String,
   /** Points to [adventureworks.person.countryregion.CountryregionRow.name] */
   val countryregionname: Name
 ) {
   companion object {
-    val _rowParser: RowParser<VvendorwithaddressesViewRow> = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> VvendorwithaddressesViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.name, row.addresstype, row.addressline1, row.addressline2, row.city, row.stateprovincename, row.postalcode, row.countryregionname) })
+    val _rowParser: RowParser<VvendorwithaddressesViewRow> = RowParsers.of(BusinessentityId.pgType, Name.pgType, Name.pgType, PgTypes.text, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> VvendorwithaddressesViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.businessentityid, row.name, row.addresstype, row.addressline1, row.addressline2, row.city, row.stateprovincename, row.postalcode, row.countryregionname) })
   }
 }

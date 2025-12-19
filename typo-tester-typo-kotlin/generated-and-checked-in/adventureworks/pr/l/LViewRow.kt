@@ -5,13 +5,13 @@
  */
 package adventureworks.pr.l
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.location.LocationId
 import adventureworks.public.Name
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.l */
 data class LViewRow(
@@ -26,9 +26,9 @@ data class LViewRow(
   /** Points to [adventureworks.production.location.LocationRow.availability] */
   val availability: BigDecimal,
   /** Points to [adventureworks.production.location.LocationRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<LViewRow> = RowParsers.of(LocationId.pgType, LocationId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5 -> LViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.id, row.locationid, row.name, row.costrate, row.availability, row.modifieddate) })
+    val _rowParser: RowParser<LViewRow> = RowParsers.of(LocationId.pgType, LocationId.pgType, Name.pgType, PgTypes.numeric, PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> LViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.id, row.locationid, row.name, row.costrate, row.availability, row.modifieddate) })
   }
 }

@@ -6,7 +6,8 @@
 package adventureworks.humanresources.department
 
 import com.fasterxml.jackson.annotation.JsonValue
-import typo.dsl.Bijection
+import typo.kotlindsl.Bijection
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.PgType
 import typo.runtime.PgTypes
 import typo.runtime.internal.arrayMap
@@ -22,7 +23,7 @@ data class DepartmentId(@JsonValue val value: Int) {
       Bijection.of(DepartmentId::value, ::DepartmentId)
 
     val pgType: PgType<DepartmentId> =
-      PgTypes.int4.bimap(::DepartmentId, DepartmentId::value)
+      KotlinDbTypes.PgTypes.int4.bimap(::DepartmentId, DepartmentId::value)
 
     val pgTypeArray: PgType<Array<DepartmentId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::DepartmentId, DepartmentId::class.java) }, { xs -> arrayMap.map(xs, DepartmentId::value, Int::class.javaObjectType) })

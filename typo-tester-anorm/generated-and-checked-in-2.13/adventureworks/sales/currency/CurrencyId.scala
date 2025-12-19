@@ -14,14 +14,14 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `sales.currency` */
-case class CurrencyId(value: /* bpchar, max 3 chars */ String) extends scala.AnyVal
+case class CurrencyId(value: String) extends scala.AnyVal
 
 object CurrencyId {
   implicit lazy val arrayColumn: Column[Array[CurrencyId]] = Column.columnToArray(column, implicitly)
 
   implicit lazy val arrayToStatement: ToStatement[Array[CurrencyId]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  implicit lazy val bijection: Bijection[CurrencyId, /* bpchar, max 3 chars */ String] = Bijection.apply[CurrencyId, /* bpchar, max 3 chars */ String](_.value)(CurrencyId.apply)
+  implicit lazy val bijection: Bijection[CurrencyId, String] = Bijection.apply[CurrencyId, String](_.value)(CurrencyId.apply)
 
   implicit lazy val column: Column[CurrencyId] = Column.columnToString.map(CurrencyId.apply)
 

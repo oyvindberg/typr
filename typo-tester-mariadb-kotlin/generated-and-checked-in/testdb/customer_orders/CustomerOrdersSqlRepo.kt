@@ -6,14 +6,13 @@
 package testdb.customer_orders
 
 import java.sql.Connection
-import java.util.Optional
 import kotlin.collections.List
 import testdb.customers.CustomersId
 
 interface CustomerOrdersSqlRepo {
-  fun apply(
+  abstract fun apply(
     customerId: /* user-picked */ CustomersId,
-    orderStatus: Optional<String>,
+    orderStatus: String?,
     c: Connection
   ): List<CustomerOrdersSqlRow>
 }

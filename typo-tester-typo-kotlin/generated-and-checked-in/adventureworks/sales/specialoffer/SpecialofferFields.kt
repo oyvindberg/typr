@@ -5,77 +5,79 @@
  */
 package adventureworks.sales.specialoffer
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface SpecialofferFields : FieldsExpr<SpecialofferRow> {
-  fun category(): Field</* max 50 chars */ String, SpecialofferRow>
+  abstract fun category(): Field<String, SpecialofferRow>
 
-  override fun columns(): List<FieldLike<*, SpecialofferRow>>
+  abstract override fun columns(): List<FieldLike<*, SpecialofferRow>>
 
-  fun description(): Field</* max 255 chars */ String, SpecialofferRow>
+  abstract fun description(): Field<String, SpecialofferRow>
 
-  fun discountpct(): Field<BigDecimal, SpecialofferRow>
+  abstract fun discountpct(): Field<BigDecimal, SpecialofferRow>
 
-  fun enddate(): Field<TypoLocalDateTime, SpecialofferRow>
+  abstract fun enddate(): Field<LocalDateTime, SpecialofferRow>
 
-  fun maxqty(): OptField<Int, SpecialofferRow>
+  abstract fun maxqty(): OptField<Int, SpecialofferRow>
 
-  fun minqty(): Field<Int, SpecialofferRow>
+  abstract fun minqty(): Field<Int, SpecialofferRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, SpecialofferRow>
+  abstract fun modifieddate(): Field<LocalDateTime, SpecialofferRow>
 
-  override fun rowParser(): RowParser<SpecialofferRow> = SpecialofferRow._rowParser
+  override fun rowParser(): RowParser<SpecialofferRow> = SpecialofferRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, SpecialofferRow>
+  abstract fun rowguid(): Field<UUID, SpecialofferRow>
 
-  fun specialofferid(): IdField<SpecialofferId, SpecialofferRow>
+  abstract fun specialofferid(): IdField<SpecialofferId, SpecialofferRow>
 
-  fun startdate(): Field<TypoLocalDateTime, SpecialofferRow>
+  abstract fun startdate(): Field<LocalDateTime, SpecialofferRow>
 
-  fun type(): Field</* max 50 chars */ String, SpecialofferRow>
+  abstract fun type(): Field<String, SpecialofferRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : SpecialofferFields, Relation<SpecialofferFields, SpecialofferRow> {
-      override fun specialofferid(): IdField<SpecialofferId, SpecialofferRow> = IdField<SpecialofferId, SpecialofferRow>(_path, "specialofferid", SpecialofferRow::specialofferid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(specialofferid = value) }, SpecialofferId.pgType)
+    data class Impl(val _path: List<Path>) : SpecialofferFields, RelationStructure<SpecialofferFields, SpecialofferRow> {
+      override fun specialofferid(): IdField<SpecialofferId, SpecialofferRow> = IdField<SpecialofferId, SpecialofferRow>(_path, "specialofferid", SpecialofferRow::specialofferid, null, "int4", { row, value -> row.copy(specialofferid = value) }, SpecialofferId.pgType)
 
-      override fun description(): Field</* max 255 chars */ String, SpecialofferRow> = Field</* max 255 chars */ String, SpecialofferRow>(_path, "description", SpecialofferRow::description, Optional.empty(), Optional.empty(), { row, value -> row.copy(description = value) }, PgTypes.text)
+      override fun description(): Field<String, SpecialofferRow> = Field<String, SpecialofferRow>(_path, "description", SpecialofferRow::description, null, null, { row, value -> row.copy(description = value) }, PgTypes.text)
 
-      override fun discountpct(): Field<BigDecimal, SpecialofferRow> = Field<BigDecimal, SpecialofferRow>(_path, "discountpct", SpecialofferRow::discountpct, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(discountpct = value) }, PgTypes.numeric)
+      override fun discountpct(): Field<BigDecimal, SpecialofferRow> = Field<BigDecimal, SpecialofferRow>(_path, "discountpct", SpecialofferRow::discountpct, null, "numeric", { row, value -> row.copy(discountpct = value) }, PgTypes.numeric)
 
-      override fun type(): Field</* max 50 chars */ String, SpecialofferRow> = Field</* max 50 chars */ String, SpecialofferRow>(_path, "type", SpecialofferRow::type, Optional.empty(), Optional.empty(), { row, value -> row.copy(type = value) }, PgTypes.text)
+      override fun type(): Field<String, SpecialofferRow> = Field<String, SpecialofferRow>(_path, "type", SpecialofferRow::type, null, null, { row, value -> row.copy(type = value) }, PgTypes.text)
 
-      override fun category(): Field</* max 50 chars */ String, SpecialofferRow> = Field</* max 50 chars */ String, SpecialofferRow>(_path, "category", SpecialofferRow::category, Optional.empty(), Optional.empty(), { row, value -> row.copy(category = value) }, PgTypes.text)
+      override fun category(): Field<String, SpecialofferRow> = Field<String, SpecialofferRow>(_path, "category", SpecialofferRow::category, null, null, { row, value -> row.copy(category = value) }, PgTypes.text)
 
-      override fun startdate(): Field<TypoLocalDateTime, SpecialofferRow> = Field<TypoLocalDateTime, SpecialofferRow>(_path, "startdate", SpecialofferRow::startdate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(startdate = value) }, TypoLocalDateTime.pgType)
+      override fun startdate(): Field<LocalDateTime, SpecialofferRow> = Field<LocalDateTime, SpecialofferRow>(_path, "startdate", SpecialofferRow::startdate, null, "timestamp", { row, value -> row.copy(startdate = value) }, PgTypes.timestamp)
 
-      override fun enddate(): Field<TypoLocalDateTime, SpecialofferRow> = Field<TypoLocalDateTime, SpecialofferRow>(_path, "enddate", SpecialofferRow::enddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(enddate = value) }, TypoLocalDateTime.pgType)
+      override fun enddate(): Field<LocalDateTime, SpecialofferRow> = Field<LocalDateTime, SpecialofferRow>(_path, "enddate", SpecialofferRow::enddate, null, "timestamp", { row, value -> row.copy(enddate = value) }, PgTypes.timestamp)
 
-      override fun minqty(): Field<Int, SpecialofferRow> = Field<Int, SpecialofferRow>(_path, "minqty", SpecialofferRow::minqty, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(minqty = value) }, PgTypes.int4)
+      override fun minqty(): Field<Int, SpecialofferRow> = Field<Int, SpecialofferRow>(_path, "minqty", SpecialofferRow::minqty, null, "int4", { row, value -> row.copy(minqty = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun maxqty(): OptField<Int, SpecialofferRow> = OptField<Int, SpecialofferRow>(_path, "maxqty", SpecialofferRow::maxqty, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(maxqty = value) }, PgTypes.int4)
+      override fun maxqty(): OptField<Int, SpecialofferRow> = OptField<Int, SpecialofferRow>(_path, "maxqty", SpecialofferRow::maxqty, null, "int4", { row, value -> row.copy(maxqty = value) }, KotlinDbTypes.PgTypes.int4)
 
-      override fun rowguid(): Field<TypoUUID, SpecialofferRow> = Field<TypoUUID, SpecialofferRow>(_path, "rowguid", SpecialofferRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, SpecialofferRow> = Field<UUID, SpecialofferRow>(_path, "rowguid", SpecialofferRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, SpecialofferRow> = Field<TypoLocalDateTime, SpecialofferRow>(_path, "modifieddate", SpecialofferRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, SpecialofferRow> = Field<LocalDateTime, SpecialofferRow>(_path, "modifieddate", SpecialofferRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, SpecialofferRow>> = listOf(this.specialofferid(), this.description(), this.discountpct(), this.type(), this.category(), this.startdate(), this.enddate(), this.minqty(), this.maxqty(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<SpecialofferFields, SpecialofferRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, SpecialofferRow>> = listOf(this.specialofferid().underlying, this.description().underlying, this.discountpct().underlying, this.type().underlying, this.category().underlying, this.startdate().underlying, this.enddate().underlying, this.minqty().underlying, this.maxqty().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<SpecialofferFields, SpecialofferRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

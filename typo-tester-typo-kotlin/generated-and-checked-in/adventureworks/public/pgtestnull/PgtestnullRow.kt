@@ -5,116 +5,115 @@
  */
 package adventureworks.public.pgtestnull
 
-import adventureworks.customtypes.TypoBox
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoCircle
-import adventureworks.customtypes.TypoHStore
-import adventureworks.customtypes.TypoInet
-import adventureworks.customtypes.TypoInstant
-import adventureworks.customtypes.TypoInt2Vector
-import adventureworks.customtypes.TypoInterval
-import adventureworks.customtypes.TypoJson
-import adventureworks.customtypes.TypoJsonb
-import adventureworks.customtypes.TypoLine
-import adventureworks.customtypes.TypoLineSegment
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoLocalTime
-import adventureworks.customtypes.TypoMoney
-import adventureworks.customtypes.TypoOffsetTime
-import adventureworks.customtypes.TypoPath
-import adventureworks.customtypes.TypoPoint
-import adventureworks.customtypes.TypoPolygon
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoVector
-import adventureworks.customtypes.TypoXml
 import adventureworks.public.Mydomain
 import adventureworks.public.Myenum
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.OffsetTime
+import java.util.UUID
+import kotlin.collections.Map
+import org.postgresql.geometric.PGbox
+import org.postgresql.geometric.PGcircle
+import org.postgresql.geometric.PGline
+import org.postgresql.geometric.PGlseg
+import org.postgresql.geometric.PGpath
+import org.postgresql.geometric.PGpoint
+import org.postgresql.geometric.PGpolygon
+import org.postgresql.util.PGInterval
+import typo.data.Inet
+import typo.data.Int2Vector
+import typo.data.Json
+import typo.data.Jsonb
+import typo.data.Money
+import typo.data.Vector
+import typo.data.Xml
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: public.pgtestnull */
 data class PgtestnullRow(
-  val bool: Optional<Boolean>,
-  val box: Optional<TypoBox>,
-  val bpchar: Optional</* bpchar, max 3 chars */ String>,
-  val bytea: Optional<TypoBytea>,
-  val char: Optional</* bpchar, max 1 chars */ String>,
-  val circle: Optional<TypoCircle>,
-  val date: Optional<TypoLocalDate>,
-  val float4: Optional<Float>,
-  val float8: Optional<Double>,
-  val hstore: Optional<TypoHStore>,
-  val inet: Optional<TypoInet>,
-  val int2: Optional<TypoShort>,
-  val int2vector: Optional<TypoInt2Vector>,
-  val int4: Optional<Int>,
-  val int8: Optional<Long>,
-  val interval: Optional<TypoInterval>,
-  val json: Optional<TypoJson>,
-  val jsonb: Optional<TypoJsonb>,
-  val line: Optional<TypoLine>,
-  val lseg: Optional<TypoLineSegment>,
-  val money: Optional<TypoMoney>,
-  val mydomain: Optional<Mydomain>,
-  val myenum: Optional<Myenum>,
-  val name: Optional<String>,
-  val numeric: Optional<BigDecimal>,
-  val path: Optional<TypoPath>,
-  val point: Optional<TypoPoint>,
-  val polygon: Optional<TypoPolygon>,
-  val text: Optional<String>,
-  val time: Optional<TypoLocalTime>,
-  val timestamp: Optional<TypoLocalDateTime>,
-  val timestampz: Optional<TypoInstant>,
-  val timez: Optional<TypoOffsetTime>,
-  val uuid: Optional<TypoUUID>,
-  val varchar: Optional<String>,
-  val vector: Optional<TypoVector>,
-  val xml: Optional<TypoXml>,
-  val boxes: Optional<Array<TypoBox>>,
-  val bpchares: Optional<Array</* bpchar */ String>>,
-  val chares: Optional<Array</* bpchar */ String>>,
-  val circlees: Optional<Array<TypoCircle>>,
-  val datees: Optional<Array<TypoLocalDate>>,
-  val float4es: Optional<Array<Float>>,
-  val float8es: Optional<Array<Double>>,
-  val inetes: Optional<Array<TypoInet>>,
-  val int2es: Optional<Array<TypoShort>>,
-  val int2vectores: Optional<Array<TypoInt2Vector>>,
-  val int4es: Optional<Array<Int>>,
-  val int8es: Optional<Array<Long>>,
-  val intervales: Optional<Array<TypoInterval>>,
-  val jsones: Optional<Array<TypoJson>>,
-  val jsonbes: Optional<Array<TypoJsonb>>,
-  val linees: Optional<Array<TypoLine>>,
-  val lseges: Optional<Array<TypoLineSegment>>,
-  val moneyes: Optional<Array<TypoMoney>>,
-  val mydomaines: Optional<Array<Mydomain>>,
-  val myenumes: Optional<Array<Myenum>>,
-  val namees: Optional<Array<String>>,
-  val numerices: Optional<Array<BigDecimal>>,
-  val pathes: Optional<Array<TypoPath>>,
-  val pointes: Optional<Array<TypoPoint>>,
-  val polygones: Optional<Array<TypoPolygon>>,
-  val textes: Optional<Array<String>>,
-  val timees: Optional<Array<TypoLocalTime>>,
-  val timestampes: Optional<Array<TypoLocalDateTime>>,
-  val timestampzes: Optional<Array<TypoInstant>>,
-  val timezes: Optional<Array<TypoOffsetTime>>,
-  val uuides: Optional<Array<TypoUUID>>,
-  val varchares: Optional<Array<String>>,
-  val xmles: Optional<Array<TypoXml>>
+  val bool: Boolean?,
+  val box: PGbox?,
+  val bpchar: /* bpchar, max 3 chars */ String?,
+  val bytea: ByteArray?,
+  val char: /* bpchar, max 1 chars */ String?,
+  val circle: PGcircle?,
+  val date: LocalDate?,
+  val float4: Float?,
+  val float8: Double?,
+  val hstore: Map<String, String>?,
+  val inet: Inet?,
+  val int2: Short?,
+  val int2vector: Int2Vector?,
+  val int4: Int?,
+  val int8: Long?,
+  val interval: PGInterval?,
+  val json: Json?,
+  val jsonb: Jsonb?,
+  val line: PGline?,
+  val lseg: PGlseg?,
+  val money: Money?,
+  val mydomain: Mydomain?,
+  val myenum: Myenum?,
+  val name: String?,
+  val numeric: BigDecimal?,
+  val path: PGpath?,
+  val point: PGpoint?,
+  val polygon: PGpolygon?,
+  val text: String?,
+  val time: LocalTime?,
+  val timestamp: LocalDateTime?,
+  val timestampz: Instant?,
+  val timez: OffsetTime?,
+  val uuid: UUID?,
+  val varchar: String?,
+  val vector: Vector?,
+  val xml: Xml?,
+  val boxes: Array<PGbox>?,
+  val bpchares: Array</* bpchar */ String>?,
+  val chares: Array</* bpchar */ String>?,
+  val circlees: Array<PGcircle>?,
+  val datees: Array<LocalDate>?,
+  val float4es: Array<Float>?,
+  val float8es: Array<Double>?,
+  val inetes: Array<Inet>?,
+  val int2es: Array<Short>?,
+  val int2vectores: Array<Int2Vector>?,
+  val int4es: Array<Int>?,
+  val int8es: Array<Long>?,
+  val intervales: Array<PGInterval>?,
+  val jsones: Array<Json>?,
+  val jsonbes: Array<Jsonb>?,
+  val linees: Array<PGline>?,
+  val lseges: Array<PGlseg>?,
+  val moneyes: Array<Money>?,
+  val mydomaines: Array<Mydomain>?,
+  val myenumes: Array<Myenum>?,
+  val namees: Array<String>?,
+  val numerices: Array<BigDecimal>?,
+  val pathes: Array<PGpath>?,
+  val pointes: Array<PGpoint>?,
+  val polygones: Array<PGpolygon>?,
+  val textes: Array<String>?,
+  val timees: Array<LocalTime>?,
+  val timestampes: Array<LocalDateTime>?,
+  val timestampzes: Array<Instant>?,
+  val timezes: Array<OffsetTime>?,
+  val uuides: Array<UUID>?,
+  val varchares: Array<String>?,
+  val xmles: Array<Xml>?
 ) {
   companion object {
-    val _rowParser: RowParser<PgtestnullRow> = RowParsers.of(PgTypes.bool.opt(), TypoBox.pgType.opt(), PgTypes.bpchar.opt(), TypoBytea.pgType.opt(), PgTypes.bpchar.opt(), TypoCircle.pgType.opt(), TypoLocalDate.pgType.opt(), PgTypes.float4.opt(), PgTypes.float8.opt(), TypoHStore.pgType.opt(), TypoInet.pgType.opt(), TypoShort.pgType.opt(), TypoInt2Vector.pgType.opt(), PgTypes.int4.opt(), PgTypes.int8.opt(), TypoInterval.pgType.opt(), TypoJson.pgType.opt(), TypoJsonb.pgType.opt(), TypoLine.pgType.opt(), TypoLineSegment.pgType.opt(), TypoMoney.pgType.opt(), Mydomain.pgType.opt(), Myenum.pgType.opt(), PgTypes.name.opt(), PgTypes.numeric.opt(), TypoPath.pgType.opt(), TypoPoint.pgType.opt(), TypoPolygon.pgType.opt(), PgTypes.text.opt(), TypoLocalTime.pgType.opt(), TypoLocalDateTime.pgType.opt(), TypoInstant.pgType.opt(), TypoOffsetTime.pgType.opt(), TypoUUID.pgType.opt(), PgTypes.text.opt(), TypoVector.pgType.opt(), TypoXml.pgType.opt(), TypoBox.pgTypeArray.opt(), PgTypes.bpcharArray.opt(), PgTypes.bpcharArray.opt(), TypoCircle.pgTypeArray.opt(), TypoLocalDate.pgTypeArray.opt(), PgTypes.float4Array.opt(), PgTypes.float8Array.opt(), TypoInet.pgTypeArray.opt(), TypoShort.pgTypeArray.opt(), TypoInt2Vector.pgTypeArray.opt(), PgTypes.int4Array.opt(), PgTypes.int8Array.opt(), TypoInterval.pgTypeArray.opt(), TypoJson.pgTypeArray.opt(), TypoJsonb.pgTypeArray.opt(), TypoLine.pgTypeArray.opt(), TypoLineSegment.pgTypeArray.opt(), TypoMoney.pgTypeArray.opt(), Mydomain.pgTypeArray.opt(), Myenum.pgTypeArray.opt(), PgTypes.nameArray.opt(), PgTypes.numericArray.opt(), TypoPath.pgTypeArray.opt(), TypoPoint.pgTypeArray.opt(), TypoPolygon.pgTypeArray.opt(), PgTypes.textArray.opt(), TypoLocalTime.pgTypeArray.opt(), TypoLocalDateTime.pgTypeArray.opt(), TypoInstant.pgTypeArray.opt(), TypoOffsetTime.pgTypeArray.opt(), TypoUUID.pgTypeArray.opt(), PgTypes.textArray.opt(), TypoXml.pgTypeArray.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37, t38, t39, t40, t41, t42, t43, t44, t45, t46, t47, t48, t49, t50, t51, t52, t53, t54, t55, t56, t57, t58, t59, t60, t61, t62, t63, t64, t65, t66, t67, t68, t69 -> PgtestnullRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!, t22!!, t23!!, t24!!, t25!!, t26!!, t27!!, t28!!, t29!!, t30!!, t31!!, t32!!, t33!!, t34!!, t35!!, t36!!, t37!!, t38!!, t39!!, t40!!, t41!!, t42!!, t43!!, t44!!, t45!!, t46!!, t47!!, t48!!, t49!!, t50!!, t51!!, t52!!, t53!!, t54!!, t55!!, t56!!, t57!!, t58!!, t59!!, t60!!, t61!!, t62!!, t63!!, t64!!, t65!!, t66!!, t67!!, t68!!, t69!!) }, { row -> arrayOf<Any?>(row.bool, row.box, row.bpchar, row.bytea, row.char, row.circle, row.date, row.float4, row.float8, row.hstore, row.inet, row.int2, row.int2vector, row.int4, row.int8, row.interval, row.json, row.jsonb, row.line, row.lseg, row.money, row.mydomain, row.myenum, row.name, row.numeric, row.path, row.point, row.polygon, row.text, row.time, row.timestamp, row.timestampz, row.timez, row.uuid, row.varchar, row.vector, row.xml, row.boxes, row.bpchares, row.chares, row.circlees, row.datees, row.float4es, row.float8es, row.inetes, row.int2es, row.int2vectores, row.int4es, row.int8es, row.intervales, row.jsones, row.jsonbes, row.linees, row.lseges, row.moneyes, row.mydomaines, row.myenumes, row.namees, row.numerices, row.pathes, row.pointes, row.polygones, row.textes, row.timees, row.timestampes, row.timestampzes, row.timezes, row.uuides, row.varchares, row.xmles) })
+    val _rowParser: RowParser<PgtestnullRow> = RowParsers.of(KotlinDbTypes.PgTypes.bool.nullable(), PgTypes.box.nullable(), PgTypes.bpchar.nullable(), PgTypes.bytea.nullable(), PgTypes.bpchar.nullable(), PgTypes.circle.nullable(), PgTypes.date.nullable(), KotlinDbTypes.PgTypes.float4.nullable(), KotlinDbTypes.PgTypes.float8.nullable(), KotlinDbTypes.PgTypes.hstore.nullable(), PgTypes.inet.nullable(), KotlinDbTypes.PgTypes.int2.nullable(), PgTypes.int2vector.nullable(), KotlinDbTypes.PgTypes.int4.nullable(), KotlinDbTypes.PgTypes.int8.nullable(), PgTypes.interval.nullable(), PgTypes.json.nullable(), PgTypes.jsonb.nullable(), PgTypes.line.nullable(), PgTypes.lseg.nullable(), PgTypes.money.nullable(), Mydomain.pgType.nullable(), Myenum.pgType.nullable(), PgTypes.name.nullable(), PgTypes.numeric.nullable(), PgTypes.path.nullable(), PgTypes.point.nullable(), PgTypes.polygon.nullable(), PgTypes.text.nullable(), PgTypes.time.nullable(), PgTypes.timestamp.nullable(), PgTypes.timestamptz.nullable(), PgTypes.timetz.nullable(), PgTypes.uuid.nullable(), PgTypes.text.nullable(), PgTypes.vector.nullable(), PgTypes.xml.nullable(), PgTypes.boxArray.nullable(), PgTypes.bpcharArray.nullable(), PgTypes.bpcharArray.nullable(), PgTypes.circleArray.nullable(), PgTypes.dateArray.nullable(), PgTypes.float4Array.nullable(), PgTypes.float8Array.nullable(), PgTypes.inetArray.nullable(), PgTypes.int2Array.nullable(), PgTypes.int2vectorArray.nullable(), PgTypes.int4Array.nullable(), PgTypes.int8Array.nullable(), PgTypes.intervalArray.nullable(), PgTypes.jsonArray.nullable(), PgTypes.jsonbArray.nullable(), PgTypes.lineArray.nullable(), PgTypes.lsegArray.nullable(), PgTypes.moneyArray.nullable(), Mydomain.pgTypeArray.nullable(), Myenum.pgTypeArray.nullable(), PgTypes.nameArray.nullable(), PgTypes.numericArray.nullable(), PgTypes.pathArray.nullable(), PgTypes.pointArray.nullable(), PgTypes.polygonArray.nullable(), PgTypes.textArray.nullable(), PgTypes.timeArray.nullable(), PgTypes.timestampArray.nullable(), PgTypes.timestamptzArray.nullable(), PgTypes.timetzArray.nullable(), PgTypes.uuidArray.nullable(), PgTypes.textArray.nullable(), PgTypes.xmlArray.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37, t38, t39, t40, t41, t42, t43, t44, t45, t46, t47, t48, t49, t50, t51, t52, t53, t54, t55, t56, t57, t58, t59, t60, t61, t62, t63, t64, t65, t66, t67, t68, t69 -> PgtestnullRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37, t38, t39, t40, t41, t42, t43, t44, t45, t46, t47, t48, t49, t50, t51, t52, t53, t54, t55, t56, t57, t58, t59, t60, t61, t62, t63, t64, t65, t66, t67, t68, t69) }, { row -> arrayOf<Any?>(row.bool, row.box, row.bpchar, row.bytea, row.char, row.circle, row.date, row.float4, row.float8, row.hstore, row.inet, row.int2, row.int2vector, row.int4, row.int8, row.interval, row.json, row.jsonb, row.line, row.lseg, row.money, row.mydomain, row.myenum, row.name, row.numeric, row.path, row.point, row.polygon, row.text, row.time, row.timestamp, row.timestampz, row.timez, row.uuid, row.varchar, row.vector, row.xml, row.boxes, row.bpchares, row.chares, row.circlees, row.datees, row.float4es, row.float8es, row.inetes, row.int2es, row.int2vectores, row.int4es, row.int8es, row.intervales, row.jsones, row.jsonbes, row.linees, row.lseges, row.moneyes, row.mydomaines, row.myenumes, row.namees, row.numerices, row.pathes, row.pointes, row.polygones, row.textes, row.timees, row.timestampes, row.timestampzes, row.timezes, row.uuides, row.varchares, row.xmles) })
 
     val pgText: PgText<PgtestnullRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

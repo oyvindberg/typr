@@ -8,5 +8,5 @@ import testapi.model.Pet
   */
 interface CreatePetOnPetCreatedCallback {
   /** Called when pet is created */
-  fun onPetCreatedCallback(body: Pet): Uni<Unit>
+  abstract fun onPetCreatedCallback(body: Pet): Uni<Unit>
 }

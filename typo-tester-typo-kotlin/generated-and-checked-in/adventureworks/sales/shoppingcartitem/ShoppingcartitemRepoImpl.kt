@@ -5,25 +5,21 @@
  */
 package adventureworks.sales.shoppingcartitem
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 import typo.runtime.PgTypes
 import typo.runtime.streamingInsert
-import typo.runtime.Fragment.interpolate
-import typo.runtime.internal.stringInterpolator.str
 
 class ShoppingcartitemRepoImpl() : ShoppingcartitemRepo {
   override fun delete(): DeleteBuilder<ShoppingcartitemFields, ShoppingcartitemRow> = DeleteBuilder.of("\"sales\".\"shoppingcartitem\"", ShoppingcartitemFields.structure, Dialect.POSTGRESQL)
@@ -31,166 +27,81 @@ class ShoppingcartitemRepoImpl() : ShoppingcartitemRepo {
   override fun deleteById(
     shoppingcartitemid: ShoppingcartitemId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("""
-    delete from "sales"."shoppingcartitem" where "shoppingcartitemid" = 
-    """.trimMargin()),
-    ShoppingcartitemId.pgType.encode(shoppingcartitemid),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from \"sales\".\"shoppingcartitem\" where \"shoppingcartitemid\" = "), Fragment.encode(ShoppingcartitemId.pgType, shoppingcartitemid), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     shoppingcartitemids: Array<ShoppingcartitemId>,
     c: Connection
-  ): Int = interpolate(
-             typo.runtime.Fragment.lit("""
-               delete
-               from "sales"."shoppingcartitem"
-               where "shoppingcartitemid" = ANY(""".trimMargin()),
-             ShoppingcartitemId.pgTypeArray.encode(shoppingcartitemids),
-             typo.runtime.Fragment.lit(")")
-           )
+  ): Int = Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"shoppingcartitem\"\nwhere \"shoppingcartitemid\" = ANY("), Fragment.encode(ShoppingcartitemId.pgTypeArray, shoppingcartitemids), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
   override fun insert(
     unsaved: ShoppingcartitemRow,
     c: Connection
-  ): ShoppingcartitemRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "sales"."shoppingcartitem"("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")
-      values (""".trimMargin()),
-    ShoppingcartitemId.pgType.encode(unsaved.shoppingcartitemid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.text.encode(unsaved.shoppingcartid),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.int4.encode(unsaved.quantity),
-    typo.runtime.Fragment.lit("::int4, "),
-    ProductId.pgType.encode(unsaved.productid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.datecreated),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      returning "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text
-    """.trimMargin())
-  )
+  ): ShoppingcartitemRow = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"shoppingcartitem\"(\"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\")\nvalues ("), Fragment.encode(ShoppingcartitemId.pgType, unsaved.shoppingcartitemid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text, unsaved.shoppingcartid), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.quantity), Fragment.lit("::int4, "), Fragment.encode(ProductId.pgType, unsaved.productid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.datecreated), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\nreturning \"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\"\n"))
     .updateReturning(ShoppingcartitemRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: ShoppingcartitemRowUnsaved,
     c: Connection
   ): ShoppingcartitemRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("\"shoppingcartid\""))
-    values.add(interpolate(
-      PgTypes.text.encode(unsaved.shoppingcartid),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(PgTypes.text, unsaved.shoppingcartid), Fragment.lit("")))
     columns.add(Fragment.lit("\"productid\""))
-    values.add(interpolate(
-      ProductId.pgType.encode(unsaved.productid),
-      typo.runtime.Fragment.lit("::int4")
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(ProductId.pgType, unsaved.productid), Fragment.lit("::int4")))
     unsaved.shoppingcartitemid.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"shoppingcartitemid\""))
-      values.add(interpolate(
-        ShoppingcartitemId.pgType.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(ShoppingcartitemId.pgType, value), Fragment.lit("::int4"))) }
     );
     unsaved.quantity.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"quantity\""))
-      values.add(interpolate(
-        PgTypes.int4.encode(value),
-        typo.runtime.Fragment.lit("::int4")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.PgTypes.int4, value), Fragment.lit("::int4"))) }
     );
     unsaved.datecreated.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"datecreated\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
     unsaved.modifieddate.visit(
       {  },
       { value -> columns.add(Fragment.lit("\"modifieddate\""))
-      values.add(interpolate(
-        TypoLocalDateTime.pgType.encode(value),
-        typo.runtime.Fragment.lit("::timestamp")
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(PgTypes.timestamp, value), Fragment.lit("::timestamp"))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("""
-      insert into "sales"."shoppingcartitem"(
-      """.trimMargin()),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"shoppingcartitem\"("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning \"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\"\n"))
     return q.updateReturning(ShoppingcartitemRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun insertStreaming(
-    unsaved: MutableIterator<ShoppingcartitemRow>,
+    unsaved: Iterator<ShoppingcartitemRow>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "sales"."shoppingcartitem"("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate") FROM STDIN
-  """.trimMargin()), batchSize, unsaved, c, ShoppingcartitemRow.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"sales\".\"shoppingcartitem\"(\"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\") FROM STDIN", batchSize, unsaved, c, ShoppingcartitemRow.pgText)
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   override fun insertUnsavedStreaming(
-    unsaved: MutableIterator<ShoppingcartitemRowUnsaved>,
+    unsaved: Iterator<ShoppingcartitemRowUnsaved>,
     batchSize: Int,
     c: Connection
-  ): Long = streamingInsert.insertUnchecked(str("""
-  COPY "sales"."shoppingcartitem"("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')
-  """.trimMargin()), batchSize, unsaved, c, ShoppingcartitemRowUnsaved.pgText)
+  ): Long = streamingInsert.insertUnchecked("COPY \"sales\".\"shoppingcartitem\"(\"shoppingcartid\", \"productid\", \"shoppingcartitemid\", \"quantity\", \"datecreated\", \"modifieddate\") FROM STDIN (DEFAULT '__DEFAULT_VALUE__')", batchSize, unsaved, c, ShoppingcartitemRowUnsaved.pgText)
 
   override fun select(): SelectBuilder<ShoppingcartitemFields, ShoppingcartitemRow> = SelectBuilder.of("\"sales\".\"shoppingcartitem\"", ShoppingcartitemFields.structure, ShoppingcartitemRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<ShoppingcartitemRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text
-    from "sales"."shoppingcartitem"
-  """.trimMargin())).query(ShoppingcartitemRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<ShoppingcartitemRow> = Fragment.interpolate(Fragment.lit("select \"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\"\nfrom \"sales\".\"shoppingcartitem\"\n")).query(ShoppingcartitemRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     shoppingcartitemid: ShoppingcartitemId,
     c: Connection
-  ): Optional<ShoppingcartitemRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text
-      from "sales"."shoppingcartitem"
-      where "shoppingcartitemid" = """.trimMargin()),
-    ShoppingcartitemId.pgType.encode(shoppingcartitemid),
-    typo.runtime.Fragment.lit("")
-  ).query(ShoppingcartitemRow._rowParser.first()).runUnchecked(c)
+  ): ShoppingcartitemRow? = Fragment.interpolate(Fragment.lit("select \"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\"\nfrom \"sales\".\"shoppingcartitem\"\nwhere \"shoppingcartitemid\" = "), Fragment.encode(ShoppingcartitemId.pgType, shoppingcartitemid), Fragment.lit("")).query(ShoppingcartitemRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     shoppingcartitemids: Array<ShoppingcartitemId>,
     c: Connection
-  ): List<ShoppingcartitemRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text
-      from "sales"."shoppingcartitem"
-      where "shoppingcartitemid" = ANY(""".trimMargin()),
-    ShoppingcartitemId.pgTypeArray.encode(shoppingcartitemids),
-    typo.runtime.Fragment.lit(")")
-  ).query(ShoppingcartitemRow._rowParser.all()).runUnchecked(c)
+  ): List<ShoppingcartitemRow> = Fragment.interpolate(Fragment.lit("select \"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\"\nfrom \"sales\".\"shoppingcartitem\"\nwhere \"shoppingcartitemid\" = ANY("), Fragment.encode(ShoppingcartitemId.pgTypeArray, shoppingcartitemids), Fragment.lit(")")).query(ShoppingcartitemRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     shoppingcartitemids: Array<ShoppingcartitemId>,
@@ -198,117 +109,41 @@ class ShoppingcartitemRepoImpl() : ShoppingcartitemRepo {
   ): Map<ShoppingcartitemId, ShoppingcartitemRow> {
     val ret: MutableMap<ShoppingcartitemId, ShoppingcartitemRow> = mutableMapOf<ShoppingcartitemId, ShoppingcartitemRow>()
     selectByIds(shoppingcartitemids, c).forEach({ row -> ret.put(row.shoppingcartitemid, row) })
-    return ret
+    return ret.toMap()
   }
 
-  override fun update(): UpdateBuilder<ShoppingcartitemFields, ShoppingcartitemRow> = UpdateBuilder.of("\"sales\".\"shoppingcartitem\"", ShoppingcartitemFields.structure, ShoppingcartitemRow._rowParser.all(), Dialect.POSTGRESQL)
+  override fun update(): UpdateBuilder<ShoppingcartitemFields, ShoppingcartitemRow> = UpdateBuilder.of("\"sales\".\"shoppingcartitem\"", ShoppingcartitemFields.structure, ShoppingcartitemRow._rowParser, Dialect.POSTGRESQL)
 
   override fun update(
     row: ShoppingcartitemRow,
     c: Connection
   ): Boolean {
     val shoppingcartitemid: ShoppingcartitemId = row.shoppingcartitemid
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update "sales"."shoppingcartitem"
-        set "shoppingcartid" = """.trimMargin()),
-      PgTypes.text.encode(row.shoppingcartid),
-      typo.runtime.Fragment.lit("""
-        ,
-        "quantity" = """.trimMargin()),
-      PgTypes.int4.encode(row.quantity),
-      typo.runtime.Fragment.lit("""
-        ::int4,
-        "productid" = """.trimMargin()),
-      ProductId.pgType.encode(row.productid),
-      typo.runtime.Fragment.lit("""
-        ::int4,
-        "datecreated" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.datecreated),
-      typo.runtime.Fragment.lit("""
-        ::timestamp,
-        "modifieddate" = """.trimMargin()),
-      TypoLocalDateTime.pgType.encode(row.modifieddate),
-      typo.runtime.Fragment.lit("""
-        ::timestamp
-        where "shoppingcartitemid" = """.trimMargin()),
-      ShoppingcartitemId.pgType.encode(shoppingcartitemid),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update \"sales\".\"shoppingcartitem\"\nset \"shoppingcartid\" = "), Fragment.encode(PgTypes.text, row.shoppingcartid), Fragment.lit(",\n\"quantity\" = "), Fragment.encode(KotlinDbTypes.PgTypes.int4, row.quantity), Fragment.lit("::int4,\n\"productid\" = "), Fragment.encode(ProductId.pgType, row.productid), Fragment.lit("::int4,\n\"datecreated\" = "), Fragment.encode(PgTypes.timestamp, row.datecreated), Fragment.lit("::timestamp,\n\"modifieddate\" = "), Fragment.encode(PgTypes.timestamp, row.modifieddate), Fragment.lit("::timestamp\nwhere \"shoppingcartitemid\" = "), Fragment.encode(ShoppingcartitemId.pgType, shoppingcartitemid), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: ShoppingcartitemRow,
     c: Connection
-  ): ShoppingcartitemRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into "sales"."shoppingcartitem"("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")
-      values (""".trimMargin()),
-    ShoppingcartitemId.pgType.encode(unsaved.shoppingcartitemid),
-    typo.runtime.Fragment.lit("::int4, "),
-    PgTypes.text.encode(unsaved.shoppingcartid),
-    typo.runtime.Fragment.lit(", "),
-    PgTypes.int4.encode(unsaved.quantity),
-    typo.runtime.Fragment.lit("::int4, "),
-    ProductId.pgType.encode(unsaved.productid),
-    typo.runtime.Fragment.lit("::int4, "),
-    TypoLocalDateTime.pgType.encode(unsaved.datecreated),
-    typo.runtime.Fragment.lit("::timestamp, "),
-    TypoLocalDateTime.pgType.encode(unsaved.modifieddate),
-    typo.runtime.Fragment.lit("""
-      ::timestamp)
-      on conflict ("shoppingcartitemid")
-      do update set
-        "shoppingcartid" = EXCLUDED."shoppingcartid",
-      "quantity" = EXCLUDED."quantity",
-      "productid" = EXCLUDED."productid",
-      "datecreated" = EXCLUDED."datecreated",
-      "modifieddate" = EXCLUDED."modifieddate"
-      returning "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text""".trimMargin())
-  )
+  ): ShoppingcartitemRow = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"shoppingcartitem\"(\"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\")\nvalues ("), Fragment.encode(ShoppingcartitemId.pgType, unsaved.shoppingcartitemid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.text, unsaved.shoppingcartid), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.PgTypes.int4, unsaved.quantity), Fragment.lit("::int4, "), Fragment.encode(ProductId.pgType, unsaved.productid), Fragment.lit("::int4, "), Fragment.encode(PgTypes.timestamp, unsaved.datecreated), Fragment.lit("::timestamp, "), Fragment.encode(PgTypes.timestamp, unsaved.modifieddate), Fragment.lit("::timestamp)\non conflict (\"shoppingcartitemid\")\ndo update set\n  \"shoppingcartid\" = EXCLUDED.\"shoppingcartid\",\n\"quantity\" = EXCLUDED.\"quantity\",\n\"productid\" = EXCLUDED.\"productid\",\n\"datecreated\" = EXCLUDED.\"datecreated\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\""))
     .updateReturning(ShoppingcartitemRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ShoppingcartitemRow>,
+    unsaved: Iterator<ShoppingcartitemRow>,
     c: Connection
-  ): List<ShoppingcartitemRow> = interpolate(typo.runtime.Fragment.lit("""
-                                   insert into "sales"."shoppingcartitem"("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")
-                                   values (?::int4, ?, ?::int4, ?::int4, ?::timestamp, ?::timestamp)
-                                   on conflict ("shoppingcartitemid")
-                                   do update set
-                                     "shoppingcartid" = EXCLUDED."shoppingcartid",
-                                   "quantity" = EXCLUDED."quantity",
-                                   "productid" = EXCLUDED."productid",
-                                   "datecreated" = EXCLUDED."datecreated",
-                                   "modifieddate" = EXCLUDED."modifieddate"
-                                   returning "shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated"::text, "modifieddate"::text""".trimMargin()))
+  ): List<ShoppingcartitemRow> = Fragment.interpolate(Fragment.lit("insert into \"sales\".\"shoppingcartitem\"(\"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\")\nvalues (?::int4, ?, ?::int4, ?::int4, ?::timestamp, ?::timestamp)\non conflict (\"shoppingcartitemid\")\ndo update set\n  \"shoppingcartid\" = EXCLUDED.\"shoppingcartid\",\n\"quantity\" = EXCLUDED.\"quantity\",\n\"productid\" = EXCLUDED.\"productid\",\n\"datecreated\" = EXCLUDED.\"datecreated\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\nreturning \"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\""))
     .updateManyReturning(ShoppingcartitemRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   override fun upsertStreaming(
-    unsaved: MutableIterator<ShoppingcartitemRow>,
+    unsaved: Iterator<ShoppingcartitemRow>,
     batchSize: Int,
     c: Connection
   ): Int {
-    interpolate(typo.runtime.Fragment.lit("""
-    create temporary table shoppingcartitem_TEMP (like "sales"."shoppingcartitem") on commit drop
-    """.trimMargin())).update().runUnchecked(c)
-    streamingInsert.insertUnchecked(str("""
-    copy shoppingcartitem_TEMP("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate") from stdin
-    """.trimMargin()), batchSize, unsaved, c, ShoppingcartitemRow.pgText)
-    return interpolate(typo.runtime.Fragment.lit("""
-      insert into "sales"."shoppingcartitem"("shoppingcartitemid", "shoppingcartid", "quantity", "productid", "datecreated", "modifieddate")
-      select * from shoppingcartitem_TEMP
-      on conflict ("shoppingcartitemid")
-      do update set
-        "shoppingcartid" = EXCLUDED."shoppingcartid",
-      "quantity" = EXCLUDED."quantity",
-      "productid" = EXCLUDED."productid",
-      "datecreated" = EXCLUDED."datecreated",
-      "modifieddate" = EXCLUDED."modifieddate"
-      ;
-      drop table shoppingcartitem_TEMP;""".trimMargin())).update().runUnchecked(c)
+    Fragment.interpolate(Fragment.lit("create temporary table shoppingcartitem_TEMP (like \"sales\".\"shoppingcartitem\") on commit drop")).update().runUnchecked(c)
+    streamingInsert.insertUnchecked("copy shoppingcartitem_TEMP(\"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\") from stdin", batchSize, unsaved, c, ShoppingcartitemRow.pgText)
+    return Fragment.interpolate(Fragment.lit("insert into \"sales\".\"shoppingcartitem\"(\"shoppingcartitemid\", \"shoppingcartid\", \"quantity\", \"productid\", \"datecreated\", \"modifieddate\")\nselect * from shoppingcartitem_TEMP\non conflict (\"shoppingcartitemid\")\ndo update set\n  \"shoppingcartid\" = EXCLUDED.\"shoppingcartid\",\n\"quantity\" = EXCLUDED.\"quantity\",\n\"productid\" = EXCLUDED.\"productid\",\n\"datecreated\" = EXCLUDED.\"datecreated\",\n\"modifieddate\" = EXCLUDED.\"modifieddate\"\n;\ndrop table shoppingcartitem_TEMP;")).update().runUnchecked(c)
   }
 }

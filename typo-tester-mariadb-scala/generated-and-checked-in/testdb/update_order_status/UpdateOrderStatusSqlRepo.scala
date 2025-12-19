@@ -10,7 +10,7 @@ import testdb.orders.OrdersId
 
 trait UpdateOrderStatusSqlRepo {
   def apply(
-    newStatus: /* user-picked */ String,
+    newStatus: String,
     orderId: /* user-picked */ OrdersId
-  )(using c: Connection): Integer
+  )(using c: Connection): Int
 }

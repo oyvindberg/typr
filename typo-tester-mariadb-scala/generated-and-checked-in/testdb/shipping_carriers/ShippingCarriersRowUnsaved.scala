@@ -6,11 +6,12 @@
 package testdb.shipping_carriers
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
 
 /** This class corresponds to a row in table `shipping_carriers` which has not been persisted yet */
 case class ShippingCarriersRowUnsaved(
@@ -21,20 +22,20 @@ case class ShippingCarriersRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("tracking_url_template") trackingUrlTemplate: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("tracking_url_template") trackingUrlTemplate: Defaulted[Option[String]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("api_config") apiConfig: Defaulted[Optional[String]] = new UseDefault(),
+  @JsonProperty("api_config") apiConfig: Defaulted[Option[String]] = new UseDefault(),
   /** Default: 1
 
    */
-  @JsonProperty("is_active") isActive: Defaulted[java.lang.Boolean] = new UseDefault()
+  @JsonProperty("is_active") isActive: Defaulted[Boolean] = new UseDefault()
 ) {
   def toRow(
-    trackingUrlTemplateDefault: => Optional[String],
-    apiConfigDefault: => Optional[String],
-    isActiveDefault: => java.lang.Boolean,
+    trackingUrlTemplateDefault: => Option[String],
+    apiConfigDefault: => Option[String],
+    isActiveDefault: => Boolean,
     carrierIdDefault: => ShippingCarriersId
   ): ShippingCarriersRow = {
     new ShippingCarriersRow(
@@ -49,5 +50,5 @@ case class ShippingCarriersRowUnsaved(
 }
 
 object ShippingCarriersRowUnsaved {
-  given mariaText: MariaText[ShippingCarriersRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.code, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.opt().mariaText).unsafeEncode(row.trackingUrlTemplate, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.opt().mariaText).unsafeEncode(row.apiConfig, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.bool.mariaText).unsafeEncode(row.isActive, sb) })
+  given mariaText: MariaText[ShippingCarriersRowUnsaved] = MariaText.instance((row, sb) => { MariaTypes.varchar.mariaText.unsafeEncode(row.code, sb); sb.append(MariaText.DELIMETER); MariaTypes.varchar.mariaText.unsafeEncode(row.name, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.varchar.nullable.mariaText).unsafeEncode(row.trackingUrlTemplate, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using MariaTypes.longtext.nullable.mariaText).unsafeEncode(row.apiConfig, sb); sb.append(MariaText.DELIMETER); Defaulted.mariaText(using ScalaDbTypes.MariaTypes.bool.mariaText).unsafeEncode(row.isActive, sb) })
 }

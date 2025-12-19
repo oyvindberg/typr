@@ -6,58 +6,57 @@
 package testdb.shipping_carriers
 
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import scala.collection.mutable.ListBuffer
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.Dialect
+import typo.scaladsl.Fragment
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.Fragment.sql
 
 class ShippingCarriersRepoImpl extends ShippingCarriersRepo {
   override def delete: DeleteBuilder[ShippingCarriersFields, ShippingCarriersRow] = DeleteBuilder.of("`shipping_carriers`", ShippingCarriersFields.structure, Dialect.MARIADB)
 
-  override def deleteById(carrierId: ShippingCarriersId)(using c: Connection): java.lang.Boolean = interpolate"delete from `shipping_carriers` where `carrier_id` = ${ShippingCarriersId.pgType.encode(carrierId)}".update().runUnchecked(c) > 0
+  override def deleteById(carrierId: ShippingCarriersId)(using c: Connection): Boolean = sql"delete from `shipping_carriers` where `carrier_id` = ${Fragment.encode(ShippingCarriersId.pgType, carrierId)}".update().runUnchecked(c) > 0
 
-  override def deleteByIds(carrierIds: Array[ShippingCarriersId])(using c: Connection): Integer = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    carrierIds.foreach { id => fragments.add(ShippingCarriersId.pgType.encode(id)) }
+  override def deleteByIds(carrierIds: Array[ShippingCarriersId])(using c: Connection): Int = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    carrierIds.foreach { id => fragments.addOne(Fragment.encode(ShippingCarriersId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `shipping_carriers` where `carrier_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: ShippingCarriersRow)(using c: Connection): ShippingCarriersRow = {
-  interpolate"""insert into `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
-    values (${MariaTypes.text.encode(unsaved.code)}, ${MariaTypes.text.encode(unsaved.name)}, ${MariaTypes.text.opt().encode(unsaved.trackingUrlTemplate)}, ${MariaTypes.text.opt().encode(unsaved.apiConfig)}, ${MariaTypes.bool.encode(unsaved.isActive)})
+  sql"""insert into `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
+    values (${Fragment.encode(MariaTypes.varchar, unsaved.code)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.trackingUrlTemplate)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.apiConfig)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isActive)})
     returning `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
     """
     .updateReturning(ShippingCarriersRow.`_rowParser`.exactlyOne()).runUnchecked(c)
   }
 
   override def insert(unsaved: ShippingCarriersRowUnsaved)(using c: Connection): ShippingCarriersRow = {
-    val columns: ArrayList[Literal] = new ArrayList[Literal]()
-    val values: ArrayList[Fragment] = new ArrayList[Fragment]()
-    columns.add(Fragment.lit("`code`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.code)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`name`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.name)}"): @scala.annotation.nowarn
+    val columns: ListBuffer[Fragment] = ListBuffer()
+    val values: ListBuffer[Fragment] = ListBuffer()
+    columns.addOne(Fragment.lit("`code`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.code)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`name`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.name)}"): @scala.annotation.nowarn
     unsaved.trackingUrlTemplate.visit(
       {  },
-      value => { columns.add(Fragment.lit("`tracking_url_template`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`tracking_url_template`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.varchar.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.apiConfig.visit(
       {  },
-      value => { columns.add(Fragment.lit("`api_config`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`api_config`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longtext.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.isActive.visit(
       {  },
-      value => { columns.add(Fragment.lit("`is_active`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.bool.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`is_active`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.bool, value)}"): @scala.annotation.nowarn }
     );
     val q: Fragment = {
-      interpolate"""insert into `shipping_carriers`(${Fragment.comma(columns)})
+      sql"""insert into `shipping_carriers`(${Fragment.comma(columns)})
       values (${Fragment.comma(values)})
       returning `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
       """
@@ -67,53 +66,53 @@ class ShippingCarriersRepoImpl extends ShippingCarriersRepo {
 
   override def select: SelectBuilder[ShippingCarriersFields, ShippingCarriersRow] = SelectBuilder.of("`shipping_carriers`", ShippingCarriersFields.structure, ShippingCarriersRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[ShippingCarriersRow] = {
-    interpolate"""select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
+  override def selectAll(using c: Connection): List[ShippingCarriersRow] = {
+    sql"""select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
     from `shipping_carriers`
     """.query(ShippingCarriersRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectById(carrierId: ShippingCarriersId)(using c: Connection): Optional[ShippingCarriersRow] = {
-    interpolate"""select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
+  override def selectById(carrierId: ShippingCarriersId)(using c: Connection): Option[ShippingCarriersRow] = {
+    sql"""select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
     from `shipping_carriers`
-    where `carrier_id` = ${ShippingCarriersId.pgType.encode(carrierId)}""".query(ShippingCarriersRow.`_rowParser`.first()).runUnchecked(c)
+    where `carrier_id` = ${Fragment.encode(ShippingCarriersId.pgType, carrierId)}""".query(ShippingCarriersRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def selectByIds(carrierIds: Array[ShippingCarriersId])(using c: Connection): java.util.List[ShippingCarriersRow] = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    carrierIds.foreach { id => fragments.add(ShippingCarriersId.pgType.encode(id)) }
+  override def selectByIds(carrierIds: Array[ShippingCarriersId])(using c: Connection): List[ShippingCarriersRow] = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    carrierIds.foreach { id => fragments.addOne(Fragment.encode(ShippingCarriersId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active` from `shipping_carriers` where `carrier_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ShippingCarriersRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectByIdsTracked(carrierIds: Array[ShippingCarriersId])(using c: Connection): java.util.Map[ShippingCarriersId, ShippingCarriersRow] = {
-    val ret: HashMap[ShippingCarriersId, ShippingCarriersRow] = new HashMap[ShippingCarriersId, ShippingCarriersRow]()
-    selectByIds(carrierIds)(using c).forEach(row => ret.put(row.carrierId, row): @scala.annotation.nowarn)
-    return ret
+  override def selectByIdsTracked(carrierIds: Array[ShippingCarriersId])(using c: Connection): Map[ShippingCarriersId, ShippingCarriersRow] = {
+    val ret: scala.collection.mutable.Map[ShippingCarriersId, ShippingCarriersRow] = scala.collection.mutable.Map.empty[ShippingCarriersId, ShippingCarriersRow]
+    selectByIds(carrierIds)(using c).foreach(row => ret.put(row.carrierId, row): @scala.annotation.nowarn)
+    return ret.toMap
   }
 
-  override def selectByUniqueCode(code: String)(using c: Connection): Optional[ShippingCarriersRow] = {
-    interpolate"""select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
+  override def selectByUniqueCode(code: String)(using c: Connection): Option[ShippingCarriersRow] = {
+    sql"""select `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`
     from `shipping_carriers`
-    where `code` = ${MariaTypes.text.encode(code)}
+    where `code` = ${Fragment.encode(MariaTypes.varchar, code)}
     """.query(ShippingCarriersRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def update: UpdateBuilder[ShippingCarriersFields, ShippingCarriersRow] = UpdateBuilder.of("`shipping_carriers`", ShippingCarriersFields.structure, ShippingCarriersRow.`_rowParser`.all(), Dialect.MARIADB)
+  override def update: UpdateBuilder[ShippingCarriersFields, ShippingCarriersRow] = UpdateBuilder.of("`shipping_carriers`", ShippingCarriersFields.structure, ShippingCarriersRow.`_rowParser`, Dialect.MARIADB)
 
-  override def update(row: ShippingCarriersRow)(using c: Connection): java.lang.Boolean = {
+  override def update(row: ShippingCarriersRow)(using c: Connection): Boolean = {
     val carrierId: ShippingCarriersId = row.carrierId
-    return interpolate"""update `shipping_carriers`
-    set `code` = ${MariaTypes.text.encode(row.code)},
-    `name` = ${MariaTypes.text.encode(row.name)},
-    `tracking_url_template` = ${MariaTypes.text.opt().encode(row.trackingUrlTemplate)},
-    `api_config` = ${MariaTypes.text.opt().encode(row.apiConfig)},
-    `is_active` = ${MariaTypes.bool.encode(row.isActive)}
-    where `carrier_id` = ${ShippingCarriersId.pgType.encode(carrierId)}""".update().runUnchecked(c) > 0
+    return sql"""update `shipping_carriers`
+    set `code` = ${Fragment.encode(MariaTypes.varchar, row.code)},
+    `name` = ${Fragment.encode(MariaTypes.varchar, row.name)},
+    `tracking_url_template` = ${Fragment.encode(MariaTypes.varchar.nullable, row.trackingUrlTemplate)},
+    `api_config` = ${Fragment.encode(MariaTypes.longtext.nullable, row.apiConfig)},
+    `is_active` = ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, row.isActive)}
+    where `carrier_id` = ${Fragment.encode(ShippingCarriersId.pgType, carrierId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: ShippingCarriersRow)(using c: Connection): ShippingCarriersRow = {
-  interpolate"""INSERT INTO `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
-    VALUES (${MariaTypes.text.encode(unsaved.code)}, ${MariaTypes.text.encode(unsaved.name)}, ${MariaTypes.text.opt().encode(unsaved.trackingUrlTemplate)}, ${MariaTypes.text.opt().encode(unsaved.apiConfig)}, ${MariaTypes.bool.encode(unsaved.isActive)})
+  sql"""INSERT INTO `shipping_carriers`(`code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
+    VALUES (${Fragment.encode(MariaTypes.varchar, unsaved.code)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.trackingUrlTemplate)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.apiConfig)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isActive)})
     ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
     `name` = VALUES(`name`),
     `tracking_url_template` = VALUES(`tracking_url_template`),
@@ -124,8 +123,8 @@ class ShippingCarriersRepoImpl extends ShippingCarriersRepo {
     .runUnchecked(c)
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[ShippingCarriersRow])(using c: Connection): java.util.List[ShippingCarriersRow] = {
-    interpolate"""INSERT INTO `shipping_carriers`(`carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
+  override def upsertBatch(unsaved: Iterator[ShippingCarriersRow])(using c: Connection): List[ShippingCarriersRow] = {
+    sql"""INSERT INTO `shipping_carriers`(`carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`)
     VALUES (?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
     `name` = VALUES(`name`),
@@ -134,6 +133,6 @@ class ShippingCarriersRepoImpl extends ShippingCarriersRepo {
     `is_active` = VALUES(`is_active`)
     RETURNING `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`"""
       .updateReturningEach(ShippingCarriersRow.`_rowParser`, unsaved)
-      .runUnchecked(c)
+    .runUnchecked(c)
   }
 }

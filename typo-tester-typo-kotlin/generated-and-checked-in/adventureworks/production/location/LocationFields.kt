@@ -5,52 +5,53 @@
  */
 package adventureworks.production.location
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface LocationFields : FieldsExpr<LocationRow> {
-  fun availability(): Field<BigDecimal, LocationRow>
+  abstract fun availability(): Field<BigDecimal, LocationRow>
 
-  override fun columns(): List<FieldLike<*, LocationRow>>
+  abstract override fun columns(): List<FieldLike<*, LocationRow>>
 
-  fun costrate(): Field<BigDecimal, LocationRow>
+  abstract fun costrate(): Field<BigDecimal, LocationRow>
 
-  fun locationid(): IdField<LocationId, LocationRow>
+  abstract fun locationid(): IdField<LocationId, LocationRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, LocationRow>
+  abstract fun modifieddate(): Field<LocalDateTime, LocationRow>
 
-  fun name(): Field<Name, LocationRow>
+  abstract fun name(): Field<Name, LocationRow>
 
-  override fun rowParser(): RowParser<LocationRow> = LocationRow._rowParser
+  override fun rowParser(): RowParser<LocationRow> = LocationRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : LocationFields, Relation<LocationFields, LocationRow> {
-      override fun locationid(): IdField<LocationId, LocationRow> = IdField<LocationId, LocationRow>(_path, "locationid", LocationRow::locationid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(locationid = value) }, LocationId.pgType)
+    data class Impl(val _path: List<Path>) : LocationFields, RelationStructure<LocationFields, LocationRow> {
+      override fun locationid(): IdField<LocationId, LocationRow> = IdField<LocationId, LocationRow>(_path, "locationid", LocationRow::locationid, null, "int4", { row, value -> row.copy(locationid = value) }, LocationId.pgType)
 
-      override fun name(): Field<Name, LocationRow> = Field<Name, LocationRow>(_path, "name", LocationRow::name, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, LocationRow> = Field<Name, LocationRow>(_path, "name", LocationRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun costrate(): Field<BigDecimal, LocationRow> = Field<BigDecimal, LocationRow>(_path, "costrate", LocationRow::costrate, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(costrate = value) }, PgTypes.numeric)
+      override fun costrate(): Field<BigDecimal, LocationRow> = Field<BigDecimal, LocationRow>(_path, "costrate", LocationRow::costrate, null, "numeric", { row, value -> row.copy(costrate = value) }, PgTypes.numeric)
 
-      override fun availability(): Field<BigDecimal, LocationRow> = Field<BigDecimal, LocationRow>(_path, "availability", LocationRow::availability, Optional.empty(), Optional.of("numeric"), { row, value -> row.copy(availability = value) }, PgTypes.numeric)
+      override fun availability(): Field<BigDecimal, LocationRow> = Field<BigDecimal, LocationRow>(_path, "availability", LocationRow::availability, null, "numeric", { row, value -> row.copy(availability = value) }, PgTypes.numeric)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, LocationRow> = Field<TypoLocalDateTime, LocationRow>(_path, "modifieddate", LocationRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, LocationRow> = Field<LocalDateTime, LocationRow>(_path, "modifieddate", LocationRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, LocationRow>> = listOf(this.locationid(), this.name(), this.costrate(), this.availability(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<LocationFields, LocationRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, LocationRow>> = listOf(this.locationid().underlying, this.name().underlying, this.costrate().underlying, this.availability().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<LocationFields, LocationRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

@@ -7,11 +7,12 @@ package adventureworks.person.personphone
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.public.Phone
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `person.personphone` which has not been persisted yet */
 data class PersonphoneRowUnsaved(
@@ -26,9 +27,9 @@ data class PersonphoneRowUnsaved(
     */
   val phonenumbertypeid: PhonenumbertypeId,
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
-  fun toRow(modifieddateDefault: () -> TypoLocalDateTime): PersonphoneRow = PersonphoneRow(businessentityid = businessentityid, phonenumber = phonenumber, phonenumbertypeid = phonenumbertypeid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
+  fun toRow(modifieddateDefault: () -> LocalDateTime): PersonphoneRow = PersonphoneRow(businessentityid = businessentityid, phonenumber = phonenumber, phonenumbertypeid = phonenumbertypeid, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
     val pgText: PgText<PersonphoneRowUnsaved> =
@@ -38,6 +39,6 @@ data class PersonphoneRowUnsaved(
       sb.append(PgText.DELIMETER)
       PhonenumbertypeId.pgType.pgText().unsafeEncode(row.phonenumbertypeid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

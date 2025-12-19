@@ -5,48 +5,46 @@
  */
 package adventureworks.pr.d
 
-import adventureworks.customtypes.TypoBytea
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.production.document.DocumentId
 import adventureworks.public.Flag
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.d */
 data class DViewRow(
   /** Points to [adventureworks.production.document.DocumentRow.title] */
-  val title: /* max 50 chars */ String,
+  val title: String,
   /** Points to [adventureworks.production.document.DocumentRow.owner] */
   val owner: BusinessentityId,
   /** Points to [adventureworks.production.document.DocumentRow.folderflag] */
   val folderflag: Flag,
   /** Points to [adventureworks.production.document.DocumentRow.filename] */
-  val filename: /* max 400 chars */ String,
+  val filename: String,
   /** Points to [adventureworks.production.document.DocumentRow.fileextension] */
-  val fileextension: Optional</* max 8 chars */ String>,
+  val fileextension: String,
   /** Points to [adventureworks.production.document.DocumentRow.revision] */
-  val revision: /* bpchar, max 5 chars */ String,
+  val revision: String,
   /** Points to [adventureworks.production.document.DocumentRow.changenumber] */
   val changenumber: Int,
   /** Points to [adventureworks.production.document.DocumentRow.status] */
-  val status: TypoShort,
+  val status: Short,
   /** Points to [adventureworks.production.document.DocumentRow.documentsummary] */
-  val documentsummary: Optional<String>,
+  val documentsummary: String,
   /** Points to [adventureworks.production.document.DocumentRow.document] */
-  val document: Optional<TypoBytea>,
+  val document: ByteArray,
   /** Points to [adventureworks.production.document.DocumentRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.production.document.DocumentRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime,
+  val modifieddate: LocalDateTime,
   /** Points to [adventureworks.production.document.DocumentRow.documentnode] */
   val documentnode: DocumentId
 ) {
   companion object {
-    val _rowParser: RowParser<DViewRow> = RowParsers.of(PgTypes.text, BusinessentityId.pgType, Flag.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.bpchar, PgTypes.int4, TypoShort.pgType, PgTypes.text.opt(), TypoBytea.pgType.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, DocumentId.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> DViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!) }, { row -> arrayOf<Any?>(row.title, row.owner, row.folderflag, row.filename, row.fileextension, row.revision, row.changenumber, row.status, row.documentsummary, row.document, row.rowguid, row.modifieddate, row.documentnode) })
+    val _rowParser: RowParser<DViewRow> = RowParsers.of(PgTypes.text, BusinessentityId.pgType, Flag.pgType, PgTypes.text, PgTypes.text, PgTypes.bpchar, KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int2, PgTypes.text, PgTypes.bytea, PgTypes.uuid, PgTypes.timestamp, DocumentId.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 -> DViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) }, { row -> arrayOf<Any?>(row.title, row.owner, row.folderflag, row.filename, row.fileextension, row.revision, row.changenumber, row.status, row.documentsummary, row.document, row.rowguid, row.modifieddate, row.documentnode) })
   }
 }

@@ -7,19 +7,19 @@ import testapi.model.Error
 /** Response type for: 201, 400 */
 sealed interface Response201400<out T201, out T400> {
   @JsonProperty("status")
-  fun status(): String
+  abstract fun status(): String
 }
 
 /** Response type for: 200, 404 */
 sealed interface Response200404<out T200, out T404> {
   @JsonProperty("status")
-  fun status(): String
+  abstract fun status(): String
 }
 
 /** Response type for: 200, 4XX, 5XX */
 sealed interface Response2004XX5XX<out T200> {
   @JsonProperty("status")
-  fun status(): String
+  abstract fun status(): String
 }
 
 /** HTTP 400 response */

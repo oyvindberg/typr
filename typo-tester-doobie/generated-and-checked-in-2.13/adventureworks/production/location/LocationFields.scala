@@ -8,10 +8,10 @@ package adventureworks.production.location
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait LocationFields {
   def locationid: IdField[LocationId, LocationRow]
@@ -22,11 +22,11 @@ trait LocationFields {
 }
 
 object LocationFields {
-  lazy val structure: Relation[LocationFields, LocationRow] =
+  lazy val structure: RelationStructure[LocationFields, LocationRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[LocationFields, LocationRow] {
+    extends RelationStructure[LocationFields, LocationRow] {
 
     override lazy val fields: LocationFields = new LocationFields {
       override def locationid = IdField[LocationId, LocationRow](_path, "locationid", None, Some("int4"), x => x.locationid, (row, value) => row.copy(locationid = value))

@@ -5,56 +5,58 @@
  */
 package adventureworks.pr.psc
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.production.productsubcategory.ProductsubcategoryId
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface PscViewFields : FieldsExpr<PscViewRow> {
-  override fun columns(): List<FieldLike<*, PscViewRow>>
+  abstract override fun columns(): List<FieldLike<*, PscViewRow>>
 
-  fun id(): Field<ProductsubcategoryId, PscViewRow>
+  abstract fun id(): Field<ProductsubcategoryId, PscViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, PscViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, PscViewRow>
 
-  fun name(): Field<Name, PscViewRow>
+  abstract fun name(): Field<Name, PscViewRow>
 
-  fun productcategoryid(): Field<ProductcategoryId, PscViewRow>
+  abstract fun productcategoryid(): Field<ProductcategoryId, PscViewRow>
 
-  fun productsubcategoryid(): Field<ProductsubcategoryId, PscViewRow>
+  abstract fun productsubcategoryid(): Field<ProductsubcategoryId, PscViewRow>
 
-  override fun rowParser(): RowParser<PscViewRow> = PscViewRow._rowParser
+  override fun rowParser(): RowParser<PscViewRow> = PscViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, PscViewRow>
+  abstract fun rowguid(): Field<UUID, PscViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : PscViewFields, Relation<PscViewFields, PscViewRow> {
-      override fun id(): Field<ProductsubcategoryId, PscViewRow> = Field<ProductsubcategoryId, PscViewRow>(_path, "id", PscViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, ProductsubcategoryId.pgType)
+    data class Impl(val _path: List<Path>) : PscViewFields, RelationStructure<PscViewFields, PscViewRow> {
+      override fun id(): Field<ProductsubcategoryId, PscViewRow> = Field<ProductsubcategoryId, PscViewRow>(_path, "id", PscViewRow::id, null, null, { row, value -> row.copy(id = value) }, ProductsubcategoryId.pgType)
 
-      override fun productsubcategoryid(): Field<ProductsubcategoryId, PscViewRow> = Field<ProductsubcategoryId, PscViewRow>(_path, "productsubcategoryid", PscViewRow::productsubcategoryid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productsubcategoryid = value) }, ProductsubcategoryId.pgType)
+      override fun productsubcategoryid(): Field<ProductsubcategoryId, PscViewRow> = Field<ProductsubcategoryId, PscViewRow>(_path, "productsubcategoryid", PscViewRow::productsubcategoryid, null, null, { row, value -> row.copy(productsubcategoryid = value) }, ProductsubcategoryId.pgType)
 
-      override fun productcategoryid(): Field<ProductcategoryId, PscViewRow> = Field<ProductcategoryId, PscViewRow>(_path, "productcategoryid", PscViewRow::productcategoryid, Optional.empty(), Optional.empty(), { row, value -> row.copy(productcategoryid = value) }, ProductcategoryId.pgType)
+      override fun productcategoryid(): Field<ProductcategoryId, PscViewRow> = Field<ProductcategoryId, PscViewRow>(_path, "productcategoryid", PscViewRow::productcategoryid, null, null, { row, value -> row.copy(productcategoryid = value) }, ProductcategoryId.pgType)
 
-      override fun name(): Field<Name, PscViewRow> = Field<Name, PscViewRow>(_path, "name", PscViewRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, PscViewRow> = Field<Name, PscViewRow>(_path, "name", PscViewRow::name, null, null, { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun rowguid(): Field<TypoUUID, PscViewRow> = Field<TypoUUID, PscViewRow>(_path, "rowguid", PscViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, PscViewRow> = Field<UUID, PscViewRow>(_path, "rowguid", PscViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, PscViewRow> = Field<TypoLocalDateTime, PscViewRow>(_path, "modifieddate", PscViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, PscViewRow> = Field<LocalDateTime, PscViewRow>(_path, "modifieddate", PscViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, PscViewRow>> = listOf(this.id(), this.productsubcategoryid(), this.productcategoryid(), this.name(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<PscViewFields, PscViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, PscViewRow>> = listOf(this.id().underlying, this.productsubcategoryid().underlying, this.productcategoryid().underlying, this.name().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<PscViewFields, PscViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

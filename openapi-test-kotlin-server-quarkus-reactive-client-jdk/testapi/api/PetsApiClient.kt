@@ -12,13 +12,11 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
-import java.util.Optional
 import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
 import testapi.model.PetId
-import typo.runtime.internal.stringInterpolator.str
 
 /** JDK HTTP Client implementation for PetsApi */
 data class PetsApiClient(
@@ -37,7 +35,7 @@ data class PetsApiClient(
         var statusCode = response.statusCode()
         if (statusCode == 201) { Created(objectMapper.readValue(response.body(), Pet::class.java)) }
         else if (statusCode == 400) { BadRequest(objectMapper.readValue(response.body(), Error::class.java)) }
-        else { throw IllegalStateException(str("Unexpected status code: ", statusCode.toString(), "")) }
+        else { throw IllegalStateException("Unexpected status code: " + statusCode) }
       } catch (e: Exception) {
         throw RuntimeException(e)
       }  })
@@ -65,7 +63,7 @@ data class PetsApiClient(
       var statusCode = response.statusCode()
       if (statusCode == 200) { Ok(objectMapper.readValue(response.body(), Pet::class.java)) }
       else if (statusCode == 404) { NotFound(objectMapper.readValue(response.body(), Error::class.java)) }
-      else { throw IllegalStateException(str("Unexpected status code: ", statusCode.toString(), "")) }
+      else { throw IllegalStateException("Unexpected status code: " + statusCode) }
     } catch (e: Exception) {
       throw RuntimeException(e)
     }  })
@@ -83,11 +81,11 @@ data class PetsApiClient(
   /** List all pets */
   override fun listPets(
     /** Maximum number of pets to return */
-    limit: Optional<Integer>,
+    limit: Int?,
     /** Filter by status */
-    status: Optional<String>
+    status: String?
   ): Uni<List<Pet>> {
-    var request = HttpRequest.newBuilder(URI.create(baseUri.toString() + "/" + "pets" + (if (limit.isPresent()) "?limit=" + limit.get().toString() else "") + (if (status.isPresent()) "&status=" + status.get().toString() else ""))).method("GET", BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
+    var request = HttpRequest.newBuilder(URI.create(baseUri.toString() + "/" + "pets" + (if (limit != null) "?limit=" + limit!!.toString() else "") + (if (status != null) "&status=" + status!!.toString() else ""))).method("GET", BodyPublishers.noBody()).header("Content-Type", "application/json").header("Accept", "application/json").build()
     return Uni.createFrom().completionStage({ httpClient.sendAsync(request, BodyHandlers.ofString()) }).map({ response -> try {
       objectMapper.readValue(response.body(), object : TypeReference<List<Pet>>() {})
     } catch (e: Exception) {

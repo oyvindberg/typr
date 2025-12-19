@@ -8,10 +8,10 @@ package adventureworks.production.scrapreason
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait ScrapreasonFields {
   def scrapreasonid: IdField[ScrapreasonId, ScrapreasonRow]
@@ -20,11 +20,11 @@ trait ScrapreasonFields {
 }
 
 object ScrapreasonFields {
-  lazy val structure: Relation[ScrapreasonFields, ScrapreasonRow] =
+  lazy val structure: RelationStructure[ScrapreasonFields, ScrapreasonRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ScrapreasonFields, ScrapreasonRow] {
+    extends RelationStructure[ScrapreasonFields, ScrapreasonRow] {
 
     override lazy val fields: ScrapreasonFields = new ScrapreasonFields {
       override def scrapreasonid = IdField[ScrapreasonId, ScrapreasonRow](_path, "scrapreasonid", None, Some("int4"), x => x.scrapreasonid, (row, value) => row.copy(scrapreasonid = value))

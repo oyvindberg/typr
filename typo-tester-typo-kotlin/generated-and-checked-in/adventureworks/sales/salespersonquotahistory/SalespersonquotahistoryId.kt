@@ -5,11 +5,11 @@
  */
 package adventureworks.sales.salespersonquotahistory
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
+import java.time.LocalDateTime
 
 /** Type for the composite primary key of table `sales.salespersonquotahistory` */
 data class SalespersonquotahistoryId(
   val businessentityid: BusinessentityId,
-  val quotadate: TypoLocalDateTime
+  val quotadate: LocalDateTime
 )

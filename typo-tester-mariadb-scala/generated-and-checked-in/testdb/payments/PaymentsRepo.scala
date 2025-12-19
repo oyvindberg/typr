@@ -6,17 +6,16 @@
 package testdb.payments
 
 import java.sql.Connection
-import java.util.Optional
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
 
 trait PaymentsRepo {
   def delete: DeleteBuilder[PaymentsFields, PaymentsRow]
 
-  def deleteById(paymentId: PaymentsId)(using c: Connection): java.lang.Boolean
+  def deleteById(paymentId: PaymentsId)(using c: Connection): Boolean
 
-  def deleteByIds(paymentIds: Array[PaymentsId])(using c: Connection): Integer
+  def deleteByIds(paymentIds: Array[PaymentsId])(using c: Connection): Int
 
   def insert(unsaved: PaymentsRow)(using c: Connection): PaymentsRow
 
@@ -24,19 +23,19 @@ trait PaymentsRepo {
 
   def select: SelectBuilder[PaymentsFields, PaymentsRow]
 
-  def selectAll(using c: Connection): java.util.List[PaymentsRow]
+  def selectAll(using c: Connection): List[PaymentsRow]
 
-  def selectById(paymentId: PaymentsId)(using c: Connection): Optional[PaymentsRow]
+  def selectById(paymentId: PaymentsId)(using c: Connection): Option[PaymentsRow]
 
-  def selectByIds(paymentIds: Array[PaymentsId])(using c: Connection): java.util.List[PaymentsRow]
+  def selectByIds(paymentIds: Array[PaymentsId])(using c: Connection): List[PaymentsRow]
 
-  def selectByIdsTracked(paymentIds: Array[PaymentsId])(using c: Connection): java.util.Map[PaymentsId, PaymentsRow]
+  def selectByIdsTracked(paymentIds: Array[PaymentsId])(using c: Connection): Map[PaymentsId, PaymentsRow]
 
   def update: UpdateBuilder[PaymentsFields, PaymentsRow]
 
-  def update(row: PaymentsRow)(using c: Connection): java.lang.Boolean
+  def update(row: PaymentsRow)(using c: Connection): Boolean
 
   def upsert(unsaved: PaymentsRow)(using c: Connection): PaymentsRow
 
-  def upsertBatch(unsaved: java.util.Iterator[PaymentsRow])(using c: Connection): java.util.List[PaymentsRow]
+  def upsertBatch(unsaved: Iterator[PaymentsRow])(using c: Connection): List[PaymentsRow]
 }

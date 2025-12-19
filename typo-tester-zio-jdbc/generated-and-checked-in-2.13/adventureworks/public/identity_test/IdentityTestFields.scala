@@ -6,10 +6,10 @@
 package adventureworks.public.identity_test
 
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait IdentityTestFields {
   def alwaysGenerated: Field[Int, IdentityTestRow]
@@ -18,11 +18,11 @@ trait IdentityTestFields {
 }
 
 object IdentityTestFields {
-  lazy val structure: Relation[IdentityTestFields, IdentityTestRow] =
+  lazy val structure: RelationStructure[IdentityTestFields, IdentityTestRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[IdentityTestFields, IdentityTestRow] {
+    extends RelationStructure[IdentityTestFields, IdentityTestRow] {
 
     override lazy val fields: IdentityTestFields = new IdentityTestFields {
       override def alwaysGenerated = Field[Int, IdentityTestRow](_path, "always_generated", None, Some("int4"), x => x.alwaysGenerated, (row, value) => row.copy(alwaysGenerated = value))

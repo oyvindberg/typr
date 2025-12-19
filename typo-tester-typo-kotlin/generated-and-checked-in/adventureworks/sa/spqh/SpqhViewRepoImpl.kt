@@ -7,15 +7,12 @@ package adventureworks.sa.spqh
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.runtime.Fragment.interpolate
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.SelectBuilder
 
 class SpqhViewRepoImpl() : SpqhViewRepo {
   override fun select(): SelectBuilder<SpqhViewFields, SpqhViewRow> = SelectBuilder.of("\"sa\".\"spqh\"", SpqhViewFields.structure, SpqhViewRow._rowParser, Dialect.POSTGRESQL)
 
-  override fun selectAll(c: Connection): List<SpqhViewRow> = interpolate(typo.runtime.Fragment.lit("""
-    select "id", "businessentityid", "quotadate"::text, "salesquota", "rowguid", "modifieddate"::text
-    from "sa"."spqh"
-  """.trimMargin())).query(SpqhViewRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<SpqhViewRow> = Fragment.interpolate(Fragment.lit("select \"id\", \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\"\nfrom \"sa\".\"spqh\"\n")).query(SpqhViewRow._rowParser.all()).runUnchecked(c)
 }

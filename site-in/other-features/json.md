@@ -20,9 +20,9 @@ import typo.internal.codegen.LangScala
 
 val options = Options(
   pkg = "org.foo",
-  lang = LangScala(Dialect.Scala3, TypeSupportScala),
-  jsonLib = JsonLibName.PlayJson,
-  dbLib = Some(DbLibName.Anorm)
+  lang = LangScala.scalaDsl(Dialect.Scala3, TypeSupportScala),
+  dbLib = Some(DbLibName.Anorm),
+  jsonLibs = List(JsonLibName.PlayJson)
 )
 ```
 

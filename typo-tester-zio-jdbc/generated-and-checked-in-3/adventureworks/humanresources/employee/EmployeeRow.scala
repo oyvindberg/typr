@@ -30,11 +30,11 @@ case class EmployeeRow(
    */
   businessentityid: BusinessentityId,
   /** Unique national identification number such as a social security number. */
-  nationalidnumber: /* max 15 chars */ String,
+  nationalidnumber: String,
   /** Network login. */
-  loginid: /* max 256 chars */ String,
+  loginid: String,
   /** Work title such as Buyer or Sales Representative. */
-  jobtitle: /* max 50 chars */ String,
+  jobtitle: String,
   /** Date of birth.
    * Constraint CK_Employee_BirthDate affecting columns birthdate: (((birthdate >= '1930-01-01'::date) AND (birthdate <= (now() - '18 years'::interval))))
    */
@@ -42,11 +42,11 @@ case class EmployeeRow(
   /** M = Married, S = Single
    * Constraint CK_Employee_MaritalStatus affecting columns maritalstatus: ((upper((maritalstatus)::text) = ANY (ARRAY['M'::text, 'S'::text])))
    */
-  maritalstatus: /* bpchar, max 1 chars */ String,
+  maritalstatus: String,
   /** M = Male, F = Female
    * Constraint CK_Employee_Gender affecting columns gender: ((upper((gender)::text) = ANY (ARRAY['M'::text, 'F'::text])))
    */
-  gender: /* bpchar, max 1 chars */ String,
+  gender: String,
   /** Employee hired on this date.
    * Constraint CK_Employee_HireDate affecting columns hiredate: (((hiredate >= '1996-07-01'::date) AND (hiredate <= (now() + '1 day'::interval))))
    */

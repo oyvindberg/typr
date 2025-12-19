@@ -6,12 +6,13 @@
 package testdb.payment_methods
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: payment_methods
  * Primary key: method_id
@@ -30,22 +31,22 @@ case class PaymentMethodsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("processor_config") processorConfig: Optional[String],
+  @JsonProperty("processor_config") processorConfig: Option[String],
   /** 
    * Default: 1
    */
-  @JsonProperty("is_active") isActive: java.lang.Boolean,
+  @JsonProperty("is_active") isActive: Boolean,
   /** 
    * Default: 0
    */
-  @JsonProperty("sort_order") sortOrder: java.lang.Byte
+  @JsonProperty("sort_order") sortOrder: Byte
 ) {
   def id: PaymentMethodsId = methodId
 
   def toUnsavedRow(
-    processorConfig: Defaulted[Optional[String]] = Defaulted.Provided(this.processorConfig),
-    isActive: Defaulted[java.lang.Boolean] = Defaulted.Provided(this.isActive),
-    sortOrder: Defaulted[java.lang.Byte] = Defaulted.Provided(this.sortOrder)
+    processorConfig: Defaulted[Option[String]] = Defaulted.Provided(this.processorConfig),
+    isActive: Defaulted[Boolean] = Defaulted.Provided(this.isActive),
+    sortOrder: Defaulted[Byte] = Defaulted.Provided(this.sortOrder)
   ): PaymentMethodsRowUnsaved = {
     new PaymentMethodsRowUnsaved(
       code,
@@ -59,7 +60,7 @@ case class PaymentMethodsRow(
 }
 
 object PaymentMethodsRow {
-  val `_rowParser`: RowParser[PaymentMethodsRow] = RowParsers.of(PaymentMethodsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.longtext.opt(), MariaTypes.bool, MariaTypes.tinyint, PaymentMethodsRow.apply, row => Array[Object](row.methodId.asInstanceOf[Object], row.code.asInstanceOf[Object], row.name.asInstanceOf[Object], row.methodType.asInstanceOf[Object], row.processorConfig.asInstanceOf[Object], row.isActive.asInstanceOf[Object], row.sortOrder.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[PaymentMethodsRow] = RowParsers.of(PaymentMethodsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.tinyint)(PaymentMethodsRow.apply)(row => Array[Any](row.methodId, row.code, row.name, row.methodType, row.processorConfig, row.isActive, row.sortOrder))
 
-  given mariaText: MariaText[PaymentMethodsRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[PaymentMethodsRow] = MariaText.from(`_rowParser`.underlying)
 }

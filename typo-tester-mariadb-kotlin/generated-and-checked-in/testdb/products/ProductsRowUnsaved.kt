@@ -8,11 +8,12 @@ package testdb.products
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.brands.BrandsId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.MariaSet
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -27,27 +28,27 @@ data class ProductsRowUnsaved(
   /** Default: NULL
     * Points to [testdb.brands.BrandsRow.brandId]
     */
-  @JsonProperty("brand_id") val brandId: Defaulted<Optional<BrandsId>> = UseDefault(),
+  @JsonProperty("brand_id") val brandId: Defaulted<BrandsId?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("short_description") val shortDescription: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("short_description") val shortDescription: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("full_description") val fullDescription: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("full_description") val fullDescription: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("cost_price") val costPrice: Defaulted<Optional<BigDecimal>> = UseDefault(),
+  @JsonProperty("cost_price") val costPrice: Defaulted<BigDecimal?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("weight_kg") val weightKg: Defaulted<Optional<BigDecimal>> = UseDefault(),
+  @JsonProperty("weight_kg") val weightKg: Defaulted<BigDecimal?> = UseDefault(),
   /** Default: NULL
     * length, width, height in cm
     */
-  @JsonProperty("dimensions_json") val dimensionsJson: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("dimensions_json") val dimensionsJson: Defaulted<String?> = UseDefault(),
   /** Default: 'draft'
 
     */
@@ -59,15 +60,15 @@ data class ProductsRowUnsaved(
   /** Default: NULL
 
     */
-  val tags: Defaulted<Optional<MariaSet>> = UseDefault(),
+  val tags: Defaulted<MariaSet?> = UseDefault(),
   /** Default: NULL
 
     */
-  val attributes: Defaulted<Optional<String>> = UseDefault(),
+  val attributes: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("seo_metadata") val seoMetadata: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("seo_metadata") val seoMetadata: Defaulted<String?> = UseDefault(),
   /** Default: current_timestamp(6)
 
     */
@@ -79,23 +80,23 @@ data class ProductsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("published_at") val publishedAt: Defaulted<Optional<LocalDateTime>> = UseDefault()
+  @JsonProperty("published_at") val publishedAt: Defaulted<LocalDateTime?> = UseDefault()
 ) {
   fun toRow(
-    brandIdDefault: () -> Optional<BrandsId>,
-    shortDescriptionDefault: () -> Optional<String>,
-    fullDescriptionDefault: () -> Optional<String>,
-    costPriceDefault: () -> Optional<BigDecimal>,
-    weightKgDefault: () -> Optional<BigDecimal>,
-    dimensionsJsonDefault: () -> Optional<String>,
+    brandIdDefault: () -> BrandsId?,
+    shortDescriptionDefault: () -> String?,
+    fullDescriptionDefault: () -> String?,
+    costPriceDefault: () -> BigDecimal?,
+    weightKgDefault: () -> BigDecimal?,
+    dimensionsJsonDefault: () -> String?,
     statusDefault: () -> String,
     taxClassDefault: () -> String,
-    tagsDefault: () -> Optional<MariaSet>,
-    attributesDefault: () -> Optional<String>,
-    seoMetadataDefault: () -> Optional<String>,
+    tagsDefault: () -> MariaSet?,
+    attributesDefault: () -> String?,
+    seoMetadataDefault: () -> String?,
     createdAtDefault: () -> LocalDateTime,
     updatedAtDefault: () -> LocalDateTime,
-    publishedAtDefault: () -> Optional<LocalDateTime>,
+    publishedAtDefault: () -> LocalDateTime?,
     productIdDefault: () -> ProductsId
   ): ProductsRow = ProductsRow(productId = productIdDefault(), sku = sku, brandId = brandId.getOrElse(brandIdDefault), name = name, shortDescription = shortDescription.getOrElse(shortDescriptionDefault), fullDescription = fullDescription.getOrElse(fullDescriptionDefault), basePrice = basePrice, costPrice = costPrice.getOrElse(costPriceDefault), weightKg = weightKg.getOrElse(weightKgDefault), dimensionsJson = dimensionsJson.getOrElse(dimensionsJsonDefault), status = status.getOrElse(statusDefault), taxClass = taxClass.getOrElse(taxClassDefault), tags = tags.getOrElse(tagsDefault), attributes = attributes.getOrElse(attributesDefault), seoMetadata = seoMetadata.getOrElse(seoMetadataDefault), createdAt = createdAt.getOrElse(createdAtDefault), updatedAt = updatedAt.getOrElse(updatedAtDefault), publishedAt = publishedAt.getOrElse(publishedAtDefault))
 
@@ -105,34 +106,34 @@ data class ProductsRowUnsaved(
       sb.append(MariaText.DELIMETER)
       MariaTypes.varchar.mariaText().unsafeEncode(row.name, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.basePrice, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.basePrice, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(BrandsId.pgType.opt().mariaText()).unsafeEncode(row.brandId, sb)
+      Defaulted.mariaText(BrandsId.pgType.nullable().mariaText()).unsafeEncode(row.brandId, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.shortDescription, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.shortDescription, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.fullDescription, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.fullDescription, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.costPrice, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.nullable().mariaText()).unsafeEncode(row.costPrice, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.weightKg, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.nullable().mariaText()).unsafeEncode(row.weightKg, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.dimensionsJson, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.dimensionsJson, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.text.mariaText()).unsafeEncode(row.status, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.text.mariaText()).unsafeEncode(row.taxClass, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.set.opt().mariaText()).unsafeEncode(row.tags, sb)
+      Defaulted.mariaText(MariaTypes.set.nullable().mariaText()).unsafeEncode(row.tags, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.attributes, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.attributes, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.seoMetadata, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.seoMetadata, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.createdAt, sb)
       sb.append(MariaText.DELIMETER)
       Defaulted.mariaText(MariaTypes.datetime.mariaText()).unsafeEncode(row.updatedAt, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.publishedAt, sb) })
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.publishedAt, sb) })
   }
 }

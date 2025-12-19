@@ -6,89 +6,88 @@
 package adventureworks.person.emailaddress
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface EmailaddressRepo {
-  fun delete(): DeleteBuilder<EmailaddressFields, EmailaddressRow>
+  abstract fun delete(): DeleteBuilder<EmailaddressFields, EmailaddressRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: EmailaddressId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<EmailaddressId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: EmailaddressRow,
     c: Connection
   ): EmailaddressRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: EmailaddressRowUnsaved,
     c: Connection
   ): EmailaddressRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<EmailaddressRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<EmailaddressRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<EmailaddressRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<EmailaddressRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<EmailaddressFields, EmailaddressRow>
+  abstract fun select(): SelectBuilder<EmailaddressFields, EmailaddressRow>
 
-  fun selectAll(c: Connection): List<EmailaddressRow>
+  abstract fun selectAll(c: Connection): List<EmailaddressRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: EmailaddressId,
     c: Connection
-  ): Optional<EmailaddressRow>
+  ): EmailaddressRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<EmailaddressId>,
     c: Connection
   ): List<EmailaddressRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<EmailaddressId>,
     c: Connection
   ): Map<EmailaddressId, EmailaddressRow>
 
-  fun update(): UpdateBuilder<EmailaddressFields, EmailaddressRow>
+  abstract fun update(): UpdateBuilder<EmailaddressFields, EmailaddressRow>
 
-  fun update(
+  abstract fun update(
     row: EmailaddressRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: EmailaddressRow,
     c: Connection
   ): EmailaddressRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<EmailaddressRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<EmailaddressRow>,
     c: Connection
   ): List<EmailaddressRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<EmailaddressRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<EmailaddressRow>,
     batchSize: Int,
     c: Connection
   ): Int

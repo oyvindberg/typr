@@ -17,6 +17,7 @@ import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.Inet4
 import typo.data.maria.Inet6
 import typo.data.maria.MariaSet
+import typo.kotlindsl.KotlinDbTypes
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -118,35 +119,35 @@ data class MariatestRowUnsaved(
 
   companion object {
     val mariaText: MariaText<MariatestRowUnsaved> =
-      MariaText.instance({ row, sb -> MariaTypes.tinyint.mariaText().unsafeEncode(row.tinyintCol, sb)
+      MariaText.instance({ row, sb -> KotlinDbTypes.MariaTypes.tinyint.mariaText().unsafeEncode(row.tinyintCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.smallint.mariaText().unsafeEncode(row.smallintCol, sb)
+      KotlinDbTypes.MariaTypes.smallint.mariaText().unsafeEncode(row.smallintCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.mediumint.mariaText().unsafeEncode(row.mediumintCol, sb)
+      KotlinDbTypes.MariaTypes.mediumint.mariaText().unsafeEncode(row.mediumintCol, sb)
       sb.append(MariaText.DELIMETER)
       MariatestId.pgType.mariaText().unsafeEncode(row.intCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.bigint.mariaText().unsafeEncode(row.bigintCol, sb)
+      KotlinDbTypes.MariaTypes.bigint.mariaText().unsafeEncode(row.bigintCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.tinyintUnsigned.mariaText().unsafeEncode(row.tinyintUCol, sb)
+      KotlinDbTypes.MariaTypes.tinyintUnsigned.mariaText().unsafeEncode(row.tinyintUCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.smallintUnsigned.mariaText().unsafeEncode(row.smallintUCol, sb)
+      KotlinDbTypes.MariaTypes.smallintUnsigned.mariaText().unsafeEncode(row.smallintUCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.mediumintUnsigned.mariaText().unsafeEncode(row.mediumintUCol, sb)
+      KotlinDbTypes.MariaTypes.mediumintUnsigned.mariaText().unsafeEncode(row.mediumintUCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.intUnsigned.mariaText().unsafeEncode(row.intUCol, sb)
+      KotlinDbTypes.MariaTypes.intUnsigned.mariaText().unsafeEncode(row.intUCol, sb)
       sb.append(MariaText.DELIMETER)
       MariaTypes.bigintUnsigned.mariaText().unsafeEncode(row.bigintUCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.decimalCol, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.decimalCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.decimal.mariaText().unsafeEncode(row.numericCol, sb)
+      KotlinDbTypes.MariaTypes.numeric.mariaText().unsafeEncode(row.numericCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.float_.mariaText().unsafeEncode(row.floatCol, sb)
+      KotlinDbTypes.MariaTypes.float_.mariaText().unsafeEncode(row.floatCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.double_.mariaText().unsafeEncode(row.doubleCol, sb)
+      KotlinDbTypes.MariaTypes.double_.mariaText().unsafeEncode(row.doubleCol, sb)
       sb.append(MariaText.DELIMETER)
-      MariaTypes.bool.mariaText().unsafeEncode(row.boolCol, sb)
+      KotlinDbTypes.MariaTypes.bool.mariaText().unsafeEncode(row.boolCol, sb)
       sb.append(MariaText.DELIMETER)
       MariaTypes.bit.mariaText().unsafeEncode(row.bitCol, sb)
       sb.append(MariaText.DELIMETER)

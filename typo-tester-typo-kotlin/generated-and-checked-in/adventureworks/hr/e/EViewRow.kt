@@ -5,16 +5,15 @@
  */
 package adventureworks.hr.e
 
-import adventureworks.customtypes.TypoLocalDate
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
-import java.util.Optional
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: hr.e */
 data class EViewRow(
@@ -23,35 +22,35 @@ data class EViewRow(
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.nationalidnumber] */
-  val nationalidnumber: /* max 15 chars */ String,
+  val nationalidnumber: String,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.loginid] */
-  val loginid: /* max 256 chars */ String,
+  val loginid: String,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.jobtitle] */
-  val jobtitle: /* max 50 chars */ String,
+  val jobtitle: String,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.birthdate] */
-  val birthdate: TypoLocalDate,
+  val birthdate: LocalDate,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.maritalstatus] */
-  val maritalstatus: /* bpchar, max 1 chars */ String,
+  val maritalstatus: String,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.gender] */
-  val gender: /* bpchar, max 1 chars */ String,
+  val gender: String,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.hiredate] */
-  val hiredate: TypoLocalDate,
+  val hiredate: LocalDate,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.salariedflag] */
   val salariedflag: Flag,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.vacationhours] */
-  val vacationhours: TypoShort,
+  val vacationhours: Short,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.sickleavehours] */
-  val sickleavehours: TypoShort,
+  val sickleavehours: Short,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.currentflag] */
   val currentflag: Flag,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime,
+  val modifieddate: LocalDateTime,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.organizationnode] */
-  val organizationnode: Optional<String>
+  val organizationnode: String
 ) {
   companion object {
-    val _rowParser: RowParser<EViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, TypoLocalDate.pgType, PgTypes.bpchar, PgTypes.bpchar, TypoLocalDate.pgType, Flag.pgType, TypoShort.pgType, TypoShort.pgType, Flag.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, PgTypes.text.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15 -> EViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.nationalidnumber, row.loginid, row.jobtitle, row.birthdate, row.maritalstatus, row.gender, row.hiredate, row.salariedflag, row.vacationhours, row.sickleavehours, row.currentflag, row.rowguid, row.modifieddate, row.organizationnode) })
+    val _rowParser: RowParser<EViewRow> = RowParsers.of(BusinessentityId.pgType, BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.date, PgTypes.bpchar, PgTypes.bpchar, PgTypes.date, Flag.pgType, KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, Flag.pgType, PgTypes.uuid, PgTypes.timestamp, PgTypes.text, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15 -> EViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) }, { row -> arrayOf<Any?>(row.id, row.businessentityid, row.nationalidnumber, row.loginid, row.jobtitle, row.birthdate, row.maritalstatus, row.gender, row.hiredate, row.salariedflag, row.vacationhours, row.sickleavehours, row.currentflag, row.rowguid, row.modifieddate, row.organizationnode) })
   }
 }

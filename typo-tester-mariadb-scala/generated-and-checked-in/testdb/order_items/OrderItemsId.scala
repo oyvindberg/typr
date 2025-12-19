@@ -7,9 +7,9 @@ package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonValue
 import java.math.BigInteger
-import typo.dsl.Bijection
 import typo.runtime.MariaType
 import typo.runtime.MariaTypes
+import typo.scaladsl.Bijection
 
 /** Type for the primary key of table `order_items` */
 case class OrderItemsId(@JsonValue value: BigInteger) extends scala.AnyVal

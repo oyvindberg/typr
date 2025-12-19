@@ -21,7 +21,7 @@ object PersonFieldValue {
     override def name: String = "blog_url"
   }
 
-  case class email(value: /* max 254 chars */ String) extends PersonFieldValue[/* max 254 chars */ String] {
+  case class email(value: String) extends PersonFieldValue[String] {
     override def name: String = "email"
   }
 
@@ -45,7 +45,7 @@ object PersonFieldValue {
     override def name: String = "marital_status_id"
   }
 
-  case class name(value: /* max 100 chars */ String) extends PersonFieldValue[/* max 100 chars */ String] {
+  case class name(value: String) extends PersonFieldValue[String] {
     override def name: String = "name"
   }
 
@@ -53,7 +53,7 @@ object PersonFieldValue {
     override def name: String = "nick_name"
   }
 
-  case class phone(value: /* max 8 chars */ String) extends PersonFieldValue[/* max 8 chars */ String] {
+  case class phone(value: String) extends PersonFieldValue[String] {
     override def name: String = "phone"
   }
 

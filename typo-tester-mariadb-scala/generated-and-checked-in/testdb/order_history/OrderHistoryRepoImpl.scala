@@ -6,67 +6,65 @@
 package testdb.order_history
 
 import java.sql.Connection
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Optional
+import scala.collection.mutable.ListBuffer
 import testdb.orders.OrdersId
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
 import typo.runtime.MariaTypes
-import typo.runtime.FragmentInterpolator.interpolate
+import typo.scaladsl.DeleteBuilder
+import typo.scaladsl.Dialect
+import typo.scaladsl.Fragment
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.SelectBuilder
+import typo.scaladsl.UpdateBuilder
+import typo.scaladsl.Fragment.sql
 
 class OrderHistoryRepoImpl extends OrderHistoryRepo {
   override def delete: DeleteBuilder[OrderHistoryFields, OrderHistoryRow] = DeleteBuilder.of("`order_history`", OrderHistoryFields.structure, Dialect.MARIADB)
 
-  override def deleteById(historyId: OrderHistoryId)(using c: Connection): java.lang.Boolean = interpolate"delete from `order_history` where `history_id` = ${OrderHistoryId.pgType.encode(historyId)}".update().runUnchecked(c) > 0
+  override def deleteById(historyId: OrderHistoryId)(using c: Connection): Boolean = sql"delete from `order_history` where `history_id` = ${Fragment.encode(OrderHistoryId.pgType, historyId)}".update().runUnchecked(c) > 0
 
-  override def deleteByIds(historyIds: Array[OrderHistoryId])(using c: Connection): Integer = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    historyIds.foreach { id => fragments.add(OrderHistoryId.pgType.encode(id)) }
+  override def deleteByIds(historyIds: Array[OrderHistoryId])(using c: Connection): Int = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    historyIds.foreach { id => fragments.addOne(Fragment.encode(OrderHistoryId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `order_history` where `history_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: OrderHistoryRow)(using c: Connection): OrderHistoryRow = {
-  interpolate"""insert into `order_history`(`order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)
-    values (${OrdersId.pgType.encode(unsaved.orderId)}, ${MariaTypes.text.opt().encode(unsaved.previousStatus)}, ${MariaTypes.text.encode(unsaved.newStatus)}, ${MariaTypes.text.opt().encode(unsaved.changedBy)}, ${MariaTypes.text.opt().encode(unsaved.changeReason)}, ${MariaTypes.text.opt().encode(unsaved.metadata)}, ${MariaTypes.datetime.encode(unsaved.createdAt)})
+  sql"""insert into `order_history`(`order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)
+    values (${Fragment.encode(OrdersId.pgType, unsaved.orderId)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.previousStatus)}, ${Fragment.encode(MariaTypes.text, unsaved.newStatus)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.changedBy)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.changeReason)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.metadata)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)})
     returning `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`
     """
     .updateReturning(OrderHistoryRow.`_rowParser`.exactlyOne()).runUnchecked(c)
   }
 
   override def insert(unsaved: OrderHistoryRowUnsaved)(using c: Connection): OrderHistoryRow = {
-    val columns: ArrayList[Literal] = new ArrayList[Literal]()
-    val values: ArrayList[Fragment] = new ArrayList[Fragment]()
-    columns.add(Fragment.lit("`order_id`")): @scala.annotation.nowarn
-    values.add(interpolate"${OrdersId.pgType.encode(unsaved.orderId)}"): @scala.annotation.nowarn
-    columns.add(Fragment.lit("`new_status`")): @scala.annotation.nowarn
-    values.add(interpolate"${MariaTypes.text.encode(unsaved.newStatus)}"): @scala.annotation.nowarn
+    val columns: ListBuffer[Fragment] = ListBuffer()
+    val values: ListBuffer[Fragment] = ListBuffer()
+    columns.addOne(Fragment.lit("`order_id`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(OrdersId.pgType, unsaved.orderId)}"): @scala.annotation.nowarn
+    columns.addOne(Fragment.lit("`new_status`")): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.text, unsaved.newStatus)}"): @scala.annotation.nowarn
     unsaved.previousStatus.visit(
       {  },
-      value => { columns.add(Fragment.lit("`previous_status`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`previous_status`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.text.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.changedBy.visit(
       {  },
-      value => { columns.add(Fragment.lit("`changed_by`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`changed_by`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.varchar.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.changeReason.visit(
       {  },
-      value => { columns.add(Fragment.lit("`change_reason`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`change_reason`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.varchar.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.metadata.visit(
       {  },
-      value => { columns.add(Fragment.lit("`metadata`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.text.opt().encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`metadata`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longtext.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.createdAt.visit(
       {  },
-      value => { columns.add(Fragment.lit("`created_at`")): @scala.annotation.nowarn; values.add(interpolate"${MariaTypes.datetime.encode(value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`created_at`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.datetime, value)}"): @scala.annotation.nowarn }
     );
     val q: Fragment = {
-      interpolate"""insert into `order_history`(${Fragment.comma(columns)})
+      sql"""insert into `order_history`(${Fragment.comma(columns)})
       values (${Fragment.comma(values)})
       returning `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`
       """
@@ -76,48 +74,48 @@ class OrderHistoryRepoImpl extends OrderHistoryRepo {
 
   override def select: SelectBuilder[OrderHistoryFields, OrderHistoryRow] = SelectBuilder.of("`order_history`", OrderHistoryFields.structure, OrderHistoryRow.`_rowParser`, Dialect.MARIADB)
 
-  override def selectAll(using c: Connection): java.util.List[OrderHistoryRow] = {
-    interpolate"""select `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`
+  override def selectAll(using c: Connection): List[OrderHistoryRow] = {
+    sql"""select `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`
     from `order_history`
     """.query(OrderHistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectById(historyId: OrderHistoryId)(using c: Connection): Optional[OrderHistoryRow] = {
-    interpolate"""select `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`
+  override def selectById(historyId: OrderHistoryId)(using c: Connection): Option[OrderHistoryRow] = {
+    sql"""select `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`
     from `order_history`
-    where `history_id` = ${OrderHistoryId.pgType.encode(historyId)}""".query(OrderHistoryRow.`_rowParser`.first()).runUnchecked(c)
+    where `history_id` = ${Fragment.encode(OrderHistoryId.pgType, historyId)}""".query(OrderHistoryRow.`_rowParser`.first()).runUnchecked(c)
   }
 
-  override def selectByIds(historyIds: Array[OrderHistoryId])(using c: Connection): java.util.List[OrderHistoryRow] = {
-    val fragments: ArrayList[Fragment] = new ArrayList[Fragment]()
-    historyIds.foreach { id => fragments.add(OrderHistoryId.pgType.encode(id)) }
+  override def selectByIds(historyIds: Array[OrderHistoryId])(using c: Connection): List[OrderHistoryRow] = {
+    val fragments: ListBuffer[Fragment] = ListBuffer()
+    historyIds.foreach { id => fragments.addOne(Fragment.encode(OrderHistoryId.pgType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at` from `order_history` where `history_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(OrderHistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 
-  override def selectByIdsTracked(historyIds: Array[OrderHistoryId])(using c: Connection): java.util.Map[OrderHistoryId, OrderHistoryRow] = {
-    val ret: HashMap[OrderHistoryId, OrderHistoryRow] = new HashMap[OrderHistoryId, OrderHistoryRow]()
-    selectByIds(historyIds)(using c).forEach(row => ret.put(row.historyId, row): @scala.annotation.nowarn)
-    return ret
+  override def selectByIdsTracked(historyIds: Array[OrderHistoryId])(using c: Connection): Map[OrderHistoryId, OrderHistoryRow] = {
+    val ret: scala.collection.mutable.Map[OrderHistoryId, OrderHistoryRow] = scala.collection.mutable.Map.empty[OrderHistoryId, OrderHistoryRow]
+    selectByIds(historyIds)(using c).foreach(row => ret.put(row.historyId, row): @scala.annotation.nowarn)
+    return ret.toMap
   }
 
-  override def update: UpdateBuilder[OrderHistoryFields, OrderHistoryRow] = UpdateBuilder.of("`order_history`", OrderHistoryFields.structure, OrderHistoryRow.`_rowParser`.all(), Dialect.MARIADB)
+  override def update: UpdateBuilder[OrderHistoryFields, OrderHistoryRow] = UpdateBuilder.of("`order_history`", OrderHistoryFields.structure, OrderHistoryRow.`_rowParser`, Dialect.MARIADB)
 
-  override def update(row: OrderHistoryRow)(using c: Connection): java.lang.Boolean = {
+  override def update(row: OrderHistoryRow)(using c: Connection): Boolean = {
     val historyId: OrderHistoryId = row.historyId
-    return interpolate"""update `order_history`
-    set `order_id` = ${OrdersId.pgType.encode(row.orderId)},
-    `previous_status` = ${MariaTypes.text.opt().encode(row.previousStatus)},
-    `new_status` = ${MariaTypes.text.encode(row.newStatus)},
-    `changed_by` = ${MariaTypes.text.opt().encode(row.changedBy)},
-    `change_reason` = ${MariaTypes.text.opt().encode(row.changeReason)},
-    `metadata` = ${MariaTypes.text.opt().encode(row.metadata)},
-    `created_at` = ${MariaTypes.datetime.encode(row.createdAt)}
-    where `history_id` = ${OrderHistoryId.pgType.encode(historyId)}""".update().runUnchecked(c) > 0
+    return sql"""update `order_history`
+    set `order_id` = ${Fragment.encode(OrdersId.pgType, row.orderId)},
+    `previous_status` = ${Fragment.encode(MariaTypes.text.nullable, row.previousStatus)},
+    `new_status` = ${Fragment.encode(MariaTypes.text, row.newStatus)},
+    `changed_by` = ${Fragment.encode(MariaTypes.varchar.nullable, row.changedBy)},
+    `change_reason` = ${Fragment.encode(MariaTypes.varchar.nullable, row.changeReason)},
+    `metadata` = ${Fragment.encode(MariaTypes.longtext.nullable, row.metadata)},
+    `created_at` = ${Fragment.encode(MariaTypes.datetime, row.createdAt)}
+    where `history_id` = ${Fragment.encode(OrderHistoryId.pgType, historyId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: OrderHistoryRow)(using c: Connection): OrderHistoryRow = {
-  interpolate"""INSERT INTO `order_history`(`order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)
-    VALUES (${OrdersId.pgType.encode(unsaved.orderId)}, ${MariaTypes.text.opt().encode(unsaved.previousStatus)}, ${MariaTypes.text.encode(unsaved.newStatus)}, ${MariaTypes.text.opt().encode(unsaved.changedBy)}, ${MariaTypes.text.opt().encode(unsaved.changeReason)}, ${MariaTypes.text.opt().encode(unsaved.metadata)}, ${MariaTypes.datetime.encode(unsaved.createdAt)})
+  sql"""INSERT INTO `order_history`(`order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)
+    VALUES (${Fragment.encode(OrdersId.pgType, unsaved.orderId)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.previousStatus)}, ${Fragment.encode(MariaTypes.text, unsaved.newStatus)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.changedBy)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.changeReason)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.metadata)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)})
     ON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),
     `previous_status` = VALUES(`previous_status`),
     `new_status` = VALUES(`new_status`),
@@ -130,8 +128,8 @@ class OrderHistoryRepoImpl extends OrderHistoryRepo {
     .runUnchecked(c)
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[OrderHistoryRow])(using c: Connection): java.util.List[OrderHistoryRow] = {
-    interpolate"""INSERT INTO `order_history`(`history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)
+  override def upsertBatch(unsaved: Iterator[OrderHistoryRow])(using c: Connection): List[OrderHistoryRow] = {
+    sql"""INSERT INTO `order_history`(`history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),
     `previous_status` = VALUES(`previous_status`),
@@ -142,6 +140,6 @@ class OrderHistoryRepoImpl extends OrderHistoryRepo {
     `created_at` = VALUES(`created_at`)
     RETURNING `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`"""
       .updateReturningEach(OrderHistoryRow.`_rowParser`, unsaved)
-      .runUnchecked(c)
+    .runUnchecked(c)
   }
 }

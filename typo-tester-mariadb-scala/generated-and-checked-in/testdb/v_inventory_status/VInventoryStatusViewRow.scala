@@ -7,12 +7,13 @@ package testdb.v_inventory_status
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** View: v_inventory_status
  * VIEW
@@ -48,26 +49,26 @@ case class VInventoryStatusViewRow(
    * Default: 0
    * Points to [[testdb.inventory.InventoryRow.quantityOnHand]]
    */
-  @JsonProperty("quantity_on_hand") quantityOnHand: Integer,
+  @JsonProperty("quantity_on_hand") quantityOnHand: Int,
   /** 
    * Default: 0
    * Points to [[testdb.inventory.InventoryRow.quantityReserved]]
    */
-  @JsonProperty("quantity_reserved") quantityReserved: Integer,
+  @JsonProperty("quantity_reserved") quantityReserved: Int,
   /** 
    * Default: 0
    * Points to [[testdb.inventory.InventoryRow.quantityOnOrder]]
    */
-  @JsonProperty("quantity_on_order") quantityOnOrder: Integer,
+  @JsonProperty("quantity_on_order") quantityOnOrder: Int,
   /** 
    * Default: 0
    */
-  available: java.lang.Long,
+  available: Long,
   /** 
    * Default: 0
    * Points to [[testdb.inventory.InventoryRow.reorderPoint]]
    */
-  @JsonProperty("reorder_point") reorderPoint: Integer,
+  @JsonProperty("reorder_point") reorderPoint: Int,
   /** 
    * Default: ''
    */
@@ -76,14 +77,14 @@ case class VInventoryStatusViewRow(
    * Default: NULL
    * Points to [[testdb.inventory.InventoryRow.binLocation]]
    */
-  @JsonProperty("bin_location") binLocation: Optional[String],
+  @JsonProperty("bin_location") binLocation: Option[String],
   /** 
    * Default: NULL
    * Points to [[testdb.inventory.InventoryRow.lastCountedAt]]
    */
-  @JsonProperty("last_counted_at") lastCountedAt: Optional[LocalDateTime]
+  @JsonProperty("last_counted_at") lastCountedAt: Option[LocalDateTime]
 )
 
 object VInventoryStatusViewRow {
-  val `_rowParser`: RowParser[VInventoryStatusViewRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.int_, MariaTypes.int_, MariaTypes.int_, MariaTypes.bigint, MariaTypes.int_, MariaTypes.varchar, MariaTypes.varchar.opt(), MariaTypes.datetime.opt(), VInventoryStatusViewRow.apply, row => Array[Object](row.productId.asInstanceOf[Object], row.sku.asInstanceOf[Object], row.productName.asInstanceOf[Object], row.warehouseId.asInstanceOf[Object], row.warehouseCode.asInstanceOf[Object], row.warehouseName.asInstanceOf[Object], row.quantityOnHand.asInstanceOf[Object], row.quantityReserved.asInstanceOf[Object], row.quantityOnOrder.asInstanceOf[Object], row.available.asInstanceOf[Object], row.reorderPoint.asInstanceOf[Object], row.stockStatus.asInstanceOf[Object], row.binLocation.asInstanceOf[Object], row.lastCountedAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[VInventoryStatusViewRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.int_, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.datetime.nullable)(VInventoryStatusViewRow.apply)(row => Array[Any](row.productId, row.sku, row.productName, row.warehouseId, row.warehouseCode, row.warehouseName, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.available, row.reorderPoint, row.stockStatus, row.binLocation, row.lastCountedAt))
 }

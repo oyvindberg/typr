@@ -11,15 +11,16 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import typo.data.maria.Inet4
 import typo.data.maria.Inet6
 import typo.data.maria.MariaSet
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: mariatestnull
 
@@ -28,215 +29,215 @@ case class MariatestnullRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("tinyint_col") tinyintCol: Optional[java.lang.Byte],
+  @JsonProperty("tinyint_col") tinyintCol: Option[Byte],
   /** 
    * Default: NULL
    */
-  @JsonProperty("smallint_col") smallintCol: Optional[java.lang.Short],
+  @JsonProperty("smallint_col") smallintCol: Option[Short],
   /** 
    * Default: NULL
    */
-  @JsonProperty("mediumint_col") mediumintCol: Optional[Integer],
+  @JsonProperty("mediumint_col") mediumintCol: Option[Int],
   /** 
    * Default: NULL
    */
-  @JsonProperty("int_col") intCol: Optional[Integer],
+  @JsonProperty("int_col") intCol: Option[Int],
   /** 
    * Default: NULL
    */
-  @JsonProperty("bigint_col") bigintCol: Optional[java.lang.Long],
+  @JsonProperty("bigint_col") bigintCol: Option[Long],
   /** 
    * Default: NULL
    */
-  @JsonProperty("tinyint_u_col") tinyintUCol: Optional[java.lang.Short],
+  @JsonProperty("tinyint_u_col") tinyintUCol: Option[Short],
   /** 
    * Default: NULL
    */
-  @JsonProperty("smallint_u_col") smallintUCol: Optional[Integer],
+  @JsonProperty("smallint_u_col") smallintUCol: Option[Int],
   /** 
    * Default: NULL
    */
-  @JsonProperty("mediumint_u_col") mediumintUCol: Optional[Integer],
+  @JsonProperty("mediumint_u_col") mediumintUCol: Option[Int],
   /** 
    * Default: NULL
    */
-  @JsonProperty("int_u_col") intUCol: Optional[java.lang.Long],
+  @JsonProperty("int_u_col") intUCol: Option[Long],
   /** 
    * Default: NULL
    */
-  @JsonProperty("bigint_u_col") bigintUCol: Optional[BigInteger],
+  @JsonProperty("bigint_u_col") bigintUCol: Option[BigInteger],
   /** 
    * Default: NULL
    */
-  @JsonProperty("decimal_col") decimalCol: Optional[java.math.BigDecimal],
+  @JsonProperty("decimal_col") decimalCol: Option[BigDecimal],
   /** 
    * Default: NULL
    */
-  @JsonProperty("numeric_col") numericCol: Optional[java.math.BigDecimal],
+  @JsonProperty("numeric_col") numericCol: Option[BigDecimal],
   /** 
    * Default: NULL
    */
-  @JsonProperty("float_col") floatCol: Optional[java.lang.Float],
+  @JsonProperty("float_col") floatCol: Option[Float],
   /** 
    * Default: NULL
    */
-  @JsonProperty("double_col") doubleCol: Optional[java.lang.Double],
+  @JsonProperty("double_col") doubleCol: Option[Double],
   /** 
    * Default: NULL
    */
-  @JsonProperty("bool_col") boolCol: Optional[java.lang.Boolean],
+  @JsonProperty("bool_col") boolCol: Option[Boolean],
   /** 
    * Default: NULL
    */
-  @JsonProperty("bit_col") bitCol: Optional[Array[Byte]],
+  @JsonProperty("bit_col") bitCol: Option[Array[Byte]],
   /** 
    * Default: NULL
    */
-  @JsonProperty("bit1_col") bit1Col: Optional[Array[Byte]],
+  @JsonProperty("bit1_col") bit1Col: Option[Array[Byte]],
   /** 
    * Default: NULL
    */
-  @JsonProperty("char_col") charCol: Optional[String],
+  @JsonProperty("char_col") charCol: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("varchar_col") varcharCol: Optional[String],
+  @JsonProperty("varchar_col") varcharCol: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("tinytext_col") tinytextCol: Optional[String],
+  @JsonProperty("tinytext_col") tinytextCol: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("text_col") textCol: Optional[String],
+  @JsonProperty("text_col") textCol: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("mediumtext_col") mediumtextCol: Optional[String],
+  @JsonProperty("mediumtext_col") mediumtextCol: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("longtext_col") longtextCol: Optional[String],
+  @JsonProperty("longtext_col") longtextCol: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("binary_col") binaryCol: Optional[Array[Byte]],
+  @JsonProperty("binary_col") binaryCol: Option[Array[Byte]],
   /** 
    * Default: NULL
    */
-  @JsonProperty("varbinary_col") varbinaryCol: Optional[Array[Byte]],
+  @JsonProperty("varbinary_col") varbinaryCol: Option[Array[Byte]],
   /** 
    * Default: NULL
    */
-  @JsonProperty("tinyblob_col") tinyblobCol: Optional[Array[Byte]],
+  @JsonProperty("tinyblob_col") tinyblobCol: Option[Array[Byte]],
   /** 
    * Default: NULL
    */
-  @JsonProperty("blob_col") blobCol: Optional[Array[Byte]],
+  @JsonProperty("blob_col") blobCol: Option[Array[Byte]],
   /** 
    * Default: NULL
    */
-  @JsonProperty("mediumblob_col") mediumblobCol: Optional[Array[Byte]],
+  @JsonProperty("mediumblob_col") mediumblobCol: Option[Array[Byte]],
   /** 
    * Default: NULL
    */
-  @JsonProperty("longblob_col") longblobCol: Optional[Array[Byte]],
+  @JsonProperty("longblob_col") longblobCol: Option[Array[Byte]],
   /** 
    * Default: NULL
    */
-  @JsonProperty("date_col") dateCol: Optional[LocalDate],
+  @JsonProperty("date_col") dateCol: Option[LocalDate],
   /** 
    * Default: NULL
    */
-  @JsonProperty("time_col") timeCol: Optional[LocalTime],
+  @JsonProperty("time_col") timeCol: Option[LocalTime],
   /** 
    * Default: NULL
    */
-  @JsonProperty("time_fsp_col") timeFspCol: Optional[LocalTime],
+  @JsonProperty("time_fsp_col") timeFspCol: Option[LocalTime],
   /** 
    * Default: NULL
    */
-  @JsonProperty("datetime_col") datetimeCol: Optional[LocalDateTime],
+  @JsonProperty("datetime_col") datetimeCol: Option[LocalDateTime],
   /** 
    * Default: NULL
    */
-  @JsonProperty("datetime_fsp_col") datetimeFspCol: Optional[LocalDateTime],
+  @JsonProperty("datetime_fsp_col") datetimeFspCol: Option[LocalDateTime],
   /** 
    * Default: NULL
    */
-  @JsonProperty("timestamp_col") timestampCol: Optional[LocalDateTime],
+  @JsonProperty("timestamp_col") timestampCol: Option[LocalDateTime],
   /** 
    * Default: NULL
    */
-  @JsonProperty("timestamp_fsp_col") timestampFspCol: Optional[LocalDateTime],
+  @JsonProperty("timestamp_fsp_col") timestampFspCol: Option[LocalDateTime],
   /** 
    * Default: NULL
    */
-  @JsonProperty("year_col") yearCol: Optional[Year],
+  @JsonProperty("year_col") yearCol: Option[Year],
   /** 
    * Default: NULL
    */
-  @JsonProperty("enum_col") enumCol: Optional[String],
+  @JsonProperty("enum_col") enumCol: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("set_col") setCol: Optional[MariaSet],
+  @JsonProperty("set_col") setCol: Option[MariaSet],
   /** 
    * Default: NULL
    */
-  @JsonProperty("json_col") jsonCol: Optional[String],
+  @JsonProperty("json_col") jsonCol: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("inet4_col") inet4Col: Optional[Inet4],
+  @JsonProperty("inet4_col") inet4Col: Option[Inet4],
   /** 
    * Default: NULL
    */
-  @JsonProperty("inet6_col") inet6Col: Optional[Inet6]
+  @JsonProperty("inet6_col") inet6Col: Option[Inet6]
 ) {
   def toUnsavedRow(
-    tinyintCol: Defaulted[Optional[java.lang.Byte]] = Defaulted.Provided(this.tinyintCol),
-    smallintCol: Defaulted[Optional[java.lang.Short]] = Defaulted.Provided(this.smallintCol),
-    mediumintCol: Defaulted[Optional[Integer]] = Defaulted.Provided(this.mediumintCol),
-    intCol: Defaulted[Optional[Integer]] = Defaulted.Provided(this.intCol),
-    bigintCol: Defaulted[Optional[java.lang.Long]] = Defaulted.Provided(this.bigintCol),
-    tinyintUCol: Defaulted[Optional[java.lang.Short]] = Defaulted.Provided(this.tinyintUCol),
-    smallintUCol: Defaulted[Optional[Integer]] = Defaulted.Provided(this.smallintUCol),
-    mediumintUCol: Defaulted[Optional[Integer]] = Defaulted.Provided(this.mediumintUCol),
-    intUCol: Defaulted[Optional[java.lang.Long]] = Defaulted.Provided(this.intUCol),
-    bigintUCol: Defaulted[Optional[BigInteger]] = Defaulted.Provided(this.bigintUCol),
-    decimalCol: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.Provided(this.decimalCol),
-    numericCol: Defaulted[Optional[java.math.BigDecimal]] = Defaulted.Provided(this.numericCol),
-    floatCol: Defaulted[Optional[java.lang.Float]] = Defaulted.Provided(this.floatCol),
-    doubleCol: Defaulted[Optional[java.lang.Double]] = Defaulted.Provided(this.doubleCol),
-    boolCol: Defaulted[Optional[java.lang.Boolean]] = Defaulted.Provided(this.boolCol),
-    bitCol: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.bitCol),
-    bit1Col: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.bit1Col),
-    charCol: Defaulted[Optional[String]] = Defaulted.Provided(this.charCol),
-    varcharCol: Defaulted[Optional[String]] = Defaulted.Provided(this.varcharCol),
-    tinytextCol: Defaulted[Optional[String]] = Defaulted.Provided(this.tinytextCol),
-    textCol: Defaulted[Optional[String]] = Defaulted.Provided(this.textCol),
-    mediumtextCol: Defaulted[Optional[String]] = Defaulted.Provided(this.mediumtextCol),
-    longtextCol: Defaulted[Optional[String]] = Defaulted.Provided(this.longtextCol),
-    binaryCol: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.binaryCol),
-    varbinaryCol: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.varbinaryCol),
-    tinyblobCol: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.tinyblobCol),
-    blobCol: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.blobCol),
-    mediumblobCol: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.mediumblobCol),
-    longblobCol: Defaulted[Optional[Array[Byte]]] = Defaulted.Provided(this.longblobCol),
-    dateCol: Defaulted[Optional[LocalDate]] = Defaulted.Provided(this.dateCol),
-    timeCol: Defaulted[Optional[LocalTime]] = Defaulted.Provided(this.timeCol),
-    timeFspCol: Defaulted[Optional[LocalTime]] = Defaulted.Provided(this.timeFspCol),
-    datetimeCol: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.datetimeCol),
-    datetimeFspCol: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.datetimeFspCol),
-    timestampCol: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.timestampCol),
-    timestampFspCol: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.timestampFspCol),
-    yearCol: Defaulted[Optional[Year]] = Defaulted.Provided(this.yearCol),
-    enumCol: Defaulted[Optional[String]] = Defaulted.Provided(this.enumCol),
-    setCol: Defaulted[Optional[MariaSet]] = Defaulted.Provided(this.setCol),
-    jsonCol: Defaulted[Optional[String]] = Defaulted.Provided(this.jsonCol),
-    inet4Col: Defaulted[Optional[Inet4]] = Defaulted.Provided(this.inet4Col),
-    inet6Col: Defaulted[Optional[Inet6]] = Defaulted.Provided(this.inet6Col)
+    tinyintCol: Defaulted[Option[Byte]] = Defaulted.Provided(this.tinyintCol),
+    smallintCol: Defaulted[Option[Short]] = Defaulted.Provided(this.smallintCol),
+    mediumintCol: Defaulted[Option[Int]] = Defaulted.Provided(this.mediumintCol),
+    intCol: Defaulted[Option[Int]] = Defaulted.Provided(this.intCol),
+    bigintCol: Defaulted[Option[Long]] = Defaulted.Provided(this.bigintCol),
+    tinyintUCol: Defaulted[Option[Short]] = Defaulted.Provided(this.tinyintUCol),
+    smallintUCol: Defaulted[Option[Int]] = Defaulted.Provided(this.smallintUCol),
+    mediumintUCol: Defaulted[Option[Int]] = Defaulted.Provided(this.mediumintUCol),
+    intUCol: Defaulted[Option[Long]] = Defaulted.Provided(this.intUCol),
+    bigintUCol: Defaulted[Option[BigInteger]] = Defaulted.Provided(this.bigintUCol),
+    decimalCol: Defaulted[Option[BigDecimal]] = Defaulted.Provided(this.decimalCol),
+    numericCol: Defaulted[Option[BigDecimal]] = Defaulted.Provided(this.numericCol),
+    floatCol: Defaulted[Option[Float]] = Defaulted.Provided(this.floatCol),
+    doubleCol: Defaulted[Option[Double]] = Defaulted.Provided(this.doubleCol),
+    boolCol: Defaulted[Option[Boolean]] = Defaulted.Provided(this.boolCol),
+    bitCol: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.bitCol),
+    bit1Col: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.bit1Col),
+    charCol: Defaulted[Option[String]] = Defaulted.Provided(this.charCol),
+    varcharCol: Defaulted[Option[String]] = Defaulted.Provided(this.varcharCol),
+    tinytextCol: Defaulted[Option[String]] = Defaulted.Provided(this.tinytextCol),
+    textCol: Defaulted[Option[String]] = Defaulted.Provided(this.textCol),
+    mediumtextCol: Defaulted[Option[String]] = Defaulted.Provided(this.mediumtextCol),
+    longtextCol: Defaulted[Option[String]] = Defaulted.Provided(this.longtextCol),
+    binaryCol: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.binaryCol),
+    varbinaryCol: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.varbinaryCol),
+    tinyblobCol: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.tinyblobCol),
+    blobCol: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.blobCol),
+    mediumblobCol: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.mediumblobCol),
+    longblobCol: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.longblobCol),
+    dateCol: Defaulted[Option[LocalDate]] = Defaulted.Provided(this.dateCol),
+    timeCol: Defaulted[Option[LocalTime]] = Defaulted.Provided(this.timeCol),
+    timeFspCol: Defaulted[Option[LocalTime]] = Defaulted.Provided(this.timeFspCol),
+    datetimeCol: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.datetimeCol),
+    datetimeFspCol: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.datetimeFspCol),
+    timestampCol: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.timestampCol),
+    timestampFspCol: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.timestampFspCol),
+    yearCol: Defaulted[Option[Year]] = Defaulted.Provided(this.yearCol),
+    enumCol: Defaulted[Option[String]] = Defaulted.Provided(this.enumCol),
+    setCol: Defaulted[Option[MariaSet]] = Defaulted.Provided(this.setCol),
+    jsonCol: Defaulted[Option[String]] = Defaulted.Provided(this.jsonCol),
+    inet4Col: Defaulted[Option[Inet4]] = Defaulted.Provided(this.inet4Col),
+    inet6Col: Defaulted[Option[Inet6]] = Defaulted.Provided(this.inet6Col)
   ): MariatestnullRowUnsaved = {
     new MariatestnullRowUnsaved(
       tinyintCol,
@@ -286,7 +287,7 @@ case class MariatestnullRow(
 }
 
 object MariatestnullRow {
-  val `_rowParser`: RowParser[MariatestnullRow] = RowParsers.of(MariaTypes.tinyint.opt(), MariaTypes.smallint.opt(), MariaTypes.mediumint.opt(), MariaTypes.int_.opt(), MariaTypes.bigint.opt(), MariaTypes.tinyintUnsigned.opt(), MariaTypes.smallintUnsigned.opt(), MariaTypes.mediumintUnsigned.opt(), MariaTypes.intUnsigned.opt(), MariaTypes.bigintUnsigned.opt(), MariaTypes.decimal.opt(), MariaTypes.decimal.opt(), MariaTypes.float_.opt(), MariaTypes.double_.opt(), MariaTypes.bool.opt(), MariaTypes.bit.opt(), MariaTypes.bit.opt(), MariaTypes.char_.opt(), MariaTypes.varchar.opt(), MariaTypes.tinytext.opt(), MariaTypes.text.opt(), MariaTypes.mediumtext.opt(), MariaTypes.longtext.opt(), MariaTypes.binary.opt(), MariaTypes.varbinary.opt(), MariaTypes.tinyblob.opt(), MariaTypes.blob.opt(), MariaTypes.mediumblob.opt(), MariaTypes.longblob.opt(), MariaTypes.date.opt(), MariaTypes.time.opt(), MariaTypes.time.opt(), MariaTypes.datetime.opt(), MariaTypes.datetime.opt(), MariaTypes.timestamp.opt(), MariaTypes.timestamp.opt(), MariaTypes.year.opt(), MariaTypes.text.opt(), MariaTypes.set.opt(), MariaTypes.longtext.opt(), MariaTypes.inet4.opt(), MariaTypes.inet6.opt(), MariatestnullRow.apply, row => Array[Object](row.tinyintCol.asInstanceOf[Object], row.smallintCol.asInstanceOf[Object], row.mediumintCol.asInstanceOf[Object], row.intCol.asInstanceOf[Object], row.bigintCol.asInstanceOf[Object], row.tinyintUCol.asInstanceOf[Object], row.smallintUCol.asInstanceOf[Object], row.mediumintUCol.asInstanceOf[Object], row.intUCol.asInstanceOf[Object], row.bigintUCol.asInstanceOf[Object], row.decimalCol.asInstanceOf[Object], row.numericCol.asInstanceOf[Object], row.floatCol.asInstanceOf[Object], row.doubleCol.asInstanceOf[Object], row.boolCol.asInstanceOf[Object], row.bitCol.asInstanceOf[Object], row.bit1Col.asInstanceOf[Object], row.charCol.asInstanceOf[Object], row.varcharCol.asInstanceOf[Object], row.tinytextCol.asInstanceOf[Object], row.textCol.asInstanceOf[Object], row.mediumtextCol.asInstanceOf[Object], row.longtextCol.asInstanceOf[Object], row.binaryCol.asInstanceOf[Object], row.varbinaryCol.asInstanceOf[Object], row.tinyblobCol.asInstanceOf[Object], row.blobCol.asInstanceOf[Object], row.mediumblobCol.asInstanceOf[Object], row.longblobCol.asInstanceOf[Object], row.dateCol.asInstanceOf[Object], row.timeCol.asInstanceOf[Object], row.timeFspCol.asInstanceOf[Object], row.datetimeCol.asInstanceOf[Object], row.datetimeFspCol.asInstanceOf[Object], row.timestampCol.asInstanceOf[Object], row.timestampFspCol.asInstanceOf[Object], row.yearCol.asInstanceOf[Object], row.enumCol.asInstanceOf[Object], row.setCol.asInstanceOf[Object], row.jsonCol.asInstanceOf[Object], row.inet4Col.asInstanceOf[Object], row.inet6Col.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[MariatestnullRow] = RowParsers.of(ScalaDbTypes.MariaTypes.tinyint.nullable, ScalaDbTypes.MariaTypes.smallint.nullable, ScalaDbTypes.MariaTypes.mediumint.nullable, ScalaDbTypes.MariaTypes.int_.nullable, ScalaDbTypes.MariaTypes.bigint.nullable, ScalaDbTypes.MariaTypes.tinyintUnsigned.nullable, ScalaDbTypes.MariaTypes.smallintUnsigned.nullable, ScalaDbTypes.MariaTypes.mediumintUnsigned.nullable, ScalaDbTypes.MariaTypes.intUnsigned.nullable, MariaTypes.bigintUnsigned.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.float_.nullable, ScalaDbTypes.MariaTypes.double_.nullable, ScalaDbTypes.MariaTypes.bool.nullable, MariaTypes.bit.nullable, MariaTypes.bit.nullable, MariaTypes.char_.nullable, MariaTypes.varchar.nullable, MariaTypes.tinytext.nullable, MariaTypes.text.nullable, MariaTypes.mediumtext.nullable, MariaTypes.longtext.nullable, MariaTypes.binary.nullable, MariaTypes.varbinary.nullable, MariaTypes.tinyblob.nullable, MariaTypes.blob.nullable, MariaTypes.mediumblob.nullable, MariaTypes.longblob.nullable, MariaTypes.date.nullable, MariaTypes.time.nullable, MariaTypes.time.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime.nullable, MariaTypes.timestamp.nullable, MariaTypes.timestamp.nullable, MariaTypes.year.nullable, MariaTypes.text.nullable, MariaTypes.set.nullable, MariaTypes.longtext.nullable, MariaTypes.inet4.nullable, MariaTypes.inet6.nullable)(MariatestnullRow.apply)(row => Array[Any](row.tinyintCol, row.smallintCol, row.mediumintCol, row.intCol, row.bigintCol, row.tinyintUCol, row.smallintUCol, row.mediumintUCol, row.intUCol, row.bigintUCol, row.decimalCol, row.numericCol, row.floatCol, row.doubleCol, row.boolCol, row.bitCol, row.bit1Col, row.charCol, row.varcharCol, row.tinytextCol, row.textCol, row.mediumtextCol, row.longtextCol, row.binaryCol, row.varbinaryCol, row.tinyblobCol, row.blobCol, row.mediumblobCol, row.longblobCol, row.dateCol, row.timeCol, row.timeFspCol, row.datetimeCol, row.datetimeFspCol, row.timestampCol, row.timestampFspCol, row.yearCol, row.enumCol, row.setCol, row.jsonCol, row.inet4Col, row.inet6Col))
 
-  given mariaText: MariaText[MariatestnullRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[MariatestnullRow] = MariaText.from(`_rowParser`.underlying)
 }

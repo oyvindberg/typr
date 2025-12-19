@@ -8,5 +8,5 @@ package testdb.subquery_test
 import java.sql.Connection
 
 trait SubqueryTestSqlRepo {
-  def apply(using c: Connection): java.util.List[SubqueryTestSqlRow]
+  def apply(using c: Connection): List[SubqueryTestSqlRow]
 }

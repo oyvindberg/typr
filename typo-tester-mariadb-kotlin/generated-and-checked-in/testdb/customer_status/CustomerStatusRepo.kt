@@ -6,70 +6,69 @@
 package testdb.customer_status
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface CustomerStatusRepo {
-  fun delete(): DeleteBuilder<CustomerStatusFields, CustomerStatusRow>
+  abstract fun delete(): DeleteBuilder<CustomerStatusFields, CustomerStatusRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     statusCode: CustomerStatusId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     statusCodes: Array<CustomerStatusId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: CustomerStatusRow,
     c: Connection
   ): CustomerStatusRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: CustomerStatusRowUnsaved,
     c: Connection
   ): CustomerStatusRow
 
-  fun select(): SelectBuilder<CustomerStatusFields, CustomerStatusRow>
+  abstract fun select(): SelectBuilder<CustomerStatusFields, CustomerStatusRow>
 
-  fun selectAll(c: Connection): List<CustomerStatusRow>
+  abstract fun selectAll(c: Connection): List<CustomerStatusRow>
 
-  fun selectById(
+  abstract fun selectById(
     statusCode: CustomerStatusId,
     c: Connection
-  ): Optional<CustomerStatusRow>
+  ): CustomerStatusRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     statusCodes: Array<CustomerStatusId>,
     c: Connection
   ): List<CustomerStatusRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     statusCodes: Array<CustomerStatusId>,
     c: Connection
   ): Map<CustomerStatusId, CustomerStatusRow>
 
-  fun update(): UpdateBuilder<CustomerStatusFields, CustomerStatusRow>
+  abstract fun update(): UpdateBuilder<CustomerStatusFields, CustomerStatusRow>
 
-  fun update(
+  abstract fun update(
     row: CustomerStatusRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: CustomerStatusRow,
     c: Connection
   ): CustomerStatusRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<CustomerStatusRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<CustomerStatusRow>,
     c: Connection
   ): List<CustomerStatusRow>
 }

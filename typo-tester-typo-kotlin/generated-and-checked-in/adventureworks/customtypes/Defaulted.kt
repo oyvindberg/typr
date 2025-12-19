@@ -53,14 +53,14 @@ sealed interface Defaulted<T> {
     }
   }
 
-  fun <U>fold(
+  abstract fun <U>fold(
     onDefault: () -> U,
     onProvided: (T) -> U
   ): U
 
-  fun getOrElse(onDefault: () -> T): T
+  abstract fun getOrElse(onDefault: () -> T): T
 
-  fun visit(
+  abstract fun visit(
     onDefault: () -> Unit,
     onProvided: (T) -> Unit
   )

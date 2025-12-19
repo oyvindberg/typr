@@ -31,23 +31,23 @@ case class WrViewRow(
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.scheduledenddate]] */
   scheduledenddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualstartdate]] */
-  actualstartdate: Option[TypoLocalDateTime],
+  actualstartdate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualenddate]] */
-  actualenddate: Option[TypoLocalDateTime],
+  actualenddate: TypoLocalDateTime,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualresourcehrs]] */
-  actualresourcehrs: Option[BigDecimal],
+  actualresourcehrs: BigDecimal,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.plannedcost]] */
   plannedcost: BigDecimal,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.actualcost]] */
-  actualcost: Option[BigDecimal],
+  actualcost: BigDecimal,
   /** Points to [[adventureworks.production.workorderrouting.WorkorderroutingRow.modifieddate]] */
   modifieddate: TypoLocalDateTime
 )
 
 object WrViewRow {
-  implicit lazy val decoder: Decoder[WrViewRow] = Decoder.forProduct13[WrViewRow, WorkorderId, WorkorderId, Int, TypoShort, LocationId, TypoLocalDateTime, TypoLocalDateTime, Option[TypoLocalDateTime], Option[TypoLocalDateTime], Option[BigDecimal], BigDecimal, Option[BigDecimal], TypoLocalDateTime]("id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate")(WrViewRow.apply)(WorkorderId.decoder, WorkorderId.decoder, Decoder.decodeInt, TypoShort.decoder, LocationId.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(TypoLocalDateTime.decoder), Decoder.decodeOption(TypoLocalDateTime.decoder), Decoder.decodeOption(Decoder.decodeBigDecimal), Decoder.decodeBigDecimal, Decoder.decodeOption(Decoder.decodeBigDecimal), TypoLocalDateTime.decoder)
+  implicit lazy val decoder: Decoder[WrViewRow] = Decoder.forProduct13[WrViewRow, WorkorderId, WorkorderId, Int, TypoShort, LocationId, TypoLocalDateTime, TypoLocalDateTime, TypoLocalDateTime, TypoLocalDateTime, BigDecimal, BigDecimal, BigDecimal, TypoLocalDateTime]("id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate")(WrViewRow.apply)(WorkorderId.decoder, WorkorderId.decoder, Decoder.decodeInt, TypoShort.decoder, LocationId.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder, TypoLocalDateTime.decoder, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, Decoder.decodeBigDecimal, TypoLocalDateTime.decoder)
 
-  implicit lazy val encoder: Encoder[WrViewRow] = Encoder.forProduct13[WrViewRow, WorkorderId, WorkorderId, Int, TypoShort, LocationId, TypoLocalDateTime, TypoLocalDateTime, Option[TypoLocalDateTime], Option[TypoLocalDateTime], Option[BigDecimal], BigDecimal, Option[BigDecimal], TypoLocalDateTime]("id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate")(x => (x.id, x.workorderid, x.productid, x.operationsequence, x.locationid, x.scheduledstartdate, x.scheduledenddate, x.actualstartdate, x.actualenddate, x.actualresourcehrs, x.plannedcost, x.actualcost, x.modifieddate))(WorkorderId.encoder, WorkorderId.encoder, Encoder.encodeInt, TypoShort.encoder, LocationId.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(TypoLocalDateTime.encoder), Encoder.encodeOption(TypoLocalDateTime.encoder), Encoder.encodeOption(Encoder.encodeBigDecimal), Encoder.encodeBigDecimal, Encoder.encodeOption(Encoder.encodeBigDecimal), TypoLocalDateTime.encoder)
+  implicit lazy val encoder: Encoder[WrViewRow] = Encoder.forProduct13[WrViewRow, WorkorderId, WorkorderId, Int, TypoShort, LocationId, TypoLocalDateTime, TypoLocalDateTime, TypoLocalDateTime, TypoLocalDateTime, BigDecimal, BigDecimal, BigDecimal, TypoLocalDateTime]("id", "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate")(x => (x.id, x.workorderid, x.productid, x.operationsequence, x.locationid, x.scheduledstartdate, x.scheduledenddate, x.actualstartdate, x.actualenddate, x.actualresourcehrs, x.plannedcost, x.actualcost, x.modifieddate))(WorkorderId.encoder, WorkorderId.encoder, Encoder.encodeInt, TypoShort.encoder, LocationId.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder, TypoLocalDateTime.encoder, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, Encoder.encodeBigDecimal, TypoLocalDateTime.encoder)
 
   implicit lazy val read: Read[WrViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -58,11 +58,11 @@ object WrViewRow {
         new Read.Single(LocationId.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
+        new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]],
         new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-        new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
+        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(TypoLocalDateTime.get).asInstanceOf[Read[Any]]
     ))(scala.reflect.ClassTag.Any).map { arr =>
       WrViewRow(
@@ -73,11 +73,11 @@ object WrViewRow {
             locationid = arr(4).asInstanceOf[LocationId],
             scheduledstartdate = arr(5).asInstanceOf[TypoLocalDateTime],
             scheduledenddate = arr(6).asInstanceOf[TypoLocalDateTime],
-            actualstartdate = arr(7).asInstanceOf[Option[TypoLocalDateTime]],
-            actualenddate = arr(8).asInstanceOf[Option[TypoLocalDateTime]],
-            actualresourcehrs = arr(9).asInstanceOf[Option[BigDecimal]],
+            actualstartdate = arr(7).asInstanceOf[TypoLocalDateTime],
+            actualenddate = arr(8).asInstanceOf[TypoLocalDateTime],
+            actualresourcehrs = arr(9).asInstanceOf[BigDecimal],
             plannedcost = arr(10).asInstanceOf[BigDecimal],
-            actualcost = arr(11).asInstanceOf[Option[BigDecimal]],
+            actualcost = arr(11).asInstanceOf[BigDecimal],
             modifieddate = arr(12).asInstanceOf[TypoLocalDateTime]
       )
     }

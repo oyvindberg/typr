@@ -8,10 +8,10 @@ package adventureworks.person.businessentity
 import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.customtypes.TypoUUID
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
 
 trait BusinessentityFields {
   def businessentityid: IdField[BusinessentityId, BusinessentityRow]
@@ -20,11 +20,11 @@ trait BusinessentityFields {
 }
 
 object BusinessentityFields {
-  lazy val structure: Relation[BusinessentityFields, BusinessentityRow] =
+  lazy val structure: RelationStructure[BusinessentityFields, BusinessentityRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[BusinessentityFields, BusinessentityRow] {
+    extends RelationStructure[BusinessentityFields, BusinessentityRow] {
 
     override lazy val fields: BusinessentityFields = new BusinessentityFields {
       override def businessentityid = IdField[BusinessentityId, BusinessentityRow](_path, "businessentityid", None, Some("int4"), x => x.businessentityid, (row, value) => row.copy(businessentityid = value))

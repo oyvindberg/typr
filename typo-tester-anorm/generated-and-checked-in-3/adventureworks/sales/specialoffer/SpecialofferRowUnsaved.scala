@@ -22,11 +22,11 @@ import scala.util.Try
 /** This class corresponds to a row in table `sales.specialoffer` which has not been persisted yet */
 case class SpecialofferRowUnsaved(
   /** Discount description. */
-  description: /* max 255 chars */ String,
+  description: String,
   /** Discount type category. */
-  `type`: /* max 50 chars */ String,
+  `type`: String,
   /** Group the discount applies to such as Reseller or Customer. */
-  category: /* max 50 chars */ String,
+  category: String,
   /** Discount start date.
    * Constraint CK_SpecialOffer_EndDate affecting columns enddate, startdate:  ((enddate >= startdate))
    */

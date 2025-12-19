@@ -26,11 +26,11 @@ public record PersonRow(
   PersonId id,
   /** Points to {@link testdb.hardcoded.myschema.football_club.FootballClubRow#id()} */
   @JsonProperty("favourite_football_club_id") FootballClubId favouriteFootballClubId,
-  /* max 100 chars */ String name,
+  String name,
   @JsonProperty("nick_name") Optional</* max 30 chars */ String> nickName,
   @JsonProperty("blog_url") Optional</* max 100 chars */ String> blogUrl,
-  /* max 254 chars */ String email,
-  /* max 8 chars */ String phone,
+  String email,
+  String phone,
   @JsonProperty("likes_pizza") Boolean likesPizza,
   /** Default: some-value
     * Points to {@link testdb.hardcoded.myschema.marital_status.MaritalStatusRow#id()}
@@ -54,7 +54,7 @@ public record PersonRow(
     return new PersonRow(id, favouriteFootballClubId, name, nickName, blogUrl, email, phone, likesPizza, maritalStatusId, workEmail, sector, favoriteNumber);
   };
 
-  public PersonRow withName(/* max 100 chars */ String name) {
+  public PersonRow withName(String name) {
     return new PersonRow(id, favouriteFootballClubId, name, nickName, blogUrl, email, phone, likesPizza, maritalStatusId, workEmail, sector, favoriteNumber);
   };
 
@@ -66,11 +66,11 @@ public record PersonRow(
     return new PersonRow(id, favouriteFootballClubId, name, nickName, blogUrl, email, phone, likesPizza, maritalStatusId, workEmail, sector, favoriteNumber);
   };
 
-  public PersonRow withEmail(/* max 254 chars */ String email) {
+  public PersonRow withEmail(String email) {
     return new PersonRow(id, favouriteFootballClubId, name, nickName, blogUrl, email, phone, likesPizza, maritalStatusId, workEmail, sector, favoriteNumber);
   };
 
-  public PersonRow withPhone(/* max 8 chars */ String phone) {
+  public PersonRow withPhone(String phone) {
     return new PersonRow(id, favouriteFootballClubId, name, nickName, blogUrl, email, phone, likesPizza, maritalStatusId, workEmail, sector, favoriteNumber);
   };
 

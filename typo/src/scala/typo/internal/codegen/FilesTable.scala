@@ -21,11 +21,11 @@ case class FilesTable(lang: Lang, table: ComputedTable, fkAnalysis: FkAnalysis, 
           jvm.Ident(col.name.value).appended("Default")
 
         val params: List[jvm.Param[jvm.Type.Function0]] =
-          unsaved.defaultedCols.map { case ComputedRowUnsaved.DefaultedCol(col, originalType) => jvm.Param(mkDefaultParamName(col), jvm.Type.Function0(originalType)) } ++
+          unsaved.defaultedCols.map { case ComputedRowUnsaved.DefaultedCol(col, originalType, _) => jvm.Param(mkDefaultParamName(col), jvm.Type.Function0(originalType)) } ++
             unsaved.alwaysGeneratedCols.map(col => jvm.Param(mkDefaultParamName(col), jvm.Type.Function0(col.tpe)))
 
         val keyValues = unsaved.categorizedColumnsOriginalOrder.map {
-          case ComputedRowUnsaved.DefaultedCol(col, _) =>
+          case ComputedRowUnsaved.DefaultedCol(col, _, _) =>
             val defaultParamName = mkDefaultParamName(col)
             val impl = code"${col.name}.getOrElse($defaultParamName)"
             jvm.Arg.Named(col.name, impl)
@@ -108,7 +108,7 @@ case class FilesTable(lang: Lang, table: ComputedTable, fkAnalysis: FkAnalysis, 
         val bijection =
           if (options.enableDsl)
             Some {
-              val thisBijection = jvm.Type.dsl.Bijection.of(id.tpe, id.underlying)
+              val thisBijection = lang.dsl.Bijection.of(id.tpe, id.underlying)
               val expr = lang.bijection(id.tpe, id.underlying, jvm.FieldGetterRef(id.tpe, value), jvm.ConstructorMethodRef(id.tpe))
               jvm.Given(Nil, jvm.Ident("bijection"), Nil, thisBijection, expr)
             }
@@ -147,7 +147,7 @@ case class FilesTable(lang: Lang, table: ComputedTable, fkAnalysis: FkAnalysis, 
         val instances = List(
           bijection.toList,
           jsonInstances.flatMap(_.givens),
-          options.dbLib.toList.flatMap(_.wrapperTypeInstances(wrapperType = id.tpe, underlying = id.underlying, overrideDbType = None))
+          options.dbLib.toList.flatMap(_.wrapperTypeInstances(wrapperType = id.tpe, underlyingJvmType = id.underlying, underlyingDbType = id.col.dbCol.tpe, overrideDbType = None))
         ).flatten
 
         val paramsWithAnnotations = List(jvm.Param(value, id.underlying)).map { p =>
@@ -181,15 +181,13 @@ case class FilesTable(lang: Lang, table: ComputedTable, fkAnalysis: FkAnalysis, 
       case x: IdComputed.UnaryOpenEnum =>
         val comments = scaladoc(s"Type for the primary key of table `${table.dbTable.name.value}`. It has some known values: " +: x.openEnum.values.toList.map { v => " - " + v })
 
-        val underlyingType: jvm.Type.Qualified =
+        val (underlyingType, underlyingTypoType, sqlType): (jvm.Type.Qualified, TypoType, String) =
           x.openEnum match {
             case OpenEnum.Text(_) =>
-              lang match {
-                case LangKotlin => TypesKotlin.String
-                case _          => TypesJava.String
-              }
+              (lang.String, TypoType.Standard(lang.String, db.PgType.Text), "text")
             case OpenEnum.TextDomain(domainRef, _) =>
-              jvm.Type.Qualified(options.naming.domainName(domainRef.name))
+              val domainJvmType = jvm.Type.Qualified(options.naming.domainName(domainRef.name))
+              (domainJvmType, TypoType.Generated(domainJvmType, domainRef, domainJvmType), domainRef.name.quotedValue)
           }
 
         val values = x.openEnum.values.map { value =>
@@ -202,13 +200,8 @@ case class FilesTable(lang: Lang, table: ComputedTable, fkAnalysis: FkAnalysis, 
           }
         }
 
-        val sqlType = x.openEnum match {
-          case OpenEnum.Text(_)                  => "text"
-          case OpenEnum.TextDomain(domainRef, _) => domainRef.name.quotedValue
-        }
-
         val instances = List(
-          options.dbLib.toList.flatMap(_.stringEnumInstances(x.tpe, x.underlying, sqlType, openEnum = true)),
+          options.dbLib.toList.flatMap(_.stringEnumInstances(x.tpe, underlyingTypoType, sqlType, openEnum = true)),
           options.jsonLibs.flatMap(_.stringEnumInstances(x.tpe, x.underlying, openEnum = true).givens)
         ).flatten
 

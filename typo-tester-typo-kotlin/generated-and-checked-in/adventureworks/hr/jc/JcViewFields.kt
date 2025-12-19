@@ -5,52 +5,53 @@
  */
 package adventureworks.hr.jc
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoXml
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
 import kotlin.collections.List
+import typo.data.Xml
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface JcViewFields : FieldsExpr<JcViewRow> {
-  fun businessentityid(): OptField<BusinessentityId, JcViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, JcViewRow>
 
-  override fun columns(): List<FieldLike<*, JcViewRow>>
+  abstract override fun columns(): List<FieldLike<*, JcViewRow>>
 
-  fun id(): Field<JobcandidateId, JcViewRow>
+  abstract fun id(): Field<JobcandidateId, JcViewRow>
 
-  fun jobcandidateid(): Field<JobcandidateId, JcViewRow>
+  abstract fun jobcandidateid(): Field<JobcandidateId, JcViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, JcViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, JcViewRow>
 
-  fun resume(): OptField<TypoXml, JcViewRow>
+  abstract fun resume(): Field<Xml, JcViewRow>
 
-  override fun rowParser(): RowParser<JcViewRow> = JcViewRow._rowParser
+  override fun rowParser(): RowParser<JcViewRow> = JcViewRow._rowParser.underlying
 
   companion object {
-    data class Impl(val _path: List<Path>) : JcViewFields, Relation<JcViewFields, JcViewRow> {
-      override fun id(): Field<JobcandidateId, JcViewRow> = Field<JobcandidateId, JcViewRow>(_path, "id", JcViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, JobcandidateId.pgType)
+    data class Impl(val _path: List<Path>) : JcViewFields, RelationStructure<JcViewFields, JcViewRow> {
+      override fun id(): Field<JobcandidateId, JcViewRow> = Field<JobcandidateId, JcViewRow>(_path, "id", JcViewRow::id, null, null, { row, value -> row.copy(id = value) }, JobcandidateId.pgType)
 
-      override fun jobcandidateid(): Field<JobcandidateId, JcViewRow> = Field<JobcandidateId, JcViewRow>(_path, "jobcandidateid", JcViewRow::jobcandidateid, Optional.empty(), Optional.empty(), { row, value -> row.copy(jobcandidateid = value) }, JobcandidateId.pgType)
+      override fun jobcandidateid(): Field<JobcandidateId, JcViewRow> = Field<JobcandidateId, JcViewRow>(_path, "jobcandidateid", JcViewRow::jobcandidateid, null, null, { row, value -> row.copy(jobcandidateid = value) }, JobcandidateId.pgType)
 
-      override fun businessentityid(): OptField<BusinessentityId, JcViewRow> = OptField<BusinessentityId, JcViewRow>(_path, "businessentityid", JcViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, JcViewRow> = Field<BusinessentityId, JcViewRow>(_path, "businessentityid", JcViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun resume(): OptField<TypoXml, JcViewRow> = OptField<TypoXml, JcViewRow>(_path, "resume", JcViewRow::resume, Optional.empty(), Optional.empty(), { row, value -> row.copy(resume = value) }, TypoXml.pgType)
+      override fun resume(): Field<Xml, JcViewRow> = Field<Xml, JcViewRow>(_path, "resume", JcViewRow::resume, null, null, { row, value -> row.copy(resume = value) }, PgTypes.xml)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, JcViewRow> = Field<TypoLocalDateTime, JcViewRow>(_path, "modifieddate", JcViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, JcViewRow> = Field<LocalDateTime, JcViewRow>(_path, "modifieddate", JcViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, JcViewRow>> = listOf(this.id(), this.jobcandidateid(), this.businessentityid(), this.resume(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<JcViewFields, JcViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, JcViewRow>> = listOf(this.id().underlying, this.jobcandidateid().underlying, this.businessentityid().underlying, this.resume().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<JcViewFields, JcViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

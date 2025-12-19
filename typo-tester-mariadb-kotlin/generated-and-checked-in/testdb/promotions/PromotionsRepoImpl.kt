@@ -7,19 +7,18 @@ package testdb.promotions
 
 import java.sql.Connection
 import java.util.ArrayList
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
-import typo.dsl.DeleteBuilder
-import typo.dsl.Dialect
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
-import typo.runtime.Fragment
-import typo.runtime.Fragment.Literal
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.Dialect
+import typo.kotlindsl.Fragment
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
+import typo.kotlindsl.nullable
 import typo.runtime.MariaTypes
-import typo.runtime.Fragment.interpolate
 
 class PromotionsRepoImpl() : PromotionsRepo {
   override fun delete(): DeleteBuilder<PromotionsFields, PromotionsRow> = DeleteBuilder.of("`promotions`", PromotionsFields.structure, Dialect.MARIADB)
@@ -27,227 +26,105 @@ class PromotionsRepoImpl() : PromotionsRepo {
   override fun deleteById(
     promotionId: PromotionsId,
     c: Connection
-  ): Boolean = interpolate(
-    typo.runtime.Fragment.lit("delete from `promotions` where `promotion_id` = "),
-    PromotionsId.pgType.encode(promotionId),
-    typo.runtime.Fragment.lit("")
-  ).update().runUnchecked(c) > 0
+  ): Boolean = Fragment.interpolate(Fragment.lit("delete from `promotions` where `promotion_id` = "), Fragment.encode(PromotionsId.pgType, promotionId), Fragment.lit("")).update().runUnchecked(c) > 0
 
   override fun deleteByIds(
     promotionIds: Array<PromotionsId>,
     c: Connection
   ): Int {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in promotionIds) { fragments.add(PromotionsId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in promotionIds) { fragments.add(Fragment.encode(PromotionsId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("delete from `promotions` where `promotion_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override fun insert(
     unsaved: PromotionsRow,
     c: Connection
-  ): PromotionsRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      insert into `promotions`(`code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`)
-      values (""".trimMargin()),
-    MariaTypes.text.encode(unsaved.code),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.description),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.discountType),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.encode(unsaved.discountValue),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.opt().encode(unsaved.minOrderAmount),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bigint.opt().encode(unsaved.maxUses),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bigint.encode(unsaved.usesCount),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.smallint.opt().encode(unsaved.maxUsesPerCustomer),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.set.opt().encode(unsaved.applicableTo),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.rulesJson),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.validFrom),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.validTo),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bool.encode(unsaved.isActive),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.createdAt),
-    typo.runtime.Fragment.lit("""
-      )
-      returning `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`
-    """.trimMargin())
-  )
+  ): PromotionsRow = Fragment.interpolate(Fragment.lit("insert into `promotions`(`code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`)\nvalues ("), Fragment.encode(MariaTypes.varchar, unsaved.code), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit(", "), Fragment.encode(MariaTypes.text.nullable(), unsaved.description), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.discountType), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric, unsaved.discountValue), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), unsaved.minOrderAmount), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.intUnsigned.nullable(), unsaved.maxUses), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.intUnsigned, unsaved.usesCount), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.tinyintUnsigned.nullable(), unsaved.maxUsesPerCustomer), Fragment.lit(", "), Fragment.encode(MariaTypes.set.nullable(), unsaved.applicableTo), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.rulesJson), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.validFrom), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.validTo), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, unsaved.isActive), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt), Fragment.lit(")\nreturning `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`\n"))
     .updateReturning(PromotionsRow._rowParser.exactlyOne()).runUnchecked(c)
 
   override fun insert(
     unsaved: PromotionsRowUnsaved,
     c: Connection
   ): PromotionsRow {
-    val columns: ArrayList<Literal> = ArrayList<Literal>()
-    val values: ArrayList<Fragment> = ArrayList<Fragment>()
+    val columns: ArrayList<Fragment> = ArrayList()
+    val values: ArrayList<Fragment> = ArrayList()
     columns.add(Fragment.lit("`code`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.code),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar, unsaved.code), Fragment.lit("")))
     columns.add(Fragment.lit("`name`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.name),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit("")))
     columns.add(Fragment.lit("`discount_type`"))
-    values.add(interpolate(
-      MariaTypes.text.encode(unsaved.discountType),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.text, unsaved.discountType), Fragment.lit("")))
     columns.add(Fragment.lit("`discount_value`"))
-    values.add(interpolate(
-      MariaTypes.numeric.encode(unsaved.discountValue),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.numeric, unsaved.discountValue), Fragment.lit("")))
     columns.add(Fragment.lit("`valid_from`"))
-    values.add(interpolate(
-      MariaTypes.datetime.encode(unsaved.validFrom),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.datetime, unsaved.validFrom), Fragment.lit("")))
     columns.add(Fragment.lit("`valid_to`"))
-    values.add(interpolate(
-      MariaTypes.datetime.encode(unsaved.validTo),
-      typo.runtime.Fragment.lit("""
-      """.trimMargin())
-    ))
+    values.add(Fragment.interpolate(Fragment.encode(MariaTypes.datetime, unsaved.validTo), Fragment.lit("")))
     unsaved.description.visit(
       {  },
       { value -> columns.add(Fragment.lit("`description`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.text.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.minOrderAmount.visit(
       {  },
       { value -> columns.add(Fragment.lit("`min_order_amount`"))
-      values.add(interpolate(
-        MariaTypes.numeric.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.maxUses.visit(
       {  },
       { value -> columns.add(Fragment.lit("`max_uses`"))
-      values.add(interpolate(
-        MariaTypes.bigint.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.intUnsigned.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.usesCount.visit(
       {  },
       { value -> columns.add(Fragment.lit("`uses_count`"))
-      values.add(interpolate(
-        MariaTypes.bigint.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.intUnsigned, value), Fragment.lit(""))) }
     );
     unsaved.maxUsesPerCustomer.visit(
       {  },
       { value -> columns.add(Fragment.lit("`max_uses_per_customer`"))
-      values.add(interpolate(
-        MariaTypes.smallint.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.tinyintUnsigned.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.applicableTo.visit(
       {  },
       { value -> columns.add(Fragment.lit("`applicable_to`"))
-      values.add(interpolate(
-        MariaTypes.set.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.set.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.rulesJson.visit(
       {  },
       { value -> columns.add(Fragment.lit("`rules_json`"))
-      values.add(interpolate(
-        MariaTypes.text.opt().encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.longtext.nullable(), value), Fragment.lit(""))) }
     );
     unsaved.isActive.visit(
       {  },
       { value -> columns.add(Fragment.lit("`is_active`"))
-      values.add(interpolate(
-        MariaTypes.bool.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(KotlinDbTypes.MariaTypes.bool, value), Fragment.lit(""))) }
     );
     unsaved.createdAt.visit(
       {  },
       { value -> columns.add(Fragment.lit("`created_at`"))
-      values.add(interpolate(
-        MariaTypes.datetime.encode(value),
-        typo.runtime.Fragment.lit("""
-        """.trimMargin())
-      )) }
+      values.add(Fragment.interpolate(Fragment.encode(MariaTypes.datetime, value), Fragment.lit(""))) }
     );
-    val q: Fragment = interpolate(
-      typo.runtime.Fragment.lit("insert into `promotions`("),
-      Fragment.comma(columns),
-      typo.runtime.Fragment.lit("""
-        )
-        values (""".trimMargin()),
-      Fragment.comma(values),
-      typo.runtime.Fragment.lit("""
-        )
-        returning `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`
-      """.trimMargin())
-    )
+    val q: Fragment = Fragment.interpolate(Fragment.lit("insert into `promotions`("), Fragment.comma(columns), Fragment.lit(")\nvalues ("), Fragment.comma(values), Fragment.lit(")\nreturning `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`\n"))
     return q.updateReturning(PromotionsRow._rowParser.exactlyOne()).runUnchecked(c)
   }
 
   override fun select(): SelectBuilder<PromotionsFields, PromotionsRow> = SelectBuilder.of("`promotions`", PromotionsFields.structure, PromotionsRow._rowParser, Dialect.MARIADB)
 
-  override fun selectAll(c: Connection): List<PromotionsRow> = interpolate(typo.runtime.Fragment.lit("""
-    select `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`
-    from `promotions`
-  """.trimMargin())).query(PromotionsRow._rowParser.all()).runUnchecked(c)
+  override fun selectAll(c: Connection): List<PromotionsRow> = Fragment.interpolate(Fragment.lit("select `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`\nfrom `promotions`\n")).query(PromotionsRow._rowParser.all()).runUnchecked(c)
 
   override fun selectById(
     promotionId: PromotionsId,
     c: Connection
-  ): Optional<PromotionsRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`
-      from `promotions`
-      where `promotion_id` = """.trimMargin()),
-    PromotionsId.pgType.encode(promotionId),
-    typo.runtime.Fragment.lit("")
-  ).query(PromotionsRow._rowParser.first()).runUnchecked(c)
+  ): PromotionsRow? = Fragment.interpolate(Fragment.lit("select `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`\nfrom `promotions`\nwhere `promotion_id` = "), Fragment.encode(PromotionsId.pgType, promotionId), Fragment.lit("")).query(PromotionsRow._rowParser.first()).runUnchecked(c)
 
   override fun selectByIds(
     promotionIds: Array<PromotionsId>,
     c: Connection
   ): List<PromotionsRow> {
-    val fragments: ArrayList<Fragment> = ArrayList<Fragment>()
-    for (id in promotionIds) { fragments.add(PromotionsId.pgType.encode(id)) }
+    val fragments: ArrayList<Fragment> = ArrayList()
+    for (id in promotionIds) { fragments.add(Fragment.encode(PromotionsId.pgType, id)) }
     return Fragment.interpolate(Fragment.lit("select `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at` from `promotions` where `promotion_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(PromotionsRow._rowParser.all()).runUnchecked(c)
   }
 
@@ -257,180 +134,35 @@ class PromotionsRepoImpl() : PromotionsRepo {
   ): Map<PromotionsId, PromotionsRow> {
     val ret: MutableMap<PromotionsId, PromotionsRow> = mutableMapOf<PromotionsId, PromotionsRow>()
     selectByIds(promotionIds, c).forEach({ row -> ret.put(row.promotionId, row) })
-    return ret
+    return ret.toMap()
   }
 
   override fun selectByUniqueCode(
     code: String,
     c: Connection
-  ): Optional<PromotionsRow> = interpolate(
-    typo.runtime.Fragment.lit("""
-      select `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`
-      from `promotions`
-      where `code` = """.trimMargin()),
-    MariaTypes.text.encode(code),
-    typo.runtime.Fragment.lit("""
+  ): PromotionsRow? = Fragment.interpolate(Fragment.lit("select `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`\nfrom `promotions`\nwhere `code` = "), Fragment.encode(MariaTypes.varchar, code), Fragment.lit("\n")).query(PromotionsRow._rowParser.first()).runUnchecked(c)
 
-
-    """.trimMargin())
-  ).query(PromotionsRow._rowParser.first()).runUnchecked(c)
-
-  override fun update(): UpdateBuilder<PromotionsFields, PromotionsRow> = UpdateBuilder.of("`promotions`", PromotionsFields.structure, PromotionsRow._rowParser.all(), Dialect.MARIADB)
+  override fun update(): UpdateBuilder<PromotionsFields, PromotionsRow> = UpdateBuilder.of("`promotions`", PromotionsFields.structure, PromotionsRow._rowParser, Dialect.MARIADB)
 
   override fun update(
     row: PromotionsRow,
     c: Connection
   ): Boolean {
     val promotionId: PromotionsId = row.promotionId
-    return interpolate(
-      typo.runtime.Fragment.lit("""
-        update `promotions`
-        set `code` = """.trimMargin()),
-      MariaTypes.text.encode(row.code),
-      typo.runtime.Fragment.lit("""
-        ,
-        `name` = """.trimMargin()),
-      MariaTypes.text.encode(row.name),
-      typo.runtime.Fragment.lit("""
-        ,
-        `description` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.description),
-      typo.runtime.Fragment.lit("""
-        ,
-        `discount_type` = """.trimMargin()),
-      MariaTypes.text.encode(row.discountType),
-      typo.runtime.Fragment.lit("""
-        ,
-        `discount_value` = """.trimMargin()),
-      MariaTypes.numeric.encode(row.discountValue),
-      typo.runtime.Fragment.lit("""
-        ,
-        `min_order_amount` = """.trimMargin()),
-      MariaTypes.numeric.opt().encode(row.minOrderAmount),
-      typo.runtime.Fragment.lit("""
-        ,
-        `max_uses` = """.trimMargin()),
-      MariaTypes.bigint.opt().encode(row.maxUses),
-      typo.runtime.Fragment.lit("""
-        ,
-        `uses_count` = """.trimMargin()),
-      MariaTypes.bigint.encode(row.usesCount),
-      typo.runtime.Fragment.lit("""
-        ,
-        `max_uses_per_customer` = """.trimMargin()),
-      MariaTypes.smallint.opt().encode(row.maxUsesPerCustomer),
-      typo.runtime.Fragment.lit("""
-        ,
-        `applicable_to` = """.trimMargin()),
-      MariaTypes.set.opt().encode(row.applicableTo),
-      typo.runtime.Fragment.lit("""
-        ,
-        `rules_json` = """.trimMargin()),
-      MariaTypes.text.opt().encode(row.rulesJson),
-      typo.runtime.Fragment.lit("""
-        ,
-        `valid_from` = """.trimMargin()),
-      MariaTypes.datetime.encode(row.validFrom),
-      typo.runtime.Fragment.lit("""
-        ,
-        `valid_to` = """.trimMargin()),
-      MariaTypes.datetime.encode(row.validTo),
-      typo.runtime.Fragment.lit("""
-        ,
-        `is_active` = """.trimMargin()),
-      MariaTypes.bool.encode(row.isActive),
-      typo.runtime.Fragment.lit("""
-        ,
-        `created_at` = """.trimMargin()),
-      MariaTypes.datetime.encode(row.createdAt),
-      typo.runtime.Fragment.lit("""
-  
-        where `promotion_id` = """.trimMargin()),
-      PromotionsId.pgType.encode(promotionId),
-      typo.runtime.Fragment.lit("")
-    ).update().runUnchecked(c) > 0
+    return Fragment.interpolate(Fragment.lit("update `promotions`\nset `code` = "), Fragment.encode(MariaTypes.varchar, row.code), Fragment.lit(",\n`name` = "), Fragment.encode(MariaTypes.varchar, row.name), Fragment.lit(",\n`description` = "), Fragment.encode(MariaTypes.text.nullable(), row.description), Fragment.lit(",\n`discount_type` = "), Fragment.encode(MariaTypes.text, row.discountType), Fragment.lit(",\n`discount_value` = "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric, row.discountValue), Fragment.lit(",\n`min_order_amount` = "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), row.minOrderAmount), Fragment.lit(",\n`max_uses` = "), Fragment.encode(KotlinDbTypes.MariaTypes.intUnsigned.nullable(), row.maxUses), Fragment.lit(",\n`uses_count` = "), Fragment.encode(KotlinDbTypes.MariaTypes.intUnsigned, row.usesCount), Fragment.lit(",\n`max_uses_per_customer` = "), Fragment.encode(KotlinDbTypes.MariaTypes.tinyintUnsigned.nullable(), row.maxUsesPerCustomer), Fragment.lit(",\n`applicable_to` = "), Fragment.encode(MariaTypes.set.nullable(), row.applicableTo), Fragment.lit(",\n`rules_json` = "), Fragment.encode(MariaTypes.longtext.nullable(), row.rulesJson), Fragment.lit(",\n`valid_from` = "), Fragment.encode(MariaTypes.datetime, row.validFrom), Fragment.lit(",\n`valid_to` = "), Fragment.encode(MariaTypes.datetime, row.validTo), Fragment.lit(",\n`is_active` = "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, row.isActive), Fragment.lit(",\n`created_at` = "), Fragment.encode(MariaTypes.datetime, row.createdAt), Fragment.lit("\nwhere `promotion_id` = "), Fragment.encode(PromotionsId.pgType, promotionId), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
   override fun upsert(
     unsaved: PromotionsRow,
     c: Connection
-  ): PromotionsRow = interpolate(
-    typo.runtime.Fragment.lit("""
-      INSERT INTO `promotions`(`code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`)
-      VALUES (""".trimMargin()),
-    MariaTypes.text.encode(unsaved.code),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.name),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.description),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.encode(unsaved.discountType),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.encode(unsaved.discountValue),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.numeric.opt().encode(unsaved.minOrderAmount),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bigint.opt().encode(unsaved.maxUses),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bigint.encode(unsaved.usesCount),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.smallint.opt().encode(unsaved.maxUsesPerCustomer),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.set.opt().encode(unsaved.applicableTo),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.text.opt().encode(unsaved.rulesJson),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.validFrom),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.validTo),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.bool.encode(unsaved.isActive),
-    typo.runtime.Fragment.lit(", "),
-    MariaTypes.datetime.encode(unsaved.createdAt),
-    typo.runtime.Fragment.lit("""
-      )
-      ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
-      `name` = VALUES(`name`),
-      `description` = VALUES(`description`),
-      `discount_type` = VALUES(`discount_type`),
-      `discount_value` = VALUES(`discount_value`),
-      `min_order_amount` = VALUES(`min_order_amount`),
-      `max_uses` = VALUES(`max_uses`),
-      `uses_count` = VALUES(`uses_count`),
-      `max_uses_per_customer` = VALUES(`max_uses_per_customer`),
-      `applicable_to` = VALUES(`applicable_to`),
-      `rules_json` = VALUES(`rules_json`),
-      `valid_from` = VALUES(`valid_from`),
-      `valid_to` = VALUES(`valid_to`),
-      `is_active` = VALUES(`is_active`),
-      `created_at` = VALUES(`created_at`)
-      RETURNING `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`""".trimMargin())
-  )
+  ): PromotionsRow = Fragment.interpolate(Fragment.lit("INSERT INTO `promotions`(`code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`)\nVALUES ("), Fragment.encode(MariaTypes.varchar, unsaved.code), Fragment.lit(", "), Fragment.encode(MariaTypes.varchar, unsaved.name), Fragment.lit(", "), Fragment.encode(MariaTypes.text.nullable(), unsaved.description), Fragment.lit(", "), Fragment.encode(MariaTypes.text, unsaved.discountType), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric, unsaved.discountValue), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), unsaved.minOrderAmount), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.intUnsigned.nullable(), unsaved.maxUses), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.intUnsigned, unsaved.usesCount), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.tinyintUnsigned.nullable(), unsaved.maxUsesPerCustomer), Fragment.lit(", "), Fragment.encode(MariaTypes.set.nullable(), unsaved.applicableTo), Fragment.lit(", "), Fragment.encode(MariaTypes.longtext.nullable(), unsaved.rulesJson), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.validFrom), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.validTo), Fragment.lit(", "), Fragment.encode(KotlinDbTypes.MariaTypes.bool, unsaved.isActive), Fragment.lit(", "), Fragment.encode(MariaTypes.datetime, unsaved.createdAt), Fragment.lit(")\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`description` = VALUES(`description`),\n`discount_type` = VALUES(`discount_type`),\n`discount_value` = VALUES(`discount_value`),\n`min_order_amount` = VALUES(`min_order_amount`),\n`max_uses` = VALUES(`max_uses`),\n`uses_count` = VALUES(`uses_count`),\n`max_uses_per_customer` = VALUES(`max_uses_per_customer`),\n`applicable_to` = VALUES(`applicable_to`),\n`rules_json` = VALUES(`rules_json`),\n`valid_from` = VALUES(`valid_from`),\n`valid_to` = VALUES(`valid_to`),\n`is_active` = VALUES(`is_active`),\n`created_at` = VALUES(`created_at`)\nRETURNING `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`"))
     .updateReturning(PromotionsRow._rowParser.exactlyOne())
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<PromotionsRow>,
+    unsaved: Iterator<PromotionsRow>,
     c: Connection
-  ): List<PromotionsRow> = interpolate(typo.runtime.Fragment.lit("""
-                             INSERT INTO `promotions`(`promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`)
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                             ON DUPLICATE KEY UPDATE `code` = VALUES(`code`),
-                             `name` = VALUES(`name`),
-                             `description` = VALUES(`description`),
-                             `discount_type` = VALUES(`discount_type`),
-                             `discount_value` = VALUES(`discount_value`),
-                             `min_order_amount` = VALUES(`min_order_amount`),
-                             `max_uses` = VALUES(`max_uses`),
-                             `uses_count` = VALUES(`uses_count`),
-                             `max_uses_per_customer` = VALUES(`max_uses_per_customer`),
-                             `applicable_to` = VALUES(`applicable_to`),
-                             `rules_json` = VALUES(`rules_json`),
-                             `valid_from` = VALUES(`valid_from`),
-                             `valid_to` = VALUES(`valid_to`),
-                             `is_active` = VALUES(`is_active`),
-                             `created_at` = VALUES(`created_at`)
-                             RETURNING `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`""".trimMargin()))
+  ): List<PromotionsRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `promotions`(`promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`description` = VALUES(`description`),\n`discount_type` = VALUES(`discount_type`),\n`discount_value` = VALUES(`discount_value`),\n`min_order_amount` = VALUES(`min_order_amount`),\n`max_uses` = VALUES(`max_uses`),\n`uses_count` = VALUES(`uses_count`),\n`max_uses_per_customer` = VALUES(`max_uses_per_customer`),\n`applicable_to` = VALUES(`applicable_to`),\n`rules_json` = VALUES(`rules_json`),\n`valid_from` = VALUES(`valid_from`),\n`valid_to` = VALUES(`valid_to`),\n`is_active` = VALUES(`is_active`),\n`created_at` = VALUES(`created_at`)\nRETURNING `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`"))
     .updateReturningEach(PromotionsRow._rowParser, unsaved)
-    .runUnchecked(c)
+  .runUnchecked(c)
 }

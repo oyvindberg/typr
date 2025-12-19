@@ -6,89 +6,88 @@
 package adventureworks.humanresources.employeedepartmenthistory
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface EmployeedepartmenthistoryRepo {
-  fun delete(): DeleteBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow>
+  abstract fun delete(): DeleteBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     compositeId: EmployeedepartmenthistoryId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     compositeIds: Array<EmployeedepartmenthistoryId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: EmployeedepartmenthistoryRow,
     c: Connection
   ): EmployeedepartmenthistoryRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: EmployeedepartmenthistoryRowUnsaved,
     c: Connection
   ): EmployeedepartmenthistoryRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<EmployeedepartmenthistoryRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<EmployeedepartmenthistoryRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<EmployeedepartmenthistoryRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<EmployeedepartmenthistoryRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow>
+  abstract fun select(): SelectBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow>
 
-  fun selectAll(c: Connection): List<EmployeedepartmenthistoryRow>
+  abstract fun selectAll(c: Connection): List<EmployeedepartmenthistoryRow>
 
-  fun selectById(
+  abstract fun selectById(
     compositeId: EmployeedepartmenthistoryId,
     c: Connection
-  ): Optional<EmployeedepartmenthistoryRow>
+  ): EmployeedepartmenthistoryRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     compositeIds: Array<EmployeedepartmenthistoryId>,
     c: Connection
   ): List<EmployeedepartmenthistoryRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     compositeIds: Array<EmployeedepartmenthistoryId>,
     c: Connection
   ): Map<EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow>
 
-  fun update(): UpdateBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow>
+  abstract fun update(): UpdateBuilder<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow>
 
-  fun update(
+  abstract fun update(
     row: EmployeedepartmenthistoryRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: EmployeedepartmenthistoryRow,
     c: Connection
   ): EmployeedepartmenthistoryRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<EmployeedepartmenthistoryRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<EmployeedepartmenthistoryRow>,
     c: Connection
   ): List<EmployeedepartmenthistoryRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<EmployeedepartmenthistoryRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<EmployeedepartmenthistoryRow>,
     batchSize: Int,
     c: Connection
   ): Int

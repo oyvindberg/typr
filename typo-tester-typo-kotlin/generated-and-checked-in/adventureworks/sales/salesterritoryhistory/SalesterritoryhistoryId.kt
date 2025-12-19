@@ -5,13 +5,13 @@
  */
 package adventureworks.sales.salesterritoryhistory
 
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
+import java.time.LocalDateTime
 
 /** Type for the composite primary key of table `sales.salesterritoryhistory` */
 data class SalesterritoryhistoryId(
   val businessentityid: BusinessentityId,
-  val startdate: TypoLocalDateTime,
+  val startdate: LocalDateTime,
   val territoryid: SalesterritoryId
 )

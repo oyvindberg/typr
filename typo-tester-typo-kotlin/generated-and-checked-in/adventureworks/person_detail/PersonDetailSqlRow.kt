@@ -5,39 +5,39 @@
  */
 package adventureworks.person_detail
 
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
-import java.util.Optional
+import java.util.UUID
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** SQL file: person_detail.sql */
 data class PersonDetailSqlRow(
   /** Points to [adventureworks.sales.salesperson.SalespersonRow.businessentityid] */
   val businessentityid: BusinessentityId,
   /** Points to [adventureworks.person.person.PersonRow.title] */
-  val title: Optional</* max 8 chars */ String>,
+  val title: /* max 8 chars */ String?,
   /** Points to [adventureworks.person.person.PersonRow.firstname] */
   val firstname: /* user-picked */ FirstName,
   /** Points to [adventureworks.person.person.PersonRow.middlename] */
-  val middlename: Optional<Name>,
+  val middlename: Name?,
   /** Points to [adventureworks.person.person.PersonRow.lastname] */
   val lastname: Name,
   /** Points to [adventureworks.humanresources.employee.EmployeeRow.jobtitle] */
-  val jobtitle: /* max 50 chars */ String,
+  val jobtitle: String,
   /** Points to [adventureworks.person.address.AddressRow.addressline1] */
-  val addressline1: Optional</* max 60 chars */ String>,
+  val addressline1: String?,
   /** Points to [adventureworks.person.address.AddressRow.city] */
-  val city: Optional</* max 30 chars */ String>,
+  val city: String?,
   /** Points to [adventureworks.person.address.AddressRow.postalcode] */
-  val postalcode: Optional</* max 15 chars */ String>,
+  val postalcode: String?,
   /** Points to [adventureworks.person.address.AddressRow.rowguid] */
-  val rowguid: Optional<TypoUUID>
+  val rowguid: UUID?
 ) {
   companion object {
-    val _rowParser: RowParser<PersonDetailSqlRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), TypoUUID.pgType.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> PersonDetailSqlRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.jobtitle, row.addressline1, row.city, row.postalcode, row.rowguid) })
+    val _rowParser: RowParser<PersonDetailSqlRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text.nullable(), FirstName.pgType, Name.pgType.nullable(), Name.pgType, PgTypes.text, PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.uuid.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> PersonDetailSqlRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.jobtitle, row.addressline1, row.city, row.postalcode, row.rowguid) })
   }
 }

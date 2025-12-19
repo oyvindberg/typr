@@ -14,14 +14,14 @@ import play.api.libs.json.Writes
 import typo.dsl.Bijection
 
 /** Type for the primary key of table `production.culture` */
-case class CultureId(value: /* bpchar, max 6 chars */ String) extends scala.AnyVal
+case class CultureId(value: String) extends scala.AnyVal
 
 object CultureId {
   given arrayColumn: Column[Array[CultureId]] = Column.columnToArray(using column, implicitly)
 
   given arrayToStatement: ToStatement[Array[CultureId]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  given bijection: Bijection[CultureId, /* bpchar, max 6 chars */ String] = Bijection.apply[CultureId, /* bpchar, max 6 chars */ String](_.value)(CultureId.apply)
+  given bijection: Bijection[CultureId, String] = Bijection.apply[CultureId, String](_.value)(CultureId.apply)
 
   given column: Column[CultureId] = Column.columnToString.map(CultureId.apply)
 

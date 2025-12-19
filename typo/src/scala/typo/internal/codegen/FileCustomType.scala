@@ -8,7 +8,7 @@ object FileCustomType {
     val maybeBijection = ct.params match {
       case NonEmptyList(jvm.Param(_, _, name, underlying, _), Nil) if options.enableDsl =>
         val bijection = {
-          val thisBijection = jvm.Type.dsl.Bijection.of(ct.typoType, underlying)
+          val thisBijection = lang.dsl.Bijection.of(ct.typoType, underlying)
           val expr = lang.bijection(ct.typoType, underlying, jvm.FieldGetterRef(ct.typoType, name), jvm.ConstructorMethodRef(ct.typoType))
           jvm.Given(Nil, jvm.Ident("bijection"), Nil, thisBijection, expr)
         }

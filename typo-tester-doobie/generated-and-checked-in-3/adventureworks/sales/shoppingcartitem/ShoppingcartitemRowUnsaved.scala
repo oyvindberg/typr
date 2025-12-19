@@ -16,7 +16,7 @@ import io.circe.Encoder
 /** This class corresponds to a row in table `sales.shoppingcartitem` which has not been persisted yet */
 case class ShoppingcartitemRowUnsaved(
   /** Shopping cart identification number. */
-  shoppingcartid: /* max 50 chars */ String,
+  shoppingcartid: String,
   /** Product ordered. Foreign key to Product.ProductID.
    * Points to [[adventureworks.production.product.ProductRow.productid]]
    */
@@ -55,9 +55,9 @@ case class ShoppingcartitemRowUnsaved(
 }
 
 object ShoppingcartitemRowUnsaved {
-  given decoder: Decoder[ShoppingcartitemRowUnsaved] = Decoder.forProduct6[ShoppingcartitemRowUnsaved, /* max 50 chars */ String, ProductId, Defaulted[ShoppingcartitemId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate")(ShoppingcartitemRowUnsaved.apply)(using Decoder.decodeString, ProductId.decoder, Defaulted.decoder(using ShoppingcartitemId.decoder), Defaulted.decoder(using Decoder.decodeInt), Defaulted.decoder(using TypoLocalDateTime.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
+  given decoder: Decoder[ShoppingcartitemRowUnsaved] = Decoder.forProduct6[ShoppingcartitemRowUnsaved, String, ProductId, Defaulted[ShoppingcartitemId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate")(ShoppingcartitemRowUnsaved.apply)(using Decoder.decodeString, ProductId.decoder, Defaulted.decoder(using ShoppingcartitemId.decoder), Defaulted.decoder(using Decoder.decodeInt), Defaulted.decoder(using TypoLocalDateTime.decoder), Defaulted.decoder(using TypoLocalDateTime.decoder))
 
-  given encoder: Encoder[ShoppingcartitemRowUnsaved] = Encoder.forProduct6[ShoppingcartitemRowUnsaved, /* max 50 chars */ String, ProductId, Defaulted[ShoppingcartitemId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate")(x => (x.shoppingcartid, x.productid, x.shoppingcartitemid, x.quantity, x.datecreated, x.modifieddate))(using Encoder.encodeString, ProductId.encoder, Defaulted.encoder(using ShoppingcartitemId.encoder), Defaulted.encoder(using Encoder.encodeInt), Defaulted.encoder(using TypoLocalDateTime.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
+  given encoder: Encoder[ShoppingcartitemRowUnsaved] = Encoder.forProduct6[ShoppingcartitemRowUnsaved, String, ProductId, Defaulted[ShoppingcartitemId], Defaulted[Int], Defaulted[TypoLocalDateTime], Defaulted[TypoLocalDateTime]]("shoppingcartid", "productid", "shoppingcartitemid", "quantity", "datecreated", "modifieddate")(x => (x.shoppingcartid, x.productid, x.shoppingcartitemid, x.quantity, x.datecreated, x.modifieddate))(using Encoder.encodeString, ProductId.encoder, Defaulted.encoder(using ShoppingcartitemId.encoder), Defaulted.encoder(using Encoder.encodeInt), Defaulted.encoder(using TypoLocalDateTime.encoder), Defaulted.encoder(using TypoLocalDateTime.encoder))
 
   given pgText: Text[ShoppingcartitemRowUnsaved] = {
     Text.instance[ShoppingcartitemRowUnsaved]{ (row, sb) =>

@@ -6,6 +6,6 @@ import com.fasterxml.jackson.annotation.JsonValue
 /** Unique pet identifier */
 data class PetId @JsonCreator constructor(@get:JsonValue val value: String) {
   override fun toString(): String {
-    return value.toString()
+    return value
   }
 }

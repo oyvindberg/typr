@@ -5,14 +5,14 @@
  */
 package adventureworks.pr.pi
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.production.location.LocationId
 import adventureworks.production.product.ProductId
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** View: pr.pi */
 data class PiViewRow(
@@ -23,17 +23,17 @@ data class PiViewRow(
   /** Points to [adventureworks.production.productinventory.ProductinventoryRow.locationid] */
   val locationid: LocationId,
   /** Points to [adventureworks.production.productinventory.ProductinventoryRow.shelf] */
-  val shelf: /* max 10 chars */ String,
+  val shelf: String,
   /** Points to [adventureworks.production.productinventory.ProductinventoryRow.bin] */
-  val bin: TypoShort,
+  val bin: Short,
   /** Points to [adventureworks.production.productinventory.ProductinventoryRow.quantity] */
-  val quantity: TypoShort,
+  val quantity: Short,
   /** Points to [adventureworks.production.productinventory.ProductinventoryRow.rowguid] */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Points to [adventureworks.production.productinventory.ProductinventoryRow.modifieddate] */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   companion object {
-    val _rowParser: RowParser<PiViewRow> = RowParsers.of(ProductId.pgType, ProductId.pgType, LocationId.pgType, PgTypes.text, TypoShort.pgType, TypoShort.pgType, TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7 -> PiViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!) }, { row -> arrayOf<Any?>(row.id, row.productid, row.locationid, row.shelf, row.bin, row.quantity, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<PiViewRow> = RowParsers.of(ProductId.pgType, ProductId.pgType, LocationId.pgType, PgTypes.text, KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7 -> PiViewRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.id, row.productid, row.locationid, row.shelf, row.bin, row.quantity, row.rowguid, row.modifieddate) })
   }
 }

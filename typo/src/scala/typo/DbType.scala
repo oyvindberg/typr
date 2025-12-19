@@ -5,20 +5,21 @@ import typo.internal.codegen.{DbAdapter, MariaDbAdapter, PostgresAdapter}
 
 sealed trait DbType {
 
-  /** Get the database adapter for code generation */
-  def adapter: DbAdapter
+  /** Get the database adapter for code generation.
+    * @param needsTimestampCasts
+    *   true for TypeMapperJvmOld (anorm, doobie, zio-jdbc), false for TypeMapperJvmNew (typo-dsl)
+    */
+  def adapter(needsTimestampCasts: Boolean): DbAdapter
 }
 
 object DbType {
   case object PostgreSQL extends DbType {
-    val adapter: DbAdapter = PostgresAdapter
+    def adapter(needsTimestampCasts: Boolean): DbAdapter =
+      if (needsTimestampCasts) PostgresAdapter.WithTimestampCasts
+      else PostgresAdapter.NoTimestampCasts
   }
   case object MariaDB extends DbType {
-    val adapter: DbAdapter = MariaDbAdapter
-  }
-  case object MySQL extends DbType {
-    // MySQL uses MariaDB adapter for now (syntax is compatible)
-    val adapter: DbAdapter = MariaDbAdapter
+    def adapter(needsTimestampCasts: Boolean): DbAdapter = MariaDbAdapter
   }
 
   def detect(connection: Connection): DbType = {
@@ -27,7 +28,7 @@ object DbType {
     productName match {
       case name if name.contains("postgresql") => PostgreSQL
       case name if name.contains("mariadb")    => MariaDB
-      case name if name.contains("mysql")      => MySQL
+      case name if name.contains("mysql")      => MariaDB
       case other                               => sys.error(s"Unsupported database: $other")
     }
   }
@@ -37,7 +38,7 @@ object DbType {
     driverName match {
       case name if name.contains("postgresql") => PostgreSQL
       case name if name.contains("mariadb")    => MariaDB
-      case name if name.contains("mysql")      => MySQL
+      case name if name.contains("mysql")      => MariaDB
       case other                               => sys.error(s"Unknown database driver: $other")
     }
   }

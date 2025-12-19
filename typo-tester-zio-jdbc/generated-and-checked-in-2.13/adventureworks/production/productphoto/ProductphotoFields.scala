@@ -8,11 +8,11 @@ package adventureworks.production.productphoto
 import adventureworks.customtypes.TypoBytea
 import adventureworks.customtypes.TypoLocalDateTime
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 
 trait ProductphotoFields {
   def productphotoid: IdField[ProductphotoId, ProductphotoRow]
@@ -24,11 +24,11 @@ trait ProductphotoFields {
 }
 
 object ProductphotoFields {
-  lazy val structure: Relation[ProductphotoFields, ProductphotoRow] =
+  lazy val structure: RelationStructure[ProductphotoFields, ProductphotoRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[ProductphotoFields, ProductphotoRow] {
+    extends RelationStructure[ProductphotoFields, ProductphotoRow] {
 
     override lazy val fields: ProductphotoFields = new ProductphotoFields {
       override def productphotoid = IdField[ProductphotoId, ProductphotoRow](_path, "productphotoid", None, Some("int4"), x => x.productphotoid, (row, value) => row.copy(productphotoid = value))

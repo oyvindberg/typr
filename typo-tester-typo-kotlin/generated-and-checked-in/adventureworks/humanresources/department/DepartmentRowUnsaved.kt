@@ -7,9 +7,10 @@ package adventureworks.humanresources.department
 
 import adventureworks.customtypes.Defaulted
 import adventureworks.customtypes.Defaulted.UseDefault
-import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.public.Name
+import java.time.LocalDateTime
 import typo.runtime.PgText
+import typo.runtime.PgTypes
 
 /** This class corresponds to a row in table `humanresources.department` which has not been persisted yet */
 data class DepartmentRowUnsaved(
@@ -22,11 +23,11 @@ data class DepartmentRowUnsaved(
     */
   val departmentid: Defaulted<DepartmentId> = UseDefault(),
   /** Default: now() */
-  val modifieddate: Defaulted<TypoLocalDateTime> = UseDefault()
+  val modifieddate: Defaulted<LocalDateTime> = UseDefault()
 ) {
   fun toRow(
     departmentidDefault: () -> DepartmentId,
-    modifieddateDefault: () -> TypoLocalDateTime
+    modifieddateDefault: () -> LocalDateTime
   ): DepartmentRow = DepartmentRow(departmentid = departmentid.getOrElse(departmentidDefault), name = name, groupname = groupname, modifieddate = modifieddate.getOrElse(modifieddateDefault))
 
   companion object {
@@ -37,6 +38,6 @@ data class DepartmentRowUnsaved(
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(DepartmentId.pgType.pgText()).unsafeEncode(row.departmentid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(TypoLocalDateTime.pgType.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
   }
 }

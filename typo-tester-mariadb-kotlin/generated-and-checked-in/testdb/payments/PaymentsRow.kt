@@ -8,15 +8,16 @@ package testdb.payments
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.orders.OrdersId
 import testdb.payment_methods.PaymentMethodsId
 import typo.data.maria.Inet6
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: payments
   * Primary key: payment_id
@@ -37,7 +38,7 @@ data class PaymentsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("transaction_id") val transactionId: Optional<String>,
+  @JsonProperty("transaction_id") val transactionId: String?,
   /**  */
   val amount: BigDecimal,
   /** 
@@ -51,15 +52,15 @@ data class PaymentsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("processor_response") val processorResponse: Optional<String>,
+  @JsonProperty("processor_response") val processorResponse: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("error_message") val errorMessage: Optional<String>,
+  @JsonProperty("error_message") val errorMessage: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("ip_address") val ipAddress: Optional<Inet6>,
+  @JsonProperty("ip_address") val ipAddress: Inet6?,
   /** 
     * Default: current_timestamp(6)
     */
@@ -67,25 +68,25 @@ data class PaymentsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("processed_at") val processedAt: Optional<LocalDateTime>
+  @JsonProperty("processed_at") val processedAt: LocalDateTime?
 ) {
   fun id(): PaymentsId = paymentId
 
   fun toUnsavedRow(
-    transactionId: Defaulted<Optional<String>>,
+    transactionId: Defaulted<String?>,
     currencyCode: Defaulted<String>,
     status: Defaulted<String>,
-    processorResponse: Defaulted<Optional<String>>,
-    errorMessage: Defaulted<Optional<String>>,
-    ipAddress: Defaulted<Optional<Inet6>>,
+    processorResponse: Defaulted<String?>,
+    errorMessage: Defaulted<String?>,
+    ipAddress: Defaulted<Inet6?>,
     createdAt: Defaulted<LocalDateTime>,
-    processedAt: Defaulted<Optional<LocalDateTime>>
+    processedAt: Defaulted<LocalDateTime?>
   ): PaymentsRowUnsaved = PaymentsRowUnsaved(orderId, methodId, amount, transactionId, currencyCode, status, processorResponse, errorMessage, ipAddress, createdAt, processedAt)
 
   companion object {
-    val _rowParser: RowParser<PaymentsRow> = RowParsers.of(PaymentsId.pgType, OrdersId.pgType, PaymentMethodsId.pgType, MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.char_, MariaTypes.text, MariaTypes.longtext.opt(), MariaTypes.varchar.opt(), MariaTypes.inet6.opt(), MariaTypes.datetime, MariaTypes.datetime.opt(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> PaymentsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!) }, { row -> arrayOf<Any?>(row.paymentId, row.orderId, row.methodId, row.transactionId, row.amount, row.currencyCode, row.status, row.processorResponse, row.errorMessage, row.ipAddress, row.createdAt, row.processedAt) })
+    val _rowParser: RowParser<PaymentsRow> = RowParsers.of(PaymentsId.pgType, OrdersId.pgType, PaymentMethodsId.pgType, MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.text, MariaTypes.longtext.nullable(), MariaTypes.varchar.nullable(), MariaTypes.inet6.nullable(), MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> PaymentsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) }, { row -> arrayOf<Any?>(row.paymentId, row.orderId, row.methodId, row.transactionId, row.amount, row.currencyCode, row.status, row.processorResponse, row.errorMessage, row.ipAddress, row.createdAt, row.processedAt) })
 
     val mariaText: MariaText<PaymentsRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

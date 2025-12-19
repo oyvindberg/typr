@@ -7,10 +7,10 @@ package testdb.v_warehouse_coverage
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface VWarehouseCoverageViewRepo {
-  fun select(): SelectBuilder<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow>
+  abstract fun select(): SelectBuilder<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow>
 
-  fun selectAll(c: Connection): List<VWarehouseCoverageViewRow>
+  abstract fun selectAll(c: Connection): List<VWarehouseCoverageViewRow>
 }

@@ -9,7 +9,7 @@ import java.sql.Connection
 import kotlin.collections.List
 
 interface SimpleCustomerLookupSqlRepo {
-  fun apply(
+  abstract fun apply(
     email: String,
     c: Connection
   ): List<SimpleCustomerLookupSqlRow>

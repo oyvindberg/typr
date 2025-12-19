@@ -8,5 +8,5 @@ package testdb.cte_test
 import java.sql.Connection
 
 trait CteTestSqlRepo {
-  def apply(using c: Connection): java.util.List[CteTestSqlRow]
+  def apply(using c: Connection): List[CteTestSqlRow]
 }

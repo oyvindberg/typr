@@ -23,15 +23,15 @@ case class VstorewithaddressesViewRow(
   /** Points to [[adventureworks.person.addresstype.AddresstypeRow.name]] */
   addresstype: Name,
   /** Points to [[adventureworks.person.address.AddressRow.addressline1]] */
-  addressline1: /* max 60 chars */ String,
+  addressline1: String,
   /** Points to [[adventureworks.person.address.AddressRow.addressline2]] */
-  addressline2: Option[/* max 60 chars */ String],
+  addressline2: String,
   /** Points to [[adventureworks.person.address.AddressRow.city]] */
-  city: /* max 30 chars */ String,
+  city: String,
   /** Points to [[adventureworks.person.stateprovince.StateprovinceRow.name]] */
   stateprovincename: Name,
   /** Points to [[adventureworks.person.address.AddressRow.postalcode]] */
-  postalcode: /* max 15 chars */ String,
+  postalcode: String,
   /** Points to [[adventureworks.person.countryregion.CountryregionRow.name]] */
   countryregionname: Name
 )
@@ -46,7 +46,7 @@ object VstorewithaddressesViewRow {
             name = Name.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             addresstype = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
             addressline1 = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 3, rs)._2,
-            addressline2 = JdbcDecoder.optionDecoder(using JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 4, rs)._2,
+            addressline2 = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 4, rs)._2,
             city = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 5, rs)._2,
             stateprovincename = Name.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
             postalcode = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 7, rs)._2,
@@ -61,7 +61,7 @@ object VstorewithaddressesViewRow {
       val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(using Name.jsonDecoder))
       val addresstype = jsonObj.get("addresstype").toRight("Missing field 'addresstype'").flatMap(_.as(using Name.jsonDecoder))
       val addressline1 = jsonObj.get("addressline1").toRight("Missing field 'addressline1'").flatMap(_.as(using JsonDecoder.string))
-      val addressline2 = jsonObj.get("addressline2").fold[Either[String, Option[String]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.string)))
+      val addressline2 = jsonObj.get("addressline2").toRight("Missing field 'addressline2'").flatMap(_.as(using JsonDecoder.string))
       val city = jsonObj.get("city").toRight("Missing field 'city'").flatMap(_.as(using JsonDecoder.string))
       val stateprovincename = jsonObj.get("stateprovincename").toRight("Missing field 'stateprovincename'").flatMap(_.as(using Name.jsonDecoder))
       val postalcode = jsonObj.get("postalcode").toRight("Missing field 'postalcode'").flatMap(_.as(using JsonDecoder.string))
@@ -89,7 +89,7 @@ object VstorewithaddressesViewRow {
         JsonEncoder.string.unsafeEncode(a.addressline1, indent, out)
         out.write(",")
         out.write(""""addressline2":""")
-        JsonEncoder.option(using JsonEncoder.string).unsafeEncode(a.addressline2, indent, out)
+        JsonEncoder.string.unsafeEncode(a.addressline2, indent, out)
         out.write(",")
         out.write(""""city":""")
         JsonEncoder.string.unsafeEncode(a.city, indent, out)

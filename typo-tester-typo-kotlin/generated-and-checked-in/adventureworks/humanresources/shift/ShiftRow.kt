@@ -6,12 +6,13 @@
 package adventureworks.humanresources.shift
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoLocalTime
 import adventureworks.public.Name
+import java.time.LocalDateTime
+import java.time.LocalTime
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
 import typo.runtime.PgText
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.runtime.PgTypes
 
 /** Table: humanresources.shift
   * Work shift lookup table.
@@ -25,23 +26,23 @@ data class ShiftRow(
   /** Shift description. */
   val name: Name,
   /** Shift start time. */
-  val starttime: TypoLocalTime,
+  val starttime: LocalTime,
   /** Shift end time. */
-  val endtime: TypoLocalTime,
+  val endtime: LocalTime,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): ShiftId = shiftid
 
   fun toUnsavedRow(
     shiftid: Defaulted<ShiftId>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    modifieddate: Defaulted<LocalDateTime>
   ): ShiftRowUnsaved = ShiftRowUnsaved(name, starttime, endtime, shiftid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ShiftRow> = RowParsers.of(ShiftId.pgType, Name.pgType, TypoLocalTime.pgType, TypoLocalTime.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4 -> ShiftRow(t0!!, t1!!, t2!!, t3!!, t4!!) }, { row -> arrayOf<Any?>(row.shiftid, row.name, row.starttime, row.endtime, row.modifieddate) })
+    val _rowParser: RowParser<ShiftRow> = RowParsers.of(ShiftId.pgType, Name.pgType, PgTypes.time, PgTypes.time, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> ShiftRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.shiftid, row.name, row.starttime, row.endtime, row.modifieddate) })
 
     val pgText: PgText<ShiftRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

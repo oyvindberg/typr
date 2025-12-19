@@ -9,14 +9,14 @@ import adventureworks.customtypes.TypoLocalDateTime
 import adventureworks.production.product.ProductId
 import adventureworks.sales.shoppingcartitem.ShoppingcartitemId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait SciViewFields {
   def id: Field[ShoppingcartitemId, SciViewRow]
   def shoppingcartitemid: Field[ShoppingcartitemId, SciViewRow]
-  def shoppingcartid: Field[/* max 50 chars */ String, SciViewRow]
+  def shoppingcartid: Field[String, SciViewRow]
   def quantity: Field[Int, SciViewRow]
   def productid: Field[ProductId, SciViewRow]
   def datecreated: Field[TypoLocalDateTime, SciViewRow]
@@ -24,16 +24,16 @@ trait SciViewFields {
 }
 
 object SciViewFields {
-  lazy val structure: Relation[SciViewFields, SciViewRow] =
+  lazy val structure: RelationStructure[SciViewFields, SciViewRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[SciViewFields, SciViewRow] {
+    extends RelationStructure[SciViewFields, SciViewRow] {
 
     override lazy val fields: SciViewFields = new SciViewFields {
       override def id = Field[ShoppingcartitemId, SciViewRow](_path, "id", None, None, x => x.id, (row, value) => row.copy(id = value))
       override def shoppingcartitemid = Field[ShoppingcartitemId, SciViewRow](_path, "shoppingcartitemid", None, None, x => x.shoppingcartitemid, (row, value) => row.copy(shoppingcartitemid = value))
-      override def shoppingcartid = Field[/* max 50 chars */ String, SciViewRow](_path, "shoppingcartid", None, None, x => x.shoppingcartid, (row, value) => row.copy(shoppingcartid = value))
+      override def shoppingcartid = Field[String, SciViewRow](_path, "shoppingcartid", None, None, x => x.shoppingcartid, (row, value) => row.copy(shoppingcartid = value))
       override def quantity = Field[Int, SciViewRow](_path, "quantity", None, None, x => x.quantity, (row, value) => row.copy(quantity = value))
       override def productid = Field[ProductId, SciViewRow](_path, "productid", None, None, x => x.productid, (row, value) => row.copy(productid = value))
       override def datecreated = Field[TypoLocalDateTime, SciViewRow](_path, "datecreated", Some("text"), None, x => x.datecreated, (row, value) => row.copy(datecreated = value))

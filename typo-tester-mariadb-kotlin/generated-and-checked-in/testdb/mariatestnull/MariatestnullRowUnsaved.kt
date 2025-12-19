@@ -12,12 +12,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import typo.data.maria.Inet4
 import typo.data.maria.Inet6
 import typo.data.maria.MariaSet
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
 
@@ -26,301 +27,301 @@ data class MariatestnullRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("tinyint_col") val tinyintCol: Defaulted<Optional<Byte>> = UseDefault(),
+  @JsonProperty("tinyint_col") val tinyintCol: Defaulted<Byte?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("smallint_col") val smallintCol: Defaulted<Optional<Short>> = UseDefault(),
+  @JsonProperty("smallint_col") val smallintCol: Defaulted<Short?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("mediumint_col") val mediumintCol: Defaulted<Optional<Int>> = UseDefault(),
+  @JsonProperty("mediumint_col") val mediumintCol: Defaulted<Int?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("int_col") val intCol: Defaulted<Optional<Int>> = UseDefault(),
+  @JsonProperty("int_col") val intCol: Defaulted<Int?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("bigint_col") val bigintCol: Defaulted<Optional<Long>> = UseDefault(),
+  @JsonProperty("bigint_col") val bigintCol: Defaulted<Long?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("tinyint_u_col") val tinyintUCol: Defaulted<Optional<Short>> = UseDefault(),
+  @JsonProperty("tinyint_u_col") val tinyintUCol: Defaulted<Short?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("smallint_u_col") val smallintUCol: Defaulted<Optional<Int>> = UseDefault(),
+  @JsonProperty("smallint_u_col") val smallintUCol: Defaulted<Int?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("mediumint_u_col") val mediumintUCol: Defaulted<Optional<Int>> = UseDefault(),
+  @JsonProperty("mediumint_u_col") val mediumintUCol: Defaulted<Int?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("int_u_col") val intUCol: Defaulted<Optional<Long>> = UseDefault(),
+  @JsonProperty("int_u_col") val intUCol: Defaulted<Long?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("bigint_u_col") val bigintUCol: Defaulted<Optional<BigInteger>> = UseDefault(),
+  @JsonProperty("bigint_u_col") val bigintUCol: Defaulted<BigInteger?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("decimal_col") val decimalCol: Defaulted<Optional<BigDecimal>> = UseDefault(),
+  @JsonProperty("decimal_col") val decimalCol: Defaulted<BigDecimal?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("numeric_col") val numericCol: Defaulted<Optional<BigDecimal>> = UseDefault(),
+  @JsonProperty("numeric_col") val numericCol: Defaulted<BigDecimal?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("float_col") val floatCol: Defaulted<Optional<Float>> = UseDefault(),
+  @JsonProperty("float_col") val floatCol: Defaulted<Float?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("double_col") val doubleCol: Defaulted<Optional<Double>> = UseDefault(),
+  @JsonProperty("double_col") val doubleCol: Defaulted<Double?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("bool_col") val boolCol: Defaulted<Optional<Boolean>> = UseDefault(),
+  @JsonProperty("bool_col") val boolCol: Defaulted<Boolean?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("bit_col") val bitCol: Defaulted<Optional<ByteArray>> = UseDefault(),
+  @JsonProperty("bit_col") val bitCol: Defaulted<ByteArray?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("bit1_col") val bit1Col: Defaulted<Optional<ByteArray>> = UseDefault(),
+  @JsonProperty("bit1_col") val bit1Col: Defaulted<ByteArray?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("char_col") val charCol: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("char_col") val charCol: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("varchar_col") val varcharCol: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("varchar_col") val varcharCol: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("tinytext_col") val tinytextCol: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("tinytext_col") val tinytextCol: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("text_col") val textCol: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("text_col") val textCol: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("mediumtext_col") val mediumtextCol: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("mediumtext_col") val mediumtextCol: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("longtext_col") val longtextCol: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("longtext_col") val longtextCol: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("binary_col") val binaryCol: Defaulted<Optional<ByteArray>> = UseDefault(),
+  @JsonProperty("binary_col") val binaryCol: Defaulted<ByteArray?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("varbinary_col") val varbinaryCol: Defaulted<Optional<ByteArray>> = UseDefault(),
+  @JsonProperty("varbinary_col") val varbinaryCol: Defaulted<ByteArray?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("tinyblob_col") val tinyblobCol: Defaulted<Optional<ByteArray>> = UseDefault(),
+  @JsonProperty("tinyblob_col") val tinyblobCol: Defaulted<ByteArray?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("blob_col") val blobCol: Defaulted<Optional<ByteArray>> = UseDefault(),
+  @JsonProperty("blob_col") val blobCol: Defaulted<ByteArray?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("mediumblob_col") val mediumblobCol: Defaulted<Optional<ByteArray>> = UseDefault(),
+  @JsonProperty("mediumblob_col") val mediumblobCol: Defaulted<ByteArray?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("longblob_col") val longblobCol: Defaulted<Optional<ByteArray>> = UseDefault(),
+  @JsonProperty("longblob_col") val longblobCol: Defaulted<ByteArray?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("date_col") val dateCol: Defaulted<Optional<LocalDate>> = UseDefault(),
+  @JsonProperty("date_col") val dateCol: Defaulted<LocalDate?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("time_col") val timeCol: Defaulted<Optional<LocalTime>> = UseDefault(),
+  @JsonProperty("time_col") val timeCol: Defaulted<LocalTime?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("time_fsp_col") val timeFspCol: Defaulted<Optional<LocalTime>> = UseDefault(),
+  @JsonProperty("time_fsp_col") val timeFspCol: Defaulted<LocalTime?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("datetime_col") val datetimeCol: Defaulted<Optional<LocalDateTime>> = UseDefault(),
+  @JsonProperty("datetime_col") val datetimeCol: Defaulted<LocalDateTime?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("datetime_fsp_col") val datetimeFspCol: Defaulted<Optional<LocalDateTime>> = UseDefault(),
+  @JsonProperty("datetime_fsp_col") val datetimeFspCol: Defaulted<LocalDateTime?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("timestamp_col") val timestampCol: Defaulted<Optional<LocalDateTime>> = UseDefault(),
+  @JsonProperty("timestamp_col") val timestampCol: Defaulted<LocalDateTime?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("timestamp_fsp_col") val timestampFspCol: Defaulted<Optional<LocalDateTime>> = UseDefault(),
+  @JsonProperty("timestamp_fsp_col") val timestampFspCol: Defaulted<LocalDateTime?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("year_col") val yearCol: Defaulted<Optional<Year>> = UseDefault(),
+  @JsonProperty("year_col") val yearCol: Defaulted<Year?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("enum_col") val enumCol: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("enum_col") val enumCol: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("set_col") val setCol: Defaulted<Optional<MariaSet>> = UseDefault(),
+  @JsonProperty("set_col") val setCol: Defaulted<MariaSet?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("json_col") val jsonCol: Defaulted<Optional<String>> = UseDefault(),
+  @JsonProperty("json_col") val jsonCol: Defaulted<String?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("inet4_col") val inet4Col: Defaulted<Optional<Inet4>> = UseDefault(),
+  @JsonProperty("inet4_col") val inet4Col: Defaulted<Inet4?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("inet6_col") val inet6Col: Defaulted<Optional<Inet6>> = UseDefault()
+  @JsonProperty("inet6_col") val inet6Col: Defaulted<Inet6?> = UseDefault()
 ) {
   fun toRow(
-    tinyintColDefault: () -> Optional<Byte>,
-    smallintColDefault: () -> Optional<Short>,
-    mediumintColDefault: () -> Optional<Int>,
-    intColDefault: () -> Optional<Int>,
-    bigintColDefault: () -> Optional<Long>,
-    tinyintUColDefault: () -> Optional<Short>,
-    smallintUColDefault: () -> Optional<Int>,
-    mediumintUColDefault: () -> Optional<Int>,
-    intUColDefault: () -> Optional<Long>,
-    bigintUColDefault: () -> Optional<BigInteger>,
-    decimalColDefault: () -> Optional<BigDecimal>,
-    numericColDefault: () -> Optional<BigDecimal>,
-    floatColDefault: () -> Optional<Float>,
-    doubleColDefault: () -> Optional<Double>,
-    boolColDefault: () -> Optional<Boolean>,
-    bitColDefault: () -> Optional<ByteArray>,
-    bit1ColDefault: () -> Optional<ByteArray>,
-    charColDefault: () -> Optional<String>,
-    varcharColDefault: () -> Optional<String>,
-    tinytextColDefault: () -> Optional<String>,
-    textColDefault: () -> Optional<String>,
-    mediumtextColDefault: () -> Optional<String>,
-    longtextColDefault: () -> Optional<String>,
-    binaryColDefault: () -> Optional<ByteArray>,
-    varbinaryColDefault: () -> Optional<ByteArray>,
-    tinyblobColDefault: () -> Optional<ByteArray>,
-    blobColDefault: () -> Optional<ByteArray>,
-    mediumblobColDefault: () -> Optional<ByteArray>,
-    longblobColDefault: () -> Optional<ByteArray>,
-    dateColDefault: () -> Optional<LocalDate>,
-    timeColDefault: () -> Optional<LocalTime>,
-    timeFspColDefault: () -> Optional<LocalTime>,
-    datetimeColDefault: () -> Optional<LocalDateTime>,
-    datetimeFspColDefault: () -> Optional<LocalDateTime>,
-    timestampColDefault: () -> Optional<LocalDateTime>,
-    timestampFspColDefault: () -> Optional<LocalDateTime>,
-    yearColDefault: () -> Optional<Year>,
-    enumColDefault: () -> Optional<String>,
-    setColDefault: () -> Optional<MariaSet>,
-    jsonColDefault: () -> Optional<String>,
-    inet4ColDefault: () -> Optional<Inet4>,
-    inet6ColDefault: () -> Optional<Inet6>
+    tinyintColDefault: () -> Byte?,
+    smallintColDefault: () -> Short?,
+    mediumintColDefault: () -> Int?,
+    intColDefault: () -> Int?,
+    bigintColDefault: () -> Long?,
+    tinyintUColDefault: () -> Short?,
+    smallintUColDefault: () -> Int?,
+    mediumintUColDefault: () -> Int?,
+    intUColDefault: () -> Long?,
+    bigintUColDefault: () -> BigInteger?,
+    decimalColDefault: () -> BigDecimal?,
+    numericColDefault: () -> BigDecimal?,
+    floatColDefault: () -> Float?,
+    doubleColDefault: () -> Double?,
+    boolColDefault: () -> Boolean?,
+    bitColDefault: () -> ByteArray?,
+    bit1ColDefault: () -> ByteArray?,
+    charColDefault: () -> String?,
+    varcharColDefault: () -> String?,
+    tinytextColDefault: () -> String?,
+    textColDefault: () -> String?,
+    mediumtextColDefault: () -> String?,
+    longtextColDefault: () -> String?,
+    binaryColDefault: () -> ByteArray?,
+    varbinaryColDefault: () -> ByteArray?,
+    tinyblobColDefault: () -> ByteArray?,
+    blobColDefault: () -> ByteArray?,
+    mediumblobColDefault: () -> ByteArray?,
+    longblobColDefault: () -> ByteArray?,
+    dateColDefault: () -> LocalDate?,
+    timeColDefault: () -> LocalTime?,
+    timeFspColDefault: () -> LocalTime?,
+    datetimeColDefault: () -> LocalDateTime?,
+    datetimeFspColDefault: () -> LocalDateTime?,
+    timestampColDefault: () -> LocalDateTime?,
+    timestampFspColDefault: () -> LocalDateTime?,
+    yearColDefault: () -> Year?,
+    enumColDefault: () -> String?,
+    setColDefault: () -> MariaSet?,
+    jsonColDefault: () -> String?,
+    inet4ColDefault: () -> Inet4?,
+    inet6ColDefault: () -> Inet6?
   ): MariatestnullRow = MariatestnullRow(tinyintCol = tinyintCol.getOrElse(tinyintColDefault), smallintCol = smallintCol.getOrElse(smallintColDefault), mediumintCol = mediumintCol.getOrElse(mediumintColDefault), intCol = intCol.getOrElse(intColDefault), bigintCol = bigintCol.getOrElse(bigintColDefault), tinyintUCol = tinyintUCol.getOrElse(tinyintUColDefault), smallintUCol = smallintUCol.getOrElse(smallintUColDefault), mediumintUCol = mediumintUCol.getOrElse(mediumintUColDefault), intUCol = intUCol.getOrElse(intUColDefault), bigintUCol = bigintUCol.getOrElse(bigintUColDefault), decimalCol = decimalCol.getOrElse(decimalColDefault), numericCol = numericCol.getOrElse(numericColDefault), floatCol = floatCol.getOrElse(floatColDefault), doubleCol = doubleCol.getOrElse(doubleColDefault), boolCol = boolCol.getOrElse(boolColDefault), bitCol = bitCol.getOrElse(bitColDefault), bit1Col = bit1Col.getOrElse(bit1ColDefault), charCol = charCol.getOrElse(charColDefault), varcharCol = varcharCol.getOrElse(varcharColDefault), tinytextCol = tinytextCol.getOrElse(tinytextColDefault), textCol = textCol.getOrElse(textColDefault), mediumtextCol = mediumtextCol.getOrElse(mediumtextColDefault), longtextCol = longtextCol.getOrElse(longtextColDefault), binaryCol = binaryCol.getOrElse(binaryColDefault), varbinaryCol = varbinaryCol.getOrElse(varbinaryColDefault), tinyblobCol = tinyblobCol.getOrElse(tinyblobColDefault), blobCol = blobCol.getOrElse(blobColDefault), mediumblobCol = mediumblobCol.getOrElse(mediumblobColDefault), longblobCol = longblobCol.getOrElse(longblobColDefault), dateCol = dateCol.getOrElse(dateColDefault), timeCol = timeCol.getOrElse(timeColDefault), timeFspCol = timeFspCol.getOrElse(timeFspColDefault), datetimeCol = datetimeCol.getOrElse(datetimeColDefault), datetimeFspCol = datetimeFspCol.getOrElse(datetimeFspColDefault), timestampCol = timestampCol.getOrElse(timestampColDefault), timestampFspCol = timestampFspCol.getOrElse(timestampFspColDefault), yearCol = yearCol.getOrElse(yearColDefault), enumCol = enumCol.getOrElse(enumColDefault), setCol = setCol.getOrElse(setColDefault), jsonCol = jsonCol.getOrElse(jsonColDefault), inet4Col = inet4Col.getOrElse(inet4ColDefault), inet6Col = inet6Col.getOrElse(inet6ColDefault))
 
   companion object {
     val mariaText: MariaText<MariatestnullRowUnsaved> =
-      MariaText.instance({ row, sb -> Defaulted.mariaText(MariaTypes.tinyint.opt().mariaText()).unsafeEncode(row.tinyintCol, sb)
+      MariaText.instance({ row, sb -> Defaulted.mariaText(KotlinDbTypes.MariaTypes.tinyint.nullable().mariaText()).unsafeEncode(row.tinyintCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.smallint.opt().mariaText()).unsafeEncode(row.smallintCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.smallint.nullable().mariaText()).unsafeEncode(row.smallintCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.mediumint.opt().mariaText()).unsafeEncode(row.mediumintCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.mediumint.nullable().mariaText()).unsafeEncode(row.mediumintCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.int_.opt().mariaText()).unsafeEncode(row.intCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.int_.nullable().mariaText()).unsafeEncode(row.intCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bigint.opt().mariaText()).unsafeEncode(row.bigintCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bigint.nullable().mariaText()).unsafeEncode(row.bigintCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.tinyintUnsigned.opt().mariaText()).unsafeEncode(row.tinyintUCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.tinyintUnsigned.nullable().mariaText()).unsafeEncode(row.tinyintUCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.smallintUnsigned.opt().mariaText()).unsafeEncode(row.smallintUCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.smallintUnsigned.nullable().mariaText()).unsafeEncode(row.smallintUCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.mediumintUnsigned.opt().mariaText()).unsafeEncode(row.mediumintUCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.mediumintUnsigned.nullable().mariaText()).unsafeEncode(row.mediumintUCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.intUnsigned.opt().mariaText()).unsafeEncode(row.intUCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.intUnsigned.nullable().mariaText()).unsafeEncode(row.intUCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bigintUnsigned.opt().mariaText()).unsafeEncode(row.bigintUCol, sb)
+      Defaulted.mariaText(MariaTypes.bigintUnsigned.nullable().mariaText()).unsafeEncode(row.bigintUCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.decimalCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.nullable().mariaText()).unsafeEncode(row.decimalCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.decimal.opt().mariaText()).unsafeEncode(row.numericCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.numeric.nullable().mariaText()).unsafeEncode(row.numericCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.float_.opt().mariaText()).unsafeEncode(row.floatCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.float_.nullable().mariaText()).unsafeEncode(row.floatCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.double_.opt().mariaText()).unsafeEncode(row.doubleCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.double_.nullable().mariaText()).unsafeEncode(row.doubleCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bool.opt().mariaText()).unsafeEncode(row.boolCol, sb)
+      Defaulted.mariaText(KotlinDbTypes.MariaTypes.bool.nullable().mariaText()).unsafeEncode(row.boolCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bit.opt().mariaText()).unsafeEncode(row.bitCol, sb)
+      Defaulted.mariaText(MariaTypes.bit.nullable().mariaText()).unsafeEncode(row.bitCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.bit.opt().mariaText()).unsafeEncode(row.bit1Col, sb)
+      Defaulted.mariaText(MariaTypes.bit.nullable().mariaText()).unsafeEncode(row.bit1Col, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.char_.opt().mariaText()).unsafeEncode(row.charCol, sb)
+      Defaulted.mariaText(MariaTypes.char_.nullable().mariaText()).unsafeEncode(row.charCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varchar.opt().mariaText()).unsafeEncode(row.varcharCol, sb)
+      Defaulted.mariaText(MariaTypes.varchar.nullable().mariaText()).unsafeEncode(row.varcharCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.tinytext.opt().mariaText()).unsafeEncode(row.tinytextCol, sb)
+      Defaulted.mariaText(MariaTypes.tinytext.nullable().mariaText()).unsafeEncode(row.tinytextCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.text.opt().mariaText()).unsafeEncode(row.textCol, sb)
+      Defaulted.mariaText(MariaTypes.text.nullable().mariaText()).unsafeEncode(row.textCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.mediumtext.opt().mariaText()).unsafeEncode(row.mediumtextCol, sb)
+      Defaulted.mariaText(MariaTypes.mediumtext.nullable().mariaText()).unsafeEncode(row.mediumtextCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.longtextCol, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.longtextCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.binary.opt().mariaText()).unsafeEncode(row.binaryCol, sb)
+      Defaulted.mariaText(MariaTypes.binary.nullable().mariaText()).unsafeEncode(row.binaryCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.varbinary.opt().mariaText()).unsafeEncode(row.varbinaryCol, sb)
+      Defaulted.mariaText(MariaTypes.varbinary.nullable().mariaText()).unsafeEncode(row.varbinaryCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.tinyblob.opt().mariaText()).unsafeEncode(row.tinyblobCol, sb)
+      Defaulted.mariaText(MariaTypes.tinyblob.nullable().mariaText()).unsafeEncode(row.tinyblobCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.blob.opt().mariaText()).unsafeEncode(row.blobCol, sb)
+      Defaulted.mariaText(MariaTypes.blob.nullable().mariaText()).unsafeEncode(row.blobCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.mediumblob.opt().mariaText()).unsafeEncode(row.mediumblobCol, sb)
+      Defaulted.mariaText(MariaTypes.mediumblob.nullable().mariaText()).unsafeEncode(row.mediumblobCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longblob.opt().mariaText()).unsafeEncode(row.longblobCol, sb)
+      Defaulted.mariaText(MariaTypes.longblob.nullable().mariaText()).unsafeEncode(row.longblobCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.date.opt().mariaText()).unsafeEncode(row.dateCol, sb)
+      Defaulted.mariaText(MariaTypes.date.nullable().mariaText()).unsafeEncode(row.dateCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.time.opt().mariaText()).unsafeEncode(row.timeCol, sb)
+      Defaulted.mariaText(MariaTypes.time.nullable().mariaText()).unsafeEncode(row.timeCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.time.opt().mariaText()).unsafeEncode(row.timeFspCol, sb)
+      Defaulted.mariaText(MariaTypes.time.nullable().mariaText()).unsafeEncode(row.timeFspCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.datetimeCol, sb)
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.datetimeCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.datetime.opt().mariaText()).unsafeEncode(row.datetimeFspCol, sb)
+      Defaulted.mariaText(MariaTypes.datetime.nullable().mariaText()).unsafeEncode(row.datetimeFspCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.timestamp.opt().mariaText()).unsafeEncode(row.timestampCol, sb)
+      Defaulted.mariaText(MariaTypes.timestamp.nullable().mariaText()).unsafeEncode(row.timestampCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.timestamp.opt().mariaText()).unsafeEncode(row.timestampFspCol, sb)
+      Defaulted.mariaText(MariaTypes.timestamp.nullable().mariaText()).unsafeEncode(row.timestampFspCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.year.opt().mariaText()).unsafeEncode(row.yearCol, sb)
+      Defaulted.mariaText(MariaTypes.year.nullable().mariaText()).unsafeEncode(row.yearCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.text.opt().mariaText()).unsafeEncode(row.enumCol, sb)
+      Defaulted.mariaText(MariaTypes.text.nullable().mariaText()).unsafeEncode(row.enumCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.set.opt().mariaText()).unsafeEncode(row.setCol, sb)
+      Defaulted.mariaText(MariaTypes.set.nullable().mariaText()).unsafeEncode(row.setCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.longtext.opt().mariaText()).unsafeEncode(row.jsonCol, sb)
+      Defaulted.mariaText(MariaTypes.longtext.nullable().mariaText()).unsafeEncode(row.jsonCol, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.inet4.opt().mariaText()).unsafeEncode(row.inet4Col, sb)
+      Defaulted.mariaText(MariaTypes.inet4.nullable().mariaText()).unsafeEncode(row.inet4Col, sb)
       sb.append(MariaText.DELIMETER)
-      Defaulted.mariaText(MariaTypes.inet6.opt().mariaText()).unsafeEncode(row.inet6Col, sb) })
+      Defaulted.mariaText(MariaTypes.inet6.nullable().mariaText()).unsafeEncode(row.inet6Col, sb) })
   }
 }

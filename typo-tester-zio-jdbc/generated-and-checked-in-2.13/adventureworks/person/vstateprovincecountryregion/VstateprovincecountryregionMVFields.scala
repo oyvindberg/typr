@@ -11,13 +11,13 @@ import adventureworks.public.Flag
 import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
 import typo.dsl.Path
+import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
 
 trait VstateprovincecountryregionMVFields {
   def stateprovinceid: Field[StateprovinceId, VstateprovincecountryregionMVRow]
-  def stateprovincecode: Field[/* bpchar, max 3 chars */ String, VstateprovincecountryregionMVRow]
+  def stateprovincecode: Field[String, VstateprovincecountryregionMVRow]
   def isonlystateprovinceflag: Field[Flag, VstateprovincecountryregionMVRow]
   def stateprovincename: Field[Name, VstateprovincecountryregionMVRow]
   def territoryid: Field[SalesterritoryId, VstateprovincecountryregionMVRow]
@@ -26,15 +26,15 @@ trait VstateprovincecountryregionMVFields {
 }
 
 object VstateprovincecountryregionMVFields {
-  lazy val structure: Relation[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] =
+  lazy val structure: RelationStructure[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] =
     new Impl(List())
 
   private final class Impl(val _path: List[Path])
-    extends Relation[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] {
+    extends RelationStructure[VstateprovincecountryregionMVFields, VstateprovincecountryregionMVRow] {
 
     override lazy val fields: VstateprovincecountryregionMVFields = new VstateprovincecountryregionMVFields {
       override def stateprovinceid = Field[StateprovinceId, VstateprovincecountryregionMVRow](_path, "stateprovinceid", None, None, x => x.stateprovinceid, (row, value) => row.copy(stateprovinceid = value))
-      override def stateprovincecode = Field[/* bpchar, max 3 chars */ String, VstateprovincecountryregionMVRow](_path, "stateprovincecode", None, None, x => x.stateprovincecode, (row, value) => row.copy(stateprovincecode = value))
+      override def stateprovincecode = Field[String, VstateprovincecountryregionMVRow](_path, "stateprovincecode", None, None, x => x.stateprovincecode, (row, value) => row.copy(stateprovincecode = value))
       override def isonlystateprovinceflag = Field[Flag, VstateprovincecountryregionMVRow](_path, "isonlystateprovinceflag", None, None, x => x.isonlystateprovinceflag, (row, value) => row.copy(isonlystateprovinceflag = value))
       override def stateprovincename = Field[Name, VstateprovincecountryregionMVRow](_path, "stateprovincename", None, None, x => x.stateprovincename, (row, value) => row.copy(stateprovincename = value))
       override def territoryid = Field[SalesterritoryId, VstateprovincecountryregionMVRow](_path, "territoryid", None, None, x => x.territoryid, (row, value) => row.copy(territoryid = value))

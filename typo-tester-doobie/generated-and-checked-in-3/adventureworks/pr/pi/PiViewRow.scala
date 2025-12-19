@@ -24,7 +24,7 @@ case class PiViewRow(
   /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.locationid]] */
   locationid: LocationId,
   /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.shelf]] */
-  shelf: /* max 10 chars */ String,
+  shelf: String,
   /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.bin]] */
   bin: TypoShort,
   /** Points to [[adventureworks.production.productinventory.ProductinventoryRow.quantity]] */
@@ -36,9 +36,9 @@ case class PiViewRow(
 )
 
 object PiViewRow {
-  given decoder: Decoder[PiViewRow] = Decoder.forProduct8[PiViewRow, ProductId, ProductId, LocationId, /* max 10 chars */ String, TypoShort, TypoShort, TypoUUID, TypoLocalDateTime]("id", "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(PiViewRow.apply)(using ProductId.decoder, ProductId.decoder, LocationId.decoder, Decoder.decodeString, TypoShort.decoder, TypoShort.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
+  given decoder: Decoder[PiViewRow] = Decoder.forProduct8[PiViewRow, ProductId, ProductId, LocationId, String, TypoShort, TypoShort, TypoUUID, TypoLocalDateTime]("id", "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(PiViewRow.apply)(using ProductId.decoder, ProductId.decoder, LocationId.decoder, Decoder.decodeString, TypoShort.decoder, TypoShort.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder)
 
-  given encoder: Encoder[PiViewRow] = Encoder.forProduct8[PiViewRow, ProductId, ProductId, LocationId, /* max 10 chars */ String, TypoShort, TypoShort, TypoUUID, TypoLocalDateTime]("id", "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(x => (x.id, x.productid, x.locationid, x.shelf, x.bin, x.quantity, x.rowguid, x.modifieddate))(using ProductId.encoder, ProductId.encoder, LocationId.encoder, Encoder.encodeString, TypoShort.encoder, TypoShort.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
+  given encoder: Encoder[PiViewRow] = Encoder.forProduct8[PiViewRow, ProductId, ProductId, LocationId, String, TypoShort, TypoShort, TypoUUID, TypoLocalDateTime]("id", "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate")(x => (x.id, x.productid, x.locationid, x.shelf, x.bin, x.quantity, x.rowguid, x.modifieddate))(using ProductId.encoder, ProductId.encoder, LocationId.encoder, Encoder.encodeString, TypoShort.encoder, TypoShort.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder)
 
   given read: Read[PiViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -55,7 +55,7 @@ object PiViewRow {
         id = arr(0).asInstanceOf[ProductId],
             productid = arr(1).asInstanceOf[ProductId],
             locationid = arr(2).asInstanceOf[LocationId],
-            shelf = arr(3).asInstanceOf[/* max 10 chars */ String],
+            shelf = arr(3).asInstanceOf[String],
             bin = arr(4).asInstanceOf[TypoShort],
             quantity = arr(5).asInstanceOf[TypoShort],
             rowguid = arr(6).asInstanceOf[TypoUUID],

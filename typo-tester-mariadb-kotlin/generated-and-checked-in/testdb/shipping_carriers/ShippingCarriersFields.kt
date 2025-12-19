@@ -5,54 +5,56 @@
  */
 package testdb.shipping_carriers
 
-import java.util.Optional
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
 
 interface ShippingCarriersFields : FieldsExpr<ShippingCarriersRow> {
-  fun apiConfig(): OptField<String, ShippingCarriersRow>
+  abstract fun apiConfig(): OptField<String, ShippingCarriersRow>
 
-  fun carrierId(): IdField<ShippingCarriersId, ShippingCarriersRow>
+  abstract fun carrierId(): IdField<ShippingCarriersId, ShippingCarriersRow>
 
-  fun code(): Field<String, ShippingCarriersRow>
+  abstract fun code(): Field<String, ShippingCarriersRow>
 
-  override fun columns(): List<FieldLike<*, ShippingCarriersRow>>
+  abstract override fun columns(): List<FieldLike<*, ShippingCarriersRow>>
 
-  fun isActive(): Field<Boolean, ShippingCarriersRow>
+  abstract fun isActive(): Field<Boolean, ShippingCarriersRow>
 
-  fun name(): Field<String, ShippingCarriersRow>
+  abstract fun name(): Field<String, ShippingCarriersRow>
 
-  override fun rowParser(): RowParser<ShippingCarriersRow> = ShippingCarriersRow._rowParser
+  override fun rowParser(): RowParser<ShippingCarriersRow> = ShippingCarriersRow._rowParser.underlying
 
-  fun trackingUrlTemplate(): OptField<String, ShippingCarriersRow>
+  abstract fun trackingUrlTemplate(): OptField<String, ShippingCarriersRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : ShippingCarriersFields, Relation<ShippingCarriersFields, ShippingCarriersRow> {
-      override fun carrierId(): IdField<ShippingCarriersId, ShippingCarriersRow> = IdField<ShippingCarriersId, ShippingCarriersRow>(_path, "carrier_id", ShippingCarriersRow::carrierId, Optional.empty(), Optional.empty(), { row, value -> row.copy(carrierId = value) }, ShippingCarriersId.pgType)
+    data class Impl(val _path: List<Path>) : ShippingCarriersFields, RelationStructure<ShippingCarriersFields, ShippingCarriersRow> {
+      override fun carrierId(): IdField<ShippingCarriersId, ShippingCarriersRow> = IdField<ShippingCarriersId, ShippingCarriersRow>(_path, "carrier_id", ShippingCarriersRow::carrierId, null, null, { row, value -> row.copy(carrierId = value) }, ShippingCarriersId.pgType)
 
-      override fun code(): Field<String, ShippingCarriersRow> = Field<String, ShippingCarriersRow>(_path, "code", ShippingCarriersRow::code, Optional.empty(), Optional.empty(), { row, value -> row.copy(code = value) }, MariaTypes.varchar)
+      override fun code(): Field<String, ShippingCarriersRow> = Field<String, ShippingCarriersRow>(_path, "code", ShippingCarriersRow::code, null, null, { row, value -> row.copy(code = value) }, MariaTypes.varchar)
 
-      override fun name(): Field<String, ShippingCarriersRow> = Field<String, ShippingCarriersRow>(_path, "name", ShippingCarriersRow::name, Optional.empty(), Optional.empty(), { row, value -> row.copy(name = value) }, MariaTypes.varchar)
+      override fun name(): Field<String, ShippingCarriersRow> = Field<String, ShippingCarriersRow>(_path, "name", ShippingCarriersRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
 
-      override fun trackingUrlTemplate(): OptField<String, ShippingCarriersRow> = OptField<String, ShippingCarriersRow>(_path, "tracking_url_template", ShippingCarriersRow::trackingUrlTemplate, Optional.empty(), Optional.empty(), { row, value -> row.copy(trackingUrlTemplate = value) }, MariaTypes.varchar)
+      override fun trackingUrlTemplate(): OptField<String, ShippingCarriersRow> = OptField<String, ShippingCarriersRow>(_path, "tracking_url_template", ShippingCarriersRow::trackingUrlTemplate, null, null, { row, value -> row.copy(trackingUrlTemplate = value) }, MariaTypes.varchar)
 
-      override fun apiConfig(): OptField<String, ShippingCarriersRow> = OptField<String, ShippingCarriersRow>(_path, "api_config", ShippingCarriersRow::apiConfig, Optional.empty(), Optional.empty(), { row, value -> row.copy(apiConfig = value) }, MariaTypes.longtext)
+      override fun apiConfig(): OptField<String, ShippingCarriersRow> = OptField<String, ShippingCarriersRow>(_path, "api_config", ShippingCarriersRow::apiConfig, null, null, { row, value -> row.copy(apiConfig = value) }, MariaTypes.longtext)
 
-      override fun isActive(): Field<Boolean, ShippingCarriersRow> = Field<Boolean, ShippingCarriersRow>(_path, "is_active", ShippingCarriersRow::isActive, Optional.empty(), Optional.empty(), { row, value -> row.copy(isActive = value) }, MariaTypes.bool)
+      override fun isActive(): Field<Boolean, ShippingCarriersRow> = Field<Boolean, ShippingCarriersRow>(_path, "is_active", ShippingCarriersRow::isActive, null, null, { row, value -> row.copy(isActive = value) }, KotlinDbTypes.MariaTypes.bool)
 
-      override fun columns(): List<FieldLike<*, ShippingCarriersRow>> = listOf(this.carrierId(), this.code(), this.name(), this.trackingUrlTemplate(), this.apiConfig(), this.isActive())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ShippingCarriersFields, ShippingCarriersRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ShippingCarriersRow>> = listOf(this.carrierId().underlying, this.code().underlying, this.name().underlying, this.trackingUrlTemplate().underlying, this.apiConfig().underlying, this.isActive().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ShippingCarriersFields, ShippingCarriersRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

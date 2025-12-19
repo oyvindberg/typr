@@ -27,9 +27,9 @@ case class CcViewRow(
   /** Points to [[adventureworks.sales.creditcard.CreditcardRow.creditcardid]] */
   creditcardid: /* user-picked */ CustomCreditcardId,
   /** Points to [[adventureworks.sales.creditcard.CreditcardRow.cardtype]] */
-  cardtype: /* max 50 chars */ String,
+  cardtype: String,
   /** Points to [[adventureworks.sales.creditcard.CreditcardRow.cardnumber]] */
-  cardnumber: /* max 25 chars */ String,
+  cardnumber: String,
   /** Points to [[adventureworks.sales.creditcard.CreditcardRow.expmonth]] */
   expmonth: TypoShort,
   /** Points to [[adventureworks.sales.creditcard.CreditcardRow.expyear]] */

@@ -5,12 +5,11 @@
  */
 package adventureworks.production.workorderrouting
 
-import adventureworks.customtypes.TypoShort
 import adventureworks.production.workorder.WorkorderId
 
 /** Type for the composite primary key of table `production.workorderrouting` */
 data class WorkorderroutingId(
   val workorderid: WorkorderId,
   val productid: Int,
-  val operationsequence: TypoShort
+  val operationsequence: Short
 )

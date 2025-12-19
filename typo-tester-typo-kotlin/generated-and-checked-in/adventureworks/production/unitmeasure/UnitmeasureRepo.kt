@@ -6,89 +6,88 @@
 package adventureworks.production.unitmeasure
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface UnitmeasureRepo {
-  fun delete(): DeleteBuilder<UnitmeasureFields, UnitmeasureRow>
+  abstract fun delete(): DeleteBuilder<UnitmeasureFields, UnitmeasureRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     unitmeasurecode: UnitmeasureId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     unitmeasurecodes: Array<UnitmeasureId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: UnitmeasureRow,
     c: Connection
   ): UnitmeasureRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: UnitmeasureRowUnsaved,
     c: Connection
   ): UnitmeasureRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<UnitmeasureRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<UnitmeasureRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<UnitmeasureRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<UnitmeasureRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<UnitmeasureFields, UnitmeasureRow>
+  abstract fun select(): SelectBuilder<UnitmeasureFields, UnitmeasureRow>
 
-  fun selectAll(c: Connection): List<UnitmeasureRow>
+  abstract fun selectAll(c: Connection): List<UnitmeasureRow>
 
-  fun selectById(
+  abstract fun selectById(
     unitmeasurecode: UnitmeasureId,
     c: Connection
-  ): Optional<UnitmeasureRow>
+  ): UnitmeasureRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     unitmeasurecodes: Array<UnitmeasureId>,
     c: Connection
   ): List<UnitmeasureRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     unitmeasurecodes: Array<UnitmeasureId>,
     c: Connection
   ): Map<UnitmeasureId, UnitmeasureRow>
 
-  fun update(): UpdateBuilder<UnitmeasureFields, UnitmeasureRow>
+  abstract fun update(): UpdateBuilder<UnitmeasureFields, UnitmeasureRow>
 
-  fun update(
+  abstract fun update(
     row: UnitmeasureRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: UnitmeasureRow,
     c: Connection
   ): UnitmeasureRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<UnitmeasureRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<UnitmeasureRow>,
     c: Connection
   ): List<UnitmeasureRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<UnitmeasureRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<UnitmeasureRow>,
     batchSize: Int,
     c: Connection
   ): Int

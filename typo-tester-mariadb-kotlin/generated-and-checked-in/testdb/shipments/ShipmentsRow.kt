@@ -9,15 +9,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.orders.OrdersId
 import testdb.shipping_carriers.ShippingCarriersId
 import testdb.warehouses.WarehousesId
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: shipments
   * Primary key: shipment_id
@@ -38,21 +39,21 @@ data class ShipmentsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("tracking_number") val trackingNumber: Optional<String>,
+  @JsonProperty("tracking_number") val trackingNumber: String?,
   /**  */
   @JsonProperty("shipping_method") val shippingMethod: String,
   /** 
     * Default: NULL
     */
-  @JsonProperty("weight_kg") val weightKg: Optional<BigDecimal>,
+  @JsonProperty("weight_kg") val weightKg: BigDecimal?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("dimensions_json") val dimensionsJson: Optional<String>,
+  @JsonProperty("dimensions_json") val dimensionsJson: String?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("label_data") val labelData: Optional<ByteArray>,
+  @JsonProperty("label_data") val labelData: ByteArray?,
   /** 
     * Default: 'pending'
     */
@@ -60,26 +61,26 @@ data class ShipmentsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("estimated_delivery_date") val estimatedDeliveryDate: Optional<LocalDate>,
+  @JsonProperty("estimated_delivery_date") val estimatedDeliveryDate: LocalDate?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("actual_delivery_at") val actualDeliveryAt: Optional<LocalDateTime>,
+  @JsonProperty("actual_delivery_at") val actualDeliveryAt: LocalDateTime?,
   /**  */
   @JsonProperty("shipping_cost") val shippingCost: BigDecimal,
   /** 
     * Default: NULL
     */
-  @JsonProperty("insurance_amount") val insuranceAmount: Optional<BigDecimal>,
+  @JsonProperty("insurance_amount") val insuranceAmount: BigDecimal?,
   /** 
     * Default: NULL
     * Points to [testdb.warehouses.WarehousesRow.warehouseId]
     */
-  @JsonProperty("origin_warehouse_id") val originWarehouseId: Optional<WarehousesId>,
+  @JsonProperty("origin_warehouse_id") val originWarehouseId: WarehousesId?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("shipped_at") val shippedAt: Optional<LocalDateTime>,
+  @JsonProperty("shipped_at") val shippedAt: LocalDateTime?,
   /** 
     * Default: current_timestamp(6)
     */
@@ -92,24 +93,24 @@ data class ShipmentsRow(
   fun id(): ShipmentsId = shipmentId
 
   fun toUnsavedRow(
-    trackingNumber: Defaulted<Optional<String>>,
-    weightKg: Defaulted<Optional<BigDecimal>>,
-    dimensionsJson: Defaulted<Optional<String>>,
-    labelData: Defaulted<Optional<ByteArray>>,
+    trackingNumber: Defaulted<String?>,
+    weightKg: Defaulted<BigDecimal?>,
+    dimensionsJson: Defaulted<String?>,
+    labelData: Defaulted<ByteArray?>,
     status: Defaulted<String>,
-    estimatedDeliveryDate: Defaulted<Optional<LocalDate>>,
-    actualDeliveryAt: Defaulted<Optional<LocalDateTime>>,
-    insuranceAmount: Defaulted<Optional<BigDecimal>>,
-    originWarehouseId: Defaulted<Optional<WarehousesId>>,
-    shippedAt: Defaulted<Optional<LocalDateTime>>,
+    estimatedDeliveryDate: Defaulted<LocalDate?>,
+    actualDeliveryAt: Defaulted<LocalDateTime?>,
+    insuranceAmount: Defaulted<BigDecimal?>,
+    originWarehouseId: Defaulted<WarehousesId?>,
+    shippedAt: Defaulted<LocalDateTime?>,
     createdAt: Defaulted<LocalDateTime>,
     updatedAt: Defaulted<LocalDateTime>
   ): ShipmentsRowUnsaved = ShipmentsRowUnsaved(orderId, carrierId, shippingMethod, shippingCost, trackingNumber, weightKg, dimensionsJson, labelData, status, estimatedDeliveryDate, actualDeliveryAt, insuranceAmount, originWarehouseId, shippedAt, createdAt, updatedAt)
 
   companion object {
-    val _rowParser: RowParser<ShipmentsRow> = RowParsers.of(ShipmentsId.pgType, OrdersId.pgType, ShippingCarriersId.pgType, MariaTypes.varchar.opt(), MariaTypes.varchar, MariaTypes.decimal.opt(), MariaTypes.longtext.opt(), MariaTypes.longblob.opt(), MariaTypes.text, MariaTypes.date.opt(), MariaTypes.datetime.opt(), MariaTypes.decimal, MariaTypes.decimal.opt(), WarehousesId.pgType.opt(), MariaTypes.datetime.opt(), MariaTypes.datetime, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16 -> ShipmentsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!) }, { row -> arrayOf<Any?>(row.shipmentId, row.orderId, row.carrierId, row.trackingNumber, row.shippingMethod, row.weightKg, row.dimensionsJson, row.labelData, row.status, row.estimatedDeliveryDate, row.actualDeliveryAt, row.shippingCost, row.insuranceAmount, row.originWarehouseId, row.shippedAt, row.createdAt, row.updatedAt) })
+    val _rowParser: RowParser<ShipmentsRow> = RowParsers.of(ShipmentsId.pgType, OrdersId.pgType, ShippingCarriersId.pgType, MariaTypes.varchar.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.longtext.nullable(), MariaTypes.longblob.nullable(), MariaTypes.text, MariaTypes.date.nullable(), MariaTypes.datetime.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), WarehousesId.pgType.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16 -> ShipmentsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) }, { row -> arrayOf<Any?>(row.shipmentId, row.orderId, row.carrierId, row.trackingNumber, row.shippingMethod, row.weightKg, row.dimensionsJson, row.labelData, row.status, row.estimatedDeliveryDate, row.actualDeliveryAt, row.shippingCost, row.insuranceAmount, row.originWarehouseId, row.shippedAt, row.createdAt, row.updatedAt) })
 
     val mariaText: MariaText<ShipmentsRow> =
-      MariaText.from(_rowParser)
+      MariaText.from(_rowParser.underlying)
   }
 }

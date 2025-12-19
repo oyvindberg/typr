@@ -6,7 +6,6 @@
 package testdb.reviews
 
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customers.CustomersFields
 import testdb.customers.CustomersId
 import testdb.customers.CustomersRow
@@ -16,18 +15,19 @@ import testdb.order_items.OrderItemsRow
 import testdb.products.ProductsFields
 import testdb.products.ProductsId
 import testdb.products.ProductsRow
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait ReviewsFields extends FieldsExpr[ReviewsRow] {
+trait ReviewsFields extends FieldsExpr0[ReviewsRow] {
   def reviewId: IdField[ReviewsId, ReviewsRow]
 
   def productId: Field[ProductsId, ReviewsRow]
@@ -36,7 +36,7 @@ trait ReviewsFields extends FieldsExpr[ReviewsRow] {
 
   def orderItemId: OptField[OrderItemsId, ReviewsRow]
 
-  def rating: Field[java.lang.Short, ReviewsRow]
+  def rating: Field[Short, ReviewsRow]
 
   def title: OptField[String, ReviewsRow]
 
@@ -48,13 +48,13 @@ trait ReviewsFields extends FieldsExpr[ReviewsRow] {
 
   def images: OptField[String, ReviewsRow]
 
-  def isVerifiedPurchase: Field[java.lang.Boolean, ReviewsRow]
+  def isVerifiedPurchase: Field[Boolean, ReviewsRow]
 
-  def isApproved: Field[java.lang.Boolean, ReviewsRow]
+  def isApproved: Field[Boolean, ReviewsRow]
 
-  def helpfulVotes: Field[java.lang.Long, ReviewsRow]
+  def helpfulVotes: Field[Long, ReviewsRow]
 
-  def unhelpfulVotes: Field[java.lang.Long, ReviewsRow]
+  def unhelpfulVotes: Field[Long, ReviewsRow]
 
   def adminResponse: OptField[String, ReviewsRow]
 
@@ -64,27 +64,27 @@ trait ReviewsFields extends FieldsExpr[ReviewsRow] {
 
   def updatedAt: Field[LocalDateTime, ReviewsRow]
 
-  def fkCustomers: ForeignKey[CustomersFields, CustomersRow] = ForeignKey.of[CustomersFields, CustomersRow]("fk_rev_customer").withColumnPair(customerId, _.customerId)
+  def fkCustomers: ForeignKey[CustomersFields, CustomersRow] = ForeignKey.of[CustomersFields, CustomersRow]("fk_rev_customer").withColumnPair[CustomersId](customerId, _.customerId)
 
-  def fkOrderItems: ForeignKey[OrderItemsFields, OrderItemsRow] = ForeignKey.of[OrderItemsFields, OrderItemsRow]("fk_rev_order_item").withColumnPair(orderItemId, _.itemId)
+  def fkOrderItems: ForeignKey[OrderItemsFields, OrderItemsRow] = ForeignKey.of[OrderItemsFields, OrderItemsRow]("fk_rev_order_item").withColumnPair[OrderItemsId](orderItemId, _.itemId)
 
-  def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_rev_product").withColumnPair(productId, _.productId)
+  def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_rev_product").withColumnPair[ProductsId](productId, _.productId)
 
   override def columns: java.util.List[FieldLike[?, ReviewsRow]]
 
-  override def rowParser: RowParser[ReviewsRow] = ReviewsRow._rowParser
+  override def rowParser: RowParser[ReviewsRow] = ReviewsRow._rowParser.underlying
 }
 
 object ReviewsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ReviewsFields with Relation[ReviewsFields, ReviewsRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends ReviewsFields with RelationStructure[ReviewsFields, ReviewsRow] {
 
     override def reviewId: IdField[ReviewsId, ReviewsRow] = {
       new IdField[ReviewsId, ReviewsRow](
         _path,
         "review_id",
         _.reviewId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(reviewId = value),
         ReviewsId.pgType
       )
@@ -95,8 +95,8 @@ object ReviewsFields {
         _path,
         "product_id",
         _.productId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(productId = value),
         ProductsId.pgType
       )
@@ -107,8 +107,8 @@ object ReviewsFields {
         _path,
         "customer_id",
         _.customerId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(customerId = value),
         CustomersId.pgType
       )
@@ -119,22 +119,22 @@ object ReviewsFields {
         _path,
         "order_item_id",
         _.orderItemId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(orderItemId = value),
         OrderItemsId.pgType
       )
     }
 
-    override def rating: Field[java.lang.Short, ReviewsRow] = {
-      new Field[java.lang.Short, ReviewsRow](
+    override def rating: Field[Short, ReviewsRow] = {
+      new Field[Short, ReviewsRow](
         _path,
         "rating",
         _.rating,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(rating = value),
-        MariaTypes.tinyintUnsigned
+        ScalaDbTypes.MariaTypes.tinyintUnsigned
       )
     }
 
@@ -143,8 +143,8 @@ object ReviewsFields {
         _path,
         "title",
         _.title,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(title = value),
         MariaTypes.varchar
       )
@@ -155,8 +155,8 @@ object ReviewsFields {
         _path,
         "content",
         _.content,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(content = value),
         MariaTypes.text
       )
@@ -167,8 +167,8 @@ object ReviewsFields {
         _path,
         "pros",
         _.pros,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(pros = value),
         MariaTypes.longtext
       )
@@ -179,8 +179,8 @@ object ReviewsFields {
         _path,
         "cons",
         _.cons,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(cons = value),
         MariaTypes.longtext
       )
@@ -191,58 +191,58 @@ object ReviewsFields {
         _path,
         "images",
         _.images,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(images = value),
         MariaTypes.longtext
       )
     }
 
-    override def isVerifiedPurchase: Field[java.lang.Boolean, ReviewsRow] = {
-      new Field[java.lang.Boolean, ReviewsRow](
+    override def isVerifiedPurchase: Field[Boolean, ReviewsRow] = {
+      new Field[Boolean, ReviewsRow](
         _path,
         "is_verified_purchase",
         _.isVerifiedPurchase,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isVerifiedPurchase = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
-    override def isApproved: Field[java.lang.Boolean, ReviewsRow] = {
-      new Field[java.lang.Boolean, ReviewsRow](
+    override def isApproved: Field[Boolean, ReviewsRow] = {
+      new Field[Boolean, ReviewsRow](
         _path,
         "is_approved",
         _.isApproved,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isApproved = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
-    override def helpfulVotes: Field[java.lang.Long, ReviewsRow] = {
-      new Field[java.lang.Long, ReviewsRow](
+    override def helpfulVotes: Field[Long, ReviewsRow] = {
+      new Field[Long, ReviewsRow](
         _path,
         "helpful_votes",
         _.helpfulVotes,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(helpfulVotes = value),
-        MariaTypes.intUnsigned
+        ScalaDbTypes.MariaTypes.intUnsigned
       )
     }
 
-    override def unhelpfulVotes: Field[java.lang.Long, ReviewsRow] = {
-      new Field[java.lang.Long, ReviewsRow](
+    override def unhelpfulVotes: Field[Long, ReviewsRow] = {
+      new Field[Long, ReviewsRow](
         _path,
         "unhelpful_votes",
         _.unhelpfulVotes,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(unhelpfulVotes = value),
-        MariaTypes.intUnsigned
+        ScalaDbTypes.MariaTypes.intUnsigned
       )
     }
 
@@ -251,8 +251,8 @@ object ReviewsFields {
         _path,
         "admin_response",
         _.adminResponse,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(adminResponse = value),
         MariaTypes.text
       )
@@ -263,8 +263,8 @@ object ReviewsFields {
         _path,
         "responded_at",
         _.respondedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(respondedAt = value),
         MariaTypes.datetime
       )
@@ -275,8 +275,8 @@ object ReviewsFields {
         _path,
         "created_at",
         _.createdAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(createdAt = value),
         MariaTypes.datetime
       )
@@ -287,17 +287,17 @@ object ReviewsFields {
         _path,
         "updated_at",
         _.updatedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(updatedAt = value),
         MariaTypes.datetime
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, ReviewsRow]] = java.util.List.of(this.reviewId, this.productId, this.customerId, this.orderItemId, this.rating, this.title, this.content, this.pros, this.cons, this.images, this.isVerifiedPurchase, this.isApproved, this.helpfulVotes, this.unhelpfulVotes, this.adminResponse, this.respondedAt, this.createdAt, this.updatedAt)
+    override def columns: java.util.List[FieldLike[?, ReviewsRow]] = java.util.List.of(this.reviewId.underlying, this.productId.underlying, this.customerId.underlying, this.orderItemId.underlying, this.rating.underlying, this.title.underlying, this.content.underlying, this.pros.underlying, this.cons.underlying, this.images.underlying, this.isVerifiedPurchase.underlying, this.isApproved.underlying, this.helpfulVotes.underlying, this.unhelpfulVotes.underlying, this.adminResponse.underlying, this.respondedAt.underlying, this.createdAt.underlying, this.updatedAt.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[ReviewsFields, ReviewsRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ReviewsFields, ReviewsRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

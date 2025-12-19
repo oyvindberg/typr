@@ -12,13 +12,13 @@ import io.circe.Encoder
 /** Type for the composite primary key of table `public.flaff` */
 case class FlaffId(
   code: ShortText,
-  anotherCode: /* max 20 chars */ String,
+  anotherCode: String,
   someNumber: Int,
   specifier: ShortText
 )
 
 object FlaffId {
-  given decoder: Decoder[FlaffId] = Decoder.forProduct4[FlaffId, ShortText, /* max 20 chars */ String, Int, ShortText]("code", "another_code", "some_number", "specifier")(FlaffId.apply)(using ShortText.decoder, Decoder.decodeString, Decoder.decodeInt, ShortText.decoder)
+  given decoder: Decoder[FlaffId] = Decoder.forProduct4[FlaffId, ShortText, String, Int, ShortText]("code", "another_code", "some_number", "specifier")(FlaffId.apply)(using ShortText.decoder, Decoder.decodeString, Decoder.decodeInt, ShortText.decoder)
 
-  given encoder: Encoder[FlaffId] = Encoder.forProduct4[FlaffId, ShortText, /* max 20 chars */ String, Int, ShortText]("code", "another_code", "some_number", "specifier")(x => (x.code, x.anotherCode, x.someNumber, x.specifier))(using ShortText.encoder, Encoder.encodeString, Encoder.encodeInt, ShortText.encoder)
+  given encoder: Encoder[FlaffId] = Encoder.forProduct4[FlaffId, ShortText, String, Int, ShortText]("code", "another_code", "some_number", "specifier")(x => (x.code, x.anotherCode, x.someNumber, x.specifier))(using ShortText.encoder, Encoder.encodeString, Encoder.encodeInt, ShortText.encoder)
 }

@@ -6,19 +6,18 @@
 package testdb.audit_log
 
 import java.time.LocalDateTime
-import java.util.Optional
 import typo.data.maria.Inet6
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
+import typo.scaladsl.SqlExpr.OptField
 
-trait AuditLogFields extends FieldsExpr[AuditLogRow] {
+trait AuditLogFields extends FieldsExpr0[AuditLogRow] {
   def logId: IdField[AuditLogId, AuditLogRow]
 
   def tableName: Field[String, AuditLogRow]
@@ -41,19 +40,19 @@ trait AuditLogFields extends FieldsExpr[AuditLogRow] {
 
   override def columns: java.util.List[FieldLike[?, AuditLogRow]]
 
-  override def rowParser: RowParser[AuditLogRow] = AuditLogRow._rowParser
+  override def rowParser: RowParser[AuditLogRow] = AuditLogRow._rowParser.underlying
 }
 
 object AuditLogFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends AuditLogFields with Relation[AuditLogFields, AuditLogRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends AuditLogFields with RelationStructure[AuditLogFields, AuditLogRow] {
 
     override def logId: IdField[AuditLogId, AuditLogRow] = {
       new IdField[AuditLogId, AuditLogRow](
         _path,
         "log_id",
         _.logId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(logId = value),
         AuditLogId.pgType
       )
@@ -64,8 +63,8 @@ object AuditLogFields {
         _path,
         "table_name",
         _.tableName,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(tableName = value),
         MariaTypes.varchar
       )
@@ -76,8 +75,8 @@ object AuditLogFields {
         _path,
         "record_id",
         _.recordId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(recordId = value),
         MariaTypes.varchar
       )
@@ -88,8 +87,8 @@ object AuditLogFields {
         _path,
         "action",
         _.action,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(action = value),
         MariaTypes.text
       )
@@ -100,8 +99,8 @@ object AuditLogFields {
         _path,
         "old_values",
         _.oldValues,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(oldValues = value),
         MariaTypes.longtext
       )
@@ -112,8 +111,8 @@ object AuditLogFields {
         _path,
         "new_values",
         _.newValues,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(newValues = value),
         MariaTypes.longtext
       )
@@ -124,8 +123,8 @@ object AuditLogFields {
         _path,
         "changed_by",
         _.changedBy,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(changedBy = value),
         MariaTypes.varchar
       )
@@ -136,8 +135,8 @@ object AuditLogFields {
         _path,
         "changed_at",
         _.changedAt,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(changedAt = value),
         MariaTypes.datetime
       )
@@ -148,8 +147,8 @@ object AuditLogFields {
         _path,
         "client_ip",
         _.clientIp,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(clientIp = value),
         MariaTypes.inet6
       )
@@ -160,17 +159,17 @@ object AuditLogFields {
         _path,
         "session_id",
         _.sessionId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(sessionId = value),
         MariaTypes.varbinary
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, AuditLogRow]] = java.util.List.of(this.logId, this.tableName, this.recordId, this.action, this.oldValues, this.newValues, this.changedBy, this.changedAt, this.clientIp, this.sessionId)
+    override def columns: java.util.List[FieldLike[?, AuditLogRow]] = java.util.List.of(this.logId.underlying, this.tableName.underlying, this.recordId.underlying, this.action.underlying, this.oldValues.underlying, this.newValues.underlying, this.changedBy.underlying, this.changedAt.underlying, this.clientIp.underlying, this.sessionId.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[AuditLogFields, AuditLogRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AuditLogFields, AuditLogRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

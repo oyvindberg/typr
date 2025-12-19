@@ -7,10 +7,10 @@ package adventureworks.pu.poh
 
 import java.sql.Connection
 import kotlin.collections.List
-import typo.dsl.SelectBuilder
+import typo.kotlindsl.SelectBuilder
 
 interface PohViewRepo {
-  fun select(): SelectBuilder<PohViewFields, PohViewRow>
+  abstract fun select(): SelectBuilder<PohViewFields, PohViewRow>
 
-  fun selectAll(c: Connection): List<PohViewRow>
+  abstract fun selectAll(c: Connection): List<PohViewRow>
 }

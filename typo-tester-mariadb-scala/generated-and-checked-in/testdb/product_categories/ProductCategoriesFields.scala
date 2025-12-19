@@ -5,58 +5,56 @@
  */
 package testdb.product_categories
 
-import java.util.Optional
 import testdb.categories.CategoriesFields
 import testdb.categories.CategoriesId
 import testdb.categories.CategoriesRow
 import testdb.products.ProductsFields
 import testdb.products.ProductsId
 import testdb.products.ProductsRow
-import typo.dsl.FieldsExpr
-import typo.dsl.ForeignKey
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
-import typo.dsl.SqlExpr
-import typo.dsl.SqlExpr.CompositeIn
-import typo.dsl.SqlExpr.CompositeIn.Part
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.Structure.Relation
-import typo.runtime.MariaTypes
 import typo.runtime.RowParser
+import typo.scaladsl.ForeignKey
+import typo.scaladsl.RelationStructure
+import typo.scaladsl.ScalaDbTypes
+import typo.scaladsl.SqlExpr
+import typo.scaladsl.SqlExpr.CompositeIn
+import typo.scaladsl.SqlExpr.Field
+import typo.scaladsl.SqlExpr.IdField
 
-trait ProductCategoriesFields extends FieldsExpr[ProductCategoriesRow] {
+trait ProductCategoriesFields extends FieldsExpr0[ProductCategoriesRow] {
   def productId: IdField[ProductsId, ProductCategoriesRow]
 
   def categoryId: IdField[CategoriesId, ProductCategoriesRow]
 
-  def isPrimary: Field[java.lang.Boolean, ProductCategoriesRow]
+  def isPrimary: Field[Boolean, ProductCategoriesRow]
 
-  def sortOrder: Field[java.lang.Short, ProductCategoriesRow]
+  def sortOrder: Field[Short, ProductCategoriesRow]
 
-  def fkCategories: ForeignKey[CategoriesFields, CategoriesRow] = ForeignKey.of[CategoriesFields, CategoriesRow]("fk_pc_category").withColumnPair(categoryId, _.categoryId)
+  def fkCategories: ForeignKey[CategoriesFields, CategoriesRow] = ForeignKey.of[CategoriesFields, CategoriesRow]("fk_pc_category").withColumnPair[CategoriesId](categoryId, _.categoryId)
 
-  def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_pc_product").withColumnPair(productId, _.productId)
+  def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_pc_product").withColumnPair[ProductsId](productId, _.productId)
 
-  def compositeIdIs(compositeId: ProductCategoriesId): SqlExpr[java.lang.Boolean] = SqlExpr.all(productId.isEqual(compositeId.productId), categoryId.isEqual(compositeId.categoryId))
+  def compositeIdIs(compositeId: ProductCategoriesId): SqlExpr[Boolean] = SqlExpr.all(productId.isEqual(compositeId.productId), categoryId.isEqual(compositeId.categoryId))
 
-  def compositeIdIn(compositeIds: java.util.List[ProductCategoriesId]): SqlExpr[java.lang.Boolean] = new CompositeIn(java.util.List.of(new Part[ProductsId, ProductCategoriesId, ProductCategoriesRow](productId, _.productId, ProductsId.pgType), new Part[CategoriesId, ProductCategoriesId, ProductCategoriesRow](categoryId, _.categoryId, CategoriesId.pgType)), compositeIds)
+  def compositeIdIn(compositeIds: List[ProductCategoriesId]): SqlExpr[Boolean] = CompositeIn(List(CompositeIn.Part[ProductsId, ProductCategoriesId, ProductCategoriesRow](productId, _.productId, ProductsId.pgType), CompositeIn.Part[CategoriesId, ProductCategoriesId, ProductCategoriesRow](categoryId, _.categoryId, CategoriesId.pgType)), compositeIds)
 
   override def columns: java.util.List[FieldLike[?, ProductCategoriesRow]]
 
-  override def rowParser: RowParser[ProductCategoriesRow] = ProductCategoriesRow._rowParser
+  override def rowParser: RowParser[ProductCategoriesRow] = ProductCategoriesRow._rowParser.underlying
 }
 
 object ProductCategoriesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductCategoriesFields with Relation[ProductCategoriesFields, ProductCategoriesRow] {
+  case class Impl(val `_path`: java.util.List[Path]) extends ProductCategoriesFields with RelationStructure[ProductCategoriesFields, ProductCategoriesRow] {
 
     override def productId: IdField[ProductsId, ProductCategoriesRow] = {
       new IdField[ProductsId, ProductCategoriesRow](
         _path,
         "product_id",
         _.productId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(productId = value),
         ProductsId.pgType
       )
@@ -67,41 +65,41 @@ object ProductCategoriesFields {
         _path,
         "category_id",
         _.categoryId,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(categoryId = value),
         CategoriesId.pgType
       )
     }
 
-    override def isPrimary: Field[java.lang.Boolean, ProductCategoriesRow] = {
-      new Field[java.lang.Boolean, ProductCategoriesRow](
+    override def isPrimary: Field[Boolean, ProductCategoriesRow] = {
+      new Field[Boolean, ProductCategoriesRow](
         _path,
         "is_primary",
         _.isPrimary,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(isPrimary = value),
-        MariaTypes.bool
+        ScalaDbTypes.MariaTypes.bool
       )
     }
 
-    override def sortOrder: Field[java.lang.Short, ProductCategoriesRow] = {
-      new Field[java.lang.Short, ProductCategoriesRow](
+    override def sortOrder: Field[Short, ProductCategoriesRow] = {
+      new Field[Short, ProductCategoriesRow](
         _path,
         "sort_order",
         _.sortOrder,
-        Optional.empty(),
-        Optional.empty(),
+        None,
+        None,
         (row, value) => row.copy(sortOrder = value),
-        MariaTypes.smallint
+        ScalaDbTypes.MariaTypes.smallint
       )
     }
 
-    override def columns: java.util.List[FieldLike[?, ProductCategoriesRow]] = java.util.List.of(this.productId, this.categoryId, this.isPrimary, this.sortOrder)
+    override def columns: java.util.List[FieldLike[?, ProductCategoriesRow]] = java.util.List.of(this.productId.underlying, this.categoryId.underlying, this.isPrimary.underlying, this.sortOrder.underlying)
 
-    override def copy(`_path`: java.util.List[Path]): Relation[ProductCategoriesFields, ProductCategoriesRow] = new Impl(`_path`)
+    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductCategoriesFields, ProductCategoriesRow] = new Impl(`_path`)
   }
 
-  def structure: Impl = new Impl(java.util.List.of())
+  def structure: Impl = new Impl(java.util.Collections.emptyList())
 }

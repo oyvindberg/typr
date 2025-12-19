@@ -5,57 +5,59 @@
  */
 package adventureworks.production.productmodel
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
-import adventureworks.customtypes.TypoXml
 import adventureworks.public.Name
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
+import typo.data.Xml
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.SqlExpr.IdField
-import typo.dsl.SqlExpr.OptField
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.kotlindsl.SqlExpr.IdField
+import typo.kotlindsl.SqlExpr.OptField
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface ProductmodelFields : FieldsExpr<ProductmodelRow> {
-  fun catalogdescription(): OptField<TypoXml, ProductmodelRow>
+  abstract fun catalogdescription(): OptField<Xml, ProductmodelRow>
 
-  override fun columns(): List<FieldLike<*, ProductmodelRow>>
+  abstract override fun columns(): List<FieldLike<*, ProductmodelRow>>
 
-  fun instructions(): OptField<TypoXml, ProductmodelRow>
+  abstract fun instructions(): OptField<Xml, ProductmodelRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, ProductmodelRow>
+  abstract fun modifieddate(): Field<LocalDateTime, ProductmodelRow>
 
-  fun name(): Field<Name, ProductmodelRow>
+  abstract fun name(): Field<Name, ProductmodelRow>
 
-  fun productmodelid(): IdField<ProductmodelId, ProductmodelRow>
+  abstract fun productmodelid(): IdField<ProductmodelId, ProductmodelRow>
 
-  override fun rowParser(): RowParser<ProductmodelRow> = ProductmodelRow._rowParser
+  override fun rowParser(): RowParser<ProductmodelRow> = ProductmodelRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, ProductmodelRow>
+  abstract fun rowguid(): Field<UUID, ProductmodelRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductmodelFields, Relation<ProductmodelFields, ProductmodelRow> {
-      override fun productmodelid(): IdField<ProductmodelId, ProductmodelRow> = IdField<ProductmodelId, ProductmodelRow>(_path, "productmodelid", ProductmodelRow::productmodelid, Optional.empty(), Optional.of("int4"), { row, value -> row.copy(productmodelid = value) }, ProductmodelId.pgType)
+    data class Impl(val _path: List<Path>) : ProductmodelFields, RelationStructure<ProductmodelFields, ProductmodelRow> {
+      override fun productmodelid(): IdField<ProductmodelId, ProductmodelRow> = IdField<ProductmodelId, ProductmodelRow>(_path, "productmodelid", ProductmodelRow::productmodelid, null, "int4", { row, value -> row.copy(productmodelid = value) }, ProductmodelId.pgType)
 
-      override fun name(): Field<Name, ProductmodelRow> = Field<Name, ProductmodelRow>(_path, "name", ProductmodelRow::name, Optional.empty(), Optional.of("varchar"), { row, value -> row.copy(name = value) }, Name.pgType)
+      override fun name(): Field<Name, ProductmodelRow> = Field<Name, ProductmodelRow>(_path, "name", ProductmodelRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
 
-      override fun catalogdescription(): OptField<TypoXml, ProductmodelRow> = OptField<TypoXml, ProductmodelRow>(_path, "catalogdescription", ProductmodelRow::catalogdescription, Optional.empty(), Optional.of("xml"), { row, value -> row.copy(catalogdescription = value) }, TypoXml.pgType)
+      override fun catalogdescription(): OptField<Xml, ProductmodelRow> = OptField<Xml, ProductmodelRow>(_path, "catalogdescription", ProductmodelRow::catalogdescription, null, "xml", { row, value -> row.copy(catalogdescription = value) }, PgTypes.xml)
 
-      override fun instructions(): OptField<TypoXml, ProductmodelRow> = OptField<TypoXml, ProductmodelRow>(_path, "instructions", ProductmodelRow::instructions, Optional.empty(), Optional.of("xml"), { row, value -> row.copy(instructions = value) }, TypoXml.pgType)
+      override fun instructions(): OptField<Xml, ProductmodelRow> = OptField<Xml, ProductmodelRow>(_path, "instructions", ProductmodelRow::instructions, null, "xml", { row, value -> row.copy(instructions = value) }, PgTypes.xml)
 
-      override fun rowguid(): Field<TypoUUID, ProductmodelRow> = Field<TypoUUID, ProductmodelRow>(_path, "rowguid", ProductmodelRow::rowguid, Optional.empty(), Optional.of("uuid"), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, ProductmodelRow> = Field<UUID, ProductmodelRow>(_path, "rowguid", ProductmodelRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, ProductmodelRow> = Field<TypoLocalDateTime, ProductmodelRow>(_path, "modifieddate", ProductmodelRow::modifieddate, Optional.of("text"), Optional.of("timestamp"), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, ProductmodelRow> = Field<LocalDateTime, ProductmodelRow>(_path, "modifieddate", ProductmodelRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, ProductmodelRow>> = listOf(this.productmodelid(), this.name(), this.catalogdescription(), this.instructions(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<ProductmodelFields, ProductmodelRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, ProductmodelRow>> = listOf(this.productmodelid().underlying, this.name().underlying, this.catalogdescription().underlying, this.instructions().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<ProductmodelFields, ProductmodelRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

@@ -6,9 +6,6 @@
 package adventureworks.sales.salesorderheader
 
 import adventureworks.customtypes.Defaulted
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoShort
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.address.AddressId
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.AccountNumber
@@ -20,11 +17,14 @@ import adventureworks.sales.customer.CustomerId
 import adventureworks.sales.salesterritory.SalesterritoryId
 import adventureworks.userdefined.CustomCreditcardId
 import java.math.BigDecimal
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
+import typo.kotlindsl.KotlinDbTypes
+import typo.kotlindsl.RowParser
+import typo.kotlindsl.RowParsers
+import typo.kotlindsl.nullable
 import typo.runtime.PgText
 import typo.runtime.PgTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
 
 /** Table: sales.salesorderheader
   * General sales order information.
@@ -38,34 +38,34 @@ data class SalesorderheaderRow(
   /** Incremental number to track changes to the sales order over time.
     * Default: 0
     */
-  val revisionnumber: TypoShort,
+  val revisionnumber: Short,
   /** Dates the sales order was created.
     * Default: now()
     * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate: ((duedate >= orderdate))
     * Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate: (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  val orderdate: TypoLocalDateTime,
+  val orderdate: LocalDateTime,
   /** Date the order is due to the customer.
     * Constraint CK_SalesOrderHeader_DueDate affecting columns duedate, orderdate: ((duedate >= orderdate))
     */
-  val duedate: TypoLocalDateTime,
+  val duedate: LocalDateTime,
   /** Date the order was shipped to the customer.
     * Constraint CK_SalesOrderHeader_ShipDate affecting columns orderdate, shipdate: (((shipdate >= orderdate) OR (shipdate IS NULL)))
     */
-  val shipdate: Optional<TypoLocalDateTime>,
+  val shipdate: LocalDateTime?,
   /** Order current status. 1 = In process; 2 = Approved; 3 = Backordered; 4 = Rejected; 5 = Shipped; 6 = Cancelled
     * Default: 1
     * Constraint CK_SalesOrderHeader_Status affecting columns status: (((status >= 0) AND (status <= 8)))
     */
-  val status: TypoShort,
+  val status: Short,
   /** 0 = Order placed by sales person. 1 = Order placed online by customer.
     * Default: true
     */
   val onlineorderflag: Flag,
   /** Customer purchase order number reference. */
-  val purchaseordernumber: Optional<OrderNumber>,
+  val purchaseordernumber: OrderNumber?,
   /** Financial accounting number reference. */
-  val accountnumber: Optional<AccountNumber>,
+  val accountnumber: AccountNumber?,
   /** Customer identification number. Foreign key to Customer.BusinessEntityID.
     * Points to [adventureworks.sales.customer.CustomerRow.customerid]
     */
@@ -73,11 +73,11 @@ data class SalesorderheaderRow(
   /** Sales person who created the sales order. Foreign key to SalesPerson.BusinessEntityID.
     * Points to [adventureworks.sales.salesperson.SalespersonRow.businessentityid]
     */
-  val salespersonid: Optional<BusinessentityId>,
+  val salespersonid: BusinessentityId?,
   /** Territory in which the sale was made. Foreign key to SalesTerritory.SalesTerritoryID.
     * Points to [adventureworks.sales.salesterritory.SalesterritoryRow.territoryid]
     */
-  val territoryid: Optional<SalesterritoryId>,
+  val territoryid: SalesterritoryId?,
   /** Customer billing address. Foreign key to Address.AddressID.
     * Points to [adventureworks.person.address.AddressRow.addressid]
     */
@@ -93,13 +93,13 @@ data class SalesorderheaderRow(
   /** Credit card identification number. Foreign key to CreditCard.CreditCardID.
     * Points to [adventureworks.sales.creditcard.CreditcardRow.creditcardid]
     */
-  val creditcardid: Optional</* user-picked */ CustomCreditcardId>,
+  val creditcardid: /* user-picked */ CustomCreditcardId?,
   /** Approval code provided by the credit card company. */
-  val creditcardapprovalcode: Optional</* max 15 chars */ String>,
+  val creditcardapprovalcode: /* max 15 chars */ String?,
   /** Currency exchange rate used. Foreign key to CurrencyRate.CurrencyRateID.
     * Points to [adventureworks.sales.currencyrate.CurrencyrateRow.currencyrateid]
     */
-  val currencyrateid: Optional<CurrencyrateId>,
+  val currencyrateid: CurrencyrateId?,
   /** Sales subtotal. Computed as SUM(SalesOrderDetail.LineTotal)for the appropriate SalesOrderID.
     * Default: 0.00
     * Constraint CK_SalesOrderHeader_SubTotal affecting columns subtotal: ((subtotal >= 0.00))
@@ -116,33 +116,33 @@ data class SalesorderheaderRow(
     */
   val freight: BigDecimal,
   /** Total due from customer. Computed as Subtotal + TaxAmt + Freight. */
-  val totaldue: Optional<BigDecimal>,
+  val totaldue: BigDecimal?,
   /** Sales representative comments. */
-  val comment: Optional</* max 128 chars */ String>,
+  val comment: /* max 128 chars */ String?,
   /** Default: uuid_generate_v1() */
-  val rowguid: TypoUUID,
+  val rowguid: UUID,
   /** Default: now() */
-  val modifieddate: TypoLocalDateTime
+  val modifieddate: LocalDateTime
 ) {
   fun id(): SalesorderheaderId = salesorderid
 
   fun toUnsavedRow(
     salesorderid: Defaulted<SalesorderheaderId>,
-    revisionnumber: Defaulted<TypoShort>,
-    orderdate: Defaulted<TypoLocalDateTime>,
-    status: Defaulted<TypoShort>,
+    revisionnumber: Defaulted<Short>,
+    orderdate: Defaulted<LocalDateTime>,
+    status: Defaulted<Short>,
     onlineorderflag: Defaulted<Flag>,
     subtotal: Defaulted<BigDecimal>,
     taxamt: Defaulted<BigDecimal>,
     freight: Defaulted<BigDecimal>,
-    rowguid: Defaulted<TypoUUID>,
-    modifieddate: Defaulted<TypoLocalDateTime>
+    rowguid: Defaulted<UUID>,
+    modifieddate: Defaulted<LocalDateTime>
   ): SalesorderheaderRowUnsaved = SalesorderheaderRowUnsaved(duedate, shipdate, purchaseordernumber, accountnumber, customerid, salespersonid, territoryid, billtoaddressid, shiptoaddressid, shipmethodid, creditcardid, creditcardapprovalcode, currencyrateid, totaldue, comment, salesorderid, revisionnumber, orderdate, status, onlineorderflag, subtotal, taxamt, freight, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SalesorderheaderRow> = RowParsers.of(SalesorderheaderId.pgType, TypoShort.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType, TypoLocalDateTime.pgType.opt(), TypoShort.pgType, Flag.pgType, OrderNumber.pgType.opt(), AccountNumber.pgType.opt(), CustomerId.pgType, BusinessentityId.pgType.opt(), SalesterritoryId.pgType.opt(), AddressId.pgType, AddressId.pgType, ShipmethodId.pgType, CustomCreditcardId.pgType.opt(), PgTypes.text.opt(), CurrencyrateId.pgType.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric.opt(), PgTypes.text.opt(), TypoUUID.pgType, TypoLocalDateTime.pgType, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24 -> SalesorderheaderRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!, t11!!, t12!!, t13!!, t14!!, t15!!, t16!!, t17!!, t18!!, t19!!, t20!!, t21!!, t22!!, t23!!, t24!!) }, { row -> arrayOf<Any?>(row.salesorderid, row.revisionnumber, row.orderdate, row.duedate, row.shipdate, row.status, row.onlineorderflag, row.purchaseordernumber, row.accountnumber, row.customerid, row.salespersonid, row.territoryid, row.billtoaddressid, row.shiptoaddressid, row.shipmethodid, row.creditcardid, row.creditcardapprovalcode, row.currencyrateid, row.subtotal, row.taxamt, row.freight, row.totaldue, row.comment, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SalesorderheaderRow> = RowParsers.of(SalesorderheaderId.pgType, KotlinDbTypes.PgTypes.int2, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp.nullable(), KotlinDbTypes.PgTypes.int2, Flag.pgType, OrderNumber.pgType.nullable(), AccountNumber.pgType.nullable(), CustomerId.pgType, BusinessentityId.pgType.nullable(), SalesterritoryId.pgType.nullable(), AddressId.pgType, AddressId.pgType, ShipmethodId.pgType, CustomCreditcardId.pgType.nullable(), PgTypes.text.nullable(), CurrencyrateId.pgType.nullable(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric.nullable(), PgTypes.text.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24 -> SalesorderheaderRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) }, { row -> arrayOf<Any?>(row.salesorderid, row.revisionnumber, row.orderdate, row.duedate, row.shipdate, row.status, row.onlineorderflag, row.purchaseordernumber, row.accountnumber, row.customerid, row.salespersonid, row.territoryid, row.billtoaddressid, row.shiptoaddressid, row.shipmethodid, row.creditcardid, row.creditcardapprovalcode, row.currencyrateid, row.subtotal, row.taxamt, row.freight, row.totaldue, row.comment, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<SalesorderheaderRow> =
-      PgText.from(_rowParser)
+      PgText.from(_rowParser.underlying)
   }
 }

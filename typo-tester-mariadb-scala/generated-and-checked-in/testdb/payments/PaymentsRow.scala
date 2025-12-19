@@ -7,15 +7,16 @@ package testdb.payments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
-import java.util.Optional
 import testdb.customtypes.Defaulted
 import testdb.orders.OrdersId
 import testdb.payment_methods.PaymentMethodsId
 import typo.data.maria.Inet6
 import typo.runtime.MariaText
 import typo.runtime.MariaTypes
-import typo.runtime.RowParser
-import typo.runtime.RowParsers
+import typo.scaladsl.MariaTypeOps
+import typo.scaladsl.RowParser
+import typo.scaladsl.RowParsers
+import typo.scaladsl.ScalaDbTypes
 
 /** Table: payments
  * Primary key: payment_id
@@ -36,9 +37,9 @@ case class PaymentsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("transaction_id") transactionId: Optional[String],
+  @JsonProperty("transaction_id") transactionId: Option[String],
   /**  */
-  amount: java.math.BigDecimal,
+  amount: BigDecimal,
   /** 
    * Default: 'USD'
    */
@@ -50,15 +51,15 @@ case class PaymentsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("processor_response") processorResponse: Optional[String],
+  @JsonProperty("processor_response") processorResponse: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("error_message") errorMessage: Optional[String],
+  @JsonProperty("error_message") errorMessage: Option[String],
   /** 
    * Default: NULL
    */
-  @JsonProperty("ip_address") ipAddress: Optional[Inet6],
+  @JsonProperty("ip_address") ipAddress: Option[Inet6],
   /** 
    * Default: current_timestamp(6)
    */
@@ -66,19 +67,19 @@ case class PaymentsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("processed_at") processedAt: Optional[LocalDateTime]
+  @JsonProperty("processed_at") processedAt: Option[LocalDateTime]
 ) {
   def id: PaymentsId = paymentId
 
   def toUnsavedRow(
-    transactionId: Defaulted[Optional[String]] = Defaulted.Provided(this.transactionId),
+    transactionId: Defaulted[Option[String]] = Defaulted.Provided(this.transactionId),
     currencyCode: Defaulted[String] = Defaulted.Provided(this.currencyCode),
     status: Defaulted[String] = Defaulted.Provided(this.status),
-    processorResponse: Defaulted[Optional[String]] = Defaulted.Provided(this.processorResponse),
-    errorMessage: Defaulted[Optional[String]] = Defaulted.Provided(this.errorMessage),
-    ipAddress: Defaulted[Optional[Inet6]] = Defaulted.Provided(this.ipAddress),
+    processorResponse: Defaulted[Option[String]] = Defaulted.Provided(this.processorResponse),
+    errorMessage: Defaulted[Option[String]] = Defaulted.Provided(this.errorMessage),
+    ipAddress: Defaulted[Option[Inet6]] = Defaulted.Provided(this.ipAddress),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt),
-    processedAt: Defaulted[Optional[LocalDateTime]] = Defaulted.Provided(this.processedAt)
+    processedAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.processedAt)
   ): PaymentsRowUnsaved = {
     new PaymentsRowUnsaved(
       orderId,
@@ -97,7 +98,7 @@ case class PaymentsRow(
 }
 
 object PaymentsRow {
-  val `_rowParser`: RowParser[PaymentsRow] = RowParsers.of(PaymentsId.pgType, OrdersId.pgType, PaymentMethodsId.pgType, MariaTypes.varchar.opt(), MariaTypes.decimal, MariaTypes.char_, MariaTypes.text, MariaTypes.longtext.opt(), MariaTypes.varchar.opt(), MariaTypes.inet6.opt(), MariaTypes.datetime, MariaTypes.datetime.opt(), PaymentsRow.apply, row => Array[Object](row.paymentId.asInstanceOf[Object], row.orderId.asInstanceOf[Object], row.methodId.asInstanceOf[Object], row.transactionId.asInstanceOf[Object], row.amount.asInstanceOf[Object], row.currencyCode.asInstanceOf[Object], row.status.asInstanceOf[Object], row.processorResponse.asInstanceOf[Object], row.errorMessage.asInstanceOf[Object], row.ipAddress.asInstanceOf[Object], row.createdAt.asInstanceOf[Object], row.processedAt.asInstanceOf[Object]))
+  val `_rowParser`: RowParser[PaymentsRow] = RowParsers.of(PaymentsId.pgType, OrdersId.pgType, PaymentMethodsId.pgType, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.text, MariaTypes.longtext.nullable, MariaTypes.varchar.nullable, MariaTypes.inet6.nullable, MariaTypes.datetime, MariaTypes.datetime.nullable)(PaymentsRow.apply)(row => Array[Any](row.paymentId, row.orderId, row.methodId, row.transactionId, row.amount, row.currencyCode, row.status, row.processorResponse, row.errorMessage, row.ipAddress, row.createdAt, row.processedAt))
 
-  given mariaText: MariaText[PaymentsRow] = MariaText.from(`_rowParser`)
+  given mariaText: MariaText[PaymentsRow] = MariaText.from(`_rowParser`.underlying)
 }

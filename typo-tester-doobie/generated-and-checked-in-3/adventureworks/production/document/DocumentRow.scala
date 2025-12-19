@@ -25,7 +25,7 @@ import io.circe.Encoder
  */
 case class DocumentRow(
   /** Title of the document. */
-  title: /* max 50 chars */ String,
+  title: String,
   /** Employee who controls the document.  Foreign key to Employee.BusinessEntityID
    * Points to [[adventureworks.humanresources.employee.EmployeeRow.businessentityid]]
    */
@@ -35,11 +35,11 @@ case class DocumentRow(
    */
   folderflag: Flag,
   /** File name of the document */
-  filename: /* max 400 chars */ String,
+  filename: String,
   /** File extension indicating the document type. For example, .doc or .txt. */
   fileextension: Option[/* max 8 chars */ String],
   /** Revision number of the document. */
-  revision: /* bpchar, max 5 chars */ String,
+  revision: String,
   /** Engineering change approval number.
    * Default: 0
    */
@@ -91,9 +91,9 @@ case class DocumentRow(
 }
 
 object DocumentRow {
-  given decoder: Decoder[DocumentRow] = Decoder.forProduct13[DocumentRow, /* max 50 chars */ String, BusinessentityId, Flag, /* max 400 chars */ String, Option[/* max 8 chars */ String], /* bpchar, max 5 chars */ String, Int, TypoShort, Option[String], Option[TypoBytea], TypoUUID, TypoLocalDateTime, DocumentId]("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")(DocumentRow.apply)(using Decoder.decodeString, BusinessentityId.decoder, Flag.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Decoder.decodeInt, TypoShort.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using TypoBytea.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder, DocumentId.decoder)
+  given decoder: Decoder[DocumentRow] = Decoder.forProduct13[DocumentRow, String, BusinessentityId, Flag, String, Option[/* max 8 chars */ String], String, Int, TypoShort, Option[String], Option[TypoBytea], TypoUUID, TypoLocalDateTime, DocumentId]("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")(DocumentRow.apply)(using Decoder.decodeString, BusinessentityId.decoder, Flag.decoder, Decoder.decodeString, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeString, Decoder.decodeInt, TypoShort.decoder, Decoder.decodeOption(using Decoder.decodeString), Decoder.decodeOption(using TypoBytea.decoder), TypoUUID.decoder, TypoLocalDateTime.decoder, DocumentId.decoder)
 
-  given encoder: Encoder[DocumentRow] = Encoder.forProduct13[DocumentRow, /* max 50 chars */ String, BusinessentityId, Flag, /* max 400 chars */ String, Option[/* max 8 chars */ String], /* bpchar, max 5 chars */ String, Int, TypoShort, Option[String], Option[TypoBytea], TypoUUID, TypoLocalDateTime, DocumentId]("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")(x => (x.title, x.owner, x.folderflag, x.filename, x.fileextension, x.revision, x.changenumber, x.status, x.documentsummary, x.document, x.rowguid, x.modifieddate, x.documentnode))(using Encoder.encodeString, BusinessentityId.encoder, Flag.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Encoder.encodeInt, TypoShort.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using TypoBytea.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder, DocumentId.encoder)
+  given encoder: Encoder[DocumentRow] = Encoder.forProduct13[DocumentRow, String, BusinessentityId, Flag, String, Option[/* max 8 chars */ String], String, Int, TypoShort, Option[String], Option[TypoBytea], TypoUUID, TypoLocalDateTime, DocumentId]("title", "owner", "folderflag", "filename", "fileextension", "revision", "changenumber", "status", "documentsummary", "document", "rowguid", "modifieddate", "documentnode")(x => (x.title, x.owner, x.folderflag, x.filename, x.fileextension, x.revision, x.changenumber, x.status, x.documentsummary, x.document, x.rowguid, x.modifieddate, x.documentnode))(using Encoder.encodeString, BusinessentityId.encoder, Flag.encoder, Encoder.encodeString, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeString, Encoder.encodeInt, TypoShort.encoder, Encoder.encodeOption(using Encoder.encodeString), Encoder.encodeOption(using TypoBytea.encoder), TypoUUID.encoder, TypoLocalDateTime.encoder, DocumentId.encoder)
 
   given pgText: Text[DocumentRow] = {
     Text.instance[DocumentRow]{ (row, sb) =>
@@ -142,12 +142,12 @@ object DocumentRow {
         new Read.Single(DocumentId.get).asInstanceOf[Read[Any]]
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       DocumentRow(
-        title = arr(0).asInstanceOf[/* max 50 chars */ String],
+        title = arr(0).asInstanceOf[String],
             owner = arr(1).asInstanceOf[BusinessentityId],
             folderflag = arr(2).asInstanceOf[Flag],
-            filename = arr(3).asInstanceOf[/* max 400 chars */ String],
+            filename = arr(3).asInstanceOf[String],
             fileextension = arr(4).asInstanceOf[Option[/* max 8 chars */ String]],
-            revision = arr(5).asInstanceOf[/* bpchar, max 5 chars */ String],
+            revision = arr(5).asInstanceOf[String],
             changenumber = arr(6).asInstanceOf[Int],
             status = arr(7).asInstanceOf[TypoShort],
             documentsummary = arr(8).asInstanceOf[Option[String]],

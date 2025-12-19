@@ -25,21 +25,21 @@ case class VstorewithcontactsViewRow(
   /** Points to [[adventureworks.person.contacttype.ContacttypeRow.name]] */
   contacttype: Name,
   /** Points to [[adventureworks.person.person.PersonRow.title]] */
-  title: Option[/* max 8 chars */ String],
+  title: String,
   /** Points to [[adventureworks.person.person.PersonRow.firstname]] */
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.middlename]] */
-  middlename: Option[Name],
+  middlename: Name,
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.suffix]] */
-  suffix: Option[/* max 10 chars */ String],
+  suffix: String,
   /** Points to [[adventureworks.person.personphone.PersonphoneRow.phonenumber]] */
-  phonenumber: Option[Phone],
+  phonenumber: Phone,
   /** Points to [[adventureworks.person.phonenumbertype.PhonenumbertypeRow.name]] */
-  phonenumbertype: Option[Name],
+  phonenumbertype: Name,
   /** Points to [[adventureworks.person.emailaddress.EmailaddressRow.emailaddress]] */
-  emailaddress: Option[/* max 50 chars */ String],
+  emailaddress: String,
   /** Points to [[adventureworks.person.person.PersonRow.emailpromotion]] */
   emailpromotion: Int
 )
@@ -53,14 +53,14 @@ object VstorewithcontactsViewRow {
             businessentityid = BusinessentityId.jdbcDecoder.unsafeDecode(columIndex + 0, rs)._2,
             name = Name.jdbcDecoder.unsafeDecode(columIndex + 1, rs)._2,
             contacttype = Name.jdbcDecoder.unsafeDecode(columIndex + 2, rs)._2,
-            title = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 3, rs)._2,
+            title = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 3, rs)._2,
             firstname = FirstName.jdbcDecoder.unsafeDecode(columIndex + 4, rs)._2,
-            middlename = JdbcDecoder.optionDecoder(Name.jdbcDecoder).unsafeDecode(columIndex + 5, rs)._2,
+            middlename = Name.jdbcDecoder.unsafeDecode(columIndex + 5, rs)._2,
             lastname = Name.jdbcDecoder.unsafeDecode(columIndex + 6, rs)._2,
-            suffix = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 7, rs)._2,
-            phonenumber = JdbcDecoder.optionDecoder(Phone.jdbcDecoder).unsafeDecode(columIndex + 8, rs)._2,
-            phonenumbertype = JdbcDecoder.optionDecoder(Name.jdbcDecoder).unsafeDecode(columIndex + 9, rs)._2,
-            emailaddress = JdbcDecoder.optionDecoder(JdbcDecoder.stringDecoder).unsafeDecode(columIndex + 10, rs)._2,
+            suffix = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 7, rs)._2,
+            phonenumber = Phone.jdbcDecoder.unsafeDecode(columIndex + 8, rs)._2,
+            phonenumbertype = Name.jdbcDecoder.unsafeDecode(columIndex + 9, rs)._2,
+            emailaddress = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 10, rs)._2,
             emailpromotion = JdbcDecoder.intDecoder.unsafeDecode(columIndex + 11, rs)._2
           )
     }
@@ -71,14 +71,14 @@ object VstorewithcontactsViewRow {
       val businessentityid = jsonObj.get("businessentityid").toRight("Missing field 'businessentityid'").flatMap(_.as(BusinessentityId.jsonDecoder))
       val name = jsonObj.get("name").toRight("Missing field 'name'").flatMap(_.as(Name.jsonDecoder))
       val contacttype = jsonObj.get("contacttype").toRight("Missing field 'contacttype'").flatMap(_.as(Name.jsonDecoder))
-      val title = jsonObj.get("title").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val title = jsonObj.get("title").toRight("Missing field 'title'").flatMap(_.as(JsonDecoder.string))
       val firstname = jsonObj.get("firstname").toRight("Missing field 'firstname'").flatMap(_.as(FirstName.jsonDecoder))
-      val middlename = jsonObj.get("middlename").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
+      val middlename = jsonObj.get("middlename").toRight("Missing field 'middlename'").flatMap(_.as(Name.jsonDecoder))
       val lastname = jsonObj.get("lastname").toRight("Missing field 'lastname'").flatMap(_.as(Name.jsonDecoder))
-      val suffix = jsonObj.get("suffix").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
-      val phonenumber = jsonObj.get("phonenumber").fold[Either[String, Option[Phone]]](Right(None))(_.as(JsonDecoder.option(Phone.jsonDecoder)))
-      val phonenumbertype = jsonObj.get("phonenumbertype").fold[Either[String, Option[Name]]](Right(None))(_.as(JsonDecoder.option(Name.jsonDecoder)))
-      val emailaddress = jsonObj.get("emailaddress").fold[Either[String, Option[String]]](Right(None))(_.as(JsonDecoder.option(JsonDecoder.string)))
+      val suffix = jsonObj.get("suffix").toRight("Missing field 'suffix'").flatMap(_.as(JsonDecoder.string))
+      val phonenumber = jsonObj.get("phonenumber").toRight("Missing field 'phonenumber'").flatMap(_.as(Phone.jsonDecoder))
+      val phonenumbertype = jsonObj.get("phonenumbertype").toRight("Missing field 'phonenumbertype'").flatMap(_.as(Name.jsonDecoder))
+      val emailaddress = jsonObj.get("emailaddress").toRight("Missing field 'emailaddress'").flatMap(_.as(JsonDecoder.string))
       val emailpromotion = jsonObj.get("emailpromotion").toRight("Missing field 'emailpromotion'").flatMap(_.as(JsonDecoder.int))
       if (businessentityid.isRight && name.isRight && contacttype.isRight && title.isRight && firstname.isRight && middlename.isRight && lastname.isRight && suffix.isRight && phonenumber.isRight && phonenumbertype.isRight && emailaddress.isRight && emailpromotion.isRight)
         Right(VstorewithcontactsViewRow(businessentityid = businessentityid.toOption.get, name = name.toOption.get, contacttype = contacttype.toOption.get, title = title.toOption.get, firstname = firstname.toOption.get, middlename = middlename.toOption.get, lastname = lastname.toOption.get, suffix = suffix.toOption.get, phonenumber = phonenumber.toOption.get, phonenumbertype = phonenumbertype.toOption.get, emailaddress = emailaddress.toOption.get, emailpromotion = emailpromotion.toOption.get))
@@ -100,28 +100,28 @@ object VstorewithcontactsViewRow {
         Name.jsonEncoder.unsafeEncode(a.contacttype, indent, out)
         out.write(",")
         out.write(""""title":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.title, indent, out)
+        JsonEncoder.string.unsafeEncode(a.title, indent, out)
         out.write(",")
         out.write(""""firstname":""")
         FirstName.jsonEncoder.unsafeEncode(a.firstname, indent, out)
         out.write(",")
         out.write(""""middlename":""")
-        JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.middlename, indent, out)
+        Name.jsonEncoder.unsafeEncode(a.middlename, indent, out)
         out.write(",")
         out.write(""""lastname":""")
         Name.jsonEncoder.unsafeEncode(a.lastname, indent, out)
         out.write(",")
         out.write(""""suffix":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.suffix, indent, out)
+        JsonEncoder.string.unsafeEncode(a.suffix, indent, out)
         out.write(",")
         out.write(""""phonenumber":""")
-        JsonEncoder.option(Phone.jsonEncoder).unsafeEncode(a.phonenumber, indent, out)
+        Phone.jsonEncoder.unsafeEncode(a.phonenumber, indent, out)
         out.write(",")
         out.write(""""phonenumbertype":""")
-        JsonEncoder.option(Name.jsonEncoder).unsafeEncode(a.phonenumbertype, indent, out)
+        Name.jsonEncoder.unsafeEncode(a.phonenumbertype, indent, out)
         out.write(",")
         out.write(""""emailaddress":""")
-        JsonEncoder.option(JsonEncoder.string).unsafeEncode(a.emailaddress, indent, out)
+        JsonEncoder.string.unsafeEncode(a.emailaddress, indent, out)
         out.write(",")
         out.write(""""emailpromotion":""")
         JsonEncoder.int.unsafeEncode(a.emailpromotion, indent, out)

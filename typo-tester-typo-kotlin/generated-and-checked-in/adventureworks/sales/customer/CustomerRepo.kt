@@ -6,89 +6,88 @@
 package adventureworks.sales.customer
 
 import java.sql.Connection
-import java.util.Optional
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
-import typo.dsl.DeleteBuilder
-import typo.dsl.SelectBuilder
-import typo.dsl.UpdateBuilder
+import typo.kotlindsl.DeleteBuilder
+import typo.kotlindsl.SelectBuilder
+import typo.kotlindsl.UpdateBuilder
 
 interface CustomerRepo {
-  fun delete(): DeleteBuilder<CustomerFields, CustomerRow>
+  abstract fun delete(): DeleteBuilder<CustomerFields, CustomerRow>
 
-  fun deleteById(
+  abstract fun deleteById(
     customerid: CustomerId,
     c: Connection
   ): Boolean
 
-  fun deleteByIds(
+  abstract fun deleteByIds(
     customerids: Array<CustomerId>,
     c: Connection
   ): Int
 
-  fun insert(
+  abstract fun insert(
     unsaved: CustomerRow,
     c: Connection
   ): CustomerRow
 
-  fun insert(
+  abstract fun insert(
     unsaved: CustomerRowUnsaved,
     c: Connection
   ): CustomerRow
 
-  fun insertStreaming(
-    unsaved: MutableIterator<CustomerRow>,
+  abstract fun insertStreaming(
+    unsaved: Iterator<CustomerRow>,
     batchSize: Int,
     c: Connection
   ): Long
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
-  fun insertUnsavedStreaming(
-    unsaved: MutableIterator<CustomerRowUnsaved>,
+  abstract fun insertUnsavedStreaming(
+    unsaved: Iterator<CustomerRowUnsaved>,
     batchSize: Int,
     c: Connection
   ): Long
 
-  fun select(): SelectBuilder<CustomerFields, CustomerRow>
+  abstract fun select(): SelectBuilder<CustomerFields, CustomerRow>
 
-  fun selectAll(c: Connection): List<CustomerRow>
+  abstract fun selectAll(c: Connection): List<CustomerRow>
 
-  fun selectById(
+  abstract fun selectById(
     customerid: CustomerId,
     c: Connection
-  ): Optional<CustomerRow>
+  ): CustomerRow?
 
-  fun selectByIds(
+  abstract fun selectByIds(
     customerids: Array<CustomerId>,
     c: Connection
   ): List<CustomerRow>
 
-  fun selectByIdsTracked(
+  abstract fun selectByIdsTracked(
     customerids: Array<CustomerId>,
     c: Connection
   ): Map<CustomerId, CustomerRow>
 
-  fun update(): UpdateBuilder<CustomerFields, CustomerRow>
+  abstract fun update(): UpdateBuilder<CustomerFields, CustomerRow>
 
-  fun update(
+  abstract fun update(
     row: CustomerRow,
     c: Connection
   ): Boolean
 
-  fun upsert(
+  abstract fun upsert(
     unsaved: CustomerRow,
     c: Connection
   ): CustomerRow
 
-  fun upsertBatch(
-    unsaved: MutableIterator<CustomerRow>,
+  abstract fun upsertBatch(
+    unsaved: Iterator<CustomerRow>,
     c: Connection
   ): List<CustomerRow>
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
-  fun upsertStreaming(
-    unsaved: MutableIterator<CustomerRow>,
+  abstract fun upsertStreaming(
+    unsaved: Iterator<CustomerRow>,
     batchSize: Int,
     c: Connection
   ): Int

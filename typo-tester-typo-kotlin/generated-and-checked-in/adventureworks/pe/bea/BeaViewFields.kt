@@ -5,56 +5,58 @@
  */
 package adventureworks.pe.bea
 
-import adventureworks.customtypes.TypoLocalDateTime
-import adventureworks.customtypes.TypoUUID
 import adventureworks.person.address.AddressId
 import adventureworks.person.addresstype.AddresstypeId
 import adventureworks.person.businessentity.BusinessentityId
-import java.util.Optional
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
-import typo.dsl.SqlExpr.Field
 import typo.dsl.SqlExpr.FieldLike
-import typo.dsl.Structure.Relation
+import typo.kotlindsl.RelationStructure
+import typo.kotlindsl.SqlExpr.Field
+import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
 interface BeaViewFields : FieldsExpr<BeaViewRow> {
-  fun addressid(): Field<AddressId, BeaViewRow>
+  abstract fun addressid(): Field<AddressId, BeaViewRow>
 
-  fun addresstypeid(): Field<AddresstypeId, BeaViewRow>
+  abstract fun addresstypeid(): Field<AddresstypeId, BeaViewRow>
 
-  fun businessentityid(): Field<BusinessentityId, BeaViewRow>
+  abstract fun businessentityid(): Field<BusinessentityId, BeaViewRow>
 
-  override fun columns(): List<FieldLike<*, BeaViewRow>>
+  abstract override fun columns(): List<FieldLike<*, BeaViewRow>>
 
-  fun id(): Field<BusinessentityId, BeaViewRow>
+  abstract fun id(): Field<BusinessentityId, BeaViewRow>
 
-  fun modifieddate(): Field<TypoLocalDateTime, BeaViewRow>
+  abstract fun modifieddate(): Field<LocalDateTime, BeaViewRow>
 
-  override fun rowParser(): RowParser<BeaViewRow> = BeaViewRow._rowParser
+  override fun rowParser(): RowParser<BeaViewRow> = BeaViewRow._rowParser.underlying
 
-  fun rowguid(): Field<TypoUUID, BeaViewRow>
+  abstract fun rowguid(): Field<UUID, BeaViewRow>
 
   companion object {
-    data class Impl(val _path: List<Path>) : BeaViewFields, Relation<BeaViewFields, BeaViewRow> {
-      override fun id(): Field<BusinessentityId, BeaViewRow> = Field<BusinessentityId, BeaViewRow>(_path, "id", BeaViewRow::id, Optional.empty(), Optional.empty(), { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
+    data class Impl(val _path: List<Path>) : BeaViewFields, RelationStructure<BeaViewFields, BeaViewRow> {
+      override fun id(): Field<BusinessentityId, BeaViewRow> = Field<BusinessentityId, BeaViewRow>(_path, "id", BeaViewRow::id, null, null, { row, value -> row.copy(id = value) }, BusinessentityId.pgType)
 
-      override fun businessentityid(): Field<BusinessentityId, BeaViewRow> = Field<BusinessentityId, BeaViewRow>(_path, "businessentityid", BeaViewRow::businessentityid, Optional.empty(), Optional.empty(), { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
+      override fun businessentityid(): Field<BusinessentityId, BeaViewRow> = Field<BusinessentityId, BeaViewRow>(_path, "businessentityid", BeaViewRow::businessentityid, null, null, { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
 
-      override fun addressid(): Field<AddressId, BeaViewRow> = Field<AddressId, BeaViewRow>(_path, "addressid", BeaViewRow::addressid, Optional.empty(), Optional.empty(), { row, value -> row.copy(addressid = value) }, AddressId.pgType)
+      override fun addressid(): Field<AddressId, BeaViewRow> = Field<AddressId, BeaViewRow>(_path, "addressid", BeaViewRow::addressid, null, null, { row, value -> row.copy(addressid = value) }, AddressId.pgType)
 
-      override fun addresstypeid(): Field<AddresstypeId, BeaViewRow> = Field<AddresstypeId, BeaViewRow>(_path, "addresstypeid", BeaViewRow::addresstypeid, Optional.empty(), Optional.empty(), { row, value -> row.copy(addresstypeid = value) }, AddresstypeId.pgType)
+      override fun addresstypeid(): Field<AddresstypeId, BeaViewRow> = Field<AddresstypeId, BeaViewRow>(_path, "addresstypeid", BeaViewRow::addresstypeid, null, null, { row, value -> row.copy(addresstypeid = value) }, AddresstypeId.pgType)
 
-      override fun rowguid(): Field<TypoUUID, BeaViewRow> = Field<TypoUUID, BeaViewRow>(_path, "rowguid", BeaViewRow::rowguid, Optional.empty(), Optional.empty(), { row, value -> row.copy(rowguid = value) }, TypoUUID.pgType)
+      override fun rowguid(): Field<UUID, BeaViewRow> = Field<UUID, BeaViewRow>(_path, "rowguid", BeaViewRow::rowguid, null, null, { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-      override fun modifieddate(): Field<TypoLocalDateTime, BeaViewRow> = Field<TypoLocalDateTime, BeaViewRow>(_path, "modifieddate", BeaViewRow::modifieddate, Optional.of("text"), Optional.empty(), { row, value -> row.copy(modifieddate = value) }, TypoLocalDateTime.pgType)
+      override fun modifieddate(): Field<LocalDateTime, BeaViewRow> = Field<LocalDateTime, BeaViewRow>(_path, "modifieddate", BeaViewRow::modifieddate, null, null, { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-      override fun columns(): List<FieldLike<*, BeaViewRow>> = listOf(this.id(), this.businessentityid(), this.addressid(), this.addresstypeid(), this.rowguid(), this.modifieddate())
+      override fun _path(): List<Path> = _path
 
-      override fun copy(_path: List<Path>): Relation<BeaViewFields, BeaViewRow> = Impl(_path)
+      override fun columns(): List<FieldLike<*, BeaViewRow>> = listOf(this.id().underlying, this.businessentityid().underlying, this.addressid().underlying, this.addresstypeid().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+      override fun withPaths(_path: List<Path>): RelationStructure<BeaViewFields, BeaViewRow> = Impl(_path)
     }
 
-    fun structure(): Impl = Impl(listOf())
+    val structure: Impl = Impl(emptyList<typo.dsl.Path>())
   }
 }

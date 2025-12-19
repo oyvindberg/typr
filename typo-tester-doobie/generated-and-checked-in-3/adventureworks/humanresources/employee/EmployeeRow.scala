@@ -29,11 +29,11 @@ case class EmployeeRow(
    */
   businessentityid: BusinessentityId,
   /** Unique national identification number such as a social security number. */
-  nationalidnumber: /* max 15 chars */ String,
+  nationalidnumber: String,
   /** Network login. */
-  loginid: /* max 256 chars */ String,
+  loginid: String,
   /** Work title such as Buyer or Sales Representative. */
-  jobtitle: /* max 50 chars */ String,
+  jobtitle: String,
   /** Date of birth.
    * Constraint CK_Employee_BirthDate affecting columns birthdate: (((birthdate >= '1930-01-01'::date) AND (birthdate <= (now() - '18 years'::interval))))
    */
@@ -41,11 +41,11 @@ case class EmployeeRow(
   /** M = Married, S = Single
    * Constraint CK_Employee_MaritalStatus affecting columns maritalstatus: ((upper((maritalstatus)::text) = ANY (ARRAY['M'::text, 'S'::text])))
    */
-  maritalstatus: /* bpchar, max 1 chars */ String,
+  maritalstatus: String,
   /** M = Male, F = Female
    * Constraint CK_Employee_Gender affecting columns gender: ((upper((gender)::text) = ANY (ARRAY['M'::text, 'F'::text])))
    */
-  gender: /* bpchar, max 1 chars */ String,
+  gender: String,
   /** Employee hired on this date.
    * Constraint CK_Employee_HireDate affecting columns hiredate: (((hiredate >= '1996-07-01'::date) AND (hiredate <= (now() + '1 day'::interval))))
    */
@@ -109,9 +109,9 @@ case class EmployeeRow(
 }
 
 object EmployeeRow {
-  given decoder: Decoder[EmployeeRow] = Decoder.forProduct15[EmployeeRow, BusinessentityId, /* max 15 chars */ String, /* max 256 chars */ String, /* max 50 chars */ String, TypoLocalDate, /* bpchar, max 1 chars */ String, /* bpchar, max 1 chars */ String, TypoLocalDate, Flag, TypoShort, TypoShort, Flag, TypoUUID, TypoLocalDateTime, Option[String]]("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")(EmployeeRow.apply)(using BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeString, Decoder.decodeString, TypoLocalDate.decoder, Decoder.decodeString, Decoder.decodeString, TypoLocalDate.decoder, Flag.decoder, TypoShort.decoder, TypoShort.decoder, Flag.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(using Decoder.decodeString))
+  given decoder: Decoder[EmployeeRow] = Decoder.forProduct15[EmployeeRow, BusinessentityId, String, String, String, TypoLocalDate, String, String, TypoLocalDate, Flag, TypoShort, TypoShort, Flag, TypoUUID, TypoLocalDateTime, Option[String]]("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")(EmployeeRow.apply)(using BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeString, Decoder.decodeString, TypoLocalDate.decoder, Decoder.decodeString, Decoder.decodeString, TypoLocalDate.decoder, Flag.decoder, TypoShort.decoder, TypoShort.decoder, Flag.decoder, TypoUUID.decoder, TypoLocalDateTime.decoder, Decoder.decodeOption(using Decoder.decodeString))
 
-  given encoder: Encoder[EmployeeRow] = Encoder.forProduct15[EmployeeRow, BusinessentityId, /* max 15 chars */ String, /* max 256 chars */ String, /* max 50 chars */ String, TypoLocalDate, /* bpchar, max 1 chars */ String, /* bpchar, max 1 chars */ String, TypoLocalDate, Flag, TypoShort, TypoShort, Flag, TypoUUID, TypoLocalDateTime, Option[String]]("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")(x => (x.businessentityid, x.nationalidnumber, x.loginid, x.jobtitle, x.birthdate, x.maritalstatus, x.gender, x.hiredate, x.salariedflag, x.vacationhours, x.sickleavehours, x.currentflag, x.rowguid, x.modifieddate, x.organizationnode))(using BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeString, Encoder.encodeString, TypoLocalDate.encoder, Encoder.encodeString, Encoder.encodeString, TypoLocalDate.encoder, Flag.encoder, TypoShort.encoder, TypoShort.encoder, Flag.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(using Encoder.encodeString))
+  given encoder: Encoder[EmployeeRow] = Encoder.forProduct15[EmployeeRow, BusinessentityId, String, String, String, TypoLocalDate, String, String, TypoLocalDate, Flag, TypoShort, TypoShort, Flag, TypoUUID, TypoLocalDateTime, Option[String]]("businessentityid", "nationalidnumber", "loginid", "jobtitle", "birthdate", "maritalstatus", "gender", "hiredate", "salariedflag", "vacationhours", "sickleavehours", "currentflag", "rowguid", "modifieddate", "organizationnode")(x => (x.businessentityid, x.nationalidnumber, x.loginid, x.jobtitle, x.birthdate, x.maritalstatus, x.gender, x.hiredate, x.salariedflag, x.vacationhours, x.sickleavehours, x.currentflag, x.rowguid, x.modifieddate, x.organizationnode))(using BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeString, Encoder.encodeString, TypoLocalDate.encoder, Encoder.encodeString, Encoder.encodeString, TypoLocalDate.encoder, Flag.encoder, TypoShort.encoder, TypoShort.encoder, Flag.encoder, TypoUUID.encoder, TypoLocalDateTime.encoder, Encoder.encodeOption(using Encoder.encodeString))
 
   given pgText: Text[EmployeeRow] = {
     Text.instance[EmployeeRow]{ (row, sb) =>
@@ -167,12 +167,12 @@ object EmployeeRow {
     ))(using scala.reflect.ClassTag.Any).map { arr =>
       EmployeeRow(
         businessentityid = arr(0).asInstanceOf[BusinessentityId],
-            nationalidnumber = arr(1).asInstanceOf[/* max 15 chars */ String],
-            loginid = arr(2).asInstanceOf[/* max 256 chars */ String],
-            jobtitle = arr(3).asInstanceOf[/* max 50 chars */ String],
+            nationalidnumber = arr(1).asInstanceOf[String],
+            loginid = arr(2).asInstanceOf[String],
+            jobtitle = arr(3).asInstanceOf[String],
             birthdate = arr(4).asInstanceOf[TypoLocalDate],
-            maritalstatus = arr(5).asInstanceOf[/* bpchar, max 1 chars */ String],
-            gender = arr(6).asInstanceOf[/* bpchar, max 1 chars */ String],
+            maritalstatus = arr(5).asInstanceOf[String],
+            gender = arr(6).asInstanceOf[String],
             hiredate = arr(7).asInstanceOf[TypoLocalDate],
             salariedflag = arr(8).asInstanceOf[Flag],
             vacationhours = arr(9).asInstanceOf[TypoShort],
