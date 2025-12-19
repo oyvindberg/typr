@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 case class Currency(@JsonValue value: String) extends AnyVal
 
 object Currency {
+
   /** Converts a String to this type for Spring @PathVariable binding */
   def valueOf(s: String): Currency = new testapi.model.Currency(s)
 }

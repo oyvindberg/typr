@@ -652,7 +652,7 @@ case class FilesRelation(
       val base = lang match {
         // FieldsExpr0 is an abstract class workaround for Scala 3 compiler bug
         case _: LangScala => jvm.Type.Qualified(s"typo.dsl.FieldsExpr0")
-        case _ => jvm.Type.Qualified(s"typo.dsl.FieldsExpr")
+        case _            => jvm.Type.Qualified(s"typo.dsl.FieldsExpr")
       }
       base.of(names.RowName)
     }

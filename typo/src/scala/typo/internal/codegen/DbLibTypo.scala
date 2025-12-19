@@ -1428,7 +1428,38 @@ class DbLibTypo(
           // because Kotlin's ::ClassName doesn't SAM-convert to Java functional interfaces
           // Also, we must NOT use typed lambda parameters because Kotlin won't SAM-convert
           // typed lambdas to Java functional interfaces with generic type parameters
+
           val decodeLambda: jvm.Code = lang match {
+            case LangScala(_, TypeSupportJava, _) if cols.length > 22 =>
+              // For Scala with Java types and arity > 22, directly instantiate Function type
+              // to work around Scala compiler bug with SAM conversion
+              val params = cols.toList.zipWithIndex.map { case (col, i) =>
+                jvm.Param(jvm.Ident(s"t$i"), col.tpe)
+              }
+              val args = params.map(_.name.code)
+              val applyMethod = jvm.Method(
+                annotations = Nil,
+                comments = jvm.Comments.Empty,
+                tparams = Nil,
+                name = jvm.Ident("apply"),
+                params = params,
+                implicitParams = Nil,
+                tpe = tpe,
+                throws = Nil,
+                body = jvm.Body.Expr(tpe.construct(args: _*)),
+                isOverride = true,
+                isDefault = false
+              )
+              val functionTypeName = jvm.Type.Qualified(s"typo.runtime.RowParsers.Function${cols.length}")
+              val typeParams = cols.toList.map(_.tpe) :+ tpe
+              val functionType = functionTypeName.of(typeParams: _*)
+              jvm
+                .NewWithBody(
+                  extendsClass = None,
+                  implementsInterface = Some(functionType),
+                  members = List(applyMethod)
+                )
+                .code
             case _: LangKotlin =>
               val params = cols.toList.zipWithIndex.map { case (col, i) =>
                 jvm.Param(jvm.Ident(s"t$i"), col.tpe)

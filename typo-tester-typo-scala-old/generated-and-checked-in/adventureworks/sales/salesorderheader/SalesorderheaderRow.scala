@@ -23,6 +23,7 @@ import typo.runtime.PgText
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 import typo.runtime.RowParsers
+import typo.runtime.RowParsers.Function25
 
 /** Table: sales.salesorderheader
  * General sales order information.
@@ -167,7 +168,65 @@ case class SalesorderheaderRow(
 }
 
 object SalesorderheaderRow {
-  val `_rowParser`: RowParser[SalesorderheaderRow] = RowParsers.of(SalesorderheaderId.pgType, PgTypes.int2, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.int2, Flag.pgType, OrderNumber.pgType.opt(), AccountNumber.pgType.opt(), CustomerId.pgType, BusinessentityId.pgType.opt(), SalesterritoryId.pgType.opt(), AddressId.pgType, AddressId.pgType, ShipmethodId.pgType, CustomCreditcardId.pgType.opt(), PgTypes.text.opt(), CurrencyrateId.pgType.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric.opt(), PgTypes.text.opt(), PgTypes.uuid, PgTypes.timestamp, SalesorderheaderRow.apply, row => Array[Any](row.salesorderid, row.revisionnumber, row.orderdate, row.duedate, row.shipdate, row.status, row.onlineorderflag, row.purchaseordernumber, row.accountnumber, row.customerid, row.salespersonid, row.territoryid, row.billtoaddressid, row.shiptoaddressid, row.shipmethodid, row.creditcardid, row.creditcardapprovalcode, row.currencyrateid, row.subtotal, row.taxamt, row.freight, row.totaldue, row.comment, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[SalesorderheaderRow] = {
+    RowParsers.of(SalesorderheaderId.pgType, PgTypes.int2, PgTypes.timestamp, PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.int2, Flag.pgType, OrderNumber.pgType.opt(), AccountNumber.pgType.opt(), CustomerId.pgType, BusinessentityId.pgType.opt(), SalesterritoryId.pgType.opt(), AddressId.pgType, AddressId.pgType, ShipmethodId.pgType, CustomCreditcardId.pgType.opt(), PgTypes.text.opt(), CurrencyrateId.pgType.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric.opt(), PgTypes.text.opt(), PgTypes.uuid, PgTypes.timestamp, new Function25[SalesorderheaderId, java.lang.Short, LocalDateTime, LocalDateTime, Optional[LocalDateTime], java.lang.Short, Flag, Optional[OrderNumber], Optional[AccountNumber], CustomerId, Optional[BusinessentityId], Optional[SalesterritoryId], AddressId, AddressId, ShipmethodId, Optional[/* user-picked */ CustomCreditcardId], Optional[/* max 15 chars */ String], Optional[CurrencyrateId], java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, Optional[java.math.BigDecimal], Optional[/* max 128 chars */ String], UUID, LocalDateTime, SalesorderheaderRow] {
+      override def apply(
+        t0: SalesorderheaderId,
+        t1: java.lang.Short,
+        t2: LocalDateTime,
+        t3: LocalDateTime,
+        t4: Optional[LocalDateTime],
+        t5: java.lang.Short,
+        t6: Flag,
+        t7: Optional[OrderNumber],
+        t8: Optional[AccountNumber],
+        t9: CustomerId,
+        t10: Optional[BusinessentityId],
+        t11: Optional[SalesterritoryId],
+        t12: AddressId,
+        t13: AddressId,
+        t14: ShipmethodId,
+        t15: Optional[/* user-picked */ CustomCreditcardId],
+        t16: Optional[/* max 15 chars */ String],
+        t17: Optional[CurrencyrateId],
+        t18: java.math.BigDecimal,
+        t19: java.math.BigDecimal,
+        t20: java.math.BigDecimal,
+        t21: Optional[java.math.BigDecimal],
+        t22: Optional[/* max 128 chars */ String],
+        t23: UUID,
+        t24: LocalDateTime
+      ): SalesorderheaderRow = {
+        new SalesorderheaderRow(
+          t0,
+          t1,
+          t2,
+          t3,
+          t4,
+          t5,
+          t6,
+          t7,
+          t8,
+          t9,
+          t10,
+          t11,
+          t12,
+          t13,
+          t14,
+          t15,
+          t16,
+          t17,
+          t18,
+          t19,
+          t20,
+          t21,
+          t22,
+          t23,
+          t24
+        )
+      }
+    }, row => Array[Any](row.salesorderid, row.revisionnumber, row.orderdate, row.duedate, row.shipdate, row.status, row.onlineorderflag, row.purchaseordernumber, row.accountnumber, row.customerid, row.salespersonid, row.territoryid, row.billtoaddressid, row.shiptoaddressid, row.shipmethodid, row.creditcardid, row.creditcardapprovalcode, row.currencyrateid, row.subtotal, row.taxamt, row.freight, row.totaldue, row.comment, row.rowguid, row.modifieddate))
+  }
 
   given pgText: PgText[SalesorderheaderRow] = PgText.from(`_rowParser`)
 }
