@@ -1,5 +1,7 @@
 package adventureworks.production.product
 
+import adventureworks.DbNow
+
 import adventureworks.production.productcategory.*
 import adventureworks.production.productmodel.*
 import adventureworks.production.productsubcategory.*
@@ -50,7 +52,7 @@ class ProductTest extends SnapshotTest {
         standardcost = BigDecimal(20),
         listprice = BigDecimal(22),
         daystomanufacture = 26,
-        sellstartdate = LocalDateTime.now().plusDays(1)
+        sellstartdate = DbNow.localDateTime().plusDays(1)
       ).copy(
         color = Some("color"),
         sizeunitmeasurecode = Some(unitmeasure.unitmeasurecode),
@@ -112,7 +114,7 @@ class ProductTest extends SnapshotTest {
       standardcost = BigDecimal(20),
       listprice = BigDecimal(22),
       daystomanufacture = 26,
-      sellstartdate = LocalDateTime.now().plusDays(1)
+      sellstartdate = DbNow.localDateTime().plusDays(1)
     )
 
     val row = unsaved.toRow(
@@ -120,7 +122,7 @@ class ProductTest extends SnapshotTest {
       Flag(true),
       Flag(false),
       UUID.randomUUID(),
-      LocalDateTime.now()
+      DbNow.localDateTime()
     )
 //
     assertNotNull(row)

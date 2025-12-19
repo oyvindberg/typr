@@ -1,5 +1,7 @@
 package adventureworks.public
 
+import adventureworks.DbNow
+
 import adventureworks.{DomainInsertImpl, TestInsert, WithConnection}
 import adventureworks.public.title._
 import adventureworks.public.title_domain._

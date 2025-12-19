@@ -1,5 +1,7 @@
 package adventureworks.humanresources.department
 
+import adventureworks.DbNow
+
 import adventureworks.WithConnection
 import adventureworks.customtypes.Defaulted
 import adventureworks.public.Name
@@ -15,7 +17,7 @@ class DepartmentTest {
   def works(): Unit = {
     WithConnection {
       val unsaved = DepartmentRowUnsaved(name = Name("foo"), groupname = Name("bar"))
-        .copy(modifieddate = Defaulted.Provided(LocalDateTime.now()))
+        .copy(modifieddate = Defaulted.Provided(DbNow.localDateTime()))
 
       val saved1 = departmentRepo.insert(unsaved)
       val saved2 = unsaved.toRow(saved1.departmentid, saved1.modifieddate)
@@ -36,7 +38,7 @@ class DepartmentTest {
   def upsertsWorks(): Unit = {
     WithConnection {
       val unsaved = DepartmentRowUnsaved(name = Name("foo"), groupname = Name("bar"))
-        .copy(modifieddate = Defaulted.Provided(LocalDateTime.now()))
+        .copy(modifieddate = Defaulted.Provided(DbNow.localDateTime()))
 
       val saved1 = departmentRepo.insert(unsaved)
       val newName = Name("baz")

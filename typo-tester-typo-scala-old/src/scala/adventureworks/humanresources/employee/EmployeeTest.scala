@@ -1,5 +1,7 @@
 package adventureworks.humanresources.employee
 
+import adventureworks.DbNow
+
 import adventureworks.WithConnection
 import adventureworks.customtypes.Defaulted
 import adventureworks.person.businessentity.{BusinessentityId, BusinessentityRepoImpl, BusinessentityRowUnsaved}
@@ -53,7 +55,7 @@ class EmployeeTest {
         sickleavehours = Defaulted.Provided(java.lang.Short.valueOf(2.toShort)),
         currentflag = Defaulted.Provided(Flag(true)),
         rowguid = Defaulted.Provided(UUID.randomUUID()),
-        modifieddate = Defaulted.Provided(LocalDateTime.now()),
+        modifieddate = Defaulted.Provided(DbNow.localDateTime()),
         organizationnode = Defaulted.Provided(Optional.of("/"))
       )
 

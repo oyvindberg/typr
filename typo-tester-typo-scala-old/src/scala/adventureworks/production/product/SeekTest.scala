@@ -1,5 +1,7 @@
 package adventureworks.production.product
 
+import adventureworks.DbNow
+
 import adventureworks.SnapshotTest
 import adventureworks.public.Name
 import org.junit.Test

@@ -1,5 +1,7 @@
 package adventureworks.production.productcosthistory
 
+import adventureworks.DbNow
+
 import adventureworks.SnapshotTest
 import adventureworks.WithConnection
 import adventureworks.person.businessentity._
@@ -49,7 +51,7 @@ class CompositeIdsTest extends SnapshotTest {
       // Setup product model
       val productModel = productmodelRepo.insert(ProductmodelRowUnsaved(Name("Test Model")))
 
-      val now = LocalDateTime.now()
+      val now = DbNow.localDateTime()
 
       // Setup product
       val product = productRepo.insert(

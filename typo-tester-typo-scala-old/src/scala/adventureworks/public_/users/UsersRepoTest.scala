@@ -1,5 +1,7 @@
 package adventureworks.public_.users
 
+import adventureworks.DbNow
+
 import adventureworks.WithConnection
 import adventureworks.customtypes.Defaulted
 import adventureworks.public.users._
@@ -23,8 +25,8 @@ class UsersRepoTest {
         password = "password"
       ).copy(
         lastName = Optional.of("last_name"),
-        verifiedOn = Optional.of(Instant.now()),
-        createdAt = Defaulted.Provided(Instant.now())
+        verifiedOn = Optional.of(DbNow.instant()),
+        createdAt = Defaulted.Provided(DbNow.instant())
       )
 
       val _ = usersRepo.insert(before)
@@ -52,7 +54,7 @@ class UsersRepoTest {
           password = "password"
         ).copy(
           lastName = Optional.of("last_name"),
-          verifiedOn = Optional.of(Instant.now())
+          verifiedOn = Optional.of(DbNow.instant())
         )
       }.toList
 
@@ -75,7 +77,7 @@ class UsersRepoTest {
 
   @Test
   def testRoundtripInMemory(): Unit = {
-    testRoundtrip(new UsersRepoMock(unsaved => unsaved.toRow(Instant.now())))
+    testRoundtrip(new UsersRepoMock(unsaved => unsaved.toRow(DbNow.instant())))
   }
 
   @Test
@@ -85,7 +87,7 @@ class UsersRepoTest {
 
   @Test
   def testInsertUnsavedStreamingInMemory(): Unit = {
-    testInsertUnsavedStreaming(new UsersRepoMock(unsaved => unsaved.toRow(Instant.now())))
+    testInsertUnsavedStreaming(new UsersRepoMock(unsaved => unsaved.toRow(DbNow.instant())))
   }
 
   @Test

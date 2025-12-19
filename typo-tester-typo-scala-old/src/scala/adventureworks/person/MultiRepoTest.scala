@@ -1,5 +1,7 @@
 package adventureworks.person
 
+import adventureworks.DbNow
+
 import adventureworks.{DomainInsertImpl, TestInsert, WithConnection}
 import adventureworks.customtypes.Defaulted
 import adventureworks.person.address._

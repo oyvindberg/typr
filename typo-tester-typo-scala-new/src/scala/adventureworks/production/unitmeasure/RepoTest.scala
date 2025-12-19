@@ -1,5 +1,7 @@
 package adventureworks.production.unitmeasure
 
+import adventureworks.DbNow
+
 import adventureworks.WithConnection
 import adventureworks.public.Name
 import org.junit.Assert._
@@ -11,8 +13,8 @@ class RepoTest {
 
   private def upsertStreaming(unitmeasureRepo: UnitmeasureRepo): Unit = {
     WithConnection {
-      val um1 = UnitmeasureRow(UnitmeasureId("kg1"), Name("name1"), LocalDateTime.now())
-      val um2 = UnitmeasureRow(UnitmeasureId("kg2"), Name("name2"), LocalDateTime.now())
+      val um1 = UnitmeasureRow(UnitmeasureId("kg1"), Name("name1"), DbNow.localDateTime())
+      val um2 = UnitmeasureRow(UnitmeasureId("kg2"), Name("name2"), DbNow.localDateTime())
       val _ = unitmeasureRepo.upsertStreaming(List(um1, um2).iterator, 1000)
 
       val all1 = unitmeasureRepo.selectAll.sortBy(_.name.value)
@@ -29,8 +31,8 @@ class RepoTest {
 
   private def upsertBatch(unitmeasureRepo: UnitmeasureRepo): Unit = {
     WithConnection {
-      val um1 = UnitmeasureRow(UnitmeasureId("kg1"), Name("name1"), LocalDateTime.now())
-      val um2 = UnitmeasureRow(UnitmeasureId("kg2"), Name("name2"), LocalDateTime.now())
+      val um1 = UnitmeasureRow(UnitmeasureId("kg1"), Name("name1"), DbNow.localDateTime())
+      val um2 = UnitmeasureRow(UnitmeasureId("kg2"), Name("name2"), DbNow.localDateTime())
       val initial = unitmeasureRepo.upsertBatch(List(um1, um2).iterator).sortBy(_.name.value)
       assertEquals(List(um1, um2), initial)
 
@@ -46,7 +48,7 @@ class RepoTest {
 
   @Test
   def upsertStreamingInMemory(): Unit = {
-    upsertStreaming(new UnitmeasureRepoMock(unsaved => unsaved.toRow(LocalDateTime.now())))
+    upsertStreaming(new UnitmeasureRepoMock(unsaved => unsaved.toRow(DbNow.localDateTime())))
   }
 
   @Test
@@ -56,7 +58,7 @@ class RepoTest {
 
   @Test
   def upsertBatchInMemory(): Unit = {
-    upsertBatch(new UnitmeasureRepoMock(unsaved => unsaved.toRow(LocalDateTime.now())))
+    upsertBatch(new UnitmeasureRepoMock(unsaved => unsaved.toRow(DbNow.localDateTime())))
   }
 
   @Test

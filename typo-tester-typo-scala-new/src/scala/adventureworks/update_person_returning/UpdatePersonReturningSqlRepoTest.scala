@@ -1,5 +1,7 @@
 package adventureworks.update_person_returning
 
+import adventureworks.DbNow
+
 import adventureworks.WithConnection
 import org.junit.Test
 
@@ -11,7 +13,7 @@ class UpdatePersonReturningSqlRepoTest {
   @Test
   def timestampWorks(): Unit = {
     WithConnection {
-      val _ = updatePersonReturningSqlRepo.apply(Some("1"), Some(LocalDateTime.now()))
+      val _ = updatePersonReturningSqlRepo.apply(Some("1"), Some(DbNow.localDateTime()))
     }
   }
 }

@@ -1,5 +1,7 @@
 package adventureworks.person_detail
 
+import adventureworks.DbNow
+
 import adventureworks.WithConnection
 import adventureworks.person.businessentity.BusinessentityId
 import org.junit.Test
@@ -12,7 +14,7 @@ class PersonDetailTest {
   @Test
   def timestampWorks(): Unit = {
     WithConnection {
-      val _ = personDetailSqlRepo.apply(BusinessentityId(1), LocalDateTime.now())
+      val _ = personDetailSqlRepo.apply(BusinessentityId(1), DbNow.localDateTime())
     }
   }
 }

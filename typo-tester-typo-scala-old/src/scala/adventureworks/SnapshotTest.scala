@@ -1,5 +1,7 @@
 package adventureworks
 
+import adventureworks.DbNow
+
 import org.junit.Assert._
 import typo.runtime.Fragment
 

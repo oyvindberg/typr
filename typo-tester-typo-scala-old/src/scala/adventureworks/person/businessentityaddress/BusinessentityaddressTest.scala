@@ -1,5 +1,7 @@
 package adventureworks.person.businessentityaddress
 
+import adventureworks.DbNow
+
 import adventureworks.WithConnection
 import adventureworks.customtypes.Defaulted
 import adventureworks.person.address.{AddressRepoImpl, AddressRowUnsaved}
@@ -66,7 +68,7 @@ class BusinessentityaddressTest {
         addresstypeid = addressType.addresstypeid
       ).copy(
         rowguid = Defaulted.Provided(UUID.randomUUID()),
-        modifieddate = Defaulted.Provided(LocalDateTime.now())
+        modifieddate = Defaulted.Provided(DbNow.localDateTime())
       )
 
       val saved1 = businessentityaddressRepo.insert(unsaved1)

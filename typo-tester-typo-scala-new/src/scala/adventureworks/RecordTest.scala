@@ -1,5 +1,7 @@
 package adventureworks
 
+import adventureworks.DbNow
+
 import adventureworks.humanresources.employee._
 import adventureworks.person.businessentity._
 import adventureworks.person.emailaddress._
