@@ -77,7 +77,8 @@ public interface PgTypes {
           "timestamptz",
           PgRead.readInstant,
           PgWrite.primitive((ps, i, v) -> ps.setObject(i, v.atOffset(ZoneOffset.UTC))),
-          PgText.instance((arr, sb) -> {}),
+          PgText.instance(
+              (t, sb) -> sb.append(t.atOffset(ZoneOffset.UTC).toString().replace('T', ' '))),
           PgJson.timestamptz);
   PgType<Instant[]> timestamptzArray = timestamptz.array(PgRead.readInstantArray, Instant[]::new);
   PgType<Int2Vector> int2vector =
@@ -106,14 +107,14 @@ public interface PgTypes {
           "date",
           PgRead.readLocalDate,
           PgWrite.passObjectToJdbc(),
-          PgText.instance((arr, sb) -> {}),
+          PgText.instance((d, sb) -> sb.append(d.toString())),
           PgJson.date);
   PgType<LocalDateTime> timestamp =
       PgType.of(
           "timestamp",
           PgRead.readLocalDateTime,
           PgWrite.passObjectToJdbc(),
-          PgText.instance((arr, sb) -> {}),
+          PgText.instance((t, sb) -> sb.append(t.toString().replace('T', ' '))),
           PgJson.timestamp);
   PgType<LocalDateTime[]> timestampArray =
       timestamp.array(PgRead.readLocalDateTimeArray, LocalDateTime[]::new);
@@ -123,7 +124,7 @@ public interface PgTypes {
           "time",
           PgRead.readLocalTime,
           PgWrite.passObjectToJdbc(),
-          PgText.instance((arr, sb) -> {}),
+          PgText.instance((t, sb) -> sb.append(t.toString())),
           PgJson.time);
   PgType<LocalTime[]> timeArray = time.array(PgRead.readLocalTimeArray, LocalTime[]::new);
   PgType<Long> int8 =
@@ -163,7 +164,7 @@ public interface PgTypes {
           "timetz",
           PgRead.readOffsetTime,
           PgWrite.passObjectToJdbc(),
-          PgText.instance((arr, sb) -> {}),
+          PgText.instance((t, sb) -> sb.append(t.toString())),
           PgJson.timetz);
   PgType<OffsetTime[]> timetzArray = timetz.array(PgRead.readOffsetTimeArray, OffsetTime[]::new);
   PgType<OidVector> oidvector =
