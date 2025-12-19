@@ -34,7 +34,6 @@ import testapi.model.PetStatus
 import java.net.URI
 import java.net.http.HttpClient
 import java.time.OffsetDateTime
-import java.util.Optional
 
 /**
  * Integration tests for the OpenAPI generated Kotlin Quarkus reactive server and JDK HTTP client code.
@@ -223,9 +222,7 @@ class OpenApiIntegrationTest {
     @Test
     fun listPetsWithLimitReturnsLimitedPets() {
         serverImpl.reset()
-        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-        val limit: Integer = 1 as Integer
-        val pets = client.listPets(limit, null).await().indefinitely()
+        val pets = client.listPets(1, null).await().indefinitely()
 
         assertEquals(1, pets.size)
     }
