@@ -43,6 +43,8 @@ from dataclasses import dataclass, field, asdict
 from typing import Optional, Any
 import re
 from enum import Enum
+import multiprocessing
+import os
 
 import sqlglot
 from sqlglot import exp
@@ -984,6 +986,59 @@ def dataclass_to_dict(obj):
         return obj
 
 
+# Global variables for multiprocessing workers (set before pool creation)
+_worker_sqlglot_schema = None
+_worker_sqlglot_schema_dict = None
+_worker_dialect = None
+
+
+def init_worker(schema, dialect):
+    """Initialize worker process with schema (called once per worker)."""
+    global _worker_sqlglot_schema, _worker_sqlglot_schema_dict, _worker_dialect
+    _worker_sqlglot_schema, _worker_sqlglot_schema_dict = build_sqlglot_schema(schema, dialect)
+    _worker_dialect = dialect
+
+
+def process_single_file(file_info):
+    """
+    Worker function to process a single SQL file.
+    Uses global variables set by init_worker for schema.
+    """
+    path = file_info.get("path", "")
+    content = file_info.get("content", "")
+
+    # Skip empty content
+    if not content.strip():
+        return {
+            "path": path,
+            "success": False,
+            "error": "Empty SQL content"
+        }
+
+    # Remove SQL comments for cleaner parsing
+    lines = content.split('\n')
+    sql_lines = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped and not stripped.startswith('--'):
+            sql_lines.append(line)
+    sql = '\n'.join(sql_lines).strip()
+
+    if not sql:
+        sql = content
+
+    try:
+        result = analyze_sql(sql, _worker_sqlglot_schema, _worker_sqlglot_schema_dict, _worker_dialect, path)
+        result.path = path
+        return dataclass_to_dict(result)
+    except Exception as e:
+        return {
+            "path": path,
+            "success": False,
+            "error": str(e)
+        }
+
+
 def main():
     # Read JSON input from stdin
     input_data = json.load(sys.stdin)
@@ -992,50 +1047,79 @@ def main():
     schema = input_data.get("schema", {})
     files = input_data.get("files", [])
 
-    # Build sqlglot schema ONCE upfront (expensive operation)
-    schema_start = time.time()
-    sqlglot_schema, sqlglot_schema_dict = build_sqlglot_schema(schema, dialect)
-    schema_time = time.time() - schema_start
-    if schema_time > 0.1:
-        print(f"Schema build time: {schema_time*1000:.0f}ms for {len(schema)} tables", file=sys.stderr)
+    # Check for parallelization env var (default: enabled)
+    # Set TYPO_SQLGLOT_PARALLEL=0 to disable parallel processing
+    enable_parallel = os.environ.get("TYPO_SQLGLOT_PARALLEL", "1") != "0"
 
-    results = []
+    # Determine number of workers (default: use all available CPUs)
+    # Can be overridden with TYPO_SQLGLOT_WORKERS env var
+    num_workers = int(os.environ.get("TYPO_SQLGLOT_WORKERS", "0"))
+    if num_workers <= 0:
+        num_workers = multiprocessing.cpu_count()
 
-    for file_info in files:
-        path = file_info.get("path", "")
-        content = file_info.get("content", "")
+    start_time = time.time()
 
-        # Skip empty content
-        if not content.strip():
-            results.append({
-                "path": path,
-                "success": False,
-                "error": "Empty SQL content"
-            })
-            continue
+    # For small batches or when parallelization is disabled, use sequential processing
+    if not enable_parallel or len(files) <= 1:
+        # Build sqlglot schema ONCE upfront (expensive operation)
+        schema_start = time.time()
+        sqlglot_schema, sqlglot_schema_dict = build_sqlglot_schema(schema, dialect)
+        schema_time = time.time() - schema_start
+        if schema_time > 0.1:
+            print(f"Schema build time: {schema_time*1000:.0f}ms for {len(schema)} tables", file=sys.stderr)
 
-        # Remove SQL comments for cleaner parsing
-        lines = content.split('\n')
-        sql_lines = []
-        for line in lines:
-            stripped = line.strip()
-            if stripped and not stripped.startswith('--'):
-                sql_lines.append(line)
-        sql = '\n'.join(sql_lines).strip()
+        results = []
 
-        if not sql:
-            sql = content
+        for file_info in files:
+            path = file_info.get("path", "")
+            content = file_info.get("content", "")
 
-        try:
-            result = analyze_sql(sql, sqlglot_schema, sqlglot_schema_dict, dialect, path)
-            result.path = path
-            results.append(dataclass_to_dict(result))
-        except Exception as e:
-            results.append({
-                "path": path,
-                "success": False,
-                "error": str(e)
-            })
+            # Skip empty content
+            if not content.strip():
+                results.append({
+                    "path": path,
+                    "success": False,
+                    "error": "Empty SQL content"
+                })
+                continue
+
+            # Remove SQL comments for cleaner parsing
+            lines = content.split('\n')
+            sql_lines = []
+            for line in lines:
+                stripped = line.strip()
+                if stripped and not stripped.startswith('--'):
+                    sql_lines.append(line)
+            sql = '\n'.join(sql_lines).strip()
+
+            if not sql:
+                sql = content
+
+            try:
+                result = analyze_sql(sql, sqlglot_schema, sqlglot_schema_dict, dialect, path)
+                result.path = path
+                results.append(dataclass_to_dict(result))
+            except Exception as e:
+                results.append({
+                    "path": path,
+                    "success": False,
+                    "error": str(e)
+                })
+    else:
+        # Parallel processing with multiprocessing.Pool
+        print(f"Processing {len(files)} files using {num_workers} workers...", file=sys.stderr)
+
+        # Use multiprocessing pool with initializer to build schema once per worker
+        # This is much more efficient than rebuilding for each file
+        with multiprocessing.Pool(
+            processes=num_workers,
+            initializer=init_worker,
+            initargs=(schema, dialect)
+        ) as pool:
+            results = pool.map(process_single_file, files)
+
+    total_time = time.time() - start_time
+    print(f"Total processing time: {total_time*1000:.0f}ms for {len(files)} files", file=sys.stderr)
 
     # Output JSON result
     output = {"results": results}
