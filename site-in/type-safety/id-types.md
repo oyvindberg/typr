@@ -44,7 +44,7 @@ import typo.internal.codegen.LangScala
 
 val options = Options(
   pkg = "mypkg",
-  lang = LangScala(Dialect.Scala3, TypeSupportScala),
+  lang = LangScala.scalaDsl(Dialect.Scala3, TypeSupportScala),
   dbLib = Some(DbLibName.Doobie),
   enablePrimaryKeyType = Selector.relationNames("myrelationname"),
 )
