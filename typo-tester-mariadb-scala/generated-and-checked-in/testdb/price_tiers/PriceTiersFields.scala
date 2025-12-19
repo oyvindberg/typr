@@ -5,11 +5,11 @@
  */
 package testdb.price_tiers
 
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.ScalaDbTypes
 import typo.scaladsl.SqlExpr.Field

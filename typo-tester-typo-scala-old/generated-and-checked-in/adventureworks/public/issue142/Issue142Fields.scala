@@ -6,14 +6,14 @@
 package adventureworks.public.issue142
 
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.runtime.RowParser
 
-trait Issue142Fields extends FieldsExpr[Issue142Row] {
+trait Issue142Fields extends FieldsExpr0[Issue142Row] {
   def tabellkode: IdField[Issue142Id, Issue142Row]
 
   override def columns: java.util.List[FieldLike[?, Issue142Row]]

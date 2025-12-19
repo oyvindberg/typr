@@ -9,7 +9,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.userdefined.CustomCreditcardId
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait PccViewFields extends FieldsExpr[PccViewRow] {
+trait PccViewFields extends FieldsExpr0[PccViewRow] {
   def id: Field[BusinessentityId, PccViewRow]
 
   def businessentityid: Field[BusinessentityId, PccViewRow]

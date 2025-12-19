@@ -8,7 +8,7 @@ package adventureworks.humanresources.vjobcandidateemployment
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import java.time.LocalDate
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -16,7 +16,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait VjobcandidateemploymentViewFields extends FieldsExpr[VjobcandidateemploymentViewRow] {
+trait VjobcandidateemploymentViewFields extends FieldsExpr0[VjobcandidateemploymentViewRow] {
   def jobcandidateid: Field[JobcandidateId, VjobcandidateemploymentViewRow]
 
   def empStartDate: Field[LocalDate, VjobcandidateemploymentViewRow]

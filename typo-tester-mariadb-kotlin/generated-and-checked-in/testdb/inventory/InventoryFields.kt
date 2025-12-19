@@ -13,9 +13,9 @@ import testdb.products.ProductsRow
 import testdb.warehouses.WarehousesFields
 import testdb.warehouses.WarehousesId
 import testdb.warehouses.WarehousesRow
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.ForeignKey
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure

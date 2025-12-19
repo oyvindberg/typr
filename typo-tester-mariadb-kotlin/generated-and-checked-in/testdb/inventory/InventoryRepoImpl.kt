@@ -7,9 +7,9 @@ package testdb.inventory
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
@@ -150,7 +150,7 @@ class InventoryRepoImpl() : InventoryRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<InventoryRow>,
+    unsaved: Iterator<InventoryRow>,
     c: Connection
   ): List<InventoryRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `inventory`(`inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`warehouse_id` = VALUES(`warehouse_id`),\n`quantity_on_hand` = VALUES(`quantity_on_hand`),\n`quantity_reserved` = VALUES(`quantity_reserved`),\n`quantity_on_order` = VALUES(`quantity_on_order`),\n`reorder_point` = VALUES(`reorder_point`),\n`reorder_quantity` = VALUES(`reorder_quantity`),\n`bin_location` = VALUES(`bin_location`),\n`last_counted_at` = VALUES(`last_counted_at`),\n`updated_at` = VALUES(`updated_at`)\nRETURNING `inventory_id`, `product_id`, `warehouse_id`, `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`, `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`"))
     .updateReturningEach(InventoryRow._rowParser, unsaved)

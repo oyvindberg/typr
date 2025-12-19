@@ -40,6 +40,6 @@ data class CustomerOrdersSqlRow(
   @JsonProperty("ordered_at") val orderedAt: LocalDateTime?
 ) {
   companion object {
-    val _rowParser: RowParser<CustomerOrdersSqlRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, OrdersId.pgType.nullable(), MariaTypes.varchar.nullable(), MariaTypes.text.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> CustomerOrdersSqlRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.firstName, row.lastName, row.tier, row.orderId, row.orderNumber, row.orderStatus, row.totalAmount, row.orderedAt) })
+    val _rowParser: RowParser<CustomerOrdersSqlRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, OrdersId.pgType.nullable(), MariaTypes.varchar.nullable(), MariaTypes.text.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> CustomerOrdersSqlRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.firstName, row.lastName, row.tier, row.orderId, row.orderNumber, row.orderStatus, row.totalAmount, row.orderedAt) })
   }
 }

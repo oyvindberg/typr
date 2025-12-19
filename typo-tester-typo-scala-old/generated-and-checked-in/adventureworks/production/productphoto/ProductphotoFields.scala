@@ -7,7 +7,7 @@ package adventureworks.production.productphoto
 
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait ProductphotoFields extends FieldsExpr[ProductphotoRow] {
+trait ProductphotoFields extends FieldsExpr0[ProductphotoRow] {
   def productphotoid: IdField[ProductphotoId, ProductphotoRow]
 
   def thumbnailphoto: OptField[Array[scala.Byte], ProductphotoRow]

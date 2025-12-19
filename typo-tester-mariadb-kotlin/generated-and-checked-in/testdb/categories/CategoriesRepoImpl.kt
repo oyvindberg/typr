@@ -7,9 +7,9 @@ package testdb.categories
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -137,7 +137,7 @@ class CategoriesRepoImpl() : CategoriesRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<CategoriesRow>,
+    unsaved: Iterator<CategoriesRow>,
     c: Connection
   ): List<CategoriesRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `categories`(`category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `parent_id` = VALUES(`parent_id`),\n`name` = VALUES(`name`),\n`slug` = VALUES(`slug`),\n`description` = VALUES(`description`),\n`image_url` = VALUES(`image_url`),\n`sort_order` = VALUES(`sort_order`),\n`is_visible` = VALUES(`is_visible`),\n`metadata` = VALUES(`metadata`)\nRETURNING `category_id`, `parent_id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_visible`, `metadata`"))
     .updateReturningEach(CategoriesRow._rowParser, unsaved)

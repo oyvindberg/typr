@@ -7,9 +7,9 @@ package testdb.order_items
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.orders.OrdersId
 import testdb.products.ProductsId
@@ -140,7 +140,7 @@ class OrderItemsRepoImpl() : OrderItemsRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<OrderItemsRow>,
+    unsaved: Iterator<OrderItemsRow>,
     c: Connection
   ): List<OrderItemsRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `order_items`(`item_id`, `order_id`, `product_id`, `sku`, `product_name`, `quantity`, `unit_price`, `discount_amount`, `tax_amount`, `line_total`, `fulfillment_status`, `warehouse_id`, `notes`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),\n`product_id` = VALUES(`product_id`),\n`sku` = VALUES(`sku`),\n`product_name` = VALUES(`product_name`),\n`quantity` = VALUES(`quantity`),\n`unit_price` = VALUES(`unit_price`),\n`discount_amount` = VALUES(`discount_amount`),\n`tax_amount` = VALUES(`tax_amount`),\n`line_total` = VALUES(`line_total`),\n`fulfillment_status` = VALUES(`fulfillment_status`),\n`warehouse_id` = VALUES(`warehouse_id`),\n`notes` = VALUES(`notes`)\nRETURNING `item_id`, `order_id`, `product_id`, `sku`, `product_name`, `quantity`, `unit_price`, `discount_amount`, `tax_amount`, `line_total`, `fulfillment_status`, `warehouse_id`, `notes`"))
     .updateReturningEach(OrderItemsRow._rowParser, unsaved)

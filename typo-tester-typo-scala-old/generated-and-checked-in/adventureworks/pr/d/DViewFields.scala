@@ -11,7 +11,7 @@ import adventureworks.public.Flag
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -19,7 +19,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait DViewFields extends FieldsExpr[DViewRow] {
+trait DViewFields extends FieldsExpr0[DViewRow] {
   def title: Field[String, DViewRow]
 
   def owner: Field[BusinessentityId, DViewRow]

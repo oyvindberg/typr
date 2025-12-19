@@ -9,7 +9,7 @@ import adventureworks.production.product.ProductId
 import adventureworks.sales.shoppingcartitem.ShoppingcartitemId
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SciViewFields extends FieldsExpr[SciViewRow] {
+trait SciViewFields extends FieldsExpr0[SciViewRow] {
   def id: Field[ShoppingcartitemId, SciViewRow]
 
   def shoppingcartitemid: Field[ShoppingcartitemId, SciViewRow]

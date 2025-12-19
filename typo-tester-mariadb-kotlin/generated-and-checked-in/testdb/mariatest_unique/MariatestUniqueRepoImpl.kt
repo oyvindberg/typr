@@ -7,9 +7,9 @@ package testdb.mariatest_unique
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -113,7 +113,7 @@ class MariatestUniqueRepoImpl() : MariatestUniqueRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<MariatestUniqueRow>,
+    unsaved: Iterator<MariatestUniqueRow>,
     c: Connection
   ): List<MariatestUniqueRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `mariatest_unique`(`id`, `email`, `code`, `category`)\nVALUES (?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `email` = VALUES(`email`),\n`code` = VALUES(`code`),\n`category` = VALUES(`category`)\nRETURNING `id`, `email`, `code`, `category`"))
     .updateReturningEach(MariatestUniqueRow._rowParser, unsaved)

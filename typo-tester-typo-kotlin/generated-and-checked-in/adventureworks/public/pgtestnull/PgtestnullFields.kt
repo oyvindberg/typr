@@ -31,9 +31,9 @@ import typo.data.Jsonb
 import typo.data.Money
 import typo.data.Vector
 import typo.data.Xml
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.OptField

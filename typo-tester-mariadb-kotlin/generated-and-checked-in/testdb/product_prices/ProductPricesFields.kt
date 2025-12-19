@@ -14,9 +14,9 @@ import testdb.price_tiers.PriceTiersRow
 import testdb.products.ProductsFields
 import testdb.products.ProductsId
 import testdb.products.ProductsRow
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.ForeignKey
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure

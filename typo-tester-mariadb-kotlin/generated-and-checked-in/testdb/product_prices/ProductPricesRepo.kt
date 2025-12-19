@@ -6,9 +6,9 @@
 package testdb.product_prices
 
 import java.sql.Connection
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.SelectBuilder
 import typo.kotlindsl.UpdateBuilder
@@ -68,7 +68,7 @@ interface ProductPricesRepo {
   ): ProductPricesRow
 
   abstract fun upsertBatch(
-    unsaved: MutableIterator<ProductPricesRow>,
+    unsaved: Iterator<ProductPricesRow>,
     c: Connection
   ): List<ProductPricesRow>
 }

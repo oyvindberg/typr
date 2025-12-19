@@ -8,9 +8,9 @@ package testdb.product_prices
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.DeleteBuilderMock
@@ -112,7 +112,7 @@ data class ProductPricesRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductPricesRow>,
+    unsaved: Iterator<ProductPricesRow>,
     c: Connection
   ): List<ProductPricesRow> {
     val result = ArrayList<ProductPricesRow>()

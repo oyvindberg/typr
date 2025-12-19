@@ -7,9 +7,9 @@ package testdb.shipments
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.orders.OrdersId
 import testdb.shipping_carriers.ShippingCarriersId
@@ -169,7 +169,7 @@ class ShipmentsRepoImpl() : ShipmentsRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ShipmentsRow>,
+    unsaved: Iterator<ShipmentsRow>,
     c: Connection
   ): List<ShipmentsRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `shipments`(`shipment_id`, `order_id`, `carrier_id`, `tracking_number`, `shipping_method`, `weight_kg`, `dimensions_json`, `label_data`, `status`, `estimated_delivery_date`, `actual_delivery_at`, `shipping_cost`, `insurance_amount`, `origin_warehouse_id`, `shipped_at`, `created_at`, `updated_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),\n`carrier_id` = VALUES(`carrier_id`),\n`tracking_number` = VALUES(`tracking_number`),\n`shipping_method` = VALUES(`shipping_method`),\n`weight_kg` = VALUES(`weight_kg`),\n`dimensions_json` = VALUES(`dimensions_json`),\n`label_data` = VALUES(`label_data`),\n`status` = VALUES(`status`),\n`estimated_delivery_date` = VALUES(`estimated_delivery_date`),\n`actual_delivery_at` = VALUES(`actual_delivery_at`),\n`shipping_cost` = VALUES(`shipping_cost`),\n`insurance_amount` = VALUES(`insurance_amount`),\n`origin_warehouse_id` = VALUES(`origin_warehouse_id`),\n`shipped_at` = VALUES(`shipped_at`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`)\nRETURNING `shipment_id`, `order_id`, `carrier_id`, `tracking_number`, `shipping_method`, `weight_kg`, `dimensions_json`, `label_data`, `status`, `estimated_delivery_date`, `actual_delivery_at`, `shipping_cost`, `insurance_amount`, `origin_warehouse_id`, `shipped_at`, `created_at`, `updated_at`"))
     .updateReturningEach(ShipmentsRow._rowParser, unsaved)

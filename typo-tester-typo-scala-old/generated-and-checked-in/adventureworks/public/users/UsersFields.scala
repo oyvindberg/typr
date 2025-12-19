@@ -8,7 +8,7 @@ package adventureworks.public.users
 import java.time.Instant
 import java.util.Optional
 import typo.data.Unknown
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -18,7 +18,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait UsersFields extends FieldsExpr[UsersRow] {
+trait UsersFields extends FieldsExpr0[UsersRow] {
   def userId: IdField[UsersId, UsersRow]
 
   def name: Field[String, UsersRow]

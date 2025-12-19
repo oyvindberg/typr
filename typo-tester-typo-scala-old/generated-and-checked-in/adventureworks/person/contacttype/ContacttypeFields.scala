@@ -8,7 +8,7 @@ package adventureworks.person.contacttype
 import adventureworks.public.Name
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait ContacttypeFields extends FieldsExpr[ContacttypeRow] {
+trait ContacttypeFields extends FieldsExpr0[ContacttypeRow] {
   def contacttypeid: IdField[ContacttypeId, ContacttypeRow]
 
   def name: Field[Name, ContacttypeRow]

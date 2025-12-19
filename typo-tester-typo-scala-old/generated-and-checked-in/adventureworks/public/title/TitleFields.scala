@@ -6,14 +6,14 @@
 package adventureworks.public.title
 
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.runtime.RowParser
 
-trait TitleFields extends FieldsExpr[TitleRow] {
+trait TitleFields extends FieldsExpr0[TitleRow] {
   def code: IdField[TitleId, TitleRow]
 
   override def columns: java.util.List[FieldLike[?, TitleRow]]

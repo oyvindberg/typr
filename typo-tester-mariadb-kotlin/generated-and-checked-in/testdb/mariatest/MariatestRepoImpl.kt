@@ -7,9 +7,9 @@ package testdb.mariatest
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -187,7 +187,7 @@ class MariatestRepoImpl() : MariatestRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<MariatestRow>,
+    unsaved: Iterator<MariatestRow>,
     c: Connection
   ): List<MariatestRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `mariatest`(`tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `tinyint_col` = VALUES(`tinyint_col`),\n`smallint_col` = VALUES(`smallint_col`),\n`mediumint_col` = VALUES(`mediumint_col`),\n`bigint_col` = VALUES(`bigint_col`),\n`tinyint_u_col` = VALUES(`tinyint_u_col`),\n`smallint_u_col` = VALUES(`smallint_u_col`),\n`mediumint_u_col` = VALUES(`mediumint_u_col`),\n`int_u_col` = VALUES(`int_u_col`),\n`bigint_u_col` = VALUES(`bigint_u_col`),\n`decimal_col` = VALUES(`decimal_col`),\n`numeric_col` = VALUES(`numeric_col`),\n`float_col` = VALUES(`float_col`),\n`double_col` = VALUES(`double_col`),\n`bool_col` = VALUES(`bool_col`),\n`bit_col` = VALUES(`bit_col`),\n`bit1_col` = VALUES(`bit1_col`),\n`char_col` = VALUES(`char_col`),\n`varchar_col` = VALUES(`varchar_col`),\n`tinytext_col` = VALUES(`tinytext_col`),\n`text_col` = VALUES(`text_col`),\n`mediumtext_col` = VALUES(`mediumtext_col`),\n`longtext_col` = VALUES(`longtext_col`),\n`binary_col` = VALUES(`binary_col`),\n`varbinary_col` = VALUES(`varbinary_col`),\n`tinyblob_col` = VALUES(`tinyblob_col`),\n`blob_col` = VALUES(`blob_col`),\n`mediumblob_col` = VALUES(`mediumblob_col`),\n`longblob_col` = VALUES(`longblob_col`),\n`date_col` = VALUES(`date_col`),\n`time_col` = VALUES(`time_col`),\n`time_fsp_col` = VALUES(`time_fsp_col`),\n`datetime_col` = VALUES(`datetime_col`),\n`datetime_fsp_col` = VALUES(`datetime_fsp_col`),\n`timestamp_col` = VALUES(`timestamp_col`),\n`timestamp_fsp_col` = VALUES(`timestamp_fsp_col`),\n`year_col` = VALUES(`year_col`),\n`enum_col` = VALUES(`enum_col`),\n`set_col` = VALUES(`set_col`),\n`json_col` = VALUES(`json_col`),\n`inet4_col` = VALUES(`inet4_col`),\n`inet6_col` = VALUES(`inet6_col`)\nRETURNING `tinyint_col`, `smallint_col`, `mediumint_col`, `int_col`, `bigint_col`, `tinyint_u_col`, `smallint_u_col`, `mediumint_u_col`, `int_u_col`, `bigint_u_col`, `decimal_col`, `numeric_col`, `float_col`, `double_col`, `bool_col`, `bit_col`, `bit1_col`, `char_col`, `varchar_col`, `tinytext_col`, `text_col`, `mediumtext_col`, `longtext_col`, `binary_col`, `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`, `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`, `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`, `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`"))
     .updateReturningEach(MariatestRow._rowParser, unsaved)

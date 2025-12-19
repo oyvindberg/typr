@@ -8,7 +8,7 @@ package adventureworks.pr.tha
 import adventureworks.production.transactionhistoryarchive.TransactionhistoryarchiveId
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -16,7 +16,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait ThaViewFields extends FieldsExpr[ThaViewRow] {
+trait ThaViewFields extends FieldsExpr0[ThaViewRow] {
   def id: Field[TransactionhistoryarchiveId, ThaViewRow]
 
   def transactionid: Field[TransactionhistoryarchiveId, ThaViewRow]

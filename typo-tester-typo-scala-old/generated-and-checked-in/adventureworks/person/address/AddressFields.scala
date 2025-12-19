@@ -11,7 +11,7 @@ import adventureworks.person.stateprovince.StateprovinceRow
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -22,7 +22,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait AddressFields extends FieldsExpr[AddressRow] {
+trait AddressFields extends FieldsExpr0[AddressRow] {
   def addressid: IdField[AddressId, AddressRow]
 
   def addressline1: Field[String, AddressRow]

@@ -8,7 +8,7 @@ package adventureworks.sales.vstorewithaddresses
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -16,7 +16,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait VstorewithaddressesViewFields extends FieldsExpr[VstorewithaddressesViewRow] {
+trait VstorewithaddressesViewFields extends FieldsExpr0[VstorewithaddressesViewRow] {
   def businessentityid: Field[BusinessentityId, VstorewithaddressesViewRow]
 
   def name: Field[Name, VstorewithaddressesViewRow]

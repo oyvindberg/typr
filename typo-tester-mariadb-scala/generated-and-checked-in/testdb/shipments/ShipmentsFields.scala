@@ -16,11 +16,11 @@ import testdb.shipping_carriers.ShippingCarriersRow
 import testdb.warehouses.WarehousesFields
 import testdb.warehouses.WarehousesId
 import testdb.warehouses.WarehousesRow
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.ForeignKey
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.ScalaDbTypes

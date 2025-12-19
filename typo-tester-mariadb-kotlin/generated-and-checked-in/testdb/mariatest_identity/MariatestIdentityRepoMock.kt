@@ -8,9 +8,9 @@ package testdb.mariatest_identity
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.DeleteBuilderMock
@@ -112,7 +112,7 @@ data class MariatestIdentityRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<MariatestIdentityRow>,
+    unsaved: Iterator<MariatestIdentityRow>,
     c: Connection
   ): List<MariatestIdentityRow> {
     val result = ArrayList<MariatestIdentityRow>()

@@ -12,7 +12,7 @@ import adventureworks.public.title_domain.TitleDomainFields
 import adventureworks.public.title_domain.TitleDomainId
 import adventureworks.public.title_domain.TitleDomainRow
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -21,7 +21,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait TitledpersonFields extends FieldsExpr[TitledpersonRow] {
+trait TitledpersonFields extends FieldsExpr0[TitledpersonRow] {
   def titleShort: Field[TitleDomainId, TitledpersonRow]
 
   def title: Field[TitleId, TitledpersonRow]

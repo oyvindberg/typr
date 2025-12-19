@@ -16,7 +16,7 @@ import adventureworks.sales.store.StoreRow
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -27,7 +27,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait CustomerFields extends FieldsExpr[CustomerRow] {
+trait CustomerFields extends FieldsExpr0[CustomerRow] {
   def customerid: IdField[CustomerId, CustomerRow]
 
   def personid: OptField[BusinessentityId, CustomerRow]

@@ -7,9 +7,9 @@ package testdb.product_prices
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.price_tiers.PriceTiersId
 import testdb.products.ProductsId
@@ -121,7 +121,7 @@ class ProductPricesRepoImpl() : ProductPricesRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductPricesRow>,
+    unsaved: Iterator<ProductPricesRow>,
     c: Connection
   ): List<ProductPricesRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `product_prices`(`price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`)\nVALUES (?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`tier_id` = VALUES(`tier_id`),\n`price` = VALUES(`price`),\n`currency_code` = VALUES(`currency_code`),\n`valid_from` = VALUES(`valid_from`),\n`valid_to` = VALUES(`valid_to`)\nRETURNING `price_id`, `product_id`, `tier_id`, `price`, `currency_code`, `valid_from`, `valid_to`"))
     .updateReturningEach(ProductPricesRow._rowParser, unsaved)

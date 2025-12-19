@@ -7,9 +7,9 @@ package testdb.customers
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.customer_status.CustomerStatusId
 import typo.kotlindsl.DeleteBuilder
@@ -156,7 +156,7 @@ class CustomersRepoImpl() : CustomersRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<CustomersRow>,
+    unsaved: Iterator<CustomersRow>,
     c: Connection
   ): List<CustomersRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `customers`(`customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `email` = VALUES(`email`),\n`password_hash` = VALUES(`password_hash`),\n`first_name` = VALUES(`first_name`),\n`last_name` = VALUES(`last_name`),\n`phone` = VALUES(`phone`),\n`status` = VALUES(`status`),\n`tier` = VALUES(`tier`),\n`preferences` = VALUES(`preferences`),\n`marketing_flags` = VALUES(`marketing_flags`),\n`notes` = VALUES(`notes`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`),\n`last_login_at` = VALUES(`last_login_at`)\nRETURNING `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`"))
     .updateReturningEach(CustomersRow._rowParser, unsaved)

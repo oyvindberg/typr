@@ -7,9 +7,9 @@ package testdb.order_history
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.orders.OrdersId
 import typo.kotlindsl.DeleteBuilder
@@ -127,7 +127,7 @@ class OrderHistoryRepoImpl() : OrderHistoryRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<OrderHistoryRow>,
+    unsaved: Iterator<OrderHistoryRow>,
     c: Connection
   ): List<OrderHistoryRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `order_history`(`history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),\n`previous_status` = VALUES(`previous_status`),\n`new_status` = VALUES(`new_status`),\n`changed_by` = VALUES(`changed_by`),\n`change_reason` = VALUES(`change_reason`),\n`metadata` = VALUES(`metadata`),\n`created_at` = VALUES(`created_at`)\nRETURNING `history_id`, `order_id`, `previous_status`, `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`"))
     .updateReturningEach(OrderHistoryRow._rowParser, unsaved)

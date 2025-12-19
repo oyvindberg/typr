@@ -11,9 +11,9 @@ import org.mariadb.jdbc.type.Point
 import testdb.customers.CustomersFields
 import testdb.customers.CustomersId
 import testdb.customers.CustomersRow
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.ForeignKey
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure

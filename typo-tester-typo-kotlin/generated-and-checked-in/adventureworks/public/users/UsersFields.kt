@@ -8,9 +8,9 @@ package adventureworks.public.users
 import java.time.Instant
 import kotlin.collections.List
 import typo.data.Unknown
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.Field
 import typo.kotlindsl.SqlExpr.IdField

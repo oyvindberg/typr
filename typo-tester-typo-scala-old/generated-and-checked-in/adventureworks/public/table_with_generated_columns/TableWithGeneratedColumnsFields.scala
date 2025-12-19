@@ -6,7 +6,7 @@
 package adventureworks.public.table_with_generated_columns
 
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -15,7 +15,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait TableWithGeneratedColumnsFields extends FieldsExpr[TableWithGeneratedColumnsRow] {
+trait TableWithGeneratedColumnsFields extends FieldsExpr0[TableWithGeneratedColumnsRow] {
   def name: IdField[TableWithGeneratedColumnsId, TableWithGeneratedColumnsRow]
 
   def nameTypeAlways: Field[String, TableWithGeneratedColumnsRow]

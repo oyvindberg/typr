@@ -9,7 +9,7 @@ import adventureworks.production.document.DocumentId
 import adventureworks.production.product.ProductId
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait PdocViewFields extends FieldsExpr[PdocViewRow] {
+trait PdocViewFields extends FieldsExpr0[PdocViewRow] {
   def id: Field[ProductId, PdocViewRow]
 
   def productid: Field[ProductId, PdocViewRow]

@@ -7,9 +7,9 @@ package testdb.customer_addresses
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.customers.CustomersId
 import typo.kotlindsl.DeleteBuilder
@@ -143,7 +143,7 @@ class CustomerAddressesRepoImpl() : CustomerAddressesRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<CustomerAddressesRow>,
+    unsaved: Iterator<CustomerAddressesRow>,
     c: Connection
   ): List<CustomerAddressesRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `customer_addresses`(`address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `customer_id` = VALUES(`customer_id`),\n`address_type` = VALUES(`address_type`),\n`is_default` = VALUES(`is_default`),\n`recipient_name` = VALUES(`recipient_name`),\n`street_line1` = VALUES(`street_line1`),\n`street_line2` = VALUES(`street_line2`),\n`city` = VALUES(`city`),\n`state_province` = VALUES(`state_province`),\n`postal_code` = VALUES(`postal_code`),\n`country_code` = VALUES(`country_code`),\n`location` = VALUES(`location`),\n`delivery_notes` = VALUES(`delivery_notes`),\n`created_at` = VALUES(`created_at`)\nRETURNING `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`"))
     .updateReturningEach(CustomerAddressesRow._rowParser, unsaved)

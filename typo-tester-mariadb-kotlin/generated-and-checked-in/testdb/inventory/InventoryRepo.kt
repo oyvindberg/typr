@@ -6,9 +6,9 @@
 package testdb.inventory
 
 import java.sql.Connection
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
 import typo.kotlindsl.DeleteBuilder
@@ -76,7 +76,7 @@ interface InventoryRepo {
   ): InventoryRow
 
   abstract fun upsertBatch(
-    unsaved: MutableIterator<InventoryRow>,
+    unsaved: Iterator<InventoryRow>,
     c: Connection
   ): List<InventoryRow>
 }

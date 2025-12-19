@@ -8,7 +8,7 @@ package adventureworks.production.illustration
 import java.time.LocalDateTime
 import java.util.Optional
 import typo.data.Xml
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -18,7 +18,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait IllustrationFields extends FieldsExpr[IllustrationRow] {
+trait IllustrationFields extends FieldsExpr0[IllustrationRow] {
   def illustrationid: IdField[IllustrationId, IllustrationRow]
 
   def diagram: OptField[Xml, IllustrationRow]

@@ -63,6 +63,6 @@ data class VWarehouseCoverageViewRow(
   @JsonProperty("total_inventory") val totalInventory: BigDecimal?
 ) {
   companion object {
-    val _rowParser: RowParser<VWarehouseCoverageViewRow> = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.longtext.nullable(), MariaTypes.longtext.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VWarehouseCoverageViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.warehouseId, row.code, row.name, row.address, row.locationWkt, row.serviceAreaWkt, row.timezone, row.isActive, row.productsStocked, row.totalInventory) })
+    val _rowParser: RowParser<VWarehouseCoverageViewRow> = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.longtext.nullable(), MariaTypes.longtext.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VWarehouseCoverageViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.warehouseId, row.code, row.name, row.address, row.locationWkt, row.serviceAreaWkt, row.timezone, row.isActive, row.productsStocked, row.totalInventory) })
   }
 }

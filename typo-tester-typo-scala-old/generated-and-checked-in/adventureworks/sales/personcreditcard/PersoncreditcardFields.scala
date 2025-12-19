@@ -13,7 +13,7 @@ import adventureworks.sales.creditcard.CreditcardRow
 import adventureworks.userdefined.CustomCreditcardId
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -25,7 +25,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait PersoncreditcardFields extends FieldsExpr[PersoncreditcardRow] {
+trait PersoncreditcardFields extends FieldsExpr0[PersoncreditcardRow] {
   def businessentityid: IdField[BusinessentityId, PersoncreditcardRow]
 
   def creditcardid: IdField[/* user-picked */ CustomCreditcardId, PersoncreditcardRow]

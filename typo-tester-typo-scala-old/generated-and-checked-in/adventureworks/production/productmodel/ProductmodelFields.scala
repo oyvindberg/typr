@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 import typo.data.Xml
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -20,7 +20,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait ProductmodelFields extends FieldsExpr[ProductmodelRow] {
+trait ProductmodelFields extends FieldsExpr0[ProductmodelRow] {
   def productmodelid: IdField[ProductmodelId, ProductmodelRow]
 
   def name: Field[Name, ProductmodelRow]

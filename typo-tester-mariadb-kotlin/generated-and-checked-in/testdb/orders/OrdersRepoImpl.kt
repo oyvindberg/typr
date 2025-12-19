@@ -7,9 +7,9 @@ package testdb.orders
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.customer_addresses.CustomerAddressesId
 import testdb.customers.CustomersId
@@ -199,7 +199,7 @@ class OrdersRepoImpl() : OrdersRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<OrdersRow>,
+    unsaved: Iterator<OrdersRow>,
     c: Connection
   ): List<OrdersRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `orders`(`order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `order_number` = VALUES(`order_number`),\n`customer_id` = VALUES(`customer_id`),\n`order_status` = VALUES(`order_status`),\n`payment_status` = VALUES(`payment_status`),\n`shipping_address_id` = VALUES(`shipping_address_id`),\n`billing_address_id` = VALUES(`billing_address_id`),\n`subtotal` = VALUES(`subtotal`),\n`shipping_cost` = VALUES(`shipping_cost`),\n`tax_amount` = VALUES(`tax_amount`),\n`discount_amount` = VALUES(`discount_amount`),\n`total_amount` = VALUES(`total_amount`),\n`currency_code` = VALUES(`currency_code`),\n`promotion_id` = VALUES(`promotion_id`),\n`notes` = VALUES(`notes`),\n`internal_notes` = VALUES(`internal_notes`),\n`ip_address` = VALUES(`ip_address`),\n`user_agent` = VALUES(`user_agent`),\n`ordered_at` = VALUES(`ordered_at`),\n`confirmed_at` = VALUES(`confirmed_at`),\n`shipped_at` = VALUES(`shipped_at`),\n`delivered_at` = VALUES(`delivered_at`)\nRETURNING `order_id`, `order_number`, `customer_id`, `order_status`, `payment_status`, `shipping_address_id`, `billing_address_id`, `subtotal`, `shipping_cost`, `tax_amount`, `discount_amount`, `total_amount`, `currency_code`, `promotion_id`, `notes`, `internal_notes`, `ip_address`, `user_agent`, `ordered_at`, `confirmed_at`, `shipped_at`, `delivered_at`"))
     .updateReturningEach(OrdersRow._rowParser, unsaved)

@@ -12,7 +12,7 @@ import adventureworks.public.Flag
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -23,7 +23,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait DocumentFields extends FieldsExpr[DocumentRow] {
+trait DocumentFields extends FieldsExpr0[DocumentRow] {
   def title: Field[String, DocumentRow]
 
   def owner: Field[BusinessentityId, DocumentRow]

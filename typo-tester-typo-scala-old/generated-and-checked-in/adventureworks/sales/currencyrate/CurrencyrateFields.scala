@@ -10,7 +10,7 @@ import adventureworks.sales.currency.CurrencyId
 import adventureworks.sales.currency.CurrencyRow
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -20,7 +20,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait CurrencyrateFields extends FieldsExpr[CurrencyrateRow] {
+trait CurrencyrateFields extends FieldsExpr0[CurrencyrateRow] {
   def currencyrateid: IdField[CurrencyrateId, CurrencyrateRow]
 
   def currencyratedate: Field[LocalDateTime, CurrencyrateRow]

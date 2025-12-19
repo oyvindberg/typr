@@ -7,9 +7,9 @@ package testdb.customer_status
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -106,7 +106,7 @@ class CustomerStatusRepoImpl() : CustomerStatusRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<CustomerStatusRow>,
+    unsaved: Iterator<CustomerStatusRow>,
     c: Connection
   ): List<CustomerStatusRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `customer_status`(`status_code`, `description`, `is_active`)\nVALUES (?, ?, ?)\nON DUPLICATE KEY UPDATE `description` = VALUES(`description`),\n`is_active` = VALUES(`is_active`)\nRETURNING `status_code`, `description`, `is_active`"))
     .updateReturningEach(CustomerStatusRow._rowParser, unsaved)

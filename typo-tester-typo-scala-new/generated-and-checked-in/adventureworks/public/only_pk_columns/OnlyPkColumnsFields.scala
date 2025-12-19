@@ -5,11 +5,11 @@
  */
 package adventureworks.public.only_pk_columns
 
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.ScalaDbTypes
 import typo.scaladsl.SqlExpr

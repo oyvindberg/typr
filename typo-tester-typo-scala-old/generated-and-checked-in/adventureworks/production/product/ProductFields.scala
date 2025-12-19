@@ -19,7 +19,7 @@ import adventureworks.public.Name
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -30,7 +30,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait ProductFields extends FieldsExpr[ProductRow] {
+trait ProductFields extends FieldsExpr0[ProductRow] {
   def productid: IdField[ProductId, ProductRow]
 
   def name: Field[Name, ProductRow]

@@ -12,11 +12,11 @@ import adventureworks.sales.salesreason.SalesreasonFields
 import adventureworks.sales.salesreason.SalesreasonId
 import adventureworks.sales.salesreason.SalesreasonRow
 import java.time.LocalDateTime
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.ForeignKey
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.SqlExpr

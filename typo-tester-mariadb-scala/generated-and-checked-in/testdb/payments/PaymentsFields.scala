@@ -13,11 +13,11 @@ import testdb.payment_methods.PaymentMethodsFields
 import testdb.payment_methods.PaymentMethodsId
 import testdb.payment_methods.PaymentMethodsRow
 import typo.data.maria.Inet6
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.MariaTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.ForeignKey
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.ScalaDbTypes

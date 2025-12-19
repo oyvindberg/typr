@@ -9,9 +9,9 @@ import adventureworks.production.culture.CultureId
 import adventureworks.public.Name
 import java.time.LocalDateTime
 import kotlin.collections.List
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes

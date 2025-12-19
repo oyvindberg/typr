@@ -12,7 +12,7 @@ import adventureworks.public.Name
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -22,7 +22,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SalestaxrateFields extends FieldsExpr[SalestaxrateRow] {
+trait SalestaxrateFields extends FieldsExpr0[SalestaxrateRow] {
   def salestaxrateid: IdField[SalestaxrateId, SalestaxrateRow]
 
   def stateprovinceid: Field[StateprovinceId, SalestaxrateRow]

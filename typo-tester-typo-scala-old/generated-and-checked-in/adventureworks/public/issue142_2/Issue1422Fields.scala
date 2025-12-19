@@ -9,7 +9,7 @@ import adventureworks.public.issue142.Issue142Fields
 import adventureworks.public.issue142.Issue142Id
 import adventureworks.public.issue142.Issue142Row
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.dsl.SqlExpr.IdField
 import typo.runtime.RowParser
 
-trait Issue1422Fields extends FieldsExpr[Issue1422Row] {
+trait Issue1422Fields extends FieldsExpr0[Issue1422Row] {
   def tabellkode: IdField[Issue142Id, Issue1422Row]
 
   def fkIssue142: ForeignKey[Issue142Fields, Issue142Row] = ForeignKey.of[Issue142Fields, Issue142Row]("public.tabell2_tabell_fk").withColumnPair[Issue142Id](tabellkode, _.tabellkode)

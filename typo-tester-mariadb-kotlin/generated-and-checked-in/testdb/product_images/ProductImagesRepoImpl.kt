@@ -7,9 +7,9 @@ package testdb.product_images
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.products.ProductsId
 import typo.kotlindsl.DeleteBuilder
@@ -128,7 +128,7 @@ class ProductImagesRepoImpl() : ProductImagesRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductImagesRow>,
+    unsaved: Iterator<ProductImagesRow>,
     c: Connection
   ): List<ProductImagesRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `product_images`(`image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`image_url` = VALUES(`image_url`),\n`thumbnail_url` = VALUES(`thumbnail_url`),\n`alt_text` = VALUES(`alt_text`),\n`sort_order` = VALUES(`sort_order`),\n`is_primary` = VALUES(`is_primary`),\n`image_data` = VALUES(`image_data`)\nRETURNING `image_id`, `product_id`, `image_url`, `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`"))
     .updateReturningEach(ProductImagesRow._rowParser, unsaved)

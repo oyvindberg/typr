@@ -15,7 +15,7 @@ import adventureworks.purchasing.vendor.VendorFields
 import adventureworks.purchasing.vendor.VendorRow
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -26,7 +26,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait PurchaseorderheaderFields extends FieldsExpr[PurchaseorderheaderRow] {
+trait PurchaseorderheaderFields extends FieldsExpr0[PurchaseorderheaderRow] {
   def purchaseorderid: IdField[PurchaseorderheaderId, PurchaseorderheaderRow]
 
   def revisionnumber: Field[java.lang.Short, PurchaseorderheaderRow]

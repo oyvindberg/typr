@@ -6,9 +6,9 @@
 package testdb.customers
 
 import java.sql.Connection
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.SelectBuilder
 import typo.kotlindsl.UpdateBuilder
@@ -73,7 +73,7 @@ interface CustomersRepo {
   ): CustomersRow
 
   abstract fun upsertBatch(
-    unsaved: MutableIterator<CustomersRow>,
+    unsaved: Iterator<CustomersRow>,
     c: Connection
   ): List<CustomersRow>
 }

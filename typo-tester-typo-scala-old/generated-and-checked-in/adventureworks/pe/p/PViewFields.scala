@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 import typo.data.Xml
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -21,7 +21,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait PViewFields extends FieldsExpr[PViewRow] {
+trait PViewFields extends FieldsExpr0[PViewRow] {
   def id: Field[BusinessentityId, PViewRow]
 
   def businessentityid: Field[BusinessentityId, PViewRow]

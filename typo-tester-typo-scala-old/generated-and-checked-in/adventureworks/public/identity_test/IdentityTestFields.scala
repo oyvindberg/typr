@@ -6,7 +6,7 @@
 package adventureworks.public.identity_test
 
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -15,7 +15,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait IdentityTestFields extends FieldsExpr[IdentityTestRow] {
+trait IdentityTestFields extends FieldsExpr0[IdentityTestRow] {
   def alwaysGenerated: Field[Integer, IdentityTestRow]
 
   def defaultGenerated: Field[Integer, IdentityTestRow]

@@ -5,10 +5,10 @@
  */
 package adventureworks.public.test_organisasjon
 
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.SqlExpr.IdField
 

@@ -48,7 +48,7 @@ data class ShippingCarriersRow(
   ): ShippingCarriersRowUnsaved = ShippingCarriersRowUnsaved(code, name, trackingUrlTemplate, apiConfig, isActive)
 
   companion object {
-    val _rowParser: RowParser<ShippingCarriersRow> = RowParsers.of(ShippingCarriersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.bool, { t0, t1, t2, t3, t4, t5 -> ShippingCarriersRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.carrierId, row.code, row.name, row.trackingUrlTemplate, row.apiConfig, row.isActive) })
+    val _rowParser: RowParser<ShippingCarriersRow> = RowParsers.of(ShippingCarriersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.bool, { t0, t1, t2, t3, t4, t5 -> ShippingCarriersRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.carrierId, row.code, row.name, row.trackingUrlTemplate, row.apiConfig, row.isActive) })
 
     val mariaText: MariaText<ShippingCarriersRow> =
       MariaText.from(_rowParser.underlying)

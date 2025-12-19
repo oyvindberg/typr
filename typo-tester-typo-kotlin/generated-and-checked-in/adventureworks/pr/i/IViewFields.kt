@@ -9,9 +9,9 @@ import adventureworks.production.illustration.IllustrationId
 import java.time.LocalDateTime
 import kotlin.collections.List
 import typo.data.Xml
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.Field
 import typo.runtime.PgTypes

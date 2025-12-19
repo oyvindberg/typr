@@ -7,9 +7,9 @@ package testdb.brands
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -127,7 +127,7 @@ class BrandsRepoImpl() : BrandsRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<BrandsRow>,
+    unsaved: Iterator<BrandsRow>,
     c: Connection
   ): List<BrandsRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `brands`(`brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)\nVALUES (?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`),\n`slug` = VALUES(`slug`),\n`logo_blob` = VALUES(`logo_blob`),\n`website_url` = VALUES(`website_url`),\n`country_of_origin` = VALUES(`country_of_origin`),\n`is_active` = VALUES(`is_active`)\nRETURNING `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`"))
     .updateReturningEach(BrandsRow._rowParser, unsaved)

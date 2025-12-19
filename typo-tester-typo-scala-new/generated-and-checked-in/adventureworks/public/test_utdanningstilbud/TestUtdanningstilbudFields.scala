@@ -8,11 +8,11 @@ package adventureworks.public.test_utdanningstilbud
 import adventureworks.public.test_organisasjon.TestOrganisasjonFields
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
 import adventureworks.public.test_organisasjon.TestOrganisasjonRow
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.ForeignKey
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.SqlExpr

@@ -8,9 +8,9 @@ package adventureworks.humanresources.vjobcandidateeducation
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import java.time.LocalDate
 import kotlin.collections.List
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.Field
 import typo.kotlindsl.SqlExpr.OptField

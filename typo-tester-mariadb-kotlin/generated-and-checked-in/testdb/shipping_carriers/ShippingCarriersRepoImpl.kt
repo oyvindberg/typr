@@ -7,9 +7,9 @@ package testdb.shipping_carriers
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -122,7 +122,7 @@ class ShippingCarriersRepoImpl() : ShippingCarriersRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ShippingCarriersRow>,
+    unsaved: Iterator<ShippingCarriersRow>,
     c: Connection
   ): List<ShippingCarriersRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `shipping_carriers`(`carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`)\nVALUES (?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`tracking_url_template` = VALUES(`tracking_url_template`),\n`api_config` = VALUES(`api_config`),\n`is_active` = VALUES(`is_active`)\nRETURNING `carrier_id`, `code`, `name`, `tracking_url_template`, `api_config`, `is_active`"))
     .updateReturningEach(ShippingCarriersRow._rowParser, unsaved)

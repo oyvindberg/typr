@@ -10,7 +10,7 @@ import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -23,7 +23,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait ProductcosthistoryFields extends FieldsExpr[ProductcosthistoryRow] {
+trait ProductcosthistoryFields extends FieldsExpr0[ProductcosthistoryRow] {
   def productid: IdField[ProductId, ProductcosthistoryRow]
 
   def startdate: IdField[LocalDateTime, ProductcosthistoryRow]

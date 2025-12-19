@@ -11,7 +11,7 @@ import adventureworks.public.Flag
 import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -19,7 +19,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait VstateprovincecountryregionMVFields extends FieldsExpr[VstateprovincecountryregionMVRow] {
+trait VstateprovincecountryregionMVFields extends FieldsExpr0[VstateprovincecountryregionMVRow] {
   def stateprovinceid: Field[StateprovinceId, VstateprovincecountryregionMVRow]
 
   def stateprovincecode: Field[String, VstateprovincecountryregionMVRow]

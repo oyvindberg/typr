@@ -6,9 +6,9 @@
 package testdb.order_history
 
 import java.sql.Connection
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.SelectBuilder
 import typo.kotlindsl.UpdateBuilder
@@ -68,7 +68,7 @@ interface OrderHistoryRepo {
   ): OrderHistoryRow
 
   abstract fun upsertBatch(
-    unsaved: MutableIterator<OrderHistoryRow>,
+    unsaved: Iterator<OrderHistoryRow>,
     c: Connection
   ): List<OrderHistoryRow>
 }

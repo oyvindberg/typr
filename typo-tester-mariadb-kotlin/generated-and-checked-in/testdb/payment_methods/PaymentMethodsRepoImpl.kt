@@ -7,9 +7,9 @@ package testdb.payment_methods
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -124,7 +124,7 @@ class PaymentMethodsRepoImpl() : PaymentMethodsRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<PaymentMethodsRow>,
+    unsaved: Iterator<PaymentMethodsRow>,
     c: Connection
   ): List<PaymentMethodsRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `payment_methods`(`method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`)\nVALUES (?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`method_type` = VALUES(`method_type`),\n`processor_config` = VALUES(`processor_config`),\n`is_active` = VALUES(`is_active`),\n`sort_order` = VALUES(`sort_order`)\nRETURNING `method_id`, `code`, `name`, `method_type`, `processor_config`, `is_active`, `sort_order`"))
     .updateReturningEach(PaymentMethodsRow._rowParser, unsaved)

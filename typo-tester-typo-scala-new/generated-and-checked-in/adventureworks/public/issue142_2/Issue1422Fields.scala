@@ -8,10 +8,10 @@ package adventureworks.public.issue142_2
 import adventureworks.public.issue142.Issue142Fields
 import adventureworks.public.issue142.Issue142Id
 import adventureworks.public.issue142.Issue142Row
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.ForeignKey
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.SqlExpr.IdField

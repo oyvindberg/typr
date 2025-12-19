@@ -7,9 +7,9 @@ package testdb.reviews
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.customers.CustomersId
 import testdb.order_items.OrderItemsId
@@ -177,7 +177,7 @@ class ReviewsRepoImpl() : ReviewsRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ReviewsRow>,
+    unsaved: Iterator<ReviewsRow>,
     c: Connection
   ): List<ReviewsRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `reviews`(`review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),\n`customer_id` = VALUES(`customer_id`),\n`order_item_id` = VALUES(`order_item_id`),\n`rating` = VALUES(`rating`),\n`title` = VALUES(`title`),\n`content` = VALUES(`content`),\n`pros` = VALUES(`pros`),\n`cons` = VALUES(`cons`),\n`images` = VALUES(`images`),\n`is_verified_purchase` = VALUES(`is_verified_purchase`),\n`is_approved` = VALUES(`is_approved`),\n`helpful_votes` = VALUES(`helpful_votes`),\n`unhelpful_votes` = VALUES(`unhelpful_votes`),\n`admin_response` = VALUES(`admin_response`),\n`responded_at` = VALUES(`responded_at`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`)\nRETURNING `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`"))
     .updateReturningEach(ReviewsRow._rowParser, unsaved)

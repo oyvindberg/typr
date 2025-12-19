@@ -6,9 +6,9 @@
 package testdb.mariatest_spatial_null
 
 import java.sql.Connection
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.SelectBuilder
 import typo.kotlindsl.UpdateBuilder
@@ -68,7 +68,7 @@ interface MariatestSpatialNullRepo {
   ): MariatestSpatialNullRow
 
   abstract fun upsertBatch(
-    unsaved: MutableIterator<MariatestSpatialNullRow>,
+    unsaved: Iterator<MariatestSpatialNullRow>,
     c: Connection
   ): List<MariatestSpatialNullRow>
 }

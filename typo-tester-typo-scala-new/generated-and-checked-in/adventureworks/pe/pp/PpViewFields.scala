@@ -9,11 +9,11 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.public.Phone
 import java.time.LocalDateTime
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.SqlExpr.Field
 

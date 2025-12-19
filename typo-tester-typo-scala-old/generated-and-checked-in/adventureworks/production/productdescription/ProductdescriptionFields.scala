@@ -8,7 +8,7 @@ package adventureworks.production.productdescription
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait ProductdescriptionFields extends FieldsExpr[ProductdescriptionRow] {
+trait ProductdescriptionFields extends FieldsExpr0[ProductdescriptionRow] {
   def productdescriptionid: IdField[ProductdescriptionId, ProductdescriptionRow]
 
   def description: Field[String, ProductdescriptionRow]

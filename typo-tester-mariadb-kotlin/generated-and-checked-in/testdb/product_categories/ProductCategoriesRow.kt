@@ -45,7 +45,7 @@ data class ProductCategoriesRow(
   ): ProductCategoriesRowUnsaved = ProductCategoriesRowUnsaved(productId, categoryId, isPrimary, sortOrder)
 
   companion object {
-    val _rowParser: RowParser<ProductCategoriesRow> = RowParsers.of(ProductsId.pgType, CategoriesId.pgType, KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.smallint, { t0, t1, t2, t3 -> ProductCategoriesRow(t0!!, t1!!, t2!!, t3!!) }, { row -> arrayOf<Any?>(row.productId, row.categoryId, row.isPrimary, row.sortOrder) })
+    val _rowParser: RowParser<ProductCategoriesRow> = RowParsers.of(ProductsId.pgType, CategoriesId.pgType, KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.smallint, { t0, t1, t2, t3 -> ProductCategoriesRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.productId, row.categoryId, row.isPrimary, row.sortOrder) })
 
     fun apply(
       compositeId: ProductCategoriesId,

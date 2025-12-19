@@ -10,7 +10,7 @@ import adventureworks.production.scrapreason.ScrapreasonId
 import adventureworks.production.workorder.WorkorderId
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -18,7 +18,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait WViewFields extends FieldsExpr[WViewRow] {
+trait WViewFields extends FieldsExpr0[WViewRow] {
   def id: Field[WorkorderId, WViewRow]
 
   def workorderid: Field[WorkorderId, WViewRow]

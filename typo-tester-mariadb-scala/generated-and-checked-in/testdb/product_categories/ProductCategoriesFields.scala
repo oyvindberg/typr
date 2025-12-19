@@ -11,10 +11,10 @@ import testdb.categories.CategoriesRow
 import testdb.products.ProductsFields
 import testdb.products.ProductsId
 import testdb.products.ProductsRow
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.ForeignKey
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.ScalaDbTypes

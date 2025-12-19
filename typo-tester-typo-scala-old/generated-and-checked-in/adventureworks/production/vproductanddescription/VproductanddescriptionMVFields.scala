@@ -9,7 +9,7 @@ import adventureworks.production.culture.CultureId
 import adventureworks.production.product.ProductId
 import adventureworks.public.Name
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait VproductanddescriptionMVFields extends FieldsExpr[VproductanddescriptionMVRow] {
+trait VproductanddescriptionMVFields extends FieldsExpr0[VproductanddescriptionMVRow] {
   def productid: Field[ProductId, VproductanddescriptionMVRow]
 
   def name: Field[Name, VproductanddescriptionMVRow]

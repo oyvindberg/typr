@@ -9,7 +9,7 @@ import adventureworks.person.phonenumbertype.PhonenumbertypeId
 import adventureworks.public.Name
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait PntViewFields extends FieldsExpr[PntViewRow] {
+trait PntViewFields extends FieldsExpr0[PntViewRow] {
   def id: Field[PhonenumbertypeId, PntViewRow]
 
   def phonenumbertypeid: Field[PhonenumbertypeId, PntViewRow]

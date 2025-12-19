@@ -6,9 +6,9 @@
 package testdb.shipments
 
 import java.sql.Connection
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.SelectBuilder
 import typo.kotlindsl.UpdateBuilder
@@ -68,7 +68,7 @@ interface ShipmentsRepo {
   ): ShipmentsRow
 
   abstract fun upsertBatch(
-    unsaved: MutableIterator<ShipmentsRow>,
+    unsaved: Iterator<ShipmentsRow>,
     c: Connection
   ): List<ShipmentsRow>
 }

@@ -14,7 +14,7 @@ import adventureworks.person.phonenumbertype.PhonenumbertypeRow
 import adventureworks.public.Phone
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -26,7 +26,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait PersonphoneFields extends FieldsExpr[PersonphoneRow] {
+trait PersonphoneFields extends FieldsExpr0[PersonphoneRow] {
   def businessentityid: IdField[BusinessentityId, PersonphoneRow]
 
   def phonenumber: IdField[Phone, PersonphoneRow]

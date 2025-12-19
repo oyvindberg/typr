@@ -8,7 +8,7 @@ package adventureworks.person.businessentity
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait BusinessentityFields extends FieldsExpr[BusinessentityRow] {
+trait BusinessentityFields extends FieldsExpr0[BusinessentityRow] {
   def businessentityid: IdField[BusinessentityId, BusinessentityRow]
 
   def rowguid: Field[UUID, BusinessentityRow]

@@ -6,9 +6,9 @@
 package testdb.product_categories
 
 import java.sql.Connection
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.SelectBuilder
 import typo.kotlindsl.UpdateBuilder
@@ -68,7 +68,7 @@ interface ProductCategoriesRepo {
   ): ProductCategoriesRow
 
   abstract fun upsertBatch(
-    unsaved: MutableIterator<ProductCategoriesRow>,
+    unsaved: Iterator<ProductCategoriesRow>,
     c: Connection
   ): List<ProductCategoriesRow>
 }

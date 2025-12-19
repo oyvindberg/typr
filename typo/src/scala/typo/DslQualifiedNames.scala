@@ -14,8 +14,6 @@ sealed abstract class DslQualifiedNames(val dslPackage: String) {
   val Dialect = jvm.Type.Qualified(s"$dslPackage.Dialect")
   val Field = jvm.Type.Qualified(s"$dslPackage.SqlExpr.Field")
   val FieldLikeNoHkt = jvm.Type.Qualified(s"$dslPackage.SqlExpr.FieldLike")
-  val FieldsExpr = jvm.Type.Qualified(s"$dslPackage.FieldsExpr")
-  val FieldsExpr0: Option[jvm.Type.Qualified]
   val ForeignKey = jvm.Type.Qualified(s"$dslPackage.ForeignKey")
   val Fragment: jvm.Type.Qualified
   val IdField = jvm.Type.Qualified(s"$dslPackage.SqlExpr.IdField")
@@ -41,7 +39,6 @@ object DslQualifiedNames {
     override val RowParser: jvm.Type.Qualified = jvm.Type.Qualified(s"$dslPackage.RowParser")
     override val RowParsers: jvm.Type.Qualified = jvm.Type.Qualified(s"$dslPackage.RowParsers")
     override val SqlExpr: jvm.Type.Qualified = jvm.Type.Qualified(s"$dslPackage.SqlExpr")
-    override val FieldsExpr0: Option[jvm.Type.Qualified] = Some(jvm.Type.Qualified(s"$dslPackage.FieldsExpr0"))
     override val Fragment: jvm.Type.Qualified = jvm.Type.Qualified("typo.scaladsl.Fragment")
     override val interpolatorName: String = "sql"
   }
@@ -50,7 +47,6 @@ object DslQualifiedNames {
     override val RowParser: jvm.Type.Qualified = jvm.Type.Qualified("typo.runtime.RowParser")
     override val RowParsers: jvm.Type.Qualified = jvm.Type.Qualified("typo.runtime.RowParsers")
     override val SqlExpr: jvm.Type.Qualified = jvm.Type.Qualified(s"$dslPackage.SqlExpr")
-    override val FieldsExpr0: Option[jvm.Type.Qualified] = None
     override val Fragment: jvm.Type.Qualified = jvm.Type.Qualified("typo.runtime.Fragment")
     override val interpolatorName: String = "interpolate"
   }
@@ -59,7 +55,6 @@ object DslQualifiedNames {
     override val SqlExpr: jvm.Type.Qualified = jvm.Type.Qualified("typo.dsl.SqlExpr")
     override val RowParser: jvm.Type.Qualified = jvm.Type.Qualified("typo.kotlindsl.RowParser")
     override val RowParsers: jvm.Type.Qualified = jvm.Type.Qualified("typo.kotlindsl.RowParsers")
-    override val FieldsExpr0: Option[jvm.Type.Qualified] = None
     override val Fragment: jvm.Type.Qualified = jvm.Type.Qualified("typo.kotlindsl.Fragment")
     override val interpolatorName: String = "interpolate"
   }

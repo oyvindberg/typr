@@ -18,11 +18,11 @@ import adventureworks.sales.salesterritory.SalesterritoryId
 import adventureworks.userdefined.CustomCreditcardId
 import java.time.LocalDateTime
 import java.util.UUID
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.ScalaDbTypes
 import typo.scaladsl.SqlExpr.Field

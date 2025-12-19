@@ -7,9 +7,9 @@ package testdb.products
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.brands.BrandsId
 import typo.kotlindsl.DeleteBuilder
@@ -180,7 +180,7 @@ class ProductsRepoImpl() : ProductsRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductsRow>,
+    unsaved: Iterator<ProductsRow>,
     c: Connection
   ): List<ProductsRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `products`(`product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `sku` = VALUES(`sku`),\n`brand_id` = VALUES(`brand_id`),\n`name` = VALUES(`name`),\n`short_description` = VALUES(`short_description`),\n`full_description` = VALUES(`full_description`),\n`base_price` = VALUES(`base_price`),\n`cost_price` = VALUES(`cost_price`),\n`weight_kg` = VALUES(`weight_kg`),\n`dimensions_json` = VALUES(`dimensions_json`),\n`status` = VALUES(`status`),\n`tax_class` = VALUES(`tax_class`),\n`tags` = VALUES(`tags`),\n`attributes` = VALUES(`attributes`),\n`seo_metadata` = VALUES(`seo_metadata`),\n`created_at` = VALUES(`created_at`),\n`updated_at` = VALUES(`updated_at`),\n`published_at` = VALUES(`published_at`)\nRETURNING `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`"))
     .updateReturningEach(ProductsRow._rowParser, unsaved)

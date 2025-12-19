@@ -19,7 +19,7 @@ import adventureworks.userdefined.CustomCreditcardId
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -27,7 +27,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SohViewFields extends FieldsExpr[SohViewRow] {
+trait SohViewFields extends FieldsExpr0[SohViewRow] {
   def id: Field[SalesorderheaderId, SohViewRow]
 
   def salesorderid: Field[SalesorderheaderId, SohViewRow]

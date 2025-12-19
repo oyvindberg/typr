@@ -12,9 +12,9 @@ import adventureworks.public.Flag
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.collections.List
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.ForeignKey
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure

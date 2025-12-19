@@ -9,9 +9,9 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import kotlin.collections.List
 import typo.data.Money
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.Field

@@ -13,7 +13,7 @@ import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderId
 import adventureworks.purchasing.purchaseorderheader.PurchaseorderheaderRow
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -25,7 +25,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait PurchaseorderdetailFields extends FieldsExpr[PurchaseorderdetailRow] {
+trait PurchaseorderdetailFields extends FieldsExpr0[PurchaseorderdetailRow] {
   def purchaseorderid: IdField[PurchaseorderheaderId, PurchaseorderdetailRow]
 
   def purchaseorderdetailid: IdField[Integer, PurchaseorderdetailRow]

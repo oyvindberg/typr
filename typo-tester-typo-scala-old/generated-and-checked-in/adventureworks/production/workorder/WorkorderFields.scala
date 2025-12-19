@@ -13,7 +13,7 @@ import adventureworks.production.scrapreason.ScrapreasonId
 import adventureworks.production.scrapreason.ScrapreasonRow
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -24,7 +24,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait WorkorderFields extends FieldsExpr[WorkorderRow] {
+trait WorkorderFields extends FieldsExpr0[WorkorderRow] {
   def workorderid: IdField[WorkorderId, WorkorderRow]
 
   def productid: Field[ProductId, WorkorderRow]

@@ -10,11 +10,11 @@ import adventureworks.humanresources.employee.EmployeeRow
 import adventureworks.person.businessentity.BusinessentityId
 import java.time.LocalDateTime
 import typo.data.Xml
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.ForeignKey
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.SqlExpr.Field

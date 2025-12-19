@@ -8,9 +8,9 @@ package testdb.inventory
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
@@ -120,7 +120,7 @@ data class InventoryRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<InventoryRow>,
+    unsaved: Iterator<InventoryRow>,
     c: Connection
   ): List<InventoryRow> {
     val result = ArrayList<InventoryRow>()

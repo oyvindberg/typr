@@ -6,9 +6,9 @@
 package testdb.shipping_carriers
 
 import kotlin.collections.List
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.Field

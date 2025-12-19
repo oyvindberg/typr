@@ -53,7 +53,7 @@ data class BrandsRow(
   ): BrandsRowUnsaved = BrandsRowUnsaved(name, slug, logoBlob, websiteUrl, countryOfOrigin, isActive)
 
   companion object {
-    val _rowParser: RowParser<BrandsRow> = RowParsers.of(BrandsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumblob.nullable(), MariaTypes.varchar.nullable(), MariaTypes.char_.nullable(), KotlinDbTypes.MariaTypes.bool, { t0, t1, t2, t3, t4, t5, t6 -> BrandsRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!) }, { row -> arrayOf<Any?>(row.brandId, row.name, row.slug, row.logoBlob, row.websiteUrl, row.countryOfOrigin, row.isActive) })
+    val _rowParser: RowParser<BrandsRow> = RowParsers.of(BrandsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumblob.nullable(), MariaTypes.varchar.nullable(), MariaTypes.char_.nullable(), KotlinDbTypes.MariaTypes.bool, { t0, t1, t2, t3, t4, t5, t6 -> BrandsRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.brandId, row.name, row.slug, row.logoBlob, row.websiteUrl, row.countryOfOrigin, row.isActive) })
 
     val mariaText: MariaText<BrandsRow> =
       MariaText.from(_rowParser.underlying)

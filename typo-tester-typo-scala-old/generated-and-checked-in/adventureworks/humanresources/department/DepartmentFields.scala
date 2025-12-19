@@ -8,7 +8,7 @@ package adventureworks.humanresources.department
 import adventureworks.public.Name
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait DepartmentFields extends FieldsExpr[DepartmentRow] {
+trait DepartmentFields extends FieldsExpr0[DepartmentRow] {
   def departmentid: IdField[DepartmentId, DepartmentRow]
 
   def name: Field[Name, DepartmentRow]

@@ -648,9 +648,14 @@ case class FilesRelation(
     // All interface members: column methods (abstract), FK methods (with default body), FieldsExpr methods
     val allMembers: List[jvm.ClassMember] = colMethods ++ fkMembers ++ extractFkMember ++ compositeIdMembers ++ List(columnsMethod, rowParserMethod)
 
-    // Use FieldsExpr0 if available (Scala DSL), otherwise FieldsExpr
-    // FieldsExpr0 is an abstract class workaround for Scala 3 compiler bug
-    val fieldsExprType: jvm.Type = lang.dsl.FieldsExpr0.getOrElse(lang.dsl.FieldsExpr).of(names.RowName)
+    val fieldsExprType: jvm.Type = {
+      val base = lang match {
+        // FieldsExpr0 is an abstract class workaround for Scala 3 compiler bug
+        case _: LangScala => jvm.Type.Qualified(s"typo.dsl.FieldsExpr0")
+        case _ => jvm.Type.Qualified(s"typo.dsl.FieldsExpr")
+      }
+      base.of(names.RowName)
+    }
 
     // Build the Fields interface using jvm.Class
     // Fields is an interface (not abstract class) to avoid downstream Java issues

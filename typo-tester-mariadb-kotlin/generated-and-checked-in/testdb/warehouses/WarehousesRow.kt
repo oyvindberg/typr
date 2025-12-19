@@ -64,7 +64,7 @@ data class WarehousesRow(
   ): WarehousesRowUnsaved = WarehousesRowUnsaved(code, name, address, location, serviceArea, timezone, isActive, contactEmail, contactPhone)
 
   companion object {
-    val _rowParser: RowParser<WarehousesRow> = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.point, MariaTypes.polygon.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> WarehousesRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!) }, { row -> arrayOf<Any?>(row.warehouseId, row.code, row.name, row.address, row.location, row.serviceArea, row.timezone, row.isActive, row.contactEmail, row.contactPhone) })
+    val _rowParser: RowParser<WarehousesRow> = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.point, MariaTypes.polygon.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> WarehousesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.warehouseId, row.code, row.name, row.address, row.location, row.serviceArea, row.timezone, row.isActive, row.contactEmail, row.contactPhone) })
 
     val mariaText: MariaText<WarehousesRow> =
       MariaText.from(_rowParser.underlying)

@@ -61,7 +61,7 @@ data class ProductImagesRow(
   ): ProductImagesRowUnsaved = ProductImagesRowUnsaved(productId, imageUrl, thumbnailUrl, altText, sortOrder, isPrimary, imageData)
 
   companion object {
-    val _rowParser: RowParser<ProductImagesRow> = RowParsers.of(ProductImagesId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.tinyintUnsigned, KotlinDbTypes.MariaTypes.bool, MariaTypes.longblob.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7 -> ProductImagesRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!) }, { row -> arrayOf<Any?>(row.imageId, row.productId, row.imageUrl, row.thumbnailUrl, row.altText, row.sortOrder, row.isPrimary, row.imageData) })
+    val _rowParser: RowParser<ProductImagesRow> = RowParsers.of(ProductImagesId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.tinyintUnsigned, KotlinDbTypes.MariaTypes.bool, MariaTypes.longblob.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7 -> ProductImagesRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.imageId, row.productId, row.imageUrl, row.thumbnailUrl, row.altText, row.sortOrder, row.isPrimary, row.imageData) })
 
     val mariaText: MariaText<ProductImagesRow> =
       MariaText.from(_rowParser.underlying)

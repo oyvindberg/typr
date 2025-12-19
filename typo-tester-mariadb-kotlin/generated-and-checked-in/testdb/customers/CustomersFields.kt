@@ -11,9 +11,9 @@ import testdb.customer_status.CustomerStatusFields
 import testdb.customer_status.CustomerStatusId
 import testdb.customer_status.CustomerStatusRow
 import typo.data.maria.MariaSet
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.ForeignKey
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.Field

@@ -13,7 +13,7 @@ import adventureworks.production.unitmeasure.UnitmeasureId
 import adventureworks.production.unitmeasure.UnitmeasureRow
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -24,7 +24,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait BillofmaterialsFields extends FieldsExpr[BillofmaterialsRow] {
+trait BillofmaterialsFields extends FieldsExpr0[BillofmaterialsRow] {
   def billofmaterialsid: IdField[Integer, BillofmaterialsRow]
 
   def productassemblyid: OptField[ProductId, BillofmaterialsRow]

@@ -7,9 +7,9 @@ package testdb.mariatest_identity
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -98,7 +98,7 @@ class MariatestIdentityRepoImpl() : MariatestIdentityRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<MariatestIdentityRow>,
+    unsaved: Iterator<MariatestIdentityRow>,
     c: Connection
   ): List<MariatestIdentityRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `mariatest_identity`(`id`, `name`)\nVALUES (?, ?)\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`)\nRETURNING `id`, `name`"))
     .updateReturningEach(MariatestIdentityRow._rowParser, unsaved)

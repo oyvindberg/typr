@@ -69,6 +69,6 @@ data class VProductCatalogViewRow(
   @JsonProperty("review_count") val reviewCount: Long
 ) {
   companion object {
-    val _rowParser: RowParser<VProductCatalogViewRow> = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.set.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.bigint, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> VProductCatalogViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!, t6!!, t7!!, t8!!, t9!!, t10!!) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount) })
+    val _rowParser: RowParser<VProductCatalogViewRow> = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.set.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.bigint, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> VProductCatalogViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount) })
   }
 }

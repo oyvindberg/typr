@@ -10,7 +10,7 @@ import adventureworks.production.productreview.ProductreviewId
 import adventureworks.public.Name
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -18,7 +18,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait PrViewFields extends FieldsExpr[PrViewRow] {
+trait PrViewFields extends FieldsExpr0[PrViewRow] {
   def id: Field[ProductreviewId, PrViewRow]
 
   def productreviewid: Field[ProductreviewId, PrViewRow]

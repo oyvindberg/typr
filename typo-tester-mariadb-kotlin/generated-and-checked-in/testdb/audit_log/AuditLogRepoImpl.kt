@@ -7,9 +7,9 @@ package testdb.audit_log
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -133,7 +133,7 @@ class AuditLogRepoImpl() : AuditLogRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<AuditLogRow>,
+    unsaved: Iterator<AuditLogRow>,
     c: Connection
   ): List<AuditLogRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `audit_log`(`log_id`, `table_name`, `record_id`, `action`, `old_values`, `new_values`, `changed_by`, `changed_at`, `client_ip`, `session_id`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `table_name` = VALUES(`table_name`),\n`record_id` = VALUES(`record_id`),\n`action` = VALUES(`action`),\n`old_values` = VALUES(`old_values`),\n`new_values` = VALUES(`new_values`),\n`changed_by` = VALUES(`changed_by`),\n`changed_at` = VALUES(`changed_at`),\n`client_ip` = VALUES(`client_ip`),\n`session_id` = VALUES(`session_id`)\nRETURNING `log_id`, `table_name`, `record_id`, `action`, `old_values`, `new_values`, `changed_by`, `changed_at`, `client_ip`, `session_id`"))
     .updateReturningEach(AuditLogRow._rowParser, unsaved)

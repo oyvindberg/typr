@@ -8,9 +8,9 @@ package testdb.mariatest_spatial_null
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.DeleteBuilderMock
@@ -112,7 +112,7 @@ data class MariatestSpatialNullRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<MariatestSpatialNullRow>,
+    unsaved: Iterator<MariatestSpatialNullRow>,
     c: Connection
   ): List<MariatestSpatialNullRow> {
     val result = ArrayList<MariatestSpatialNullRow>()

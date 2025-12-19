@@ -10,7 +10,7 @@ import adventureworks.public.Name
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -18,7 +18,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SViewFields extends FieldsExpr[SViewRow] {
+trait SViewFields extends FieldsExpr0[SViewRow] {
   def id: Field[ShiftId, SViewRow]
 
   def shiftid: Field[ShiftId, SViewRow]

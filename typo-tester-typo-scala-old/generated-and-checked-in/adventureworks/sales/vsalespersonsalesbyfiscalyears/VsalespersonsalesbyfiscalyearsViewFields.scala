@@ -6,7 +6,7 @@
 package adventureworks.sales.vsalespersonsalesbyfiscalyears
 
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -14,7 +14,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait VsalespersonsalesbyfiscalyearsViewFields extends FieldsExpr[VsalespersonsalesbyfiscalyearsViewRow] {
+trait VsalespersonsalesbyfiscalyearsViewFields extends FieldsExpr0[VsalespersonsalesbyfiscalyearsViewRow] {
   def salesPersonID: Field[Integer, VsalespersonsalesbyfiscalyearsViewRow]
 
   def fullName: Field[String, VsalespersonsalesbyfiscalyearsViewRow]

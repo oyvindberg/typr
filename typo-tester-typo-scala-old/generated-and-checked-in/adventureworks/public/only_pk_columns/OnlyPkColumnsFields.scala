@@ -6,7 +6,7 @@
 package adventureworks.public.only_pk_columns
 
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr
@@ -16,7 +16,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait OnlyPkColumnsFields extends FieldsExpr[OnlyPkColumnsRow] {
+trait OnlyPkColumnsFields extends FieldsExpr0[OnlyPkColumnsRow] {
   def keyColumn1: IdField[String, OnlyPkColumnsRow]
 
   def keyColumn2: IdField[Integer, OnlyPkColumnsRow]

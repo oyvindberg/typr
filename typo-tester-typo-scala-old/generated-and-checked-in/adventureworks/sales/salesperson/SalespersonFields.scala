@@ -14,7 +14,7 @@ import adventureworks.sales.salesterritory.SalesterritoryRow
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -25,7 +25,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SalespersonFields extends FieldsExpr[SalespersonRow] {
+trait SalespersonFields extends FieldsExpr0[SalespersonRow] {
   def businessentityid: IdField[BusinessentityId, SalespersonRow]
 
   def territoryid: OptField[SalesterritoryId, SalespersonRow]

@@ -1,0 +1,2 @@
+select personemailaddress0."businessentityid", personemailaddress0."emailaddressid", personemailaddress0."emailaddress", personemailaddress0."rowguid", personemailaddress0."modifieddate"
+from (select * from "person"."emailaddress" personemailaddress0 where ((personemailaddress0)."businessentityid" , (personemailaddress0)."emailaddressid" ) IN ((?::int4, ?::int4), (?::int4, ?::int4))) personemailaddress0

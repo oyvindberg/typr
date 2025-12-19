@@ -8,9 +8,9 @@ package testdb.warehouses
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.DeleteBuilderMock
@@ -117,7 +117,7 @@ data class WarehousesRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<WarehousesRow>,
+    unsaved: Iterator<WarehousesRow>,
     c: Connection
   ): List<WarehousesRow> {
     val result = ArrayList<WarehousesRow>()

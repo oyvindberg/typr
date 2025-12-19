@@ -9,7 +9,7 @@ import adventureworks.sales.specialoffer.SpecialofferId
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SoViewFields extends FieldsExpr[SoViewRow] {
+trait SoViewFields extends FieldsExpr0[SoViewRow] {
   def id: Field[SpecialofferId, SoViewRow]
 
   def specialofferid: Field[SpecialofferId, SoViewRow]

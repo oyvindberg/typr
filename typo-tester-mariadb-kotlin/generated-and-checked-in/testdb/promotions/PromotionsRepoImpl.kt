@@ -7,9 +7,9 @@ package testdb.promotions
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -160,7 +160,7 @@ class PromotionsRepoImpl() : PromotionsRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<PromotionsRow>,
+    unsaved: Iterator<PromotionsRow>,
     c: Connection
   ): List<PromotionsRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `promotions`(`promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`description` = VALUES(`description`),\n`discount_type` = VALUES(`discount_type`),\n`discount_value` = VALUES(`discount_value`),\n`min_order_amount` = VALUES(`min_order_amount`),\n`max_uses` = VALUES(`max_uses`),\n`uses_count` = VALUES(`uses_count`),\n`max_uses_per_customer` = VALUES(`max_uses_per_customer`),\n`applicable_to` = VALUES(`applicable_to`),\n`rules_json` = VALUES(`rules_json`),\n`valid_from` = VALUES(`valid_from`),\n`valid_to` = VALUES(`valid_to`),\n`is_active` = VALUES(`is_active`),\n`created_at` = VALUES(`created_at`)\nRETURNING `promotion_id`, `code`, `name`, `description`, `discount_type`, `discount_value`, `min_order_amount`, `max_uses`, `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`, `valid_to`, `is_active`, `created_at`"))
     .updateReturningEach(PromotionsRow._rowParser, unsaved)

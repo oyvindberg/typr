@@ -13,7 +13,7 @@ import adventureworks.sales.salesterritory.SalesterritoryId
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -21,7 +21,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SpViewFields extends FieldsExpr[SpViewRow] {
+trait SpViewFields extends FieldsExpr0[SpViewRow] {
   def id: Field[StateprovinceId, SpViewRow]
 
   def stateprovinceid: Field[StateprovinceId, SpViewRow]

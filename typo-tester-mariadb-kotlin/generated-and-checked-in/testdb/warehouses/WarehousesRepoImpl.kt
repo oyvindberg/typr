@@ -7,9 +7,9 @@ package testdb.warehouses
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -136,7 +136,7 @@ class WarehousesRepoImpl() : WarehousesRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<WarehousesRow>,
+    unsaved: Iterator<WarehousesRow>,
     c: Connection
   ): List<WarehousesRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `warehouses`(`warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `code` = VALUES(`code`),\n`name` = VALUES(`name`),\n`address` = VALUES(`address`),\n`location` = VALUES(`location`),\n`service_area` = VALUES(`service_area`),\n`timezone` = VALUES(`timezone`),\n`is_active` = VALUES(`is_active`),\n`contact_email` = VALUES(`contact_email`),\n`contact_phone` = VALUES(`contact_phone`)\nRETURNING `warehouse_id`, `code`, `name`, `address`, `location`, `service_area`, `timezone`, `is_active`, `contact_email`, `contact_phone`"))
     .updateReturningEach(WarehousesRow._rowParser, unsaved)

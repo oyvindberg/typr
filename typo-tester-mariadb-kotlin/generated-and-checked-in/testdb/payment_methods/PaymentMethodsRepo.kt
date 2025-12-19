@@ -6,9 +6,9 @@
 package testdb.payment_methods
 
 import java.sql.Connection
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.SelectBuilder
 import typo.kotlindsl.UpdateBuilder
@@ -73,7 +73,7 @@ interface PaymentMethodsRepo {
   ): PaymentMethodsRow
 
   abstract fun upsertBatch(
-    unsaved: MutableIterator<PaymentMethodsRow>,
+    unsaved: Iterator<PaymentMethodsRow>,
     c: Connection
   ): List<PaymentMethodsRow>
 }

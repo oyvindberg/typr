@@ -7,9 +7,9 @@ package testdb.payments
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.orders.OrdersId
 import testdb.payment_methods.PaymentMethodsId
@@ -146,7 +146,7 @@ class PaymentsRepoImpl() : PaymentsRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<PaymentsRow>,
+    unsaved: Iterator<PaymentsRow>,
     c: Connection
   ): List<PaymentsRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `payments`(`payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),\n`method_id` = VALUES(`method_id`),\n`transaction_id` = VALUES(`transaction_id`),\n`amount` = VALUES(`amount`),\n`currency_code` = VALUES(`currency_code`),\n`status` = VALUES(`status`),\n`processor_response` = VALUES(`processor_response`),\n`error_message` = VALUES(`error_message`),\n`ip_address` = VALUES(`ip_address`),\n`created_at` = VALUES(`created_at`),\n`processed_at` = VALUES(`processed_at`)\nRETURNING `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`"))
     .updateReturningEach(PaymentsRow._rowParser, unsaved)

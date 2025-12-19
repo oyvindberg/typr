@@ -15,9 +15,9 @@ import kotlin.collections.List
 import typo.data.maria.Inet4
 import typo.data.maria.Inet6
 import typo.data.maria.MariaSet
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.OptField

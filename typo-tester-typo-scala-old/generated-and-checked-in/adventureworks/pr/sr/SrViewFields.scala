@@ -9,7 +9,7 @@ import adventureworks.production.scrapreason.ScrapreasonId
 import adventureworks.public.Name
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SrViewFields extends FieldsExpr[SrViewRow] {
+trait SrViewFields extends FieldsExpr0[SrViewRow] {
   def id: Field[ScrapreasonId, SrViewRow]
 
   def scrapreasonid: Field[ScrapreasonId, SrViewRow]

@@ -45,8 +45,7 @@ public sealed interface SqlExpr<T>
         SqlExpr.BoolAnd,
         SqlExpr.BoolOr,
         Tuples.TupleExpr,
-        FieldsExpr,
-        typo.scaladsl.FieldsExpr0 {
+        FieldsExpr {
 
   /**
    * Returns the database type for this expression's result. Used for row parsing when the

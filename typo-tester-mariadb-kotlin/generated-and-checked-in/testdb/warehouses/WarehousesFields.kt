@@ -8,9 +8,9 @@ package testdb.warehouses
 import kotlin.collections.List
 import org.mariadb.jdbc.type.Point
 import org.mariadb.jdbc.type.Polygon
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.Field

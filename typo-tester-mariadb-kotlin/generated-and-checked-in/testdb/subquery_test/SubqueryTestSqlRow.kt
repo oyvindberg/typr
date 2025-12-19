@@ -28,6 +28,6 @@ data class SubqueryTestSqlRow(
   @JsonProperty("favorite_brand") val favoriteBrand: String?
 ) {
   companion object {
-    val _rowParser: RowParser<SubqueryTestSqlRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric, MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5 -> SubqueryTestSqlRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.firstName, row.orderCount, row.totalSpent, row.favoriteBrand) })
+    val _rowParser: RowParser<SubqueryTestSqlRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric, MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5 -> SubqueryTestSqlRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.firstName, row.orderCount, row.totalSpent, row.favoriteBrand) })
   }
 }

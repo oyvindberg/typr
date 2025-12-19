@@ -13,7 +13,7 @@ import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.production.productmodel.ProductmodelRow
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -25,7 +25,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait ProductmodelillustrationFields extends FieldsExpr[ProductmodelillustrationRow] {
+trait ProductmodelillustrationFields extends FieldsExpr0[ProductmodelillustrationRow] {
   def productmodelid: IdField[ProductmodelId, ProductmodelillustrationRow]
 
   def illustrationid: IdField[IllustrationId, ProductmodelillustrationRow]

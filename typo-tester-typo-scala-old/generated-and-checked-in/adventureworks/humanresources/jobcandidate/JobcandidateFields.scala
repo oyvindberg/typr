@@ -11,7 +11,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import java.time.LocalDateTime
 import java.util.Optional
 import typo.data.Xml
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -22,7 +22,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait JobcandidateFields extends FieldsExpr[JobcandidateRow] {
+trait JobcandidateFields extends FieldsExpr0[JobcandidateRow] {
   def jobcandidateid: IdField[JobcandidateId, JobcandidateRow]
 
   def businessentityid: OptField[BusinessentityId, JobcandidateRow]

@@ -7,9 +7,9 @@ package testdb.product_categories
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import testdb.categories.CategoriesId
 import testdb.products.ProductsId
@@ -112,7 +112,7 @@ class ProductCategoriesRepoImpl() : ProductCategoriesRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<ProductCategoriesRow>,
+    unsaved: Iterator<ProductCategoriesRow>,
     c: Connection
   ): List<ProductCategoriesRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `product_categories`(`product_id`, `category_id`, `is_primary`, `sort_order`)\nVALUES (?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `is_primary` = VALUES(`is_primary`),\n`sort_order` = VALUES(`sort_order`)\nRETURNING `product_id`, `category_id`, `is_primary`, `sort_order`"))
     .updateReturningEach(ProductCategoriesRow._rowParser, unsaved)

@@ -10,7 +10,7 @@ import adventureworks.public.Name
 import adventureworks.public.Phone
 import adventureworks.userdefined.FirstName
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -18,7 +18,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait VvendorwithcontactsViewFields extends FieldsExpr[VvendorwithcontactsViewRow] {
+trait VvendorwithcontactsViewFields extends FieldsExpr0[VvendorwithcontactsViewRow] {
   def businessentityid: Field[BusinessentityId, VvendorwithcontactsViewRow]
 
   def name: Field[Name, VvendorwithcontactsViewRow]

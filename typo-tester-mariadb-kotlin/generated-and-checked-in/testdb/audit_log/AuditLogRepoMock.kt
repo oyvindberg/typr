@@ -8,9 +8,9 @@ package testdb.audit_log
 import java.lang.RuntimeException
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.DeleteBuilderMock
@@ -112,7 +112,7 @@ data class AuditLogRepoMock(
   }
 
   override fun upsertBatch(
-    unsaved: MutableIterator<AuditLogRow>,
+    unsaved: Iterator<AuditLogRow>,
     c: Connection
   ): List<AuditLogRow> {
     val result = ArrayList<AuditLogRow>()

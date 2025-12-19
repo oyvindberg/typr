@@ -31,7 +31,7 @@ data class CustomerStatusRow(
   fun toUnsavedRow(isActive: Defaulted<Boolean>): CustomerStatusRowUnsaved = CustomerStatusRowUnsaved(statusCode, description, isActive)
 
   companion object {
-    val _rowParser: RowParser<CustomerStatusRow> = RowParsers.of(CustomerStatusId.pgType, MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, { t0, t1, t2 -> CustomerStatusRow(t0!!, t1!!, t2!!) }, { row -> arrayOf<Any?>(row.statusCode, row.description, row.isActive) })
+    val _rowParser: RowParser<CustomerStatusRow> = RowParsers.of(CustomerStatusId.pgType, MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, { t0, t1, t2 -> CustomerStatusRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.statusCode, row.description, row.isActive) })
 
     val mariaText: MariaText<CustomerStatusRow> =
       MariaText.from(_rowParser.underlying)

@@ -29,7 +29,7 @@ import typo.data.Jsonb
 import typo.data.Money
 import typo.data.Vector
 import typo.data.Xml
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.FieldLike
@@ -37,7 +37,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait PgtestnullFields extends FieldsExpr[PgtestnullRow] {
+trait PgtestnullFields extends FieldsExpr0[PgtestnullRow] {
   def bool: OptField[java.lang.Boolean, PgtestnullRow]
 
   def box: OptField[PGbox, PgtestnullRow]

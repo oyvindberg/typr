@@ -9,7 +9,7 @@ import adventureworks.humanresources.jobcandidate.JobcandidateId
 import adventureworks.person.businessentity.BusinessentityId
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait VjobcandidateViewFields extends FieldsExpr[VjobcandidateViewRow] {
+trait VjobcandidateViewFields extends FieldsExpr0[VjobcandidateViewRow] {
   def jobcandidateid: Field[JobcandidateId, VjobcandidateViewRow]
 
   def businessentityid: Field[BusinessentityId, VjobcandidateViewRow]

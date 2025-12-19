@@ -9,7 +9,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import java.time.LocalDate
 import java.util.Optional
 import typo.data.Money
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait VpersondemographicsViewFields extends FieldsExpr[VpersondemographicsViewRow] {
+trait VpersondemographicsViewFields extends FieldsExpr0[VpersondemographicsViewRow] {
   def businessentityid: Field[BusinessentityId, VpersondemographicsViewRow]
 
   def totalpurchaseytd: Field[Money, VpersondemographicsViewRow]

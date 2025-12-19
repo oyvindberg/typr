@@ -9,9 +9,9 @@ import adventureworks.public.issue142.Issue142Fields
 import adventureworks.public.issue142.Issue142Id
 import adventureworks.public.issue142.Issue142Row
 import kotlin.collections.List
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.ForeignKey
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.IdField

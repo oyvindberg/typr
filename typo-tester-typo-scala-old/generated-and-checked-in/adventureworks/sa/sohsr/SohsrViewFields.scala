@@ -9,7 +9,7 @@ import adventureworks.sales.salesorderheader.SalesorderheaderId
 import adventureworks.sales.salesreason.SalesreasonId
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SohsrViewFields extends FieldsExpr[SohsrViewRow] {
+trait SohsrViewFields extends FieldsExpr0[SohsrViewRow] {
   def salesorderid: Field[SalesorderheaderId, SohsrViewRow]
 
   def salesreasonid: Field[SalesreasonId, SohsrViewRow]

@@ -18,9 +18,9 @@ import testdb.promotions.PromotionsFields
 import testdb.promotions.PromotionsId
 import testdb.promotions.PromotionsRow
 import typo.data.maria.Inet6
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.ForeignKey
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure

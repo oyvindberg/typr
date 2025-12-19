@@ -7,9 +7,9 @@ package testdb.price_tiers
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -108,7 +108,7 @@ class PriceTiersRepoImpl() : PriceTiersRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<PriceTiersRow>,
+    unsaved: Iterator<PriceTiersRow>,
     c: Connection
   ): List<PriceTiersRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `price_tiers`(`tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`)\nVALUES (?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`),\n`min_quantity` = VALUES(`min_quantity`),\n`discount_type` = VALUES(`discount_type`),\n`discount_value` = VALUES(`discount_value`)\nRETURNING `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`"))
     .updateReturningEach(PriceTiersRow._rowParser, unsaved)

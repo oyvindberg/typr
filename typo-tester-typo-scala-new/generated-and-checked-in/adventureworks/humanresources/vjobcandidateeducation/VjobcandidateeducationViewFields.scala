@@ -7,11 +7,11 @@ package adventureworks.humanresources.vjobcandidateeducation
 
 import adventureworks.humanresources.jobcandidate.JobcandidateId
 import java.time.LocalDate
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.SqlExpr.Field
 import typo.scaladsl.SqlExpr.OptField

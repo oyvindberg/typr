@@ -9,7 +9,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.RelationStructure
 import typo.dsl.SqlExpr.Field
@@ -17,7 +17,7 @@ import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SpqhViewFields extends FieldsExpr[SpqhViewRow] {
+trait SpqhViewFields extends FieldsExpr0[SpqhViewRow] {
   def id: Field[BusinessentityId, SpqhViewRow]
 
   def businessentityid: Field[BusinessentityId, SpqhViewRow]

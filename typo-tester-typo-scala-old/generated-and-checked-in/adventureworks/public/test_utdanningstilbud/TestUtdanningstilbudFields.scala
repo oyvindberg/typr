@@ -9,7 +9,7 @@ import adventureworks.public.test_organisasjon.TestOrganisasjonFields
 import adventureworks.public.test_organisasjon.TestOrganisasjonId
 import adventureworks.public.test_organisasjon.TestOrganisasjonRow
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -20,7 +20,7 @@ import typo.dsl.SqlExpr.IdField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait TestUtdanningstilbudFields extends FieldsExpr[TestUtdanningstilbudRow] {
+trait TestUtdanningstilbudFields extends FieldsExpr0[TestUtdanningstilbudRow] {
   def organisasjonskode: IdField[TestOrganisasjonId, TestUtdanningstilbudRow]
 
   def utdanningsmulighetKode: IdField[String, TestUtdanningstilbudRow]

@@ -11,11 +11,11 @@ import adventureworks.userdefined.FirstName
 import java.time.LocalDateTime
 import java.util.UUID
 import typo.data.Xml
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.SqlExpr.Field
 import typo.scaladsl.SqlExpr.OptField

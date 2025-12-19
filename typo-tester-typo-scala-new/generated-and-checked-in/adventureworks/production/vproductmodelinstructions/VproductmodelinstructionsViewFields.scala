@@ -9,11 +9,11 @@ import adventureworks.production.productmodel.ProductmodelId
 import adventureworks.public.Name
 import java.time.LocalDateTime
 import java.util.UUID
+import typo.dsl.FieldsExpr0
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
-import typo.scaladsl.FieldsExpr0
 import typo.scaladsl.RelationStructure
 import typo.scaladsl.ScalaDbTypes
 import typo.scaladsl.SqlExpr.Field

@@ -7,9 +7,9 @@ package testdb.mariatest_spatial_null
 
 import java.sql.Connection
 import java.util.ArrayList
+import kotlin.collections.Iterator
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.collections.MutableIterator
 import kotlin.collections.MutableMap
 import typo.kotlindsl.DeleteBuilder
 import typo.kotlindsl.Dialect
@@ -137,7 +137,7 @@ class MariatestSpatialNullRepoImpl() : MariatestSpatialNullRepo {
     .runUnchecked(c)
 
   override fun upsertBatch(
-    unsaved: MutableIterator<MariatestSpatialNullRow>,
+    unsaved: Iterator<MariatestSpatialNullRow>,
     c: Connection
   ): List<MariatestSpatialNullRow> = Fragment.interpolate(Fragment.lit("INSERT INTO `mariatest_spatial_null`(`id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)\nON DUPLICATE KEY UPDATE `geometry_col` = VALUES(`geometry_col`),\n`point_col` = VALUES(`point_col`),\n`linestring_col` = VALUES(`linestring_col`),\n`polygon_col` = VALUES(`polygon_col`),\n`multipoint_col` = VALUES(`multipoint_col`),\n`multilinestring_col` = VALUES(`multilinestring_col`),\n`multipolygon_col` = VALUES(`multipolygon_col`),\n`geometrycollection_col` = VALUES(`geometrycollection_col`)\nRETURNING `id`, `geometry_col`, `point_col`, `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`, `geometrycollection_col`"))
     .updateReturningEach(MariatestSpatialNullRow._rowParser, unsaved)

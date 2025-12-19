@@ -9,9 +9,9 @@ import java.math.BigDecimal
 import kotlin.collections.List
 import testdb.products.ProductsId
 import typo.data.maria.MariaSet
+import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
-import typo.kotlindsl.FieldsExpr
 import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.Field

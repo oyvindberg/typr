@@ -13,7 +13,7 @@ import adventureworks.production.workorder.WorkorderId
 import adventureworks.production.workorder.WorkorderRow
 import java.time.LocalDateTime
 import java.util.Optional
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -26,7 +26,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait WorkorderroutingFields extends FieldsExpr[WorkorderroutingRow] {
+trait WorkorderroutingFields extends FieldsExpr0[WorkorderroutingRow] {
   def workorderid: IdField[WorkorderId, WorkorderroutingRow]
 
   def productid: IdField[Integer, WorkorderroutingRow]

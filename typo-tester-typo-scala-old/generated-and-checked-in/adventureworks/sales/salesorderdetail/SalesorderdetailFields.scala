@@ -16,7 +16,7 @@ import adventureworks.sales.specialofferproduct.SpecialofferproductRow
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import typo.dsl.FieldsExpr
+import typo.dsl.FieldsExpr0
 import typo.dsl.ForeignKey
 import typo.dsl.Path
 import typo.dsl.RelationStructure
@@ -29,7 +29,7 @@ import typo.dsl.SqlExpr.OptField
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 
-trait SalesorderdetailFields extends FieldsExpr[SalesorderdetailRow] {
+trait SalesorderdetailFields extends FieldsExpr0[SalesorderdetailRow] {
   def salesorderid: IdField[SalesorderheaderId, SalesorderdetailRow]
 
   def salesorderdetailid: IdField[Integer, SalesorderdetailRow]
