@@ -2,7 +2,6 @@ package testapi.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.smallrye.mutiny.Uni
-import Int
 import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
@@ -34,7 +33,7 @@ interface PetsApi {
   /** List all pets */
   abstract fun listPets(
     /** Maximum number of pets to return */
-    limit: Integer?,
+    limit: Int?,
     /** Filter by status */
     status: String?
   ): Uni<List<Pet>>

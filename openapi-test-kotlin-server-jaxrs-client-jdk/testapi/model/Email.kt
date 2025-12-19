@@ -6,6 +6,6 @@ import com.fasterxml.jackson.annotation.JsonValue
 /** Email address wrapper */
 data class Email @JsonCreator constructor(@get:JsonValue val value: String) {
   override fun toString(): String {
-    return value.toString()
+    return value
   }
 }

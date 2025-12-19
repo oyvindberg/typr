@@ -2,7 +2,6 @@ package testapi.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import java.lang.Exception
-import Int
 import kotlin.collections.List
 import testapi.model.Error
 import testapi.model.Pet
@@ -39,7 +38,7 @@ interface PetsApi {
   @Throws(Exception::class)
   abstract fun listPets(
     /** Maximum number of pets to return */
-    limit: Integer?,
+    limit: Int?,
     /** Filter by status */
     status: String?
   ): List<Pet>

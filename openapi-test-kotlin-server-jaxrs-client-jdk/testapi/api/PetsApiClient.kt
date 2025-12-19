@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.lang.Exception
 import java.lang.IllegalStateException
-import Int
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -16,7 +15,6 @@ import testapi.model.Error
 import testapi.model.Pet
 import testapi.model.PetCreate
 import testapi.model.PetId
-import typo.runtime.internal.stringInterpolator.str
 
 /** JDK HTTP Client implementation for PetsApi */
 data class PetsApiClient(
@@ -35,7 +33,7 @@ data class PetsApiClient(
     var statusCode = response.statusCode()
     if (statusCode == 201) { return Created(objectMapper.readValue(response.body(), Pet::class.java)) }
     else if (statusCode == 400) { return BadRequest(objectMapper.readValue(response.body(), Error::class.java)) }
-    else { throw IllegalStateException(str("Unexpected status code: ", statusCode.toString(), "")) }
+    else { throw IllegalStateException("Unexpected status code: " + statusCode) }
   }
 
   /** Delete a pet */
@@ -59,7 +57,7 @@ data class PetsApiClient(
     var statusCode = response.statusCode()
     if (statusCode == 200) { return Ok(objectMapper.readValue(response.body(), Pet::class.java)) }
     else if (statusCode == 404) { return NotFound(objectMapper.readValue(response.body(), Error::class.java)) }
-    else { throw IllegalStateException(str("Unexpected status code: ", statusCode.toString(), "")) }
+    else { throw IllegalStateException("Unexpected status code: " + statusCode) }
   }
 
   /** Get pet photo */
@@ -76,7 +74,7 @@ data class PetsApiClient(
   @Throws(Exception::class)
   override fun listPets(
     /** Maximum number of pets to return */
-    limit: Integer?,
+    limit: Int?,
     /** Filter by status */
     status: String?
   ): List<Pet> {

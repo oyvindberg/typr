@@ -29,7 +29,6 @@ import testapi.model.PetId
 @SecurityScheme(name = "apiKeyQuery", `type` = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.QUERY, paramName = "api_key")
 @SecurityScheme(name = "oauth2", `type` = SecuritySchemeType.OAUTH2)
 trait PetsApiServer extends PetsApi {
-
   /** Create a pet */
   override def createPet(body: PetCreate): Response201400[Pet, Error]
 
@@ -39,7 +38,7 @@ trait PetsApiServer extends PetsApi {
   @SecurityRequirement(name = "apiKeyHeader")
   def createPetEndpoint(@RequestBody body: PetCreate): ResponseEntity[?] = {
     createPet(body) match {
-      case r: testapi.api.Created[?]    => org.springframework.http.ResponseEntity.status(201).body(r.value.asInstanceOf[testapi.model.Pet])
+      case r: testapi.api.Created[?] => org.springframework.http.ResponseEntity.status(201).body(r.value.asInstanceOf[testapi.model.Pet])
       case r: testapi.api.BadRequest[?] => org.springframework.http.ResponseEntity.status(400).body(r.value.asInstanceOf[testapi.model.Error])
     }
   }
@@ -47,24 +46,24 @@ trait PetsApiServer extends PetsApi {
   /** Delete a pet */
   @DeleteMapping(value = Array("/{petId}"))
   override def deletePet(
-      /** The pet ID */
-      @PathVariable("petId") petId: PetId
+    /** The pet ID */
+    @PathVariable("petId") petId: PetId
   ): Unit
 
   /** Get a pet by ID */
   override def getPet(
-      /** The pet ID */
-      petId: PetId
+    /** The pet ID */
+    petId: PetId
   ): Response200404[Pet, Error]
 
   /** Endpoint wrapper for getPet - handles response status codes */
   @GetMapping(value = Array("/{petId}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def getPetEndpoint(
-      /** The pet ID */
-      @PathVariable("petId") petId: PetId
+    /** The pet ID */
+    @PathVariable("petId") petId: PetId
   ): ResponseEntity[?] = {
     getPet(petId) match {
-      case r: testapi.api.Ok[?]       => org.springframework.http.ResponseEntity.ok(r.value.asInstanceOf[testapi.model.Pet])
+      case r: testapi.api.Ok[?] => org.springframework.http.ResponseEntity.ok(r.value.asInstanceOf[testapi.model.Pet])
       case r: testapi.api.NotFound[?] => org.springframework.http.ResponseEntity.status(404).body(r.value.asInstanceOf[testapi.model.Error])
     }
   }
@@ -72,27 +71,27 @@ trait PetsApiServer extends PetsApi {
   /** Get pet photo */
   @GetMapping(value = Array("/{petId}/photo"), produces = Array(MediaType.APPLICATION_OCTET_STREAM_VALUE))
   override def getPetPhoto(
-      /** The pet ID */
-      @PathVariable("petId") petId: PetId
+    /** The pet ID */
+    @PathVariable("petId") petId: PetId
   ): Unit
 
   /** List all pets */
   @GetMapping(value = Array(""), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   override def listPets(
-      /** Maximum number of pets to return */
-      @RequestParam(name = "limit", required = false, defaultValue = "20") limit: Optional[Integer],
-      /** Filter by status */
-      @RequestParam(name = "status", required = false, defaultValue = "available") status: Optional[String]
+    /** Maximum number of pets to return */
+    @RequestParam(name = "limit", required = false, defaultValue = "20") limit: Optional[Integer],
+    /** Filter by status */
+    @RequestParam(name = "status", required = false, defaultValue = "available") status: Optional[String]
   ): java.util.List[Pet]
 
   /** Upload a pet photo */
   @PostMapping(value = Array("/{petId}/photo"), consumes = Array(MediaType.MULTIPART_FORM_DATA_VALUE), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   override def uploadPetPhoto(
-      /** The pet ID */
-      @PathVariable("petId") petId: PetId,
-      /** Optional caption for the photo */
-      @RequestPart(name = "caption", required = false) caption: String,
-      /** The photo file to upload */
-      @RequestPart(name = "file") file: Array[Byte]
+    /** The pet ID */
+    @PathVariable("petId") petId: PetId,
+    /** Optional caption for the photo */
+    @RequestPart(name = "caption", required = false) caption: String,
+    /** The photo file to upload */
+    @RequestPart(name = "file") file: Array[Byte]
   ): Json
 }

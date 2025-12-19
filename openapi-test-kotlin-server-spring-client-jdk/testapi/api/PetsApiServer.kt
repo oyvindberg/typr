@@ -3,7 +3,6 @@ package testapi.api
 import com.fasterxml.jackson.databind.JsonNode
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import java.lang.IllegalStateException
-import Int
 import kotlin.collections.List
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -24,8 +23,8 @@ interface PetsApiServer : PetsApi {
   @SecurityRequirement(name = "oauth2", scopes = ["write:pets"])
   @SecurityRequirement(name = "apiKeyHeader")
   fun createPetEndpoint(body: PetCreate): ResponseEntity<*> = when (val __r = createPet(body)) {
-    is Created -> { val r = __r as Created; ResponseEntity.status(201).body(r.value) }
-    is BadRequest -> { val r = __r as BadRequest; ResponseEntity.status(400).body(r.value) }
+    is Created<*> -> { val r = __r as Created<*>; ResponseEntity.status(201).body(r.value) }
+    is BadRequest<*> -> { val r = __r as BadRequest<*>; ResponseEntity.status(400).body(r.value) }
     else -> throw IllegalStateException("Unexpected response type")
   }
 
@@ -48,8 +47,8 @@ interface PetsApiServer : PetsApi {
     /** The pet ID */
     petId: PetId
   ): ResponseEntity<*> = when (val __r = getPet(petId)) {
-    is Ok -> { val r = __r as Ok; ResponseEntity.ok(r.value) }
-    is NotFound -> { val r = __r as NotFound; ResponseEntity.status(404).body(r.value) }
+    is Ok<*> -> { val r = __r as Ok<*>; ResponseEntity.ok(r.value) }
+    is NotFound<*> -> { val r = __r as NotFound<*>; ResponseEntity.status(404).body(r.value) }
     else -> throw IllegalStateException("Unexpected response type")
   }
 
@@ -64,7 +63,7 @@ interface PetsApiServer : PetsApi {
   @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
   abstract override fun listPets(
     /** Maximum number of pets to return */
-    limit: Integer?,
+    limit: Int?,
     /** Filter by status */
     status: String?
   ): List<Pet>

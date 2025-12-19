@@ -14,7 +14,6 @@ import java.net.http.HttpResponse.BodyHandlers
 import kotlin.collections.List
 import testapi.model.Animal
 import testapi.model.Error
-import typo.runtime.internal.stringInterpolator.str
 
 /** JDK HTTP Client implementation for AnimalsApi */
 data class AnimalsApiClient(
@@ -33,7 +32,7 @@ data class AnimalsApiClient(
       if (statusCode == 200) { Ok(objectMapper.readValue(response.body(), object : TypeReference<List<Animal>>() {})) }
       else if (statusCode >= 400 && statusCode < 500) { ClientError4XX(statusCode, objectMapper.readValue(response.body(), Error::class.java)) }
       else if (statusCode >= 500 && statusCode < 600) { ServerError5XX(statusCode, objectMapper.readValue(response.body(), Error::class.java)) }
-      else { throw IllegalStateException(str("Unexpected status code: ", statusCode.toString(), "")) }
+      else { throw IllegalStateException("Unexpected status code: " + statusCode) }
     } catch (e: Exception) {
       throw RuntimeException(e)
     }  })

@@ -6,12 +6,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public record PetId(@JsonValue String value) {
   public PetId withValue(String value) {
     return new PetId(value);
-  }
-  ;
+  };
 
   @Override
   public String toString() {
     return value;
-  }
-  ;
+  };
 }

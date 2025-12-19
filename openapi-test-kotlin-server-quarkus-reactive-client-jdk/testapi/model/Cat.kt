@@ -2,11 +2,10 @@ package testapi.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.NotNull
-import Int
 import java.time.OffsetDateTime
 
 data class Cat(
-  @field:JsonProperty("meowVolume") val meowVolume: Integer?,
+  @field:JsonProperty("meowVolume") val meowVolume: Int?,
   @field:JsonProperty("id") @NotNull val id: PetId,
   @field:JsonProperty("createdAt") @NotNull val createdAt: OffsetDateTime,
   /** Whether the cat is an indoor cat */

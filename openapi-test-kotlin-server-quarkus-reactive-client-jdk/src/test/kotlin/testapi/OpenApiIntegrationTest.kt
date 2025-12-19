@@ -56,13 +56,13 @@ class OpenApiIntegrationTest {
     @Path("/pets")
     class TestPetsApiServer {
         private val initialPet = Pet(
-            tags = Optional.of(listOf("friendly", "cute")),
+            tags = listOf("friendly", "cute"),
             id = PetId("pet-123"),
             status = PetStatus.available,
             createdAt = TEST_TIME,
-            metadata = Optional.of(mapOf("color" to "brown")),
+            metadata = mapOf("color" to "brown"),
             name = "Fluffy",
-            updatedAt = Optional.empty()
+            updatedAt = null
         )
         private val pets = mutableMapOf<PetId, Pet>()
 
@@ -82,11 +82,11 @@ class OpenApiIntegrationTest {
             val newPet = Pet(
                 tags = body.tags,
                 id = PetId("pet-${System.nanoTime()}"),
-                status = body.status.orElse(PetStatus.available),
+                status = body.status ?: PetStatus.available,
                 createdAt = TEST_TIME,
-                metadata = Optional.empty(),
+                metadata = null,
                 name = body.name,
-                updatedAt = Optional.empty()
+                updatedAt = null
             )
             pets[newPet.id] = newPet
             return Response.status(201).entity(newPet).build()
@@ -106,7 +106,7 @@ class OpenApiIntegrationTest {
             return if (pet != null) {
                 Response.ok(pet).build()
             } else {
-                Response.status(404).entity(Error(code = "NOT_FOUND", details = Optional.empty(), message = "Pet not found")).build()
+                Response.status(404).entity(Error(code = "NOT_FOUND", details = null, message = "Pet not found")).build()
             }
         }
 
@@ -185,12 +185,12 @@ class OpenApiIntegrationTest {
     fun createPetCreatesAndReturnsPet() {
         serverImpl.reset()
         val newPet = PetCreate(
-            age = Optional.of(2L),
-            email = Optional.empty(),
+            age = 2L,
+            email = null,
             name = "Buddy",
-            status = Optional.of(PetStatus.pending),
-            tags = Optional.of(listOf("playful")),
-            website = Optional.empty()
+            status = PetStatus.pending,
+            tags = listOf("playful"),
+            website = null
         )
 
         val response = client.createPet(newPet).await().indefinitely()
@@ -199,7 +199,7 @@ class OpenApiIntegrationTest {
         val created = response as Created<Pet>
         assertEquals("Buddy", created.value.name)
         assertEquals(PetStatus.pending, created.value.status)
-        assertEquals(Optional.of(listOf("playful")), created.value.tags)
+        assertEquals(listOf("playful"), created.value.tags)
     }
 
     @Test
@@ -214,7 +214,7 @@ class OpenApiIntegrationTest {
     @Test
     fun listPetsReturnsAllPets() {
         serverImpl.reset()
-        val pets = client.listPets(Optional.empty(), Optional.empty()).await().indefinitely()
+        val pets = client.listPets(null, null).await().indefinitely()
 
         assertFalse(pets.isEmpty())
         assertTrue(pets.any { it.name == "Fluffy" })
@@ -224,8 +224,8 @@ class OpenApiIntegrationTest {
     fun listPetsWithLimitReturnsLimitedPets() {
         serverImpl.reset()
         @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-        val limit: Optional<Integer> = Optional.of(1 as Integer)
-        val pets = client.listPets(limit, Optional.empty()).await().indefinitely()
+        val limit: Integer = 1 as Integer
+        val pets = client.listPets(limit, null).await().indefinitely()
 
         assertEquals(1, pets.size)
     }
