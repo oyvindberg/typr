@@ -15,8 +15,9 @@ import typo.{Options, Dialect, TypeSupportScala}
 import typo.internal.codegen.LangScala
 Options(
   pkg = "mypkg",
-  lang = LangScala(Dialect.Scala3, TypeSupportScala),
+  lang = LangScala.javaDsl(Dialect.Scala3, TypeSupportScala),
   dbLib = None,
+  jsonLibs = Nil,
   enableDsl = true
 )
 ```
@@ -56,10 +57,10 @@ val options = Options(
   // customize package name for generated code
   pkg = "org.foo.generated",
   // choose language and dialect for generated code
-  lang = LangScala(Dialect.Scala3, TypeSupportScala),
+  lang = LangScala.scalaDsl(Dialect.Scala3, TypeSupportScala),
   // pick your database library
   dbLib = Some(DbLibName.Anorm),
-  jsonLib = JsonLibName.PlayJson,
+  jsonLibs = List(JsonLibName.PlayJson),
   // many more possibilities for customization here
   // ...
 )

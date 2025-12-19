@@ -504,12 +504,21 @@ def get_direct_column_source(qualified_ast: exp.Expression, column_name: str, sc
                     # by examining node.expression (the SELECT expression), not downstream.expression
                     is_expr = True  # Default to expression
                     if isinstance(node.expression, exp.Alias):
+                        inner = node.expression.this
                         # If it's Alias(this=Column(...)), it's a direct column reference
-                        # If it's Alias(this=Cast(...)) or Alias(this=Anonymous(...)), etc., it's an expression
-                        is_expr = not isinstance(node.expression.this, exp.Column)
+                        # If it's a binary operation (Add, Sub, Mul, Div, etc.) or other expression, it's computed
+                        if isinstance(inner, exp.Column):
+                            is_expr = False
+                        elif isinstance(inner, (exp.Binary, exp.Unary)):
+                            # Arithmetic or logical operations are always expressions
+                            # This catches cases like (col1 - col2) AS available
+                            is_expr = True
                     elif isinstance(node.expression, exp.Column):
                         # Simple Column without Alias is also a direct reference
                         is_expr = False
+                    elif isinstance(node.expression, (exp.Binary, exp.Unary)):
+                        # Arithmetic or logical operations without alias are expressions
+                        is_expr = True
 
                     return table_name, col_name, is_expr
 
@@ -519,12 +528,20 @@ def get_direct_column_source(qualified_ast: exp.Expression, column_name: str, sc
                     # by examining node.expression (the outer SELECT's expression for this column)
                     is_expr = True  # Default to expression
                     if isinstance(node.expression, exp.Alias):
+                        inner = node.expression.this
                         # If it's Alias(this=Column(...)), it's selecting a column from the subquery
-                        # If it's Alias(this=Sum(...)) or other expression, it's computed
-                        is_expr = not isinstance(node.expression.this, exp.Column)
+                        # If it's a binary operation or other expression, it's computed
+                        if isinstance(inner, exp.Column):
+                            is_expr = False
+                        elif isinstance(inner, (exp.Binary, exp.Unary)):
+                            # Arithmetic or logical operations are always expressions
+                            is_expr = True
                     elif isinstance(node.expression, exp.Column):
                         # Simple Column without Alias is also a direct reference
                         is_expr = False
+                    elif isinstance(node.expression, (exp.Binary, exp.Unary)):
+                        # Arithmetic or logical operations without alias are expressions
+                        is_expr = True
 
                     if is_expr:
                         # This is an aggregate or computed expression, no typeflow

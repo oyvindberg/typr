@@ -114,6 +114,7 @@ jobs:
       - name: Sourcegen
         run: |
           bleep sourcegen typo-runtime-java
+          bleep sourcegen typo-dsl-java
           bleep sourcegen typo-dsl-kotlin
       - name: Compile Kotlin
         run: ./gradlew compileKotlin compileTestKotlin
