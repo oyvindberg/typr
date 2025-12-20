@@ -33,7 +33,7 @@ class PurchaseorderdetailRepoImpl() : PurchaseorderdetailRepo {
   ): List<PurchaseorderdetailRow> {
     val purchaseorderid: Array<PurchaseorderheaderId> = arrayMap.map(compositeIds, PurchaseorderdetailId::purchaseorderid, PurchaseorderheaderId::class.java)
     val purchaseorderdetailid: Array<Int> = arrayMap.map(compositeIds, PurchaseorderdetailId::purchaseorderdetailid, Int::class.javaObjectType)
-    return Fragment.interpolate(Fragment.lit("select \"purchaseorderid\", \"purchaseorderdetailid\", \"duedate\", \"orderqty\", \"productid\", \"unitprice\", \"receivedqty\", \"rejectedqty\", \"modifieddate\"\nfrom \"purchasing\".\"purchaseorderdetail\"\nwhere (\"purchaseorderid\", \"purchaseorderdetailid\")\nin (select unnest("), Fragment.encode(PurchaseorderheaderId.pgTypeArray, purchaseorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, purchaseorderdetailid), Fragment.lit("::int4[]))\n")).query(PurchaseorderdetailRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"purchaseorderid\", \"purchaseorderdetailid\", \"duedate\", \"orderqty\", \"productid\", \"unitprice\", \"receivedqty\", \"rejectedqty\", \"modifieddate\"\nfrom \"purchasing\".\"purchaseorderdetail\"\nwhere (\"purchaseorderid\", \"purchaseorderdetailid\")\nin (select * from unnest("), Fragment.encode(PurchaseorderheaderId.pgTypeArray, purchaseorderid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, purchaseorderdetailid), Fragment.lit("))\n")).query(PurchaseorderdetailRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

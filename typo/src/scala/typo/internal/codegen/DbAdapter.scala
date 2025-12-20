@@ -69,6 +69,9 @@ trait DbAdapter {
   /** Lookup runtime type instance for a WellKnownPrimitive */
   def lookupPrimitive(primitive: analysis.WellKnownPrimitive, typeSupport: TypeSupport): Code
 
+  /** Get the database-specific text/string type (for string enum underlying types) */
+  def textType: db.Type
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 3: Capabilities
   // ═══════════════════════════════════════════════════════════════════════════

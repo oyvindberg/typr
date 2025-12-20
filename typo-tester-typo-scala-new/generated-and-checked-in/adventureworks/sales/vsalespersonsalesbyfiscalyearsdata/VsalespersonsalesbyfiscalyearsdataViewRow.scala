@@ -23,9 +23,9 @@ case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
   salestotal: Option[BigDecimal],
-  fiscalyear: BigDecimal
+  fiscalyear: Double
 )
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
-  val `_rowParser`: RowParser[VsalespersonsalesbyfiscalyearsdataViewRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, Name.pgType, ScalaDbTypes.PgTypes.numeric.nullable, ScalaDbTypes.PgTypes.numeric)(VsalespersonsalesbyfiscalyearsdataViewRow.apply)(row => Array[Any](row.salespersonid, row.fullname, row.jobtitle, row.salesterritory, row.salestotal, row.fiscalyear))
+  val `_rowParser`: RowParser[VsalespersonsalesbyfiscalyearsdataViewRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, Name.pgType, ScalaDbTypes.PgTypes.numeric.nullable, ScalaDbTypes.PgTypes.float8)(VsalespersonsalesbyfiscalyearsdataViewRow.apply)(row => Array[Any](row.salespersonid, row.fullname, row.jobtitle, row.salesterritory, row.salestotal, row.fiscalyear))
 }

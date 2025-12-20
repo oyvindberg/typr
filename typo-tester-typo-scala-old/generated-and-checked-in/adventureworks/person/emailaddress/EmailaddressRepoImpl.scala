@@ -30,7 +30,7 @@ class EmailaddressRepoImpl extends EmailaddressRepo {
     return interpolate(Fragment.lit("""delete
     from "person"."emailaddress"
     where ("businessentityid", "emailaddressid")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -101,7 +101,7 @@ class EmailaddressRepoImpl extends EmailaddressRepo {
     return interpolate(Fragment.lit("""select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"
     from "person"."emailaddress"
     where ("businessentityid", "emailaddressid")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("""))
     """)).query(EmailaddressRow.`_rowParser`.all()).runUnchecked(c)
   }
 

@@ -28,7 +28,7 @@ trait VsalespersonsalesbyfiscalyearsdataViewFields extends FieldsExpr0[Vsalesper
 
   def salestotal: OptField[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow]
 
-  def fiscalyear: Field[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow]
+  def fiscalyear: Field[Double, VsalespersonsalesbyfiscalyearsdataViewRow]
 
   override def columns: java.util.List[FieldLike[?, VsalespersonsalesbyfiscalyearsdataViewRow]]
 
@@ -98,15 +98,15 @@ object VsalespersonsalesbyfiscalyearsdataViewFields {
       )
     }
 
-    override def fiscalyear: Field[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow] = {
-      new Field[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow](
+    override def fiscalyear: Field[Double, VsalespersonsalesbyfiscalyearsdataViewRow] = {
+      new Field[Double, VsalespersonsalesbyfiscalyearsdataViewRow](
         _path,
         "fiscalyear",
         _.fiscalyear,
         None,
         None,
         (row, value) => row.copy(fiscalyear = value),
-        ScalaDbTypes.PgTypes.numeric
+        ScalaDbTypes.PgTypes.float8
       )
     }
 

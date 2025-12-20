@@ -3,6 +3,7 @@ package typo.runtime;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +31,15 @@ public record RowParser<Row>(
   // Convenience method for compatibility with SelectBuilderSql
   public Row parse(ResultSet rs) throws SqlResultParseException {
     try {
-      return readRow(rs, rs.getRow());
+      // Try to get row number for error reporting, but fall back to -1 if not supported (e.g.,
+      // DuckDB)
+      int rowNum = -1;
+      try {
+        rowNum = rs.getRow();
+      } catch (SQLFeatureNotSupportedException ignored) {
+        // Some databases (like DuckDB) don't support getRow()
+      }
+      return readRow(rs, rowNum);
     } catch (SQLException e) {
       throw new SqlResultParseException(0, 0, null, e);
     }

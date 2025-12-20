@@ -656,7 +656,6 @@ case class FilesRelation(
       }
       base.of(names.RowName)
     }
-
     // Build the Fields interface using jvm.Class
     // Fields is an interface (not abstract class) to avoid downstream Java issues
     val fieldsClass = jvm.Class(

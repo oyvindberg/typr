@@ -32,7 +32,7 @@ class ProductlistpricehistoryRepoImpl extends ProductlistpricehistoryRepo {
     return sql"""delete
     from "production"."productlistpricehistory"
     where ("productid", "startdate")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(PgTypes.timestampArray, startdate)}::timestamp[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(PgTypes.timestampArray, startdate)}))
     """.update().runUnchecked(c)
   }
 
@@ -99,7 +99,7 @@ class ProductlistpricehistoryRepoImpl extends ProductlistpricehistoryRepo {
     return sql"""select "productid", "startdate", "enddate", "listprice", "modifieddate"
     from "production"."productlistpricehistory"
     where ("productid", "startdate")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(PgTypes.timestampArray, startdate)}::timestamp[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(PgTypes.timestampArray, startdate)}))
     """.query(ProductlistpricehistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

@@ -79,11 +79,11 @@ public class PurchaseorderdetailRepoImpl implements PurchaseorderdetailRepo {
                     + " \"modifieddate\"\n"
                     + "from \"purchasing\".\"purchaseorderdetail\"\n"
                     + "where (\"purchaseorderid\", \"purchaseorderdetailid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(PurchaseorderheaderId.pgTypeArray, purchaseorderid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, purchaseorderdetailid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(PurchaseorderdetailRow._rowParser.all())
         .runUnchecked(c);
   }

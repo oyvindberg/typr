@@ -31,7 +31,7 @@ class BusinessentitycontactRepoImpl extends BusinessentitycontactRepo {
     return sql"""delete
     from "person"."businessentitycontact"
     where ("businessentityid", "personid", "contacttypeid")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(BusinessentityId.pgTypeArray, personid)}::int4[]), unnest(${Fragment.encode(ContacttypeId.pgTypeArray, contacttypeid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(BusinessentityId.pgTypeArray, personid)}, ${Fragment.encode(ContacttypeId.pgTypeArray, contacttypeid)}))
     """.update().runUnchecked(c)
   }
 
@@ -101,7 +101,7 @@ class BusinessentitycontactRepoImpl extends BusinessentitycontactRepo {
     return sql"""select "businessentityid", "personid", "contacttypeid", "rowguid", "modifieddate"
     from "person"."businessentitycontact"
     where ("businessentityid", "personid", "contacttypeid")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(BusinessentityId.pgTypeArray, personid)}::int4[]), unnest(${Fragment.encode(ContacttypeId.pgTypeArray, contacttypeid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(BusinessentityId.pgTypeArray, personid)}, ${Fragment.encode(ContacttypeId.pgTypeArray, contacttypeid)}))
     """.query(BusinessentitycontactRow.`_rowParser`.all()).runUnchecked(c)
   }
 

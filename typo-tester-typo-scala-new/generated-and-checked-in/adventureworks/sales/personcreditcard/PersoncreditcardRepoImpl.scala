@@ -30,7 +30,7 @@ class PersoncreditcardRepoImpl extends PersoncreditcardRepo {
     return sql"""delete
     from "sales"."personcreditcard"
     where ("businessentityid", "creditcardid")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid)}))
     """.update().runUnchecked(c)
   }
 
@@ -93,7 +93,7 @@ class PersoncreditcardRepoImpl extends PersoncreditcardRepo {
     return sql"""select "businessentityid", "creditcardid", "modifieddate"
     from "sales"."personcreditcard"
     where ("businessentityid", "creditcardid")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid)}))
     """.query(PersoncreditcardRow.`_rowParser`.all()).runUnchecked(c)
   }
 

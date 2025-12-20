@@ -30,7 +30,7 @@ class SalesorderheadersalesreasonRepoImpl extends SalesorderheadersalesreasonRep
     return sql"""delete
     from "sales"."salesorderheadersalesreason"
     where ("salesorderid", "salesreasonid")
-    in (select unnest(${Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid)}::int4[]), unnest(${Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid)}, ${Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid)}))
     """.update().runUnchecked(c)
   }
 
@@ -93,7 +93,7 @@ class SalesorderheadersalesreasonRepoImpl extends SalesorderheadersalesreasonRep
     return sql"""select "salesorderid", "salesreasonid", "modifieddate"
     from "sales"."salesorderheadersalesreason"
     where ("salesorderid", "salesreasonid")
-    in (select unnest(${Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid)}::int4[]), unnest(${Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid)}, ${Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid)}))
     """.query(SalesorderheadersalesreasonRow.`_rowParser`.all()).runUnchecked(c)
   }
 

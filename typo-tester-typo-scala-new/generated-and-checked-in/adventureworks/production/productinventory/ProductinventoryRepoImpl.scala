@@ -31,7 +31,7 @@ class ProductinventoryRepoImpl extends ProductinventoryRepo {
     return sql"""delete
     from "production"."productinventory"
     where ("productid", "locationid")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(LocationId.pgTypeArray, locationid)}::int2[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(LocationId.pgTypeArray, locationid)}))
     """.update().runUnchecked(c)
   }
 
@@ -106,7 +106,7 @@ class ProductinventoryRepoImpl extends ProductinventoryRepo {
     return sql"""select "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"
     from "production"."productinventory"
     where ("productid", "locationid")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(LocationId.pgTypeArray, locationid)}::int2[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(LocationId.pgTypeArray, locationid)}))
     """.query(ProductinventoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

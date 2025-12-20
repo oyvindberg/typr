@@ -34,7 +34,7 @@ class OnlyPkColumnsRepoImpl() : OnlyPkColumnsRepo {
   ): Int {
     val keyColumn1: Array<String> = arrayMap.map(compositeIds, OnlyPkColumnsId::keyColumn1, String::class.java)
     val keyColumn2: Array<Int> = arrayMap.map(compositeIds, OnlyPkColumnsId::keyColumn2, Int::class.javaObjectType)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"public\".\"only_pk_columns\"\nwhere (\"key_column_1\", \"key_column_2\")\nin (select unnest("), Fragment.encode(PgTypes.textArray, keyColumn1), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.int4Array, keyColumn2), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"public\".\"only_pk_columns\"\nwhere (\"key_column_1\", \"key_column_2\")\nin (select * from unnest("), Fragment.encode(PgTypes.textArray, keyColumn1), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, keyColumn2), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -64,7 +64,7 @@ class OnlyPkColumnsRepoImpl() : OnlyPkColumnsRepo {
   ): List<OnlyPkColumnsRow> {
     val keyColumn1: Array<String> = arrayMap.map(compositeIds, OnlyPkColumnsId::keyColumn1, String::class.java)
     val keyColumn2: Array<Int> = arrayMap.map(compositeIds, OnlyPkColumnsId::keyColumn2, Int::class.javaObjectType)
-    return Fragment.interpolate(Fragment.lit("select \"key_column_1\", \"key_column_2\"\nfrom \"public\".\"only_pk_columns\"\nwhere (\"key_column_1\", \"key_column_2\")\nin (select unnest("), Fragment.encode(PgTypes.textArray, keyColumn1), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.int4Array, keyColumn2), Fragment.lit("::int4[]))\n")).query(OnlyPkColumnsRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"key_column_1\", \"key_column_2\"\nfrom \"public\".\"only_pk_columns\"\nwhere (\"key_column_1\", \"key_column_2\")\nin (select * from unnest("), Fragment.encode(PgTypes.textArray, keyColumn1), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, keyColumn2), Fragment.lit("))\n")).query(OnlyPkColumnsRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

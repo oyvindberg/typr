@@ -67,6 +67,7 @@ object TypesJava {
   val DateTimeFormatterBuilder = jvm.Type.Qualified("java.time.format.DateTimeFormatterBuilder")
   val DateTimeParseException = Qualified("java.time.format.DateTimeParseException")
   val Double = Qualified("java.lang.Double")
+  val Duration = Qualified("java.time.Duration")
   val Float = Qualified("java.lang.Float")
   val Function = Qualified("java.util.function.Function")
   val Instant = Qualified("java.time.Instant")

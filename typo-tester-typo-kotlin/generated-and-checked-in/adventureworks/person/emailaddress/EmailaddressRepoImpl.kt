@@ -37,7 +37,7 @@ class EmailaddressRepoImpl() : EmailaddressRepo {
   ): Int {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, EmailaddressId::businessentityid, BusinessentityId::class.java)
     val emailaddressid: Array<Int> = arrayMap.map(compositeIds, EmailaddressId::emailaddressid, Int::class.javaObjectType)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"person\".\"emailaddress\"\nwhere (\"businessentityid\", \"emailaddressid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"person\".\"emailaddress\"\nwhere (\"businessentityid\", \"emailaddressid\")\nin (select * from unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -103,7 +103,7 @@ class EmailaddressRepoImpl() : EmailaddressRepo {
   ): List<EmailaddressRow> {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, EmailaddressId::businessentityid, BusinessentityId::class.java)
     val emailaddressid: Array<Int> = arrayMap.map(compositeIds, EmailaddressId::emailaddressid, Int::class.javaObjectType)
-    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"emailaddress\"\nwhere (\"businessentityid\", \"emailaddressid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("::int4[]))\n")).query(EmailaddressRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"emailaddressid\", \"emailaddress\", \"rowguid\", \"modifieddate\"\nfrom \"person\".\"emailaddress\"\nwhere (\"businessentityid\", \"emailaddressid\")\nin (select * from unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, emailaddressid), Fragment.lit("))\n")).query(EmailaddressRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

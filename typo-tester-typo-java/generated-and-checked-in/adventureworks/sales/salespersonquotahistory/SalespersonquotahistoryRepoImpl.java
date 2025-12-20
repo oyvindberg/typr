@@ -65,11 +65,11 @@ public class SalespersonquotahistoryRepoImpl implements SalespersonquotahistoryR
                 "delete\n"
                     + "from \"sales\".\"salespersonquotahistory\"\n"
                     + "where (\"businessentityid\", \"quotadate\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, quotadate),
-            Fragment.lit("::timestamp[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -239,11 +239,11 @@ public class SalespersonquotahistoryRepoImpl implements SalespersonquotahistoryR
                     + " \"modifieddate\"\n"
                     + "from \"sales\".\"salespersonquotahistory\"\n"
                     + "where (\"businessentityid\", \"quotadate\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, quotadate),
-            Fragment.lit("::timestamp[]))\n"))
+            Fragment.lit("))\n"))
         .query(SalespersonquotahistoryRow._rowParser.all())
         .runUnchecked(c);
   }

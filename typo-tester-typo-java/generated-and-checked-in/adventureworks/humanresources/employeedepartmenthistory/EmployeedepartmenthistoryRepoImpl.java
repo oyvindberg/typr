@@ -77,15 +77,15 @@ public class EmployeedepartmenthistoryRepoImpl implements Employeedepartmenthist
                 "delete\n"
                     + "from \"humanresources\".\"employeedepartmenthistory\"\n"
                     + "where (\"businessentityid\", \"startdate\", \"departmentid\", \"shiftid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.dateArray, startdate),
-            Fragment.lit("::date[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(DepartmentId.pgTypeArray, departmentid),
-            Fragment.lit("::int2[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ShiftId.pgTypeArray, shiftid),
-            Fragment.lit("::int2[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -266,15 +266,15 @@ public class EmployeedepartmenthistoryRepoImpl implements Employeedepartmenthist
                     + " \"enddate\", \"modifieddate\"\n"
                     + "from \"humanresources\".\"employeedepartmenthistory\"\n"
                     + "where (\"businessentityid\", \"startdate\", \"departmentid\", \"shiftid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.dateArray, startdate),
-            Fragment.lit("::date[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(DepartmentId.pgTypeArray, departmentid),
-            Fragment.lit("::int2[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ShiftId.pgTypeArray, shiftid),
-            Fragment.lit("::int2[]))\n"))
+            Fragment.lit("))\n"))
         .query(EmployeedepartmenthistoryRow._rowParser.all())
         .runUnchecked(c);
   }

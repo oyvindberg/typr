@@ -33,7 +33,7 @@ class BusinessentityaddressRepoImpl extends BusinessentityaddressRepo {
     return interpolate(Fragment.lit("""delete
     from "person"."businessentityaddress"
     where ("businessentityid", "addressid", "addresstypeid")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(AddressId.pgTypeArray, addressid), Fragment.lit("::int4[]), unnest("), Fragment.encode(AddresstypeId.pgTypeArray, addresstypeid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(AddressId.pgTypeArray, addressid), Fragment.lit(", "), Fragment.encode(AddresstypeId.pgTypeArray, addresstypeid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -103,7 +103,7 @@ class BusinessentityaddressRepoImpl extends BusinessentityaddressRepo {
     return interpolate(Fragment.lit("""select "businessentityid", "addressid", "addresstypeid", "rowguid", "modifieddate"
     from "person"."businessentityaddress"
     where ("businessentityid", "addressid", "addresstypeid")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(AddressId.pgTypeArray, addressid), Fragment.lit("::int4[]), unnest("), Fragment.encode(AddresstypeId.pgTypeArray, addresstypeid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(AddressId.pgTypeArray, addressid), Fragment.lit(", "), Fragment.encode(AddresstypeId.pgTypeArray, addresstypeid), Fragment.lit("""))
     """)).query(BusinessentityaddressRow.`_rowParser`.all()).runUnchecked(c)
   }
 

@@ -31,7 +31,7 @@ class EmployeepayhistoryRepoImpl extends EmployeepayhistoryRepo {
     return sql"""delete
     from "humanresources"."employeepayhistory"
     where ("businessentityid", "ratechangedate")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(PgTypes.timestampArray, ratechangedate)}::timestamp[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(PgTypes.timestampArray, ratechangedate)}))
     """.update().runUnchecked(c)
   }
 
@@ -98,7 +98,7 @@ class EmployeepayhistoryRepoImpl extends EmployeepayhistoryRepo {
     return sql"""select "businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate"
     from "humanresources"."employeepayhistory"
     where ("businessentityid", "ratechangedate")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(PgTypes.timestampArray, ratechangedate)}::timestamp[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(PgTypes.timestampArray, ratechangedate)}))
     """.query(EmployeepayhistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

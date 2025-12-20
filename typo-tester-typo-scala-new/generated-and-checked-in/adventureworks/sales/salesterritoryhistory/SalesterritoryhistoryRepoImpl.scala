@@ -33,7 +33,7 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
     return sql"""delete
     from "sales"."salesterritoryhistory"
     where ("businessentityid", "startdate", "territoryid")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(PgTypes.timestampArray, startdate)}::timestamp[]), unnest(${Fragment.encode(SalesterritoryId.pgTypeArray, territoryid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(PgTypes.timestampArray, startdate)}, ${Fragment.encode(SalesterritoryId.pgTypeArray, territoryid)}))
     """.update().runUnchecked(c)
   }
 
@@ -105,7 +105,7 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
     return sql"""select "businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate"
     from "sales"."salesterritoryhistory"
     where ("businessentityid", "startdate", "territoryid")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(PgTypes.timestampArray, startdate)}::timestamp[]), unnest(${Fragment.encode(SalesterritoryId.pgTypeArray, territoryid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(PgTypes.timestampArray, startdate)}, ${Fragment.encode(SalesterritoryId.pgTypeArray, territoryid)}))
     """.query(SalesterritoryhistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

@@ -1,7 +1,7 @@
 package typo
 
 import java.sql.Connection
-import typo.internal.codegen.{DbAdapter, MariaDbAdapter, PostgresAdapter}
+import typo.internal.codegen.{DbAdapter, DuckDbAdapter, MariaDbAdapter, PostgresAdapter}
 
 sealed trait DbType {
 
@@ -21,6 +21,9 @@ object DbType {
   case object MariaDB extends DbType {
     def adapter(needsTimestampCasts: Boolean): DbAdapter = MariaDbAdapter
   }
+  case object DuckDB extends DbType {
+    def adapter(needsTimestampCasts: Boolean): DbAdapter = DuckDbAdapter
+  }
 
   def detect(connection: Connection): DbType = {
     val metadata = connection.getMetaData
@@ -29,6 +32,7 @@ object DbType {
       case name if name.contains("postgresql") => PostgreSQL
       case name if name.contains("mariadb")    => MariaDB
       case name if name.contains("mysql")      => MariaDB
+      case name if name.contains("duckdb")     => DuckDB
       case other                               => sys.error(s"Unsupported database: $other")
     }
   }
@@ -39,6 +43,7 @@ object DbType {
       case name if name.contains("postgresql") => PostgreSQL
       case name if name.contains("mariadb")    => MariaDB
       case name if name.contains("mysql")      => MariaDB
+      case name if name.contains("duckdb")     => DuckDB
       case other                               => sys.error(s"Unknown database driver: $other")
     }
   }

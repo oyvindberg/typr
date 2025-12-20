@@ -71,13 +71,13 @@ public class SalesterritoryhistoryRepoImpl implements SalesterritoryhistoryRepo 
                 "delete\n"
                     + "from \"sales\".\"salesterritoryhistory\"\n"
                     + "where (\"businessentityid\", \"startdate\", \"territoryid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, startdate),
-            Fragment.lit("::timestamp[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(SalesterritoryId.pgTypeArray, territoryid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -260,13 +260,13 @@ public class SalesterritoryhistoryRepoImpl implements SalesterritoryhistoryRepo 
                     + " \"rowguid\", \"modifieddate\"\n"
                     + "from \"sales\".\"salesterritoryhistory\"\n"
                     + "where (\"businessentityid\", \"startdate\", \"territoryid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, startdate),
-            Fragment.lit("::timestamp[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(SalesterritoryId.pgTypeArray, territoryid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(SalesterritoryhistoryRow._rowParser.all())
         .runUnchecked(c);
   }

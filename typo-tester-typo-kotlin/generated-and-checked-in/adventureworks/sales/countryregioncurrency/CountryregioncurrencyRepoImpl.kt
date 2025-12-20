@@ -36,7 +36,7 @@ class CountryregioncurrencyRepoImpl() : CountryregioncurrencyRepo {
   ): Int {
     val countryregioncode: Array<CountryregionId> = arrayMap.map(compositeIds, CountryregioncurrencyId::countryregioncode, CountryregionId::class.java)
     val currencycode: Array<CurrencyId> = arrayMap.map(compositeIds, CountryregioncurrencyId::currencycode, CurrencyId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"countryregioncurrency\"\nwhere (\"countryregioncode\", \"currencycode\")\nin (select unnest("), Fragment.encode(CountryregionId.pgTypeArray, countryregioncode), Fragment.lit("::varchar[]), unnest("), Fragment.encode(CurrencyId.pgTypeArray, currencycode), Fragment.lit("::bpchar[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"countryregioncurrency\"\nwhere (\"countryregioncode\", \"currencycode\")\nin (select * from unnest("), Fragment.encode(CountryregionId.pgTypeArray, countryregioncode), Fragment.lit(", "), Fragment.encode(CurrencyId.pgTypeArray, currencycode), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -92,7 +92,7 @@ class CountryregioncurrencyRepoImpl() : CountryregioncurrencyRepo {
   ): List<CountryregioncurrencyRow> {
     val countryregioncode: Array<CountryregionId> = arrayMap.map(compositeIds, CountryregioncurrencyId::countryregioncode, CountryregionId::class.java)
     val currencycode: Array<CurrencyId> = arrayMap.map(compositeIds, CountryregioncurrencyId::currencycode, CurrencyId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"countryregioncode\", \"currencycode\", \"modifieddate\"\nfrom \"sales\".\"countryregioncurrency\"\nwhere (\"countryregioncode\", \"currencycode\")\nin (select unnest("), Fragment.encode(CountryregionId.pgTypeArray, countryregioncode), Fragment.lit("::varchar[]), unnest("), Fragment.encode(CurrencyId.pgTypeArray, currencycode), Fragment.lit("::bpchar[]))\n")).query(CountryregioncurrencyRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"countryregioncode\", \"currencycode\", \"modifieddate\"\nfrom \"sales\".\"countryregioncurrency\"\nwhere (\"countryregioncode\", \"currencycode\")\nin (select * from unnest("), Fragment.encode(CountryregionId.pgTypeArray, countryregioncode), Fragment.lit(", "), Fragment.encode(CurrencyId.pgTypeArray, currencycode), Fragment.lit("))\n")).query(CountryregioncurrencyRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

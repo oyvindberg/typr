@@ -22,9 +22,9 @@ case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
   salestotal: Optional[java.math.BigDecimal],
-  fiscalyear: java.math.BigDecimal
+  fiscalyear: java.lang.Double
 )
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
-  val `_rowParser`: RowParser[VsalespersonsalesbyfiscalyearsdataViewRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.numeric.opt(), PgTypes.numeric, VsalespersonsalesbyfiscalyearsdataViewRow.apply, row => Array[Any](row.salespersonid, row.fullname, row.jobtitle, row.salesterritory, row.salestotal, row.fiscalyear))
+  val `_rowParser`: RowParser[VsalespersonsalesbyfiscalyearsdataViewRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.numeric.opt(), PgTypes.float8, VsalespersonsalesbyfiscalyearsdataViewRow.apply, row => Array[Any](row.salespersonid, row.fullname, row.jobtitle, row.salesterritory, row.salestotal, row.fiscalyear))
 }

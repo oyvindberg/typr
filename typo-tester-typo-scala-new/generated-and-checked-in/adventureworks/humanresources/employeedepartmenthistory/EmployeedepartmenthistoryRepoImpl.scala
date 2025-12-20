@@ -35,7 +35,7 @@ class EmployeedepartmenthistoryRepoImpl extends EmployeedepartmenthistoryRepo {
     return sql"""delete
     from "humanresources"."employeedepartmenthistory"
     where ("businessentityid", "startdate", "departmentid", "shiftid")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(PgTypes.dateArray, startdate)}::date[]), unnest(${Fragment.encode(DepartmentId.pgTypeArray, departmentid)}::int2[]), unnest(${Fragment.encode(ShiftId.pgTypeArray, shiftid)}::int2[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(PgTypes.dateArray, startdate)}, ${Fragment.encode(DepartmentId.pgTypeArray, departmentid)}, ${Fragment.encode(ShiftId.pgTypeArray, shiftid)}))
     """.update().runUnchecked(c)
   }
 
@@ -106,7 +106,7 @@ class EmployeedepartmenthistoryRepoImpl extends EmployeedepartmenthistoryRepo {
     return sql"""select "businessentityid", "departmentid", "shiftid", "startdate", "enddate", "modifieddate"
     from "humanresources"."employeedepartmenthistory"
     where ("businessentityid", "startdate", "departmentid", "shiftid")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(PgTypes.dateArray, startdate)}::date[]), unnest(${Fragment.encode(DepartmentId.pgTypeArray, departmentid)}::int2[]), unnest(${Fragment.encode(ShiftId.pgTypeArray, shiftid)}::int2[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(PgTypes.dateArray, startdate)}, ${Fragment.encode(DepartmentId.pgTypeArray, departmentid)}, ${Fragment.encode(ShiftId.pgTypeArray, shiftid)}))
     """.query(EmployeedepartmenthistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

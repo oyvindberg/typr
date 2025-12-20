@@ -32,7 +32,7 @@ class FlaffRepoImpl extends FlaffRepo {
     return sql"""delete
     from "public"."flaff"
     where ("code", "another_code", "some_number", "specifier")
-    in (select unnest(${Fragment.encode(ShortText.pgTypeArray, code)}::text[]), unnest(${Fragment.encode(PgTypes.textArray, anotherCode)}::varchar[]), unnest(${Fragment.encode(PgTypes.int4ArrayUnboxed, someNumber)}::int4[]), unnest(${Fragment.encode(ShortText.pgTypeArray, specifier)}::text[]))
+    in (select * from unnest(${Fragment.encode(ShortText.pgTypeArray, code)}, ${Fragment.encode(PgTypes.textArray, anotherCode)}, ${Fragment.encode(PgTypes.int4ArrayUnboxed, someNumber)}, ${Fragment.encode(ShortText.pgTypeArray, specifier)}))
     """.update().runUnchecked(c)
   }
 
@@ -71,7 +71,7 @@ class FlaffRepoImpl extends FlaffRepo {
     return sql"""select "code", "another_code", "some_number", "specifier", "parentspecifier"
     from "public"."flaff"
     where ("code", "another_code", "some_number", "specifier")
-    in (select unnest(${Fragment.encode(ShortText.pgTypeArray, code)}::text[]), unnest(${Fragment.encode(PgTypes.textArray, anotherCode)}::varchar[]), unnest(${Fragment.encode(PgTypes.int4ArrayUnboxed, someNumber)}::int4[]), unnest(${Fragment.encode(ShortText.pgTypeArray, specifier)}::text[]))
+    in (select * from unnest(${Fragment.encode(ShortText.pgTypeArray, code)}, ${Fragment.encode(PgTypes.textArray, anotherCode)}, ${Fragment.encode(PgTypes.int4ArrayUnboxed, someNumber)}, ${Fragment.encode(ShortText.pgTypeArray, specifier)}))
     """.query(FlaffRow.`_rowParser`.all()).runUnchecked(c)
   }
 

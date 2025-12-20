@@ -16,7 +16,7 @@ import java.util.Optional;
  * <p>Similar to PgRead but adapted for MariaDB-specific types.
  */
 public sealed interface MariaRead<A> extends DbRead<A>
-    permits MariaRead.NonNullable, MariaRead.Nullable {
+    permits MariaRead.NonNullable, MariaRead.Nullable, KotlinNullableMariaRead {
   A read(ResultSet rs, int col) throws SQLException;
 
   <B> MariaRead<B> map(SqlFunction<A, B> f);

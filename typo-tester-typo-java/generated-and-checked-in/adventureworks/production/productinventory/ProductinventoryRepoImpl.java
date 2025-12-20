@@ -63,11 +63,11 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
                 "delete\n"
                     + "from \"production\".\"productinventory\"\n"
                     + "where (\"productid\", \"locationid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(LocationId.pgTypeArray, locationid),
-            Fragment.lit("::int2[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -245,11 +245,11 @@ public class ProductinventoryRepoImpl implements ProductinventoryRepo {
                     + " \"rowguid\", \"modifieddate\"\n"
                     + "from \"production\".\"productinventory\"\n"
                     + "where (\"productid\", \"locationid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(LocationId.pgTypeArray, locationid),
-            Fragment.lit("::int2[]))\n"))
+            Fragment.lit("))\n"))
         .query(ProductinventoryRow._rowParser.all())
         .runUnchecked(c);
   }

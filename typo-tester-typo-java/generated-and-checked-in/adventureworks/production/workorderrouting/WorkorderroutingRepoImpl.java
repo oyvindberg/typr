@@ -67,13 +67,13 @@ public class WorkorderroutingRepoImpl implements WorkorderroutingRepo {
                 "delete\n"
                     + "from \"production\".\"workorderrouting\"\n"
                     + "where (\"workorderid\", \"productid\", \"operationsequence\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(WorkorderId.pgTypeArray, workorderid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int2Array, operationsequence),
-            Fragment.lit("::int2[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -301,13 +301,13 @@ public class WorkorderroutingRepoImpl implements WorkorderroutingRepo {
                     + " \"modifieddate\"\n"
                     + "from \"production\".\"workorderrouting\"\n"
                     + "where (\"workorderid\", \"productid\", \"operationsequence\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(WorkorderId.pgTypeArray, workorderid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int2Array, operationsequence),
-            Fragment.lit("::int2[]))\n"))
+            Fragment.lit("))\n"))
         .query(WorkorderroutingRow._rowParser.all())
         .runUnchecked(c);
   }

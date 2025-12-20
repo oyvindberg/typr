@@ -123,12 +123,13 @@ object generate {
 
         val domainFiles = domains.map(d => FileDomain(d, options, language))
 
+        val adapter = metaDb.dbType.adapter(needsTimestampCasts = false)
         val defaultFile = FileDefault(default, options.jsonLibs, options.dbLib, language)
         val mostFiles: List[jvm.File] =
           List(
             options.dbLib.toList.flatMap(_.additionalFiles),
             defaultFile.file :: defaultFile.additionalFiles,
-            enums.map(enm => FileStringEnum(options, enm)),
+            enums.map(enm => FileStringEnum(options, enm, adapter)),
             domainFiles,
             customTypes.All.values.map(FileCustomType(options, language)),
             relationFilesByName.map { case (_, f) => f },

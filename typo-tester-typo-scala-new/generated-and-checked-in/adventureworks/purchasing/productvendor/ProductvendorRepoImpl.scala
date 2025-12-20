@@ -33,7 +33,7 @@ class ProductvendorRepoImpl extends ProductvendorRepo {
     return sql"""delete
     from "purchasing"."productvendor"
     where ("productid", "businessentityid")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}))
     """.update().runUnchecked(c)
   }
 
@@ -112,7 +112,7 @@ class ProductvendorRepoImpl extends ProductvendorRepo {
     return sql"""select "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"
     from "purchasing"."productvendor"
     where ("productid", "businessentityid")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}))
     """.query(ProductvendorRow.`_rowParser`.all()).runUnchecked(c)
   }
 

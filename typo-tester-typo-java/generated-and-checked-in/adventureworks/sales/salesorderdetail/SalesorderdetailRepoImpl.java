@@ -62,11 +62,11 @@ public class SalesorderdetailRepoImpl implements SalesorderdetailRepo {
                 "delete\n"
                     + "from \"sales\".\"salesorderdetail\"\n"
                     + "where (\"salesorderid\", \"salesorderdetailid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, salesorderdetailid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -283,11 +283,11 @@ public class SalesorderdetailRepoImpl implements SalesorderdetailRepo {
                     + " \"unitpricediscount\", \"rowguid\", \"modifieddate\"\n"
                     + "from \"sales\".\"salesorderdetail\"\n"
                     + "where (\"salesorderid\", \"salesorderdetailid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, salesorderdetailid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(SalesorderdetailRow._rowParser.all())
         .runUnchecked(c);
   }

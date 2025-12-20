@@ -31,7 +31,7 @@ class SpecialofferproductRepoImpl extends SpecialofferproductRepo {
     return interpolate(Fragment.lit("""delete
     from "sales"."specialofferproduct"
     where ("specialofferid", "productid")
-    in (select unnest("""), Fragment.encode(SpecialofferId.pgTypeArray, specialofferid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(SpecialofferId.pgTypeArray, specialofferid), Fragment.lit(", "), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -98,7 +98,7 @@ class SpecialofferproductRepoImpl extends SpecialofferproductRepo {
     return interpolate(Fragment.lit("""select "specialofferid", "productid", "rowguid", "modifieddate"
     from "sales"."specialofferproduct"
     where ("specialofferid", "productid")
-    in (select unnest("""), Fragment.encode(SpecialofferId.pgTypeArray, specialofferid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(SpecialofferId.pgTypeArray, specialofferid), Fragment.lit(", "), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("""))
     """)).query(SpecialofferproductRow.`_rowParser`.all()).runUnchecked(c)
   }
 

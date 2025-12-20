@@ -30,7 +30,7 @@ class ProductdocumentRepoImpl extends ProductdocumentRepo {
     return sql"""delete
     from "production"."productdocument"
     where ("productid", "documentnode")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(DocumentId.pgTypeArray, documentnode)}::varchar[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(DocumentId.pgTypeArray, documentnode)}))
     """.update().runUnchecked(c)
   }
 
@@ -95,7 +95,7 @@ class ProductdocumentRepoImpl extends ProductdocumentRepo {
     return sql"""select "productid", "modifieddate", "documentnode"
     from "production"."productdocument"
     where ("productid", "documentnode")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(DocumentId.pgTypeArray, documentnode)}::varchar[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(DocumentId.pgTypeArray, documentnode)}))
     """.query(ProductdocumentRow.`_rowParser`.all()).runUnchecked(c)
   }
 

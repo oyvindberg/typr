@@ -31,7 +31,7 @@ class SalespersonquotahistoryRepoImpl extends SalespersonquotahistoryRepo {
     return sql"""delete
     from "sales"."salespersonquotahistory"
     where ("businessentityid", "quotadate")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(PgTypes.timestampArray, quotadate)}::timestamp[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(PgTypes.timestampArray, quotadate)}))
     """.update().runUnchecked(c)
   }
 
@@ -100,7 +100,7 @@ class SalespersonquotahistoryRepoImpl extends SalespersonquotahistoryRepo {
     return sql"""select "businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate"
     from "sales"."salespersonquotahistory"
     where ("businessentityid", "quotadate")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(PgTypes.timestampArray, quotadate)}::timestamp[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(PgTypes.timestampArray, quotadate)}))
     """.query(SalespersonquotahistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

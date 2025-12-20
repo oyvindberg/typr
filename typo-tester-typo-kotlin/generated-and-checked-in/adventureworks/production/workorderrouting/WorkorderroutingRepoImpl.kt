@@ -39,7 +39,7 @@ class WorkorderroutingRepoImpl() : WorkorderroutingRepo {
     val workorderid: Array<WorkorderId> = arrayMap.map(compositeIds, WorkorderroutingId::workorderid, WorkorderId::class.java)
     val productid: Array<Int> = arrayMap.map(compositeIds, WorkorderroutingId::productid, Int::class.javaObjectType)
     val operationsequence: Array<Short> = arrayMap.map(compositeIds, WorkorderroutingId::operationsequence, Short::class.javaObjectType)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"workorderrouting\"\nwhere (\"workorderid\", \"productid\", \"operationsequence\")\nin (select unnest("), Fragment.encode(WorkorderId.pgTypeArray, workorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int2Array, operationsequence), Fragment.lit("::int2[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"workorderrouting\"\nwhere (\"workorderid\", \"productid\", \"operationsequence\")\nin (select * from unnest("), Fragment.encode(WorkorderId.pgTypeArray, workorderid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, productid), Fragment.lit(", "), Fragment.encode(PgTypes.int2Array, operationsequence), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -114,7 +114,7 @@ class WorkorderroutingRepoImpl() : WorkorderroutingRepo {
     val workorderid: Array<WorkorderId> = arrayMap.map(compositeIds, WorkorderroutingId::workorderid, WorkorderId::class.java)
     val productid: Array<Int> = arrayMap.map(compositeIds, WorkorderroutingId::productid, Int::class.javaObjectType)
     val operationsequence: Array<Short> = arrayMap.map(compositeIds, WorkorderroutingId::operationsequence, Short::class.javaObjectType)
-    return Fragment.interpolate(Fragment.lit("select \"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\"\nfrom \"production\".\"workorderrouting\"\nwhere (\"workorderid\", \"productid\", \"operationsequence\")\nin (select unnest("), Fragment.encode(WorkorderId.pgTypeArray, workorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int2Array, operationsequence), Fragment.lit("::int2[]))\n")).query(WorkorderroutingRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"workorderid\", \"productid\", \"operationsequence\", \"locationid\", \"scheduledstartdate\", \"scheduledenddate\", \"actualstartdate\", \"actualenddate\", \"actualresourcehrs\", \"plannedcost\", \"actualcost\", \"modifieddate\"\nfrom \"production\".\"workorderrouting\"\nwhere (\"workorderid\", \"productid\", \"operationsequence\")\nin (select * from unnest("), Fragment.encode(WorkorderId.pgTypeArray, workorderid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, productid), Fragment.lit(", "), Fragment.encode(PgTypes.int2Array, operationsequence), Fragment.lit("))\n")).query(WorkorderroutingRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

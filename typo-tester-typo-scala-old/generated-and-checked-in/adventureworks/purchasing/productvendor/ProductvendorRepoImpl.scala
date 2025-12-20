@@ -32,7 +32,7 @@ class ProductvendorRepoImpl extends ProductvendorRepo {
     return interpolate(Fragment.lit("""delete
     from "purchasing"."productvendor"
     where ("productid", "businessentityid")
-    in (select unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -111,7 +111,7 @@ class ProductvendorRepoImpl extends ProductvendorRepo {
     return interpolate(Fragment.lit("""select "productid", "businessentityid", "averageleadtime", "standardprice", "lastreceiptcost", "lastreceiptdate", "minorderqty", "maxorderqty", "onorderqty", "unitmeasurecode", "modifieddate"
     from "purchasing"."productvendor"
     where ("productid", "businessentityid")
-    in (select unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("""))
     """)).query(ProductvendorRow.`_rowParser`.all()).runUnchecked(c)
   }
 

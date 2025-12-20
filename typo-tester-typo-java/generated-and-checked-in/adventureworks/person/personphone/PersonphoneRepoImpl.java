@@ -66,13 +66,13 @@ public class PersonphoneRepoImpl implements PersonphoneRepo {
                 "delete\n"
                     + "from \"person\".\"personphone\"\n"
                     + "where (\"businessentityid\", \"phonenumber\", \"phonenumbertypeid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(Phone.pgTypeArray, phonenumber),
-            Fragment.lit("::varchar[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PhonenumbertypeId.pgTypeArray, phonenumbertypeid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -230,13 +230,13 @@ public class PersonphoneRepoImpl implements PersonphoneRepo {
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"personphone\"\n"
                     + "where (\"businessentityid\", \"phonenumber\", \"phonenumbertypeid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(Phone.pgTypeArray, phonenumber),
-            Fragment.lit("::varchar[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PhonenumbertypeId.pgTypeArray, phonenumbertypeid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(PersonphoneRow._rowParser.all())
         .runUnchecked(c);
   }

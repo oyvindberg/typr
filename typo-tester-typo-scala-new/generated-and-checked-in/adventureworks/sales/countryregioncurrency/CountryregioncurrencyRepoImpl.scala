@@ -30,7 +30,7 @@ class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
     return sql"""delete
     from "sales"."countryregioncurrency"
     where ("countryregioncode", "currencycode")
-    in (select unnest(${Fragment.encode(CountryregionId.pgTypeArray, countryregioncode)}::varchar[]), unnest(${Fragment.encode(CurrencyId.pgTypeArray, currencycode)}::bpchar[]))
+    in (select * from unnest(${Fragment.encode(CountryregionId.pgTypeArray, countryregioncode)}, ${Fragment.encode(CurrencyId.pgTypeArray, currencycode)}))
     """.update().runUnchecked(c)
   }
 
@@ -93,7 +93,7 @@ class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
     return sql"""select "countryregioncode", "currencycode", "modifieddate"
     from "sales"."countryregioncurrency"
     where ("countryregioncode", "currencycode")
-    in (select unnest(${Fragment.encode(CountryregionId.pgTypeArray, countryregioncode)}::varchar[]), unnest(${Fragment.encode(CurrencyId.pgTypeArray, currencycode)}::bpchar[]))
+    in (select * from unnest(${Fragment.encode(CountryregionId.pgTypeArray, countryregioncode)}, ${Fragment.encode(CurrencyId.pgTypeArray, currencycode)}))
     """.query(CountryregioncurrencyRow.`_rowParser`.all()).runUnchecked(c)
   }
 

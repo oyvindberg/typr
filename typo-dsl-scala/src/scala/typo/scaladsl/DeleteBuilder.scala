@@ -1,7 +1,6 @@
 package typo.scaladsl
 
 import typo.dsl.{DeleteBuilder => JavaDeleteBuilder}
-import typo.dsl.SqlExpr
 import typo.runtime.Fragment
 import java.sql.Connection
 import scala.jdk.CollectionConverters._
@@ -10,8 +9,8 @@ import scala.util.Using
 
 class DeleteBuilder[Fields, Row](private val javaBuilder: JavaDeleteBuilder[Fields, Row]) {
 
-  def where(predicate: Fields => SqlExpr[java.lang.Boolean]): DeleteBuilder[Fields, Row] = {
-    new DeleteBuilder(javaBuilder.where(fields => predicate(fields)))
+  def where(predicate: Fields => typo.dsl.SqlExpr[Boolean]): DeleteBuilder[Fields, Row] = {
+    new DeleteBuilder(javaBuilder.where((fields: Fields) => predicate(fields).underlying(Bijections.scalaBooleanToJavaBoolean)))
   }
 
   def execute(connection: Connection): Int = {

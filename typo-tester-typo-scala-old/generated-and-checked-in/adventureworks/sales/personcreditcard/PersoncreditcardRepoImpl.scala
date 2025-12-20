@@ -31,7 +31,7 @@ class PersoncreditcardRepoImpl extends PersoncreditcardRepo {
     return interpolate(Fragment.lit("""delete
     from "sales"."personcreditcard"
     where ("businessentityid", "creditcardid")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -94,7 +94,7 @@ class PersoncreditcardRepoImpl extends PersoncreditcardRepo {
     return interpolate(Fragment.lit("""select "businessentityid", "creditcardid", "modifieddate"
     from "sales"."personcreditcard"
     where ("businessentityid", "creditcardid")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid), Fragment.lit("""))
     """)).query(PersoncreditcardRow.`_rowParser`.all()).runUnchecked(c)
   }
 

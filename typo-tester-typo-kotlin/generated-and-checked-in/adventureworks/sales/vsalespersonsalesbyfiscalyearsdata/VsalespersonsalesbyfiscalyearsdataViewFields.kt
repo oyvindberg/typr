@@ -12,6 +12,7 @@ import kotlin.collections.List
 import typo.dsl.FieldsExpr
 import typo.dsl.Path
 import typo.dsl.SqlExpr.FieldLike
+import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RelationStructure
 import typo.kotlindsl.SqlExpr.Field
 import typo.kotlindsl.SqlExpr.OptField
@@ -21,7 +22,7 @@ import typo.runtime.RowParser
 interface VsalespersonsalesbyfiscalyearsdataViewFields : FieldsExpr<VsalespersonsalesbyfiscalyearsdataViewRow> {
   abstract override fun columns(): List<FieldLike<*, VsalespersonsalesbyfiscalyearsdataViewRow>>
 
-  abstract fun fiscalyear(): Field<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow>
+  abstract fun fiscalyear(): Field<Double, VsalespersonsalesbyfiscalyearsdataViewRow>
 
   abstract fun fullname(): Field<String, VsalespersonsalesbyfiscalyearsdataViewRow>
 
@@ -47,7 +48,7 @@ interface VsalespersonsalesbyfiscalyearsdataViewFields : FieldsExpr<Vsalesperson
 
       override fun salestotal(): OptField<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow> = OptField<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "salestotal", VsalespersonsalesbyfiscalyearsdataViewRow::salestotal, null, null, { row, value -> row.copy(salestotal = value) }, PgTypes.numeric)
 
-      override fun fiscalyear(): Field<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow> = Field<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "fiscalyear", VsalespersonsalesbyfiscalyearsdataViewRow::fiscalyear, null, null, { row, value -> row.copy(fiscalyear = value) }, PgTypes.numeric)
+      override fun fiscalyear(): Field<Double, VsalespersonsalesbyfiscalyearsdataViewRow> = Field<Double, VsalespersonsalesbyfiscalyearsdataViewRow>(_path, "fiscalyear", VsalespersonsalesbyfiscalyearsdataViewRow::fiscalyear, null, null, { row, value -> row.copy(fiscalyear = value) }, KotlinDbTypes.PgTypes.float8)
 
       override fun _path(): List<Path> = _path
 

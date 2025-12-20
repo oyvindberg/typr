@@ -17,3 +17,5 @@ out/
 build/
 .typo/
 __pycache__/
+testdb
+testdb.wal

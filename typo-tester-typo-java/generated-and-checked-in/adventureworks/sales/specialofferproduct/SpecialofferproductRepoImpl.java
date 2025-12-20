@@ -63,11 +63,11 @@ public class SpecialofferproductRepoImpl implements SpecialofferproductRepo {
                 "delete\n"
                     + "from \"sales\".\"specialofferproduct\"\n"
                     + "where (\"specialofferid\", \"productid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(SpecialofferId.pgTypeArray, specialofferid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -223,11 +223,11 @@ public class SpecialofferproductRepoImpl implements SpecialofferproductRepo {
                 "select \"specialofferid\", \"productid\", \"rowguid\", \"modifieddate\"\n"
                     + "from \"sales\".\"specialofferproduct\"\n"
                     + "where (\"specialofferid\", \"productid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(SpecialofferId.pgTypeArray, specialofferid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(SpecialofferproductRow._rowParser.all())
         .runUnchecked(c);
   }

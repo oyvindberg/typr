@@ -63,15 +63,15 @@ public class FlaffRepoImpl implements FlaffRepo {
                 "delete\n"
                     + "from \"public\".\"flaff\"\n"
                     + "where (\"code\", \"another_code\", \"some_number\", \"specifier\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ShortText.pgTypeArray, code),
-            Fragment.lit("::text[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.textArray, anotherCode),
-            Fragment.lit("::varchar[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, someNumber),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ShortText.pgTypeArray, specifier),
-            Fragment.lit("::text[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -170,15 +170,15 @@ public class FlaffRepoImpl implements FlaffRepo {
                     + " \"parentspecifier\"\n"
                     + "from \"public\".\"flaff\"\n"
                     + "where (\"code\", \"another_code\", \"some_number\", \"specifier\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ShortText.pgTypeArray, code),
-            Fragment.lit("::text[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.textArray, anotherCode),
-            Fragment.lit("::varchar[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, someNumber),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ShortText.pgTypeArray, specifier),
-            Fragment.lit("::text[]))\n"))
+            Fragment.lit("))\n"))
         .query(FlaffRow._rowParser.all())
         .runUnchecked(c);
   }

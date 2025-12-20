@@ -64,11 +64,11 @@ public class ProductlistpricehistoryRepoImpl implements ProductlistpricehistoryR
                 "delete\n"
                     + "from \"production\".\"productlistpricehistory\"\n"
                     + "where (\"productid\", \"startdate\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, startdate),
-            Fragment.lit("::timestamp[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -231,11 +231,11 @@ public class ProductlistpricehistoryRepoImpl implements ProductlistpricehistoryR
                     + " \"modifieddate\"\n"
                     + "from \"production\".\"productlistpricehistory\"\n"
                     + "where (\"productid\", \"startdate\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, startdate),
-            Fragment.lit("::timestamp[]))\n"))
+            Fragment.lit("))\n"))
         .query(ProductlistpricehistoryRow._rowParser.all())
         .runUnchecked(c);
   }

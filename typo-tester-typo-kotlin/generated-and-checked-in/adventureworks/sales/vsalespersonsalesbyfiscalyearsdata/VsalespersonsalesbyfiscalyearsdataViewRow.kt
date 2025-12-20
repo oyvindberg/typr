@@ -8,6 +8,7 @@ package adventureworks.sales.vsalespersonsalesbyfiscalyearsdata
 import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import java.math.BigDecimal
+import typo.kotlindsl.KotlinDbTypes
 import typo.kotlindsl.RowParser
 import typo.kotlindsl.RowParsers
 import typo.kotlindsl.nullable
@@ -23,9 +24,9 @@ data class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [adventureworks.sales.salesterritory.SalesterritoryRow.name] */
   val salesterritory: Name,
   val salestotal: BigDecimal?,
-  val fiscalyear: BigDecimal
+  val fiscalyear: Double
 ) {
   companion object {
-    val _rowParser: RowParser<VsalespersonsalesbyfiscalyearsdataViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.numeric.nullable(), PgTypes.numeric, { t0, t1, t2, t3, t4, t5 -> VsalespersonsalesbyfiscalyearsdataViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.salespersonid, row.fullname, row.jobtitle, row.salesterritory, row.salestotal, row.fiscalyear) })
+    val _rowParser: RowParser<VsalespersonsalesbyfiscalyearsdataViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.numeric.nullable(), KotlinDbTypes.PgTypes.float8, { t0, t1, t2, t3, t4, t5 -> VsalespersonsalesbyfiscalyearsdataViewRow(t0!!, t1!!, t2!!, t3!!, t4!!, t5!!) }, { row -> arrayOf<Any?>(row.salespersonid, row.fullname, row.jobtitle, row.salesterritory, row.salestotal, row.fiscalyear) })
   }
 }

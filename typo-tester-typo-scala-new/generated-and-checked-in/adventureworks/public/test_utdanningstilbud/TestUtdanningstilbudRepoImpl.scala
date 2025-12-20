@@ -28,7 +28,7 @@ class TestUtdanningstilbudRepoImpl extends TestUtdanningstilbudRepo {
     return sql"""delete
     from "public"."test_utdanningstilbud"
     where ("organisasjonskode", "utdanningsmulighet_kode")
-    in (select unnest(${Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode)}::text[]), unnest(${Fragment.encode(PgTypes.textArray, utdanningsmulighetKode)}::text[]))
+    in (select * from unnest(${Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode)}, ${Fragment.encode(PgTypes.textArray, utdanningsmulighetKode)}))
     """.update().runUnchecked(c)
   }
 
@@ -65,7 +65,7 @@ class TestUtdanningstilbudRepoImpl extends TestUtdanningstilbudRepo {
     return sql"""select "organisasjonskode", "utdanningsmulighet_kode"
     from "public"."test_utdanningstilbud"
     where ("organisasjonskode", "utdanningsmulighet_kode")
-    in (select unnest(${Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode)}::text[]), unnest(${Fragment.encode(PgTypes.textArray, utdanningsmulighetKode)}::text[]))
+    in (select * from unnest(${Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode)}, ${Fragment.encode(PgTypes.textArray, utdanningsmulighetKode)}))
     """.query(TestUtdanningstilbudRow.`_rowParser`.all()).runUnchecked(c)
   }
 

@@ -63,11 +63,11 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
                 "delete\n"
                     + "from \"public\".\"test_utdanningstilbud\"\n"
                     + "where (\"organisasjonskode\", \"utdanningsmulighet_kode\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode),
-            Fragment.lit("::text[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.textArray, utdanningsmulighetKode),
-            Fragment.lit("::text[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -155,11 +155,11 @@ public class TestUtdanningstilbudRepoImpl implements TestUtdanningstilbudRepo {
                 "select \"organisasjonskode\", \"utdanningsmulighet_kode\"\n"
                     + "from \"public\".\"test_utdanningstilbud\"\n"
                     + "where (\"organisasjonskode\", \"utdanningsmulighet_kode\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode),
-            Fragment.lit("::text[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.textArray, utdanningsmulighetKode),
-            Fragment.lit("::text[]))\n"))
+            Fragment.lit("))\n"))
         .query(TestUtdanningstilbudRow._rowParser.all())
         .runUnchecked(c);
   }

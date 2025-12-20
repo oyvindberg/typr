@@ -33,7 +33,7 @@ class WorkorderroutingRepoImpl extends WorkorderroutingRepo {
     return sql"""delete
     from "production"."workorderrouting"
     where ("workorderid", "productid", "operationsequence")
-    in (select unnest(${Fragment.encode(WorkorderId.pgTypeArray, workorderid)}::int4[]), unnest(${Fragment.encode(PgTypes.int4ArrayUnboxed, productid)}::int4[]), unnest(${Fragment.encode(PgTypes.int2ArrayUnboxed, operationsequence)}::int2[]))
+    in (select * from unnest(${Fragment.encode(WorkorderId.pgTypeArray, workorderid)}, ${Fragment.encode(PgTypes.int4ArrayUnboxed, productid)}, ${Fragment.encode(PgTypes.int2ArrayUnboxed, operationsequence)}))
     """.update().runUnchecked(c)
   }
 
@@ -115,7 +115,7 @@ class WorkorderroutingRepoImpl extends WorkorderroutingRepo {
     return sql"""select "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"
     from "production"."workorderrouting"
     where ("workorderid", "productid", "operationsequence")
-    in (select unnest(${Fragment.encode(WorkorderId.pgTypeArray, workorderid)}::int4[]), unnest(${Fragment.encode(PgTypes.int4ArrayUnboxed, productid)}::int4[]), unnest(${Fragment.encode(PgTypes.int2ArrayUnboxed, operationsequence)}::int2[]))
+    in (select * from unnest(${Fragment.encode(WorkorderId.pgTypeArray, workorderid)}, ${Fragment.encode(PgTypes.int4ArrayUnboxed, productid)}, ${Fragment.encode(PgTypes.int2ArrayUnboxed, operationsequence)}))
     """.query(WorkorderroutingRow.`_rowParser`.all()).runUnchecked(c)
   }
 

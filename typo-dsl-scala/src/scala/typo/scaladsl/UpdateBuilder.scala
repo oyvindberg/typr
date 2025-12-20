@@ -1,6 +1,6 @@
 package typo.scaladsl
 
-import typo.dsl.{SqlExpr, UpdateBuilder as JavaUpdateBuilder}
+import typo.dsl.{UpdateBuilder as JavaUpdateBuilder}
 import typo.runtime.{Fragment, PgType}
 
 import java.sql.Connection
@@ -15,26 +15,36 @@ class UpdateBuilder[Fields, Row] private[scaladsl] (
     new UpdateBuilder(newJavaBuilder)
 
   def set[T](field: Fields => SqlExpr.FieldLike[T, Row], value: T, pgType: PgType[T]): UpdateBuilder[Fields, Row] = {
-    copy(javaBuilder.set(fields => field(fields), value, pgType))
+    copy(javaBuilder.set((fields: Fields) => field(fields).underlying, value, pgType))
   }
 
   def setValue[T](field: Fields => SqlExpr.FieldLike[T, Row], value: T): UpdateBuilder[Fields, Row] = {
-    copy(javaBuilder.setValue(fields => field(fields), value))
+    copy(javaBuilder.setValue((fields: Fields) => field(fields).underlying, value))
   }
 
-  def setExpr[T](field: Fields => SqlExpr.FieldLike[T, Row], expr: SqlExpr[T]): UpdateBuilder[Fields, Row] = {
-    copy(javaBuilder.setExpr(fields => field(fields), expr))
+  def setExpr[T](field: Fields => SqlExpr.FieldLike[T, Row], expr: typo.dsl.SqlExpr[T]): UpdateBuilder[Fields, Row] = {
+    copy(javaBuilder.setExpr((fields: Fields) => field(fields).underlying, expr))
   }
 
   def setComputedValue[T](
       field: Fields => SqlExpr.FieldLike[T, Row],
-      compute: SqlExpr.FieldLike[T, Row] => SqlExpr[T]
+      compute: SqlExpr.FieldLike[T, Row] => typo.dsl.SqlExpr[T]
   ): UpdateBuilder[Fields, Row] = {
-    copy(javaBuilder.setComputedValue(fields => field(fields), fieldLike => compute(fieldLike)))
+    copy(
+      javaBuilder.setComputedValue(
+        (fields: Fields) => field(fields).underlying,
+        (javaFieldLike: typo.dsl.SqlExpr.FieldLike[T, Row]) => {
+          val scalaFieldLike = new GenericFieldLikeWrapper(javaFieldLike)
+          compute(scalaFieldLike)
+        }
+      )
+    )
   }
 
-  def where(predicate: Fields => SqlExpr[java.lang.Boolean]): UpdateBuilder[Fields, Row] = {
-    copy(javaBuilder.where(fields => predicate(fields)))
+  private class GenericFieldLikeWrapper[T](override val underlying: typo.dsl.SqlExpr.FieldLike[T, Row]) extends SqlExpr.FieldLike[T, Row]
+
+  def where(predicate: Fields => typo.dsl.SqlExpr[Boolean]): UpdateBuilder[Fields, Row] = {
+    copy(javaBuilder.where((fields: Fields) => predicate(fields).underlying(Bijections.scalaBooleanToJavaBoolean)))
   }
 
   def execute(connection: Connection): Int = {

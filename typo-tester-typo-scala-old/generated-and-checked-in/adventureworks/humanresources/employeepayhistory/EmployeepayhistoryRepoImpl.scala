@@ -31,7 +31,7 @@ class EmployeepayhistoryRepoImpl extends EmployeepayhistoryRepo {
     return interpolate(Fragment.lit("""delete
     from "humanresources"."employeepayhistory"
     where ("businessentityid", "ratechangedate")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, ratechangedate), Fragment.lit("""::timestamp[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, ratechangedate), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -98,7 +98,7 @@ class EmployeepayhistoryRepoImpl extends EmployeepayhistoryRepo {
     return interpolate(Fragment.lit("""select "businessentityid", "ratechangedate", "rate", "payfrequency", "modifieddate"
     from "humanresources"."employeepayhistory"
     where ("businessentityid", "ratechangedate")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, ratechangedate), Fragment.lit("""::timestamp[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, ratechangedate), Fragment.lit("""))
     """)).query(EmployeepayhistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

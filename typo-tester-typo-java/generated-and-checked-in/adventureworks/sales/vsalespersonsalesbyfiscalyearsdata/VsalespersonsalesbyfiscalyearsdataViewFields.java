@@ -92,15 +92,15 @@ public interface VsalespersonsalesbyfiscalyearsdataViewFields
     ;
 
     @Override
-    public Field<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow> fiscalyear() {
-      return new Field<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow>(
+    public Field<Double, VsalespersonsalesbyfiscalyearsdataViewRow> fiscalyear() {
+      return new Field<Double, VsalespersonsalesbyfiscalyearsdataViewRow>(
           _path,
           "fiscalyear",
           VsalespersonsalesbyfiscalyearsdataViewRow::fiscalyear,
           Optional.empty(),
           Optional.empty(),
           (row, value) -> row.withFiscalyear(value),
-          PgTypes.numeric);
+          PgTypes.float8);
     }
     ;
 
@@ -141,7 +141,7 @@ public interface VsalespersonsalesbyfiscalyearsdataViewFields
 
   OptField<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow> salestotal();
 
-  Field<BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow> fiscalyear();
+  Field<Double, VsalespersonsalesbyfiscalyearsdataViewRow> fiscalyear();
 
   @Override
   List<FieldLike<?, VsalespersonsalesbyfiscalyearsdataViewRow>> columns();

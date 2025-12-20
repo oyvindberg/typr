@@ -52,8 +52,9 @@ object TypoType {
   /** An array of another TypoType */
   case class Array(jvmType: jvm.Type, element: TypoType) extends TypoType {
     def underlyingDbType: db.Type = element.underlyingDbType match {
-      case pgType: db.PgType => db.PgType.Array(pgType)
-      case other             => other // MariaDB doesn't support arrays
+      case pgType: db.PgType         => db.PgType.Array(pgType)
+      case duckDbType: db.DuckDbType => db.DuckDbType.ListType(duckDbType)
+      case other                     => other // MariaDB doesn't support arrays
     }
     def innerJvmType: jvm.Type = element.innerJvmType
     def withJvmType(newJvmType: jvm.Type): Array = copy(jvmType = newJvmType)
@@ -76,14 +77,18 @@ object TypoType {
       case lang.Optional(inner) =>
         Nullable(jvmType, compute(inner, dbType))
 
-      // Handle PostgreSQL Array wrappers - only if db.Type is also an array
-      // This distinguishes PostgreSQL arrays from Java/Scala byte arrays (bytea)
+      // Handle PostgreSQL/DuckDB Array wrappers - only if db.Type is also an array
+      // This distinguishes PostgreSQL/DuckDB arrays from Java/Scala byte arrays (bytea/blob)
       case jvm.Type.ArrayOf(inner) =>
         dbType match {
           case db.PgType.Array(innerDb) =>
             Array(jvmType, compute(inner, innerDb))
+          case db.DuckDbType.ListType(innerDb) =>
+            Array(jvmType, compute(inner, innerDb))
+          case db.DuckDbType.ArrayType(innerDb, _) =>
+            Array(jvmType, compute(inner, innerDb))
           case _ =>
-            // bytea and other non-array types that map to Array[Byte] in JVM
+            // bytea/blob and other non-array types that map to Array[Byte] in JVM
             Standard(jvmType, dbType)
         }
 

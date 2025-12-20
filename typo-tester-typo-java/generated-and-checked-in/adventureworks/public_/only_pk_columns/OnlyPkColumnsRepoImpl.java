@@ -56,11 +56,11 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
                 "delete\n"
                     + "from \"public\".\"only_pk_columns\"\n"
                     + "where (\"key_column_1\", \"key_column_2\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(PgTypes.textArray, keyColumn1),
-            Fragment.lit("::text[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, keyColumn2),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -139,11 +139,11 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
                 "select \"key_column_1\", \"key_column_2\"\n"
                     + "from \"public\".\"only_pk_columns\"\n"
                     + "where (\"key_column_1\", \"key_column_2\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(PgTypes.textArray, keyColumn1),
-            Fragment.lit("::text[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, keyColumn2),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(OnlyPkColumnsRow._rowParser.all())
         .runUnchecked(c);
   }

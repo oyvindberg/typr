@@ -1,12 +1,63 @@
 package typo.scaladsl
 
-import typo.runtime.{MariaType, PgType}
+import typo.runtime.{DuckDbType, MariaType, PgType}
 
 import scala.jdk.CollectionConverters.*
 
 /** Scala-friendly DbType instances that use Scala types instead of Java boxed types.
   */
 object ScalaDbTypes {
+  object DuckDbTypes {
+    // Primitives - convert Java boxed types to Scala native types
+    val tinyint: DuckDbType[Byte] = typo.runtime.DuckDbTypes.tinyint.bimap(b => b, b => b)
+    val smallint: DuckDbType[Short] = typo.runtime.DuckDbTypes.smallint.bimap(s => s, s => s)
+    val integer: DuckDbType[Int] = typo.runtime.DuckDbTypes.integer.bimap(i => i, i => i)
+    val bigint: DuckDbType[Long] = typo.runtime.DuckDbTypes.bigint.bimap(l => l, l => l)
+    val float_ : DuckDbType[Float] = typo.runtime.DuckDbTypes.float_.bimap(f => f, f => f)
+    val double_ : DuckDbType[Double] = typo.runtime.DuckDbTypes.double_.bimap(d => d, d => d)
+    val boolean_ : DuckDbType[Boolean] = typo.runtime.DuckDbTypes.boolean_.bimap(b => b, b => b)
+    val bool: DuckDbType[Boolean] = typo.runtime.DuckDbTypes.bool.bimap(b => b, b => b)
+
+    // Unsigned integer types
+    val utinyint: DuckDbType[Short] = typo.runtime.DuckDbTypes.utinyint.bimap(s => s, s => s)
+    val usmallint: DuckDbType[Int] = typo.runtime.DuckDbTypes.usmallint.bimap(i => i, i => i)
+    val uinteger: DuckDbType[Long] = typo.runtime.DuckDbTypes.uinteger.bimap(l => l, l => l)
+
+    // BigDecimal - convert Java BigDecimal to Scala BigDecimal
+    val decimal: DuckDbType[BigDecimal] = typo.runtime.DuckDbTypes.decimal.bimap(jbd => BigDecimal(jbd), sbd => sbd.bigDecimal)
+    val numeric: DuckDbType[BigDecimal] = typo.runtime.DuckDbTypes.numeric.bimap(jbd => BigDecimal(jbd), sbd => sbd.bigDecimal)
+
+    // Array types - convert Java boxed arrays to Scala primitive arrays
+    val booleanArrayUnboxed: DuckDbType[Array[Boolean]] = typo.runtime.DuckDbTypes.booleanArray.bimap(
+      arr => arr.map(_.booleanValue()),
+      arr => arr.map(java.lang.Boolean.valueOf)
+    )
+    val tinyintArrayUnboxed: DuckDbType[Array[Byte]] = typo.runtime.DuckDbTypes.tinyintArray.bimap(
+      arr => arr.map(_.byteValue()),
+      arr => arr.map(java.lang.Byte.valueOf)
+    )
+    val smallintArrayUnboxed: DuckDbType[Array[Short]] = typo.runtime.DuckDbTypes.smallintArray.bimap(
+      arr => arr.map(_.shortValue()),
+      arr => arr.map(java.lang.Short.valueOf)
+    )
+    val integerArrayUnboxed: DuckDbType[Array[Int]] = typo.runtime.DuckDbTypes.integerArray.bimap(
+      arr => arr.map(_.intValue()),
+      arr => arr.map(java.lang.Integer.valueOf)
+    )
+    val bigintArrayUnboxed: DuckDbType[Array[Long]] = typo.runtime.DuckDbTypes.bigintArray.bimap(
+      arr => arr.map(_.longValue()),
+      arr => arr.map(java.lang.Long.valueOf)
+    )
+    val floatArrayUnboxed: DuckDbType[Array[Float]] = typo.runtime.DuckDbTypes.floatArray.bimap(
+      arr => arr.map(_.floatValue()),
+      arr => arr.map(java.lang.Float.valueOf)
+    )
+    val doubleArrayUnboxed: DuckDbType[Array[Double]] = typo.runtime.DuckDbTypes.doubleArray.bimap(
+      arr => arr.map(_.doubleValue()),
+      arr => arr.map(java.lang.Double.valueOf)
+    )
+  }
+
   object PgTypes {
     // Primitives - convert Java boxed types to Scala native types
     val bool: PgType[Boolean] = typo.runtime.PgTypes.bool.bimap(b => b, b => b)

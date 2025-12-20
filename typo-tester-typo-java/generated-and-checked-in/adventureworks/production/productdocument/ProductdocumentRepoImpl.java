@@ -63,11 +63,11 @@ public class ProductdocumentRepoImpl implements ProductdocumentRepo {
                 "delete\n"
                     + "from \"production\".\"productdocument\"\n"
                     + "where (\"productid\", \"documentnode\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(DocumentId.pgTypeArray, documentnode),
-            Fragment.lit("::varchar[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -210,11 +210,11 @@ public class ProductdocumentRepoImpl implements ProductdocumentRepo {
                 "select \"productid\", \"modifieddate\", \"documentnode\"\n"
                     + "from \"production\".\"productdocument\"\n"
                     + "where (\"productid\", \"documentnode\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(DocumentId.pgTypeArray, documentnode),
-            Fragment.lit("::varchar[]))\n"))
+            Fragment.lit("))\n"))
         .query(ProductdocumentRow._rowParser.all())
         .runUnchecked(c);
   }

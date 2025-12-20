@@ -29,7 +29,7 @@ class TestUtdanningstilbudRepoImpl extends TestUtdanningstilbudRepo {
     return interpolate(Fragment.lit("""delete
     from "public"."test_utdanningstilbud"
     where ("organisasjonskode", "utdanningsmulighet_kode")
-    in (select unnest("""), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("""::text[]))
+    in (select * from unnest("""), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode), Fragment.lit(", "), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -66,7 +66,7 @@ class TestUtdanningstilbudRepoImpl extends TestUtdanningstilbudRepo {
     return interpolate(Fragment.lit("""select "organisasjonskode", "utdanningsmulighet_kode"
     from "public"."test_utdanningstilbud"
     where ("organisasjonskode", "utdanningsmulighet_kode")
-    in (select unnest("""), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("""::text[]))
+    in (select * from unnest("""), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode), Fragment.lit(", "), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("""))
     """)).query(TestUtdanningstilbudRow.`_rowParser`.all()).runUnchecked(c)
   }
 

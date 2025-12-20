@@ -36,7 +36,7 @@ class SpecialofferproductRepoImpl() : SpecialofferproductRepo {
   ): Int {
     val specialofferid: Array<SpecialofferId> = arrayMap.map(compositeIds, SpecialofferproductId::specialofferid, SpecialofferId::class.java)
     val productid: Array<ProductId> = arrayMap.map(compositeIds, SpecialofferproductId::productid, ProductId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"specialofferproduct\"\nwhere (\"specialofferid\", \"productid\")\nin (select unnest("), Fragment.encode(SpecialofferId.pgTypeArray, specialofferid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"specialofferproduct\"\nwhere (\"specialofferid\", \"productid\")\nin (select * from unnest("), Fragment.encode(SpecialofferId.pgTypeArray, specialofferid), Fragment.lit(", "), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -97,7 +97,7 @@ class SpecialofferproductRepoImpl() : SpecialofferproductRepo {
   ): List<SpecialofferproductRow> {
     val specialofferid: Array<SpecialofferId> = arrayMap.map(compositeIds, SpecialofferproductId::specialofferid, SpecialofferId::class.java)
     val productid: Array<ProductId> = arrayMap.map(compositeIds, SpecialofferproductId::productid, ProductId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"specialofferid\", \"productid\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"specialofferproduct\"\nwhere (\"specialofferid\", \"productid\")\nin (select unnest("), Fragment.encode(SpecialofferId.pgTypeArray, specialofferid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]))\n")).query(SpecialofferproductRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"specialofferid\", \"productid\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"specialofferproduct\"\nwhere (\"specialofferid\", \"productid\")\nin (select * from unnest("), Fragment.encode(SpecialofferId.pgTypeArray, specialofferid), Fragment.lit(", "), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("))\n")).query(SpecialofferproductRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

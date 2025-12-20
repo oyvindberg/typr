@@ -18,7 +18,6 @@ import typo.runtime.PgText
 import typo.runtime.PgTypes
 import typo.runtime.RowParser
 import typo.runtime.RowParsers
-import typo.runtime.RowParsers.Function25
 
 /** Table: production.product
  * Products sold or used in the manfacturing of sold products.
@@ -152,65 +151,7 @@ case class ProductRow(
 }
 
 object ProductRow {
-  val `_rowParser`: RowParser[ProductRow] = {
-    RowParsers.of(ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text.opt(), PgTypes.int2, PgTypes.int2, PgTypes.numeric, PgTypes.numeric, PgTypes.text.opt(), UnitmeasureId.pgType.opt(), UnitmeasureId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.int4, PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), ProductsubcategoryId.pgType.opt(), ProductmodelId.pgType.opt(), PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.timestamp.opt(), PgTypes.uuid, PgTypes.timestamp, new Function25[ProductId, Name, String, Flag, Flag, Optional[/* max 15 chars */ String], java.lang.Short, java.lang.Short, java.math.BigDecimal, java.math.BigDecimal, Optional[/* max 5 chars */ String], Optional[UnitmeasureId], Optional[UnitmeasureId], Optional[java.math.BigDecimal], Integer, Optional[/* bpchar, max 2 chars */ String], Optional[/* bpchar, max 2 chars */ String], Optional[/* bpchar, max 2 chars */ String], Optional[ProductsubcategoryId], Optional[ProductmodelId], LocalDateTime, Optional[LocalDateTime], Optional[LocalDateTime], UUID, LocalDateTime, ProductRow] {
-      override def apply(
-        t0: ProductId,
-        t1: Name,
-        t2: String,
-        t3: Flag,
-        t4: Flag,
-        t5: Optional[/* max 15 chars */ String],
-        t6: java.lang.Short,
-        t7: java.lang.Short,
-        t8: java.math.BigDecimal,
-        t9: java.math.BigDecimal,
-        t10: Optional[/* max 5 chars */ String],
-        t11: Optional[UnitmeasureId],
-        t12: Optional[UnitmeasureId],
-        t13: Optional[java.math.BigDecimal],
-        t14: Integer,
-        t15: Optional[/* bpchar, max 2 chars */ String],
-        t16: Optional[/* bpchar, max 2 chars */ String],
-        t17: Optional[/* bpchar, max 2 chars */ String],
-        t18: Optional[ProductsubcategoryId],
-        t19: Optional[ProductmodelId],
-        t20: LocalDateTime,
-        t21: Optional[LocalDateTime],
-        t22: Optional[LocalDateTime],
-        t23: UUID,
-        t24: LocalDateTime
-      ): ProductRow = {
-        new ProductRow(
-          t0,
-          t1,
-          t2,
-          t3,
-          t4,
-          t5,
-          t6,
-          t7,
-          t8,
-          t9,
-          t10,
-          t11,
-          t12,
-          t13,
-          t14,
-          t15,
-          t16,
-          t17,
-          t18,
-          t19,
-          t20,
-          t21,
-          t22,
-          t23,
-          t24
-        )
-      }
-    }, row => Array[Any](row.productid, row.name, row.productnumber, row.makeflag, row.finishedgoodsflag, row.color, row.safetystocklevel, row.reorderpoint, row.standardcost, row.listprice, row.size, row.sizeunitmeasurecode, row.weightunitmeasurecode, row.weight, row.daystomanufacture, row.productline, row.`class`, row.style, row.productsubcategoryid, row.productmodelid, row.sellstartdate, row.sellenddate, row.discontinueddate, row.rowguid, row.modifieddate))
-  }
+  val `_rowParser`: RowParser[ProductRow] = RowParsers.of(ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text.opt(), PgTypes.int2, PgTypes.int2, PgTypes.numeric, PgTypes.numeric, PgTypes.text.opt(), UnitmeasureId.pgType.opt(), UnitmeasureId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.int4, PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), ProductsubcategoryId.pgType.opt(), ProductmodelId.pgType.opt(), PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.timestamp.opt(), PgTypes.uuid, PgTypes.timestamp, ProductRow.apply, row => Array[Any](row.productid, row.name, row.productnumber, row.makeflag, row.finishedgoodsflag, row.color, row.safetystocklevel, row.reorderpoint, row.standardcost, row.listprice, row.size, row.sizeunitmeasurecode, row.weightunitmeasurecode, row.weight, row.daystomanufacture, row.productline, row.`class`, row.style, row.productsubcategoryid, row.productmodelid, row.sellstartdate, row.sellenddate, row.discontinueddate, row.rowguid, row.modifieddate))
 
   given pgText: PgText[ProductRow] = PgText.from(`_rowParser`)
 }
