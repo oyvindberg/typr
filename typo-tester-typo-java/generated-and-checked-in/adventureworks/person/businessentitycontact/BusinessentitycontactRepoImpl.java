@@ -70,13 +70,13 @@ public class BusinessentitycontactRepoImpl implements BusinessentitycontactRepo 
                 "delete\n"
                     + "from \"person\".\"businessentitycontact\"\n"
                     + "where (\"businessentityid\", \"personid\", \"contacttypeid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(BusinessentityId.pgTypeArray, personid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ContacttypeId.pgTypeArray, contacttypeid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -251,13 +251,13 @@ public class BusinessentitycontactRepoImpl implements BusinessentitycontactRepo 
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"businessentitycontact\"\n"
                     + "where (\"businessentityid\", \"personid\", \"contacttypeid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(BusinessentityId.pgTypeArray, personid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ContacttypeId.pgTypeArray, contacttypeid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(BusinessentitycontactRow._rowParser.all())
         .runUnchecked(c);
   }

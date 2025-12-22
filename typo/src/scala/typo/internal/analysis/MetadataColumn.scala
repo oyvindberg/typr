@@ -29,7 +29,8 @@ case class MetadataColumn(
     precision: Int,
     scale: Int,
     schemaName: Option[String],
-    tableName: Option[String]
+    tableName: Option[String],
+    isExpression: Boolean = false // True if this is a computed expression (not a direct column reference)
 ) {
   def name: db.ColName = parsedColumnName.name
 }

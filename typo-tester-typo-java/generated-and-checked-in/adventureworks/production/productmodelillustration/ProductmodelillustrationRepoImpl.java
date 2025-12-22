@@ -66,11 +66,11 @@ public class ProductmodelillustrationRepoImpl implements Productmodelillustratio
                 "delete\n"
                     + "from \"production\".\"productmodelillustration\"\n"
                     + "where (\"productmodelid\", \"illustrationid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductmodelId.pgTypeArray, productmodelid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(IllustrationId.pgTypeArray, illustrationid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -218,11 +218,11 @@ public class ProductmodelillustrationRepoImpl implements Productmodelillustratio
                 "select \"productmodelid\", \"illustrationid\", \"modifieddate\"\n"
                     + "from \"production\".\"productmodelillustration\"\n"
                     + "where (\"productmodelid\", \"illustrationid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductmodelId.pgTypeArray, productmodelid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(IllustrationId.pgTypeArray, illustrationid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(ProductmodelillustrationRow._rowParser.all())
         .runUnchecked(c);
   }

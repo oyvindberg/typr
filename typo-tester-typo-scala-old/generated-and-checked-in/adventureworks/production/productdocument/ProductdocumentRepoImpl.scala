@@ -31,7 +31,7 @@ class ProductdocumentRepoImpl extends ProductdocumentRepo {
     return interpolate(Fragment.lit("""delete
     from "production"."productdocument"
     where ("productid", "documentnode")
-    in (select unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(DocumentId.pgTypeArray, documentnode), Fragment.lit("""::varchar[]))
+    in (select * from unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(DocumentId.pgTypeArray, documentnode), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -96,7 +96,7 @@ class ProductdocumentRepoImpl extends ProductdocumentRepo {
     return interpolate(Fragment.lit("""select "productid", "modifieddate", "documentnode"
     from "production"."productdocument"
     where ("productid", "documentnode")
-    in (select unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(DocumentId.pgTypeArray, documentnode), Fragment.lit("""::varchar[]))
+    in (select * from unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(DocumentId.pgTypeArray, documentnode), Fragment.lit("""))
     """)).query(ProductdocumentRow.`_rowParser`.all()).runUnchecked(c)
   }
 

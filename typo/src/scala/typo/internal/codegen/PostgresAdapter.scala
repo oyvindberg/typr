@@ -178,6 +178,8 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
     }
   }
 
+  def textType: db.Type = db.PgType.Text
+
   private def lookupByDbType(dbType: db.Type, naming: Naming, typeSupport: TypeSupport): Code = {
     // Helper to get primitive type code based on language
     def primitiveType(name: String): Code = {
@@ -277,8 +279,8 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
             code"${lookupByDbType(inner, naming, TypeSupportJava)}Array"
         }
 
-      case _: db.MariaType =>
-        sys.error(s"PostgresAdapter.lookupByDbType: Cannot lookup MariaDB type in PostgreSQL adapter")
+      case _ =>
+        sys.error(s"PostgresAdapter.lookupByDbType: Cannot lookup db type from another database")
     }
   }
 

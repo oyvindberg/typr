@@ -24,7 +24,7 @@ case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
   salestotal: Option[BigDecimal],
-  fiscalyear: BigDecimal
+  fiscalyear: Double
 )
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
@@ -38,7 +38,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
             jobtitle = JdbcDecoder.stringDecoder.unsafeDecode(columIndex + 2, rs)._2,
             salesterritory = Name.jdbcDecoder.unsafeDecode(columIndex + 3, rs)._2,
             salestotal = JdbcDecoder.optionDecoder(using JdbcDecoder.bigDecimalDecoderScala).unsafeDecode(columIndex + 4, rs)._2,
-            fiscalyear = JdbcDecoder.bigDecimalDecoderScala.unsafeDecode(columIndex + 5, rs)._2
+            fiscalyear = JdbcDecoder.doubleDecoder.unsafeDecode(columIndex + 5, rs)._2
           )
     }
   }
@@ -50,7 +50,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
       val jobtitle = jsonObj.get("jobtitle").toRight("Missing field 'jobtitle'").flatMap(_.as(using JsonDecoder.string))
       val salesterritory = jsonObj.get("salesterritory").toRight("Missing field 'salesterritory'").flatMap(_.as(using Name.jsonDecoder))
       val salestotal = jsonObj.get("salestotal").fold[Either[String, Option[BigDecimal]]](Right(None))(_.as(using JsonDecoder.option(using JsonDecoder.scalaBigDecimal)))
-      val fiscalyear = jsonObj.get("fiscalyear").toRight("Missing field 'fiscalyear'").flatMap(_.as(using JsonDecoder.scalaBigDecimal))
+      val fiscalyear = jsonObj.get("fiscalyear").toRight("Missing field 'fiscalyear'").flatMap(_.as(using JsonDecoder.double))
       if (salespersonid.isRight && fullname.isRight && jobtitle.isRight && salesterritory.isRight && salestotal.isRight && fiscalyear.isRight)
         Right(VsalespersonsalesbyfiscalyearsdataViewRow(salespersonid = salespersonid.toOption.get, fullname = fullname.toOption.get, jobtitle = jobtitle.toOption.get, salesterritory = salesterritory.toOption.get, salestotal = salestotal.toOption.get, fiscalyear = fiscalyear.toOption.get))
       else Left(List[Either[String, Any]](salespersonid, fullname, jobtitle, salesterritory, salestotal, fiscalyear).flatMap(_.left.toOption).mkString(", "))
@@ -77,7 +77,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
         JsonEncoder.option(using JsonEncoder.scalaBigDecimal).unsafeEncode(a.salestotal, indent, out)
         out.write(",")
         out.write(""""fiscalyear":""")
-        JsonEncoder.scalaBigDecimal.unsafeEncode(a.fiscalyear, indent, out)
+        JsonEncoder.double.unsafeEncode(a.fiscalyear, indent, out)
         out.write("}")
       }
     }

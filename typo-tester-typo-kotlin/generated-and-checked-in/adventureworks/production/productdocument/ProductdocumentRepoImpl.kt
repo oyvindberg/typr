@@ -36,7 +36,7 @@ class ProductdocumentRepoImpl() : ProductdocumentRepo {
   ): Int {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductdocumentId::productid, ProductId::class.java)
     val documentnode: Array<DocumentId> = arrayMap.map(compositeIds, ProductdocumentId::documentnode, DocumentId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productdocument\"\nwhere (\"productid\", \"documentnode\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(DocumentId.pgTypeArray, documentnode), Fragment.lit("::varchar[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productdocument\"\nwhere (\"productid\", \"documentnode\")\nin (select * from unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(DocumentId.pgTypeArray, documentnode), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -95,7 +95,7 @@ class ProductdocumentRepoImpl() : ProductdocumentRepo {
   ): List<ProductdocumentRow> {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductdocumentId::productid, ProductId::class.java)
     val documentnode: Array<DocumentId> = arrayMap.map(compositeIds, ProductdocumentId::documentnode, DocumentId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"productid\", \"modifieddate\", \"documentnode\"\nfrom \"production\".\"productdocument\"\nwhere (\"productid\", \"documentnode\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(DocumentId.pgTypeArray, documentnode), Fragment.lit("::varchar[]))\n")).query(ProductdocumentRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"productid\", \"modifieddate\", \"documentnode\"\nfrom \"production\".\"productdocument\"\nwhere (\"productid\", \"documentnode\")\nin (select * from unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(DocumentId.pgTypeArray, documentnode), Fragment.lit("))\n")).query(ProductdocumentRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

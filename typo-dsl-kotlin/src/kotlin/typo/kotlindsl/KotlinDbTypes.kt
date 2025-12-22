@@ -1,5 +1,6 @@
 package typo.kotlindsl
 
+import typo.runtime.DuckDbType
 import typo.runtime.MariaType
 import typo.runtime.PgType
 import typo.runtime.SqlFunction
@@ -103,6 +104,60 @@ object KotlinDbTypes {
             { it }
         )
         val bit1: MariaType<Boolean> = typo.runtime.MariaTypes.bit1.bimap(
+            SqlFunction { it },
+            { it }
+        )
+    }
+
+    object DuckDbTypes {
+        // Signed integers
+        val tinyint: DuckDbType<Byte> = typo.runtime.DuckDbTypes.tinyint.bimap(
+            SqlFunction { it },
+            { it }
+        )
+        val smallint: DuckDbType<Short> = typo.runtime.DuckDbTypes.smallint.bimap(
+            SqlFunction { it },
+            { it }
+        )
+        val integer: DuckDbType<Int> = typo.runtime.DuckDbTypes.integer.bimap(
+            SqlFunction { it },
+            { it }
+        )
+        val bigint: DuckDbType<Long> = typo.runtime.DuckDbTypes.bigint.bimap(
+            SqlFunction { it },
+            { it }
+        )
+
+        // Unsigned integers
+        val utinyint: DuckDbType<Short> = typo.runtime.DuckDbTypes.utinyint.bimap(
+            SqlFunction { it },
+            { it }
+        )
+        val usmallint: DuckDbType<Int> = typo.runtime.DuckDbTypes.usmallint.bimap(
+            SqlFunction { it },
+            { it }
+        )
+        val uinteger: DuckDbType<Long> = typo.runtime.DuckDbTypes.uinteger.bimap(
+            SqlFunction { it },
+            { it }
+        )
+
+        // Floating point
+        val float_: DuckDbType<Float> = typo.runtime.DuckDbTypes.float_.bimap(
+            SqlFunction { it },
+            { it }
+        )
+        val double_: DuckDbType<Double> = typo.runtime.DuckDbTypes.double_.bimap(
+            SqlFunction { it },
+            { it }
+        )
+
+        // Boolean
+        val boolean_: DuckDbType<Boolean> = typo.runtime.DuckDbTypes.boolean_.bimap(
+            SqlFunction { it },
+            { it }
+        )
+        val bool: DuckDbType<Boolean> = typo.runtime.DuckDbTypes.bool.bimap(
             SqlFunction { it },
             { it }
         )

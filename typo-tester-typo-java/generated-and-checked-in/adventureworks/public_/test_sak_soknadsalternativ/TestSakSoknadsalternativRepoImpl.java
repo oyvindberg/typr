@@ -64,11 +64,11 @@ public class TestSakSoknadsalternativRepoImpl implements TestSakSoknadsalternati
                 "delete\n"
                     + "from \"public\".\"test_sak_soknadsalternativ\"\n"
                     + "where (\"organisasjonskode_saksbehandler\", \"utdanningsmulighet_kode\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(PgTypes.textArray, organisasjonskodeSaksbehandler),
-            Fragment.lit("::text[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.textArray, utdanningsmulighetKode),
-            Fragment.lit("::text[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -166,11 +166,11 @@ public class TestSakSoknadsalternativRepoImpl implements TestSakSoknadsalternati
                     + " \"organisasjonskode_tilbyder\"\n"
                     + "from \"public\".\"test_sak_soknadsalternativ\"\n"
                     + "where (\"organisasjonskode_saksbehandler\", \"utdanningsmulighet_kode\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(PgTypes.textArray, organisasjonskodeSaksbehandler),
-            Fragment.lit("::text[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.textArray, utdanningsmulighetKode),
-            Fragment.lit("::text[]))\n"))
+            Fragment.lit("))\n"))
         .query(TestSakSoknadsalternativRow._rowParser.all())
         .runUnchecked(c);
   }

@@ -29,7 +29,7 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
     return interpolate(Fragment.lit("""delete
     from "public"."test_sak_soknadsalternativ"
     where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-    in (select unnest("""), Fragment.encode(PgTypes.textArray, organisasjonskodeSaksbehandler), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("""::text[]))
+    in (select * from unnest("""), Fragment.encode(PgTypes.textArray, organisasjonskodeSaksbehandler), Fragment.lit(", "), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -66,7 +66,7 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
     return interpolate(Fragment.lit("""select "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
     from "public"."test_sak_soknadsalternativ"
     where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-    in (select unnest("""), Fragment.encode(PgTypes.textArray, organisasjonskodeSaksbehandler), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("""::text[]))
+    in (select * from unnest("""), Fragment.encode(PgTypes.textArray, organisasjonskodeSaksbehandler), Fragment.lit(", "), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("""))
     """)).query(TestSakSoknadsalternativRow.`_rowParser`.all()).runUnchecked(c)
   }
 

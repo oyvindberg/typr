@@ -30,7 +30,7 @@ class SpecialofferproductRepoImpl extends SpecialofferproductRepo {
     return sql"""delete
     from "sales"."specialofferproduct"
     where ("specialofferid", "productid")
-    in (select unnest(${Fragment.encode(SpecialofferId.pgTypeArray, specialofferid)}::int4[]), unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(SpecialofferId.pgTypeArray, specialofferid)}, ${Fragment.encode(ProductId.pgTypeArray, productid)}))
     """.update().runUnchecked(c)
   }
 
@@ -97,7 +97,7 @@ class SpecialofferproductRepoImpl extends SpecialofferproductRepo {
     return sql"""select "specialofferid", "productid", "rowguid", "modifieddate"
     from "sales"."specialofferproduct"
     where ("specialofferid", "productid")
-    in (select unnest(${Fragment.encode(SpecialofferId.pgTypeArray, specialofferid)}::int4[]), unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(SpecialofferId.pgTypeArray, specialofferid)}, ${Fragment.encode(ProductId.pgTypeArray, productid)}))
     """.query(SpecialofferproductRow.`_rowParser`.all()).runUnchecked(c)
   }
 

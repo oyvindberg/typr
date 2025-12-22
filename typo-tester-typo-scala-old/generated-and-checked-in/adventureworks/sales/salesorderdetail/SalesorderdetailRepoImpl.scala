@@ -32,7 +32,7 @@ class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
     return interpolate(Fragment.lit("""delete
     from "sales"."salesorderdetail"
     where ("salesorderid", "salesorderdetailid")
-    in (select unnest("""), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, salesorderdetailid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, salesorderdetailid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -115,7 +115,7 @@ class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
     return interpolate(Fragment.lit("""select "salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate"
     from "sales"."salesorderdetail"
     where ("salesorderid", "salesorderdetailid")
-    in (select unnest("""), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, salesorderdetailid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, salesorderdetailid), Fragment.lit("""))
     """)).query(SalesorderdetailRow.`_rowParser`.all()).runUnchecked(c)
   }
 

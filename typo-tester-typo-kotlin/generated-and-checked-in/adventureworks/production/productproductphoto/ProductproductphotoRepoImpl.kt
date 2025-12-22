@@ -37,7 +37,7 @@ class ProductproductphotoRepoImpl() : ProductproductphotoRepo {
   ): Int {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductproductphotoId::productid, ProductId::class.java)
     val productphotoid: Array<ProductphotoId> = arrayMap.map(compositeIds, ProductproductphotoId::productphotoid, ProductphotoId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productproductphoto\"\nwhere (\"productid\", \"productphotoid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductphotoId.pgTypeArray, productphotoid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productproductphoto\"\nwhere (\"productid\", \"productphotoid\")\nin (select * from unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(ProductphotoId.pgTypeArray, productphotoid), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -98,7 +98,7 @@ class ProductproductphotoRepoImpl() : ProductproductphotoRepo {
   ): List<ProductproductphotoRow> {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductproductphotoId::productid, ProductId::class.java)
     val productphotoid: Array<ProductphotoId> = arrayMap.map(compositeIds, ProductproductphotoId::productphotoid, ProductphotoId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"productid\", \"productphotoid\", \"primary\", \"modifieddate\"\nfrom \"production\".\"productproductphoto\"\nwhere (\"productid\", \"productphotoid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductphotoId.pgTypeArray, productphotoid), Fragment.lit("::int4[]))\n")).query(ProductproductphotoRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"productid\", \"productphotoid\", \"primary\", \"modifieddate\"\nfrom \"production\".\"productproductphoto\"\nwhere (\"productid\", \"productphotoid\")\nin (select * from unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(ProductphotoId.pgTypeArray, productphotoid), Fragment.lit("))\n")).query(ProductproductphotoRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

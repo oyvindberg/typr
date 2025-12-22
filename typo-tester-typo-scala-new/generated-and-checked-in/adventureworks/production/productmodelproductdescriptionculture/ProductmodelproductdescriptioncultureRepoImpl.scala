@@ -32,7 +32,7 @@ class ProductmodelproductdescriptioncultureRepoImpl extends Productmodelproductd
     return sql"""delete
     from "production"."productmodelproductdescriptionculture"
     where ("productmodelid", "productdescriptionid", "cultureid")
-    in (select unnest(${Fragment.encode(ProductmodelId.pgTypeArray, productmodelid)}::int4[]), unnest(${Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid)}::int4[]), unnest(${Fragment.encode(CultureId.pgTypeArray, cultureid)}::bpchar[]))
+    in (select * from unnest(${Fragment.encode(ProductmodelId.pgTypeArray, productmodelid)}, ${Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid)}, ${Fragment.encode(CultureId.pgTypeArray, cultureid)}))
     """.update().runUnchecked(c)
   }
 
@@ -98,7 +98,7 @@ class ProductmodelproductdescriptioncultureRepoImpl extends Productmodelproductd
     return sql"""select "productmodelid", "productdescriptionid", "cultureid", "modifieddate"
     from "production"."productmodelproductdescriptionculture"
     where ("productmodelid", "productdescriptionid", "cultureid")
-    in (select unnest(${Fragment.encode(ProductmodelId.pgTypeArray, productmodelid)}::int4[]), unnest(${Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid)}::int4[]), unnest(${Fragment.encode(CultureId.pgTypeArray, cultureid)}::bpchar[]))
+    in (select * from unnest(${Fragment.encode(ProductmodelId.pgTypeArray, productmodelid)}, ${Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid)}, ${Fragment.encode(CultureId.pgTypeArray, cultureid)}))
     """.query(ProductmodelproductdescriptioncultureRow.`_rowParser`.all()).runUnchecked(c)
   }
 

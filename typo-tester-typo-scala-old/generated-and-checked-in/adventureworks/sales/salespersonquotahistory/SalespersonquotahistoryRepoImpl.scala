@@ -31,7 +31,7 @@ class SalespersonquotahistoryRepoImpl extends SalespersonquotahistoryRepo {
     return interpolate(Fragment.lit("""delete
     from "sales"."salespersonquotahistory"
     where ("businessentityid", "quotadate")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, quotadate), Fragment.lit("""::timestamp[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, quotadate), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -100,7 +100,7 @@ class SalespersonquotahistoryRepoImpl extends SalespersonquotahistoryRepo {
     return interpolate(Fragment.lit("""select "businessentityid", "quotadate", "salesquota", "rowguid", "modifieddate"
     from "sales"."salespersonquotahistory"
     where ("businessentityid", "quotadate")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, quotadate), Fragment.lit("""::timestamp[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, quotadate), Fragment.lit("""))
     """)).query(SalespersonquotahistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

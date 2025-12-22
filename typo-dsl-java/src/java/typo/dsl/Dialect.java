@@ -122,4 +122,34 @@ public interface Dialect {
           return alias + "." + quotedColumn;
         }
       };
+
+  /**
+   * DuckDB dialect - uses double quotes for identifiers and :: for casts (PostgreSQL-compatible).
+   */
+  Dialect DUCKDB =
+      new Dialect() {
+        @Override
+        public String quoteIdent(String name) {
+          return "\"" + name + "\"";
+        }
+
+        @Override
+        public String escapeIdent(String name) {
+          return name.replace("\"", "\"\"");
+        }
+
+        @Override
+        public Fragment typeCast(Fragment value, String typeName) {
+          if (typeName == null || typeName.isEmpty()) {
+            return value;
+          }
+          return value.append(Fragment.lit("::" + typeName));
+        }
+
+        @Override
+        public String columnRef(String alias, String quotedColumn) {
+          // DuckDB uses simple alias."column" format (not PostgreSQL's (alias)."column")
+          return alias + "." + quotedColumn;
+        }
+      };
 }

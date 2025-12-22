@@ -75,6 +75,7 @@ package object scaladsl {
   object Dialect {
     val POSTGRESQL: typo.dsl.Dialect = typo.dsl.Dialect.POSTGRESQL
     val MARIADB: typo.dsl.Dialect = typo.dsl.Dialect.MARIADB
+    val DUCKDB: typo.dsl.Dialect = typo.dsl.Dialect.DUCKDB
   }
 
   // Bijection companion object with factory methods
@@ -87,5 +88,11 @@ package object scaladsl {
 
     def identity[T](): typo.dsl.Bijection[T, T] =
       typo.dsl.Bijection.identity[T]()
+
+    def asString: typo.dsl.Bijection[String, String] =
+      typo.dsl.Bijection.asString()
+
+    def asBool: typo.dsl.Bijection[java.lang.Boolean, java.lang.Boolean] =
+      typo.dsl.Bijection.asBool()
   }
 }

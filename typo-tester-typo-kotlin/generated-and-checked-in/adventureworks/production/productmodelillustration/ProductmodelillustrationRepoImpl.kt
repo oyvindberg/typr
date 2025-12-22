@@ -36,7 +36,7 @@ class ProductmodelillustrationRepoImpl() : ProductmodelillustrationRepo {
   ): Int {
     val productmodelid: Array<ProductmodelId> = arrayMap.map(compositeIds, ProductmodelillustrationId::productmodelid, ProductmodelId::class.java)
     val illustrationid: Array<IllustrationId> = arrayMap.map(compositeIds, ProductmodelillustrationId::illustrationid, IllustrationId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productmodelillustration\"\nwhere (\"productmodelid\", \"illustrationid\")\nin (select unnest("), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit("::int4[]), unnest("), Fragment.encode(IllustrationId.pgTypeArray, illustrationid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productmodelillustration\"\nwhere (\"productmodelid\", \"illustrationid\")\nin (select * from unnest("), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit(", "), Fragment.encode(IllustrationId.pgTypeArray, illustrationid), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -92,7 +92,7 @@ class ProductmodelillustrationRepoImpl() : ProductmodelillustrationRepo {
   ): List<ProductmodelillustrationRow> {
     val productmodelid: Array<ProductmodelId> = arrayMap.map(compositeIds, ProductmodelillustrationId::productmodelid, ProductmodelId::class.java)
     val illustrationid: Array<IllustrationId> = arrayMap.map(compositeIds, ProductmodelillustrationId::illustrationid, IllustrationId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"productmodelid\", \"illustrationid\", \"modifieddate\"\nfrom \"production\".\"productmodelillustration\"\nwhere (\"productmodelid\", \"illustrationid\")\nin (select unnest("), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit("::int4[]), unnest("), Fragment.encode(IllustrationId.pgTypeArray, illustrationid), Fragment.lit("::int4[]))\n")).query(ProductmodelillustrationRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"productmodelid\", \"illustrationid\", \"modifieddate\"\nfrom \"production\".\"productmodelillustration\"\nwhere (\"productmodelid\", \"illustrationid\")\nin (select * from unnest("), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit(", "), Fragment.encode(IllustrationId.pgTypeArray, illustrationid), Fragment.lit("))\n")).query(ProductmodelillustrationRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

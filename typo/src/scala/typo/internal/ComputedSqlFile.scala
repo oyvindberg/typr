@@ -44,7 +44,10 @@ case class ComputedSqlFile(
           }
 
         // we let types flow through constraints down to this column, the point is to reuse id types downstream
-        val typeFromFk: Option[jvm.Type] = findTypeFromFk(logger, source, col.name, pointsTo, eval, lang)(_ => None)
+        // BUT: only for actual column references, not computed expressions (is_expression from sqlglot)
+        val typeFromFk: Option[jvm.Type] =
+          if (col.isExpression) None // Computed expression, don't use FK type inference
+          else findTypeFromFk(logger, source, col.name, pointsTo, eval, lang)(_ => None)
 
         val tpe = scalaTypeMapper.sqlFile(col.parsedColumnName.overriddenJvmType(lang).orElse(typeFromFk), dbType, nullability)
 

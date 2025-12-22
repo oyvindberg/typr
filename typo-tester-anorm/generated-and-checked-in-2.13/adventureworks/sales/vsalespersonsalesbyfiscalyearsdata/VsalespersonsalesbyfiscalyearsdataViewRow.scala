@@ -29,7 +29,7 @@ case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
   salestotal: Option[BigDecimal],
-  fiscalyear: BigDecimal
+  fiscalyear: Double
 )
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
@@ -42,7 +42,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
             jobtitle = json.\("jobtitle").as(Reads.StringReads),
             salesterritory = json.\("salesterritory").as(Name.reads),
             salestotal = json.\("salestotal").toOption.map(_.as(Reads.bigDecReads)),
-            fiscalyear = json.\("fiscalyear").as(Reads.bigDecReads)
+            fiscalyear = json.\("fiscalyear").as(Reads.DoubleReads)
           )
         )
       ),
@@ -58,7 +58,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
           jobtitle = row(idx + 2)(Column.columnToString),
           salesterritory = row(idx + 3)(Name.column),
           salestotal = row(idx + 4)(Column.columnToOption(Column.columnToScalaBigDecimal)),
-          fiscalyear = row(idx + 5)(Column.columnToScalaBigDecimal)
+          fiscalyear = row(idx + 5)(Column.columnToDouble)
         )
       )
     }
@@ -72,7 +72,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
         "jobtitle" -> Writes.StringWrites.writes(o.jobtitle),
         "salesterritory" -> Name.writes.writes(o.salesterritory),
         "salestotal" -> Writes.OptionWrites(Writes.BigDecimalWrites).writes(o.salestotal),
-        "fiscalyear" -> Writes.BigDecimalWrites.writes(o.fiscalyear)
+        "fiscalyear" -> Writes.DoubleWrites.writes(o.fiscalyear)
       ))
     )
   }

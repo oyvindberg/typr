@@ -37,7 +37,7 @@ class ProductcosthistoryRepoImpl() : ProductcosthistoryRepo {
   ): Int {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductcosthistoryId::productid, ProductId::class.java)
     val startdate: Array<LocalDateTime> = arrayMap.map(compositeIds, ProductcosthistoryId::startdate, LocalDateTime::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productcosthistory\"\nwhere (\"productid\", \"startdate\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("::timestamp[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productcosthistory\"\nwhere (\"productid\", \"startdate\")\nin (select * from unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -97,7 +97,7 @@ class ProductcosthistoryRepoImpl() : ProductcosthistoryRepo {
   ): List<ProductcosthistoryRow> {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductcosthistoryId::productid, ProductId::class.java)
     val startdate: Array<LocalDateTime> = arrayMap.map(compositeIds, ProductcosthistoryId::startdate, LocalDateTime::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"productid\", \"startdate\", \"enddate\", \"standardcost\", \"modifieddate\"\nfrom \"production\".\"productcosthistory\"\nwhere (\"productid\", \"startdate\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("::timestamp[]))\n")).query(ProductcosthistoryRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"productid\", \"startdate\", \"enddate\", \"standardcost\", \"modifieddate\"\nfrom \"production\".\"productcosthistory\"\nwhere (\"productid\", \"startdate\")\nin (select * from unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("))\n")).query(ProductcosthistoryRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

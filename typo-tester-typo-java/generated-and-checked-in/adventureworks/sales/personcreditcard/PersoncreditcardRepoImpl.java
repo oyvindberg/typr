@@ -64,11 +64,11 @@ public class PersoncreditcardRepoImpl implements PersoncreditcardRepo {
                 "delete\n"
                     + "from \"sales\".\"personcreditcard\"\n"
                     + "where (\"businessentityid\", \"creditcardid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -214,11 +214,11 @@ public class PersoncreditcardRepoImpl implements PersoncreditcardRepo {
                 "select \"businessentityid\", \"creditcardid\", \"modifieddate\"\n"
                     + "from \"sales\".\"personcreditcard\"\n"
                     + "where (\"businessentityid\", \"creditcardid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(PersoncreditcardRow._rowParser.all())
         .runUnchecked(c);
   }

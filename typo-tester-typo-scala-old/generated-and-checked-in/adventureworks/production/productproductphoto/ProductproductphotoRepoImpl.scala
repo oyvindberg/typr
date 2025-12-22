@@ -32,7 +32,7 @@ class ProductproductphotoRepoImpl extends ProductproductphotoRepo {
     return interpolate(Fragment.lit("""delete
     from "production"."productproductphoto"
     where ("productid", "productphotoid")
-    in (select unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductphotoId.pgTypeArray, productphotoid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(ProductphotoId.pgTypeArray, productphotoid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -99,7 +99,7 @@ class ProductproductphotoRepoImpl extends ProductproductphotoRepo {
     return interpolate(Fragment.lit("""select "productid", "productphotoid", "primary", "modifieddate"
     from "production"."productproductphoto"
     where ("productid", "productphotoid")
-    in (select unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductphotoId.pgTypeArray, productphotoid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(ProductphotoId.pgTypeArray, productphotoid), Fragment.lit("""))
     """)).query(ProductproductphotoRow.`_rowParser`.all()).runUnchecked(c)
   }
 

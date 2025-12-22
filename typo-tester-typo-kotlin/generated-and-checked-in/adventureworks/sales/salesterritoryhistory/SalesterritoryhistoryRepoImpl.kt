@@ -39,7 +39,7 @@ class SalesterritoryhistoryRepoImpl() : SalesterritoryhistoryRepo {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, SalesterritoryhistoryId::businessentityid, BusinessentityId::class.java)
     val startdate: Array<LocalDateTime> = arrayMap.map(compositeIds, SalesterritoryhistoryId::startdate, LocalDateTime::class.java)
     val territoryid: Array<SalesterritoryId> = arrayMap.map(compositeIds, SalesterritoryhistoryId::territoryid, SalesterritoryId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"salesterritoryhistory\"\nwhere (\"businessentityid\", \"startdate\", \"territoryid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("::timestamp[]), unnest("), Fragment.encode(SalesterritoryId.pgTypeArray, territoryid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"salesterritoryhistory\"\nwhere (\"businessentityid\", \"startdate\", \"territoryid\")\nin (select * from unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit(", "), Fragment.encode(SalesterritoryId.pgTypeArray, territoryid), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -105,7 +105,7 @@ class SalesterritoryhistoryRepoImpl() : SalesterritoryhistoryRepo {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, SalesterritoryhistoryId::businessentityid, BusinessentityId::class.java)
     val startdate: Array<LocalDateTime> = arrayMap.map(compositeIds, SalesterritoryhistoryId::startdate, LocalDateTime::class.java)
     val territoryid: Array<SalesterritoryId> = arrayMap.map(compositeIds, SalesterritoryhistoryId::territoryid, SalesterritoryId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"territoryid\", \"startdate\", \"enddate\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salesterritoryhistory\"\nwhere (\"businessentityid\", \"startdate\", \"territoryid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("::timestamp[]), unnest("), Fragment.encode(SalesterritoryId.pgTypeArray, territoryid), Fragment.lit("::int4[]))\n")).query(SalesterritoryhistoryRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"territoryid\", \"startdate\", \"enddate\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salesterritoryhistory\"\nwhere (\"businessentityid\", \"startdate\", \"territoryid\")\nin (select * from unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit(", "), Fragment.encode(SalesterritoryId.pgTypeArray, territoryid), Fragment.lit("))\n")).query(SalesterritoryhistoryRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

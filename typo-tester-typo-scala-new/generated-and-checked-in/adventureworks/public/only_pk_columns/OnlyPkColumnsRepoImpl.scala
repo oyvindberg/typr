@@ -28,7 +28,7 @@ class OnlyPkColumnsRepoImpl extends OnlyPkColumnsRepo {
     return sql"""delete
     from "public"."only_pk_columns"
     where ("key_column_1", "key_column_2")
-    in (select unnest(${Fragment.encode(PgTypes.textArray, keyColumn1)}::text[]), unnest(${Fragment.encode(PgTypes.int4ArrayUnboxed, keyColumn2)}::int4[]))
+    in (select * from unnest(${Fragment.encode(PgTypes.textArray, keyColumn1)}, ${Fragment.encode(PgTypes.int4ArrayUnboxed, keyColumn2)}))
     """.update().runUnchecked(c)
   }
 
@@ -65,7 +65,7 @@ class OnlyPkColumnsRepoImpl extends OnlyPkColumnsRepo {
     return sql"""select "key_column_1", "key_column_2"
     from "public"."only_pk_columns"
     where ("key_column_1", "key_column_2")
-    in (select unnest(${Fragment.encode(PgTypes.textArray, keyColumn1)}::text[]), unnest(${Fragment.encode(PgTypes.int4ArrayUnboxed, keyColumn2)}::int4[]))
+    in (select * from unnest(${Fragment.encode(PgTypes.textArray, keyColumn1)}, ${Fragment.encode(PgTypes.int4ArrayUnboxed, keyColumn2)}))
     """.query(OnlyPkColumnsRow.`_rowParser`.all()).runUnchecked(c)
   }
 

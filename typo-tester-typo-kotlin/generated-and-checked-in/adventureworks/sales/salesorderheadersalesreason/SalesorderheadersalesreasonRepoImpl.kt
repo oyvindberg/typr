@@ -36,7 +36,7 @@ class SalesorderheadersalesreasonRepoImpl() : SalesorderheadersalesreasonRepo {
   ): Int {
     val salesorderid: Array<SalesorderheaderId> = arrayMap.map(compositeIds, SalesorderheadersalesreasonId::salesorderid, SalesorderheaderId::class.java)
     val salesreasonid: Array<SalesreasonId> = arrayMap.map(compositeIds, SalesorderheadersalesreasonId::salesreasonid, SalesreasonId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"salesorderheadersalesreason\"\nwhere (\"salesorderid\", \"salesreasonid\")\nin (select unnest("), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"salesorderheadersalesreason\"\nwhere (\"salesorderid\", \"salesreasonid\")\nin (select * from unnest("), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit(", "), Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -92,7 +92,7 @@ class SalesorderheadersalesreasonRepoImpl() : SalesorderheadersalesreasonRepo {
   ): List<SalesorderheadersalesreasonRow> {
     val salesorderid: Array<SalesorderheaderId> = arrayMap.map(compositeIds, SalesorderheadersalesreasonId::salesorderid, SalesorderheaderId::class.java)
     val salesreasonid: Array<SalesreasonId> = arrayMap.map(compositeIds, SalesorderheadersalesreasonId::salesreasonid, SalesreasonId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"salesorderid\", \"salesreasonid\", \"modifieddate\"\nfrom \"sales\".\"salesorderheadersalesreason\"\nwhere (\"salesorderid\", \"salesreasonid\")\nin (select unnest("), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid), Fragment.lit("::int4[]))\n")).query(SalesorderheadersalesreasonRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"salesorderid\", \"salesreasonid\", \"modifieddate\"\nfrom \"sales\".\"salesorderheadersalesreason\"\nwhere (\"salesorderid\", \"salesreasonid\")\nin (select * from unnest("), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit(", "), Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid), Fragment.lit("))\n")).query(SalesorderheadersalesreasonRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

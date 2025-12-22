@@ -64,11 +64,11 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
                 "delete\n"
                     + "from \"production\".\"productproductphoto\"\n"
                     + "where (\"productid\", \"productphotoid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ProductphotoId.pgTypeArray, productphotoid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -224,11 +224,11 @@ public class ProductproductphotoRepoImpl implements ProductproductphotoRepo {
                 "select \"productid\", \"productphotoid\", \"primary\", \"modifieddate\"\n"
                     + "from \"production\".\"productproductphoto\"\n"
                     + "where (\"productid\", \"productphotoid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ProductphotoId.pgTypeArray, productphotoid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(ProductproductphotoRow._rowParser.all())
         .runUnchecked(c);
   }

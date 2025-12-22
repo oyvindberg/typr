@@ -33,7 +33,7 @@ class ProductmodelproductdescriptioncultureRepoImpl extends Productmodelproductd
     return interpolate(Fragment.lit("""delete
     from "production"."productmodelproductdescriptionculture"
     where ("productmodelid", "productdescriptionid", "cultureid")
-    in (select unnest("""), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid), Fragment.lit("::int4[]), unnest("), Fragment.encode(CultureId.pgTypeArray, cultureid), Fragment.lit("""::bpchar[]))
+    in (select * from unnest("""), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit(", "), Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid), Fragment.lit(", "), Fragment.encode(CultureId.pgTypeArray, cultureid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -99,7 +99,7 @@ class ProductmodelproductdescriptioncultureRepoImpl extends Productmodelproductd
     return interpolate(Fragment.lit("""select "productmodelid", "productdescriptionid", "cultureid", "modifieddate"
     from "production"."productmodelproductdescriptionculture"
     where ("productmodelid", "productdescriptionid", "cultureid")
-    in (select unnest("""), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid), Fragment.lit("::int4[]), unnest("), Fragment.encode(CultureId.pgTypeArray, cultureid), Fragment.lit("""::bpchar[]))
+    in (select * from unnest("""), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit(", "), Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid), Fragment.lit(", "), Fragment.encode(CultureId.pgTypeArray, cultureid), Fragment.lit("""))
     """)).query(ProductmodelproductdescriptioncultureRow.`_rowParser`.all()).runUnchecked(c)
   }
 

@@ -28,7 +28,7 @@ class OnlyPkColumnsRepoImpl extends OnlyPkColumnsRepo {
     return interpolate(Fragment.lit("""delete
     from "public"."only_pk_columns"
     where ("key_column_1", "key_column_2")
-    in (select unnest("""), Fragment.encode(PgTypes.textArray, keyColumn1), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.int4Array, keyColumn2), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(PgTypes.textArray, keyColumn1), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, keyColumn2), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -65,7 +65,7 @@ class OnlyPkColumnsRepoImpl extends OnlyPkColumnsRepo {
     return interpolate(Fragment.lit("""select "key_column_1", "key_column_2"
     from "public"."only_pk_columns"
     where ("key_column_1", "key_column_2")
-    in (select unnest("""), Fragment.encode(PgTypes.textArray, keyColumn1), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.int4Array, keyColumn2), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(PgTypes.textArray, keyColumn1), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, keyColumn2), Fragment.lit("""))
     """)).query(OnlyPkColumnsRow.`_rowParser`.all()).runUnchecked(c)
   }
 

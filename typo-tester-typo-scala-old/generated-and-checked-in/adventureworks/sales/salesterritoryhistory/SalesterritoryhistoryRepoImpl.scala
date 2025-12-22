@@ -33,7 +33,7 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
     return interpolate(Fragment.lit("""delete
     from "sales"."salesterritoryhistory"
     where ("businessentityid", "startdate", "territoryid")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("::timestamp[]), unnest("), Fragment.encode(SalesterritoryId.pgTypeArray, territoryid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit(", "), Fragment.encode(SalesterritoryId.pgTypeArray, territoryid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -105,7 +105,7 @@ class SalesterritoryhistoryRepoImpl extends SalesterritoryhistoryRepo {
     return interpolate(Fragment.lit("""select "businessentityid", "territoryid", "startdate", "enddate", "rowguid", "modifieddate"
     from "sales"."salesterritoryhistory"
     where ("businessentityid", "startdate", "territoryid")
-    in (select unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("::timestamp[]), unnest("), Fragment.encode(SalesterritoryId.pgTypeArray, territoryid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit(", "), Fragment.encode(SalesterritoryId.pgTypeArray, territoryid), Fragment.lit("""))
     """)).query(SalesterritoryhistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

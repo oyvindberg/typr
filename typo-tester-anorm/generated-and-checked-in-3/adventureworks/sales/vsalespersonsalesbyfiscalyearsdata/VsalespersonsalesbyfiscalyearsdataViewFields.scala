@@ -19,7 +19,7 @@ trait VsalespersonsalesbyfiscalyearsdataViewFields {
   def jobtitle: Field[String, VsalespersonsalesbyfiscalyearsdataViewRow]
   def salesterritory: Field[Name, VsalespersonsalesbyfiscalyearsdataViewRow]
   def salestotal: OptField[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow]
-  def fiscalyear: Field[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow]
+  def fiscalyear: Field[Double, VsalespersonsalesbyfiscalyearsdataViewRow]
 }
 
 object VsalespersonsalesbyfiscalyearsdataViewFields {
@@ -35,7 +35,7 @@ object VsalespersonsalesbyfiscalyearsdataViewFields {
       override def jobtitle = Field[String, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "jobtitle", None, None, x => x.jobtitle, (row, value) => row.copy(jobtitle = value))
       override def salesterritory = Field[Name, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "salesterritory", None, None, x => x.salesterritory, (row, value) => row.copy(salesterritory = value))
       override def salestotal = OptField[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "salestotal", None, None, x => x.salestotal, (row, value) => row.copy(salestotal = value))
-      override def fiscalyear = Field[BigDecimal, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "fiscalyear", None, None, x => x.fiscalyear, (row, value) => row.copy(fiscalyear = value))
+      override def fiscalyear = Field[Double, VsalespersonsalesbyfiscalyearsdataViewRow](_path, "fiscalyear", None, None, x => x.fiscalyear, (row, value) => row.copy(fiscalyear = value))
     }
 
     override lazy val columns: List[FieldLike[?, VsalespersonsalesbyfiscalyearsdataViewRow]] =

@@ -3,6 +3,175 @@ $version: 0.0.14
 jvm:
   name: graalvm-community:25.0.0
 projects:
+  openapi-test-java-jaxrs-client-jdk:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.novocode:junit-interface:0.11
+    - io.swagger.core.v3:swagger-annotations:2.2.25
+    - jakarta.validation:jakarta.validation-api:3.0.2
+    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
+    - junit:junit:4.13.2
+    - org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.9
+    - org.glassfish.jersey.inject:jersey-hk2:3.1.9
+    - org.glassfish.jersey.media:jersey-media-json-jackson:3.1.9
+    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
+    dependsOn: typo-runtime-java
+    folder: ./openapi-test-java-server-jaxrs-client-jdk
+    isTestProject: true
+    java:
+      options: --release 21 -proc:none
+    platform:
+      name: jvm
+    sources: ./testapi
+  openapi-test-java-quarkus:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.novocode:junit-interface:0.11
+    - io.quarkus:quarkus-rest-jackson:3.17.2
+    - io.smallrye.reactive:mutiny:2.6.2
+    - io.swagger.core.v3:swagger-annotations:2.2.25
+    - jakarta.validation:jakarta.validation-api:3.0.2
+    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
+    - junit:junit:4.13.2
+    - org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.9
+    - org.glassfish.jersey.inject:jersey-hk2:3.1.9
+    - org.glassfish.jersey.media:jersey-media-json-jackson:3.1.9
+    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
+    dependsOn: typo-runtime-java
+    folder: ./openapi-test-java-server-quarkus-reactive-client-jdk
+    isTestProject: true
+    java:
+      options: --release 21 -proc:none
+    platform:
+      name: jvm
+    sources: ./testapi
+  openapi-test-java-spring:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.novocode:junit-interface:0.11
+    - io.swagger.core.v3:swagger-annotations:2.2.25
+    - jakarta.validation:jakarta.validation-api:3.0.2
+    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
+    - junit:junit:4.13.2
+    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
+    - org.springframework.boot:spring-boot-starter-test:3.4.0
+    - org.springframework.boot:spring-boot-starter-web:3.4.0
+    dependsOn: typo-runtime-java
+    folder: ./openapi-test-java-server-spring-client-jdk
+    isTestProject: true
+    java:
+      options: --release 21 -proc:none
+    platform:
+      name: jvm
+    sources: ./testapi
+  openapi-test-kotlin-jaxrs:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
+    - com.novocode:junit-interface:0.11
+    - io.swagger.core.v3:swagger-annotations:2.2.25
+    - jakarta.validation:jakarta.validation-api:3.0.2
+    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
+    - junit:junit:4.13.2
+    - org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.9
+    - org.glassfish.jersey.inject:jersey-hk2:3.1.9
+    - org.glassfish.jersey.media:jersey-media-json-jackson:3.1.9
+    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
+    dependsOn: typo-runtime-java
+    folder: ./openapi-test-kotlin-server-jaxrs-client-jdk
+    isTestProject: true
+    platform:
+      name: jvm
+    scala:
+      options: -Xallow-kotlin
+    sources: ./testapi
+  openapi-test-kotlin-quarkus:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
+    - com.novocode:junit-interface:0.11
+    - io.quarkus:quarkus-rest-jackson:3.17.2
+    - io.smallrye.reactive:mutiny:2.6.2
+    - io.swagger.core.v3:swagger-annotations:2.2.25
+    - jakarta.validation:jakarta.validation-api:3.0.2
+    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
+    - junit:junit:4.13.2
+    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
+    dependsOn: typo-runtime-java
+    folder: ./openapi-test-kotlin-server-quarkus-reactive-client-jdk
+    isTestProject: true
+    platform:
+      name: jvm
+    scala:
+      options: -Xallow-kotlin
+    sources: ./testapi
+  openapi-test-kotlin-spring:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
+    - com.novocode:junit-interface:0.11
+    - io.swagger.core.v3:swagger-annotations:2.2.25
+    - jakarta.validation:jakarta.validation-api:3.0.2
+    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
+    - junit:junit:4.13.2
+    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
+    - org.springframework.boot:spring-boot-starter-web:3.4.0
+    dependsOn: typo-runtime-java
+    folder: ./openapi-test-kotlin-server-spring-client-jdk
+    isTestProject: true
+    platform:
+      name: jvm
+    scala:
+      options: -Xallow-kotlin
+    sources: ./testapi
+  openapi-test-scala-http4s:
+    dependencies:
+    - io.circe::circe-generic:0.14.10
+    - org.http4s::http4s-circe:0.23.30
+    - org.http4s::http4s-dsl:0.23.30
+    - org.http4s::http4s-ember-client:0.23.30
+    - org.http4s::http4s-ember-server:0.23.30
+    - org.scalatest::scalatest:3.2.18
+    - org.typelevel::cats-effect-testing-scalatest:1.6.0
+    extends: template-scala-3-stable
+    folder: ./openapi-test-scala-server-http4s-client-http4s
+    isTestProject: true
+    scala:
+      strict: false
+    sources: ./testapi
+  openapi-test-scala-spring:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-databind:2.18.1
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.18.1
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.1
+    - com.fasterxml.jackson.module::jackson-module-scala:2.18.1
+    - com.novocode:junit-interface:0.11
+    - io.circe::circe-generic:0.14.10
+    - io.swagger.core.v3:swagger-annotations:2.2.25
+    - jakarta.validation:jakarta.validation-api:3.0.2
+    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
+    - junit:junit:4.13.2
+    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
+    - org.springframework.boot:spring-boot-starter-web:3.4.0
+    dependsOn: typo-runtime-java
+    extends: template-scala-3-stable
+    folder: ./openapi-test-scala-server-spring-client-jdk
+    isTestProject: true
+    scala:
+      strict: false
+    sources: ./testapi
   tests:
     dependencies: org.scalatest::scalatest:3.2.18
     dependsOn: typo
@@ -12,20 +181,21 @@ projects:
     cross:
       jvm212:
         scala:
-          strict: false
           options: -Xsource:3 -language:higherKinds -language:implicitConversions
+          strict: false
           version: 2.12.19
     dependencies:
     - com.typesafe.play::play-json:2.10.6
-    - org.playframework.anorm::anorm:2.7.0
-    - org.postgresql:postgresql:42.7.3
-    - org.mariadb.jdbc:mariadb-java-client:3.5.1
     - com.zaxxer:HikariCP:4.0.3
-    - org.slf4j:slf4j-nop:2.0.13
-    - io.swagger.parser.v3:swagger-parser:2.1.24
-    - org.scala-lang.modules::scala-collection-compat:2.12.0
     - for3Use213: true
       module: io.get-coursier::coursier:2.1.24
+    - io.swagger.parser.v3:swagger-parser:2.1.24
+    - org.duckdb:duckdb_jdbc:1.1.3
+    - org.mariadb.jdbc:mariadb-java-client:3.5.1
+    - org.playframework.anorm::anorm:2.7.0
+    - org.postgresql:postgresql:42.7.3
+    - org.scala-lang.modules::scala-collection-compat:2.12.0
+    - org.slf4j:slf4j-nop:2.0.13
     extends: template-cross
     platform:
       mainClass: com.foo.App
@@ -34,26 +204,32 @@ projects:
     dependsOn: typo-runtime-anorm
     extends: template-cross
     sources: ../typo-dsl-shared
-  typo-dsl-java:
-    dependsOn: typo-runtime-java
-    java:
-      options: -proc:none --release 24
-    platform:
-      name: jvm
-    sourcegen:
-      project: typo-scripts
-      main: scripts.GeneratedTuples
-  typo-dsl-kotlin:
-    dependsOn: typo-dsl-java
-    sourcegen:
-      project: typo-scripts
-      main: scripts.GeneratedRowParsers
-    platform:
-      name: jvm
   typo-dsl-doobie:
     dependsOn: typo-runtime-doobie
     extends: template-cross
     sources: ../typo-dsl-shared
+  typo-dsl-java:
+    dependsOn: typo-runtime-java
+    java:
+      options: --release 24 -proc:none
+    platform:
+      name: jvm
+    sourcegen:
+      main: scripts.GeneratedTuples
+      project: typo-scripts
+  typo-dsl-kotlin:
+    dependsOn: typo-dsl-java
+    platform:
+      name: jvm
+    sourcegen:
+      main: scripts.GeneratedRowParsers
+      project: typo-scripts
+  typo-dsl-scala:
+    dependsOn: typo-dsl-java
+    extends: template-scala-3-stable
+    sourcegen:
+      main: scripts.GeneratedRowParsers
+      project: typo-scripts
   typo-dsl-zio-jdbc:
     dependsOn: typo-runtime-zio-jdbc
     extends: template-cross
@@ -67,24 +243,19 @@ projects:
     dependsOn: typo-runtime-java
     extends: template-cross
   typo-runtime-java:
+    dependencies:
+    - net.hamnaberg.json:immutable-json-ast:7.0.1
+    - org.duckdb:duckdb_jdbc:1.1.3
+    - org.jetbrains:annotations:26.0.1
+    - org.mariadb.jdbc:mariadb-java-client:3.5.1
+    - org.postgresql:postgresql:42.7.3
     java:
       options: -proc:none
-    sourcegen:
-      project: typo-scripts
-      main: scripts.GeneratedRowParsers
-    dependencies:
-      - org.postgresql:postgresql:42.7.3
-      - org.mariadb.jdbc:mariadb-java-client:3.5.1
-      - net.hamnaberg.json:immutable-json-ast:7.0.1
-      - org.jetbrains:annotations:26.0.1
     platform:
       name: jvm
-  typo-dsl-scala:
-    dependsOn: typo-dsl-java
     sourcegen:
-      project: typo-scripts
       main: scripts.GeneratedRowParsers
-    extends: template-scala-3-newest
+      project: typo-scripts
   typo-runtime-zio-jdbc:
     dependencies: dev.zio::zio-jdbc:0.1.2
     dependsOn: typo-runtime-java
@@ -94,8 +265,8 @@ projects:
     dependsOn: typo
     extends: template-scala-3-stable
     scala:
+      strict: false
       version: 3.5.0
-    # scripts for generating docs
   typo-scripts-doc:
     dependencies:
     - build.bleep::bleep-plugin-dynver:${BLEEP_VERSION}
@@ -106,7 +277,6 @@ projects:
     extends: template-scala-3-stable
     scala:
       strict: false
-  # scripts generate code into the tester projects, and there are hand-written tests inside as well
   typo-tester-anorm:
     cross:
       jvm213:
@@ -138,14 +308,14 @@ projects:
       main: scripts.GenHardcodedFiles
       project: typo-scripts
     sources: ./generated-and-checked-in
-  typo-tester-typo-java:
+  typo-tester-duckdb-java:
     dependencies:
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
     - com.fasterxml.jackson.core:jackson-annotations:2.17.2
     - com.fasterxml.jackson.core:jackson-databind:2.17.2
     - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
     - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.novocode:junit-interface:0.11
+    - junit:junit:4.13.2
     dependsOn: typo-dsl-java
     isTestProject: true
     java:
@@ -153,41 +323,108 @@ projects:
     platform:
       name: jvm
     sources: ./generated-and-checked-in
-    sourcegen:
-      main: scripts.GenHardcodedFiles
-      project: typo-scripts
-  typo-tester-typo-scala-old:
+  typo-tester-duckdb-kotlin:
     dependencies:
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
-    - org.scalatest::scalatest:3.2.18
     - com.fasterxml.jackson.core:jackson-annotations:2.17.2
     - com.fasterxml.jackson.core:jackson-databind:2.17.2
     - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
     - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    dependsOn:
-    - typo-dsl-java
-    extends: template-scala-3-newest
+    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
+    - com.novocode:junit-interface:0.11
+    - junit:junit:4.13.2
+    dependsOn: typo-dsl-kotlin
+    isTestProject: true
+    platform:
+      name: jvm
+    scala:
+      options: -Xallow-kotlin
+    sources:
+    - ./generated-and-checked-in
+    - ./src/kotlin
+  typo-tester-duckdb-scala:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.novocode:junit-interface:0.11
+    - junit:junit:4.13.2
+    dependsOn: typo-dsl-scala
+    extends: template-scala-3-stable
     isTestProject: true
     sources: ./generated-and-checked-in
-
-  typo-tester-typo-scala-new:
+  typo-tester-mariadb-java:
     dependencies:
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
-    - org.scalatest::scalatest:3.2.18
     - com.fasterxml.jackson.core:jackson-annotations:2.17.2
     - com.fasterxml.jackson.core:jackson-databind:2.17.2
     - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
     - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    dependsOn:
-    - typo-dsl-java
-    - typo-dsl-scala
+    - com.novocode:junit-interface:0.11
+    - junit:junit:4.13.2
+    dependsOn: typo-dsl-java
+    isTestProject: true
+    java:
+      options: -proc:none
+    platform:
+      name: jvm
+    sources: ./generated-and-checked-in
+  typo-tester-mariadb-scala:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - org.scalatest::scalatest:3.2.18
+    dependsOn: typo-dsl-scala
     extends: template-scala-3-newest
     isTestProject: true
     sources: ./generated-and-checked-in
   typo-tester-none:
     extends: template-cross-scala-3-newest
+    sources: ./generated-and-checked-in
+  typo-tester-typo-java:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.novocode:junit-interface:0.11
+    - junit:junit:4.13.2
+    dependsOn: typo-dsl-java
+    isTestProject: true
+    java:
+      options: -proc:none
+    platform:
+      name: jvm
+    sourcegen:
+      main: scripts.GenHardcodedFiles
+      project: typo-scripts
+    sources: ./generated-and-checked-in
+  typo-tester-typo-scala-new:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.novocode:junit-interface:0.11
+    - junit:junit:4.13.2
+    - org.scalatest::scalatest:3.2.18
+    dependsOn: typo-dsl-scala
+    extends: template-scala-3-newest
+    isTestProject: true
+    sources: ./generated-and-checked-in
+  typo-tester-typo-scala-old:
+    dependencies:
+    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.novocode:junit-interface:0.11
+    - junit:junit:4.13.2
+    - org.scalatest::scalatest:3.2.18
+    dependsOn: typo-dsl-java
+    extends: template-scala-3-newest
+    isTestProject: true
     sources: ./generated-and-checked-in
   typo-tester-zio-jdbc:
     cross:
@@ -204,203 +441,6 @@ projects:
     sourcegen:
       main: scripts.GenHardcodedFiles
       project: typo-scripts
-  # MariaDB tester projects
-  typo-tester-mariadb-java:
-    dependencies:
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
-    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    dependsOn: typo-dsl-java
-    isTestProject: true
-    java:
-      options: -proc:none
-    platform:
-      name: jvm
-    sources: ./generated-and-checked-in
-  typo-tester-mariadb-scala:
-    dependencies:
-    - org.scalatest::scalatest:3.2.18
-    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    dependsOn:
-    - typo-dsl-scala
-    extends: template-scala-3-newest
-    isTestProject: true
-    sources: ./generated-and-checked-in
-  openapi-test-scala-http4s:
-    dependencies:
-    - org.http4s::http4s-dsl:0.23.30
-    - org.http4s::http4s-ember-server:0.23.30
-    - org.http4s::http4s-ember-client:0.23.30
-    - org.http4s::http4s-circe:0.23.30
-    - io.circe::circe-generic:0.14.10
-    - org.scalatest::scalatest:3.2.18
-    - org.typelevel::cats-effect-testing-scalatest:1.6.0
-    extends: template-scala-3-stable
-    isTestProject: true
-    folder: ./openapi-test-scala-server-http4s-client-http4s
-    sources: ./testapi
-    scala:
-      strict: false
-  openapi-test-scala-spring:
-    dependencies:
-    - org.springframework.boot:spring-boot-starter-web:3.4.0
-    - io.circe::circe-generic:0.14.10
-    - io.swagger.core.v3:swagger-annotations:2.2.25
-    - jakarta.validation:jakarta.validation-api:3.0.2
-    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
-    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
-    - com.fasterxml.jackson.core:jackson-databind:2.18.1
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.18.1
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.1
-    - com.fasterxml.jackson.module::jackson-module-scala:2.18.1
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
-    dependsOn: typo-runtime-java
-    extends: template-scala-3-stable
-    isTestProject: true
-    folder: ./openapi-test-scala-server-spring-client-jdk
-    sources: ./testapi
-    scala:
-      strict: false
-  openapi-test-java-spring:
-    dependencies:
-    - org.springframework.boot:spring-boot-starter-web:3.4.0
-    - org.springframework.boot:spring-boot-starter-test:3.4.0
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - io.swagger.core.v3:swagger-annotations:2.2.25
-    - jakarta.validation:jakarta.validation-api:3.0.2
-    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
-    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
-    dependsOn: typo-runtime-java
-    isTestProject: true
-    folder: ./openapi-test-java-server-spring-client-jdk
-    sources: ./testapi
-    java:
-      options: -proc:none --release 21
-    platform:
-      name: jvm
-  openapi-test-java-jaxrs-client-jdk:
-    dependencies:
-    - org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.9
-    - org.glassfish.jersey.inject:jersey-hk2:3.1.9
-    - org.glassfish.jersey.media:jersey-media-json-jackson:3.1.9
-    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
-    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - io.swagger.core.v3:swagger-annotations:2.2.25
-    - jakarta.validation:jakarta.validation-api:3.0.2
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
-    dependsOn: typo-runtime-java
-    isTestProject: true
-    folder: ./openapi-test-java-server-jaxrs-client-jdk
-    sources: ./testapi
-    java:
-      options: -proc:none --release 21
-    platform:
-      name: jvm
-  openapi-test-java-quarkus:
-    dependencies:
-    - io.quarkus:quarkus-rest-jackson:3.17.2
-    - io.smallrye.reactive:mutiny:2.6.2
-    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - io.swagger.core.v3:swagger-annotations:2.2.25
-    - jakarta.validation:jakarta.validation-api:3.0.2
-    - org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.9
-    - org.glassfish.jersey.inject:jersey-hk2:3.1.9
-    - org.glassfish.jersey.media:jersey-media-json-jackson:3.1.9
-    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
-    dependsOn: typo-runtime-java
-    isTestProject: true
-    folder: ./openapi-test-java-server-quarkus-reactive-client-jdk
-    sources: ./testapi
-    java:
-      options: -proc:none --release 21
-    platform:
-      name: jvm
-  openapi-test-kotlin-jaxrs:
-    dependencies:
-    - org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.9
-    - org.glassfish.jersey.inject:jersey-hk2:3.1.9
-    - org.glassfish.jersey.media:jersey-media-json-jackson:3.1.9
-    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
-    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
-    - io.swagger.core.v3:swagger-annotations:2.2.25
-    - jakarta.validation:jakarta.validation-api:3.0.2
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
-    dependsOn: typo-runtime-java
-    isTestProject: true
-    folder: ./openapi-test-kotlin-server-jaxrs-client-jdk
-    sources: ./testapi
-    scala:
-      options: -Xallow-kotlin
-    platform:
-      name: jvm
-  openapi-test-kotlin-spring:
-    dependencies:
-    - org.springframework.boot:spring-boot-starter-web:3.4.0
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
-    - io.swagger.core.v3:swagger-annotations:2.2.25
-    - jakarta.validation:jakarta.validation-api:3.0.2
-    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
-    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
-    dependsOn: typo-runtime-java
-    isTestProject: true
-    folder: ./openapi-test-kotlin-server-spring-client-jdk
-    sources: ./testapi
-    scala:
-      options: -Xallow-kotlin
-    platform:
-      name: jvm
-  openapi-test-kotlin-quarkus:
-    dependencies:
-    - io.quarkus:quarkus-rest-jackson:3.17.2
-    - io.smallrye.reactive:mutiny:2.6.2
-    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
-    - io.swagger.core.v3:swagger-annotations:2.2.25
-    - jakarta.validation:jakarta.validation-api:3.0.2
-    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
-    - junit:junit:4.13.2
-    - com.novocode:junit-interface:0.11
-    dependsOn: typo-runtime-java
-    isTestProject: true
-    folder: ./openapi-test-kotlin-server-quarkus-reactive-client-jdk
-    sources: ./testapi
-    scala:
-      options: -Xallow-kotlin
-    platform:
-      name: jvm
 scripts:
   compile-benchmarks:
     main: scripts.CompileBenchmark
@@ -412,19 +452,22 @@ scripts:
   generate-all:
     main: scripts.GenerateAll
     project: typo-scripts
+  generate-duckdb:
+    main: scripts.GeneratedDuckDb
+    project: typo-scripts
   generate-docs:
     main: scripts.GenDocumentation
     project: typo-scripts-doc
   generate-frontpage:
     main: scripts.GeneratedFrontpage
     project: typo-scripts
-  generate-openapi-test:
-    main: scripts.GenerateOpenApiTest
-    project: typo-scripts
   generate-mariadb:
     main: scripts.GeneratedMariaDb
     project: typo-scripts
     sourceGlobs: ../mariadb_sql
+  generate-openapi-test:
+    main: scripts.GenerateOpenApiTest
+    project: typo-scripts
   generate-sources:
     main: scripts.GeneratedSources
     project: typo-scripts
@@ -436,10 +479,10 @@ scripts:
     project: typo-scripts
 templates:
   template-common:
+    java:
+      options: -Xlint:deprecation -Xlint:unchecked
     platform:
       name: jvm
-    java:
-      options: -Xlint:unchecked -Xlint:deprecation
     scala:
       options: -Xfatal-warnings -encoding utf8 -feature -unchecked
       strict: true
@@ -457,11 +500,6 @@ templates:
       jvm3:
         extends: template-scala-3-newest
     extends: template-common
-  template-scala-3-stable:
-    extends: template-common
-    scala:
-      options: -source 3.3 -release 21
-      version: 3.3.6
   template-scala-2:
     scala:
       options: -Xsource:3 -release:21
@@ -469,5 +507,10 @@ templates:
   template-scala-3-newest:
     extends: template-common
     scala:
-      options: -source 3.7 -release 24
+      options: -release 24 -source 3.7
       version: 3.7.3
+  template-scala-3-stable:
+    extends: template-common
+    scala:
+      options: -release 21 -source 3.3
+      version: 3.3.6

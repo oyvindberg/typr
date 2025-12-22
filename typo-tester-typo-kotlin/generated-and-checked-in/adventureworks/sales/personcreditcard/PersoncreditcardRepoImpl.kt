@@ -36,7 +36,7 @@ class PersoncreditcardRepoImpl() : PersoncreditcardRepo {
   ): Int {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, PersoncreditcardId::businessentityid, BusinessentityId::class.java)
     val creditcardid: Array</* user-picked */ CustomCreditcardId> = arrayMap.map(compositeIds, PersoncreditcardId::creditcardid, /* user-picked */ CustomCreditcardId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"personcreditcard\"\nwhere (\"businessentityid\", \"creditcardid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"personcreditcard\"\nwhere (\"businessentityid\", \"creditcardid\")\nin (select * from unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -92,7 +92,7 @@ class PersoncreditcardRepoImpl() : PersoncreditcardRepo {
   ): List<PersoncreditcardRow> {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, PersoncreditcardId::businessentityid, BusinessentityId::class.java)
     val creditcardid: Array</* user-picked */ CustomCreditcardId> = arrayMap.map(compositeIds, PersoncreditcardId::creditcardid, /* user-picked */ CustomCreditcardId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"creditcardid\", \"modifieddate\"\nfrom \"sales\".\"personcreditcard\"\nwhere (\"businessentityid\", \"creditcardid\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid), Fragment.lit("::int4[]))\n")).query(PersoncreditcardRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"creditcardid\", \"modifieddate\"\nfrom \"sales\".\"personcreditcard\"\nwhere (\"businessentityid\", \"creditcardid\")\nin (select * from unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(CustomCreditcardId.pgTypeArray, creditcardid), Fragment.lit("))\n")).query(PersoncreditcardRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

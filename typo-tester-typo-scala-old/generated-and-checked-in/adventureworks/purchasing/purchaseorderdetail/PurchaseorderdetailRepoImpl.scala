@@ -36,7 +36,7 @@ class PurchaseorderdetailRepoImpl extends PurchaseorderdetailRepo {
     return interpolate(Fragment.lit("""select "purchaseorderid", "purchaseorderdetailid", "duedate", "orderqty", "productid", "unitprice", "receivedqty", "rejectedqty", "modifieddate"
     from "purchasing"."purchaseorderdetail"
     where ("purchaseorderid", "purchaseorderdetailid")
-    in (select unnest("""), Fragment.encode(PurchaseorderheaderId.pgTypeArray, purchaseorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, purchaseorderdetailid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(PurchaseorderheaderId.pgTypeArray, purchaseorderid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, purchaseorderdetailid), Fragment.lit("""))
     """)).query(PurchaseorderdetailRow.`_rowParser`.all()).runUnchecked(c)
   }
 

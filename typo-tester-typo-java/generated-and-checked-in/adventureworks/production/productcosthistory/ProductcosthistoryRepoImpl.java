@@ -63,11 +63,11 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
                 "delete\n"
                     + "from \"production\".\"productcosthistory\"\n"
                     + "where (\"productid\", \"startdate\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, startdate),
-            Fragment.lit("::timestamp[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -229,11 +229,11 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
                     + " \"modifieddate\"\n"
                     + "from \"production\".\"productcosthistory\"\n"
                     + "where (\"productid\", \"startdate\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, startdate),
-            Fragment.lit("::timestamp[]))\n"))
+            Fragment.lit("))\n"))
         .query(ProductcosthistoryRow._rowParser.all())
         .runUnchecked(c);
   }

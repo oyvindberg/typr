@@ -31,7 +31,7 @@ class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
     return interpolate(Fragment.lit("""delete
     from "sales"."countryregioncurrency"
     where ("countryregioncode", "currencycode")
-    in (select unnest("""), Fragment.encode(CountryregionId.pgTypeArray, countryregioncode), Fragment.lit("::varchar[]), unnest("), Fragment.encode(CurrencyId.pgTypeArray, currencycode), Fragment.lit("""::bpchar[]))
+    in (select * from unnest("""), Fragment.encode(CountryregionId.pgTypeArray, countryregioncode), Fragment.lit(", "), Fragment.encode(CurrencyId.pgTypeArray, currencycode), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -94,7 +94,7 @@ class CountryregioncurrencyRepoImpl extends CountryregioncurrencyRepo {
     return interpolate(Fragment.lit("""select "countryregioncode", "currencycode", "modifieddate"
     from "sales"."countryregioncurrency"
     where ("countryregioncode", "currencycode")
-    in (select unnest("""), Fragment.encode(CountryregionId.pgTypeArray, countryregioncode), Fragment.lit("::varchar[]), unnest("), Fragment.encode(CurrencyId.pgTypeArray, currencycode), Fragment.lit("""::bpchar[]))
+    in (select * from unnest("""), Fragment.encode(CountryregionId.pgTypeArray, countryregioncode), Fragment.lit(", "), Fragment.encode(CurrencyId.pgTypeArray, currencycode), Fragment.lit("""))
     """)).query(CountryregioncurrencyRow.`_rowParser`.all()).runUnchecked(c)
   }
 

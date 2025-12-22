@@ -38,7 +38,7 @@ class FlaffRepoImpl() : FlaffRepo {
     val anotherCode: Array<String> = arrayMap.map(compositeIds, FlaffId::anotherCode, String::class.java)
     val someNumber: Array<Int> = arrayMap.map(compositeIds, FlaffId::someNumber, Int::class.javaObjectType)
     val specifier: Array<ShortText> = arrayMap.map(compositeIds, FlaffId::specifier, ShortText::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"public\".\"flaff\"\nwhere (\"code\", \"another_code\", \"some_number\", \"specifier\")\nin (select unnest("), Fragment.encode(ShortText.pgTypeArray, code), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, anotherCode), Fragment.lit("::varchar[]), unnest("), Fragment.encode(PgTypes.int4Array, someNumber), Fragment.lit("::int4[]), unnest("), Fragment.encode(ShortText.pgTypeArray, specifier), Fragment.lit("::text[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"public\".\"flaff\"\nwhere (\"code\", \"another_code\", \"some_number\", \"specifier\")\nin (select * from unnest("), Fragment.encode(ShortText.pgTypeArray, code), Fragment.lit(", "), Fragment.encode(PgTypes.textArray, anotherCode), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, someNumber), Fragment.lit(", "), Fragment.encode(ShortText.pgTypeArray, specifier), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -70,7 +70,7 @@ class FlaffRepoImpl() : FlaffRepo {
     val anotherCode: Array<String> = arrayMap.map(compositeIds, FlaffId::anotherCode, String::class.java)
     val someNumber: Array<Int> = arrayMap.map(compositeIds, FlaffId::someNumber, Int::class.javaObjectType)
     val specifier: Array<ShortText> = arrayMap.map(compositeIds, FlaffId::specifier, ShortText::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\"\nfrom \"public\".\"flaff\"\nwhere (\"code\", \"another_code\", \"some_number\", \"specifier\")\nin (select unnest("), Fragment.encode(ShortText.pgTypeArray, code), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, anotherCode), Fragment.lit("::varchar[]), unnest("), Fragment.encode(PgTypes.int4Array, someNumber), Fragment.lit("::int4[]), unnest("), Fragment.encode(ShortText.pgTypeArray, specifier), Fragment.lit("::text[]))\n")).query(FlaffRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"code\", \"another_code\", \"some_number\", \"specifier\", \"parentspecifier\"\nfrom \"public\".\"flaff\"\nwhere (\"code\", \"another_code\", \"some_number\", \"specifier\")\nin (select * from unnest("), Fragment.encode(ShortText.pgTypeArray, code), Fragment.lit(", "), Fragment.encode(PgTypes.textArray, anotherCode), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, someNumber), Fragment.lit(", "), Fragment.encode(ShortText.pgTypeArray, specifier), Fragment.lit("))\n")).query(FlaffRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

@@ -55,6 +55,64 @@ fun <A : Any> PgType<A>.nullable(): PgType<A?> {
 }
 
 // ================================
+// DuckDbType Extensions
+// ================================
+
+/**
+ * Kotlin-friendly nullable version of DuckDbType.opt().
+ */
+fun <A : Any> DuckDbType<A>.nullable(): DuckDbType<A?> {
+    val underlying = this.opt()
+
+    // Create wrapper components that convert Optional<A> to A? at boundaries
+    val duckDbTypename = underlying.typename().to(optionalToNullable<A>()) as DuckDbTypename<A?>
+
+    // Use KotlinNullableDuckDbRead which implements DbRead.Nullable marker interface
+    // This tells RowParser.opt() that this column is already nullable
+    val duckDbRead: DuckDbRead<A?> = typo.runtime.KotlinNullableDuckDbRead(underlying.read())
+
+    val duckDbWrite = DuckDbWrite.primitive<A?> { ps, index, value -> underlying.write().set(ps, index, value.toOptional()) }
+
+    val duckDbStringifier = DuckDbStringifier.instance<A?> { v, sb, i -> underlying.stringifier().unsafeEncode(v.toOptional(), sb, i) }
+
+    val duckDbJson = underlying.duckDbJson().bimap<A?>(
+        SqlFunction { opt -> opt.orNull() },
+        { nullable -> nullable.toOptional() }
+    )
+
+    return DuckDbType(duckDbTypename, duckDbRead, duckDbWrite, duckDbStringifier, duckDbJson)
+}
+
+// ================================
+// MariaType Extensions
+// ================================
+
+/**
+ * Kotlin-friendly nullable version of MariaType.opt().
+ */
+fun <A : Any> MariaType<A>.nullable(): MariaType<A?> {
+    val underlying = this.opt()
+
+    // Create wrapper components that convert Optional<A> to A? at boundaries
+    val mariaTypename = underlying.typename().to(optionalToNullable<A>()) as MariaTypename<A?>
+
+    // Use KotlinNullableMariaRead which implements DbRead.Nullable marker interface
+    // This tells RowParser.opt() that this column is already nullable
+    val mariaRead: MariaRead<A?> = typo.runtime.KotlinNullableMariaRead(underlying.read())
+
+    val mariaWrite = MariaWrite.primitive<A?> { ps, index, value -> underlying.write().set(ps, index, value.toOptional()) }
+
+    val mariaText = MariaText.instance<A?> { v, sb -> underlying.mariaText().unsafeEncode(v.toOptional(), sb) }
+
+    val mariaJson = underlying.mariaJson().bimap<A?>(
+        SqlFunction { opt -> opt.orNull() },
+        { nullable -> nullable.toOptional() }
+    )
+
+    return MariaType(mariaTypename, mariaRead, mariaWrite, mariaText, mariaJson)
+}
+
+// ================================
 // Either Extensions (value-level)
 // ================================
 

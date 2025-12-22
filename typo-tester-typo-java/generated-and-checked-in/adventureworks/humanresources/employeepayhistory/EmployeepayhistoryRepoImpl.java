@@ -64,11 +64,11 @@ public class EmployeepayhistoryRepoImpl implements EmployeepayhistoryRepo {
                 "delete\n"
                     + "from \"humanresources\".\"employeepayhistory\"\n"
                     + "where (\"businessentityid\", \"ratechangedate\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, ratechangedate),
-            Fragment.lit("::timestamp[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -230,11 +230,11 @@ public class EmployeepayhistoryRepoImpl implements EmployeepayhistoryRepo {
                     + " \"modifieddate\"\n"
                     + "from \"humanresources\".\"employeepayhistory\"\n"
                     + "where (\"businessentityid\", \"ratechangedate\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, ratechangedate),
-            Fragment.lit("::timestamp[]))\n"))
+            Fragment.lit("))\n"))
         .query(EmployeepayhistoryRow._rowParser.all())
         .runUnchecked(c);
   }

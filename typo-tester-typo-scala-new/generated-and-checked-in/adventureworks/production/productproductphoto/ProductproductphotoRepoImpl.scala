@@ -31,7 +31,7 @@ class ProductproductphotoRepoImpl extends ProductproductphotoRepo {
     return sql"""delete
     from "production"."productproductphoto"
     where ("productid", "productphotoid")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(ProductphotoId.pgTypeArray, productphotoid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(ProductphotoId.pgTypeArray, productphotoid)}))
     """.update().runUnchecked(c)
   }
 
@@ -98,7 +98,7 @@ class ProductproductphotoRepoImpl extends ProductproductphotoRepo {
     return sql"""select "productid", "productphotoid", "primary", "modifieddate"
     from "production"."productproductphoto"
     where ("productid", "productphotoid")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(ProductphotoId.pgTypeArray, productphotoid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(ProductphotoId.pgTypeArray, productphotoid)}))
     """.query(ProductproductphotoRow.`_rowParser`.all()).runUnchecked(c)
   }
 

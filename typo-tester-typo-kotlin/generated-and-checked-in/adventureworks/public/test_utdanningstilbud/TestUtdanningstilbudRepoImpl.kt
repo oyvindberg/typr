@@ -34,7 +34,7 @@ class TestUtdanningstilbudRepoImpl() : TestUtdanningstilbudRepo {
   ): Int {
     val organisasjonskode: Array<TestOrganisasjonId> = arrayMap.map(compositeIds, TestUtdanningstilbudId::organisasjonskode, TestOrganisasjonId::class.java)
     val utdanningsmulighetKode: Array<String> = arrayMap.map(compositeIds, TestUtdanningstilbudId::utdanningsmulighetKode, String::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"public\".\"test_utdanningstilbud\"\nwhere (\"organisasjonskode\", \"utdanningsmulighet_kode\")\nin (select unnest("), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("::text[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"public\".\"test_utdanningstilbud\"\nwhere (\"organisasjonskode\", \"utdanningsmulighet_kode\")\nin (select * from unnest("), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode), Fragment.lit(", "), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -64,7 +64,7 @@ class TestUtdanningstilbudRepoImpl() : TestUtdanningstilbudRepo {
   ): List<TestUtdanningstilbudRow> {
     val organisasjonskode: Array<TestOrganisasjonId> = arrayMap.map(compositeIds, TestUtdanningstilbudId::organisasjonskode, TestOrganisasjonId::class.java)
     val utdanningsmulighetKode: Array<String> = arrayMap.map(compositeIds, TestUtdanningstilbudId::utdanningsmulighetKode, String::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"organisasjonskode\", \"utdanningsmulighet_kode\"\nfrom \"public\".\"test_utdanningstilbud\"\nwhere (\"organisasjonskode\", \"utdanningsmulighet_kode\")\nin (select unnest("), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode), Fragment.lit("::text[]), unnest("), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("::text[]))\n")).query(TestUtdanningstilbudRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"organisasjonskode\", \"utdanningsmulighet_kode\"\nfrom \"public\".\"test_utdanningstilbud\"\nwhere (\"organisasjonskode\", \"utdanningsmulighet_kode\")\nin (select * from unnest("), Fragment.encode(TestOrganisasjonId.pgTypeArray, organisasjonskode), Fragment.lit(", "), Fragment.encode(PgTypes.textArray, utdanningsmulighetKode), Fragment.lit("))\n")).query(TestUtdanningstilbudRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

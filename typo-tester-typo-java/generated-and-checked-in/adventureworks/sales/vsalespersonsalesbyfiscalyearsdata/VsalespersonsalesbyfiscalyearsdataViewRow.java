@@ -25,7 +25,7 @@ public record VsalespersonsalesbyfiscalyearsdataViewRow(
     /** Points to {@link adventureworks.sales.salesterritory.SalesterritoryRow#name()} */
     Name salesterritory,
     Optional<BigDecimal> salestotal,
-    BigDecimal fiscalyear) {
+    Double fiscalyear) {
   /** Points to {@link adventureworks.sales.salesorderheader.SalesorderheaderRow#salespersonid()} */
   public VsalespersonsalesbyfiscalyearsdataViewRow withSalespersonid(
       BusinessentityId salespersonid) {
@@ -60,7 +60,7 @@ public record VsalespersonsalesbyfiscalyearsdataViewRow(
   }
   ;
 
-  public VsalespersonsalesbyfiscalyearsdataViewRow withFiscalyear(BigDecimal fiscalyear) {
+  public VsalespersonsalesbyfiscalyearsdataViewRow withFiscalyear(Double fiscalyear) {
     return new VsalespersonsalesbyfiscalyearsdataViewRow(
         salespersonid, fullname, jobtitle, salesterritory, salestotal, fiscalyear);
   }
@@ -73,8 +73,9 @@ public record VsalespersonsalesbyfiscalyearsdataViewRow(
           PgTypes.text,
           Name.pgType,
           PgTypes.numeric.opt(),
-          PgTypes.numeric,
-          VsalespersonsalesbyfiscalyearsdataViewRow::new,
+          PgTypes.float8,
+          (t0, t1, t2, t3, t4, t5) ->
+              new VsalespersonsalesbyfiscalyearsdataViewRow(t0, t1, t2, t3, t4, t5),
           row ->
               new Object[] {
                 row.salespersonid(),

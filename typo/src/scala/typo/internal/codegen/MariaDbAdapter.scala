@@ -97,6 +97,8 @@ object MariaDbAdapter extends DbAdapter {
     }
   }
 
+  def textType: db.Type = db.MariaType.Text
+
   private def lookupByDbType(dbType: db.Type, typeSupport: TypeSupport): Code = {
     // Helper to get primitive type code based on language
     def primitiveType(name: String): Code = {
@@ -109,58 +111,61 @@ object MariaDbAdapter extends DbAdapter {
     }
 
     dbType match {
-      // Primitive types with language-specific overrides
-      case db.MariaType.TinyInt           => primitiveType("tinyint")
-      case db.MariaType.SmallInt          => primitiveType("smallint")
-      case db.MariaType.MediumInt         => primitiveType("mediumint")
-      case db.MariaType.Int               => primitiveType("int_")
-      case db.MariaType.BigInt            => primitiveType("bigint")
-      case db.MariaType.TinyIntUnsigned   => primitiveType("tinyintUnsigned")
-      case db.MariaType.SmallIntUnsigned  => primitiveType("smallintUnsigned")
-      case db.MariaType.MediumIntUnsigned => primitiveType("mediumintUnsigned")
-      case db.MariaType.IntUnsigned       => primitiveType("intUnsigned")
-      case db.MariaType.Float             => primitiveType("float_")
-      case db.MariaType.Double            => primitiveType("double_")
-      case db.MariaType.Decimal(_, _)     => primitiveType("numeric")
-      case db.MariaType.Boolean           => primitiveType("bool")
-      case db.MariaType.Bit(Some(1))      => primitiveType("bit1")
+      case dbType: db.MariaType =>
+        dbType match {
+          // Primitive types with language-specific overrides
+          case db.MariaType.TinyInt           => primitiveType("tinyint")
+          case db.MariaType.SmallInt          => primitiveType("smallint")
+          case db.MariaType.MediumInt         => primitiveType("mediumint")
+          case db.MariaType.Int               => primitiveType("int_")
+          case db.MariaType.BigInt            => primitiveType("bigint")
+          case db.MariaType.TinyIntUnsigned   => primitiveType("tinyintUnsigned")
+          case db.MariaType.SmallIntUnsigned  => primitiveType("smallintUnsigned")
+          case db.MariaType.MediumIntUnsigned => primitiveType("mediumintUnsigned")
+          case db.MariaType.IntUnsigned       => primitiveType("intUnsigned")
+          case db.MariaType.Float             => primitiveType("float_")
+          case db.MariaType.Double            => primitiveType("double_")
+          case db.MariaType.Decimal(_, _)     => primitiveType("numeric")
+          case db.MariaType.Boolean           => primitiveType("bool")
+          case db.MariaType.Bit(Some(1))      => primitiveType("bit1")
 
-      // Non-primitive types use base Types
-      case db.MariaType.BigIntUnsigned     => code"$Types.bigintUnsigned"
-      case db.MariaType.Bit(_)             => code"$Types.bit"
-      case db.MariaType.Char(_)            => code"$Types.char_"
-      case db.MariaType.VarChar(_)         => code"$Types.varchar"
-      case db.MariaType.TinyText           => code"$Types.tinytext"
-      case db.MariaType.Text               => code"$Types.text"
-      case db.MariaType.MediumText         => code"$Types.mediumtext"
-      case db.MariaType.LongText           => code"$Types.longtext"
-      case db.MariaType.Binary(_)          => code"$Types.binary"
-      case db.MariaType.VarBinary(_)       => code"$Types.varbinary"
-      case db.MariaType.TinyBlob           => code"$Types.tinyblob"
-      case db.MariaType.Blob               => code"$Types.blob"
-      case db.MariaType.MediumBlob         => code"$Types.mediumblob"
-      case db.MariaType.LongBlob           => code"$Types.longblob"
-      case db.MariaType.Date               => code"$Types.date"
-      case db.MariaType.Time(_)            => code"$Types.time"
-      case db.MariaType.DateTime(_)        => code"$Types.datetime"
-      case db.MariaType.Timestamp(_)       => code"$Types.timestamp"
-      case db.MariaType.Year               => code"$Types.year"
-      case db.MariaType.Enum(_)            => code"$Types.text" // MariaDB inline ENUMs stored as strings
-      case db.MariaType.Set(_)             => code"$Types.set"
-      case db.MariaType.Json               => code"$Types.json"
-      case db.MariaType.Inet4              => code"$Types.inet4"
-      case db.MariaType.Inet6              => code"$Types.inet6"
-      case db.MariaType.Geometry           => code"$Types.geometry"
-      case db.MariaType.Point              => code"$Types.point"
-      case db.MariaType.LineString         => code"$Types.linestring"
-      case db.MariaType.Polygon            => code"$Types.polygon"
-      case db.MariaType.MultiPoint         => code"$Types.multipoint"
-      case db.MariaType.MultiLineString    => code"$Types.multilinestring"
-      case db.MariaType.MultiPolygon       => code"$Types.multipolygon"
-      case db.MariaType.GeometryCollection => code"$Types.geometrycollection"
-      case db.Unknown(_)                   => code"$Types.unknown"
-      case _: db.PgType =>
-        sys.error(s"MariaDbAdapter.lookupByDbType: Cannot lookup PostgreSQL type in MariaDB adapter")
+          // Non-primitive types use base Types
+          case db.MariaType.BigIntUnsigned     => code"$Types.bigintUnsigned"
+          case db.MariaType.Bit(_)             => code"$Types.bit"
+          case db.MariaType.Char(_)            => code"$Types.char_"
+          case db.MariaType.VarChar(_)         => code"$Types.varchar"
+          case db.MariaType.TinyText           => code"$Types.tinytext"
+          case db.MariaType.Text               => code"$Types.text"
+          case db.MariaType.MediumText         => code"$Types.mediumtext"
+          case db.MariaType.LongText           => code"$Types.longtext"
+          case db.MariaType.Binary(_)          => code"$Types.binary"
+          case db.MariaType.VarBinary(_)       => code"$Types.varbinary"
+          case db.MariaType.TinyBlob           => code"$Types.tinyblob"
+          case db.MariaType.Blob               => code"$Types.blob"
+          case db.MariaType.MediumBlob         => code"$Types.mediumblob"
+          case db.MariaType.LongBlob           => code"$Types.longblob"
+          case db.MariaType.Date               => code"$Types.date"
+          case db.MariaType.Time(_)            => code"$Types.time"
+          case db.MariaType.DateTime(_)        => code"$Types.datetime"
+          case db.MariaType.Timestamp(_)       => code"$Types.timestamp"
+          case db.MariaType.Year               => code"$Types.year"
+          case db.MariaType.Enum(_)            => code"$Types.text" // MariaDB inline ENUMs stored as strings
+          case db.MariaType.Set(_)             => code"$Types.set"
+          case db.MariaType.Json               => code"$Types.json"
+          case db.MariaType.Inet4              => code"$Types.inet4"
+          case db.MariaType.Inet6              => code"$Types.inet6"
+          case db.MariaType.Geometry           => code"$Types.geometry"
+          case db.MariaType.Point              => code"$Types.point"
+          case db.MariaType.LineString         => code"$Types.linestring"
+          case db.MariaType.Polygon            => code"$Types.polygon"
+          case db.MariaType.MultiPoint         => code"$Types.multipoint"
+          case db.MariaType.MultiLineString    => code"$Types.multilinestring"
+          case db.MariaType.MultiPolygon       => code"$Types.multipolygon"
+          case db.MariaType.GeometryCollection => code"$Types.geometrycollection"
+          case db.Unknown(_)                   => code"$Types.unknown"
+        }
+      case _ =>
+        sys.error(s"MariaDbAdapter.lookupByDbType: Cannot lookup db type from another database")
     }
   }
 

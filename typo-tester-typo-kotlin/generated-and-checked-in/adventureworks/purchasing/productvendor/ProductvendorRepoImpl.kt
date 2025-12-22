@@ -39,7 +39,7 @@ class ProductvendorRepoImpl() : ProductvendorRepo {
   ): Int {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductvendorId::productid, ProductId::class.java)
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, ProductvendorId::businessentityid, BusinessentityId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"purchasing\".\"productvendor\"\nwhere (\"productid\", \"businessentityid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"purchasing\".\"productvendor\"\nwhere (\"productid\", \"businessentityid\")\nin (select * from unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -111,7 +111,7 @@ class ProductvendorRepoImpl() : ProductvendorRepo {
   ): List<ProductvendorRow> {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductvendorId::productid, ProductId::class.java)
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, ProductvendorId::businessentityid, BusinessentityId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\"\nfrom \"purchasing\".\"productvendor\"\nwhere (\"productid\", \"businessentityid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]))\n")).query(ProductvendorRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"productid\", \"businessentityid\", \"averageleadtime\", \"standardprice\", \"lastreceiptcost\", \"lastreceiptdate\", \"minorderqty\", \"maxorderqty\", \"onorderqty\", \"unitmeasurecode\", \"modifieddate\"\nfrom \"purchasing\".\"productvendor\"\nwhere (\"productid\", \"businessentityid\")\nin (select * from unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("))\n")).query(ProductvendorRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

@@ -20,6 +20,10 @@ abstract class TypeMapperJvm(lang: Lang, typeOverride: TypeOverride, nullability
     val baseTpe = col.tpe match {
       case db.PgType.Array(tpe) =>
         jvm.Type.ArrayOf(go(tpe))
+      case db.DuckDbType.ListType(tpe) =>
+        jvm.Type.ArrayOf(go(tpe))
+      case db.DuckDbType.ArrayType(tpe, _) =>
+        jvm.Type.ArrayOf(go(tpe))
       case other =>
         go(other)
     }
@@ -33,6 +37,10 @@ abstract class TypeMapperJvm(lang: Lang, typeOverride: TypeOverride, nullability
 
     val base = dbType match {
       case db.PgType.Array(tpe) =>
+        jvm.Type.ArrayOf(go(tpe, stripArrays = true))
+      case db.DuckDbType.ListType(tpe) =>
+        jvm.Type.ArrayOf(go(tpe, stripArrays = true))
+      case db.DuckDbType.ArrayType(tpe, _) =>
         jvm.Type.ArrayOf(go(tpe, stripArrays = true))
       case other =>
         go(other, stripArrays = false)
@@ -56,6 +64,10 @@ abstract class TypeMapperJvm(lang: Lang, typeOverride: TypeOverride, nullability
   def domain(dbType: db.Type): jvm.Type =
     dbType match {
       case db.PgType.Array(tpe) =>
+        jvm.Type.ArrayOf(baseType(tpe))
+      case db.DuckDbType.ListType(tpe) =>
+        jvm.Type.ArrayOf(baseType(tpe))
+      case db.DuckDbType.ArrayType(tpe, _) =>
         jvm.Type.ArrayOf(baseType(tpe))
       case other =>
         baseType(other)

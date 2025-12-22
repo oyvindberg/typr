@@ -31,7 +31,7 @@ class ProductinventoryRepoImpl extends ProductinventoryRepo {
     return interpolate(Fragment.lit("""delete
     from "production"."productinventory"
     where ("productid", "locationid")
-    in (select unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(LocationId.pgTypeArray, locationid), Fragment.lit("""::int2[]))
+    in (select * from unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(LocationId.pgTypeArray, locationid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -106,7 +106,7 @@ class ProductinventoryRepoImpl extends ProductinventoryRepo {
     return interpolate(Fragment.lit("""select "productid", "locationid", "shelf", "bin", "quantity", "rowguid", "modifieddate"
     from "production"."productinventory"
     where ("productid", "locationid")
-    in (select unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(LocationId.pgTypeArray, locationid), Fragment.lit("""::int2[]))
+    in (select * from unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(LocationId.pgTypeArray, locationid), Fragment.lit("""))
     """)).query(ProductinventoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

@@ -22,13 +22,13 @@ case class VsalespersonsalesbyfiscalyearsdataViewRow(
   /** Points to [[adventureworks.sales.salesterritory.SalesterritoryRow.name]] */
   salesterritory: Name,
   salestotal: Option[BigDecimal],
-  fiscalyear: BigDecimal
+  fiscalyear: Double
 )
 
 object VsalespersonsalesbyfiscalyearsdataViewRow {
-  implicit lazy val decoder: Decoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Decoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, BusinessentityId, String, String, Name, Option[BigDecimal], BigDecimal]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(VsalespersonsalesbyfiscalyearsdataViewRow.apply)(BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeString, Name.decoder, Decoder.decodeOption(Decoder.decodeBigDecimal), Decoder.decodeBigDecimal)
+  implicit lazy val decoder: Decoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Decoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, BusinessentityId, String, String, Name, Option[BigDecimal], Double]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(VsalespersonsalesbyfiscalyearsdataViewRow.apply)(BusinessentityId.decoder, Decoder.decodeString, Decoder.decodeString, Name.decoder, Decoder.decodeOption(Decoder.decodeBigDecimal), Decoder.decodeDouble)
 
-  implicit lazy val encoder: Encoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Encoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, BusinessentityId, String, String, Name, Option[BigDecimal], BigDecimal]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(x => (x.salespersonid, x.fullname, x.jobtitle, x.salesterritory, x.salestotal, x.fiscalyear))(BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeString, Name.encoder, Encoder.encodeOption(Encoder.encodeBigDecimal), Encoder.encodeBigDecimal)
+  implicit lazy val encoder: Encoder[VsalespersonsalesbyfiscalyearsdataViewRow] = Encoder.forProduct6[VsalespersonsalesbyfiscalyearsdataViewRow, BusinessentityId, String, String, Name, Option[BigDecimal], Double]("salespersonid", "fullname", "jobtitle", "salesterritory", "salestotal", "fiscalyear")(x => (x.salespersonid, x.fullname, x.jobtitle, x.salesterritory, x.salestotal, x.fiscalyear))(BusinessentityId.encoder, Encoder.encodeString, Encoder.encodeString, Name.encoder, Encoder.encodeOption(Encoder.encodeBigDecimal), Encoder.encodeDouble)
 
   implicit lazy val read: Read[VsalespersonsalesbyfiscalyearsdataViewRow] = {
     new Read.CompositeOfInstances(Array(
@@ -37,7 +37,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
         new Read.Single(Meta.StringMeta.get).asInstanceOf[Read[Any]],
         new Read.Single(Name.get).asInstanceOf[Read[Any]],
         new Read.SingleOpt(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]],
-        new Read.Single(Meta.ScalaBigDecimalMeta.get).asInstanceOf[Read[Any]]
+        new Read.Single(Meta.DoubleMeta.get).asInstanceOf[Read[Any]]
     ))(scala.reflect.ClassTag.Any).map { arr =>
       VsalespersonsalesbyfiscalyearsdataViewRow(
         salespersonid = arr(0).asInstanceOf[BusinessentityId],
@@ -45,7 +45,7 @@ object VsalespersonsalesbyfiscalyearsdataViewRow {
             jobtitle = arr(2).asInstanceOf[String],
             salesterritory = arr(3).asInstanceOf[Name],
             salestotal = arr(4).asInstanceOf[Option[BigDecimal]],
-            fiscalyear = arr(5).asInstanceOf[BigDecimal]
+            fiscalyear = arr(5).asInstanceOf[Double]
       )
     }
   }

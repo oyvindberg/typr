@@ -49,6 +49,7 @@ class DbLibTypo(
   val ScalaDbTypeOps = adapter.dbType match {
     case DbType.PostgreSQL => jvm.Type.Qualified("typo.scaladsl.PgTypeOps")
     case DbType.MariaDB    => jvm.Type.Qualified("typo.scaladsl.MariaTypeOps")
+    case DbType.DuckDB     => jvm.Type.Qualified("typo.scaladsl.DuckDbTypeOps")
   }
 
   def rowParserFor(rowType: jvm.Type) = code"$rowType.$rowParserName"
@@ -77,6 +78,12 @@ class DbLibTypo(
 
   /** Fragment.comma() now accepts Iterable, so no conversion needed */
   def collectionForComma(listCode: jvm.Code): jvm.Code = listCode
+
+  /** Fragment.or() expects List[Fragment] for Scala, ArrayList for Java/Kotlin */
+  def collectionForOr(listCode: jvm.Code): jvm.Code = lang match {
+    case _: LangScala => code"$listCode.toList"
+    case _            => listCode
+  }
 
   def SQL(content: jvm.Code): jvm.Code = {
     if (useNativeStringInterpolation) {
@@ -107,14 +114,15 @@ class DbLibTypo(
           processedParts
       }
 
-      // Kotlin doesn't support static imports from companion objects, so use qualified name
-      // Java can use static imports for cleaner code
+      // For Kotlin, use qualified name Fragment.interpolate() directly (static imports don't work with companion objects)
+      // For Java, use static import and unqualified name
       lang match {
         case _: LangKotlin =>
-          // Kotlin: use qualified name Fragment.interpolate(...)
-          code"$Fragment.interpolate(${finalParts.mkCode(", ")})"
+          // Create qualified call: Fragment.interpolate(...)
+          val selectInterpolate = jvm.Select(Fragment.code, jvm.Ident(lang.dsl.interpolatorName))
+          val call = jvm.Call(selectInterpolate.code, List(jvm.Call.ArgGroup(finalParts.map(jvm.Arg.Pos.apply), isImplicit = false)))
+          call.code
         case _ =>
-          // Java: use static import + unqualified name for cleaner code
           val staticImport = jvm.Import(Fragment / jvm.Ident(lang.dsl.interpolatorName), isStatic = true)
           val interpolateIdent = jvm.Ident(lang.dsl.interpolatorName)
           val call = jvm.Call(interpolateIdent, List(jvm.Call.ArgGroup(finalParts.map(jvm.Arg.Pos.apply), isImplicit = false)))
@@ -267,13 +275,17 @@ class DbLibTypo(
               }
               val selectClause = x.cols.toList match {
                 case single :: Nil =>
+                  // Single column: use unnest directly
                   code"select ${unnestCol(single)}"
-                case first :: rest =>
-                  val firstUnnest = code"select ${unnestCol(first)}"
-                  rest.foldLeft(firstUnnest) { (acc, col) =>
-                    code"$acc, ${unnestCol(col)}"
-                  }
-                case Nil => sys.error("No columns")
+                case _ =>
+                  // Multiple columns: SELECT * FROM unnest(arr1, arr2) works for both PostgreSQL and DuckDB
+                  val unnestArgs = x.cols.toList
+                    .map { col =>
+                      val arrayTypoType = TypoType.Array(jvm.Type.ArrayOf(col.tpe), col.typoType)
+                      runtimeInterpolateValue(col.name, arrayTypoType)
+                    }
+                    .mkCode(", ")
+                  code"select * from unnest($unnestArgs)"
               }
               code"""|select $colNames
                      |from $qRelName
@@ -282,6 +294,49 @@ class DbLibTypo(
                      |""".stripMargin
             }
             jvm.Body.Stmts(vals.toList :+ jvm.Return(code"$sql.query(${resultSetParserFor(rowType, "all")})$queryAllRunUnchecked").code)
+        }
+
+      case DbType.DuckDB =>
+        id match {
+          case x: IdComputed.Unary =>
+            // DuckDB: WHERE col = ANY(array) - same as PostgreSQL
+            val arrayTypoType = TypoType.Array(idsParam.tpe, x.typoType)
+            val sql = SQL {
+              code"""|select $colNames
+                     |from $qRelName
+                     |where ${jvm.Code.Str(adapter.quoteIdent(x.col.dbName.value))} = ANY(${runtimeInterpolateValue(idsParam.name, arrayTypoType)})""".stripMargin
+            }
+            jvm.Body.Expr(code"$sql.query(${resultSetParserFor(rowType, "all")})$queryAllRunUnchecked")
+
+          case x: IdComputed.Composite =>
+            // DuckDB: Generate OR clauses since unnest(INTEGER[], VARCHAR[]) doesn't work with mixed types
+            // WHERE (col1 = ? AND col2 = ?) OR (col1 = ? AND col2 = ?) OR ...
+            val idIdent = jvm.Ident("id")
+            val orClauses = jvm.Ident("orClauses")
+
+            // Build: "(col1 = encode(id.col1) AND col2 = encode(id.col2))"
+            val encodedCols = x.cols.toList.map { col =>
+              val quotedCol = adapter.quoteIdent(col.dbCol.name.value)
+              code"$Fragment.lit(${jvm.StrLit(s"$quotedCol = ")}), $Fragment.encode(${lookupType(col)}, ${lang.prop(idIdent.code, col.name)})"
+            }
+            val andLit = code"$Fragment.lit(${jvm.StrLit(" AND ")})"
+            val andArgs = encodedCols.flatMap(e => List(andLit, e)).drop(1)
+            val openParen = code"$Fragment.lit(${jvm.StrLit("(")})"
+            val closeParen = code"$Fragment.lit(${jvm.StrLit(")")})"
+            val orClauseForId = code"$Fragment.interpolate($openParen, ${andArgs.mkCode(", ")}, $closeParen)"
+            val addOrClause = lang.typeSupport.MutableListOps.add(orClauses.code, orClauseForId)
+
+            jvm.Body.Stmts(
+              List(
+                jvm.LocalVar(orClauses, Some(lang.typeSupport.MutableListOps.tpe.of(Fragment)), lang.typeSupport.MutableListOps.empty),
+                lang.arrayForEach(idsParam.name.code, idIdent, jvm.Body.Expr(addOrClause)),
+                jvm.Return(
+                  code"""$Fragment.interpolate($Fragment.lit(${jvm.StrLit(
+                      s"select $colNamesStr\nfrom $qRelNameStr\nwhere "
+                    )}), $Fragment.or(${collectionForOr(orClauses.code)}), $Fragment.lit(${jvm.StrLit("\n")})).query(${resultSetParserFor(rowType, "all")})$queryAllRunUnchecked"""
+                )
+              )
+            )
         }
 
       case DbType.MariaDB =>
@@ -386,13 +441,17 @@ class DbLibTypo(
               }
               val selectClause = x.cols.toList match {
                 case single :: Nil =>
+                  // Single column: use unnest directly
                   code"select ${unnestCol(single)}"
-                case first :: rest =>
-                  val firstUnnest = code"select ${unnestCol(first)}"
-                  rest.foldLeft(firstUnnest) { (acc, col) =>
-                    code"$acc, ${unnestCol(col)}"
-                  }
-                case Nil => sys.error("No columns")
+                case _ =>
+                  // Multiple columns: SELECT * FROM unnest(arr1, arr2) works for both PostgreSQL and DuckDB
+                  val unnestArgs = x.cols.toList
+                    .map { col =>
+                      val arrayTypoType = TypoType.Array(jvm.Type.ArrayOf(col.tpe), col.typoType)
+                      runtimeInterpolateValue(col.name, arrayTypoType)
+                    }
+                    .mkCode(", ")
+                  code"select * from unnest($unnestArgs)"
               }
               code"""|delete
                      |from $qRelName
@@ -401,6 +460,52 @@ class DbLibTypo(
                      |""".stripMargin
             }
             jvm.Body.Stmts(vals.toList :+ jvm.Return(code"$sql.update().runUnchecked(c)").code)
+        }
+
+      case DbType.DuckDB =>
+        id match {
+          case x: IdComputed.Unary =>
+            // DuckDB: WHERE col = ANY(array) - same as PostgreSQL
+            val arrayTypoType = TypoType.Array(jvm.Type.ArrayOf(x.tpe), x.typoType)
+            val sql = SQL {
+              code"""|delete
+                     |from $qRelName
+                     |where ${jvm.Code.Str(adapter.quoteIdent(x.col.dbName.value))} = ANY(${runtimeInterpolateValue(idsParam.name, arrayTypoType)})""".stripMargin
+            }
+            jvm.Body.Expr(
+              code"""|$sql
+                     |  .update()
+                     |  .runUnchecked(c)""".stripMargin
+            )
+
+          case x: IdComputed.Composite =>
+            // DuckDB: Generate OR clauses since unnest(INTEGER[], VARCHAR[]) doesn't work with mixed types
+            val idIdent = jvm.Ident("id")
+            val orClauses = jvm.Ident("orClauses")
+
+            // Build: "(col1 = encode(id.col1) AND col2 = encode(id.col2))"
+            val encodedCols = x.cols.toList.map { col =>
+              val quotedCol = adapter.quoteIdent(col.dbCol.name.value)
+              code"$Fragment.lit(${jvm.StrLit(s"$quotedCol = ")}), $Fragment.encode(${lookupType(col)}, ${lang.prop(idIdent.code, col.name)})"
+            }
+            val andLit = code"$Fragment.lit(${jvm.StrLit(" AND ")})"
+            val andArgs = encodedCols.flatMap(e => List(andLit, e)).drop(1)
+            val openParen = code"$Fragment.lit(${jvm.StrLit("(")})"
+            val closeParen = code"$Fragment.lit(${jvm.StrLit(")")})"
+            val orClauseForId = code"$Fragment.interpolate($openParen, ${andArgs.mkCode(", ")}, $closeParen)"
+            val addOrClause = lang.typeSupport.MutableListOps.add(orClauses.code, orClauseForId)
+
+            jvm.Body.Stmts(
+              List(
+                jvm.LocalVar(orClauses, Some(lang.typeSupport.MutableListOps.tpe.of(Fragment)), lang.typeSupport.MutableListOps.empty),
+                lang.arrayForEach(idsParam.name.code, idIdent, jvm.Body.Expr(addOrClause)),
+                jvm.Return(
+                  code"""$Fragment.interpolate($Fragment.lit(${jvm.StrLit(
+                      s"delete\nfrom $qRelNameStr\nwhere "
+                    )}), $Fragment.or(${collectionForOr(orClauses.code)}), $Fragment.lit(${jvm.StrLit("\n")})).update().runUnchecked(c)"""
+                )
+              )
+            )
         }
 
       case DbType.MariaDB =>
@@ -743,10 +848,11 @@ class DbLibTypo(
         }
         val rowParser = code"$rowType.$rowParserName"
         // MariaDB: RETURNING with batch doesn't work via getGeneratedKeys(), so we execute each row individually
+        // DuckDB: JDBC driver doesn't support batch + RETURNING (SQLFeatureNotSupportedException)
         // PostgreSQL: Use updateManyReturning which works correctly with batch + RETURNING
         // Note: For Scala DSL, Fragment methods expect Scala iterators, not Java iterators
         val unsavedArg = code"unsaved"
-        if (!adapter.supportsArrays) {
+        if (!adapter.supportsArrays || adapter.dbType == DbType.DuckDB) {
           jvm.Body.Expr(
             code"""|$sql
                    |  .updateReturningEach($rowParser, $unsavedArg)
@@ -1336,8 +1442,9 @@ class DbLibTypo(
               val lambda1 = jvm.Lambda(xs, lang.arrayMap(xs.code, create, jvm.ClassOf(wrapperType).code))
               val lambda2 = jvm.Lambda(xs, lang.arrayMap(xs.code, extract, underlyingJvmCls.code))
               val arrayDbType = underlyingDbType match {
-                case pgType: db.PgType => db.PgType.Array(pgType)
-                case other             => other
+                case pgType: db.PgType         => db.PgType.Array(pgType)
+                case duckDbType: db.DuckDbType => db.DuckDbType.ArrayType(duckDbType, None)
+                case other                     => other
               }
               val base =
                 code"""|${lookupType(arrayDbType)}
@@ -1388,8 +1495,9 @@ class DbLibTypo(
               val lambda1 = jvm.Lambda(xs, lang.arrayMap(xs.code, jvm.ConstructorMethodRef(wrapperType).code, jvm.ClassOf(wrapperType).code))
               val lambda2 = jvm.Lambda(xs, lang.arrayMap(xs.code, jvm.FieldGetterRef(wrapperType, jvm.Ident("value")).code, jvm.ClassOf(underlyingJvmType).code))
               val arrayDbType = underlyingDbType match {
-                case pgType: db.PgType => db.PgType.Array(pgType)
-                case other             => other
+                case pgType: db.PgType         => db.PgType.Array(pgType)
+                case duckDbType: db.DuckDbType => db.DuckDbType.ArrayType(duckDbType, None)
+                case other                     => other
               }
               val base = code"${lookupType(arrayDbType)}.bimap($lambda1, $lambda2)"
               overrideDbType.fold(base)(t => maybeRename(base, t + "[]"))
@@ -1428,61 +1536,65 @@ class DbLibTypo(
           // because Kotlin's ::ClassName doesn't SAM-convert to Java functional interfaces
           // Also, we must NOT use typed lambda parameters because Kotlin won't SAM-convert
           // typed lambdas to Java functional interfaces with generic type parameters
-
           val decodeLambda: jvm.Code = lang match {
-            case LangScala(_, TypeSupportJava, _) if cols.length > 22 =>
-              // For Scala with Java types and arity > 22, directly instantiate Function type
-              // to work around Scala compiler bug with SAM conversion
-              val params = cols.toList.zipWithIndex.map { case (col, i) =>
-                jvm.Param(jvm.Ident(s"t$i"), col.tpe)
-              }
-              val args = params.map(_.name.code)
-              val applyMethod = jvm.Method(
-                annotations = Nil,
-                comments = jvm.Comments.Empty,
-                tparams = Nil,
-                name = jvm.Ident("apply"),
-                params = params,
-                implicitParams = Nil,
-                tpe = tpe,
-                throws = Nil,
-                body = jvm.Body.Expr(tpe.construct(args: _*)),
-                isOverride = true,
-                isDefault = false
-              )
-              val functionTypeName = jvm.Type.Qualified(s"typo.runtime.RowParsers.Function${cols.length}")
-              val typeParams = cols.toList.map(_.tpe) :+ tpe
-              val functionType = functionTypeName.of(typeParams: _*)
-              jvm
-                .NewWithBody(
-                  extendsClass = None,
-                  implementsInterface = Some(functionType),
-                  members = List(applyMethod)
-                )
-                .code
             case _: LangKotlin =>
               val params = cols.toList.zipWithIndex.map { case (col, i) =>
                 jvm.Param(jvm.Ident(s"t$i"), col.tpe)
               }
               val args = params.zip(cols.toList).map { case (p, col) =>
-                // Don't use NotNull (!!); parameter types already encode nullability from PgType
+                // Don't use !! - the RowParser framework handles nullability correctly
+                val paramRef = p.name.code
                 // Use base() to unwrap Commented/UserDefined wrappers
                 jvm.Type.base(col.tpe) match {
-                  case TypesJava.String => code"${p.name} as ${col.tpe}"
-                  case _                => p.name.code
+                  case TypesJava.String => code"$paramRef as ${col.tpe}"
+                  case _                => paramRef
                 }
               }
               // Use untyped params for SAM conversion compatibility
               jvm.Lambda(params.map(p => jvm.LambdaParam(p.name)), jvm.Body.Expr(tpe.construct(args: _*)))
+            case _: LangScala if lang.typeSupport == TypeSupportJava && cols.length > 22 =>
+              // For Scala with TypeSupportJava and >22 params, Scala cannot implement Java function types
+              // with that many parameters. Use Object[] array instead: (Object[] arr) -> new Row(arr(0).asInstanceOf[T], ...)
+              val arr = jvm.Ident("arr")
+              val args = cols.toList.zipWithIndex.map { case (col, i) =>
+                code"${arr.code}($i).asInstanceOf[${col.tpe}]"
+              }
+              jvm.Lambda(
+                List(jvm.LambdaParam(arr, Some(jvm.Type.ArrayOf(TypesJava.Object)))),
+                jvm.Body.Expr(tpe.construct(args: _*))
+              )
+            case _: LangScala =>
+              // For Scala, always generate explicit lambda - method references don't work for >22 params
+              // and can cause LambdaConversionException in Scala 3
+              val params = cols.toList.zipWithIndex.map { case (col, i) =>
+                jvm.Param(jvm.Ident(s"t$i"), col.tpe)
+              }
+              val args = params.map(_.name.code)
+              jvm.Lambda(params.map(p => jvm.LambdaParam(p.name)), jvm.Body.Expr(tpe.construct(args: _*)))
+            case _ if lang.typeSupport == TypeSupportJava =>
+              // For TypeSupportJava (Java types in other langs), also use lambda
+              val params = cols.toList.zipWithIndex.map { case (col, i) =>
+                jvm.Param(jvm.Ident(s"t$i"), col.tpe)
+              }
+              val args = params.map(_.name.code)
+              jvm.Lambda(params.map(p => jvm.LambdaParam(p.name)), jvm.Body.Expr(tpe.construct(args: _*)))
             case _ =>
               jvm.ConstructorMethodRef(tpe)
           }
-          // For Scala DSL, use curried calls; for Java/Kotlin, use single parameter list
-          lang.dsl match {
-            case DslQualifiedNames.Scala =>
-              code"${lang.dsl.RowParsers}.of($pgTypes)($decodeLambda)($encodeLambda)"
+          // For Scala with TypeSupportJava and >22 params, use RowParser constructor directly
+          // because RowParsers.of() uses Function22+ which Scala cannot implement
+          lang match {
+            case _: LangScala if lang.typeSupport == TypeSupportJava && cols.length > 22 =>
+              val columnsList = code"${TypesJava.List}.of($pgTypes)"
+              code"new ${lang.dsl.RowParser}($columnsList, $decodeLambda, $encodeLambda)"
             case _ =>
-              code"${lang.dsl.RowParsers}.of($pgTypes, $decodeLambda, $encodeLambda)"
+              // For Scala DSL, use curried calls; for Java/Kotlin, use single parameter list
+              lang.dsl match {
+                case DslQualifiedNames.Scala =>
+                  code"${lang.dsl.RowParsers}.of($pgTypes)($decodeLambda)($encodeLambda)"
+                case _ =>
+                  code"${lang.dsl.RowParsers}.of($pgTypes, $decodeLambda, $encodeLambda)"
+              }
           }
         },
         isLazy = false,

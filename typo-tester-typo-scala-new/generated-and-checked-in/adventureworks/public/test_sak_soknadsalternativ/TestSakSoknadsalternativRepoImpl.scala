@@ -28,7 +28,7 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
     return sql"""delete
     from "public"."test_sak_soknadsalternativ"
     where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-    in (select unnest(${Fragment.encode(PgTypes.textArray, organisasjonskodeSaksbehandler)}::text[]), unnest(${Fragment.encode(PgTypes.textArray, utdanningsmulighetKode)}::text[]))
+    in (select * from unnest(${Fragment.encode(PgTypes.textArray, organisasjonskodeSaksbehandler)}, ${Fragment.encode(PgTypes.textArray, utdanningsmulighetKode)}))
     """.update().runUnchecked(c)
   }
 
@@ -65,7 +65,7 @@ class TestSakSoknadsalternativRepoImpl extends TestSakSoknadsalternativRepo {
     return sql"""select "organisasjonskode_saksbehandler", "utdanningsmulighet_kode", "organisasjonskode_tilbyder"
     from "public"."test_sak_soknadsalternativ"
     where ("organisasjonskode_saksbehandler", "utdanningsmulighet_kode")
-    in (select unnest(${Fragment.encode(PgTypes.textArray, organisasjonskodeSaksbehandler)}::text[]), unnest(${Fragment.encode(PgTypes.textArray, utdanningsmulighetKode)}::text[]))
+    in (select * from unnest(${Fragment.encode(PgTypes.textArray, organisasjonskodeSaksbehandler)}, ${Fragment.encode(PgTypes.textArray, utdanningsmulighetKode)}))
     """.query(TestSakSoknadsalternativRow.`_rowParser`.all()).runUnchecked(c)
   }
 

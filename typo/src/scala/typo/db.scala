@@ -134,8 +134,62 @@ object db {
     case object Json extends MariaType
   }
 
-  // Shared/unknown type - extends both PgType and MariaType so it can be used in pattern matching for either
-  case class Unknown(sqlType: String) extends PgType with MariaType
+  // DuckDB-specific types
+  sealed trait DuckDbType extends Type
+  object DuckDbType {
+    // Integer types (signed)
+    case object TinyInt extends DuckDbType
+    case object SmallInt extends DuckDbType
+    case object Integer extends DuckDbType
+    case object BigInt extends DuckDbType
+    case object HugeInt extends DuckDbType
+    // Integer types (unsigned)
+    case object UTinyInt extends DuckDbType
+    case object USmallInt extends DuckDbType
+    case object UInteger extends DuckDbType
+    case object UBigInt extends DuckDbType
+    case object UHugeInt extends DuckDbType
+    // Floating-point
+    case object Float extends DuckDbType
+    case object Double extends DuckDbType
+    // Fixed-point
+    case class Decimal(precision: Option[Int], scale: Option[Int]) extends DuckDbType
+    // Boolean
+    case object Boolean extends DuckDbType
+    // String types
+    case class VarChar(maxLength: Option[Int]) extends DuckDbType
+    case class Char(length: Option[Int]) extends DuckDbType
+    case object Text extends DuckDbType
+    // Binary
+    case object Blob extends DuckDbType
+    // Bit string
+    case class Bit(length: Option[Int]) extends DuckDbType
+    // Date/Time types
+    case object Date extends DuckDbType
+    case object Time extends DuckDbType
+    case object Timestamp extends DuckDbType
+    case object TimestampTz extends DuckDbType
+    case object TimestampS extends DuckDbType
+    case object TimestampMS extends DuckDbType
+    case object TimestampNS extends DuckDbType
+    case object TimeTz extends DuckDbType
+    case object Interval extends DuckDbType
+    // UUID
+    case object UUID extends DuckDbType
+    // JSON
+    case object Json extends DuckDbType
+    // Enum type
+    case class Enum(name: String, values: List[String]) extends DuckDbType
+    // Nested/Complex types
+    case class ListType(elementType: Type) extends DuckDbType
+    case class ArrayType(elementType: Type, size: Option[Int]) extends DuckDbType
+    case class MapType(keyType: Type, valueType: Type) extends DuckDbType
+    case class StructType(fields: List[(String, Type)]) extends DuckDbType
+    case class UnionType(members: List[(String, Type)]) extends DuckDbType
+  }
+
+  // Shared/unknown type - extends all database types
+  case class Unknown(sqlType: String) extends PgType with MariaType with DuckDbType
 
   case class Domain(name: RelationName, tpe: Type, originalType: String, isNotNull: Nullability, hasDefault: Boolean, constraintDefinition: Option[String])
   case class StringEnum(name: RelationName, values: NonEmptyList[String])

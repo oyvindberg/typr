@@ -65,11 +65,11 @@ public class CountryregioncurrencyRepoImpl implements CountryregioncurrencyRepo 
                 "delete\n"
                     + "from \"sales\".\"countryregioncurrency\"\n"
                     + "where (\"countryregioncode\", \"currencycode\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(CountryregionId.pgTypeArray, countryregioncode),
-            Fragment.lit("::varchar[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(CurrencyId.pgTypeArray, currencycode),
-            Fragment.lit("::bpchar[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -214,11 +214,11 @@ public class CountryregioncurrencyRepoImpl implements CountryregioncurrencyRepo 
                 "select \"countryregioncode\", \"currencycode\", \"modifieddate\"\n"
                     + "from \"sales\".\"countryregioncurrency\"\n"
                     + "where (\"countryregioncode\", \"currencycode\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(CountryregionId.pgTypeArray, countryregioncode),
-            Fragment.lit("::varchar[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(CurrencyId.pgTypeArray, currencycode),
-            Fragment.lit("::bpchar[]))\n"))
+            Fragment.lit("))\n"))
         .query(CountryregioncurrencyRow._rowParser.all())
         .runUnchecked(c);
   }

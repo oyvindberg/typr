@@ -277,7 +277,7 @@ def collect_placeholders_in_order(node: exp.Expression, results: list) -> None:
                 collect_placeholders_in_order(child, results)
 
 
-def infer_parameter_types(annotated_ast, alias_to_table: dict) -> list[dict]:
+def infer_parameter_types(annotated_ast, alias_to_table: dict, dialect: str) -> list[dict]:
     """
     Walk the annotated AST to find ALL placeholders and infer their types from context.
     """
@@ -401,7 +401,7 @@ def infer_parameter_types(annotated_ast, alias_to_table: dict) -> list[dict]:
             # Parameter is being cast - get the target type
             cast_type = parent.to
             if cast_type:
-                info['type'] = cast_type.sql(dialect='mysql')
+                info['type'] = cast_type.sql(dialect=dialect)
                 info['context'] = 'CAST'
 
         elif isinstance(parent, (exp.Limit, exp.Offset)):
@@ -604,14 +604,25 @@ def build_sqlglot_schema(schema: dict, dialect: str) -> tuple[MappingSchema, dic
     sqlglot_schema = MappingSchema(dialect=dialect)
     sqlglot_schema_dict = {}
 
+    # Build two separate maps:
+    # 1. sqlglot_schema_for_sqlglot: for sqlglot's type inference (uses exp.DataType)
+    # 2. sqlglot_schema_dict: for our lookups (preserves full column info including nullable)
+    sqlglot_schema_for_sqlglot = {}
+
     for table_name, columns in schema.items():
-        table_cols = {}
+        table_cols_for_sqlglot = {}
+        table_cols_dict = {}
+
         for col_name, col_info in columns.items():
             if isinstance(col_info, dict):
+                # Preserve the full dict for our lookups (includes nullable, primary_key)
+                table_cols_dict[col_name] = col_info
+
+                # Build exp.DataType for sqlglot's inference
                 col_type = col_info.get("type", "VARCHAR")
                 try:
                     dtype = exp.DataType.build(col_type, dialect=dialect)
-                    table_cols[col_name] = dtype
+                    table_cols_for_sqlglot[col_name] = dtype
                 except Exception as e:
                     # Try spatial types, otherwise use string
                     spatial_types = {
@@ -622,15 +633,17 @@ def build_sqlglot_schema(schema: dict, dialect: str) -> tuple[MappingSchema, dic
                     }
                     lower_type = col_type.lower()
                     if lower_type in spatial_types:
-                        table_cols[col_name] = exp.DataType(this=spatial_types[lower_type])
+                        table_cols_for_sqlglot[col_name] = exp.DataType(this=spatial_types[lower_type])
                     else:
                         # Only warn once per unique type to reduce verbosity
                         if col_type not in _warned_types:
                             _warned_types.add(col_type)
                             print(f"Warning: couldn't parse type '{col_type}': {e}", file=sys.stderr)
-                        table_cols[col_name] = col_type
+                        table_cols_for_sqlglot[col_name] = col_type
             else:
-                table_cols[col_name] = col_info
+                # Not a dict - just use the value directly
+                table_cols_for_sqlglot[col_name] = col_info
+                table_cols_dict[col_name] = col_info
 
         # Quote table name if it contains special characters (like hyphens)
         # sqlglot expects quoted identifiers for names with special chars
@@ -649,15 +662,12 @@ def build_sqlglot_schema(schema: dict, dialect: str) -> tuple[MappingSchema, dic
             quoted_table_name = f'"{table_name}"'
 
         try:
-            sqlglot_schema.add_table(quoted_table_name, table_cols)
+            sqlglot_schema.add_table(quoted_table_name, table_cols_for_sqlglot)
         except Exception as e:
             print(f"Warning: couldn't add table '{table_name}' to schema: {e}", file=sys.stderr)
 
-        # Store with original name for lookups
-        sqlglot_schema_dict[table_name] = {
-            k: str(v) if isinstance(v, exp.DataType) else v
-            for k, v in table_cols.items()
-        }
+        # Store the dict version for our lookups (preserves nullable, primary_key)
+        sqlglot_schema_dict[table_name] = table_cols_dict
 
     return sqlglot_schema, sqlglot_schema_dict
 
@@ -858,6 +868,18 @@ def analyze_sql(sql: str, sqlglot_schema: MappingSchema, sqlglot_schema_dict: di
             if hasattr(select_col, 'type') and select_col.type:
                 inferred_type = str(select_col.type)
 
+            # Fix known function return types that sqlglot gets wrong
+            if isinstance(select_col, exp.Alias):
+                expr = select_col.this
+            else:
+                expr = select_col
+
+            # Fix known function return types that sqlglot gets wrong
+            # DuckDB DATE_DIFF function returns INTEGER, not DATE
+            if isinstance(expr, exp.DateDiff):
+                # DATE_DIFF returns INTEGER
+                inferred_type = 'INT'
+
             # Get direct source using the qualified/annotated AST
             source_table, source_col, is_expr = get_direct_column_source(
                 annotated, col_name, sqlglot_schema_dict, dialect
@@ -895,6 +917,11 @@ def analyze_sql(sql: str, sqlglot_schema: MappingSchema, sqlglot_schema_dict: di
                             nullable_in_schema = col_schema.get("nullable", False)
                             source_primary_key = col_schema.get("primary_key", False)
                         break
+
+            # For expressions with manually corrected types, clear source_type so inferred_type takes precedence
+            expr_upper = str(expr).upper()
+            if inferred_type == 'INT' and ('DATE_DIFF' in expr_upper or 'DATEDIFF' in expr_upper):
+                source_type = None
 
             # Fallback from qualified column
             if not source_table and isinstance(inner, exp.Column) and inner.table:
@@ -939,7 +966,7 @@ def analyze_sql(sql: str, sqlglot_schema: MappingSchema, sqlglot_schema_dict: di
     # Infer parameter types
     param_types_start = time.time()
     if parameters:
-        param_type_info = infer_parameter_types(annotated, alias_to_table)
+        param_type_info = infer_parameter_types(annotated, alias_to_table, dialect)
         for i, param in enumerate(parameters):
             if i < len(param_type_info):
                 info = param_type_info[i]

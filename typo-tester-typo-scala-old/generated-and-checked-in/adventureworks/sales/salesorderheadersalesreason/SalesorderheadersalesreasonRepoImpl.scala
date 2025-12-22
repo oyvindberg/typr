@@ -31,7 +31,7 @@ class SalesorderheadersalesreasonRepoImpl extends SalesorderheadersalesreasonRep
     return interpolate(Fragment.lit("""delete
     from "sales"."salesorderheadersalesreason"
     where ("salesorderid", "salesreasonid")
-    in (select unnest("""), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit(", "), Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -94,7 +94,7 @@ class SalesorderheadersalesreasonRepoImpl extends SalesorderheadersalesreasonRep
     return interpolate(Fragment.lit("""select "salesorderid", "salesreasonid", "modifieddate"
     from "sales"."salesorderheadersalesreason"
     where ("salesorderid", "salesreasonid")
-    in (select unnest("""), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid), Fragment.lit("""::int4[]))
+    in (select * from unnest("""), Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid), Fragment.lit(", "), Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid), Fragment.lit("""))
     """)).query(SalesorderheadersalesreasonRow.`_rowParser`.all()).runUnchecked(c)
   }
 

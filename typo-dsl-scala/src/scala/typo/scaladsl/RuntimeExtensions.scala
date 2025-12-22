@@ -15,6 +15,11 @@ implicit class MariaTypeOps[A](private val mariaType: MariaType[A]) extends AnyV
     mariaType.opt.to(Bijections.optionalToOption[A])
 }
 
+implicit class DuckDbTypeOps[A](private val duckDbType: DuckDbType[A]) extends AnyVal {
+  def nullable: DuckDbType[Option[A]] =
+    duckDbType.opt.to(Bijections.optionalToOption[A])
+}
+
 implicit class DbTypeOps[A](private val dbType: DbType[A]) extends AnyVal {
   def nullable: DbType[Option[A]] =
     dbType.opt.to(Bijections.optionalToOption[A])

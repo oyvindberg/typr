@@ -32,7 +32,7 @@ class WorkorderroutingRepoImpl extends WorkorderroutingRepo {
     return interpolate(Fragment.lit("""delete
     from "production"."workorderrouting"
     where ("workorderid", "productid", "operationsequence")
-    in (select unnest("""), Fragment.encode(WorkorderId.pgTypeArray, workorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int2Array, operationsequence), Fragment.lit("""::int2[]))
+    in (select * from unnest("""), Fragment.encode(WorkorderId.pgTypeArray, workorderid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, productid), Fragment.lit(", "), Fragment.encode(PgTypes.int2Array, operationsequence), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -114,7 +114,7 @@ class WorkorderroutingRepoImpl extends WorkorderroutingRepo {
     return interpolate(Fragment.lit("""select "workorderid", "productid", "operationsequence", "locationid", "scheduledstartdate", "scheduledenddate", "actualstartdate", "actualenddate", "actualresourcehrs", "plannedcost", "actualcost", "modifieddate"
     from "production"."workorderrouting"
     where ("workorderid", "productid", "operationsequence")
-    in (select unnest("""), Fragment.encode(WorkorderId.pgTypeArray, workorderid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int4Array, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.int2Array, operationsequence), Fragment.lit("""::int2[]))
+    in (select * from unnest("""), Fragment.encode(WorkorderId.pgTypeArray, workorderid), Fragment.lit(", "), Fragment.encode(PgTypes.int4Array, productid), Fragment.lit(", "), Fragment.encode(PgTypes.int2Array, operationsequence), Fragment.lit("""))
     """)).query(WorkorderroutingRow.`_rowParser`.all()).runUnchecked(c)
   }
 

@@ -32,7 +32,7 @@ class ProductcosthistoryRepoImpl extends ProductcosthistoryRepo {
     return sql"""delete
     from "production"."productcosthistory"
     where ("productid", "startdate")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(PgTypes.timestampArray, startdate)}::timestamp[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(PgTypes.timestampArray, startdate)}))
     """.update().runUnchecked(c)
   }
 
@@ -99,7 +99,7 @@ class ProductcosthistoryRepoImpl extends ProductcosthistoryRepo {
     return sql"""select "productid", "startdate", "enddate", "standardcost", "modifieddate"
     from "production"."productcosthistory"
     where ("productid", "startdate")
-    in (select unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}::int4[]), unnest(${Fragment.encode(PgTypes.timestampArray, startdate)}::timestamp[]))
+    in (select * from unnest(${Fragment.encode(ProductId.pgTypeArray, productid)}, ${Fragment.encode(PgTypes.timestampArray, startdate)}))
     """.query(ProductcosthistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

@@ -38,7 +38,7 @@ class ProductmodelproductdescriptioncultureRepoImpl() : Productmodelproductdescr
     val productmodelid: Array<ProductmodelId> = arrayMap.map(compositeIds, ProductmodelproductdescriptioncultureId::productmodelid, ProductmodelId::class.java)
     val productdescriptionid: Array<ProductdescriptionId> = arrayMap.map(compositeIds, ProductmodelproductdescriptioncultureId::productdescriptionid, ProductdescriptionId::class.java)
     val cultureid: Array<CultureId> = arrayMap.map(compositeIds, ProductmodelproductdescriptioncultureId::cultureid, CultureId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productmodelproductdescriptionculture\"\nwhere (\"productmodelid\", \"productdescriptionid\", \"cultureid\")\nin (select unnest("), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid), Fragment.lit("::int4[]), unnest("), Fragment.encode(CultureId.pgTypeArray, cultureid), Fragment.lit("::bpchar[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productmodelproductdescriptionculture\"\nwhere (\"productmodelid\", \"productdescriptionid\", \"cultureid\")\nin (select * from unnest("), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit(", "), Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid), Fragment.lit(", "), Fragment.encode(CultureId.pgTypeArray, cultureid), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -97,7 +97,7 @@ class ProductmodelproductdescriptioncultureRepoImpl() : Productmodelproductdescr
     val productmodelid: Array<ProductmodelId> = arrayMap.map(compositeIds, ProductmodelproductdescriptioncultureId::productmodelid, ProductmodelId::class.java)
     val productdescriptionid: Array<ProductdescriptionId> = arrayMap.map(compositeIds, ProductmodelproductdescriptioncultureId::productdescriptionid, ProductdescriptionId::class.java)
     val cultureid: Array<CultureId> = arrayMap.map(compositeIds, ProductmodelproductdescriptioncultureId::cultureid, CultureId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"productmodelid\", \"productdescriptionid\", \"cultureid\", \"modifieddate\"\nfrom \"production\".\"productmodelproductdescriptionculture\"\nwhere (\"productmodelid\", \"productdescriptionid\", \"cultureid\")\nin (select unnest("), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit("::int4[]), unnest("), Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid), Fragment.lit("::int4[]), unnest("), Fragment.encode(CultureId.pgTypeArray, cultureid), Fragment.lit("::bpchar[]))\n")).query(ProductmodelproductdescriptioncultureRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"productmodelid\", \"productdescriptionid\", \"cultureid\", \"modifieddate\"\nfrom \"production\".\"productmodelproductdescriptionculture\"\nwhere (\"productmodelid\", \"productdescriptionid\", \"cultureid\")\nin (select * from unnest("), Fragment.encode(ProductmodelId.pgTypeArray, productmodelid), Fragment.lit(", "), Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid), Fragment.lit(", "), Fragment.encode(CultureId.pgTypeArray, cultureid), Fragment.lit("))\n")).query(ProductmodelproductdescriptioncultureRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

@@ -37,7 +37,7 @@ class ProductinventoryRepoImpl() : ProductinventoryRepo {
   ): Int {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductinventoryId::productid, ProductId::class.java)
     val locationid: Array<LocationId> = arrayMap.map(compositeIds, ProductinventoryId::locationid, LocationId::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productinventory\"\nwhere (\"productid\", \"locationid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(LocationId.pgTypeArray, locationid), Fragment.lit("::int2[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"production\".\"productinventory\"\nwhere (\"productid\", \"locationid\")\nin (select * from unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(LocationId.pgTypeArray, locationid), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -107,7 +107,7 @@ class ProductinventoryRepoImpl() : ProductinventoryRepo {
   ): List<ProductinventoryRow> {
     val productid: Array<ProductId> = arrayMap.map(compositeIds, ProductinventoryId::productid, ProductId::class.java)
     val locationid: Array<LocationId> = arrayMap.map(compositeIds, ProductinventoryId::locationid, LocationId::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productinventory\"\nwhere (\"productid\", \"locationid\")\nin (select unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(LocationId.pgTypeArray, locationid), Fragment.lit("::int2[]))\n")).query(ProductinventoryRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"productid\", \"locationid\", \"shelf\", \"bin\", \"quantity\", \"rowguid\", \"modifieddate\"\nfrom \"production\".\"productinventory\"\nwhere (\"productid\", \"locationid\")\nin (select * from unnest("), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(LocationId.pgTypeArray, locationid), Fragment.lit("))\n")).query(ProductinventoryRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

@@ -37,7 +37,7 @@ class EmployeepayhistoryRepoImpl() : EmployeepayhistoryRepo {
   ): Int {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, EmployeepayhistoryId::businessentityid, BusinessentityId::class.java)
     val ratechangedate: Array<LocalDateTime> = arrayMap.map(compositeIds, EmployeepayhistoryId::ratechangedate, LocalDateTime::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"humanresources\".\"employeepayhistory\"\nwhere (\"businessentityid\", \"ratechangedate\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, ratechangedate), Fragment.lit("::timestamp[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"humanresources\".\"employeepayhistory\"\nwhere (\"businessentityid\", \"ratechangedate\")\nin (select * from unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, ratechangedate), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -97,7 +97,7 @@ class EmployeepayhistoryRepoImpl() : EmployeepayhistoryRepo {
   ): List<EmployeepayhistoryRow> {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, EmployeepayhistoryId::businessentityid, BusinessentityId::class.java)
     val ratechangedate: Array<LocalDateTime> = arrayMap.map(compositeIds, EmployeepayhistoryId::ratechangedate, LocalDateTime::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\"\nfrom \"humanresources\".\"employeepayhistory\"\nwhere (\"businessentityid\", \"ratechangedate\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, ratechangedate), Fragment.lit("::timestamp[]))\n")).query(EmployeepayhistoryRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"ratechangedate\", \"rate\", \"payfrequency\", \"modifieddate\"\nfrom \"humanresources\".\"employeepayhistory\"\nwhere (\"businessentityid\", \"ratechangedate\")\nin (select * from unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, ratechangedate), Fragment.lit("))\n")).query(EmployeepayhistoryRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

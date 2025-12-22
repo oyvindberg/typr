@@ -36,7 +36,7 @@ class SalespersonquotahistoryRepoImpl() : SalespersonquotahistoryRepo {
   ): Int {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, SalespersonquotahistoryId::businessentityid, BusinessentityId::class.java)
     val quotadate: Array<LocalDateTime> = arrayMap.map(compositeIds, SalespersonquotahistoryId::quotadate, LocalDateTime::class.java)
-    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"salespersonquotahistory\"\nwhere (\"businessentityid\", \"quotadate\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, quotadate), Fragment.lit("::timestamp[]))\n")).update().runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("delete\nfrom \"sales\".\"salespersonquotahistory\"\nwhere (\"businessentityid\", \"quotadate\")\nin (select * from unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, quotadate), Fragment.lit("))\n")).update().runUnchecked(c)
   }
 
   override fun insert(
@@ -99,7 +99,7 @@ class SalespersonquotahistoryRepoImpl() : SalespersonquotahistoryRepo {
   ): List<SalespersonquotahistoryRow> {
     val businessentityid: Array<BusinessentityId> = arrayMap.map(compositeIds, SalespersonquotahistoryId::businessentityid, BusinessentityId::class.java)
     val quotadate: Array<LocalDateTime> = arrayMap.map(compositeIds, SalespersonquotahistoryId::quotadate, LocalDateTime::class.java)
-    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salespersonquotahistory\"\nwhere (\"businessentityid\", \"quotadate\")\nin (select unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, quotadate), Fragment.lit("::timestamp[]))\n")).query(SalespersonquotahistoryRow._rowParser.all()).runUnchecked(c)
+    return Fragment.interpolate(Fragment.lit("select \"businessentityid\", \"quotadate\", \"salesquota\", \"rowguid\", \"modifieddate\"\nfrom \"sales\".\"salespersonquotahistory\"\nwhere (\"businessentityid\", \"quotadate\")\nin (select * from unnest("), Fragment.encode(BusinessentityId.pgTypeArray, businessentityid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, quotadate), Fragment.lit("))\n")).query(SalespersonquotahistoryRow._rowParser.all()).runUnchecked(c)
   }
 
   override fun selectByIdsTracked(

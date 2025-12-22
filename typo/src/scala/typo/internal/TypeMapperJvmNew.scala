@@ -130,6 +130,46 @@ case class TypeMapperJvmNew(
           case db.MariaType.GeometryCollection => TypesJava.maria.GeometryCollection
           case db.Unknown(_)                   => TypesJava.runtime.Unknown
         }
+      case x: db.DuckDbType =>
+        x match {
+          case db.DuckDbType.TinyInt         => lang.Byte
+          case db.DuckDbType.SmallInt        => lang.Short
+          case db.DuckDbType.Integer         => lang.Int
+          case db.DuckDbType.BigInt          => lang.Long
+          case db.DuckDbType.HugeInt         => TypesJava.BigInteger
+          case db.DuckDbType.UTinyInt        => lang.Short
+          case db.DuckDbType.USmallInt       => lang.Int
+          case db.DuckDbType.UInteger        => lang.Long
+          case db.DuckDbType.UBigInt         => TypesJava.BigInteger
+          case db.DuckDbType.UHugeInt        => TypesJava.BigInteger
+          case db.DuckDbType.Float           => lang.Float
+          case db.DuckDbType.Double          => lang.Double
+          case db.DuckDbType.Decimal(_, _)   => lang.BigDecimal
+          case db.DuckDbType.Boolean         => lang.Boolean
+          case db.DuckDbType.VarChar(_)      => lang.String
+          case db.DuckDbType.Char(_)         => lang.String
+          case db.DuckDbType.Text            => lang.String
+          case db.DuckDbType.Blob            => lang.ByteArrayType
+          case db.DuckDbType.Bit(_)          => lang.ByteArrayType
+          case db.DuckDbType.Date            => TypesJava.LocalDate
+          case db.DuckDbType.Time            => TypesJava.LocalTime
+          case db.DuckDbType.Timestamp       => TypesJava.LocalDateTime
+          case db.DuckDbType.TimestampTz     => TypesJava.OffsetDateTime
+          case db.DuckDbType.TimestampS      => TypesJava.LocalDateTime
+          case db.DuckDbType.TimestampMS     => TypesJava.LocalDateTime
+          case db.DuckDbType.TimestampNS     => TypesJava.LocalDateTime
+          case db.DuckDbType.TimeTz          => TypesJava.OffsetDateTime
+          case db.DuckDbType.Interval        => TypesJava.Duration
+          case db.DuckDbType.UUID            => TypesJava.UUID
+          case db.DuckDbType.Json            => TypesJava.runtime.Json
+          case db.DuckDbType.Enum(name, _)   => jvm.Type.Qualified(naming.enumName(db.RelationName(None, name)))
+          case db.DuckDbType.ListType(_)     => lang.String.withComment("LIST type - mapped to String")
+          case db.DuckDbType.ArrayType(_, _) => lang.String.withComment("ARRAY type - mapped to String")
+          case db.DuckDbType.MapType(_, _)   => lang.String.withComment("MAP type - mapped to String")
+          case db.DuckDbType.StructType(_)   => lang.String.withComment("STRUCT type - mapped to String")
+          case db.DuckDbType.UnionType(_)    => lang.String.withComment("UNION type - mapped to String")
+          case db.Unknown(_)                 => TypesJava.runtime.Unknown
+        }
     }
   }
 }

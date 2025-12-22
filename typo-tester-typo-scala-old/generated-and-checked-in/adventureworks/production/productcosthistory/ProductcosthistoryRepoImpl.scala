@@ -31,7 +31,7 @@ class ProductcosthistoryRepoImpl extends ProductcosthistoryRepo {
     return interpolate(Fragment.lit("""delete
     from "production"."productcosthistory"
     where ("productid", "startdate")
-    in (select unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("""::timestamp[]))
+    in (select * from unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("""))
     """)).update().runUnchecked(c)
   }
 
@@ -98,7 +98,7 @@ class ProductcosthistoryRepoImpl extends ProductcosthistoryRepo {
     return interpolate(Fragment.lit("""select "productid", "startdate", "enddate", "standardcost", "modifieddate"
     from "production"."productcosthistory"
     where ("productid", "startdate")
-    in (select unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit("::int4[]), unnest("), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("""::timestamp[]))
+    in (select * from unnest("""), Fragment.encode(ProductId.pgTypeArray, productid), Fragment.lit(", "), Fragment.encode(PgTypes.timestampArray, startdate), Fragment.lit("""))
     """)).query(ProductcosthistoryRow.`_rowParser`.all()).runUnchecked(c)
   }
 

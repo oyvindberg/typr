@@ -60,11 +60,11 @@ public class ProductvendorRepoImpl implements ProductvendorRepo {
                 "delete\n"
                     + "from \"purchasing\".\"productvendor\"\n"
                     + "where (\"productid\", \"businessentityid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -275,11 +275,11 @@ public class ProductvendorRepoImpl implements ProductvendorRepo {
                     + " \"modifieddate\"\n"
                     + "from \"purchasing\".\"productvendor\"\n"
                     + "where (\"productid\", \"businessentityid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductId.pgTypeArray, productid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(ProductvendorRow._rowParser.all())
         .runUnchecked(c);
   }

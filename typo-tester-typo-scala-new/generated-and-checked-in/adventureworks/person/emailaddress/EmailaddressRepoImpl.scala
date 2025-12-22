@@ -31,7 +31,7 @@ class EmailaddressRepoImpl extends EmailaddressRepo {
     return sql"""delete
     from "person"."emailaddress"
     where ("businessentityid", "emailaddressid")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(PgTypes.int4ArrayUnboxed, emailaddressid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(PgTypes.int4ArrayUnboxed, emailaddressid)}))
     """.update().runUnchecked(c)
   }
 
@@ -102,7 +102,7 @@ class EmailaddressRepoImpl extends EmailaddressRepo {
     return sql"""select "businessentityid", "emailaddressid", "emailaddress", "rowguid", "modifieddate"
     from "person"."emailaddress"
     where ("businessentityid", "emailaddressid")
-    in (select unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}::int4[]), unnest(${Fragment.encode(PgTypes.int4ArrayUnboxed, emailaddressid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(BusinessentityId.pgTypeArray, businessentityid)}, ${Fragment.encode(PgTypes.int4ArrayUnboxed, emailaddressid)}))
     """.query(EmailaddressRow.`_rowParser`.all()).runUnchecked(c)
   }
 

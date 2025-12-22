@@ -39,6 +39,14 @@ object TypoDataSource {
     TypoDataSource(ds, DbType.MariaDB)
   }
 
+  /** Create an in-memory DuckDB TypoDataSource */
+  def hikariDuckDbInMemory(databaseName: String): TypoDataSource = {
+    val config = new HikariConfig
+    config.setJdbcUrl(s"jdbc:duckdb:$databaseName")
+    val ds = new HikariDataSource(config)
+    TypoDataSource(ds, DbType.DuckDB)
+  }
+
   /** Create a TypoDataSource with auto-detection of database type */
   def hikari(ds: DataSource): TypoDataSource = {
     val conn = ds.getConnection

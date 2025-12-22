@@ -80,13 +80,13 @@ public class ProductmodelproductdescriptioncultureRepoImpl
                 "delete\n"
                     + "from \"production\".\"productmodelproductdescriptionculture\"\n"
                     + "where (\"productmodelid\", \"productdescriptionid\", \"cultureid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductmodelId.pgTypeArray, productmodelid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(CultureId.pgTypeArray, cultureid),
-            Fragment.lit("::bpchar[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -264,13 +264,13 @@ public class ProductmodelproductdescriptioncultureRepoImpl
                     + " \"modifieddate\"\n"
                     + "from \"production\".\"productmodelproductdescriptionculture\"\n"
                     + "where (\"productmodelid\", \"productdescriptionid\", \"cultureid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(ProductmodelId.pgTypeArray, productmodelid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(ProductdescriptionId.pgTypeArray, productdescriptionid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(CultureId.pgTypeArray, cultureid),
-            Fragment.lit("::bpchar[]))\n"))
+            Fragment.lit("))\n"))
         .query(ProductmodelproductdescriptioncultureRow._rowParser.all())
         .runUnchecked(c);
   }

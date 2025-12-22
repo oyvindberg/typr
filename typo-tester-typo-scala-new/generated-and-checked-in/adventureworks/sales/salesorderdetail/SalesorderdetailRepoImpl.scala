@@ -33,7 +33,7 @@ class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
     return sql"""delete
     from "sales"."salesorderdetail"
     where ("salesorderid", "salesorderdetailid")
-    in (select unnest(${Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid)}::int4[]), unnest(${Fragment.encode(PgTypes.int4ArrayUnboxed, salesorderdetailid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid)}, ${Fragment.encode(PgTypes.int4ArrayUnboxed, salesorderdetailid)}))
     """.update().runUnchecked(c)
   }
 
@@ -116,7 +116,7 @@ class SalesorderdetailRepoImpl extends SalesorderdetailRepo {
     return sql"""select "salesorderid", "salesorderdetailid", "carriertrackingnumber", "orderqty", "productid", "specialofferid", "unitprice", "unitpricediscount", "rowguid", "modifieddate"
     from "sales"."salesorderdetail"
     where ("salesorderid", "salesorderdetailid")
-    in (select unnest(${Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid)}::int4[]), unnest(${Fragment.encode(PgTypes.int4ArrayUnboxed, salesorderdetailid)}::int4[]))
+    in (select * from unnest(${Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid)}, ${Fragment.encode(PgTypes.int4ArrayUnboxed, salesorderdetailid)}))
     """.query(SalesorderdetailRow.`_rowParser`.all()).runUnchecked(c)
   }
 

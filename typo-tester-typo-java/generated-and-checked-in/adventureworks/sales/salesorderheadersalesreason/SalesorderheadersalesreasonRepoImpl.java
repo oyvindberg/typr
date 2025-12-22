@@ -66,11 +66,11 @@ public class SalesorderheadersalesreasonRepoImpl implements Salesorderheadersale
                 "delete\n"
                     + "from \"sales\".\"salesorderheadersalesreason\"\n"
                     + "where (\"salesorderid\", \"salesreasonid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -218,11 +218,11 @@ public class SalesorderheadersalesreasonRepoImpl implements Salesorderheadersale
                 "select \"salesorderid\", \"salesreasonid\", \"modifieddate\"\n"
                     + "from \"sales\".\"salesorderheadersalesreason\"\n"
                     + "where (\"salesorderid\", \"salesreasonid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(SalesorderheaderId.pgTypeArray, salesorderid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(SalesreasonId.pgTypeArray, salesreasonid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(SalesorderheadersalesreasonRow._rowParser.all())
         .runUnchecked(c);
   }

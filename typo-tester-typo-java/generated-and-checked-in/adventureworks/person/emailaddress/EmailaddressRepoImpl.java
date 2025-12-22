@@ -60,11 +60,11 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
                 "delete\n"
                     + "from \"person\".\"emailaddress\"\n"
                     + "where (\"businessentityid\", \"emailaddressid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, emailaddressid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
@@ -233,11 +233,11 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"emailaddress\"\n"
                     + "where (\"businessentityid\", \"emailaddressid\")\n"
-                    + "in (select unnest("),
+                    + "in (select * from unnest("),
             Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
-            Fragment.lit("::int4[]), unnest("),
+            Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, emailaddressid),
-            Fragment.lit("::int4[]))\n"))
+            Fragment.lit("))\n"))
         .query(EmailaddressRow._rowParser.all())
         .runUnchecked(c);
   }
