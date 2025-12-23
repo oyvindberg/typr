@@ -1,6 +1,6 @@
 # Use postgres/example user/password credentials
 services:
-  db:
+  postgres:
     image: ghcr.io/oyvindberg/typo/typo-postgres${PG_MAJOR-16}:latest
     restart: always
     environment:
@@ -26,3 +26,34 @@ services:
       - 3307:3306
     volumes:
       - ./db/mariadb:/docker-entrypoint-initdb.d
+
+  oracle:
+    # Multi-arch image works on both ARM64 (local dev) and AMD64 (CI)
+    image: gvenzl/oracle-free:23-slim
+    restart: always
+    environment:
+      ORACLE_PASSWORD: password
+      APP_USER: typo
+      APP_USER_PASSWORD: typo_password
+    ports:
+      - 1521:1521
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./db/oracle:/container-entrypoint-initdb.d
+    # Oracle requires significant resources
+    shm_size: 1g
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+        reservations:
+          memory: 2g
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+volumes:
+  oracle-data:

@@ -21,15 +21,12 @@ jobs:
       - name: Scalafmt Check
         run: bleep fmt --check
 
-  build-scala:
+  tests:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     if: "!contains(github.event.head_commit.message, 'ci skip')"
-    strategy:
-      fail-fast: false
-      matrix:
-        scala-version: [213, 3]
-        postgres-version: [12, 16]
+    env:
+      PG_MAJOR: 16
     steps:
       - uses: actions/checkout@v4
       - uses: bleep-build/bleep-setup-action@0.0.1
@@ -37,17 +34,22 @@ jobs:
         with:
           extraFiles: bleep.yaml
 
-      - name: Start up Postgres
-        env:
-          PG_MAJOR: ${{ matrix.postgres-version }}
-        run: docker compose up -d
+      - name: Start Postgres
+        run: docker compose up -d postgres
 
-      - name: Run tests
-        env:
-          CI: true
+      - name: Wait for Postgres
         run: |
-          bleep compile jvm${{ matrix.scala-version }}
-          bleep test jvm${{ matrix.scala-version }}
+          for i in {1..30}; do
+            if docker compose exec -T postgres pg_isready -U postgres; then
+              echo "Postgres is ready"
+              break
+            fi
+            echo "Waiting for Postgres... ($i/30)"
+            sleep 2
+          done
+
+      - name: Run general tests
+        run: bleep test tests
 
   build-scala212:
     runs-on: ubuntu-latest
@@ -63,9 +65,9 @@ jobs:
       - name: Compile for 2.12
         run: bleep compile typo@jvm212
 
-  build-java:
+  build-postgres:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     strategy:
       fail-fast: false
@@ -78,27 +80,74 @@ jobs:
         with:
           extraFiles: bleep.yaml
 
-      - name: Start up Postgres
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Start Postgres
         env:
           PG_MAJOR: ${{ matrix.postgres-version }}
-        run: docker compose up -d
+        run: docker compose up -d postgres
 
-      - name: Run tests
+      - name: Wait for Postgres
+        run: |
+          for i in {1..30}; do
+            if docker compose exec -T postgres pg_isready -U postgres; then
+              echo "Postgres is ready"
+              break
+            fi
+            echo "Waiting for Postgres... ($i/30)"
+            sleep 2
+          done
+
+      - name: Compile all Scala versions
+        run: |
+          bleep compile typo@jvm213
+          bleep compile typo@jvm3
+
+      - name: Run Scala 2.13 Postgres tests
+        env:
+          CI: true
+        run: |
+          bleep test typo-tester-anorm@jvm213
+          bleep test typo-tester-doobie@jvm213
+          bleep test typo-tester-zio-jdbc@jvm213
+
+      - name: Run Scala 3 Postgres tests
+        env:
+          CI: true
+        run: |
+          bleep test typo-tester-anorm@jvm3
+          bleep test typo-tester-doobie@jvm3
+          bleep test typo-tester-zio-jdbc@jvm3
+          bleep test typo-tester-typo-scala-new
+          bleep test typo-tester-typo-scala-old
+
+      - name: Run Java Postgres tests
         env:
           CI: true
         run: bleep test typo-tester-typo-java
 
-  build-kotlin:
+      - name: Sourcegen
+        run: bleep sourcegen
+
+      - name: Run Kotlin Postgres tests
+        env:
+          CI: true
+        run: ./gradlew :typo-tester-typo-kotlin:test
+
+  build-mariadb:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: "!contains(github.event.head_commit.message, 'ci skip')"
-    strategy:
-      fail-fast: false
-      matrix:
-        postgres-version: [12, 16]
     steps:
       - uses: actions/checkout@v4
       - uses: bleep-build/bleep-setup-action@0.0.1
+      - uses: coursier/cache-action@v6
+        with:
+          extraFiles: bleep.yaml
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -106,22 +155,152 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Start up Postgres
-        env:
-          PG_MAJOR: ${{ matrix.postgres-version }}
-        run: docker compose up -d
+      - name: Start MariaDB
+        run: docker compose up -d mariadb
 
-      - name: Sourcegen
+      - name: Wait for MariaDB
         run: |
-          bleep sourcegen typo-runtime-java
-          bleep sourcegen typo-dsl-java
-          bleep sourcegen typo-dsl-kotlin
-      - name: Compile Kotlin
-        run: ./gradlew compileKotlin compileTestKotlin
-      - name: Run Kotlin tests
+          for i in {1..30}; do
+            if docker compose exec -T mariadb mariadb -u typo -ppassword -e "SELECT 1" typo 2>/dev/null; then
+              echo "MariaDB is ready"
+              break
+            fi
+            echo "Waiting for MariaDB... ($i/30)"
+            sleep 2
+          done
+
+      - name: Run MariaDB Scala tests
         env:
           CI: true
-        run: ./gradlew test
+        run: bleep test typo-tester-mariadb-scala
+
+      - name: Run MariaDB Java tests
+        env:
+          CI: true
+        run: bleep test typo-tester-mariadb-java
+
+      - name: Sourcegen
+        run: bleep sourcegen
+
+      - name: Run MariaDB Kotlin tests
+        env:
+          CI: true
+        run: ./gradlew :typo-tester-mariadb-kotlin:test
+
+  build-oracle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bleep-build/bleep-setup-action@0.0.1
+      - uses: coursier/cache-action@v6
+        with:
+          extraFiles: bleep.yaml
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Start Oracle and wait for healthy
+        run: |
+          docker compose up -d oracle
+          echo "Waiting for Oracle to be healthy (this may take several minutes)..."
+          docker compose up -d --wait oracle
+
+      - name: Run Oracle Scala tests
+        env:
+          CI: true
+        run: |
+          bleep test typo-tester-oracle-scala
+          bleep test typo-tester-oracle-scala-new
+
+      - name: Run Oracle Java tests
+        env:
+          CI: true
+        run: bleep test typo-tester-oracle-java
+
+      - name: Sourcegen
+        run: bleep sourcegen
+
+      - name: Run Oracle Kotlin tests
+        env:
+          CI: true
+        run: ./gradlew :typo-tester-oracle-kotlin:test
+
+  build-duckdb:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bleep-build/bleep-setup-action@0.0.1
+      - uses: coursier/cache-action@v6
+        with:
+          extraFiles: bleep.yaml
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Run DuckDB Scala tests
+        env:
+          CI: true
+        run: bleep test typo-tester-duckdb-scala
+
+      - name: Run DuckDB Java tests
+        env:
+          CI: true
+        run: bleep test typo-tester-duckdb-java
+
+      - name: Sourcegen
+        run: bleep sourcegen
+
+      - name: Run DuckDB Kotlin tests
+        env:
+          CI: true
+        run: ./gradlew :typo-tester-duckdb-kotlin:test
+
+  build-openapi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bleep-build/bleep-setup-action@0.0.1
+      - uses: coursier/cache-action@v6
+        with:
+          extraFiles: bleep.yaml
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Compile Scala OpenAPI testers
+        run: |
+          bleep compile openapi-test-scala-http4s
+          bleep compile openapi-test-scala-spring
+
+      - name: Compile Java OpenAPI testers
+        run: |
+          bleep compile openapi-test-java-jaxrs-client-jdk
+          bleep compile openapi-test-java-quarkus
+          bleep compile openapi-test-java-spring
+
+      - name: Sourcegen
+        run: bleep sourcegen
+
+      - name: Compile Kotlin OpenAPI testers (via gradle)
+        run: |
+          ./gradlew :openapi-test-kotlin-server-jaxrs-client-jdk:compileKotlin
+          ./gradlew :openapi-test-kotlin-server-spring-client-jdk:compileKotlin
+          ./gradlew :openapi-test-kotlin-server-quarkus-reactive-client-jdk:compileKotlin
 
   build-docs:
     timeout-minutes: 20
@@ -137,16 +316,26 @@ jobs:
           extraFiles: bleep.yaml
 
       - name: Start up Postgres
-        run: docker compose up -d
+        run: docker compose up -d postgres
+
+      - name: Wait for Postgres
+        run: |
+          for i in {1..30}; do
+            if docker compose exec -T postgres pg_isready -U postgres; then
+              echo "Postgres is ready"
+              break
+            fi
+            echo "Waiting for Postgres... ($i/30)"
+            sleep 2
+          done
 
       - name: Build docs
-        run: |
-          bleep generate-docs
+        run: bleep generate-docs
 
   release:
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    needs: [ scalafmt, build-scala ]
+    needs: [ scalafmt, tests, build-postgres, build-mariadb, build-oracle, build-duckdb ]
     if: "startsWith(github.ref, 'refs/tags/v')"
     steps:
       - uses: actions/checkout@v4

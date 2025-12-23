@@ -27,7 +27,6 @@ import testdb.v_product_catalog.VProductCatalogViewRepoImpl
 import testdb.warehouses.WarehousesRepoImpl
 import testdb.warehouses.WarehousesRowUnsaved
 import java.math.BigDecimal
-import java.util.Optional
 
 /**
  * Tests for views - read-only operations using generated view repositories.
@@ -94,7 +93,7 @@ class ViewTest {
 
             val summary = summaries[0]
             assertEquals("summary@example.com", summary.email)
-            assertEquals(Optional.of("Summary Test"), summary.fullName)
+            assertEquals("Summary Test", summary.fullName)
             assertEquals("gold", summary.tier)
             assertEquals("suspended", summary.status.value)
             assertEquals(0L, summary.totalOrders)
@@ -170,7 +169,7 @@ class ViewTest {
                     sku = "CAT-SKU-001",
                     name = "Catalog Product 1",
                     basePrice = BigDecimal("25.00"),
-                    brandId = Provided(Optional.of(brand.brandId)),
+                    brandId = Provided(brand.brandId),
                     status = Provided("active")
                 ),
                 c
@@ -203,8 +202,8 @@ class ViewTest {
                     sku = "FIELDS-SKU",
                     name = "Fields Product",
                     basePrice = BigDecimal("99.99"),
-                    brandId = Provided(Optional.of(brand.brandId)),
-                    shortDescription = Provided(Optional.of("Short description")),
+                    brandId = Provided(brand.brandId),
+                    shortDescription = Provided("Short description"),
                     status = Provided("active")
                 ),
                 c
@@ -218,8 +217,8 @@ class ViewTest {
             assertEquals("Fields Product", row.name)
             assertEquals(0, BigDecimal("99.99").compareTo(row.basePrice))
             assertEquals("active", row.status)
-            assertEquals(Optional.of("FieldsBrand"), row.brandName)
-            assertEquals(Optional.of("Short description"), row.shortDescription)
+            assertEquals("FieldsBrand", row.brandName)
+            assertEquals("Short description", row.shortDescription)
             assertEquals(0L, row.reviewCount)
         }
     }
