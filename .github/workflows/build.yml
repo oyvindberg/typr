@@ -293,16 +293,10 @@ jobs:
           bleep compile openapi-test-java-quarkus
           bleep compile openapi-test-java-spring
 
-      - name: Compile Kotlin OpenAPI testers
-        run: |
-          bleep compile openapi-test-kotlin-jaxrs
-          bleep compile openapi-test-kotlin-quarkus
-          bleep compile openapi-test-kotlin-spring
-
       - name: Sourcegen
         run: bleep sourcegen
 
-      - name: Compile Gradle OpenAPI testers
+      - name: Compile Kotlin OpenAPI testers (via gradle)
         run: |
           ./gradlew :openapi-test-kotlin-server-jaxrs-client-jdk:compileKotlin
           ./gradlew :openapi-test-kotlin-server-spring-client-jdk:compileKotlin
