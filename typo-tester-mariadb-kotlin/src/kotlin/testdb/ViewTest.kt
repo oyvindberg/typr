@@ -27,7 +27,6 @@ import testdb.v_product_catalog.VProductCatalogViewRepoImpl
 import testdb.warehouses.WarehousesRepoImpl
 import testdb.warehouses.WarehousesRowUnsaved
 import java.math.BigDecimal
-import java.util.Optional
 
 /**
  * Tests for views - read-only operations using generated view repositories.
@@ -94,7 +93,7 @@ class ViewTest {
 
             val summary = summaries[0]
             assertEquals("summary@example.com", summary.email)
-            assertEquals(Optional.of("Summary Test"), summary.fullName)
+            assertEquals("Summary Test", summary.fullName)
             assertEquals("gold", summary.tier)
             assertEquals("suspended", summary.status.value)
             assertEquals(0L, summary.totalOrders)
@@ -218,8 +217,8 @@ class ViewTest {
             assertEquals("Fields Product", row.name)
             assertEquals(0, BigDecimal("99.99").compareTo(row.basePrice))
             assertEquals("active", row.status)
-            assertEquals(Optional.of("FieldsBrand"), row.brandName)
-            assertEquals(Optional.of("Short description"), row.shortDescription)
+            assertEquals("FieldsBrand", row.brandName)
+            assertEquals("Short description", row.shortDescription)
             assertEquals(0L, row.reviewCount)
         }
     }
