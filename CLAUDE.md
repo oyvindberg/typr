@@ -46,7 +46,6 @@ bleep compile @jvm3    # Scala 3.3
 ### Key Scripts (defined in bleep.yaml)
 - **`GeneratedAdventureWorks`** - Main code generation from AdventureWorks DB
 - **`GeneratedSources`** - Generate Typo's internal code from database
-- **`GenHardcodedFiles`** - Generate test fixtures without database
 - **`GenerateDocumentation`** - Generate documentation using mdoc
 
 ## Development Environment
@@ -199,9 +198,6 @@ def selectById(id: PersonId): Option[PersonRow]
 ```bash
 # Watch for SQL file changes and regenerate
 bleep run GeneratedAdventureWorks -- --watch
-
-# Regenerate test fixtures
-bleep run GenHardcodedFiles
 
 # Regenerate documentation
 bleep run GenerateDocumentation

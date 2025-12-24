@@ -285,9 +285,6 @@ projects:
     dependsOn: typr-dsl-anorm
     extends: template-cross-scala-3-newest
     isTestProject: true
-    sourcegen:
-      main: scripts.GenHardcodedFiles
-      project: typr-scripts
   testers/pg/scala/doobie:
     cross:
       jvm213:
@@ -300,9 +297,6 @@ projects:
     dependsOn: typr-dsl-doobie
     extends: template-cross-scala-3-newest
     isTestProject: true
-    sourcegen:
-      main: scripts.GenHardcodedFiles
-      project: typr-scripts
     sources: ./generated-and-checked-in
   testers/duckdb/java:
     dependencies:
@@ -496,9 +490,6 @@ projects:
       options: -proc:none
     platform:
       name: jvm
-    sourcegen:
-      main: scripts.GenHardcodedFiles
-      project: typr-scripts
     sources: ./generated-and-checked-in
   testers/pg/scala/scalatypes:
     dependencies:
@@ -538,9 +529,6 @@ projects:
     dependsOn: typr-dsl-zio-jdbc
     extends: template-cross-scala-3-newest
     isTestProject: true
-    sourcegen:
-      main: scripts.GenHardcodedFiles
-      project: typr-scripts
 scripts:
   compile-benchmarks:
     main: scripts.CompileBenchmark
