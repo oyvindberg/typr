@@ -111,24 +111,24 @@ jobs:
         env:
           CI: true
         run: |
-          bleep test typr-tester-anorm@jvm213
-          bleep test typr-tester-doobie@jvm213
-          bleep test typr-tester-zio-jdbc@jvm213
+          bleep test testers/pg/scala/anorm@jvm213
+          bleep test testers/pg/scala/doobie@jvm213
+          bleep test testers/pg/scala/zio-jdbc@jvm213
 
       - name: Run Scala 3 Postgres tests
         env:
           CI: true
         run: |
-          bleep test typr-tester-anorm@jvm3
-          bleep test typr-tester-doobie@jvm3
-          bleep test typr-tester-zio-jdbc@jvm3
-          bleep test typr-tester-typr-scala-new
-          bleep test typr-tester-typr-scala-old
+          bleep test testers/pg/scala/anorm@jvm3
+          bleep test testers/pg/scala/doobie@jvm3
+          bleep test testers/pg/scala/zio-jdbc@jvm3
+          bleep test testers/pg/scala/scalatypes
+          bleep test testers/pg/scala/javatypes
 
       - name: Run Java Postgres tests
         env:
           CI: true
-        run: bleep test typr-tester-typr-java
+        run: bleep test testers/pg/java
 
       - name: Sourcegen
         run: bleep sourcegen
@@ -136,7 +136,7 @@ jobs:
       - name: Run Kotlin Postgres tests
         env:
           CI: true
-        run: ./gradlew :typr-tester-typr-kotlin:test
+        run: ./gradlew :testers:pg:kotlin:test
 
   build-mariadb:
     runs-on: ubuntu-latest
@@ -172,12 +172,12 @@ jobs:
       - name: Run MariaDB Scala tests
         env:
           CI: true
-        run: bleep test typr-tester-mariadb-scala
+        run: bleep test testers/mariadb/scala
 
       - name: Run MariaDB Java tests
         env:
           CI: true
-        run: bleep test typr-tester-mariadb-java
+        run: bleep test testers/mariadb/java
 
       - name: Sourcegen
         run: bleep sourcegen
@@ -185,7 +185,7 @@ jobs:
       - name: Run MariaDB Kotlin tests
         env:
           CI: true
-        run: ./gradlew :typr-tester-mariadb-kotlin:test
+        run: ./gradlew :testers:mariadb:kotlin:test
 
   build-oracle:
     runs-on: ubuntu-latest
@@ -214,13 +214,13 @@ jobs:
         env:
           CI: true
         run: |
-          bleep test typr-tester-oracle-scala
-          bleep test typr-tester-oracle-scala-new
+          bleep test testers/oracle/scala
+          bleep test testers/oracle/scala-new
 
       - name: Run Oracle Java tests
         env:
           CI: true
-        run: bleep test typr-tester-oracle-java
+        run: bleep test testers/oracle/java
 
       - name: Sourcegen
         run: bleep sourcegen
@@ -228,7 +228,7 @@ jobs:
       - name: Run Oracle Kotlin tests
         env:
           CI: true
-        run: ./gradlew :typr-tester-oracle-kotlin:test
+        run: ./gradlew :testers:oracle:kotlin:test
 
   build-duckdb:
     runs-on: ubuntu-latest
@@ -250,12 +250,12 @@ jobs:
       - name: Run DuckDB Scala tests
         env:
           CI: true
-        run: bleep test typr-tester-duckdb-scala
+        run: bleep test testers/duckdb/scala
 
       - name: Run DuckDB Java tests
         env:
           CI: true
-        run: bleep test typr-tester-duckdb-java
+        run: bleep test testers/duckdb/java
 
       - name: Sourcegen
         run: bleep sourcegen
@@ -263,7 +263,7 @@ jobs:
       - name: Run DuckDB Kotlin tests
         env:
           CI: true
-        run: ./gradlew :typr-tester-duckdb-kotlin:test
+        run: ./gradlew :testers:duckdb:kotlin:test
 
   build-sqlserver:
     runs-on: ubuntu-latest
@@ -291,12 +291,12 @@ jobs:
       - name: Run SQL Server Scala tests
         env:
           CI: true
-        run: bleep test typr-tester-sqlserver-scala
+        run: bleep test testers/sqlserver/scala
 
       - name: Run SQL Server Java tests
         env:
           CI: true
-        run: bleep test typr-tester-sqlserver-java
+        run: bleep test testers/sqlserver/java
 
       - name: Sourcegen
         run: bleep sourcegen
@@ -304,7 +304,7 @@ jobs:
       - name: Run SQL Server Kotlin tests
         env:
           CI: true
-        run: ./gradlew :typr-tester-sqlserver-kotlin:test
+        run: ./gradlew :testers:sqlserver:kotlin:test
 
   build-openapi:
     runs-on: ubuntu-latest
@@ -325,23 +325,23 @@ jobs:
 
       - name: Compile Scala OpenAPI testers
         run: |
-          bleep compile openapi-test-scala-http4s
-          bleep compile openapi-test-scala-spring
+          bleep compile testers/openapi/scala/http4s
+          bleep compile testers/openapi/scala/spring
 
       - name: Compile Java OpenAPI testers
         run: |
-          bleep compile openapi-test-java-jaxrs-client-jdk
-          bleep compile openapi-test-java-quarkus
-          bleep compile openapi-test-java-spring
+          bleep compile testers/openapi/java/jaxrs
+          bleep compile testers/openapi/java/quarkus
+          bleep compile testers/openapi/java/spring
 
       - name: Sourcegen
         run: bleep sourcegen
 
       - name: Compile Kotlin OpenAPI testers (via gradle)
         run: |
-          ./gradlew :openapi-test-kotlin-server-jaxrs-client-jdk:compileKotlin
-          ./gradlew :openapi-test-kotlin-server-spring-client-jdk:compileKotlin
-          ./gradlew :openapi-test-kotlin-server-quarkus-reactive-client-jdk:compileKotlin
+          ./gradlew :testers:openapi:kotlin:jaxrs:compileKotlin
+          ./gradlew :testers:openapi:kotlin:spring:compileKotlin
+          ./gradlew :testers:openapi:kotlin:quarkus:compileKotlin
 
   build-docs:
     timeout-minutes: 20
