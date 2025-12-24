@@ -48,6 +48,30 @@ object GeneratedTuples extends bleep.BleepCodegenScript("GeneratedTuples") {
          |            java.util.List<dev.typr.foundations.Fragment> fragments = java.util.List.of($renderArgs);
          |            return dev.typr.foundations.Fragment.comma(fragments);
          |        }
+         |
+         |        /**
+         |         * Check if this tuple is in a list of in-memory tuple values.
+         |         * Renders as: (expr1, expr2, ...) IN ((v1, v2, ...), ...)
+         |         */
+         |        public SqlExpr<Boolean> in(java.util.List<Tuple$n<$tparamsDecl>> values) {
+         |            return new SqlExpr.TupleIn(this, values);
+         |        }
+         |
+         |        /**
+         |         * Check if this tuple is in a list of in-memory tuple values. Kotlin-friendly alias for {@link #in(java.util.List)}.
+         |         * Renders as: (expr1, expr2, ...) IN ((v1, v2, ...), ...)
+         |         */
+         |        public SqlExpr<Boolean> among(java.util.List<Tuple$n<$tparamsDecl>> values) {
+         |            return in(values);
+         |        }
+         |
+         |        /**
+         |         * Check if this tuple is in a subquery result set.
+         |         * Renders as: (expr1, expr2, ...) IN (SELECT ...)
+         |         */
+         |        public <F, R> SqlExpr<Boolean> in(SelectBuilder<F, R> subquery) {
+         |            return new SqlExpr.TupleInSubquery<>(this, subquery);
+         |        }
          |    }""".stripMargin
     }
 
