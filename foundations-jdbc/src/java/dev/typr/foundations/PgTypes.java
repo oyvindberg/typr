@@ -130,6 +130,9 @@ public interface PgTypes {
   PgType<Long> int8 =
       PgType.of("int8", PgRead.readLong, PgWrite.writeLong, PgText.textLong, PgJson.int8);
   PgType<Long[]> int8Array = int8.array(PgRead.readLongArray, Long[]::new);
+  PgType<Long> oid =
+      PgType.of("oid", PgRead.readLong, PgWrite.writeLong, PgText.textLong, PgJson.int8);
+  PgType<Long[]> oidArray = oid.array(PgRead.readLongArray, Long[]::new);
 
   @SuppressWarnings("unchecked")
   PgType<long[]> int8ArrayUnboxed =
