@@ -13,6 +13,13 @@ import adventureworks.humanresources.department.DepartmentRowUnsaved
 import adventureworks.humanresources.employee.EmployeeRepoImpl
 import adventureworks.humanresources.employee.EmployeeRow
 import adventureworks.humanresources.employee.EmployeeRowUnsaved
+import adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRepoImpl
+import adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow
+import adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRowUnsaved
+import adventureworks.humanresources.shift.ShiftId
+import adventureworks.humanresources.shift.ShiftRepoImpl
+import adventureworks.humanresources.shift.ShiftRow
+import adventureworks.humanresources.shift.ShiftRowUnsaved
 import adventureworks.person.address.AddressId
 import adventureworks.person.address.AddressRepoImpl
 import adventureworks.person.address.AddressRow
@@ -188,6 +195,40 @@ case class TestInsert(
       rowguid = rowguid,
       modifieddate = modifieddate,
       organizationnode = organizationnode
+    ))(using c)
+  }
+
+  def humanresourcesEmployeedepartmenthistory(
+    businessentityid: BusinessentityId,
+    departmentid: DepartmentId,
+    shiftid: ShiftId,
+    startdate: LocalDate,
+    enddate: Option[LocalDate] = None,
+    modifieddate: Defaulted[LocalDateTime] = Defaulted.UseDefault()
+  )(using c: Connection): EmployeedepartmenthistoryRow = {
+    (new EmployeedepartmenthistoryRepoImpl()).insert(new EmployeedepartmenthistoryRowUnsaved(
+      businessentityid = businessentityid,
+      departmentid = departmentid,
+      shiftid = shiftid,
+      startdate = startdate,
+      enddate = enddate,
+      modifieddate = modifieddate
+    ))(using c)
+  }
+
+  def humanresourcesShift(
+    starttime: LocalTime,
+    endtime: LocalTime,
+    name: Name = domainInsert.publicName(random),
+    shiftid: Defaulted[ShiftId] = Defaulted.UseDefault(),
+    modifieddate: Defaulted[LocalDateTime] = Defaulted.UseDefault()
+  )(using c: Connection): ShiftRow = {
+    (new ShiftRepoImpl()).insert(new ShiftRowUnsaved(
+      name = name,
+      starttime = starttime,
+      endtime = endtime,
+      shiftid = shiftid,
+      modifieddate = modifieddate
     ))(using c)
   }
 

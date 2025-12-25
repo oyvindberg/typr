@@ -33,6 +33,9 @@ object GeneratedAdventureWorks {
           // humanresources
           "department",
           "employee",
+          "employeedepartmenthistory",
+          "shift",
+          "vemployee",
           // person
           "address",
           "addresstype",
