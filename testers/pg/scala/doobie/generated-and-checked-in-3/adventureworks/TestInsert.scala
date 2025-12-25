@@ -38,6 +38,13 @@ import adventureworks.humanresources.department.DepartmentRowUnsaved
 import adventureworks.humanresources.employee.EmployeeRepoImpl
 import adventureworks.humanresources.employee.EmployeeRow
 import adventureworks.humanresources.employee.EmployeeRowUnsaved
+import adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRepoImpl
+import adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow
+import adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRowUnsaved
+import adventureworks.humanresources.shift.ShiftId
+import adventureworks.humanresources.shift.ShiftRepoImpl
+import adventureworks.humanresources.shift.ShiftRow
+import adventureworks.humanresources.shift.ShiftRowUnsaved
 import adventureworks.person.address.AddressId
 import adventureworks.person.address.AddressRepoImpl
 import adventureworks.person.address.AddressRow
@@ -173,6 +180,23 @@ case class TestInsert(
     modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault(),
     organizationnode: Defaulted[Option[String]] = Defaulted.UseDefault()
   ): ConnectionIO[EmployeeRow] = (new EmployeeRepoImpl).insert(new EmployeeRowUnsaved(businessentityid = businessentityid, nationalidnumber = nationalidnumber, loginid = loginid, jobtitle = jobtitle, birthdate = birthdate, maritalstatus = maritalstatus, gender = gender, hiredate = hiredate, salariedflag = salariedflag, vacationhours = vacationhours, sickleavehours = sickleavehours, currentflag = currentflag, rowguid = rowguid, modifieddate = modifieddate, organizationnode = organizationnode))
+
+  def humanresourcesEmployeedepartmenthistory(
+    businessentityid: BusinessentityId,
+    departmentid: DepartmentId,
+    shiftid: ShiftId,
+    startdate: TypoLocalDate,
+    enddate: Option[TypoLocalDate] = None,
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault()
+  ): ConnectionIO[EmployeedepartmenthistoryRow] = (new EmployeedepartmenthistoryRepoImpl).insert(new EmployeedepartmenthistoryRowUnsaved(businessentityid = businessentityid, departmentid = departmentid, shiftid = shiftid, startdate = startdate, enddate = enddate, modifieddate = modifieddate))
+
+  def humanresourcesShift(
+    name: Name = domainInsert.publicName(random),
+    starttime: TypoLocalTime = TypoLocalTime(LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)),
+    endtime: TypoLocalTime = TypoLocalTime(LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)),
+    shiftid: Defaulted[ShiftId] = Defaulted.UseDefault(),
+    modifieddate: Defaulted[TypoLocalDateTime] = Defaulted.UseDefault()
+  ): ConnectionIO[ShiftRow] = (new ShiftRepoImpl).insert(new ShiftRowUnsaved(name = name, starttime = starttime, endtime = endtime, shiftid = shiftid, modifieddate = modifieddate))
 
   def personAddress(
     stateprovinceid: StateprovinceId,

@@ -13,6 +13,13 @@ import adventureworks.humanresources.department.DepartmentRowUnsaved
 import adventureworks.humanresources.employee.EmployeeRepoImpl
 import adventureworks.humanresources.employee.EmployeeRow
 import adventureworks.humanresources.employee.EmployeeRowUnsaved
+import adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRepoImpl
+import adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRow
+import adventureworks.humanresources.employeedepartmenthistory.EmployeedepartmenthistoryRowUnsaved
+import adventureworks.humanresources.shift.ShiftId
+import adventureworks.humanresources.shift.ShiftRepoImpl
+import adventureworks.humanresources.shift.ShiftRow
+import adventureworks.humanresources.shift.ShiftRowUnsaved
 import adventureworks.person.address.AddressId
 import adventureworks.person.address.AddressRepoImpl
 import adventureworks.person.address.AddressRow
@@ -169,6 +176,25 @@ data class TestInsert(
     organizationnode: Defaulted<String?>,
     c: Connection
   ): EmployeeRow = (EmployeeRepoImpl()).insert(EmployeeRowUnsaved(businessentityid = businessentityid, nationalidnumber = nationalidnumber, loginid = loginid, jobtitle = jobtitle, birthdate = birthdate, maritalstatus = maritalstatus, gender = gender, hiredate = hiredate, salariedflag = salariedflag, vacationhours = vacationhours, sickleavehours = sickleavehours, currentflag = currentflag, rowguid = rowguid, modifieddate = modifieddate, organizationnode = organizationnode), c)
+
+  fun humanresourcesEmployeedepartmenthistory(
+    businessentityid: BusinessentityId,
+    departmentid: DepartmentId,
+    shiftid: ShiftId,
+    startdate: LocalDate,
+    enddate: LocalDate?,
+    modifieddate: Defaulted<LocalDateTime>,
+    c: Connection
+  ): EmployeedepartmenthistoryRow = (EmployeedepartmenthistoryRepoImpl()).insert(EmployeedepartmenthistoryRowUnsaved(businessentityid = businessentityid, departmentid = departmentid, shiftid = shiftid, startdate = startdate, enddate = enddate, modifieddate = modifieddate), c)
+
+  fun humanresourcesShift(
+    starttime: LocalTime,
+    endtime: LocalTime,
+    name: Name,
+    shiftid: Defaulted<ShiftId>,
+    modifieddate: Defaulted<LocalDateTime>,
+    c: Connection
+  ): ShiftRow = (ShiftRepoImpl()).insert(ShiftRowUnsaved(name = name, starttime = starttime, endtime = endtime, shiftid = shiftid, modifieddate = modifieddate), c)
 
   fun personAddress(
     addressline1: String,
