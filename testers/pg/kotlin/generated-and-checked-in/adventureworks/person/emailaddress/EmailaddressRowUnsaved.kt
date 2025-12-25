@@ -40,14 +40,14 @@ data class EmailaddressRowUnsaved(
 
   companion object {
     val pgText: PgText<EmailaddressRowUnsaved> =
-      PgText.instance({ row, sb -> BusinessentityId.pgType.pgText().unsafeEncode(row.businessentityid, sb)
+      PgText.instance({ row, sb -> BusinessentityId.pgType.text().unsafeEncode(row.businessentityid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.nullable().pgText().unsafeEncode(row.emailaddress, sb)
+      PgTypes.text.nullable().text().unsafeEncode(row.emailaddress, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.emailaddressid, sb)
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.text()).unsafeEncode(row.emailaddressid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.text()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.text()).unsafeEncode(row.modifieddate, sb) })
   }
 }

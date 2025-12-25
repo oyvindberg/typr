@@ -6,8 +6,8 @@
 package testdb.customer_orders
 
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.Fragment
-import dev.typr.foundations.scala.MariaTypeOps
 import java.sql.Connection
 import testdb.customers.CustomersId
 import dev.typr.foundations.scala.Fragment.sql

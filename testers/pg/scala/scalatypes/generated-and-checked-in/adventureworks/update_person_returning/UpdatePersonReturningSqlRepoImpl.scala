@@ -6,8 +6,8 @@
 package adventureworks.update_person_returning
 
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.Fragment
-import dev.typr.foundations.scala.PgTypeOps
 import java.sql.Connection
 import java.time.LocalDateTime
 import dev.typr.foundations.scala.Fragment.sql

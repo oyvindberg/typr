@@ -1,7 +1,7 @@
 package dev.typr.foundations.scala
 
 import dev.typr.foundations.dsl.{UpdateBuilder as JavaUpdateBuilder}
-import dev.typr.foundations.{Fragment, PgType}
+import dev.typr.foundations.{DbType, Fragment}
 
 import java.sql.Connection
 import _root_.scala.jdk.CollectionConverters.*
@@ -14,8 +14,8 @@ class UpdateBuilder[Fields, Row] private[scala] (
   private def copy(newJavaBuilder: JavaUpdateBuilder[Fields, Row]): UpdateBuilder[Fields, Row] =
     new UpdateBuilder(newJavaBuilder)
 
-  def set[T](field: Fields => SqlExpr.FieldLike[T, Row], value: T, pgType: PgType[T]): UpdateBuilder[Fields, Row] = {
-    copy(javaBuilder.set((fields: Fields) => field(fields).underlying, value, pgType))
+  def set[T](field: Fields => SqlExpr.FieldLike[T, Row], value: T, dbType: DbType[T]): UpdateBuilder[Fields, Row] = {
+    copy(javaBuilder.set((fields: Fields) => field(fields).underlying, value, dbType))
   }
 
   def setValue[T](field: Fields => SqlExpr.FieldLike[T, Row], value: T): UpdateBuilder[Fields, Row] = {

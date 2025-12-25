@@ -18,10 +18,7 @@ import java.util.Optional;
  * (BigDecimal → Long, String → NonEmptyString, etc.)
  */
 public sealed interface OracleRead<A> extends DbRead<A>
-    permits OracleRead.NonNullable,
-        OracleRead.Nullable,
-        OracleRead.MappedNullable,
-        KotlinNullableOracleRead {
+    permits OracleRead.NonNullable, OracleRead.Nullable, OracleRead.MappedNullable {
   /**
    * Phase 1: Extract a value from the ResultSet. Determines which ResultSet method to use
    * (getString, getInt, getObject, etc.).
@@ -136,7 +133,7 @@ public sealed interface OracleRead<A> extends DbRead<A>
     }
   }
 
-  final class Nullable<U, A> implements OracleRead<Optional<A>>, DbRead.Nullable {
+  final class Nullable<U, A> implements OracleRead<Optional<A>> {
     final Extractor<U> extractor;
     final Transformer<U, A> transformer;
 

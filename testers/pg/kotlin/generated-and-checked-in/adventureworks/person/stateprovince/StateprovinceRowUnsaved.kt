@@ -52,20 +52,20 @@ data class StateprovinceRowUnsaved(
 
   companion object {
     val pgText: PgText<StateprovinceRowUnsaved> =
-      PgText.instance({ row, sb -> PgTypes.bpchar.pgText().unsafeEncode(row.stateprovincecode, sb)
+      PgText.instance({ row, sb -> PgTypes.bpchar.text().unsafeEncode(row.stateprovincecode, sb)
       sb.append(PgText.DELIMETER)
-      CountryregionId.pgType.pgText().unsafeEncode(row.countryregioncode, sb)
+      CountryregionId.pgType.text().unsafeEncode(row.countryregioncode, sb)
       sb.append(PgText.DELIMETER)
-      Name.pgType.pgText().unsafeEncode(row.name, sb)
+      Name.pgType.text().unsafeEncode(row.name, sb)
       sb.append(PgText.DELIMETER)
-      SalesterritoryId.pgType.pgText().unsafeEncode(row.territoryid, sb)
+      SalesterritoryId.pgType.text().unsafeEncode(row.territoryid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(StateprovinceId.pgType.pgText()).unsafeEncode(row.stateprovinceid, sb)
+      Defaulted.pgText(StateprovinceId.pgType.text()).unsafeEncode(row.stateprovinceid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(Flag.pgType.pgText()).unsafeEncode(row.isonlystateprovinceflag, sb)
+      Defaulted.pgText(Flag.pgType.text()).unsafeEncode(row.isonlystateprovinceflag, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.text()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.text()).unsafeEncode(row.modifieddate, sb) })
   }
 }

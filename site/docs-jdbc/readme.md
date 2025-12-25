@@ -314,28 +314,30 @@ PgType<Jsonb> jsonbType = PgTypes.jsonb;
 
 A powerful use case is fetching nested data as JSON and parsing it with a RowParser. This enables MULTISET-like queries across all databases.
 
-The RowParser can create a `DbType<List<Row>>` that knows how to parse JSON arrays:
+The `JsonRowType` class bridges RowParser with the DbType system, allowing JSON-encoded rows to be used like any other database type:
 
 ```java
 // Define a row parser for the nested data
 RowParser<Email> emailParser = RowParsers.of(
     PgTypes.int4,   // id
     PgTypes.text,   // email
-    Email::new
+    Email::new,
+    email -> new Object[]{email.id(), email.email()}
 );
 
-// Create a DbType for List<Email> from JSON, with column names for JSON object lookup
-PgType<List<Email>> emailListType = emailParser.jsonListType(
-    PgTypes.json,                // the JSON column type
-    List.of("id", "email")       // column names in the JSON objects
-);
+// Create a JsonRowType with column names for JSON object format
+JsonRowType<Email> emailJsonType = JsonRowType.of(emailParser, List.of("id", "email"));
+
+// Get a PgType for List<Email> (JSON array of objects)
+PgType<List<Email>> emailListType = emailJsonType.pgList();
 
 // Now use it like any other DbType in a RowParser
 RowParser<PersonWithEmails> personParser = RowParsers.of(
     PgTypes.int4,      // id
     PgTypes.text,      // name
     emailListType,     // emails as JSON array
-    PersonWithEmails::new
+    PersonWithEmails::new,
+    p -> new Object[]{p.id(), p.name(), p.emails()}
 );
 
 // Query that returns child rows as JSON array
@@ -353,6 +355,28 @@ List<PersonWithEmails> results = Fragment.of(sql)
     .param(PgTypes.int4, personId)
     .query(personParser)
     .runUnchecked(connection);
+```
+
+Each database has its own method to create the appropriate type:
+
+```java
+// PostgreSQL
+PgType<List<Email>> pgEmails = emailJsonType.pgList();
+
+// MariaDB
+MariaType<List<Email>> mariaEmails = emailJsonType.mariaList();
+
+// Oracle
+OracleType<List<Email>> oracleEmails = emailJsonType.oracleList();
+
+// DuckDB
+DuckDbType<List<Email>> duckDbEmails = emailJsonType.duckDbList();
+
+// SQL Server
+SqlServerType<List<Email>> sqlServerEmails = emailJsonType.sqlServerList();
+
+// Nullable variant (Optional wrapper)
+PgType<Optional<List<Email>>> optionalEmails = emailJsonType.pgListOpt();
 ```
 
 The JSON codecs enable features like:

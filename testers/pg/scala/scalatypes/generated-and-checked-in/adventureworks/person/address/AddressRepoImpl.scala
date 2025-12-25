@@ -7,10 +7,10 @@ package adventureworks.person.address
 
 import adventureworks.person.stateprovince.StateprovinceId
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.DeleteBuilder
 import dev.typr.foundations.scala.Dialect
 import dev.typr.foundations.scala.Fragment
-import dev.typr.foundations.scala.PgTypeOps
 import dev.typr.foundations.scala.ScalaIteratorOps
 import dev.typr.foundations.scala.SelectBuilder
 import dev.typr.foundations.scala.UpdateBuilder

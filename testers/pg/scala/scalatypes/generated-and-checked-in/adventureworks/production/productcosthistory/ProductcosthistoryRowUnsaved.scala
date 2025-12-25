@@ -10,7 +10,7 @@ import adventureworks.customtypes.Defaulted.UseDefault
 import adventureworks.production.product.ProductId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
-import dev.typr.foundations.scala.PgTypeOps
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.ScalaDbTypes
 import java.time.LocalDateTime
 
@@ -47,5 +47,5 @@ case class ProductcosthistoryRowUnsaved(
 }
 
 object ProductcosthistoryRowUnsaved {
-  given pgText: PgText[ProductcosthistoryRowUnsaved] = PgText.instance((row, sb) => { ProductId.pgType.pgText.unsafeEncode(row.productid, sb); sb.append(PgText.DELIMETER); PgTypes.timestamp.pgText.unsafeEncode(row.startdate, sb); sb.append(PgText.DELIMETER); PgTypes.timestamp.nullable.pgText.unsafeEncode(row.enddate, sb); sb.append(PgText.DELIMETER); ScalaDbTypes.PgTypes.numeric.pgText.unsafeEncode(row.standardcost, sb); sb.append(PgText.DELIMETER); Defaulted.pgText(using PgTypes.timestamp.pgText).unsafeEncode(row.modifieddate, sb) })
+  given pgText: PgText[ProductcosthistoryRowUnsaved] = PgText.instance((row, sb) => { ProductId.pgType.text.unsafeEncode(row.productid, sb); sb.append(PgText.DELIMETER); PgTypes.timestamp.text.unsafeEncode(row.startdate, sb); sb.append(PgText.DELIMETER); PgTypes.timestamp.nullable.text.unsafeEncode(row.enddate, sb); sb.append(PgText.DELIMETER); ScalaDbTypes.PgTypes.numeric.text.unsafeEncode(row.standardcost, sb); sb.append(PgText.DELIMETER); Defaulted.pgText(using PgTypes.timestamp.text).unsafeEncode(row.modifieddate, sb) })
 }

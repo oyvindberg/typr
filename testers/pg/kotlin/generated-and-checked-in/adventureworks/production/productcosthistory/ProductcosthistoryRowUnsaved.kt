@@ -39,14 +39,14 @@ data class ProductcosthistoryRowUnsaved(
 
   companion object {
     val pgText: PgText<ProductcosthistoryRowUnsaved> =
-      PgText.instance({ row, sb -> ProductId.pgType.pgText().unsafeEncode(row.productid, sb)
+      PgText.instance({ row, sb -> ProductId.pgType.text().unsafeEncode(row.productid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.timestamp.pgText().unsafeEncode(row.startdate, sb)
+      PgTypes.timestamp.text().unsafeEncode(row.startdate, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.timestamp.nullable().pgText().unsafeEncode(row.enddate, sb)
+      PgTypes.timestamp.nullable().text().unsafeEncode(row.enddate, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.numeric.pgText().unsafeEncode(row.standardcost, sb)
+      PgTypes.numeric.text().unsafeEncode(row.standardcost, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.text()).unsafeEncode(row.modifieddate, sb) })
   }
 }

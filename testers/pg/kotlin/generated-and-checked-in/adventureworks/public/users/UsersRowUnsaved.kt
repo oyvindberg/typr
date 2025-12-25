@@ -29,18 +29,18 @@ data class UsersRowUnsaved(
 
   companion object {
     val pgText: PgText<UsersRowUnsaved> =
-      PgText.instance({ row, sb -> UsersId.pgType.pgText().unsafeEncode(row.userId, sb)
+      PgText.instance({ row, sb -> UsersId.pgType.text().unsafeEncode(row.userId, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.pgText().unsafeEncode(row.name, sb)
+      PgTypes.text.text().unsafeEncode(row.name, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.nullable().pgText().unsafeEncode(row.lastName, sb)
+      PgTypes.text.nullable().text().unsafeEncode(row.lastName, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.unknown.pgText().unsafeEncode(row.email, sb)
+      PgTypes.unknown.text().unsafeEncode(row.email, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.pgText().unsafeEncode(row.password, sb)
+      PgTypes.text.text().unsafeEncode(row.password, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.timestamptz.nullable().pgText().unsafeEncode(row.verifiedOn, sb)
+      PgTypes.timestamptz.nullable().text().unsafeEncode(row.verifiedOn, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.timestamptz.pgText()).unsafeEncode(row.createdAt, sb) })
+      Defaulted.pgText(PgTypes.timestamptz.text()).unsafeEncode(row.createdAt, sb) })
   }
 }

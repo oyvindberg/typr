@@ -74,6 +74,37 @@ public interface DbJson<A> {
     };
   }
 
+  /** Create a list version of this JSON codec. */
+  default DbJson<java.util.List<A>> list() {
+    DbJson<A> self = this;
+    return new DbJson<>() {
+      @Override
+      public JsonValue toJson(java.util.List<A> value) {
+        java.util.List<JsonValue> elements = new java.util.ArrayList<>(value.size());
+        for (A elem : value) {
+          elements.add(self.toJson(elem));
+        }
+        return new JsonValue.JArray(elements);
+      }
+
+      @Override
+      public java.util.List<A> fromJson(JsonValue json) {
+        if (json instanceof JsonValue.JNull) {
+          return java.util.List.of();
+        }
+        if (!(json instanceof JsonValue.JArray arr)) {
+          throw new IllegalArgumentException(
+              "Expected JSON array, got: " + json.getClass().getSimpleName());
+        }
+        java.util.List<A> result = new java.util.ArrayList<>(arr.values().size());
+        for (JsonValue elem : arr.values()) {
+          result.add(self.fromJson(elem));
+        }
+        return result;
+      }
+    };
+  }
+
   /** Transform this codec using bidirectional mapping. */
   default <B> DbJson<B> bimap(SqlFunction<A, B> f, java.util.function.Function<B, A> g) {
     DbJson<A> self = this;

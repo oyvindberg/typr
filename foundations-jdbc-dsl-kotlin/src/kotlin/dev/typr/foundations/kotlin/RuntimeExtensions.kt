@@ -11,162 +11,24 @@ import java.util.Optional
  */
 
 // ================================
-// PgType Extensions
+// DbType Extensions
 // ================================
 
 /**
- * Kotlin-friendly nullable version of PgType.opt().
+ * Kotlin-friendly nullable version of DbType.opt().
  *
- * Java's PgType.opt() returns PgType<Optional<A>>, but Kotlin code should work with A? instead.
- * This extension wraps a PgType<A> to create a PgType<A?> that converts between Optional and nullable
+ * Java's DbType.opt() returns DbType<Optional<A>>, but Kotlin code should work with A? instead.
+ * This extension wraps a DbType<A> to create a DbType<A?> that converts between Optional and nullable
  * at read/write boundaries.
  *
  * Usage:
- *   val nullableText: PgType<String?> = PgTypes.text.nullable()
+ *   val nullableText: DbType<String?> = PgTypes.text.nullable()
  *
  * Instead of:
- *   val optionalText: PgType<Optional<String>> = PgTypes.text.opt()  // Java-style
- *
- * Note: This delegates to the underlying PgType.opt() and converts Optional<A> <-> A? at boundaries.
+ *   val optionalText: DbType<Optional<String>> = PgTypes.text.opt()  // Java-style
  */
-fun <A : Any> PgType<A>.nullable(): PgType<A?> {
-    val underlying = this.opt()
-
-    // Create wrapper components that convert Optional<A> to A? at boundaries
-    val pgTypename = underlying.typename().to(optionalToNullable<A>())
-
-    // Use KotlinNullablePgRead which implements DbRead.Nullable marker interface
-    // This tells RowParser.opt() that this column is already nullable
-    val pgRead: PgRead<A?> = dev.typr.foundations.KotlinNullablePgRead(underlying.read())
-
-    val pgWrite = PgWrite.primitive<A?> { ps, index, value -> underlying.write().set(ps, index, value.toOptional()) }
-
-    val pgText = PgText.instance<A?>(
-        { v, sb -> underlying.pgText().unsafeEncode(v.toOptional(), sb) },
-        { v, sb -> underlying.pgText().unsafeArrayEncode(v.toOptional(), sb) }
-    )
-
-    val pgJson = underlying.pgJson().bimap<A?>(
-        SqlFunction { opt -> opt.orNull() },
-        { nullable -> nullable.toOptional() }
-    )
-
-    return PgType.of(pgTypename, pgRead, pgWrite, pgText, pgJson)
-}
-
-// ================================
-// DuckDbType Extensions
-// ================================
-
-/**
- * Kotlin-friendly nullable version of DuckDbType.opt().
- */
-fun <A : Any> DuckDbType<A>.nullable(): DuckDbType<A?> {
-    val underlying = this.opt()
-
-    // Create wrapper components that convert Optional<A> to A? at boundaries
-    val duckDbTypename = underlying.typename().to(optionalToNullable<A>()) as DuckDbTypename<A?>
-
-    // Use KotlinNullableDuckDbRead which implements DbRead.Nullable marker interface
-    // This tells RowParser.opt() that this column is already nullable
-    val duckDbRead: DuckDbRead<A?> = dev.typr.foundations.KotlinNullableDuckDbRead(underlying.read())
-
-    val duckDbWrite = DuckDbWrite.primitive<A?> { ps, index, value -> underlying.write().set(ps, index, value.toOptional()) }
-
-    val duckDbStringifier = DuckDbStringifier.instance<A?> { v, sb, i -> underlying.stringifier().unsafeEncode(v.toOptional(), sb, i) }
-
-    val duckDbJson = underlying.duckDbJson().bimap<A?>(
-        SqlFunction { opt -> opt.orNull() },
-        { nullable -> nullable.toOptional() }
-    )
-
-    return DuckDbType(duckDbTypename, duckDbRead, duckDbWrite, duckDbStringifier, duckDbJson)
-}
-
-// ================================
-// MariaType Extensions
-// ================================
-
-/**
- * Kotlin-friendly nullable version of MariaType.opt().
- */
-fun <A : Any> MariaType<A>.nullable(): MariaType<A?> {
-    val underlying = this.opt()
-
-    // Create wrapper components that convert Optional<A> to A? at boundaries
-    val mariaTypename = underlying.typename().to(optionalToNullable<A>()) as MariaTypename<A?>
-
-    // Use KotlinNullableMariaRead which implements DbRead.Nullable marker interface
-    // This tells RowParser.opt() that this column is already nullable
-    val mariaRead: MariaRead<A?> = dev.typr.foundations.KotlinNullableMariaRead(underlying.read())
-
-    val mariaWrite = MariaWrite.primitive<A?> { ps, index, value -> underlying.write().set(ps, index, value.toOptional()) }
-
-    val mariaText = MariaText.instance<A?> { v, sb -> underlying.mariaText().unsafeEncode(v.toOptional(), sb) }
-
-    val mariaJson = underlying.mariaJson().bimap<A?>(
-        SqlFunction { opt -> opt.orNull() },
-        { nullable -> nullable.toOptional() }
-    )
-
-    return MariaType(mariaTypename, mariaRead, mariaWrite, mariaText, mariaJson)
-}
-
-// ================================
-// OracleType Extensions
-// ================================
-
-/**
- * Kotlin-friendly nullable version of OracleType.opt().
- */
-fun <A : Any> OracleType<A>.nullable(): OracleType<A?> {
-    val underlying = this.opt()
-
-    // Create wrapper components that convert Optional<A> to A? at boundaries
-    val oracleTypename = underlying.typename().to(optionalToNullable<A>()) as OracleTypename<A?>
-
-    // Use KotlinNullableOracleRead which implements DbRead.Nullable marker interface
-    // This tells RowParser.opt() that this column is already nullable
-    val oracleRead: OracleRead<A?> = dev.typr.foundations.KotlinNullableOracleRead(underlying.read())
-
-    val oracleWrite = OracleWrite.primitive<A?> { ps, index, value -> underlying.write().set(ps, index, value.toOptional()) }
-
-    val oracleJson = underlying.oracleJson().bimap<A?>(
-        SqlFunction { opt -> opt.orNull() },
-        { nullable -> nullable.toOptional() }
-    )
-
-    return OracleType(oracleTypename, oracleRead, oracleWrite, oracleJson)
-}
-
-// ================================
-// SqlServerType Extensions
-// ================================
-
-/**
- * Kotlin-friendly nullable version of SqlServerType.opt().
- */
-fun <A : Any> SqlServerType<A>.nullable(): SqlServerType<A?> {
-    val underlying = this.opt()
-
-    // Create wrapper components that convert Optional<A> to A? at boundaries
-    val sqlServerTypename = underlying.typename().to(optionalToNullable<A>()) as SqlServerTypename<A?>
-
-    // Use KotlinNullableSqlServerRead which implements DbRead.Nullable marker interface
-    // This tells RowParser.opt() that this column is already nullable
-    val sqlServerRead: SqlServerRead<A?> = dev.typr.foundations.KotlinNullableSqlServerRead(underlying.read())
-
-    val sqlServerWrite = SqlServerWrite.primitive<A?> { ps, index, value -> underlying.write().set(ps, index, value.toOptional()) }
-
-    val sqlServerText = SqlServerText.instance<A?> { v, sb -> underlying.sqlServerText().unsafeEncode(v.toOptional(), sb) }
-
-    val sqlServerJson = underlying.sqlServerJson().bimap<A?>(
-        SqlFunction { opt -> opt.orNull() },
-        { nullable -> nullable.toOptional() }
-    )
-
-    return SqlServerType.of(sqlServerTypename, sqlServerRead, sqlServerWrite, sqlServerText, sqlServerJson)
-}
+fun <A : Any> DbType<A>.nullable(): DbType<A?> =
+    this.opt().to(optionalToNullable())
 
 // ================================
 // Either Extensions (value-level)
@@ -239,7 +101,7 @@ inline fun buildFragment(block: dev.typr.foundations.Fragment.Builder.() -> Unit
  * Append a nullable parameter to fragment builder.
  * Converts Kotlin's T? to Java's Optional<T> automatically.
  */
-fun <T> dev.typr.foundations.Fragment.Builder.paramNullable(type: PgType<T>, value: T?): dev.typr.foundations.Fragment.Builder {
+fun <T> dev.typr.foundations.Fragment.Builder.paramNullable(type: DbType<T>, value: T?): dev.typr.foundations.Fragment.Builder {
     return this.param(type.opt(), value.toOptional())
 }
 

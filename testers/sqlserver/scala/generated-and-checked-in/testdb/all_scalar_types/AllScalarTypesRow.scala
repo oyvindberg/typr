@@ -9,10 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.microsoft.sqlserver.jdbc.Geography
 import com.microsoft.sqlserver.jdbc.Geometry
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
-import dev.typr.foundations.scala.SqlServerTypeOps
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime

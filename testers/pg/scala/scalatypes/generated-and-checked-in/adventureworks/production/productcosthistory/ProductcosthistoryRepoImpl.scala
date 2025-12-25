@@ -7,10 +7,10 @@ package adventureworks.production.productcosthistory
 
 import adventureworks.production.product.ProductId
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.DeleteBuilder
 import dev.typr.foundations.scala.Dialect
 import dev.typr.foundations.scala.Fragment
-import dev.typr.foundations.scala.PgTypeOps
 import dev.typr.foundations.scala.ScalaDbTypes
 import dev.typr.foundations.scala.ScalaIteratorOps
 import dev.typr.foundations.scala.SelectBuilder

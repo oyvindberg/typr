@@ -15,10 +15,4 @@ public interface DbRead<A> {
 
   /** Derive a DbRead which allows nullable values */
   DbRead<Optional<A>> opt();
-
-  /**
-   * Marker interface for nullable read implementations. Used by RowParser.opt() to detect which
-   * columns are already nullable.
-   */
-  interface Nullable {}
 }

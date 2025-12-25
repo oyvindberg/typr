@@ -6,9 +6,9 @@
 package testdb.products
 
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.DeleteBuilder
 import dev.typr.foundations.scala.Dialect
-import dev.typr.foundations.scala.DuckDbTypeOps
 import dev.typr.foundations.scala.Fragment
 import dev.typr.foundations.scala.ScalaDbTypes
 import dev.typr.foundations.scala.SelectBuilder

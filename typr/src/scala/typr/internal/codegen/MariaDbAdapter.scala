@@ -28,9 +28,7 @@ object MariaDbAdapter extends DbAdapter {
   // ═══════════════════════════════════════════════════════════════════════════
 
   val KotlinDbTypes: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.kotlin.KotlinDbTypes")
-  val KotlinNullableExtension: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.kotlin.nullable")
   val ScalaDbTypes: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.scala.ScalaDbTypes")
-  val ScalaDbTypeOps: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.scala.MariaTypeOps")
   val Types: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.MariaTypes")
   val TypeClass: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.MariaType")
   val TextClass: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.MariaText")
@@ -44,12 +42,7 @@ object MariaDbAdapter extends DbAdapter {
         lookupByDbType(dbType, typeSupport)
 
       case TypoType.Nullable(_, inner) =>
-        val innerCode = lookupType(inner, naming, typeSupport)
-        typeSupport match {
-          case TypeSupportScala  => code"${jvm.Import(ScalaDbTypeOps)}$innerCode.nullable"
-          case TypeSupportKotlin => code"${jvm.Import(KotlinNullableExtension)}$innerCode.nullable()"
-          case _                 => code"$innerCode.opt()"
-        }
+        nullableType(lookupType(inner, naming, typeSupport), typeSupport)
 
       case TypoType.Generated(_, _, qualifiedType) =>
         code"$qualifiedType.$typeFieldName"

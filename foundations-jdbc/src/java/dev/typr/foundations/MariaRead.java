@@ -16,7 +16,7 @@ import java.util.Optional;
  * <p>Similar to PgRead but adapted for MariaDB-specific types.
  */
 public sealed interface MariaRead<A> extends DbRead<A>
-    permits MariaRead.NonNullable, MariaRead.Nullable, KotlinNullableMariaRead {
+    permits MariaRead.NonNullable, MariaRead.Nullable, MariaRead.Mapped {
   A read(ResultSet rs, int col) throws SQLException;
 
   <B> MariaRead<B> map(SqlFunction<A, B> f);
@@ -74,7 +74,7 @@ public sealed interface MariaRead<A> extends DbRead<A>
     }
   }
 
-  final class Nullable<A> implements MariaRead<Optional<A>>, DbRead.Nullable {
+  final class Nullable<A> implements MariaRead<Optional<A>> {
     final RawRead<Optional<A>> readNullable;
 
     public Nullable(RawRead<Optional<A>> readNullable) {
@@ -88,7 +88,7 @@ public sealed interface MariaRead<A> extends DbRead<A>
 
     @Override
     public <B> MariaRead<B> map(SqlFunction<Optional<A>, B> f) {
-      return new NonNullable<>((rs, col) -> Optional.of(f.apply(read(rs, col))));
+      return new Mapped<>(this, f);
     }
 
     @Override
@@ -99,6 +99,27 @@ public sealed interface MariaRead<A> extends DbRead<A>
             if (maybeA.isEmpty()) return Optional.empty();
             return Optional.of(maybeA);
           });
+    }
+  }
+
+  /**
+   * A read that came from mapping another read. Just returns whatever the mapping function
+   * produces, null or not.
+   */
+  record Mapped<A, B>(MariaRead<A> underlying, SqlFunction<A, B> f) implements MariaRead<B> {
+    @Override
+    public B read(ResultSet rs, int col) throws SQLException {
+      return f.apply(underlying.read(rs, col));
+    }
+
+    @Override
+    public <C> MariaRead<C> map(SqlFunction<B, C> g) {
+      return new Mapped<>(this, g);
+    }
+
+    @Override
+    public MariaRead<Optional<B>> opt() {
+      return new Nullable<>((rs, col) -> Optional.ofNullable(read(rs, col)));
     }
   }
 

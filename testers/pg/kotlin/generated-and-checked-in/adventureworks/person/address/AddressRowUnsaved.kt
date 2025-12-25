@@ -47,22 +47,22 @@ data class AddressRowUnsaved(
 
   companion object {
     val pgText: PgText<AddressRowUnsaved> =
-      PgText.instance({ row, sb -> PgTypes.text.pgText().unsafeEncode(row.addressline1, sb)
+      PgText.instance({ row, sb -> PgTypes.text.text().unsafeEncode(row.addressline1, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.nullable().pgText().unsafeEncode(row.addressline2, sb)
+      PgTypes.text.nullable().text().unsafeEncode(row.addressline2, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.pgText().unsafeEncode(row.city, sb)
+      PgTypes.text.text().unsafeEncode(row.city, sb)
       sb.append(PgText.DELIMETER)
-      StateprovinceId.pgType.pgText().unsafeEncode(row.stateprovinceid, sb)
+      StateprovinceId.pgType.text().unsafeEncode(row.stateprovinceid, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.text.pgText().unsafeEncode(row.postalcode, sb)
+      PgTypes.text.text().unsafeEncode(row.postalcode, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.bytea.nullable().pgText().unsafeEncode(row.spatiallocation, sb)
+      PgTypes.bytea.nullable().text().unsafeEncode(row.spatiallocation, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(AddressId.pgType.pgText()).unsafeEncode(row.addressid, sb)
+      Defaulted.pgText(AddressId.pgType.text()).unsafeEncode(row.addressid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.text()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.text()).unsafeEncode(row.modifieddate, sb) })
   }
 }
