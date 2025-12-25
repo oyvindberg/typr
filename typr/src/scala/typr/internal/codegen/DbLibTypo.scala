@@ -48,13 +48,16 @@ class DbLibTypo(
   val KotlinNullableExtension = jvm.Type.Qualified("dev.typr.foundations.kotlin.nullable")
   // Kotlin query extension function for Fragment
   val KotlinQueryExtension = jvm.Type.Qualified("dev.typr.foundations.kotlin.query")
-  // Scala DbTypeOps implicit class for nullable extension method - use specific type for each database
-  val ScalaDbTypeOps = adapter.dbType match {
-    case DbType.PostgreSQL => jvm.Type.Qualified("dev.typr.foundations.scala.PgTypeOps")
-    case DbType.MariaDB    => jvm.Type.Qualified("dev.typr.foundations.scala.MariaTypeOps")
-    case DbType.DuckDB     => jvm.Type.Qualified("dev.typr.foundations.scala.DuckDbTypeOps")
-    case DbType.Oracle     => jvm.Type.Qualified("dev.typr.foundations.scala.OracleTypeOps")
-    case DbType.SqlServer  => jvm.Type.Qualified("dev.typr.foundations.scala.SqlServerTypeOps")
+  // Scala DbTypeOps implicit class for nullable extension method
+  val ScalaDbTypeOps = jvm.Type.Qualified("dev.typr.foundations.scala.DbTypeOps")
+  // Generic DbText type (base interface for PgText, MariaText, etc.)
+  val DbText = jvm.Type.Qualified("dev.typr.foundations.DbText")
+
+  /** Wrap a type code to make it nullable - adds import and calls appropriate method based on language */
+  def nullableType(innerCode: jvm.Code): jvm.Code = lang.typeSupport match {
+    case TypeSupportScala  => code"${jvm.Import(ScalaDbTypeOps)}$innerCode.nullable"
+    case TypeSupportKotlin => code"${jvm.Import(KotlinNullableExtension)}$innerCode.nullable()"
+    case _                 => code"$innerCode.opt()"
   }
 
   def rowParserFor(rowType: jvm.Type) = code"$rowType.$rowParserName"
@@ -1729,7 +1732,7 @@ class DbLibTypo(
       jvm.Given(
         tparams = List(T),
         name = adapter.textFieldName,
-        implicitParams = List(jvm.Param(textofT, adapter.TextClass.of(T))),
+        implicitParams = List(jvm.Param(textofT, DbText.of(T))),
         tpe = adapter.TextClass.of(default.Defaulted.of(T)),
         body = code"""${adapter.TextClass}.instance($outerLambda)"""
       )
@@ -1951,15 +1954,17 @@ class DbLibTypo(
         val text = if (enableStreamingInserts && adapter.supportsCopyStreaming) {
           val row = jvm.Ident("row")
           val sb = jvm.Ident("sb")
+          // Use .text() method (from DbType interface) instead of db-specific field like .pgText
+          val textMethod = jvm.Ident("text")
           val textCols: NonEmptyList[jvm.Code] = cols.map { col =>
             val text = col.tpe match {
               case jvm.Type.TApply(default.Defaulted, List(_)) =>
-                // For Defaulted[T], col.typoType preserves the inner type structure (e.g., Generated for DepartmentId)
-                val innerPgText = jvm.ApplyNullary(lookupType(col), adapter.textFieldName)
+                // For Defaulted[T], Defaulted.pgText accepts DbText[T], so we use .text() for the inner type
+                val innerText = jvm.ApplyNullary(lookupType(col), textMethod)
                 val target = jvm.Select(default.Defaulted.code, adapter.textFieldName)
-                jvm.Call(target.code, List(jvm.Call.ArgGroup(List(jvm.Arg.Pos(innerPgText.code)), isImplicit = true))).code
+                jvm.Call(target.code, List(jvm.Call.ArgGroup(List(jvm.Arg.Pos(innerText.code)), isImplicit = true))).code
               case _ =>
-                jvm.ApplyNullary(lookupType(col), adapter.textFieldName).code
+                jvm.ApplyNullary(lookupType(col), textMethod).code
             }
             code"$text.unsafeEncode($row.${col.name}, $sb)"
           }

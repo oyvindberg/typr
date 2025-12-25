@@ -7,7 +7,7 @@ package testdb.inventory_check
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
-import dev.typr.foundations.scala.MariaTypeOps
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -35,7 +35,7 @@ case class InventoryCheckSqlRow(
   @JsonProperty("quantity_on_hand") quantityOnHand: Int,
   /** Points to [[testdb.inventory.InventoryRow.quantityReserved]] */
   @JsonProperty("quantity_reserved") quantityReserved: Int,
-  /** Points to [[testdb.inventory.InventoryRow.quantityReserved]] */
+  /** Points to [[testdb.inventory.InventoryRow.quantityOnHand]] */
   available: Int,
   /** Points to [[testdb.inventory.InventoryRow.reorderPoint]] */
   @JsonProperty("reorder_point") reorderPoint: Int,

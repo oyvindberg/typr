@@ -9,6 +9,7 @@ import adventureworks.DefaultedDeserializer
 import adventureworks.DefaultedSerializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import dev.typr.foundations.DbText
 import dev.typr.foundations.PgText
 
 @JsonSerialize(using = DefaultedSerializer::class)
@@ -48,7 +49,7 @@ sealed interface Defaulted<T> {
   }
 
   companion object {
-    fun <T> pgText(t: PgText<T>): PgText<Defaulted<T>> {
+    fun <T> pgText(t: DbText<T>): PgText<Defaulted<T>> {
       return PgText.instance({ ot, sb -> ot.visit({ sb.append("__DEFAULT_VALUE__") }, { value -> t.unsafeEncode(value, sb) }) })
     }
   }

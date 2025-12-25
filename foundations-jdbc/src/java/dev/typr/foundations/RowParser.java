@@ -95,22 +95,9 @@ public record RowParser<Row>(
    * joins where all columns from the joined table can be null.
    */
   public RowParser<Optional<Row>> opt() {
-    // For opt(), we need to allow nullable reads for all columns
-    // because in a left join, all columns from the right table can be null.
-    // Track which columns were originally non-nullable so we can unwrap them later.
     List<DbType<?>> optColumns = new ArrayList<>(columns.size());
-    boolean[] wasNonNullable = new boolean[columns.size()];
     for (int i = 0; i < columns.size(); i++) {
-      var dbType = columns.get(i);
-      if (dbType.read() instanceof DbRead.Nullable) {
-        // Already nullable, keep as-is
-        optColumns.add(dbType);
-        wasNonNullable[i] = false;
-      } else {
-        // Make it nullable - this changes the type to Optional<A>
-        optColumns.add(dbType.opt());
-        wasNonNullable[i] = true;
-      }
+      optColumns.add(columns.get(i).opt());
     }
 
     Function<Object[], Optional<Row>> decode =
@@ -126,10 +113,10 @@ public record RowParser<Row>(
           if (allNull) {
             return Optional.empty();
           }
-          // Unwrap Optional values that we wrapped (originally non-nullable columns)
+          // Unwrap the Optional wrapper we added
           Object[] unwrapped = new Object[values.length];
           for (int i = 0; i < values.length; i++) {
-            if (wasNonNullable[i] && values[i] instanceof Optional<?> opt) {
+            if (values[i] instanceof Optional<?> opt) {
               unwrapped[i] = opt.orElse(null);
             } else {
               unwrapped[i] = values[i];

@@ -7,9 +7,9 @@ package testdb.find_customers_by_email
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
-import dev.typr.foundations.scala.SqlServerTypeOps
 import java.time.LocalDateTime
 import testdb.customers.CustomersId
 

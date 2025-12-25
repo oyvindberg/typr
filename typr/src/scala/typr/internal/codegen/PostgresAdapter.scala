@@ -83,9 +83,7 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
   // ═══════════════════════════════════════════════════════════════════════════
 
   val KotlinDbTypes = jvm.Type.Qualified("dev.typr.foundations.kotlin.KotlinDbTypes")
-  val KotlinNullableExtension = jvm.Type.Qualified("dev.typr.foundations.kotlin.nullable")
   val ScalaDbTypes = jvm.Type.Qualified("dev.typr.foundations.scala.ScalaDbTypes")
-  val ScalaDbTypeOps = jvm.Type.Qualified("dev.typr.foundations.scala.PgTypeOps")
   val Types: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.PgTypes")
   val TypeClass: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.PgType")
   val TextClass: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.PgText")
@@ -99,12 +97,7 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
       lookupByDbType(dbType, naming, typeSupport)
 
     case TypoType.Nullable(_, inner) =>
-      val innerCode = lookupType(inner, naming, typeSupport)
-      typeSupport match {
-        case TypeSupportScala  => code"${jvm.Import(ScalaDbTypeOps)}$innerCode.nullable"
-        case TypeSupportKotlin => code"${jvm.Import(KotlinNullableExtension)}$innerCode.nullable()"
-        case _                 => code"$innerCode.opt()"
-      }
+      nullableType(lookupType(inner, naming, typeSupport), typeSupport)
 
     case TypoType.Generated(_, _, qualifiedType) =>
       code"$qualifiedType.$typeFieldName"

@@ -7,10 +7,10 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
-import dev.typr.foundations.scala.SqlServerTypeOps
 
 /** Table: products
  * Primary key: product_id

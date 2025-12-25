@@ -40,16 +40,16 @@ data class ProductmodelRowUnsaved(
 
   companion object {
     val pgText: PgText<ProductmodelRowUnsaved> =
-      PgText.instance({ row, sb -> Name.pgType.pgText().unsafeEncode(row.name, sb)
+      PgText.instance({ row, sb -> Name.pgType.text().unsafeEncode(row.name, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.xml.nullable().pgText().unsafeEncode(row.catalogdescription, sb)
+      PgTypes.xml.nullable().text().unsafeEncode(row.catalogdescription, sb)
       sb.append(PgText.DELIMETER)
-      PgTypes.xml.nullable().pgText().unsafeEncode(row.instructions, sb)
+      PgTypes.xml.nullable().text().unsafeEncode(row.instructions, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(ProductmodelId.pgType.pgText()).unsafeEncode(row.productmodelid, sb)
+      Defaulted.pgText(ProductmodelId.pgType.text()).unsafeEncode(row.productmodelid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.uuid.pgText()).unsafeEncode(row.rowguid, sb)
+      Defaulted.pgText(PgTypes.uuid.text()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(PgTypes.timestamp.pgText()).unsafeEncode(row.modifieddate, sb) })
+      Defaulted.pgText(PgTypes.timestamp.text()).unsafeEncode(row.modifieddate, sb) })
   }
 }

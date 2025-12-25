@@ -37,7 +37,7 @@ import org.postgresql.util.PGobject;
  * Then you create derived instances with {@code map} and/or {@code opt}
  */
 public sealed interface PgRead<A> extends DbRead<A>
-    permits PgRead.NonNullable, PgRead.Nullable, KotlinNullablePgRead {
+    permits PgRead.NonNullable, PgRead.Nullable, PgRead.Mapped {
   A read(ResultSet rs, int col) throws SQLException;
 
   <B> PgRead<B> map(SqlFunction<A, B> f);
@@ -96,7 +96,7 @@ public sealed interface PgRead<A> extends DbRead<A>
     }
   }
 
-  final class Nullable<A> implements PgRead<Optional<A>>, DbRead.Nullable {
+  final class Nullable<A> implements PgRead<Optional<A>> {
     final RawRead<Optional<A>> readNullable;
 
     public Nullable(RawRead<Optional<A>> readNullable) {
@@ -110,24 +110,38 @@ public sealed interface PgRead<A> extends DbRead<A>
 
     @Override
     public <B> PgRead<B> map(SqlFunction<Optional<A>, B> f) {
-      // note that there is an implicit assertion here -
-      // we're not adding another level of optionality and we *know* we have a `B` even if there was
-      // no `A`
-      // note that `B` may very well be `Optional<>` itself
-      // Use ofNullable to support Kotlin nullable types where B can be null
-      return new NonNullable<>((rs, col) -> Optional.ofNullable(f.apply(read(rs, col))));
+      return new Mapped<>(this, f);
     }
 
-    // just here for completeness, doesn't make much sense
     @Override
     public Nullable<Optional<A>> opt() {
       return new Nullable<>(
           (rs, col) -> {
             Optional<A> maybeA = readNullable.apply(rs, col);
-            // avoid `Some(None)`
             if (maybeA.isEmpty()) return Optional.empty();
             return Optional.of(maybeA);
           });
+    }
+  }
+
+  /**
+   * A read that came from mapping another read. Just returns whatever the mapping function
+   * produces, null or not. No throwing on null, no Optional wrapping.
+   */
+  record Mapped<A, B>(PgRead<A> underlying, SqlFunction<A, B> f) implements PgRead<B> {
+    @Override
+    public B read(ResultSet rs, int col) throws SQLException {
+      return f.apply(underlying.read(rs, col));
+    }
+
+    @Override
+    public <C> PgRead<C> map(SqlFunction<B, C> g) {
+      return new Mapped<>(this, g);
+    }
+
+    @Override
+    public PgRead<Optional<B>> opt() {
+      return new Nullable<>((rs, col) -> Optional.ofNullable(read(rs, col)));
     }
   }
 

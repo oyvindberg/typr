@@ -37,19 +37,19 @@ case class ColumnsViewRow(
   isNullable: Option[/* max 3 chars */ String],
   /** debug: {"name":"data_type","inferred_type":"\"information_schema\".\"character_data\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_attribute","source_column":"atttypid","source_type":"oid","source_primary_key":false} */
   dataType: Option[String],
-  /** debug: {"name":"character_maximum_length","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_attribute","source_column":"*","source_primary_key":false} */
+  /** debug: {"name":"character_maximum_length","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"*","source_primary_key":false} */
   characterMaximumLength: Option[Int],
-  /** debug: {"name":"character_octet_length","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_attribute","source_column":"*","source_primary_key":false} */
+  /** debug: {"name":"character_octet_length","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"*","source_primary_key":false} */
   characterOctetLength: Option[Int],
-  /** debug: {"name":"numeric_precision","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_attribute","source_column":"*","source_primary_key":false} */
+  /** debug: {"name":"numeric_precision","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"*","source_primary_key":false} */
   numericPrecision: Option[Int],
-  /** debug: {"name":"numeric_precision_radix","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_attribute","source_column":"*","source_primary_key":false} */
+  /** debug: {"name":"numeric_precision_radix","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"*","source_primary_key":false} */
   numericPrecisionRadix: Option[Int],
-  /** debug: {"name":"numeric_scale","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_attribute","source_column":"*","source_primary_key":false} */
+  /** debug: {"name":"numeric_scale","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"*","source_primary_key":false} */
   numericScale: Option[Int],
-  /** debug: {"name":"datetime_precision","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_attribute","source_column":"*","source_primary_key":false} */
+  /** debug: {"name":"datetime_precision","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"*","source_primary_key":false} */
   datetimePrecision: Option[Int],
-  /** debug: {"name":"interval_type","inferred_type":"\"information_schema\".\"character_data\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_attribute","source_column":"*","source_primary_key":false} */
+  /** debug: {"name":"interval_type","inferred_type":"\"information_schema\".\"character_data\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"*","source_primary_key":false} */
   intervalType: Option[String],
   /** debug: {"name":"interval_precision","inferred_type":"\"information_schema\".\"cardinal_number\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":false,"source_primary_key":false} */
   intervalPrecision: Option[Int],
@@ -69,7 +69,7 @@ case class ColumnsViewRow(
   domainCatalog: Option[String],
   /** debug: {"name":"domain_schema","inferred_type":"\"information_schema\".\"sql_identifier\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"typtype","source_type":"char","source_primary_key":false} */
   domainSchema: Option[String],
-  /** debug: {"name":"domain_name","inferred_type":"\"information_schema\".\"sql_identifier\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"typname","source_type":"name","source_primary_key":false} */
+  /** debug: {"name":"domain_name","inferred_type":"\"information_schema\".\"sql_identifier\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"typtype","source_type":"char","source_primary_key":false} */
   domainName: Option[String],
   /** debug: {"name":"udt_catalog","inferred_type":"\"information_schema\".\"sql_identifier\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":false,"source_primary_key":false} */
   udtCatalog: Option[String],

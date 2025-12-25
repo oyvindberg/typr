@@ -32,9 +32,7 @@ object OracleAdapter extends DbAdapter {
   // Oracle doesn't support text-based streaming inserts (COPY), so TextClass throws if accessed
   def TextClass: jvm.Type.Qualified = sys.error("Oracle doesn't support text-based streaming inserts")
   val KotlinDbTypes: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.kotlin.KotlinDbTypes")
-  val KotlinNullableExtension: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.kotlin.nullable")
   val ScalaDbTypes: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.scala.ScalaDbTypes")
-  val ScalaDbTypeOps: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.scala.OracleTypeOps")
 
   val typeFieldName: jvm.Ident = jvm.Ident("oracleType")
   // Oracle doesn't support text-based streaming inserts (COPY), so textFieldName throws if accessed
@@ -46,12 +44,7 @@ object OracleAdapter extends DbAdapter {
       lookupByDbType(dbType, naming, typeSupport)
 
     case TypoType.Nullable(_, inner) =>
-      val innerCode = lookupType(inner, naming, typeSupport)
-      typeSupport match {
-        case TypeSupportScala  => code"${jvm.Import(ScalaDbTypeOps)}$innerCode.nullable"
-        case TypeSupportKotlin => code"${jvm.Import(KotlinNullableExtension)}$innerCode.nullable()"
-        case _                 => code"$innerCode.opt()"
-      }
+      nullableType(lookupType(inner, naming, typeSupport), typeSupport)
 
     case TypoType.Generated(_, _, qualifiedType) =>
       code"$qualifiedType.$typeFieldName"

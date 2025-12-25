@@ -6,9 +6,9 @@
 package testdb.orders_with_customer_details
 
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.Fragment
 import dev.typr.foundations.scala.ScalaDbTypes
-import dev.typr.foundations.scala.SqlServerTypeOps
 import java.sql.Connection
 import java.time.LocalDateTime
 import dev.typr.foundations.scala.Fragment.sql

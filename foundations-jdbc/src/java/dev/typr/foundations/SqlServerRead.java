@@ -16,7 +16,7 @@ import java.util.UUID;
  * <p>Similar to MariaRead but adapted for SQL Server-specific types.
  */
 public sealed interface SqlServerRead<A> extends DbRead<A>
-    permits SqlServerRead.NonNullable, SqlServerRead.Nullable, KotlinNullableSqlServerRead {
+    permits SqlServerRead.NonNullable, SqlServerRead.Nullable, SqlServerRead.Mapped {
   A read(ResultSet rs, int col) throws SQLException;
 
   <B> SqlServerRead<B> map(SqlFunction<A, B> f);
@@ -75,7 +75,7 @@ public sealed interface SqlServerRead<A> extends DbRead<A>
     }
   }
 
-  final class Nullable<A> implements SqlServerRead<Optional<A>>, DbRead.Nullable {
+  final class Nullable<A> implements SqlServerRead<Optional<A>> {
     final RawRead<Optional<A>> readNullable;
 
     public Nullable(RawRead<Optional<A>> readNullable) {
@@ -89,7 +89,7 @@ public sealed interface SqlServerRead<A> extends DbRead<A>
 
     @Override
     public <B> SqlServerRead<B> map(SqlFunction<Optional<A>, B> f) {
-      return new NonNullable<>((rs, col) -> Optional.of(f.apply(read(rs, col))));
+      return new Mapped<>(this, f);
     }
 
     @Override
@@ -100,6 +100,24 @@ public sealed interface SqlServerRead<A> extends DbRead<A>
             if (maybeA.isEmpty()) return Optional.empty();
             return Optional.of(maybeA);
           });
+    }
+  }
+
+  record Mapped<A, B>(SqlServerRead<A> underlying, SqlFunction<A, B> f)
+      implements SqlServerRead<B> {
+    @Override
+    public B read(ResultSet rs, int col) throws SQLException {
+      return f.apply(underlying.read(rs, col));
+    }
+
+    @Override
+    public <C> SqlServerRead<C> map(SqlFunction<B, C> g) {
+      return new Mapped<>(this, g);
+    }
+
+    @Override
+    public SqlServerRead<Optional<B>> opt() {
+      return new Nullable<>((rs, col) -> Optional.ofNullable(read(rs, col)));
     }
   }
 

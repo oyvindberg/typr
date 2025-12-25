@@ -7,7 +7,7 @@ package oracledb.departments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
-import dev.typr.foundations.scala.OracleTypeOps
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import oracledb.MoneyT

@@ -6,12 +6,12 @@
 package testdb.orders
 
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.DeleteBuilder
 import dev.typr.foundations.scala.Dialect
 import dev.typr.foundations.scala.Fragment
 import dev.typr.foundations.scala.ScalaDbTypes
 import dev.typr.foundations.scala.SelectBuilder
-import dev.typr.foundations.scala.SqlServerTypeOps
 import dev.typr.foundations.scala.UpdateBuilder
 import java.sql.Connection
 import scala.collection.mutable.ListBuffer

@@ -5,31 +5,7 @@ import dev.typr.foundations.*
 import _root_.scala.jdk.CollectionConverters.*
 import _root_.scala.jdk.OptionConverters.*
 
-implicit class PgTypeOps[A](private val pgType: PgType[A]) extends AnyVal {
-  def nullable: PgType[Option[A]] =
-    pgType.opt.to(Bijections.optionalToOption[A])
-}
-
-implicit class MariaTypeOps[A](private val mariaType: MariaType[A]) extends AnyVal {
-  def nullable: MariaType[Option[A]] =
-    mariaType.opt.to(Bijections.optionalToOption[A])
-}
-
-implicit class DuckDbTypeOps[A](private val duckDbType: DuckDbType[A]) extends AnyVal {
-  def nullable: DuckDbType[Option[A]] =
-    duckDbType.opt.to(Bijections.optionalToOption[A])
-}
-
-implicit class OracleTypeOps[A](private val oracleType: OracleType[A]) extends AnyVal {
-  def nullable: OracleType[Option[A]] =
-    oracleType.opt.to(Bijections.optionalToOption[A])
-}
-
-implicit class SqlServerTypeOps[A](private val sqlServerType: SqlServerType[A]) extends AnyVal {
-  def nullable: SqlServerType[Option[A]] =
-    sqlServerType.opt.to(Bijections.optionalToOption[A])
-}
-
+/** Extension to add `.nullable` method to any DbType, converting Optional to Option. */
 implicit class DbTypeOps[A](private val dbType: DbType[A]) extends AnyVal {
   def nullable: DbType[Option[A]] =
     dbType.opt.to(Bijections.optionalToOption[A])
@@ -65,8 +41,8 @@ implicit class RangeOps[T <: Comparable[T]](private val range: dev.typr.foundati
 }
 
 implicit class FragmentBuilderOps(private val builder: Fragment.Builder) extends AnyVal {
-  def paramNullable[T](pgType: PgType[T], value: Option[T]): Fragment.Builder = {
-    builder.param(pgType.opt(), value.toJava)
+  def paramNullable[T](dbType: DbType[T], value: Option[T]): Fragment.Builder = {
+    builder.param(dbType.opt(), value.toJava)
   }
 }
 

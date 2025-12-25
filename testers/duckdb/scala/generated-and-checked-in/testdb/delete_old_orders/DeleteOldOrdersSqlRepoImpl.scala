@@ -6,7 +6,7 @@
 package testdb.delete_old_orders
 
 import dev.typr.foundations.DuckDbTypes
-import dev.typr.foundations.scala.DuckDbTypeOps
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.Fragment
 import java.sql.Connection
 import java.time.LocalDate

@@ -6,8 +6,8 @@
 package testdb.product_search
 
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.Fragment
-import dev.typr.foundations.scala.MariaTypeOps
 import dev.typr.foundations.scala.ScalaDbTypes
 import java.sql.Connection
 import dev.typr.foundations.scala.Fragment.sql

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.data.Unknown
-import dev.typr.foundations.scala.PgTypeOps
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.time.Instant

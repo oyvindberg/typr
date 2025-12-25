@@ -9,7 +9,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
-import dev.typr.foundations.scala.PgTypeOps
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.util.UUID

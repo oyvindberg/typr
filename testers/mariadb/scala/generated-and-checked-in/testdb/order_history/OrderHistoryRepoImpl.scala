@@ -6,10 +6,10 @@
 package testdb.order_history
 
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.DeleteBuilder
 import dev.typr.foundations.scala.Dialect
 import dev.typr.foundations.scala.Fragment
-import dev.typr.foundations.scala.MariaTypeOps
 import dev.typr.foundations.scala.SelectBuilder
 import dev.typr.foundations.scala.UpdateBuilder
 import java.sql.Connection

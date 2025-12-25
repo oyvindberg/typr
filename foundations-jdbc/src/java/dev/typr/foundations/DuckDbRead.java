@@ -13,7 +13,7 @@ import java.util.UUID;
  * good type support for most types.
  */
 public sealed interface DuckDbRead<A> extends DbRead<A>
-    permits DuckDbRead.NonNullable, DuckDbRead.Nullable, KotlinNullableDuckDbRead {
+    permits DuckDbRead.NonNullable, DuckDbRead.Nullable, DuckDbRead.Mapped {
   A read(ResultSet rs, int col) throws SQLException;
 
   <B> DuckDbRead<B> map(SqlFunction<A, B> f);
@@ -71,7 +71,7 @@ public sealed interface DuckDbRead<A> extends DbRead<A>
     }
   }
 
-  final class Nullable<A> implements DuckDbRead<Optional<A>>, DbRead.Nullable {
+  final class Nullable<A> implements DuckDbRead<Optional<A>> {
     final RawRead<Optional<A>> readNullable;
 
     public Nullable(RawRead<Optional<A>> readNullable) {
@@ -85,15 +85,7 @@ public sealed interface DuckDbRead<A> extends DbRead<A>
 
     @Override
     public <B> DuckDbRead<B> map(SqlFunction<Optional<A>, B> f) {
-      // Mapping over Nullable should return NonNullable because the function f
-      // is expected to produce a non-null B from Optional<A>
-      // However, if B itself is Optional, we need to flatten it
-      return new NonNullable<>(
-          (rs, col) -> {
-            Optional<A> opt = read(rs, col);
-            B result = f.apply(opt);
-            return Optional.ofNullable(result);
-          });
+      return new Mapped<>(this, f);
     }
 
     @Override
@@ -104,6 +96,23 @@ public sealed interface DuckDbRead<A> extends DbRead<A>
             if (maybeA.isEmpty()) return Optional.empty();
             return Optional.of(maybeA);
           });
+    }
+  }
+
+  record Mapped<A, B>(DuckDbRead<A> underlying, SqlFunction<A, B> f) implements DuckDbRead<B> {
+    @Override
+    public B read(ResultSet rs, int col) throws SQLException {
+      return f.apply(underlying.read(rs, col));
+    }
+
+    @Override
+    public <C> DuckDbRead<C> map(SqlFunction<B, C> g) {
+      return new Mapped<>(this, g);
+    }
+
+    @Override
+    public DuckDbRead<Optional<B>> opt() {
+      return new Nullable<>((rs, col) -> Optional.ofNullable(read(rs, col)));
     }
   }
 

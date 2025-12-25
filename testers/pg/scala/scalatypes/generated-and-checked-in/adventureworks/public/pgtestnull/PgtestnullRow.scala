@@ -16,7 +16,7 @@ import dev.typr.foundations.data.Jsonb
 import dev.typr.foundations.data.Money
 import dev.typr.foundations.data.Vector
 import dev.typr.foundations.data.Xml
-import dev.typr.foundations.scala.PgTypeOps
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes

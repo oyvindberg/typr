@@ -24,8 +24,8 @@ data class IdentityTestRowUnsaved(
 
   companion object {
     val pgText: PgText<IdentityTestRowUnsaved> =
-      PgText.instance({ row, sb -> IdentityTestId.pgType.pgText().unsafeEncode(row.name, sb)
+      PgText.instance({ row, sb -> IdentityTestId.pgType.text().unsafeEncode(row.name, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.pgText()).unsafeEncode(row.defaultGenerated, sb) })
+      Defaulted.pgText(KotlinDbTypes.PgTypes.int4.text()).unsafeEncode(row.defaultGenerated, sb) })
   }
 }
