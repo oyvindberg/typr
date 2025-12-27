@@ -39,7 +39,7 @@ public interface EmployeesRepo {
 
   Boolean update(EmployeesRow row, Connection c);
 
-  EmployeesRow upsert(EmployeesRow unsaved, Connection c);
+  void upsert(EmployeesRow unsaved, Connection c);
 
-  List<EmployeesRow> upsertBatch(Iterator<EmployeesRow> unsaved, Connection c);
+  void upsertBatch(Iterator<EmployeesRow> unsaved, Connection c);
 }

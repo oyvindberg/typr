@@ -161,22 +161,18 @@ public record EmployeesRepoMock(
   ;
 
   @Override
-  public EmployeesRow upsert(EmployeesRow unsaved, Connection c) {
+  public void upsert(EmployeesRow unsaved, Connection c) {
     map.put(unsaved.compositeId(), unsaved);
-    return unsaved;
   }
   ;
 
   @Override
-  public List<EmployeesRow> upsertBatch(Iterator<EmployeesRow> unsaved, Connection c) {
-    var result = new ArrayList<EmployeesRow>();
+  public void upsertBatch(Iterator<EmployeesRow> unsaved, Connection c) {
     while (unsaved.hasNext()) {
       var row = unsaved.next();
       map.put(row.compositeId(), row);
-      result.add(row);
     }
     ;
-    return result;
   }
   ;
 }

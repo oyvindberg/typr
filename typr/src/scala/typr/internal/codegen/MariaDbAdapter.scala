@@ -179,6 +179,10 @@ object MariaDbAdapter extends DbAdapter {
   def returningStrategy(cols: NonEmptyList[ComputedColumn], rowType: jvm.Type, maybeId: Option[IdComputed]): ReturningStrategy =
     ReturningStrategy.SqlReturning(rowType)
 
+  /** MariaDB supports RETURNING with ON DUPLICATE KEY UPDATE */
+  def upsertStrategy(rowType: jvm.Type): UpsertStrategy =
+    UpsertStrategy.Returning(rowType)
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 4: SQL Templates
   // ═══════════════════════════════════════════════════════════════════════════

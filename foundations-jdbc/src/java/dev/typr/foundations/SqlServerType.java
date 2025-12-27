@@ -15,7 +15,6 @@ public record SqlServerType<A>(
     SqlServerText<A> sqlServerText,
     SqlServerJson<A> sqlServerJson)
     implements DbType<A> {
-
   @Override
   public DbText<A> text() {
     return sqlServerText;

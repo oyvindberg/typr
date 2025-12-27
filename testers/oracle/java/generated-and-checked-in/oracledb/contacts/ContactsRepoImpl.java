@@ -204,8 +204,8 @@ public class ContactsRepoImpl implements ContactsRepo {
   ;
 
   @Override
-  public ContactsRow upsert(ContactsRow unsaved, Connection c) {
-    return interpolate(
+  public void upsert(ContactsRow unsaved, Connection c) {
+    interpolate(
             Fragment.lit("MERGE INTO \"CONTACTS\" t\nUSING (SELECT "),
             Fragment.encode(ContactsId.oracleType, unsaved.contactId()),
             Fragment.lit(", "),
@@ -216,7 +216,7 @@ public class ContactsRepoImpl implements ContactsRepo {
             Fragment.encode(TagVarrayT.oracleType.opt(), unsaved.tags()),
             Fragment.lit(
                 " FROM DUAL) s\n"
-                    + "ON (\"CONTACT_ID\")\n"
+                    + "ON (t.\"CONTACT_ID\" = s.\"CONTACT_ID\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\n"
                     + "t.\"EMAILS\" = s.\"EMAILS\",\n"
                     + "t.\"TAGS\" = s.\"TAGS\"\n"
@@ -230,24 +230,24 @@ public class ContactsRepoImpl implements ContactsRepo {
             Fragment.lit(", "),
             Fragment.encode(TagVarrayT.oracleType.opt(), unsaved.tags()),
             Fragment.lit(")"))
-        .updateReturning(ContactsRow._rowParser.exactlyOne())
+        .update()
         .runUnchecked(c);
   }
   ;
 
   @Override
-  public List<ContactsRow> upsertBatch(Iterator<ContactsRow> unsaved, Connection c) {
-    return interpolate(
+  public void upsertBatch(Iterator<ContactsRow> unsaved, Connection c) {
+    interpolate(
             Fragment.lit(
                 "MERGE INTO \"CONTACTS\" t\n"
                     + "USING (SELECT ?, ?, ?, ? FROM DUAL) s\n"
-                    + "ON (\"CONTACT_ID\")\n"
+                    + "ON (t.\"CONTACT_ID\" = s.\"CONTACT_ID\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\n"
                     + "t.\"EMAILS\" = s.\"EMAILS\",\n"
                     + "t.\"TAGS\" = s.\"TAGS\"\n"
                     + "WHEN NOT MATCHED THEN INSERT (\"CONTACT_ID\", \"NAME\", \"EMAILS\","
                     + " \"TAGS\") VALUES (?, ?, ?, ?)"))
-        .updateReturningEach(ContactsRow._rowParser, unsaved)
+        .updateMany(ContactsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
   ;

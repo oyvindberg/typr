@@ -38,7 +38,7 @@ trait ProductsRepo {
 
   def update(row: ProductsRow)(using c: Connection): java.lang.Boolean
 
-  def upsert(unsaved: ProductsRow)(using c: Connection): ProductsRow
+  def upsert(unsaved: ProductsRow)(using c: Connection): Unit
 
-  def upsertBatch(unsaved: java.util.Iterator[ProductsRow])(using c: Connection): java.util.List[ProductsRow]
+  def upsertBatch(unsaved: java.util.Iterator[ProductsRow])(using c: Connection): Unit
 }

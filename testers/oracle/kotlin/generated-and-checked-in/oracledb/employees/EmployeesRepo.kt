@@ -65,10 +65,10 @@ interface EmployeesRepo {
   abstract fun upsert(
     unsaved: EmployeesRow,
     c: Connection
-  ): EmployeesRow
+  )
 
   abstract fun upsertBatch(
     unsaved: Iterator<EmployeesRow>,
     c: Connection
-  ): List<EmployeesRow>
+  )
 }

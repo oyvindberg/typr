@@ -197,6 +197,10 @@ object OracleAdapter extends DbAdapter {
     }
   }
 
+  /** Oracle MERGE doesn't support RETURNING */
+  def upsertStrategy(rowType: jvm.Type): UpsertStrategy =
+    UpsertStrategy.NotSupported
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 4: SQL Templates
   // ═══════════════════════════════════════════════════════════════════════════
@@ -210,6 +214,7 @@ object OracleAdapter extends DbAdapter {
       returning: Option[Code]
   ): Code =
     // Oracle uses MERGE statement for upsert
+    // idColumns is already a proper join condition like "t.col = s.col"
     // Note: RETURNING with MERGE is complex in Oracle, omitted for now
     code"""|MERGE INTO $tableName t
            |USING (SELECT $values FROM DUAL) s

@@ -34,7 +34,7 @@ trait DepartmentsRepo {
 
   def update(row: DepartmentsRow)(using c: Connection): java.lang.Boolean
 
-  def upsert(unsaved: DepartmentsRow)(using c: Connection): DepartmentsRow
+  def upsert(unsaved: DepartmentsRow)(using c: Connection): Unit
 
-  def upsertBatch(unsaved: java.util.Iterator[DepartmentsRow])(using c: Connection): java.util.List[DepartmentsRow]
+  def upsertBatch(unsaved: java.util.Iterator[DepartmentsRow])(using c: Connection): Unit
 }

@@ -37,7 +37,7 @@ public interface DepartmentsRepo {
 
   Boolean update(DepartmentsRow row, Connection c);
 
-  DepartmentsRow upsert(DepartmentsRow unsaved, Connection c);
+  void upsert(DepartmentsRow unsaved, Connection c);
 
-  List<DepartmentsRow> upsertBatch(Iterator<DepartmentsRow> unsaved, Connection c);
+  void upsertBatch(Iterator<DepartmentsRow> unsaved, Connection c);
 }

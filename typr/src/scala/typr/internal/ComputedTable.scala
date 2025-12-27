@@ -162,7 +162,8 @@ case class ComputedTable(
           writeableColumnsWithId <- writeableColumnsWithId
         } yield {
           val unsavedParam = jvm.Param(jvm.Ident("unsaved"), names.RowName)
-          RepoMethod.Upsert(dbTable.name, cols, id, unsavedParam, names.RowName, writeableColumnsWithId)
+          val upsertStrategy = dbType.adapter(needsTimestampCasts = false).upsertStrategy(names.RowName)
+          RepoMethod.Upsert(dbTable.name, cols, id, unsavedParam, names.RowName, writeableColumnsWithId, upsertStrategy)
         },
         maybeId
           .collect {
@@ -213,7 +214,10 @@ case class ComputedTable(
         for {
           id <- maybeId
           writeableColumnsWithId <- writeableColumnsWithId
-        } yield RepoMethod.UpsertBatch(dbTable.name, cols, id, names.RowName, writeableColumnsWithId),
+        } yield {
+          val upsertStrategy = dbType.adapter(needsTimestampCasts = false).upsertStrategy(names.RowName)
+          RepoMethod.UpsertBatch(dbTable.name, cols, id, names.RowName, writeableColumnsWithId, upsertStrategy)
+        },
         for {
           unsavedRow <- maybeUnsavedRow
         } yield {

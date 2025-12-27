@@ -28,7 +28,8 @@ object SqlglotAnalyzer {
   case class Config(
       pythonBinary: Path,
       sqlglotScript: Path,
-      pythonPath: Option[Path]
+      pythonPath: Option[Path],
+      disableParallel: Boolean = false
   )
 
   /** Extract Python script from resources to a temp file */
@@ -58,6 +59,21 @@ object SqlglotAnalyzer {
       pythonBinary = tools.python.binary,
       sqlglotScript = scriptPath,
       pythonPath = Some(tools.sqlglot.pythonPath)
+    )
+  }
+
+  /** Create config from ExternalTools using the DB2 dialect fork. Requires sqlglotDb2 to be downloaded first via ExternalTools.withDb2Dialect. */
+  def configFromExternalToolsDb2(tools: ExternalTools): Config = {
+    val sqlglotDb2 = tools.sqlglotDb2.getOrElse(
+      throw new RuntimeException("DB2 dialect not available. Call ExternalTools.withDb2Dialect first.")
+    )
+    val scriptPath = extractScriptFromResources().getOrElse(
+      throw new RuntimeException("Could not extract sqlglot_analyze.py from resources")
+    )
+    Config(
+      pythonBinary = tools.python.binary,
+      sqlglotScript = scriptPath,
+      pythonPath = Some(sqlglotDb2.pythonPath)
     )
   }
 
@@ -95,7 +111,8 @@ object SqlglotAnalyzer {
         "TMPDIR" -> tempDir.toString, // Use unique temp dir for this process
         "TEMP" -> tempDir.toString, // Windows equivalent
         "TMP" -> tempDir.toString // Another Windows equivalent
-      ) ++ config.pythonPath.map(p => "PYTHONPATH" -> p.toString).toList
+      ) ++ config.pythonPath.map(p => "PYTHONPATH" -> p.toString).toList ++
+        (if (config.disableParallel) List("TYPO_SQLGLOT_PARALLEL" -> "0") else Nil)
 
       val exitCode = Process(
         Seq(config.pythonBinary.toString, config.sqlglotScript.toString),

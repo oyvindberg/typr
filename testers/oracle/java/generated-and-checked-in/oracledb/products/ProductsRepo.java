@@ -41,7 +41,7 @@ public interface ProductsRepo {
 
   Boolean update(ProductsRow row, Connection c);
 
-  ProductsRow upsert(ProductsRow unsaved, Connection c);
+  void upsert(ProductsRow unsaved, Connection c);
 
-  List<ProductsRow> upsertBatch(Iterator<ProductsRow> unsaved, Connection c);
+  void upsertBatch(Iterator<ProductsRow> unsaved, Connection c);
 }

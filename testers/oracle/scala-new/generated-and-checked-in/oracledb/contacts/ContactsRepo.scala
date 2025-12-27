@@ -35,7 +35,7 @@ trait ContactsRepo {
 
   def update(row: ContactsRow)(using c: Connection): Boolean
 
-  def upsert(unsaved: ContactsRow)(using c: Connection): ContactsRow
+  def upsert(unsaved: ContactsRow)(using c: Connection): Unit
 
-  def upsertBatch(unsaved: Iterator[ContactsRow])(using c: Connection): List[ContactsRow]
+  def upsertBatch(unsaved: Iterator[ContactsRow])(using c: Connection): Unit
 }

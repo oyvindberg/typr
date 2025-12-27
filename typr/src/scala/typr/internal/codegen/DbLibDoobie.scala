@@ -121,13 +121,13 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
       case RepoMethod.InsertStreaming(_, rowType, _) =>
         val unsavedParam = jvm.Param(jvm.Ident("unsaved"), fs2Stream.of(ConnectionIO, rowType))
         sig(params = List(unsavedParam, batchSize), returnType = ConnectionIO.of(TypesScala.Long))
-      case RepoMethod.UpsertBatch(_, _, _, rowType, _) =>
+      case RepoMethod.UpsertBatch(_, _, _, rowType, _, _) =>
         val unsavedParam = jvm.Param(jvm.Ident("unsaved"), TypesScala.List.of(rowType))
         sig(params = List(unsavedParam), returnType = fs2Stream.of(ConnectionIO, rowType))
       case RepoMethod.InsertUnsavedStreaming(_, unsaved) =>
         val unsavedParam = jvm.Param(jvm.Ident("unsaved"), fs2Stream.of(ConnectionIO, unsaved.tpe))
         sig(params = List(unsavedParam, batchSize), returnType = ConnectionIO.of(TypesScala.Long))
-      case RepoMethod.Upsert(_, _, _, unsavedParam, rowType, _) =>
+      case RepoMethod.Upsert(_, _, _, unsavedParam, rowType, _, _) =>
         sig(params = List(unsavedParam), returnType = ConnectionIO.of(rowType))
       case RepoMethod.UpsertStreaming(_, _, rowType, _) =>
         val unsavedParam = jvm.Param(jvm.Ident("unsaved"), fs2Stream.of(ConnectionIO, rowType))
@@ -326,7 +326,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
           else code"new $FragmentOps($sql).copyIn[${unsaved.tpe}](unsaved, batchSize)"
         )
 
-      case RepoMethod.Upsert(relName, cols, id, unsavedParam, rowType, writeableColumnsWithId) =>
+      case RepoMethod.Upsert(relName, cols, id, unsavedParam, rowType, writeableColumnsWithId, _) =>
         val writeableColumnsNotId = writeableColumnsWithId.toList.filterNot(c => id.cols.exists(_.name == c.name))
 
         val values = writeableColumnsWithId.map { c =>
@@ -353,7 +353,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
 
         jvm.Body.Expr(code"${query(sql, rowType)}.unique")
 
-      case RepoMethod.UpsertBatch(relName, cols, id, rowType, writeableColumnsWithId) =>
+      case RepoMethod.UpsertBatch(relName, cols, id, rowType, writeableColumnsWithId, _) =>
         val writeableColumnsNotId = writeableColumnsWithId.toList.filterNot(c => id.cols.exists(_.name == c.name))
 
         val conflictAction = writeableColumnsNotId match {
@@ -552,7 +552,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
                |
                |  ${unsavedParam.name}
                |}""")
-      case RepoMethod.Upsert(_, _, _, unsavedParam, _, _) =>
+      case RepoMethod.Upsert(_, _, _, unsavedParam, _, _, _) =>
         jvm.Body.Expr(code"""|$delayCIO {
                |  map.put(${unsavedParam.name}.${id.paramName}, ${unsavedParam.name}): @${TypesScala.nowarn}
                |  ${unsavedParam.name}
@@ -566,7 +566,7 @@ class DbLibDoobie(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDe
                |  }
                |  num
                |}""".stripMargin)
-      case RepoMethod.UpsertBatch(_, _, _, _, _) =>
+      case RepoMethod.UpsertBatch(_, _, _, _, _, _) =>
         jvm.Body.Expr(code"""|$fs2Stream.emits {
                |  unsaved.map { row =>
                |    map += (row.${id.paramName} -> row)

@@ -102,31 +102,31 @@ class EmployeesRepoImpl extends EmployeesRepo {
     where "EMP_NUMBER" = ${Fragment.encode(ScalaDbTypes.OracleTypes.number, compositeId.empNumber)} AND "EMP_SUFFIX" = ${Fragment.encode(OracleTypes.varchar2, compositeId.empSuffix)}""".update().runUnchecked(c) > 0
   }
 
-  override def upsert(unsaved: EmployeesRow)(using c: Connection): EmployeesRow = {
-  sql"""MERGE INTO "EMPLOYEES" t
+  override def upsert(unsaved: EmployeesRow)(using c: Connection): Unit = {
+    sql"""MERGE INTO "EMPLOYEES" t
     USING (SELECT ${Fragment.encode(ScalaDbTypes.OracleTypes.number, unsaved.empNumber)}, ${Fragment.encode(OracleTypes.varchar2, unsaved.empSuffix)}, ${Fragment.encode(OracleTypes.varchar2, unsaved.deptCode)}, ${Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion)}, ${Fragment.encode(OracleTypes.varchar2, unsaved.empName)}, ${Fragment.encode(MoneyT.oracleType.nullable, unsaved.salary)}, ${Fragment.encode(OracleTypes.date, unsaved.hireDate)} FROM DUAL) s
-    ON ("EMP_NUMBER", "EMP_SUFFIX")
+    ON (t."EMP_NUMBER" = s."EMP_NUMBER" AND t."EMP_SUFFIX" = s."EMP_SUFFIX")
     WHEN MATCHED THEN UPDATE SET t."DEPT_CODE" = s."DEPT_CODE",
     t."DEPT_REGION" = s."DEPT_REGION",
     t."EMP_NAME" = s."EMP_NAME",
     t."SALARY" = s."SALARY",
     t."HIRE_DATE" = s."HIRE_DATE"
     WHEN NOT MATCHED THEN INSERT ("EMP_NUMBER", "EMP_SUFFIX", "DEPT_CODE", "DEPT_REGION", "EMP_NAME", "SALARY", "HIRE_DATE") VALUES (${Fragment.encode(ScalaDbTypes.OracleTypes.number, unsaved.empNumber)}, ${Fragment.encode(OracleTypes.varchar2, unsaved.empSuffix)}, ${Fragment.encode(OracleTypes.varchar2, unsaved.deptCode)}, ${Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion)}, ${Fragment.encode(OracleTypes.varchar2, unsaved.empName)}, ${Fragment.encode(MoneyT.oracleType.nullable, unsaved.salary)}, ${Fragment.encode(OracleTypes.date, unsaved.hireDate)})"""
-    .updateReturning(EmployeesRow.`_rowParser`.exactlyOne())
-    .runUnchecked(c)
+      .update()
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 
-  override def upsertBatch(unsaved: Iterator[EmployeesRow])(using c: Connection): List[EmployeesRow] = {
+  override def upsertBatch(unsaved: Iterator[EmployeesRow])(using c: Connection): Unit = {
     sql"""MERGE INTO "EMPLOYEES" t
     USING (SELECT ?, ?, ?, ?, ?, ?, ? FROM DUAL) s
-    ON ("EMP_NUMBER", "EMP_SUFFIX")
+    ON (t."EMP_NUMBER" = s."EMP_NUMBER" AND t."EMP_SUFFIX" = s."EMP_SUFFIX")
     WHEN MATCHED THEN UPDATE SET t."DEPT_CODE" = s."DEPT_CODE",
     t."DEPT_REGION" = s."DEPT_REGION",
     t."EMP_NAME" = s."EMP_NAME",
     t."SALARY" = s."SALARY",
     t."HIRE_DATE" = s."HIRE_DATE"
     WHEN NOT MATCHED THEN INSERT ("EMP_NUMBER", "EMP_SUFFIX", "DEPT_CODE", "DEPT_REGION", "EMP_NAME", "SALARY", "HIRE_DATE") VALUES (?, ?, ?, ?, ?, ?, ?)"""
-      .updateReturningEach(EmployeesRow.`_rowParser`, unsaved)
-    .runUnchecked(c)
+      .updateMany(EmployeesRow.`_rowParser`, unsaved)
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 }

@@ -112,6 +112,12 @@ trait DbAdapter {
     */
   def returningStrategy(cols: NonEmptyList[ComputedColumn], rowType: jvm.Type, maybeId: Option[IdComputed]): ReturningStrategy
 
+  /** Determine the strategy for returning data after UPSERT operations.
+    *   - PostgreSQL/MariaDB/DuckDB/SQL Server: Use SQL RETURNING/OUTPUT clause
+    *   - DB2/Oracle: Don't support returning from MERGE
+    */
+  def upsertStrategy(rowType: jvm.Type): UpsertStrategy
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 4: SQL Templates
   // ═══════════════════════════════════════════════════════════════════════════
@@ -131,6 +137,14 @@ trait DbAdapter {
 
   /** Generate no-op conflict update for tables where all columns are PK */
   def conflictNoOpClause(firstPkCol: ComputedColumn, quotedColName: ComputedColumn => Code): Code
+
+  /** Generate MERGE ON clause for upsert statements. Different databases need different formats:
+    *   - Oracle: ON (t.id = s.id)
+    *   - DB2: ON t."ID" = s."ID"
+    * Default implementation just uses the column names wrapped in parens (works for Oracle).
+    */
+  def mergeOnClause(idCols: NonEmptyList[ComputedColumn], quotedColName: ComputedColumn => Code): Code =
+    idCols.map(c => code"t.${quotedColName(c)} = s.${quotedColName(c)}").mkCode(" AND ")
 
   /** Generate streaming insert command (COPY or batch) */
   def streamingInsertSql(tableName: Code, columns: Code): Code

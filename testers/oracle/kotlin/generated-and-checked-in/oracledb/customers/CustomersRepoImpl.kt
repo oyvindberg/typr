@@ -110,14 +110,18 @@ class CustomersRepoImpl() : CustomersRepo {
   override fun upsert(
     unsaved: CustomersRow,
     c: Connection
-  ): CustomersRow = Fragment.interpolate(Fragment.lit("MERGE INTO \"CUSTOMERS\" t\nUSING (SELECT "), Fragment.encode(CustomersId.oracleType, unsaved.customerId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(AddressT.oracleType, unsaved.billingAddress), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.creditLimit), Fragment.lit(", "), Fragment.encode(OracleTypes.timestamp, unsaved.createdAt), Fragment.lit(" FROM DUAL) s\nON (\"CUSTOMER_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\nt.\"BILLING_ADDRESS\" = s.\"BILLING_ADDRESS\",\nt.\"CREDIT_LIMIT\" = s.\"CREDIT_LIMIT\",\nt.\"CREATED_AT\" = s.\"CREATED_AT\"\nWHEN NOT MATCHED THEN INSERT (\"CUSTOMER_ID\", \"NAME\", \"BILLING_ADDRESS\", \"CREDIT_LIMIT\", \"CREATED_AT\") VALUES ("), Fragment.encode(CustomersId.oracleType, unsaved.customerId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(AddressT.oracleType, unsaved.billingAddress), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.creditLimit), Fragment.lit(", "), Fragment.encode(OracleTypes.timestamp, unsaved.createdAt), Fragment.lit(")"))
-    .updateReturning(CustomersRow._rowParser.exactlyOne())
-    .runUnchecked(c)
+  ) {
+    Fragment.interpolate(Fragment.lit("MERGE INTO \"CUSTOMERS\" t\nUSING (SELECT "), Fragment.encode(CustomersId.oracleType, unsaved.customerId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(AddressT.oracleType, unsaved.billingAddress), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.creditLimit), Fragment.lit(", "), Fragment.encode(OracleTypes.timestamp, unsaved.createdAt), Fragment.lit(" FROM DUAL) s\nON (t.\"CUSTOMER_ID\" = s.\"CUSTOMER_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\nt.\"BILLING_ADDRESS\" = s.\"BILLING_ADDRESS\",\nt.\"CREDIT_LIMIT\" = s.\"CREDIT_LIMIT\",\nt.\"CREATED_AT\" = s.\"CREATED_AT\"\nWHEN NOT MATCHED THEN INSERT (\"CUSTOMER_ID\", \"NAME\", \"BILLING_ADDRESS\", \"CREDIT_LIMIT\", \"CREATED_AT\") VALUES ("), Fragment.encode(CustomersId.oracleType, unsaved.customerId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(AddressT.oracleType, unsaved.billingAddress), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.creditLimit), Fragment.lit(", "), Fragment.encode(OracleTypes.timestamp, unsaved.createdAt), Fragment.lit(")"))
+      .update()
+      .runUnchecked(c)
+  }
 
   override fun upsertBatch(
     unsaved: Iterator<CustomersRow>,
     c: Connection
-  ): List<CustomersRow> = Fragment.interpolate(Fragment.lit("MERGE INTO \"CUSTOMERS\" t\nUSING (SELECT ?, ?, ?, ?, ? FROM DUAL) s\nON (\"CUSTOMER_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\nt.\"BILLING_ADDRESS\" = s.\"BILLING_ADDRESS\",\nt.\"CREDIT_LIMIT\" = s.\"CREDIT_LIMIT\",\nt.\"CREATED_AT\" = s.\"CREATED_AT\"\nWHEN NOT MATCHED THEN INSERT (\"CUSTOMER_ID\", \"NAME\", \"BILLING_ADDRESS\", \"CREDIT_LIMIT\", \"CREATED_AT\") VALUES (?, ?, ?, ?, ?)"))
-    .updateReturningEach(CustomersRow._rowParser, unsaved)
-  .runUnchecked(c)
+  ) {
+    Fragment.interpolate(Fragment.lit("MERGE INTO \"CUSTOMERS\" t\nUSING (SELECT ?, ?, ?, ?, ? FROM DUAL) s\nON (t.\"CUSTOMER_ID\" = s.\"CUSTOMER_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\nt.\"BILLING_ADDRESS\" = s.\"BILLING_ADDRESS\",\nt.\"CREDIT_LIMIT\" = s.\"CREDIT_LIMIT\",\nt.\"CREATED_AT\" = s.\"CREATED_AT\"\nWHEN NOT MATCHED THEN INSERT (\"CUSTOMER_ID\", \"NAME\", \"BILLING_ADDRESS\", \"CREDIT_LIMIT\", \"CREATED_AT\") VALUES (?, ?, ?, ?, ?)"))
+      .updateMany(CustomersRow._rowParser, unsaved)
+      .runUnchecked(c)
+  }
 }

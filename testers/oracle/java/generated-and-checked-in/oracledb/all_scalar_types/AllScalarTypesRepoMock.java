@@ -162,22 +162,18 @@ public record AllScalarTypesRepoMock(
   ;
 
   @Override
-  public AllScalarTypesRow upsert(AllScalarTypesRow unsaved, Connection c) {
+  public void upsert(AllScalarTypesRow unsaved, Connection c) {
     map.put(unsaved.id(), unsaved);
-    return unsaved;
   }
   ;
 
   @Override
-  public List<AllScalarTypesRow> upsertBatch(Iterator<AllScalarTypesRow> unsaved, Connection c) {
-    var result = new ArrayList<AllScalarTypesRow>();
+  public void upsertBatch(Iterator<AllScalarTypesRow> unsaved, Connection c) {
     while (unsaved.hasNext()) {
       var row = unsaved.next();
       map.put(row.id(), row);
-      result.add(row);
     }
     ;
-    return result;
   }
   ;
 }

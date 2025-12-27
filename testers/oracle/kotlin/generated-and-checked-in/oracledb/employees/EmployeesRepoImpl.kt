@@ -111,14 +111,18 @@ class EmployeesRepoImpl() : EmployeesRepo {
   override fun upsert(
     unsaved: EmployeesRow,
     c: Connection
-  ): EmployeesRow = Fragment.interpolate(Fragment.lit("MERGE INTO \"EMPLOYEES\" t\nUSING (SELECT "), Fragment.encode(KotlinDbTypes.OracleTypes.number, unsaved.empNumber), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empSuffix), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.salary), Fragment.lit(", "), Fragment.encode(OracleTypes.date, unsaved.hireDate), Fragment.lit(" FROM DUAL) s\nON (\"EMP_NUMBER\", \"EMP_SUFFIX\")\nWHEN MATCHED THEN UPDATE SET t.\"DEPT_CODE\" = s.\"DEPT_CODE\",\nt.\"DEPT_REGION\" = s.\"DEPT_REGION\",\nt.\"EMP_NAME\" = s.\"EMP_NAME\",\nt.\"SALARY\" = s.\"SALARY\",\nt.\"HIRE_DATE\" = s.\"HIRE_DATE\"\nWHEN NOT MATCHED THEN INSERT (\"EMP_NUMBER\", \"EMP_SUFFIX\", \"DEPT_CODE\", \"DEPT_REGION\", \"EMP_NAME\", \"SALARY\", \"HIRE_DATE\") VALUES ("), Fragment.encode(KotlinDbTypes.OracleTypes.number, unsaved.empNumber), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empSuffix), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.salary), Fragment.lit(", "), Fragment.encode(OracleTypes.date, unsaved.hireDate), Fragment.lit(")"))
-    .updateReturning(EmployeesRow._rowParser.exactlyOne())
-    .runUnchecked(c)
+  ) {
+    Fragment.interpolate(Fragment.lit("MERGE INTO \"EMPLOYEES\" t\nUSING (SELECT "), Fragment.encode(KotlinDbTypes.OracleTypes.number, unsaved.empNumber), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empSuffix), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.salary), Fragment.lit(", "), Fragment.encode(OracleTypes.date, unsaved.hireDate), Fragment.lit(" FROM DUAL) s\nON (t.\"EMP_NUMBER\" = s.\"EMP_NUMBER\" AND t.\"EMP_SUFFIX\" = s.\"EMP_SUFFIX\")\nWHEN MATCHED THEN UPDATE SET t.\"DEPT_CODE\" = s.\"DEPT_CODE\",\nt.\"DEPT_REGION\" = s.\"DEPT_REGION\",\nt.\"EMP_NAME\" = s.\"EMP_NAME\",\nt.\"SALARY\" = s.\"SALARY\",\nt.\"HIRE_DATE\" = s.\"HIRE_DATE\"\nWHEN NOT MATCHED THEN INSERT (\"EMP_NUMBER\", \"EMP_SUFFIX\", \"DEPT_CODE\", \"DEPT_REGION\", \"EMP_NAME\", \"SALARY\", \"HIRE_DATE\") VALUES ("), Fragment.encode(KotlinDbTypes.OracleTypes.number, unsaved.empNumber), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empSuffix), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.salary), Fragment.lit(", "), Fragment.encode(OracleTypes.date, unsaved.hireDate), Fragment.lit(")"))
+      .update()
+      .runUnchecked(c)
+  }
 
   override fun upsertBatch(
     unsaved: Iterator<EmployeesRow>,
     c: Connection
-  ): List<EmployeesRow> = Fragment.interpolate(Fragment.lit("MERGE INTO \"EMPLOYEES\" t\nUSING (SELECT ?, ?, ?, ?, ?, ?, ? FROM DUAL) s\nON (\"EMP_NUMBER\", \"EMP_SUFFIX\")\nWHEN MATCHED THEN UPDATE SET t.\"DEPT_CODE\" = s.\"DEPT_CODE\",\nt.\"DEPT_REGION\" = s.\"DEPT_REGION\",\nt.\"EMP_NAME\" = s.\"EMP_NAME\",\nt.\"SALARY\" = s.\"SALARY\",\nt.\"HIRE_DATE\" = s.\"HIRE_DATE\"\nWHEN NOT MATCHED THEN INSERT (\"EMP_NUMBER\", \"EMP_SUFFIX\", \"DEPT_CODE\", \"DEPT_REGION\", \"EMP_NAME\", \"SALARY\", \"HIRE_DATE\") VALUES (?, ?, ?, ?, ?, ?, ?)"))
-    .updateReturningEach(EmployeesRow._rowParser, unsaved)
-  .runUnchecked(c)
+  ) {
+    Fragment.interpolate(Fragment.lit("MERGE INTO \"EMPLOYEES\" t\nUSING (SELECT ?, ?, ?, ?, ?, ?, ? FROM DUAL) s\nON (t.\"EMP_NUMBER\" = s.\"EMP_NUMBER\" AND t.\"EMP_SUFFIX\" = s.\"EMP_SUFFIX\")\nWHEN MATCHED THEN UPDATE SET t.\"DEPT_CODE\" = s.\"DEPT_CODE\",\nt.\"DEPT_REGION\" = s.\"DEPT_REGION\",\nt.\"EMP_NAME\" = s.\"EMP_NAME\",\nt.\"SALARY\" = s.\"SALARY\",\nt.\"HIRE_DATE\" = s.\"HIRE_DATE\"\nWHEN NOT MATCHED THEN INSERT (\"EMP_NUMBER\", \"EMP_SUFFIX\", \"DEPT_CODE\", \"DEPT_REGION\", \"EMP_NAME\", \"SALARY\", \"HIRE_DATE\") VALUES (?, ?, ?, ?, ?, ?, ?)"))
+      .updateMany(EmployeesRow._rowParser, unsaved)
+      .runUnchecked(c)
+  }
 }

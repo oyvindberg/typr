@@ -234,4 +234,47 @@ public interface Dialect {
           return alias + "." + quotedColumn;
         }
       };
+
+  /**
+   * DB2 dialect - uses double quotes for identifiers, CAST() for casts, and FETCH FIRST for limits.
+   */
+  Dialect DB2 =
+      new Dialect() {
+        @Override
+        public String quoteIdent(String name) {
+          return "\"" + name + "\"";
+        }
+
+        @Override
+        public String escapeIdent(String name) {
+          return name.replace("\"", "\"\"");
+        }
+
+        @Override
+        public Fragment typeCast(Fragment value, String typeName) {
+          if (typeName == null || typeName.isEmpty()) {
+            return value;
+          }
+          // DB2 uses CAST() syntax
+          return Fragment.lit("CAST(").append(value).append(Fragment.lit(" AS " + typeName + ")"));
+        }
+
+        @Override
+        public String columnRef(String alias, String quotedColumn) {
+          // DB2 uses simple alias."column" format
+          return alias + "." + quotedColumn;
+        }
+
+        @Override
+        public String limitClause(int n) {
+          // DB2 uses FETCH FIRST syntax
+          return "FETCH FIRST " + n + " ROWS ONLY";
+        }
+
+        @Override
+        public String offsetClause(int n) {
+          // DB2 uses OFFSET with ROWS
+          return "OFFSET " + n + " ROWS";
+        }
+      };
 }

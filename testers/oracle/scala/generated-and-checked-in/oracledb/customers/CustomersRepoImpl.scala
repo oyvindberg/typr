@@ -100,29 +100,29 @@ class CustomersRepoImpl extends CustomersRepo {
     where "CUSTOMER_ID" = """), Fragment.encode(CustomersId.oracleType, customerId), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
-  override def upsert(unsaved: CustomersRow)(using c: Connection): CustomersRow = {
-  interpolate(Fragment.lit("""MERGE INTO "CUSTOMERS" t
+  override def upsert(unsaved: CustomersRow)(using c: Connection): Unit = {
+    interpolate(Fragment.lit("""MERGE INTO "CUSTOMERS" t
     USING (SELECT """), Fragment.encode(CustomersId.oracleType, unsaved.customerId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(AddressT.oracleType, unsaved.billingAddress), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.opt(), unsaved.creditLimit), Fragment.lit(", "), Fragment.encode(OracleTypes.timestamp, unsaved.createdAt), Fragment.lit(""" FROM DUAL) s
-    ON ("CUSTOMER_ID")
+    ON (t."CUSTOMER_ID" = s."CUSTOMER_ID")
     WHEN MATCHED THEN UPDATE SET t."NAME" = s."NAME",
     t."BILLING_ADDRESS" = s."BILLING_ADDRESS",
     t."CREDIT_LIMIT" = s."CREDIT_LIMIT",
     t."CREATED_AT" = s."CREATED_AT"
     WHEN NOT MATCHED THEN INSERT ("CUSTOMER_ID", "NAME", "BILLING_ADDRESS", "CREDIT_LIMIT", "CREATED_AT") VALUES ("""), Fragment.encode(CustomersId.oracleType, unsaved.customerId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(AddressT.oracleType, unsaved.billingAddress), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.opt(), unsaved.creditLimit), Fragment.lit(", "), Fragment.encode(OracleTypes.timestamp, unsaved.createdAt), Fragment.lit(")"))
-    .updateReturning(CustomersRow.`_rowParser`.exactlyOne())
-    .runUnchecked(c)
+      .update()
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[CustomersRow])(using c: Connection): java.util.List[CustomersRow] = {
+  override def upsertBatch(unsaved: java.util.Iterator[CustomersRow])(using c: Connection): Unit = {
     interpolate(Fragment.lit("""MERGE INTO "CUSTOMERS" t
     USING (SELECT ?, ?, ?, ?, ? FROM DUAL) s
-    ON ("CUSTOMER_ID")
+    ON (t."CUSTOMER_ID" = s."CUSTOMER_ID")
     WHEN MATCHED THEN UPDATE SET t."NAME" = s."NAME",
     t."BILLING_ADDRESS" = s."BILLING_ADDRESS",
     t."CREDIT_LIMIT" = s."CREDIT_LIMIT",
     t."CREATED_AT" = s."CREATED_AT"
     WHEN NOT MATCHED THEN INSERT ("CUSTOMER_ID", "NAME", "BILLING_ADDRESS", "CREDIT_LIMIT", "CREATED_AT") VALUES (?, ?, ?, ?, ?)"""))
-      .updateReturningEach(CustomersRow.`_rowParser`, unsaved)
-    .runUnchecked(c)
+      .updateMany(CustomersRow.`_rowParser`, unsaved)
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 }

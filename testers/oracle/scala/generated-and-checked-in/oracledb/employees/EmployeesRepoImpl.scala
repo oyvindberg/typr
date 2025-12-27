@@ -102,31 +102,31 @@ class EmployeesRepoImpl extends EmployeesRepo {
     where "EMP_NUMBER" = """), Fragment.encode(OracleTypes.number, compositeId.empNumber), Fragment.lit(""" AND "EMP_SUFFIX" = """), Fragment.encode(OracleTypes.varchar2, compositeId.empSuffix), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
-  override def upsert(unsaved: EmployeesRow)(using c: Connection): EmployeesRow = {
-  interpolate(Fragment.lit("""MERGE INTO "EMPLOYEES" t
+  override def upsert(unsaved: EmployeesRow)(using c: Connection): Unit = {
+    interpolate(Fragment.lit("""MERGE INTO "EMPLOYEES" t
     USING (SELECT """), Fragment.encode(OracleTypes.number, unsaved.empNumber), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empSuffix), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.opt(), unsaved.salary), Fragment.lit(", "), Fragment.encode(OracleTypes.date, unsaved.hireDate), Fragment.lit(""" FROM DUAL) s
-    ON ("EMP_NUMBER", "EMP_SUFFIX")
+    ON (t."EMP_NUMBER" = s."EMP_NUMBER" AND t."EMP_SUFFIX" = s."EMP_SUFFIX")
     WHEN MATCHED THEN UPDATE SET t."DEPT_CODE" = s."DEPT_CODE",
     t."DEPT_REGION" = s."DEPT_REGION",
     t."EMP_NAME" = s."EMP_NAME",
     t."SALARY" = s."SALARY",
     t."HIRE_DATE" = s."HIRE_DATE"
     WHEN NOT MATCHED THEN INSERT ("EMP_NUMBER", "EMP_SUFFIX", "DEPT_CODE", "DEPT_REGION", "EMP_NAME", "SALARY", "HIRE_DATE") VALUES ("""), Fragment.encode(OracleTypes.number, unsaved.empNumber), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empSuffix), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.empName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.opt(), unsaved.salary), Fragment.lit(", "), Fragment.encode(OracleTypes.date, unsaved.hireDate), Fragment.lit(")"))
-    .updateReturning(EmployeesRow.`_rowParser`.exactlyOne())
-    .runUnchecked(c)
+      .update()
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[EmployeesRow])(using c: Connection): java.util.List[EmployeesRow] = {
+  override def upsertBatch(unsaved: java.util.Iterator[EmployeesRow])(using c: Connection): Unit = {
     interpolate(Fragment.lit("""MERGE INTO "EMPLOYEES" t
     USING (SELECT ?, ?, ?, ?, ?, ?, ? FROM DUAL) s
-    ON ("EMP_NUMBER", "EMP_SUFFIX")
+    ON (t."EMP_NUMBER" = s."EMP_NUMBER" AND t."EMP_SUFFIX" = s."EMP_SUFFIX")
     WHEN MATCHED THEN UPDATE SET t."DEPT_CODE" = s."DEPT_CODE",
     t."DEPT_REGION" = s."DEPT_REGION",
     t."EMP_NAME" = s."EMP_NAME",
     t."SALARY" = s."SALARY",
     t."HIRE_DATE" = s."HIRE_DATE"
     WHEN NOT MATCHED THEN INSERT ("EMP_NUMBER", "EMP_SUFFIX", "DEPT_CODE", "DEPT_REGION", "EMP_NAME", "SALARY", "HIRE_DATE") VALUES (?, ?, ?, ?, ?, ?, ?)"""))
-      .updateReturningEach(EmployeesRow.`_rowParser`, unsaved)
-    .runUnchecked(c)
+      .updateMany(EmployeesRow.`_rowParser`, unsaved)
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 }

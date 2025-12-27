@@ -243,8 +243,8 @@ public class EmployeesRepoImpl implements EmployeesRepo {
   ;
 
   @Override
-  public EmployeesRow upsert(EmployeesRow unsaved, Connection c) {
-    return interpolate(
+  public void upsert(EmployeesRow unsaved, Connection c) {
+    interpolate(
             Fragment.lit("MERGE INTO \"EMPLOYEES\" t\nUSING (SELECT "),
             Fragment.encode(OracleTypes.number, unsaved.empNumber()),
             Fragment.lit(", "),
@@ -261,7 +261,8 @@ public class EmployeesRepoImpl implements EmployeesRepo {
             Fragment.encode(OracleTypes.date, unsaved.hireDate()),
             Fragment.lit(
                 " FROM DUAL) s\n"
-                    + "ON (\"EMP_NUMBER\", \"EMP_SUFFIX\")\n"
+                    + "ON (t.\"EMP_NUMBER\" = s.\"EMP_NUMBER\" AND t.\"EMP_SUFFIX\" ="
+                    + " s.\"EMP_SUFFIX\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"DEPT_CODE\" = s.\"DEPT_CODE\",\n"
                     + "t.\"DEPT_REGION\" = s.\"DEPT_REGION\",\n"
                     + "t.\"EMP_NAME\" = s.\"EMP_NAME\",\n"
@@ -283,18 +284,19 @@ public class EmployeesRepoImpl implements EmployeesRepo {
             Fragment.lit(", "),
             Fragment.encode(OracleTypes.date, unsaved.hireDate()),
             Fragment.lit(")"))
-        .updateReturning(EmployeesRow._rowParser.exactlyOne())
+        .update()
         .runUnchecked(c);
   }
   ;
 
   @Override
-  public List<EmployeesRow> upsertBatch(Iterator<EmployeesRow> unsaved, Connection c) {
-    return interpolate(
+  public void upsertBatch(Iterator<EmployeesRow> unsaved, Connection c) {
+    interpolate(
             Fragment.lit(
                 "MERGE INTO \"EMPLOYEES\" t\n"
                     + "USING (SELECT ?, ?, ?, ?, ?, ?, ? FROM DUAL) s\n"
-                    + "ON (\"EMP_NUMBER\", \"EMP_SUFFIX\")\n"
+                    + "ON (t.\"EMP_NUMBER\" = s.\"EMP_NUMBER\" AND t.\"EMP_SUFFIX\" ="
+                    + " s.\"EMP_SUFFIX\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"DEPT_CODE\" = s.\"DEPT_CODE\",\n"
                     + "t.\"DEPT_REGION\" = s.\"DEPT_REGION\",\n"
                     + "t.\"EMP_NAME\" = s.\"EMP_NAME\",\n"
@@ -303,7 +305,7 @@ public class EmployeesRepoImpl implements EmployeesRepo {
                     + "WHEN NOT MATCHED THEN INSERT (\"EMP_NUMBER\", \"EMP_SUFFIX\", \"DEPT_CODE\","
                     + " \"DEPT_REGION\", \"EMP_NAME\", \"SALARY\", \"HIRE_DATE\") VALUES (?, ?, ?,"
                     + " ?, ?, ?, ?)"))
-        .updateReturningEach(EmployeesRow._rowParser, unsaved)
+        .updateMany(EmployeesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
   ;

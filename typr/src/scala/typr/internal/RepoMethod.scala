@@ -30,6 +30,21 @@ object ReturningStrategy {
   }
 }
 
+/** Strategy for returning data after UPSERT operations. Some databases don't support returning from MERGE.
+  */
+sealed trait UpsertStrategy
+
+object UpsertStrategy {
+
+  /** Use SQL-level RETURNING clause with upsert (PostgreSQL ON CONFLICT, MariaDB ON DUPLICATE KEY, SQL Server OUTPUT).
+    */
+  case class Returning(rowType: jvm.Type) extends UpsertStrategy
+
+  /** Database doesn't support returning from upsert (DB2, Oracle with MERGE).
+    */
+  case object NotSupported extends UpsertStrategy
+}
+
 sealed abstract class RepoMethod(val methodName: String, val tiebreaker: Int) {
   val comment: jvm.Comments = jvm.Comments.Empty
 
@@ -116,7 +131,8 @@ object RepoMethod {
       id: IdComputed,
       unsavedParam: jvm.Param[jvm.Type],
       rowType: jvm.Type,
-      writeableColumnsWithId: NonEmptyList[ComputedColumn]
+      writeableColumnsWithId: NonEmptyList[ComputedColumn],
+      upsertStrategy: UpsertStrategy
   ) extends Mutator("upsert")
 
   case class UpsertBatch(
@@ -124,7 +140,8 @@ object RepoMethod {
       cols: NonEmptyList[ComputedColumn],
       id: IdComputed,
       rowType: jvm.Type,
-      writeableColumnsWithId: NonEmptyList[ComputedColumn]
+      writeableColumnsWithId: NonEmptyList[ComputedColumn],
+      upsertStrategy: UpsertStrategy
   ) extends Mutator("upsertBatch")
 
   case class UpsertStreaming(

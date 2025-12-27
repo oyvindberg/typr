@@ -78,6 +78,7 @@ package object scala {
     val DUCKDB: dev.typr.foundations.dsl.Dialect = dev.typr.foundations.dsl.Dialect.DUCKDB
     val ORACLE: dev.typr.foundations.dsl.Dialect = dev.typr.foundations.dsl.Dialect.ORACLE
     val SQLSERVER: dev.typr.foundations.dsl.Dialect = dev.typr.foundations.dsl.Dialect.SQLSERVER
+    val DB2: dev.typr.foundations.dsl.Dialect = dev.typr.foundations.dsl.Dialect.DB2
   }
 
   // Bijection companion object with factory methods

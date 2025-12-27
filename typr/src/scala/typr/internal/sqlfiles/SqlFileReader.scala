@@ -6,6 +6,7 @@ import typr.internal.external.ExternalTools
 import typr.internal.mariadb.MariaSqlFileMetadata
 import typr.internal.duckdb.DuckDbSqlFileMetadata
 import typr.internal.sqlserver.SqlServerSqlFileMetadata
+import typr.internal.db2.Db2SqlFileMetadata
 
 import java.nio.file.Path
 import scala.concurrent.{ExecutionContext, Future}
@@ -24,6 +25,8 @@ object SqlFileReader {
         readSqlFileDirectories(logger, scriptsPath, ds)
       case DbType.SqlServer =>
         SqlServerSqlFileMetadata(logger, scriptsPath, ds, externalTools)
+      case DbType.DB2 =>
+        Db2SqlFileMetadata(logger, scriptsPath, ds, externalTools)
     }
   }
 }

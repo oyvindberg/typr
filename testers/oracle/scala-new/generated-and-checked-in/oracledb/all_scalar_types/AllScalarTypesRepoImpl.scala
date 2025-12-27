@@ -102,10 +102,10 @@ class AllScalarTypesRepoImpl extends AllScalarTypesRepo {
     where "ID" = ${Fragment.encode(AllScalarTypesId.oracleType, id)}""".update().runUnchecked(c) > 0
   }
 
-  override def upsert(unsaved: AllScalarTypesRow)(using c: Connection): AllScalarTypesRow = {
-  sql"""MERGE INTO "ALL_SCALAR_TYPES" t
+  override def upsert(unsaved: AllScalarTypesRow)(using c: Connection): Unit = {
+    sql"""MERGE INTO "ALL_SCALAR_TYPES" t
     USING (SELECT ${Fragment.encode(AllScalarTypesId.oracleType, unsaved.id)}, ${Fragment.encode(OracleTypes.varchar2.nullable, unsaved.colVarchar2)}, ${Fragment.encode(ScalaDbTypes.OracleTypes.number.nullable, unsaved.colNumber)}, ${Fragment.encode(OracleTypes.date.nullable, unsaved.colDate)}, ${Fragment.encode(OracleTypes.timestamp.nullable, unsaved.colTimestamp)}, ${Fragment.encode(OracleTypes.clob.nullable, unsaved.colClob)}, ${Fragment.encode(OracleTypes.varchar2, unsaved.colNotNull)} FROM DUAL) s
-    ON ("ID")
+    ON (t."ID" = s."ID")
     WHEN MATCHED THEN UPDATE SET t."COL_VARCHAR2" = s."COL_VARCHAR2",
     t."COL_NUMBER" = s."COL_NUMBER",
     t."COL_DATE" = s."COL_DATE",
@@ -113,14 +113,14 @@ class AllScalarTypesRepoImpl extends AllScalarTypesRepo {
     t."COL_CLOB" = s."COL_CLOB",
     t."COL_NOT_NULL" = s."COL_NOT_NULL"
     WHEN NOT MATCHED THEN INSERT ("ID", "COL_VARCHAR2", "COL_NUMBER", "COL_DATE", "COL_TIMESTAMP", "COL_CLOB", "COL_NOT_NULL") VALUES (${Fragment.encode(AllScalarTypesId.oracleType, unsaved.id)}, ${Fragment.encode(OracleTypes.varchar2.nullable, unsaved.colVarchar2)}, ${Fragment.encode(ScalaDbTypes.OracleTypes.number.nullable, unsaved.colNumber)}, ${Fragment.encode(OracleTypes.date.nullable, unsaved.colDate)}, ${Fragment.encode(OracleTypes.timestamp.nullable, unsaved.colTimestamp)}, ${Fragment.encode(OracleTypes.clob.nullable, unsaved.colClob)}, ${Fragment.encode(OracleTypes.varchar2, unsaved.colNotNull)})"""
-    .updateReturning(AllScalarTypesRow.`_rowParser`.exactlyOne())
-    .runUnchecked(c)
+      .update()
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 
-  override def upsertBatch(unsaved: Iterator[AllScalarTypesRow])(using c: Connection): List[AllScalarTypesRow] = {
+  override def upsertBatch(unsaved: Iterator[AllScalarTypesRow])(using c: Connection): Unit = {
     sql"""MERGE INTO "ALL_SCALAR_TYPES" t
     USING (SELECT ?, ?, ?, ?, ?, ?, ? FROM DUAL) s
-    ON ("ID")
+    ON (t."ID" = s."ID")
     WHEN MATCHED THEN UPDATE SET t."COL_VARCHAR2" = s."COL_VARCHAR2",
     t."COL_NUMBER" = s."COL_NUMBER",
     t."COL_DATE" = s."COL_DATE",
@@ -128,7 +128,7 @@ class AllScalarTypesRepoImpl extends AllScalarTypesRepo {
     t."COL_CLOB" = s."COL_CLOB",
     t."COL_NOT_NULL" = s."COL_NOT_NULL"
     WHEN NOT MATCHED THEN INSERT ("ID", "COL_VARCHAR2", "COL_NUMBER", "COL_DATE", "COL_TIMESTAMP", "COL_CLOB", "COL_NOT_NULL") VALUES (?, ?, ?, ?, ?, ?, ?)"""
-      .updateReturningEach(AllScalarTypesRow.`_rowParser`, unsaved)
-    .runUnchecked(c)
+      .updateMany(AllScalarTypesRow.`_rowParser`, unsaved)
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 }

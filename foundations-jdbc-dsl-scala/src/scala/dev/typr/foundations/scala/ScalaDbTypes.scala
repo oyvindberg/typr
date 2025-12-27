@@ -1,6 +1,6 @@
 package dev.typr.foundations.scala
 
-import dev.typr.foundations.{DuckDbType, MariaType, OracleType, PgType, SqlServerType}
+import dev.typr.foundations.{Db2Type, DuckDbType, MariaType, OracleType, PgType, SqlServerType}
 
 import _root_.scala.jdk.CollectionConverters.*
 
@@ -160,5 +160,24 @@ object ScalaDbTypes {
 
     // Boolean
     val bit: SqlServerType[Boolean] = dev.typr.foundations.SqlServerTypes.bit.bimap(b => b, b => b)
+  }
+
+  object Db2Types {
+    // Primitives - convert Java boxed types to Scala native types
+    val smallint: Db2Type[Short] = dev.typr.foundations.Db2Types.smallint.bimap(s => s, s => s)
+    val integer: Db2Type[Int] = dev.typr.foundations.Db2Types.integer.bimap(i => i, i => i)
+    val bigint: Db2Type[Long] = dev.typr.foundations.Db2Types.bigint.bimap(l => l, l => l)
+
+    // Floating point
+    val real: Db2Type[Float] = dev.typr.foundations.Db2Types.real.bimap(f => f, f => f)
+    val double_ : Db2Type[Double] = dev.typr.foundations.Db2Types.double_.bimap(d => d, d => d)
+
+    // BigDecimal - convert Java BigDecimal to Scala BigDecimal
+    val decimal: Db2Type[BigDecimal] = dev.typr.foundations.Db2Types.decimal.bimap(jbd => BigDecimal(jbd), sbd => sbd.bigDecimal)
+    val numeric: Db2Type[BigDecimal] = dev.typr.foundations.Db2Types.numeric.bimap(jbd => BigDecimal(jbd), sbd => sbd.bigDecimal)
+    val decfloat: Db2Type[BigDecimal] = dev.typr.foundations.Db2Types.decfloat.bimap(jbd => BigDecimal(jbd), sbd => sbd.bigDecimal)
+
+    // Boolean
+    val boolean_ : Db2Type[Boolean] = dev.typr.foundations.Db2Types.boolean_.bimap(b => b, b => b)
   }
 }

@@ -35,7 +35,7 @@ trait AllScalarTypesRepo {
 
   def update(row: AllScalarTypesRow)(using c: Connection): Boolean
 
-  def upsert(unsaved: AllScalarTypesRow)(using c: Connection): AllScalarTypesRow
+  def upsert(unsaved: AllScalarTypesRow)(using c: Connection): Unit
 
-  def upsertBatch(unsaved: Iterator[AllScalarTypesRow])(using c: Connection): List[AllScalarTypesRow]
+  def upsertBatch(unsaved: Iterator[AllScalarTypesRow])(using c: Connection): Unit
 }

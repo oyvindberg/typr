@@ -24,6 +24,10 @@ project(":testers:oracle:kotlin").projectDir = file("testers/oracle/kotlin")
 include("testers:sqlserver:kotlin")
 project(":testers:sqlserver:kotlin").projectDir = file("testers/sqlserver/kotlin")
 
+// DB2 Kotlin testers
+include("testers:db2:kotlin")
+project(":testers:db2:kotlin").projectDir = file("testers/db2/kotlin")
+
 // OpenAPI Kotlin testers
 include("testers:openapi:kotlin:jaxrs")
 project(":testers:openapi:kotlin:jaxrs").projectDir = file("testers/openapi/kotlin/jaxrs")

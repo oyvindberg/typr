@@ -160,22 +160,18 @@ public record ContactsRepoMock(
   ;
 
   @Override
-  public ContactsRow upsert(ContactsRow unsaved, Connection c) {
+  public void upsert(ContactsRow unsaved, Connection c) {
     map.put(unsaved.contactId(), unsaved);
-    return unsaved;
   }
   ;
 
   @Override
-  public List<ContactsRow> upsertBatch(Iterator<ContactsRow> unsaved, Connection c) {
-    var result = new ArrayList<ContactsRow>();
+  public void upsertBatch(Iterator<ContactsRow> unsaved, Connection c) {
     while (unsaved.hasNext()) {
       var row = unsaved.next();
       map.put(row.contactId(), row);
-      result.add(row);
     }
     ;
-    return result;
   }
   ;
 }

@@ -36,7 +36,7 @@ trait AllScalarTypesRepo {
 
   def update(row: AllScalarTypesRow)(using c: Connection): java.lang.Boolean
 
-  def upsert(unsaved: AllScalarTypesRow)(using c: Connection): AllScalarTypesRow
+  def upsert(unsaved: AllScalarTypesRow)(using c: Connection): Unit
 
-  def upsertBatch(unsaved: java.util.Iterator[AllScalarTypesRow])(using c: Connection): java.util.List[AllScalarTypesRow]
+  def upsertBatch(unsaved: java.util.Iterator[AllScalarTypesRow])(using c: Connection): Unit
 }

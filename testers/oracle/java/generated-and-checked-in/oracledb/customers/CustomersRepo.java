@@ -39,7 +39,7 @@ public interface CustomersRepo {
 
   Boolean update(CustomersRow row, Connection c);
 
-  CustomersRow upsert(CustomersRow unsaved, Connection c);
+  void upsert(CustomersRow unsaved, Connection c);
 
-  List<CustomersRow> upsertBatch(Iterator<CustomersRow> unsaved, Connection c);
+  void upsertBatch(Iterator<CustomersRow> unsaved, Connection c);
 }

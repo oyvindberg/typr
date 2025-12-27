@@ -70,10 +70,10 @@ interface ProductsRepo {
   abstract fun upsert(
     unsaved: ProductsRow,
     c: Connection
-  ): ProductsRow
+  )
 
   abstract fun upsertBatch(
     unsaved: Iterator<ProductsRow>,
     c: Connection
-  ): List<ProductsRow>
+  )
 }
