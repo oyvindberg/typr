@@ -65,10 +65,10 @@ interface AllScalarTypesRepo {
   abstract fun upsert(
     unsaved: AllScalarTypesRow,
     c: Connection
-  ): AllScalarTypesRow
+  )
 
   abstract fun upsertBatch(
     unsaved: Iterator<AllScalarTypesRow>,
     c: Connection
-  ): List<AllScalarTypesRow>
+  )
 }

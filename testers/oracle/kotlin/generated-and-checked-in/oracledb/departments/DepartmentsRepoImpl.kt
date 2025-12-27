@@ -83,14 +83,18 @@ class DepartmentsRepoImpl() : DepartmentsRepo {
   override fun upsert(
     unsaved: DepartmentsRow,
     c: Connection
-  ): DepartmentsRow = Fragment.interpolate(Fragment.lit("MERGE INTO \"DEPARTMENTS\" t\nUSING (SELECT "), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.budget), Fragment.lit(" FROM DUAL) s\nON (\"DEPT_CODE\", \"DEPT_REGION\")\nWHEN MATCHED THEN UPDATE SET t.\"DEPT_NAME\" = s.\"DEPT_NAME\",\nt.\"BUDGET\" = s.\"BUDGET\"\nWHEN NOT MATCHED THEN INSERT (\"DEPT_CODE\", \"DEPT_REGION\", \"DEPT_NAME\", \"BUDGET\") VALUES ("), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.budget), Fragment.lit(")"))
-    .updateReturning(DepartmentsRow._rowParser.exactlyOne())
-    .runUnchecked(c)
+  ) {
+    Fragment.interpolate(Fragment.lit("MERGE INTO \"DEPARTMENTS\" t\nUSING (SELECT "), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.budget), Fragment.lit(" FROM DUAL) s\nON (t.\"DEPT_CODE\" = s.\"DEPT_CODE\" AND t.\"DEPT_REGION\" = s.\"DEPT_REGION\")\nWHEN MATCHED THEN UPDATE SET t.\"DEPT_NAME\" = s.\"DEPT_NAME\",\nt.\"BUDGET\" = s.\"BUDGET\"\nWHEN NOT MATCHED THEN INSERT (\"DEPT_CODE\", \"DEPT_REGION\", \"DEPT_NAME\", \"BUDGET\") VALUES ("), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.nullable(), unsaved.budget), Fragment.lit(")"))
+      .update()
+      .runUnchecked(c)
+  }
 
   override fun upsertBatch(
     unsaved: Iterator<DepartmentsRow>,
     c: Connection
-  ): List<DepartmentsRow> = Fragment.interpolate(Fragment.lit("MERGE INTO \"DEPARTMENTS\" t\nUSING (SELECT ?, ?, ?, ? FROM DUAL) s\nON (\"DEPT_CODE\", \"DEPT_REGION\")\nWHEN MATCHED THEN UPDATE SET t.\"DEPT_NAME\" = s.\"DEPT_NAME\",\nt.\"BUDGET\" = s.\"BUDGET\"\nWHEN NOT MATCHED THEN INSERT (\"DEPT_CODE\", \"DEPT_REGION\", \"DEPT_NAME\", \"BUDGET\") VALUES (?, ?, ?, ?)"))
-    .updateReturningEach(DepartmentsRow._rowParser, unsaved)
-  .runUnchecked(c)
+  ) {
+    Fragment.interpolate(Fragment.lit("MERGE INTO \"DEPARTMENTS\" t\nUSING (SELECT ?, ?, ?, ? FROM DUAL) s\nON (t.\"DEPT_CODE\" = s.\"DEPT_CODE\" AND t.\"DEPT_REGION\" = s.\"DEPT_REGION\")\nWHEN MATCHED THEN UPDATE SET t.\"DEPT_NAME\" = s.\"DEPT_NAME\",\nt.\"BUDGET\" = s.\"BUDGET\"\nWHEN NOT MATCHED THEN INSERT (\"DEPT_CODE\", \"DEPT_REGION\", \"DEPT_NAME\", \"BUDGET\") VALUES (?, ?, ?, ?)"))
+      .updateMany(DepartmentsRow._rowParser, unsaved)
+      .runUnchecked(c)
+  }
 }

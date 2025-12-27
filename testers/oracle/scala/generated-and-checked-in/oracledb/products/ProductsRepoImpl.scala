@@ -105,29 +105,29 @@ class ProductsRepoImpl extends ProductsRepo {
     where "PRODUCT_ID" = """), Fragment.encode(ProductsId.oracleType, productId), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
-  override def upsert(unsaved: ProductsRow)(using c: Connection): ProductsRow = {
-  interpolate(Fragment.lit("""MERGE INTO "PRODUCTS" t
+  override def upsert(unsaved: ProductsRow)(using c: Connection): Unit = {
+    interpolate(Fragment.lit("""MERGE INTO "PRODUCTS" t
     USING (SELECT """), Fragment.encode(ProductsId.oracleType, unsaved.productId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.sku), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType, unsaved.price), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.opt(), unsaved.tags), Fragment.lit(""" FROM DUAL) s
-    ON ("PRODUCT_ID")
+    ON (t."PRODUCT_ID" = s."PRODUCT_ID")
     WHEN MATCHED THEN UPDATE SET t."SKU" = s."SKU",
     t."NAME" = s."NAME",
     t."PRICE" = s."PRICE",
     t."TAGS" = s."TAGS"
     WHEN NOT MATCHED THEN INSERT ("PRODUCT_ID", "SKU", "NAME", "PRICE", "TAGS") VALUES ("""), Fragment.encode(ProductsId.oracleType, unsaved.productId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.sku), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType, unsaved.price), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.opt(), unsaved.tags), Fragment.lit(")"))
-    .updateReturning(ProductsRow.`_rowParser`.exactlyOne())
-    .runUnchecked(c)
+      .update()
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[ProductsRow])(using c: Connection): java.util.List[ProductsRow] = {
+  override def upsertBatch(unsaved: java.util.Iterator[ProductsRow])(using c: Connection): Unit = {
     interpolate(Fragment.lit("""MERGE INTO "PRODUCTS" t
     USING (SELECT ?, ?, ?, ?, ? FROM DUAL) s
-    ON ("PRODUCT_ID")
+    ON (t."PRODUCT_ID" = s."PRODUCT_ID")
     WHEN MATCHED THEN UPDATE SET t."SKU" = s."SKU",
     t."NAME" = s."NAME",
     t."PRICE" = s."PRICE",
     t."TAGS" = s."TAGS"
     WHEN NOT MATCHED THEN INSERT ("PRODUCT_ID", "SKU", "NAME", "PRICE", "TAGS") VALUES (?, ?, ?, ?, ?)"""))
-      .updateReturningEach(ProductsRow.`_rowParser`, unsaved)
-    .runUnchecked(c)
+      .updateMany(ProductsRow.`_rowParser`, unsaved)
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 }

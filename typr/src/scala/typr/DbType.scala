@@ -1,6 +1,6 @@
 package typr
 
-import typr.internal.codegen.{DbAdapter, DuckDbAdapter, MariaDbAdapter, OracleAdapter, PostgresAdapter, SqlServerAdapter}
+import typr.internal.codegen.{Db2Adapter, DbAdapter, DuckDbAdapter, MariaDbAdapter, OracleAdapter, PostgresAdapter, SqlServerAdapter}
 
 import java.sql.Connection
 
@@ -34,6 +34,10 @@ object DbType {
     def adapter(needsTimestampCasts: Boolean): DbAdapter = OracleAdapter
   }
 
+  case object DB2 extends DbType {
+    def adapter(needsTimestampCasts: Boolean): DbAdapter = Db2Adapter
+  }
+
   def detect(connection: Connection): DbType = {
     val metadata = connection.getMetaData
     val productName = metadata.getDatabaseProductName.toLowerCase
@@ -45,6 +49,7 @@ object DbType {
       case name if name.contains("oracle")               => Oracle
       case name if name.contains("microsoft sql server") => SqlServer
       case name if name.contains("sql server")           => SqlServer
+      case name if name.contains("db2")                  => DB2
       case other                                         => sys.error(s"Unsupported database: $other")
     }
   }
@@ -59,6 +64,8 @@ object DbType {
       case name if name.contains("oracle")                => Oracle
       case name if name.contains("microsoft jdbc driver") => SqlServer
       case name if name.contains("sqlserver")             => SqlServer
+      case name if name.contains("db2")                   => DB2
+      case name if name.contains("ibm data server")       => DB2
       case other                                          => sys.error(s"Unknown database driver: $other")
     }
   }

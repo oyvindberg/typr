@@ -65,10 +65,10 @@ interface ContactsRepo {
   abstract fun upsert(
     unsaved: ContactsRow,
     c: Connection
-  ): ContactsRow
+  )
 
   abstract fun upsertBatch(
     unsaved: Iterator<ContactsRow>,
     c: Connection
-  ): List<ContactsRow>
+  )
 }

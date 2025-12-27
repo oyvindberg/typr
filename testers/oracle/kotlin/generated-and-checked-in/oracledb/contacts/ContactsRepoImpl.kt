@@ -105,14 +105,18 @@ class ContactsRepoImpl() : ContactsRepo {
   override fun upsert(
     unsaved: ContactsRow,
     c: Connection
-  ): ContactsRow = Fragment.interpolate(Fragment.lit("MERGE INTO \"CONTACTS\" t\nUSING (SELECT "), Fragment.encode(ContactsId.oracleType, unsaved.contactId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(EmailTableT.oracleType.nullable(), unsaved.emails), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.nullable(), unsaved.tags), Fragment.lit(" FROM DUAL) s\nON (\"CONTACT_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\nt.\"EMAILS\" = s.\"EMAILS\",\nt.\"TAGS\" = s.\"TAGS\"\nWHEN NOT MATCHED THEN INSERT (\"CONTACT_ID\", \"NAME\", \"EMAILS\", \"TAGS\") VALUES ("), Fragment.encode(ContactsId.oracleType, unsaved.contactId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(EmailTableT.oracleType.nullable(), unsaved.emails), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.nullable(), unsaved.tags), Fragment.lit(")"))
-    .updateReturning(ContactsRow._rowParser.exactlyOne())
-    .runUnchecked(c)
+  ) {
+    Fragment.interpolate(Fragment.lit("MERGE INTO \"CONTACTS\" t\nUSING (SELECT "), Fragment.encode(ContactsId.oracleType, unsaved.contactId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(EmailTableT.oracleType.nullable(), unsaved.emails), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.nullable(), unsaved.tags), Fragment.lit(" FROM DUAL) s\nON (t.\"CONTACT_ID\" = s.\"CONTACT_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\nt.\"EMAILS\" = s.\"EMAILS\",\nt.\"TAGS\" = s.\"TAGS\"\nWHEN NOT MATCHED THEN INSERT (\"CONTACT_ID\", \"NAME\", \"EMAILS\", \"TAGS\") VALUES ("), Fragment.encode(ContactsId.oracleType, unsaved.contactId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(EmailTableT.oracleType.nullable(), unsaved.emails), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.nullable(), unsaved.tags), Fragment.lit(")"))
+      .update()
+      .runUnchecked(c)
+  }
 
   override fun upsertBatch(
     unsaved: Iterator<ContactsRow>,
     c: Connection
-  ): List<ContactsRow> = Fragment.interpolate(Fragment.lit("MERGE INTO \"CONTACTS\" t\nUSING (SELECT ?, ?, ?, ? FROM DUAL) s\nON (\"CONTACT_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\nt.\"EMAILS\" = s.\"EMAILS\",\nt.\"TAGS\" = s.\"TAGS\"\nWHEN NOT MATCHED THEN INSERT (\"CONTACT_ID\", \"NAME\", \"EMAILS\", \"TAGS\") VALUES (?, ?, ?, ?)"))
-    .updateReturningEach(ContactsRow._rowParser, unsaved)
-  .runUnchecked(c)
+  ) {
+    Fragment.interpolate(Fragment.lit("MERGE INTO \"CONTACTS\" t\nUSING (SELECT ?, ?, ?, ? FROM DUAL) s\nON (t.\"CONTACT_ID\" = s.\"CONTACT_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\nt.\"EMAILS\" = s.\"EMAILS\",\nt.\"TAGS\" = s.\"TAGS\"\nWHEN NOT MATCHED THEN INSERT (\"CONTACT_ID\", \"NAME\", \"EMAILS\", \"TAGS\") VALUES (?, ?, ?, ?)"))
+      .updateMany(ContactsRow._rowParser, unsaved)
+      .runUnchecked(c)
+  }
 }

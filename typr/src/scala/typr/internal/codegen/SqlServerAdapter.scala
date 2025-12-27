@@ -176,6 +176,10 @@ object SqlServerAdapter extends DbAdapter {
     // SQL Server uses OUTPUT clause which returns columns directly in the result set
     ReturningStrategy.SqlReturning(rowType)
 
+  /** SQL Server supports OUTPUT with MERGE */
+  def upsertStrategy(rowType: jvm.Type): UpsertStrategy =
+    UpsertStrategy.Returning(rowType)
+
   def supportsReturning: Boolean = true // OUTPUT clause
   def supportsArrays: Boolean = false
   def supportsCopyStreaming: Boolean = false
@@ -194,20 +198,20 @@ object SqlServerAdapter extends DbAdapter {
       returning: Option[Code]
   ): Code = {
     // SQL Server uses MERGE statement for UPSERT
-    // This is a simplified version - for production you'd want to generate a proper MERGE
+    // idColumns is already a proper join condition like "target.[col] = source.[col]"
     returning match {
       case Some(cols) =>
         // cols already has INSERTED. prefix from returningColumns
         code"""|MERGE INTO $tableName AS target
                |USING (VALUES ($values)) AS source($columns)
-               |ON target.$idColumns = source.$idColumns
+               |ON $idColumns
                |WHEN MATCHED THEN UPDATE SET $conflictUpdate
                |WHEN NOT MATCHED THEN INSERT ($columns) VALUES ($values)
                |OUTPUT $cols;""".stripMargin
       case None =>
         code"""|MERGE INTO $tableName AS target
                |USING (VALUES ($values)) AS source($columns)
-               |ON target.$idColumns = source.$idColumns
+               |ON $idColumns
                |WHEN MATCHED THEN UPDATE SET $conflictUpdate
                |WHEN NOT MATCHED THEN INSERT ($columns) VALUES ($values);""".stripMargin
     }
@@ -215,6 +219,10 @@ object SqlServerAdapter extends DbAdapter {
 
   def conflictUpdateClause(cols: List[ComputedColumn], quotedColName: ComputedColumn => Code): Code =
     cols.map(c => code"${quotedColName(c)} = source.${quotedColName(c)}").mkCode(",\n")
+
+  /** SQL Server uses target and source as MERGE aliases */
+  override def mergeOnClause(idCols: NonEmptyList[ComputedColumn], quotedColName: ComputedColumn => Code): Code =
+    idCols.map(c => code"target.${quotedColName(c)} = source.${quotedColName(c)}").mkCode(" AND ")
 
   def conflictNoOpClause(firstPkCol: ComputedColumn, quotedColName: ComputedColumn => Code): Code =
     // For no-op, we just set the same column to itself

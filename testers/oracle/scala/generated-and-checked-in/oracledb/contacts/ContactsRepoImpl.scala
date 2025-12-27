@@ -95,27 +95,27 @@ class ContactsRepoImpl extends ContactsRepo {
     where "CONTACT_ID" = """), Fragment.encode(ContactsId.oracleType, contactId), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
-  override def upsert(unsaved: ContactsRow)(using c: Connection): ContactsRow = {
-  interpolate(Fragment.lit("""MERGE INTO "CONTACTS" t
+  override def upsert(unsaved: ContactsRow)(using c: Connection): Unit = {
+    interpolate(Fragment.lit("""MERGE INTO "CONTACTS" t
     USING (SELECT """), Fragment.encode(ContactsId.oracleType, unsaved.contactId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(EmailTableT.oracleType.opt(), unsaved.emails), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.opt(), unsaved.tags), Fragment.lit(""" FROM DUAL) s
-    ON ("CONTACT_ID")
+    ON (t."CONTACT_ID" = s."CONTACT_ID")
     WHEN MATCHED THEN UPDATE SET t."NAME" = s."NAME",
     t."EMAILS" = s."EMAILS",
     t."TAGS" = s."TAGS"
     WHEN NOT MATCHED THEN INSERT ("CONTACT_ID", "NAME", "EMAILS", "TAGS") VALUES ("""), Fragment.encode(ContactsId.oracleType, unsaved.contactId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(EmailTableT.oracleType.opt(), unsaved.emails), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.opt(), unsaved.tags), Fragment.lit(")"))
-    .updateReturning(ContactsRow.`_rowParser`.exactlyOne())
-    .runUnchecked(c)
+      .update()
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[ContactsRow])(using c: Connection): java.util.List[ContactsRow] = {
+  override def upsertBatch(unsaved: java.util.Iterator[ContactsRow])(using c: Connection): Unit = {
     interpolate(Fragment.lit("""MERGE INTO "CONTACTS" t
     USING (SELECT ?, ?, ?, ? FROM DUAL) s
-    ON ("CONTACT_ID")
+    ON (t."CONTACT_ID" = s."CONTACT_ID")
     WHEN MATCHED THEN UPDATE SET t."NAME" = s."NAME",
     t."EMAILS" = s."EMAILS",
     t."TAGS" = s."TAGS"
     WHEN NOT MATCHED THEN INSERT ("CONTACT_ID", "NAME", "EMAILS", "TAGS") VALUES (?, ?, ?, ?)"""))
-      .updateReturningEach(ContactsRow.`_rowParser`, unsaved)
-    .runUnchecked(c)
+      .updateMany(ContactsRow.`_rowParser`, unsaved)
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 }

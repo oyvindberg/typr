@@ -258,8 +258,8 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
   ;
 
   @Override
-  public AllScalarTypesRow upsert(AllScalarTypesRow unsaved, Connection c) {
-    return interpolate(
+  public void upsert(AllScalarTypesRow unsaved, Connection c) {
+    interpolate(
             Fragment.lit("MERGE INTO \"ALL_SCALAR_TYPES\" t\nUSING (SELECT "),
             Fragment.encode(AllScalarTypesId.oracleType, unsaved.id()),
             Fragment.lit(", "),
@@ -276,7 +276,7 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             Fragment.encode(OracleTypes.varchar2, unsaved.colNotNull()),
             Fragment.lit(
                 " FROM DUAL) s\n"
-                    + "ON (\"ID\")\n"
+                    + "ON (t.\"ID\" = s.\"ID\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"COL_VARCHAR2\" = s.\"COL_VARCHAR2\",\n"
                     + "t.\"COL_NUMBER\" = s.\"COL_NUMBER\",\n"
                     + "t.\"COL_DATE\" = s.\"COL_DATE\",\n"
@@ -299,18 +299,18 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             Fragment.lit(", "),
             Fragment.encode(OracleTypes.varchar2, unsaved.colNotNull()),
             Fragment.lit(")"))
-        .updateReturning(AllScalarTypesRow._rowParser.exactlyOne())
+        .update()
         .runUnchecked(c);
   }
   ;
 
   @Override
-  public List<AllScalarTypesRow> upsertBatch(Iterator<AllScalarTypesRow> unsaved, Connection c) {
-    return interpolate(
+  public void upsertBatch(Iterator<AllScalarTypesRow> unsaved, Connection c) {
+    interpolate(
             Fragment.lit(
                 "MERGE INTO \"ALL_SCALAR_TYPES\" t\n"
                     + "USING (SELECT ?, ?, ?, ?, ?, ?, ? FROM DUAL) s\n"
-                    + "ON (\"ID\")\n"
+                    + "ON (t.\"ID\" = s.\"ID\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"COL_VARCHAR2\" = s.\"COL_VARCHAR2\",\n"
                     + "t.\"COL_NUMBER\" = s.\"COL_NUMBER\",\n"
                     + "t.\"COL_DATE\" = s.\"COL_DATE\",\n"
@@ -320,7 +320,7 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
                     + "WHEN NOT MATCHED THEN INSERT (\"ID\", \"COL_VARCHAR2\", \"COL_NUMBER\","
                     + " \"COL_DATE\", \"COL_TIMESTAMP\", \"COL_CLOB\", \"COL_NOT_NULL\") VALUES (?,"
                     + " ?, ?, ?, ?, ?, ?)"))
-        .updateReturningEach(AllScalarTypesRow._rowParser, unsaved)
+        .updateMany(AllScalarTypesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
   ;

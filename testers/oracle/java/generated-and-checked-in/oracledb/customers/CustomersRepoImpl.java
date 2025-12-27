@@ -223,8 +223,8 @@ public class CustomersRepoImpl implements CustomersRepo {
   ;
 
   @Override
-  public CustomersRow upsert(CustomersRow unsaved, Connection c) {
-    return interpolate(
+  public void upsert(CustomersRow unsaved, Connection c) {
+    interpolate(
             Fragment.lit("MERGE INTO \"CUSTOMERS\" t\nUSING (SELECT "),
             Fragment.encode(CustomersId.oracleType, unsaved.customerId()),
             Fragment.lit(", "),
@@ -237,7 +237,7 @@ public class CustomersRepoImpl implements CustomersRepo {
             Fragment.encode(OracleTypes.timestamp, unsaved.createdAt()),
             Fragment.lit(
                 " FROM DUAL) s\n"
-                    + "ON (\"CUSTOMER_ID\")\n"
+                    + "ON (t.\"CUSTOMER_ID\" = s.\"CUSTOMER_ID\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\n"
                     + "t.\"BILLING_ADDRESS\" = s.\"BILLING_ADDRESS\",\n"
                     + "t.\"CREDIT_LIMIT\" = s.\"CREDIT_LIMIT\",\n"
@@ -254,18 +254,18 @@ public class CustomersRepoImpl implements CustomersRepo {
             Fragment.lit(", "),
             Fragment.encode(OracleTypes.timestamp, unsaved.createdAt()),
             Fragment.lit(")"))
-        .updateReturning(CustomersRow._rowParser.exactlyOne())
+        .update()
         .runUnchecked(c);
   }
   ;
 
   @Override
-  public List<CustomersRow> upsertBatch(Iterator<CustomersRow> unsaved, Connection c) {
-    return interpolate(
+  public void upsertBatch(Iterator<CustomersRow> unsaved, Connection c) {
+    interpolate(
             Fragment.lit(
                 "MERGE INTO \"CUSTOMERS\" t\n"
                     + "USING (SELECT ?, ?, ?, ?, ? FROM DUAL) s\n"
-                    + "ON (\"CUSTOMER_ID\")\n"
+                    + "ON (t.\"CUSTOMER_ID\" = s.\"CUSTOMER_ID\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"NAME\" = s.\"NAME\",\n"
                     + "t.\"BILLING_ADDRESS\" = s.\"BILLING_ADDRESS\",\n"
                     + "t.\"CREDIT_LIMIT\" = s.\"CREDIT_LIMIT\",\n"
@@ -273,7 +273,7 @@ public class CustomersRepoImpl implements CustomersRepo {
                     + "WHEN NOT MATCHED THEN INSERT (\"CUSTOMER_ID\", \"NAME\","
                     + " \"BILLING_ADDRESS\", \"CREDIT_LIMIT\", \"CREATED_AT\") VALUES (?, ?, ?, ?,"
                     + " ?)"))
-        .updateReturningEach(CustomersRow._rowParser, unsaved)
+        .updateMany(CustomersRow._rowParser, unsaved)
         .runUnchecked(c);
   }
   ;

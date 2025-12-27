@@ -23,8 +23,10 @@ object ExternalToolsConfig {
 
 /** Container for initialized external tools (Python + sqlglot) */
 case class ExternalTools(
+    config: ExternalToolsConfig,
     python: Python,
-    sqlglot: Sqlglot
+    sqlglot: Sqlglot,
+    sqlglotDb2: Option[SqlglotDb2]
 )
 
 object ExternalTools {
@@ -59,6 +61,31 @@ object ExternalTools {
     }
     logger.info(s"sqlglot available at: ${sqlglot.folder}")
 
-    ExternalTools(python, sqlglot)
+    ExternalTools(config, python, sqlglot, sqlglotDb2 = None)
+  }
+
+  /** Ensure sqlglot-db2-dialect is available (download if needed). Returns a new ExternalTools with sqlglotDb2 populated.
+    */
+  def withDb2Dialect(logger: TypoLogger, tools: ExternalTools): ExternalTools = synchronized {
+    tools.sqlglotDb2 match {
+      case Some(_) => tools // Already downloaded
+      case None =>
+        logger.info("Ensuring sqlglot-db2-dialect is available...")
+
+        if (!Files.exists(tools.config.downloadsDir)) {
+          val _ = Files.createDirectories(tools.config.downloadsDir)
+        }
+
+        val osArch = OsArch.current
+        val coursier = TypoCoursier(logger, tools.config.downloadsDir, osArch)
+
+        val sqlglotDb2 = SqlglotDb2.fetch(coursier) match {
+          case Left(err)         => throw new RuntimeException(s"Failed to download sqlglot-db2-dialect: $err")
+          case Right(sqlglotDb2) => sqlglotDb2
+        }
+        logger.info(s"sqlglot-db2-dialect available at: ${sqlglotDb2.folder}")
+
+        tools.copy(sqlglotDb2 = Some(sqlglotDb2))
+    }
   }
 }

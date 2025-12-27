@@ -166,22 +166,18 @@ public record ProductsRepoMock(
   ;
 
   @Override
-  public ProductsRow upsert(ProductsRow unsaved, Connection c) {
+  public void upsert(ProductsRow unsaved, Connection c) {
     map.put(unsaved.productId(), unsaved);
-    return unsaved;
   }
   ;
 
   @Override
-  public List<ProductsRow> upsertBatch(Iterator<ProductsRow> unsaved, Connection c) {
-    var result = new ArrayList<ProductsRow>();
+  public void upsertBatch(Iterator<ProductsRow> unsaved, Connection c) {
     while (unsaved.hasNext()) {
       var row = unsaved.next();
       map.put(row.productId(), row);
-      result.add(row);
     }
     ;
-    return result;
   }
   ;
 }

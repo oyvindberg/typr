@@ -301,6 +301,10 @@ object DuckDbAdapter extends DbAdapter {
   def returningStrategy(cols: NonEmptyList[ComputedColumn], rowType: jvm.Type, maybeId: Option[IdComputed]): ReturningStrategy =
     ReturningStrategy.SqlReturning(rowType)
 
+  /** DuckDB supports RETURNING with INSERT OR REPLACE */
+  def upsertStrategy(rowType: jvm.Type): UpsertStrategy =
+    UpsertStrategy.Returning(rowType)
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 4: SQL Templates
   // ═══════════════════════════════════════════════════════════════════════════
@@ -333,6 +337,10 @@ object DuckDbAdapter extends DbAdapter {
 
   def conflictNoOpClause(firstPkCol: ComputedColumn, quotedColName: ComputedColumn => Code): Code =
     code"DO UPDATE SET ${quotedColName(firstPkCol)} = EXCLUDED.${quotedColName(firstPkCol)}"
+
+  /** DuckDB uses ON CONFLICT (colname) which expects just the column names, not a join condition */
+  override def mergeOnClause(idCols: NonEmptyList[ComputedColumn], quotedColName: ComputedColumn => Code): Code =
+    idCols.map(quotedColName).mkCode(", ")
 
   def streamingInsertSql(tableName: Code, columns: Code): Code =
     // DuckDB doesn't support streaming COPY in the same way as PostgreSQL

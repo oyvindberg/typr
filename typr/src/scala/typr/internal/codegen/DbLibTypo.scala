@@ -443,8 +443,8 @@ class DbLibTypo(
             )
         }
 
-      case DbType.SqlServer =>
-        // SQL Server doesn't support arrays, use same approach as MariaDB with IN clause
+      case DbType.SqlServer | DbType.DB2 =>
+        // SQL Server and DB2 don't support arrays, use same approach as MariaDB with IN clause
         id match {
           case x: IdComputed.Unary =>
             val colName = adapter.quoteIdent(x.col.dbName.value)
@@ -704,8 +704,8 @@ class DbLibTypo(
             )
         }
 
-      case DbType.SqlServer =>
-        // SQL Server doesn't support arrays, use same approach as MariaDB with IN clause
+      case DbType.SqlServer | DbType.DB2 =>
+        // SQL Server and DB2 don't support arrays, use same approach as MariaDB with IN clause
         id match {
           case x: IdComputed.Unary =>
             val colName = adapter.quoteIdent(x.col.dbName.value)
@@ -800,11 +800,19 @@ class DbLibTypo(
         val unsaved = jvm.Param(jvm.Ident("unsaved"), lang.IteratorType.of(rowType))
         val batchSize = jvm.Param(Nil, jvm.Comments.Empty, jvm.Ident("batchSize"), lang.Int, Some(code"10000"))
         sig(params = List(unsaved, batchSize), implicitParams = List(c), returnType = lang.Long)
-      case RepoMethod.Upsert(_, _, _, unsavedParam, rowType, _) =>
-        sig(params = List(unsavedParam), implicitParams = List(c), returnType = rowType)
-      case RepoMethod.UpsertBatch(_, _, _, rowType, _) =>
+      case RepoMethod.Upsert(_, _, _, unsavedParam, _, _, upsertStrategy) =>
+        val returnType = upsertStrategy match {
+          case UpsertStrategy.Returning(t) => t
+          case UpsertStrategy.NotSupported => jvm.Type.Void
+        }
+        sig(params = List(unsavedParam), implicitParams = List(c), returnType = returnType)
+      case RepoMethod.UpsertBatch(_, _, _, rowType, _, upsertStrategy) =>
         val unsaved = jvm.Param(jvm.Ident("unsaved"), lang.IteratorType.of(rowType))
-        sig(params = List(unsaved), implicitParams = List(c), returnType = lang.ListType.tpe.of(rowType))
+        val returnType = upsertStrategy match {
+          case UpsertStrategy.Returning(t) => lang.ListType.tpe.of(t)
+          case UpsertStrategy.NotSupported => jvm.Type.Void
+        }
+        sig(params = List(unsaved), implicitParams = List(c), returnType = returnType)
       case RepoMethod.UpsertStreaming(_, _, rowType, _) =>
         val unsaved = jvm.Param(jvm.Ident("unsaved"), lang.IteratorType.of(rowType))
         val batchSize = jvm.Param(Nil, jvm.Comments.Empty, jvm.Ident("batchSize"), lang.Int, Some(code"10000"))
@@ -1025,7 +1033,7 @@ class DbLibTypo(
                      |  .updateReturningGeneratedKeys($columnNamesArray, $code).runUnchecked(c)"""
             )
         }
-      case RepoMethod.Upsert(relName, cols, id, unsavedParam, rowType, writeableColumnsWithId) =>
+      case RepoMethod.Upsert(relName, cols, id, unsavedParam, rowType, writeableColumnsWithId, upsertStrategy) =>
         val values = writeableColumnsWithId.map { c =>
           runtimeInterpolateValue(prop(unsavedParam.name.code, c.name), c.typoType).code ++ adapter.columnWriteCast(c)
         }
@@ -1040,24 +1048,45 @@ class DbLibTypo(
             adapter.conflictUpdateClause(cols, quotedColName)
         }
 
-        val sql = SQL {
-          adapter.upsertSql(
-            tableName = quotedRelName(relName),
-            columns = dbNames(writeableColumnsWithId, isRead = false),
-            idColumns = dbNames(id.cols, isRead = false),
-            values = values.mkCode(", "),
-            conflictUpdate = conflictUpdate,
-            returning = Some(adapter.returningColumns(cols))
-          )
-        }
+        upsertStrategy match {
+          case UpsertStrategy.NotSupported =>
+            val sql = SQL {
+              adapter.upsertSql(
+                tableName = quotedRelName(relName),
+                columns = dbNames(writeableColumnsWithId, isRead = false),
+                idColumns = adapter.mergeOnClause(id.cols, quotedColName),
+                values = values.mkCode(", "),
+                conflictUpdate = conflictUpdate,
+                returning = None
+              )
+            }
+            jvm.Body.Expr(
+              jvm.IgnoreResult(
+                code"""|$sql
+                       |  .update()
+                       |  .runUnchecked(c)""".stripMargin
+              )
+            )
+          case UpsertStrategy.Returning(_) =>
+            val sql = SQL {
+              adapter.upsertSql(
+                tableName = quotedRelName(relName),
+                columns = dbNames(writeableColumnsWithId, isRead = false),
+                idColumns = adapter.mergeOnClause(id.cols, quotedColName),
+                values = values.mkCode(", "),
+                conflictUpdate = conflictUpdate,
+                returning = Some(adapter.returningColumns(cols))
+              )
+            }
 
-        val parser = code"$rowType.$rowParserName.exactlyOne()"
-        jvm.Body.Expr(
-          code"""|$sql
-                 |  .updateReturning($parser)
-                 |  .runUnchecked(c)"""
-        )
-      case RepoMethod.UpsertBatch(relName, cols, id, rowType, writeableColumnsWithId) =>
+            val parser = code"$rowType.$rowParserName.exactlyOne()"
+            jvm.Body.Expr(
+              code"""|$sql
+                     |  .updateReturning($parser)
+                     |  .runUnchecked(c)"""
+            )
+        }
+      case RepoMethod.UpsertBatch(relName, cols, id, rowType, writeableColumnsWithId, upsertStrategy) =>
         // For MariaDB, we need to include ALL columns (including AUTO_INCREMENT) in the INSERT
         // because upsertBatch operates on Row type (not RowUnsaved) which has the ID.
         // MariaDB allows explicit values in AUTO_INCREMENT columns.
@@ -1069,35 +1098,57 @@ class DbLibTypo(
           case updateCols =>
             adapter.conflictUpdateClause(updateCols, quotedColName)
         }
-
-        val sql = SQL {
-          adapter.upsertSql(
-            tableName = quotedRelName(relName),
-            columns = dbNames(insertCols, isRead = false),
-            idColumns = dbNames(id.cols, isRead = false),
-            values = insertCols.map(c => code"?${adapter.columnWriteCast(c)}").mkCode(", "),
-            conflictUpdate = conflictAction,
-            returning = Some(adapter.returningColumns(cols))
-          )
-        }
-        val rowParser = code"$rowType.$rowParserName"
-        // MariaDB: RETURNING with batch doesn't work via getGeneratedKeys(), so we execute each row individually
-        // DuckDB: JDBC driver doesn't support batch + RETURNING (SQLFeatureNotSupportedException)
-        // PostgreSQL: Use updateManyReturning which works correctly with batch + RETURNING
-        // Note: For Scala DSL, Fragment methods expect Scala iterators, not Java iterators
         val unsavedArg = iteratorToJava(code"unsaved")
-        if (!adapter.supportsArrays || adapter.dbType == DbType.DuckDB) {
-          jvm.Body.Expr(
-            code"""|$sql
-                   |  .updateReturningEach($rowParser, $unsavedArg)
-                   |$queryAllRunUnchecked""".stripMargin
-          )
-        } else {
-          jvm.Body.Expr(
-            code"""|$sql
-                   |  .updateManyReturning($rowParser, $unsavedArg)
-                   |$queryAllRunUnchecked""".stripMargin
-          )
+
+        upsertStrategy match {
+          case UpsertStrategy.NotSupported =>
+            val sql = SQL {
+              adapter.upsertSql(
+                tableName = quotedRelName(relName),
+                columns = dbNames(insertCols, isRead = false),
+                idColumns = adapter.mergeOnClause(id.cols, quotedColName),
+                values = insertCols.map(c => code"?${adapter.columnWriteCast(c)}").mkCode(", "),
+                conflictUpdate = conflictAction,
+                returning = None
+              )
+            }
+            val rowParser = code"$rowType.$rowParserName"
+            jvm.Body.Expr(
+              jvm.IgnoreResult(
+                code"""|$sql
+                       |  .updateMany($rowParser, $unsavedArg)
+                       |  .runUnchecked(c)""".stripMargin
+              )
+            )
+          case UpsertStrategy.Returning(_) =>
+            val sql = SQL {
+              adapter.upsertSql(
+                tableName = quotedRelName(relName),
+                columns = dbNames(insertCols, isRead = false),
+                idColumns = adapter.mergeOnClause(id.cols, quotedColName),
+                values = insertCols.map(c => code"?${adapter.columnWriteCast(c)}").mkCode(", "),
+                conflictUpdate = conflictAction,
+                returning = Some(adapter.returningColumns(cols))
+              )
+            }
+            val rowParser = code"$rowType.$rowParserName"
+            // MariaDB: RETURNING with batch doesn't work via getGeneratedKeys(), so we execute each row individually
+            // DuckDB: JDBC driver doesn't support batch + RETURNING (SQLFeatureNotSupportedException)
+            // PostgreSQL: Use updateManyReturning which works correctly with batch + RETURNING
+            // Note: For Scala DSL, Fragment methods expect Scala iterators, not Java iterators
+            if (!adapter.supportsArrays || adapter.dbType == DbType.DuckDB) {
+              jvm.Body.Expr(
+                code"""|$sql
+                       |  .updateReturningEach($rowParser, $unsavedArg)
+                       |$queryAllRunUnchecked""".stripMargin
+              )
+            } else {
+              jvm.Body.Expr(
+                code"""|$sql
+                       |  .updateManyReturning($rowParser, $unsavedArg)
+                       |$queryAllRunUnchecked""".stripMargin
+              )
+            }
         }
 
       case RepoMethod.UpsertStreaming(relName, id, rowType, writeableColumnsWithId) =>
@@ -1502,14 +1553,19 @@ class DbLibTypo(
             jvm.Return(returnValue)
           )
         )
-      case RepoMethod.Upsert(_, _, _, unsavedParam, _, _) =>
+      case RepoMethod.Upsert(_, _, _, unsavedParam, _, _, upsertStrategy) =>
         val unsavedIdAccess = idAccess(unsavedParam.name.code)
-        jvm.Body.Stmts(
-          List(
-            lang.MapOps.putVoid(mapCode, unsavedIdAccess, unsavedParam.name.code),
-            jvm.Return(unsavedParam.name.code)
-          )
-        )
+        upsertStrategy match {
+          case UpsertStrategy.NotSupported =>
+            jvm.Body.Expr(lang.MapOps.putVoid(mapCode, unsavedIdAccess, unsavedParam.name.code))
+          case UpsertStrategy.Returning(_) =>
+            jvm.Body.Stmts(
+              List(
+                lang.MapOps.putVoid(mapCode, unsavedIdAccess, unsavedParam.name.code),
+                jvm.Return(unsavedParam.name.code)
+              )
+            )
+        }
       case RepoMethod.UpsertStreaming(_, localId, _, _) =>
         val rowVar = jvm.Ident("row")
         val rowIdAccess = idAccessOnRow(rowVar.code, localId)
@@ -1536,35 +1592,61 @@ class DbLibTypo(
             )
           )
         }
-      case RepoMethod.UpsertBatch(_, _, localId, rowType, _) =>
+      case RepoMethod.UpsertBatch(_, _, localId, rowType, _, upsertStrategy) =>
         val rowVar = jvm.Ident("row")
         val rowIdAccess = idAccessOnRow(rowVar.code, localId)
-        // Use Scala idiom for Scala types, imperative style for Java types
-        if (usesScalaTypes) {
-          jvm.Body.Expr(
-            code"""|unsaved.map { $rowVar =>
-                   |  ${lang.MapOps.putVoid(mapCode, rowIdAccess, rowVar.code)}
-                   |  $rowVar
-                   |}.toList""".stripMargin
-          )
-        } else {
-          val resultVar = jvm.Ident("result")
-          jvm.Body.Stmts(
-            List(
-              jvm.LocalVar(resultVar, None, jvm.New(TypesJava.ArrayList.of(rowType), Nil).code).code,
-              jvm
-                .While(
-                  code"unsaved.hasNext()",
-                  List(
-                    jvm.LocalVar(rowVar, None, code"unsaved.next()").code,
-                    lang.MapOps.putVoid(mapCode, rowIdAccess, rowVar.code),
-                    jvm.IgnoreResult(resultVar.code.invoke("add", rowVar.code)).code
-                  )
+        upsertStrategy match {
+          case UpsertStrategy.NotSupported =>
+            // Void return - just put in map, don't return anything
+            if (usesScalaTypes) {
+              jvm.Body.Expr(
+                code"""|unsaved.foreach { $rowVar =>
+                       |  ${lang.MapOps.putVoid(mapCode, rowIdAccess, rowVar.code)}
+                       |}""".stripMargin
+              )
+            } else {
+              jvm.Body.Stmts(
+                List(
+                  jvm
+                    .While(
+                      code"unsaved.hasNext()",
+                      List(
+                        jvm.LocalVar(rowVar, None, code"unsaved.next()").code,
+                        lang.MapOps.putVoid(mapCode, rowIdAccess, rowVar.code)
+                      )
+                    )
+                    .code
                 )
-                .code,
-              jvm.Return(resultVar.code)
-            )
-          )
+              )
+            }
+          case UpsertStrategy.Returning(_) =>
+            // Use Scala idiom for Scala types, imperative style for Java types
+            if (usesScalaTypes) {
+              jvm.Body.Expr(
+                code"""|unsaved.map { $rowVar =>
+                       |  ${lang.MapOps.putVoid(mapCode, rowIdAccess, rowVar.code)}
+                       |  $rowVar
+                       |}.toList""".stripMargin
+              )
+            } else {
+              val resultVar = jvm.Ident("result")
+              jvm.Body.Stmts(
+                List(
+                  jvm.LocalVar(resultVar, None, jvm.New(TypesJava.ArrayList.of(rowType), Nil).code).code,
+                  jvm
+                    .While(
+                      code"unsaved.hasNext()",
+                      List(
+                        jvm.LocalVar(rowVar, None, code"unsaved.next()").code,
+                        lang.MapOps.putVoid(mapCode, rowIdAccess, rowVar.code),
+                        jvm.IgnoreResult(resultVar.code.invoke("add", rowVar.code)).code
+                      )
+                    )
+                    .code,
+                  jvm.Return(resultVar.code)
+                )
+              )
+            }
         }
       case RepoMethod.InsertUnsaved(_, _, _, unsavedParam, _, _, _) =>
         val insertCall = jvm.Call.withImplicits(

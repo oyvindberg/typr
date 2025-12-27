@@ -72,25 +72,25 @@ class DepartmentsRepoImpl extends DepartmentsRepo {
     where "DEPT_CODE" = """), Fragment.encode(OracleTypes.varchar2, compositeId.deptCode), Fragment.lit(""" AND "DEPT_REGION" = """), Fragment.encode(OracleTypes.varchar2, compositeId.deptRegion), Fragment.lit("")).update().runUnchecked(c) > 0
   }
 
-  override def upsert(unsaved: DepartmentsRow)(using c: Connection): DepartmentsRow = {
-  interpolate(Fragment.lit("""MERGE INTO "DEPARTMENTS" t
+  override def upsert(unsaved: DepartmentsRow)(using c: Connection): Unit = {
+    interpolate(Fragment.lit("""MERGE INTO "DEPARTMENTS" t
     USING (SELECT """), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.opt(), unsaved.budget), Fragment.lit(""" FROM DUAL) s
-    ON ("DEPT_CODE", "DEPT_REGION")
+    ON (t."DEPT_CODE" = s."DEPT_CODE" AND t."DEPT_REGION" = s."DEPT_REGION")
     WHEN MATCHED THEN UPDATE SET t."DEPT_NAME" = s."DEPT_NAME",
     t."BUDGET" = s."BUDGET"
     WHEN NOT MATCHED THEN INSERT ("DEPT_CODE", "DEPT_REGION", "DEPT_NAME", "BUDGET") VALUES ("""), Fragment.encode(OracleTypes.varchar2, unsaved.deptCode), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptRegion), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.deptName), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType.opt(), unsaved.budget), Fragment.lit(")"))
-    .updateReturning(DepartmentsRow.`_rowParser`.exactlyOne())
-    .runUnchecked(c)
+      .update()
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 
-  override def upsertBatch(unsaved: java.util.Iterator[DepartmentsRow])(using c: Connection): java.util.List[DepartmentsRow] = {
+  override def upsertBatch(unsaved: java.util.Iterator[DepartmentsRow])(using c: Connection): Unit = {
     interpolate(Fragment.lit("""MERGE INTO "DEPARTMENTS" t
     USING (SELECT ?, ?, ?, ? FROM DUAL) s
-    ON ("DEPT_CODE", "DEPT_REGION")
+    ON (t."DEPT_CODE" = s."DEPT_CODE" AND t."DEPT_REGION" = s."DEPT_REGION")
     WHEN MATCHED THEN UPDATE SET t."DEPT_NAME" = s."DEPT_NAME",
     t."BUDGET" = s."BUDGET"
     WHEN NOT MATCHED THEN INSERT ("DEPT_CODE", "DEPT_REGION", "DEPT_NAME", "BUDGET") VALUES (?, ?, ?, ?)"""))
-      .updateReturningEach(DepartmentsRow.`_rowParser`, unsaved)
-    .runUnchecked(c)
+      .updateMany(DepartmentsRow.`_rowParser`, unsaved)
+      .runUnchecked(c): @scala.annotation.nowarn
   }
 }

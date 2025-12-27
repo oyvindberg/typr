@@ -109,13 +109,10 @@ final class JsonParser {
     if (json.charAt(pos) == '-') {
       pos++;
     }
-    // Integer part
-    if (pos < json.length() && json.charAt(pos) == '0') {
+    // Integer part - also accept non-standard leading zeros (DB2 produces these for negative
+    // decimals)
+    while (pos < json.length() && Character.isDigit(json.charAt(pos))) {
       pos++;
-    } else {
-      while (pos < json.length() && Character.isDigit(json.charAt(pos))) {
-        pos++;
-      }
     }
     // Fractional part
     if (pos < json.length() && json.charAt(pos) == '.') {

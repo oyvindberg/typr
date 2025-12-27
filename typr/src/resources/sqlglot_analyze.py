@@ -36,6 +36,8 @@ Output JSON schema:
 }
 """
 
+from __future__ import annotations
+
 import json
 import sys
 import time
@@ -46,12 +48,35 @@ from enum import Enum
 import multiprocessing
 import os
 
-import sqlglot
-from sqlglot import exp
-from sqlglot.optimizer.qualify import qualify
-from sqlglot.optimizer.annotate_types import annotate_types
-from sqlglot.lineage import lineage, Node as LineageNode
-from sqlglot.schema import MappingSchema
+# Lazy import for sqlglot - this allows multiprocessing workers on macOS to set up
+# sys.path BEFORE importing sqlglot (needed for DB2 dialect which uses a forked sqlglot)
+sqlglot = None
+exp = None
+qualify = None
+annotate_types = None
+lineage = None
+LineageNode = None
+MappingSchema = None
+
+
+def _ensure_sqlglot_imported():
+    """Lazily import sqlglot modules. This is called after sys.path setup in workers."""
+    global sqlglot, exp, qualify, annotate_types, lineage, LineageNode, MappingSchema
+    if sqlglot is None:
+        import sqlglot as _sqlglot
+        from sqlglot import exp as _exp
+        from sqlglot.optimizer.qualify import qualify as _qualify
+        from sqlglot.optimizer.annotate_types import annotate_types as _annotate_types
+        from sqlglot.lineage import lineage as _lineage, Node as _LineageNode
+        from sqlglot.schema import MappingSchema as _MappingSchema
+
+        sqlglot = _sqlglot
+        exp = _exp
+        qualify = _qualify
+        annotate_types = _annotate_types
+        lineage = _lineage
+        LineageNode = _LineageNode
+        MappingSchema = _MappingSchema
 
 
 @dataclass
@@ -596,11 +621,12 @@ def get_direct_column_source(qualified_ast: exp.Expression, column_name: str, sc
 # Track which types we've already warned about to avoid duplicate warnings
 _warned_types = set()
 
-def build_sqlglot_schema(schema: dict, dialect: str) -> tuple[MappingSchema, dict]:
+def build_sqlglot_schema(schema: dict, dialect: str) -> tuple:
     """
     Build sqlglot MappingSchema and dict from input schema.
     This is expensive, so should be done once and reused.
     """
+    _ensure_sqlglot_imported()
     sqlglot_schema = MappingSchema(dialect=dialect)
     sqlglot_schema_dict = {}
 
@@ -626,8 +652,14 @@ def build_sqlglot_schema(schema: dict, dialect: str) -> tuple[MappingSchema, dic
                         "polygon": exp.DataType.Type.POLYGON,
                         "geometry": exp.DataType.Type.GEOMETRY,
                     }
+                    # Known DB2-specific types that we recognize (don't warn about)
+                    # These get passed through as-is (the column type string is preserved)
+                    db2_known_types = {"graphic", "vargraphic", "dbclob", "xml", "decfloat"}
                     lower_type = col_type.lower()
-                    if lower_type in spatial_types:
+                    if lower_type in db2_known_types:
+                        # Keep original type name - it will be used in lineage analysis
+                        table_cols[col_name] = col_type
+                    elif lower_type in spatial_types:
                         table_cols[col_name] = exp.DataType(this=spatial_types[lower_type])
                     else:
                         # Only warn once per unique type to reduce verbosity
@@ -667,8 +699,9 @@ def build_sqlglot_schema(schema: dict, dialect: str) -> tuple[MappingSchema, dic
     return sqlglot_schema, sqlglot_schema_dict
 
 
-def analyze_sql(sql: str, sqlglot_schema: MappingSchema, sqlglot_schema_dict: dict, dialect: str, path: str = "") -> SqlFileResult:
+def analyze_sql(sql: str, sqlglot_schema, sqlglot_schema_dict: dict, dialect: str, path: str = "") -> SqlFileResult:
     """Analyze a single SQL query."""
+    _ensure_sqlglot_imported()
     start_time = time.time()
 
     # Print which file we're analyzing if it takes time
@@ -998,8 +1031,25 @@ _worker_dialect = None
 
 
 def init_worker(schema, dialect):
-    """Initialize worker process with schema (called once per worker)."""
+    """Initialize worker process with schema (called once per worker).
+
+    On macOS, multiprocessing uses 'spawn' which creates a fresh Python interpreter.
+    PYTHONPATH is inherited but imports at module level happen before we can set sys.path.
+    By using lazy imports and setting sys.path here, we ensure the correct sqlglot is used.
+    """
     global _worker_sqlglot_schema, _worker_sqlglot_schema_dict, _worker_dialect
+
+    # Set up sys.path from PYTHONPATH before importing sqlglot
+    # This is critical for DB2 dialect which uses a forked sqlglot
+    pythonpath = os.environ.get("PYTHONPATH", "")
+    if pythonpath:
+        for path in pythonpath.split(os.pathsep):
+            if path and path not in sys.path:
+                sys.path.insert(0, path)
+
+    # Now import sqlglot (with correct sys.path)
+    _ensure_sqlglot_imported()
+
     _worker_sqlglot_schema, _worker_sqlglot_schema_dict = build_sqlglot_schema(schema, dialect)
     _worker_dialect = dialect
 
@@ -1045,6 +1095,17 @@ def process_single_file(file_info):
 
 
 def main():
+    # Set up sys.path from PYTHONPATH before importing sqlglot
+    # This is critical for DB2 dialect which uses a forked sqlglot
+    pythonpath = os.environ.get("PYTHONPATH", "")
+    if pythonpath:
+        for path in pythonpath.split(os.pathsep):
+            if path and path not in sys.path:
+                sys.path.insert(0, path)
+
+    # Now import sqlglot
+    _ensure_sqlglot_imported()
+
     # Read JSON input from stdin
     input_data = json.load(sys.stdin)
 

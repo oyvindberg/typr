@@ -147,22 +147,18 @@ public record DepartmentsRepoMock(HashMap<DepartmentsId, DepartmentsRow> map)
   ;
 
   @Override
-  public DepartmentsRow upsert(DepartmentsRow unsaved, Connection c) {
+  public void upsert(DepartmentsRow unsaved, Connection c) {
     map.put(unsaved.compositeId(), unsaved);
-    return unsaved;
   }
   ;
 
   @Override
-  public List<DepartmentsRow> upsertBatch(Iterator<DepartmentsRow> unsaved, Connection c) {
-    var result = new ArrayList<DepartmentsRow>();
+  public void upsertBatch(Iterator<DepartmentsRow> unsaved, Connection c) {
     while (unsaved.hasNext()) {
       var row = unsaved.next();
       map.put(row.compositeId(), row);
-      result.add(row);
     }
     ;
-    return result;
   }
   ;
 }

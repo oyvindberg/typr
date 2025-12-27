@@ -60,10 +60,10 @@ interface DepartmentsRepo {
   abstract fun upsert(
     unsaved: DepartmentsRow,
     c: Connection
-  ): DepartmentsRow
+  )
 
   abstract fun upsertBatch(
     unsaved: Iterator<DepartmentsRow>,
     c: Connection
-  ): List<DepartmentsRow>
+  )
 }

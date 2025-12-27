@@ -439,6 +439,9 @@ bleep test testers/pg/scala/anorm
 bleep test testers/pg/java
 bleep test testers/mariadb/scala
 
+# Run a specific test class within a project
+bleep test foundations-jdbc-test --only DuckDbTypeTest
+
 # Kotlin tests via Gradle
 ./gradlew :testers:pg:kotlin:test
 ```

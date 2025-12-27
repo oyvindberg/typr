@@ -248,6 +248,35 @@ case class TypeMapperJvmNew(
           case db.SqlServerType.ClrTypeRef(_, _, _)         => lang.String.withComment("CLR type")
           case db.Unknown(_)                                => TypesJava.runtime.Unknown
         }
+      case x: db.DB2Type =>
+        x match {
+          case db.DB2Type.SmallInt              => lang.Short
+          case db.DB2Type.Integer               => lang.Int
+          case db.DB2Type.BigInt                => lang.Long
+          case db.DB2Type.Decimal(_, _)         => lang.BigDecimal
+          case db.DB2Type.DecFloat(_)           => lang.BigDecimal
+          case db.DB2Type.Real                  => lang.Float
+          case db.DB2Type.Double                => lang.Double
+          case db.DB2Type.Boolean               => lang.Boolean
+          case db.DB2Type.Char(_)               => lang.String
+          case db.DB2Type.VarChar(_)            => lang.String
+          case db.DB2Type.Clob                  => lang.String
+          case db.DB2Type.Long                  => lang.String
+          case db.DB2Type.Graphic(_)            => lang.String
+          case db.DB2Type.VarGraphic(_)         => lang.String
+          case db.DB2Type.DbClob                => lang.String
+          case db.DB2Type.LongVarGraphic        => lang.String
+          case db.DB2Type.Binary(_)             => lang.ByteArrayType
+          case db.DB2Type.VarBinary(_)          => lang.ByteArrayType
+          case db.DB2Type.Blob                  => lang.ByteArrayType
+          case db.DB2Type.Date                  => TypesJava.LocalDate
+          case db.DB2Type.Time                  => TypesJava.LocalTime
+          case db.DB2Type.Timestamp(_)          => TypesJava.LocalDateTime
+          case db.DB2Type.Xml                   => lang.String.withComment("XML")
+          case db.DB2Type.RowId                 => lang.String.withComment("ROWID")
+          case db.DB2Type.DistinctType(name, _) => jvm.Type.Qualified(naming.domainName(name))
+          case db.Unknown(_)                    => TypesJava.runtime.Unknown
+        }
     }
   }
 }

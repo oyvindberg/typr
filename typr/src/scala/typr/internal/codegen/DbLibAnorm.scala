@@ -255,9 +255,9 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
         val unsaved = jvm.Param(jvm.Ident("unsaved"), TypesScala.Iterator.of(rowType))
         val batchSize = jvm.Param(Nil, jvm.Comments.Empty, jvm.Ident("batchSize"), TypesScala.Int, Some(code"10000"))
         sig(params = List(unsaved, batchSize), implicitParams = List(c), returnType = TypesScala.Long)
-      case RepoMethod.Upsert(_, _, _, unsavedParam, rowType, _) =>
+      case RepoMethod.Upsert(_, _, _, unsavedParam, rowType, _, _) =>
         sig(params = List(unsavedParam), implicitParams = List(c), returnType = rowType)
-      case RepoMethod.UpsertBatch(_, _, _, rowType, _) =>
+      case RepoMethod.UpsertBatch(_, _, _, rowType, _, _) =>
         val unsaved = jvm.Param(jvm.Ident("unsaved"), TypesScala.Iterable.of(rowType))
         sig(params = List(unsaved), implicitParams = List(c), returnType = TypesScala.List.of(rowType))
       case RepoMethod.UpsertStreaming(_, _, rowType, _) =>
@@ -451,7 +451,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
           code"""|$sql
                  |  .executeInsert(${rowParserFor(rowType)}.single)"""
         )
-      case RepoMethod.Upsert(relName, cols, id, unsavedParam, rowType, writeableColumnsWithId) =>
+      case RepoMethod.Upsert(relName, cols, id, unsavedParam, rowType, writeableColumnsWithId, _) =>
         val writeableColumnsNotId = writeableColumnsWithId.toList.filterNot(c => id.cols.exists(_.name == c.name))
 
         val values = writeableColumnsWithId.map { c =>
@@ -481,7 +481,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
           code"""|$sql
                  |  .executeInsert(${rowParserFor(rowType)}.single)"""
         )
-      case RepoMethod.UpsertBatch(relName, cols, id, rowType, writeableColumnsWithId) =>
+      case RepoMethod.UpsertBatch(relName, cols, id, rowType, writeableColumnsWithId, _) =>
         val writeableColumnsNotId = writeableColumnsWithId.toList.filterNot(c => id.cols.exists(_.name == c.name))
 
         val conflictAction = writeableColumnsNotId match {
@@ -725,7 +725,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
                |${unsavedParam.name}""".stripMargin
           )
         )
-      case RepoMethod.Upsert(_, _, _, unsavedParam, _, _) =>
+      case RepoMethod.Upsert(_, _, _, unsavedParam, _, _, _) =>
         jvm.Body.Expr(
           code"""|map.put(${unsavedParam.name}.${id.paramName}, ${unsavedParam.name}): @${TypesScala.nowarn}
                |${unsavedParam.name}""".stripMargin
@@ -739,7 +739,7 @@ class DbLibAnorm(pkg: jvm.QIdent, inlineImplicits: Boolean, default: ComputedDef
                |unsaved.size""".stripMargin
           )
         )
-      case RepoMethod.UpsertBatch(_, _, id, _, _) =>
+      case RepoMethod.UpsertBatch(_, _, id, _, _, _) =>
         jvm.Body.Expr(code"""|unsaved.map { row =>
                |  map += (row.${id.paramName} -> row)
                |  row

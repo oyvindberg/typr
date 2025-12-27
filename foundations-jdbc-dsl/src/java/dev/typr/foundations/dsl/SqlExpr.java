@@ -3,7 +3,6 @@ package dev.typr.foundations.dsl;
 import dev.typr.foundations.DbType;
 import dev.typr.foundations.Either;
 import dev.typr.foundations.Fragment;
-import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.data.Json;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -74,11 +73,12 @@ public sealed interface SqlExpr<T>
   @SafeVarargs
   static SqlExpr<Boolean> all(SqlExpr<Boolean>... exprs) {
     if (exprs.length == 0) {
-      return new ConstReq<>(true, PgTypes.bool);
+      return new ConstReq<>(true, GenericDbTypes.bool);
     }
     SqlExpr<Boolean> result = exprs[0];
     for (int i = 1; i < exprs.length; i++) {
-      result = new Binary<>(result, SqlOperator.and(Bijection.asBool(), PgTypes.bool), exprs[i]);
+      result =
+          new Binary<>(result, SqlOperator.and(Bijection.asBool(), GenericDbTypes.bool), exprs[i]);
     }
     return result;
   }
@@ -87,11 +87,12 @@ public sealed interface SqlExpr<T>
   @SafeVarargs
   static SqlExpr<Boolean> any(SqlExpr<Boolean>... exprs) {
     if (exprs.length == 0) {
-      return new ConstReq<>(false, PgTypes.bool);
+      return new ConstReq<>(false, GenericDbTypes.bool);
     }
     SqlExpr<Boolean> result = exprs[0];
     for (int i = 1; i < exprs.length; i++) {
-      result = new Binary<>(result, SqlOperator.or(Bijection.asBool(), PgTypes.bool), exprs[i]);
+      result =
+          new Binary<>(result, SqlOperator.or(Bijection.asBool(), GenericDbTypes.bool), exprs[i]);
     }
     return result;
   }
@@ -168,7 +169,8 @@ public sealed interface SqlExpr<T>
 
   // String operations
   default SqlExpr<Boolean> like(String pattern, Bijection<T, String> bijection) {
-    return new Binary<>(this, SqlOperator.like(bijection), new ConstReq<>(pattern, PgTypes.text));
+    return new Binary<>(
+        this, SqlOperator.like(bijection), new ConstReq<>(pattern, GenericDbTypes.text));
   }
 
   default SqlExpr<T> stringAppend(SqlExpr<T> other, Bijection<T, String> bijection) {
@@ -290,7 +292,7 @@ public sealed interface SqlExpr<T>
   // Custom operators
   default <T2> SqlExpr<Boolean> customBinaryOp(
       String op, SqlExpr<T2> right, BiFunction<T, T2, Boolean> eval) {
-    return new Binary<>(this, new SqlOperator<>(op, eval, PgTypes.bool), right);
+    return new Binary<>(this, new SqlOperator<>(op, eval, GenericDbTypes.bool), right);
   }
 
   // Rendering
@@ -604,7 +606,7 @@ public sealed interface SqlExpr<T>
   record IsNull<T>(SqlExpr<T> expr) implements SqlExpr<Boolean> {
     @Override
     public DbType<Boolean> dbType() {
-      return PgTypes.bool;
+      return GenericDbTypes.bool;
     }
 
     @Override
@@ -648,7 +650,7 @@ public sealed interface SqlExpr<T>
   record In<T>(SqlExpr<T> expr, T[] values, DbType<T> pgType) implements SqlExpr<Boolean> {
     @Override
     public DbType<Boolean> dbType() {
-      return PgTypes.bool;
+      return GenericDbTypes.bool;
     }
 
     @Override
@@ -695,7 +697,7 @@ public sealed interface SqlExpr<T>
     public DbType<List<Optional<?>>> dbType() {
       // ROW expressions return a composite type - we use a placeholder
       // This isn't commonly used in projections
-      return (DbType<List<Optional<?>>>) (DbType<?>) PgTypes.text;
+      return (DbType<List<Optional<?>>>) (DbType<?>) GenericDbTypes.text;
     }
 
     @Override
@@ -721,7 +723,7 @@ public sealed interface SqlExpr<T>
 
     @Override
     public DbType<Boolean> dbType() {
-      return PgTypes.bool;
+      return GenericDbTypes.bool;
     }
 
     @Override
@@ -771,7 +773,7 @@ public sealed interface SqlExpr<T>
       SqlExpr<T> expr, SelectBuilder<F, R> subquery) implements SqlExpr<Boolean> {
     @Override
     public DbType<Boolean> dbType() {
-      return PgTypes.bool;
+      return GenericDbTypes.bool;
     }
 
     @Override
@@ -796,7 +798,7 @@ public sealed interface SqlExpr<T>
   record Exists<F, R>(SelectBuilder<F, R> subquery) implements SqlExpr<Boolean> {
     @Override
     public DbType<Boolean> dbType() {
-      return PgTypes.bool;
+      return GenericDbTypes.bool;
     }
 
     @Override
@@ -841,7 +843,7 @@ public sealed interface SqlExpr<T>
   record CountStar() implements SqlExpr<Long> {
     @Override
     public DbType<Long> dbType() {
-      return PgTypes.int8;
+      return GenericDbTypes.int8;
     }
 
     @Override
@@ -854,7 +856,7 @@ public sealed interface SqlExpr<T>
   record Count<T>(SqlExpr<T> expr) implements SqlExpr<Long> {
     @Override
     public DbType<Long> dbType() {
-      return PgTypes.int8;
+      return GenericDbTypes.int8;
     }
 
     @Override
@@ -867,7 +869,7 @@ public sealed interface SqlExpr<T>
   record CountDistinct<T>(SqlExpr<T> expr) implements SqlExpr<Long> {
     @Override
     public DbType<Long> dbType() {
-      return PgTypes.int8;
+      return GenericDbTypes.int8;
     }
 
     @Override
@@ -898,7 +900,7 @@ public sealed interface SqlExpr<T>
   record Avg<T>(SqlExpr<T> expr) implements SqlExpr<Double> {
     @Override
     public DbType<Double> dbType() {
-      return PgTypes.float8;
+      return GenericDbTypes.float8;
     }
 
     @Override
@@ -940,7 +942,7 @@ public sealed interface SqlExpr<T>
   record StringAgg(SqlExpr<String> expr, String delimiter) implements SqlExpr<String> {
     @Override
     public DbType<String> dbType() {
-      return PgTypes.text;
+      return GenericDbTypes.text;
     }
 
     @Override
@@ -949,13 +951,13 @@ public sealed interface SqlExpr<T>
         return Fragment.lit("GROUP_CONCAT(")
             .append(expr.render(ctx, counter))
             .append(Fragment.lit(" SEPARATOR "))
-            .append(Fragment.value(delimiter, PgTypes.text))
+            .append(Fragment.value(delimiter, GenericDbTypes.text))
             .append(Fragment.lit(")"));
       } else {
         return Fragment.lit("STRING_AGG(")
             .append(expr.render(ctx, counter))
             .append(Fragment.lit(", "))
-            .append(Fragment.value(delimiter, PgTypes.text))
+            .append(Fragment.value(delimiter, GenericDbTypes.text))
             .append(Fragment.lit(")"));
       }
     }
@@ -994,7 +996,7 @@ public sealed interface SqlExpr<T>
   record BoolAnd(SqlExpr<Boolean> expr) implements SqlExpr<Boolean> {
     @Override
     public DbType<Boolean> dbType() {
-      return PgTypes.bool;
+      return GenericDbTypes.bool;
     }
 
     @Override
@@ -1007,7 +1009,7 @@ public sealed interface SqlExpr<T>
   record BoolOr(SqlExpr<Boolean> expr) implements SqlExpr<Boolean> {
     @Override
     public DbType<Boolean> dbType() {
-      return PgTypes.bool;
+      return GenericDbTypes.bool;
     }
 
     @Override
@@ -1035,27 +1037,27 @@ public sealed interface SqlExpr<T>
 
   /** SUM(expr) for Integer - returns Long. */
   static SqlExpr<Long> sum(SqlExpr<Integer> expr) {
-    return new Sum<>(expr, PgTypes.int8);
+    return new Sum<>(expr, GenericDbTypes.int8);
   }
 
   /** SUM(expr) for Long - returns Long. */
   static SqlExpr<Long> sumLong(SqlExpr<Long> expr) {
-    return new Sum<>(expr, PgTypes.int8);
+    return new Sum<>(expr, GenericDbTypes.int8);
   }
 
   /** SUM(expr) for BigDecimal - returns BigDecimal. */
   static SqlExpr<BigDecimal> sumBigDecimal(SqlExpr<BigDecimal> expr) {
-    return new Sum<>(expr, PgTypes.numeric);
+    return new Sum<>(expr, GenericDbTypes.numeric);
   }
 
   /** SUM(expr) for Double - returns Double. */
   static SqlExpr<Double> sumDouble(SqlExpr<Double> expr) {
-    return new Sum<>(expr, PgTypes.float8);
+    return new Sum<>(expr, GenericDbTypes.float8);
   }
 
   /** SUM(expr) for Short - returns Long. */
   static SqlExpr<Long> sumShort(SqlExpr<Short> expr) {
-    return new Sum<>(expr, PgTypes.int8);
+    return new Sum<>(expr, GenericDbTypes.int8);
   }
 
   /** AVG(expr) - average of numeric values, returns Double. */
@@ -1091,7 +1093,7 @@ public sealed interface SqlExpr<T>
    * for MariaDB.
    */
   static <T> SqlExpr<Json> jsonAgg(SqlExpr<T> expr) {
-    return new JsonAgg<>(expr, PgTypes.json);
+    return new JsonAgg<>(expr, GenericDbTypes.json);
   }
 
   /** BOOL_AND(expr) - true if all values are true. */

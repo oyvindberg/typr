@@ -187,8 +187,8 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
   ;
 
   @Override
-  public DepartmentsRow upsert(DepartmentsRow unsaved, Connection c) {
-    return interpolate(
+  public void upsert(DepartmentsRow unsaved, Connection c) {
+    interpolate(
             Fragment.lit("MERGE INTO \"DEPARTMENTS\" t\nUSING (SELECT "),
             Fragment.encode(OracleTypes.varchar2, unsaved.deptCode()),
             Fragment.lit(", "),
@@ -199,7 +199,8 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
             Fragment.encode(MoneyT.oracleType.opt(), unsaved.budget()),
             Fragment.lit(
                 " FROM DUAL) s\n"
-                    + "ON (\"DEPT_CODE\", \"DEPT_REGION\")\n"
+                    + "ON (t.\"DEPT_CODE\" = s.\"DEPT_CODE\" AND t.\"DEPT_REGION\" ="
+                    + " s.\"DEPT_REGION\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"DEPT_NAME\" = s.\"DEPT_NAME\",\n"
                     + "t.\"BUDGET\" = s.\"BUDGET\"\n"
                     + "WHEN NOT MATCHED THEN INSERT (\"DEPT_CODE\", \"DEPT_REGION\", \"DEPT_NAME\","
@@ -212,23 +213,24 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
             Fragment.lit(", "),
             Fragment.encode(MoneyT.oracleType.opt(), unsaved.budget()),
             Fragment.lit(")"))
-        .updateReturning(DepartmentsRow._rowParser.exactlyOne())
+        .update()
         .runUnchecked(c);
   }
   ;
 
   @Override
-  public List<DepartmentsRow> upsertBatch(Iterator<DepartmentsRow> unsaved, Connection c) {
-    return interpolate(
+  public void upsertBatch(Iterator<DepartmentsRow> unsaved, Connection c) {
+    interpolate(
             Fragment.lit(
                 "MERGE INTO \"DEPARTMENTS\" t\n"
                     + "USING (SELECT ?, ?, ?, ? FROM DUAL) s\n"
-                    + "ON (\"DEPT_CODE\", \"DEPT_REGION\")\n"
+                    + "ON (t.\"DEPT_CODE\" = s.\"DEPT_CODE\" AND t.\"DEPT_REGION\" ="
+                    + " s.\"DEPT_REGION\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"DEPT_NAME\" = s.\"DEPT_NAME\",\n"
                     + "t.\"BUDGET\" = s.\"BUDGET\"\n"
                     + "WHEN NOT MATCHED THEN INSERT (\"DEPT_CODE\", \"DEPT_REGION\", \"DEPT_NAME\","
                     + " \"BUDGET\") VALUES (?, ?, ?, ?)"))
-        .updateReturningEach(DepartmentsRow._rowParser, unsaved)
+        .updateMany(DepartmentsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
   ;

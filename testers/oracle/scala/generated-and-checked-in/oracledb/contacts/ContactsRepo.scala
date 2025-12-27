@@ -36,7 +36,7 @@ trait ContactsRepo {
 
   def update(row: ContactsRow)(using c: Connection): java.lang.Boolean
 
-  def upsert(unsaved: ContactsRow)(using c: Connection): ContactsRow
+  def upsert(unsaved: ContactsRow)(using c: Connection): Unit
 
-  def upsertBatch(unsaved: java.util.Iterator[ContactsRow])(using c: Connection): java.util.List[ContactsRow]
+  def upsertBatch(unsaved: java.util.Iterator[ContactsRow])(using c: Connection): Unit
 }

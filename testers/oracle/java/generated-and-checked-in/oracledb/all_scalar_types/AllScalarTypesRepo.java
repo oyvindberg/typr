@@ -39,7 +39,7 @@ public interface AllScalarTypesRepo {
 
   Boolean update(AllScalarTypesRow row, Connection c);
 
-  AllScalarTypesRow upsert(AllScalarTypesRow unsaved, Connection c);
+  void upsert(AllScalarTypesRow unsaved, Connection c);
 
-  List<AllScalarTypesRow> upsertBatch(Iterator<AllScalarTypesRow> unsaved, Connection c);
+  void upsertBatch(Iterator<AllScalarTypesRow> unsaved, Connection c);
 }

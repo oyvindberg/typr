@@ -343,8 +343,59 @@ object db {
     case class ClrTypeRef(name: RelationName, assemblyName: String, className: String) extends SqlServerType
   }
 
+  // DB2-specific types
+  sealed trait DB2Type extends Type
+  object DB2Type {
+    // Integer types
+    case object SmallInt extends DB2Type // 16-bit
+    case object Integer extends DB2Type // 32-bit
+    case object BigInt extends DB2Type // 64-bit
+
+    // Fixed-point
+    case class Decimal(precision: Option[Int], scale: Option[Int]) extends DB2Type
+    case class DecFloat(precision: Option[Int]) extends DB2Type // DB2-specific: 16 or 34 digits
+
+    // Floating-point
+    case object Real extends DB2Type // Single precision
+    case object Double extends DB2Type // Double precision
+
+    // Boolean (DB2 11.1+)
+    case object Boolean extends DB2Type
+
+    // Character types (SBCS)
+    case class Char(length: Option[Int]) extends DB2Type
+    case class VarChar(length: Option[Int]) extends DB2Type
+    case object Clob extends DB2Type
+    case object Long extends DB2Type // Deprecated VARCHAR
+
+    // Character types (DBCS/Graphic) - DB2-specific for double-byte character sets
+    case class Graphic(length: Option[Int]) extends DB2Type
+    case class VarGraphic(length: Option[Int]) extends DB2Type
+    case object DbClob extends DB2Type
+    case object LongVarGraphic extends DB2Type // Deprecated VARGRAPHIC
+
+    // Binary types
+    case class Binary(length: Option[Int]) extends DB2Type // CHAR FOR BIT DATA equivalent
+    case class VarBinary(length: Option[Int]) extends DB2Type // VARCHAR FOR BIT DATA equivalent
+    case object Blob extends DB2Type
+
+    // Date/Time types
+    case object Date extends DB2Type
+    case object Time extends DB2Type
+    case class Timestamp(precision: Option[Int]) extends DB2Type // 0-12 fractional seconds
+
+    // XML type
+    case object Xml extends DB2Type
+
+    // Row ID types
+    case object RowId extends DB2Type // DB2-specific: internal row identifier
+
+    // Distinct types (user-defined type aliases, similar to PostgreSQL domains)
+    case class DistinctType(name: RelationName, sourceType: Type) extends DB2Type
+  }
+
   // Shared/unknown type - extends PgType, MariaType, and OracleType for pattern matching
-  case class Unknown(sqlType: String) extends PgType with MariaType with DuckDbType with OracleType with SqlServerType
+  case class Unknown(sqlType: String) extends PgType with MariaType with DuckDbType with OracleType with SqlServerType with DB2Type
 
   case class Domain(name: RelationName, tpe: Type, originalType: String, isNotNull: Nullability, hasDefault: Boolean, constraintDefinition: Option[String])
   case class StringEnum(name: RelationName, values: NonEmptyList[String])

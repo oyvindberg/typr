@@ -294,6 +294,10 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
   def returningStrategy(cols: NonEmptyList[ComputedColumn], rowType: jvm.Type, maybeId: Option[IdComputed]): ReturningStrategy =
     ReturningStrategy.SqlReturning(rowType)
 
+  /** PostgreSQL supports RETURNING with ON CONFLICT */
+  def upsertStrategy(rowType: jvm.Type): UpsertStrategy =
+    UpsertStrategy.Returning(rowType)
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 4: SQL Templates
   // ═══════════════════════════════════════════════════════════════════════════
@@ -326,6 +330,10 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
 
   def conflictNoOpClause(firstPkCol: ComputedColumn, quotedColName: ComputedColumn => Code): Code =
     code"do update set ${quotedColName(firstPkCol)} = EXCLUDED.${quotedColName(firstPkCol)}"
+
+  /** PostgreSQL uses ON CONFLICT (colname) which expects just the column names, not a join condition */
+  override def mergeOnClause(idCols: NonEmptyList[ComputedColumn], quotedColName: ComputedColumn => Code): Code =
+    idCols.map(quotedColName).mkCode(", ")
 
   def streamingInsertSql(tableName: Code, columns: Code): Code =
     code"COPY $tableName($columns) FROM STDIN"

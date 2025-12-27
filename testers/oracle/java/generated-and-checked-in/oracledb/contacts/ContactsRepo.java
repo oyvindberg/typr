@@ -39,7 +39,7 @@ public interface ContactsRepo {
 
   Boolean update(ContactsRow row, Connection c);
 
-  ContactsRow upsert(ContactsRow unsaved, Connection c);
+  void upsert(ContactsRow unsaved, Connection c);
 
-  List<ContactsRow> upsertBatch(Iterator<ContactsRow> unsaved, Connection c);
+  void upsertBatch(Iterator<ContactsRow> unsaved, Connection c);
 }

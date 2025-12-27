@@ -1,5 +1,6 @@
 package dev.typr.foundations.kotlin
 
+import dev.typr.foundations.Db2Type
 import dev.typr.foundations.DuckDbType
 import dev.typr.foundations.MariaType
 import dev.typr.foundations.OracleType
@@ -239,5 +240,42 @@ object KotlinDbTypes {
         val numeric = dev.typr.foundations.SqlServerTypes.numeric
         val money = dev.typr.foundations.SqlServerTypes.money
         val smallmoney = dev.typr.foundations.SqlServerTypes.smallmoney
+    }
+
+    object Db2Types {
+        // Primitives - convert Java boxed types to Kotlin native types
+        val smallint: Db2Type<Short> = dev.typr.foundations.Db2Types.smallint.bimap(
+            SqlFunction { it },
+            { it }
+        )
+        val integer: Db2Type<Int> = dev.typr.foundations.Db2Types.integer.bimap(
+            SqlFunction { it },
+            { it }
+        )
+        val bigint: Db2Type<Long> = dev.typr.foundations.Db2Types.bigint.bimap(
+            SqlFunction { it },
+            { it }
+        )
+
+        // Floating point
+        val real: Db2Type<Float> = dev.typr.foundations.Db2Types.real.bimap(
+            SqlFunction { it },
+            { it }
+        )
+        val double_: Db2Type<Double> = dev.typr.foundations.Db2Types.double_.bimap(
+            SqlFunction { it },
+            { it }
+        )
+
+        // Boolean
+        val boolean_: Db2Type<Boolean> = dev.typr.foundations.Db2Types.boolean_.bimap(
+            SqlFunction { it },
+            { it }
+        )
+
+        // Decimal types - no conversion needed, already BigDecimal
+        val decimal = dev.typr.foundations.Db2Types.decimal
+        val numeric = dev.typr.foundations.Db2Types.numeric
+        val decfloat = dev.typr.foundations.Db2Types.decfloat
     }
 }

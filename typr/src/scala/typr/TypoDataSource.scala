@@ -68,6 +68,17 @@ object TypoDataSource {
     TypoDataSource(ds, DbType.SqlServer)
   }
 
+  /** Create a TypoDataSource for IBM DB2 */
+  def hikariDb2(server: String, port: Int, databaseName: String, username: String, password: String): TypoDataSource = {
+    val config = new HikariConfig
+    config.setDriverClassName("com.ibm.db2.jcc.DB2Driver")
+    config.setJdbcUrl(s"jdbc:db2://$server:$port/$databaseName")
+    config.setUsername(username)
+    config.setPassword(password)
+    val ds = new HikariDataSource(config)
+    TypoDataSource(ds, DbType.DB2)
+  }
+
   /** Create a TypoDataSource with auto-detection of database type */
   def hikari(ds: DataSource): TypoDataSource = {
     val conn = ds.getConnection

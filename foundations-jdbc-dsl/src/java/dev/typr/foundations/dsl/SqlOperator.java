@@ -1,40 +1,39 @@
 package dev.typr.foundations.dsl;
 
 import dev.typr.foundations.DbType;
-import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.dsl.internal.DummyComparator;
 import java.util.Comparator;
 import java.util.function.BiFunction;
 
 public record SqlOperator<T1, T2, O>(String op, BiFunction<T1, T2, O> eval, DbType<O> outputType) {
 
-  // Standard comparison operators - return Boolean
+  // Standard comparison operators
   public static <T> SqlOperator<T, T, Boolean> eq() {
-    return new SqlOperator<>("=", Object::equals, PgTypes.bool);
+    return new SqlOperator<>("=", Object::equals, GenericDbTypes.bool);
   }
 
   public static <T> SqlOperator<T, T, Boolean> neq() {
-    return new SqlOperator<>("!=", (a, b) -> !a.equals(b), PgTypes.bool);
+    return new SqlOperator<>("!=", (a, b) -> !a.equals(b), GenericDbTypes.bool);
   }
 
   public static <T> SqlOperator<T, T, Boolean> gt() {
     Comparator<T> comparator = DummyComparator.typed();
-    return new SqlOperator<>(">", (a, b) -> comparator.compare(a, b) > 0, PgTypes.bool);
+    return new SqlOperator<>(">", (a, b) -> comparator.compare(a, b) > 0, GenericDbTypes.bool);
   }
 
   public static <T> SqlOperator<T, T, Boolean> gte() {
     Comparator<T> comparator = DummyComparator.typed();
-    return new SqlOperator<>(">=", (a, b) -> comparator.compare(a, b) >= 0, PgTypes.bool);
+    return new SqlOperator<>(">=", (a, b) -> comparator.compare(a, b) >= 0, GenericDbTypes.bool);
   }
 
   public static <T> SqlOperator<T, T, Boolean> lt() {
     Comparator<T> comparator = DummyComparator.typed();
-    return new SqlOperator<>("<", (a, b) -> comparator.compare(a, b) < 0, PgTypes.bool);
+    return new SqlOperator<>("<", (a, b) -> comparator.compare(a, b) < 0, GenericDbTypes.bool);
   }
 
   public static <T> SqlOperator<T, T, Boolean> lte() {
     Comparator<T> comparator = DummyComparator.typed();
-    return new SqlOperator<>("<=", (a, b) -> comparator.compare(a, b) <= 0, PgTypes.bool);
+    return new SqlOperator<>("<=", (a, b) -> comparator.compare(a, b) <= 0, GenericDbTypes.bool);
   }
 
   // Logical operators - need dbType to infer output type
@@ -97,7 +96,9 @@ public record SqlOperator<T1, T2, O>(String op, BiFunction<T1, T2, O> eval, DbTy
 
   public static <T> SqlOperator<T, String, Boolean> like(Bijection<T, String> bijection) {
     return new SqlOperator<>(
-        "LIKE", (value, pattern) -> pattern.contains(bijection.underlying(value)), PgTypes.bool);
+        "LIKE",
+        (value, pattern) -> pattern.contains(bijection.underlying(value)),
+        GenericDbTypes.bool);
   }
 
   public static <T> SqlOperator<T, T, T> strAdd(Bijection<T, String> bijection, DbType<T> dbType) {

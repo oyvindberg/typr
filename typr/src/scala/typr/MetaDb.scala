@@ -1,5 +1,6 @@
 package typr
 
+import typr.internal.db2.{Db2MetaDb, Db2TypeMapperDb}
 import typr.internal.duckdb.{DuckDbMetaDb, DuckDbTypeMapperDb}
 import typr.internal.external.ExternalTools
 import typr.internal.mariadb.{MariaMetaDb, MariaTypeMapperDb}
@@ -24,6 +25,7 @@ case class MetaDb(
     case DbType.DuckDB     => DuckDbTypeMapperDb()
     case DbType.Oracle     => OracleTypeMapperDb(oracleObjectTypes, oracleCollectionTypes)
     case DbType.SqlServer  => SqlServerTypeMapperDb(domains)
+    case DbType.DB2        => Db2TypeMapperDb()
   }
 }
 
@@ -43,6 +45,7 @@ object MetaDb {
       case DbType.DuckDB     => DuckDbMetaDb.fromDb(logger, ds, viewSelector, schemaMode)
       case DbType.Oracle     => OracleMetaDb.fromDb(logger, ds, viewSelector, schemaMode)
       case DbType.SqlServer  => SqlServerMetaDb.fromDb(logger, ds, viewSelector, schemaMode)
+      case DbType.DB2        => Db2MetaDb.fromDb(logger, ds, viewSelector, schemaMode)
     }
 
   /** Load metadata from PostgreSQL-specific input (for backwards compatibility) */

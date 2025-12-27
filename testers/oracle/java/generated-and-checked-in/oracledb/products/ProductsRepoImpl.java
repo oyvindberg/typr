@@ -223,8 +223,8 @@ public class ProductsRepoImpl implements ProductsRepo {
   ;
 
   @Override
-  public ProductsRow upsert(ProductsRow unsaved, Connection c) {
-    return interpolate(
+  public void upsert(ProductsRow unsaved, Connection c) {
+    interpolate(
             Fragment.lit("MERGE INTO \"PRODUCTS\" t\nUSING (SELECT "),
             Fragment.encode(ProductsId.oracleType, unsaved.productId()),
             Fragment.lit(", "),
@@ -237,7 +237,7 @@ public class ProductsRepoImpl implements ProductsRepo {
             Fragment.encode(TagVarrayT.oracleType.opt(), unsaved.tags()),
             Fragment.lit(
                 " FROM DUAL) s\n"
-                    + "ON (\"PRODUCT_ID\")\n"
+                    + "ON (t.\"PRODUCT_ID\" = s.\"PRODUCT_ID\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"SKU\" = s.\"SKU\",\n"
                     + "t.\"NAME\" = s.\"NAME\",\n"
                     + "t.\"PRICE\" = s.\"PRICE\",\n"
@@ -254,25 +254,25 @@ public class ProductsRepoImpl implements ProductsRepo {
             Fragment.lit(", "),
             Fragment.encode(TagVarrayT.oracleType.opt(), unsaved.tags()),
             Fragment.lit(")"))
-        .updateReturning(ProductsRow._rowParser.exactlyOne())
+        .update()
         .runUnchecked(c);
   }
   ;
 
   @Override
-  public List<ProductsRow> upsertBatch(Iterator<ProductsRow> unsaved, Connection c) {
-    return interpolate(
+  public void upsertBatch(Iterator<ProductsRow> unsaved, Connection c) {
+    interpolate(
             Fragment.lit(
                 "MERGE INTO \"PRODUCTS\" t\n"
                     + "USING (SELECT ?, ?, ?, ?, ? FROM DUAL) s\n"
-                    + "ON (\"PRODUCT_ID\")\n"
+                    + "ON (t.\"PRODUCT_ID\" = s.\"PRODUCT_ID\")\n"
                     + "WHEN MATCHED THEN UPDATE SET t.\"SKU\" = s.\"SKU\",\n"
                     + "t.\"NAME\" = s.\"NAME\",\n"
                     + "t.\"PRICE\" = s.\"PRICE\",\n"
                     + "t.\"TAGS\" = s.\"TAGS\"\n"
                     + "WHEN NOT MATCHED THEN INSERT (\"PRODUCT_ID\", \"SKU\", \"NAME\", \"PRICE\","
                     + " \"TAGS\") VALUES (?, ?, ?, ?, ?)"))
-        .updateReturningEach(ProductsRow._rowParser, unsaved)
+        .updateMany(ProductsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
   ;

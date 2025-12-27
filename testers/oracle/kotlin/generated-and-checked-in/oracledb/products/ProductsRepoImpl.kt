@@ -112,14 +112,18 @@ class ProductsRepoImpl() : ProductsRepo {
   override fun upsert(
     unsaved: ProductsRow,
     c: Connection
-  ): ProductsRow = Fragment.interpolate(Fragment.lit("MERGE INTO \"PRODUCTS\" t\nUSING (SELECT "), Fragment.encode(ProductsId.oracleType, unsaved.productId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.sku), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType, unsaved.price), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.nullable(), unsaved.tags), Fragment.lit(" FROM DUAL) s\nON (\"PRODUCT_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"SKU\" = s.\"SKU\",\nt.\"NAME\" = s.\"NAME\",\nt.\"PRICE\" = s.\"PRICE\",\nt.\"TAGS\" = s.\"TAGS\"\nWHEN NOT MATCHED THEN INSERT (\"PRODUCT_ID\", \"SKU\", \"NAME\", \"PRICE\", \"TAGS\") VALUES ("), Fragment.encode(ProductsId.oracleType, unsaved.productId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.sku), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType, unsaved.price), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.nullable(), unsaved.tags), Fragment.lit(")"))
-    .updateReturning(ProductsRow._rowParser.exactlyOne())
-    .runUnchecked(c)
+  ) {
+    Fragment.interpolate(Fragment.lit("MERGE INTO \"PRODUCTS\" t\nUSING (SELECT "), Fragment.encode(ProductsId.oracleType, unsaved.productId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.sku), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType, unsaved.price), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.nullable(), unsaved.tags), Fragment.lit(" FROM DUAL) s\nON (t.\"PRODUCT_ID\" = s.\"PRODUCT_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"SKU\" = s.\"SKU\",\nt.\"NAME\" = s.\"NAME\",\nt.\"PRICE\" = s.\"PRICE\",\nt.\"TAGS\" = s.\"TAGS\"\nWHEN NOT MATCHED THEN INSERT (\"PRODUCT_ID\", \"SKU\", \"NAME\", \"PRICE\", \"TAGS\") VALUES ("), Fragment.encode(ProductsId.oracleType, unsaved.productId), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.sku), Fragment.lit(", "), Fragment.encode(OracleTypes.varchar2, unsaved.name), Fragment.lit(", "), Fragment.encode(MoneyT.oracleType, unsaved.price), Fragment.lit(", "), Fragment.encode(TagVarrayT.oracleType.nullable(), unsaved.tags), Fragment.lit(")"))
+      .update()
+      .runUnchecked(c)
+  }
 
   override fun upsertBatch(
     unsaved: Iterator<ProductsRow>,
     c: Connection
-  ): List<ProductsRow> = Fragment.interpolate(Fragment.lit("MERGE INTO \"PRODUCTS\" t\nUSING (SELECT ?, ?, ?, ?, ? FROM DUAL) s\nON (\"PRODUCT_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"SKU\" = s.\"SKU\",\nt.\"NAME\" = s.\"NAME\",\nt.\"PRICE\" = s.\"PRICE\",\nt.\"TAGS\" = s.\"TAGS\"\nWHEN NOT MATCHED THEN INSERT (\"PRODUCT_ID\", \"SKU\", \"NAME\", \"PRICE\", \"TAGS\") VALUES (?, ?, ?, ?, ?)"))
-    .updateReturningEach(ProductsRow._rowParser, unsaved)
-  .runUnchecked(c)
+  ) {
+    Fragment.interpolate(Fragment.lit("MERGE INTO \"PRODUCTS\" t\nUSING (SELECT ?, ?, ?, ?, ? FROM DUAL) s\nON (t.\"PRODUCT_ID\" = s.\"PRODUCT_ID\")\nWHEN MATCHED THEN UPDATE SET t.\"SKU\" = s.\"SKU\",\nt.\"NAME\" = s.\"NAME\",\nt.\"PRICE\" = s.\"PRICE\",\nt.\"TAGS\" = s.\"TAGS\"\nWHEN NOT MATCHED THEN INSERT (\"PRODUCT_ID\", \"SKU\", \"NAME\", \"PRICE\", \"TAGS\") VALUES (?, ?, ?, ?, ?)"))
+      .updateMany(ProductsRow._rowParser, unsaved)
+      .runUnchecked(c)
+  }
 }

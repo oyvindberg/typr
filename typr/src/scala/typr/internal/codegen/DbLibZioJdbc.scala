@@ -241,12 +241,12 @@ class DbLibZioJdbc(pkg: jvm.QIdent, inlineImplicits: Boolean, dslEnabled: Boolea
       case RepoMethod.InsertStreaming(_, rowType, _) =>
         val unsavedParam = jvm.Param(jvm.Ident("unsaved"), ZStream.of(ZConnection, TypesJava.Throwable, rowType))
         sig(params = List(unsavedParam, batchSize), returnType = ZIO.of(ZConnection, TypesJava.Throwable, TypesScala.Long))
-      case RepoMethod.UpsertBatch(_, _, _, _, _) =>
+      case RepoMethod.UpsertBatch(_, _, _, _, _, _) =>
         Left(DbLib.NotImplementedFor(repoMethod, "zio-jdbc"))
       case RepoMethod.UpsertStreaming(_, _, rowType, _) =>
         val unsavedParam = jvm.Param(jvm.Ident("unsaved"), ZStream.of(ZConnection, TypesJava.Throwable, rowType))
         sig(params = List(unsavedParam, batchSize), returnType = ZIO.of(ZConnection, TypesJava.Throwable, TypesScala.Long))
-      case RepoMethod.Upsert(_, _, _, unsavedParam, rowType, _) =>
+      case RepoMethod.Upsert(_, _, _, unsavedParam, rowType, _, _) =>
         sig(params = List(unsavedParam), returnType = ZIO.of(ZConnection, Throwable, UpdateResult.of(rowType)))
       case RepoMethod.InsertUnsavedStreaming(_, unsaved) =>
         val unsavedParam = jvm.Param(jvm.Ident("unsaved"), ZStream.of(ZConnection, TypesJava.Throwable, unsaved.tpe))
@@ -417,7 +417,7 @@ class DbLibZioJdbc(pkg: jvm.QIdent, inlineImplicits: Boolean, dslEnabled: Boolea
             code"q.insertReturning(${dialect.usingCall}${lookupJdbcDecoder(rowType)}).map(_.updatedKeys.head)"
           )
         )
-      case RepoMethod.Upsert(relName, cols, id, unsavedParam, rowType, writeableColumnsWithId) =>
+      case RepoMethod.Upsert(relName, cols, id, unsavedParam, rowType, writeableColumnsWithId, _) =>
         val writeableColumnsNotId = writeableColumnsWithId.toList.filterNot(c => id.cols.exists(_.name == c.name))
 
         val values = writeableColumnsWithId.map { c =>
@@ -445,7 +445,7 @@ class DbLibZioJdbc(pkg: jvm.QIdent, inlineImplicits: Boolean, dslEnabled: Boolea
 
         jvm.Body.Expr(code"$sql.insertReturning(${dialect.usingCall}${lookupJdbcDecoder(rowType)})")
 
-      case RepoMethod.UpsertBatch(_, _, _, _, _) =>
+      case RepoMethod.UpsertBatch(_, _, _, _, _, _) =>
         jvm.Body.Expr("???")
       case RepoMethod.UpsertStreaming(relName, id, rowType, writeableColumnsWithId) =>
         val writeableColumnsNotId = writeableColumnsWithId.toList.filterNot(c => id.cols.exists(_.name == c.name))
@@ -625,12 +625,12 @@ class DbLibZioJdbc(pkg: jvm.QIdent, inlineImplicits: Boolean, dslEnabled: Boolea
                |
                |  ${unsavedParam.name}
                |}""")
-      case RepoMethod.Upsert(_, _, _, unsavedParam, _, _) =>
+      case RepoMethod.Upsert(_, _, _, unsavedParam, _, _, _) =>
         jvm.Body.Expr(code"""|$ZIO.succeed {
                |  map.put(${unsavedParam.name}.${id.paramName}, ${unsavedParam.name}): @${TypesScala.nowarn}
                |  $UpdateResult(1, $Chunk.single(${unsavedParam.name}))
                |}""".stripMargin)
-      case RepoMethod.UpsertBatch(_, _, id, _, _) =>
+      case RepoMethod.UpsertBatch(_, _, id, _, _, _) =>
         jvm.Body.Expr(code"""|ZIO.succeed {
                |  unsaved.map{ row =>
                |    map += (row.${id.paramName} -> row)
