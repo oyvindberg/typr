@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import org.junit.Test;
 import org.postgresql.geometric.*;
@@ -15,6 +16,24 @@ import org.postgresql.jdbc.PgConnection;
 import org.postgresql.util.PGInterval;
 
 public class PgTypeTest {
+
+  // PostgreSQL only supports microsecond precision (6 digits), but Java's now() methods
+  // return nanosecond precision (9 digits). Truncate to ensure roundtrip equality.
+  private static LocalTime nowTime() {
+    return LocalTime.now().truncatedTo(ChronoUnit.MICROS);
+  }
+
+  private static LocalDateTime nowDateTime() {
+    return LocalDateTime.now().truncatedTo(ChronoUnit.MICROS);
+  }
+
+  private static Instant nowInstant() {
+    return Instant.now().truncatedTo(ChronoUnit.MICROS);
+  }
+
+  private static OffsetTime nowOffsetTime() {
+    return OffsetTime.now().truncatedTo(ChronoUnit.MICROS);
+  }
 
   record TestPair<A>(A t0, Optional<A> t1) {}
 
@@ -124,20 +143,20 @@ public class PgTypeTest {
           new PgTypeAndExample<>(PgTypes.date, LocalDate.of(1970, 1, 1)), // Edge case: epoch
           new PgTypeAndExample<>(PgTypes.date, LocalDate.of(2099, 12, 31)), // Edge case: far future
           new PgTypeAndExample<>(PgTypes.dateArray, new LocalDate[] {LocalDate.now()}),
-          new PgTypeAndExample<>(PgTypes.time, LocalTime.now()),
+          new PgTypeAndExample<>(PgTypes.time, nowTime()),
           new PgTypeAndExample<>(PgTypes.time, LocalTime.of(0, 0, 0)), // Edge case: midnight
           new PgTypeAndExample<>(
               PgTypes.time, LocalTime.of(23, 59, 59, 999999000)), // Edge case: end of day
-          new PgTypeAndExample<>(PgTypes.timeArray, new LocalTime[] {LocalTime.now()}),
-          new PgTypeAndExample<>(PgTypes.timestamp, LocalDateTime.now()),
+          new PgTypeAndExample<>(PgTypes.timeArray, new LocalTime[] {nowTime()}),
+          new PgTypeAndExample<>(PgTypes.timestamp, nowDateTime()),
           new PgTypeAndExample<>(
               PgTypes.timestamp, LocalDateTime.of(1970, 1, 1, 0, 0, 0)), // Edge case: epoch
-          new PgTypeAndExample<>(PgTypes.timestampArray, new LocalDateTime[] {LocalDateTime.now()}),
-          new PgTypeAndExample<>(PgTypes.timestamptz, Instant.now()),
+          new PgTypeAndExample<>(PgTypes.timestampArray, new LocalDateTime[] {nowDateTime()}),
+          new PgTypeAndExample<>(PgTypes.timestamptz, nowInstant()),
           new PgTypeAndExample<>(PgTypes.timestamptz, Instant.EPOCH), // Edge case: epoch
-          new PgTypeAndExample<>(PgTypes.timestamptzArray, new Instant[] {Instant.now()}),
-          new PgTypeAndExample<>(PgTypes.timetz, OffsetTime.now()),
-          new PgTypeAndExample<>(PgTypes.timetzArray, new OffsetTime[] {OffsetTime.now()}),
+          new PgTypeAndExample<>(PgTypes.timestamptzArray, new Instant[] {nowInstant()}),
+          new PgTypeAndExample<>(PgTypes.timetz, nowOffsetTime()),
+          new PgTypeAndExample<>(PgTypes.timetzArray, new OffsetTime[] {nowOffsetTime()}),
           new PgTypeAndExample<>(PgTypes.interval, new PGInterval(1, 2, 3, 4, 5, 6.666)),
           new PgTypeAndExample<>(PgTypes.interval, new PGInterval(0, 0, 0, 0, 0, 0))
               .noIdentity(), // Edge case: zero interval
