@@ -5,6 +5,8 @@ sealed abstract class DslQualifiedNames(val dslPackage: String) {
   val In = jvm.Type.Qualified(s"$dslPackage.SqlExpr.In")
   val Rows = jvm.Type.Qualified(s"$dslPackage.SqlExpr.Rows")
   val Tuples = jvm.Type.Qualified(s"$dslPackage.Tuples")
+  val CompositeIn = jvm.Type.Qualified(s"$dslPackage.SqlExpr.CompositeIn")
+  val CompositeTuplePart = jvm.Type.Qualified(s"$dslPackage.SqlExpr.CompositeIn.TuplePart")
   val ConstAs = jvm.Type.Qualified(s"$dslPackage.SqlExpr.Const.As")
   val ConstAsAs = ConstAs / jvm.Ident("as")
   val ConstAsAsOpt = ConstAs / jvm.Ident("asOpt")

@@ -236,6 +236,42 @@ class DbLibTypo(
     }
   }
 
+  // CompositeIn types for the new DSL pattern
+  private val CompositeIn = lang.dsl.SqlExpr / jvm.Ident("CompositeIn")
+  private val CompositeInPart = CompositeIn / jvm.Ident("Part")
+
+  /** Generate a single CompositeIn.Part expression for one field. */
+  override def compositeInPart(fieldType: jvm.Type, idType: jvm.Type, rowType: jvm.Type, fieldExpr: jvm.Code, fieldName: jvm.Ident, pgType: jvm.Code): jvm.Code = {
+    val partType = CompositeInPart.of(fieldType, idType, rowType)
+    val getter = jvm.FieldGetterRef(idType, fieldName)
+    lang match {
+      case _: LangScala =>
+        // Scala: CompositeIn.Part[FieldType, IdType, RowType](fieldExpr, _.fieldName, pgType)
+        code"$partType($fieldExpr, $getter, $pgType)"
+      case _: LangKotlin =>
+        // Kotlin: Part<FieldType, IdType, RowType>(fieldExpr(), IdType::fieldName, pgType)
+        code"${jvm.Import(CompositeInPart)}$partType($fieldExpr, $getter, $pgType)"
+      case _ =>
+        // Java: new Part<>(fieldExpr(), IdType::getFieldName, pgType)
+        code"${jvm.Import(CompositeInPart)}new ${CompositeInPart}<>($fieldExpr, $getter, $pgType)"
+    }
+  }
+
+  /** Generate a complete CompositeIn expression from parts and IDs. */
+  override def compositeInConstruct(partsExpr: jvm.Code, idsExpr: jvm.Code): jvm.Code = {
+    lang match {
+      case _: LangScala =>
+        // Scala: CompositeIn(parts, ids)
+        code"${jvm.Import(CompositeIn)}$CompositeIn($partsExpr, $idsExpr)"
+      case _: LangKotlin =>
+        // Kotlin: CompositeIn(parts, ids) - using companion object invoke
+        code"${jvm.Import(CompositeIn)}$CompositeIn($partsExpr, $idsExpr)"
+      case _ =>
+        // Java: new CompositeIn(parts, ids)
+        code"${jvm.Import(CompositeIn)}new $CompositeIn($partsExpr, $idsExpr)"
+    }
+  }
+
   val c: jvm.Param[jvm.Type] = jvm.Param(jvm.Ident("c"), TypesJava.Connection)
 
   /** Generate selectByIds method body - different strategies per database */
