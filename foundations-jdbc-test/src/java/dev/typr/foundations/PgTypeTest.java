@@ -305,8 +305,7 @@ public class PgTypeTest {
           new PgTypeAndExample<>(
               PgTypes.regprocedureArray, new Regprocedure[] {new Regprocedure("sum(integer)")}),
           new PgTypeAndExample<>(PgTypes.regrole, new Regrole("pg_monitor")),
-          new PgTypeAndExample<>(
-              PgTypes.regroleArray, new Regrole[] {new Regrole("pg_monitor")}),
+          new PgTypeAndExample<>(PgTypes.regroleArray, new Regrole[] {new Regrole("pg_monitor")}),
           new PgTypeAndExample<>(PgTypes.regtype, new Regtype("integer")),
           new PgTypeAndExample<>(PgTypes.regtype, new Regtype("text")), // Edge case: different type
           new PgTypeAndExample<>(PgTypes.regtypeArray, new Regtype[] {new Regtype("integer")}),
